@@ -520,22 +520,20 @@ def test_round_trip_customized_state_preserves_list(api_client, clean_state):
 
 
 @pytest.mark.project
-def test_legacy_pre_v33_format_promotes_to_customized(api_client, clean_state):
+def test_unflagged_workspaces_array_is_ignored(api_client, clean_state):
     """
-    Pre-v3.3 files have no customizeWorkspaces key but may carry a hand-edited
-    workspaces array. The loader must promote them to customize=true so the
-    user does not lose their manual layout.
+    Defensive: a stray workspaces array with no customizeWorkspaces flag should
+    NOT promote the project to customize. 3.2.6 had no workspaces feature, so
+    any real file in the wild always carries the flag.
     """
-    api_client.create_new_project(title="Legacy")
+    api_client.create_new_project(title="Stray")
     time.sleep(0.3)
 
     config = api_client.command("project.exportJson")["config"]
-
-    # Strip the v3.3 flag, inject a hand-crafted workspaces array
     config.pop("customizeWorkspaces", None)
     config["workspaces"] = [{
         "workspaceId": 5000,
-        "title": "Legacy View",
+        "title": "Stray View",
         "icon": "",
         "widgetRefs": [],
     }]
@@ -545,40 +543,8 @@ def test_legacy_pre_v33_format_promotes_to_customized(api_client, clean_state):
     api_client.command("project.loadFromJSON", {"config": config})
     time.sleep(0.3)
 
-    assert _customize_get(api_client)["enabled"] is True, (
-        "Legacy file with workspaces array must promote to customize=true"
-    )
-
-    titles = [w["title"] for w in _list_workspaces(api_client)["workspaces"]]
-    assert "Legacy View" in titles
-
-
-@pytest.mark.project
-def test_v33_buggy_save_does_not_re_promote(api_client, clean_state):
-    """
-    A 3.3 file written by the buggy serializer carries customizeWorkspaces=false
-    AND a stale workspaces array (the auto list at save time). The fixed loader
-    must honour the explicit flag and NOT promote.
-    """
-    api_client.create_new_project(title="Buggy 3.3 file")
-    time.sleep(0.3)
-
-    config = api_client.command("project.exportJson")["config"]
-    config["customizeWorkspaces"] = False
-    config["workspaces"] = [{
-        "workspaceId": 1000,
-        "title": "Stale Auto",
-        "icon": "qrc:/icons/panes/overview.svg",
-        "widgetRefs": [],
-    }]
-
-    api_client.create_new_project(title="Loader")
-    time.sleep(0.3)
-    api_client.command("project.loadFromJSON", {"config": config})
-    time.sleep(0.3)
-
     assert _customize_get(api_client)["enabled"] is False, (
-        "Explicit customizeWorkspaces=false must be honoured even with a workspaces array"
+        "Workspaces array without flag must not auto-promote"
     )
 
 
@@ -675,6 +641,126 @@ def test_workspace_remove_in_auto_mode_is_rejected(api_client, clean_state):
     with pytest.raises(APIError) as ei:
         _delete_workspace(api_client, auto_id)
     assert ei.value.code == "INVALID_PARAM"
+
+
+# ---------------------------------------------------------------------------
+# REGRESSION -- user IDs do not collide with auto per-group IDs
+# ---------------------------------------------------------------------------
+
+@pytest.mark.project
+def test_user_workspace_ids_disjoint_from_auto_range(api_client, clean_state):
+    """
+    Auto IDs use [1000, 5000); user IDs start at 5000. A new user workspace
+    must not land on an ID a future group could claim, otherwise adding a
+    group later would silently merge the user's workspace with the new group.
+    """
+    _add_group_with_datasets(api_client, "G0", widget_type=0, dataset_count=1)
+    _add_group_with_datasets(api_client, "G1", widget_type=0, dataset_count=1)
+    time.sleep(0.3)
+
+    new_id = _add_workspace(api_client, "User Pick")["id"]
+    time.sleep(0.15)
+
+    assert new_id >= 5000, (
+        f"User-defined workspace ID {new_id} falls inside the auto reserved "
+        "range [1000, 5000); future group additions would collide"
+    )
+
+
+@pytest.mark.project
+def test_per_group_workspace_renumbers_on_group_delete(api_client, clean_state):
+    """
+    Per-group workspaces in customize mode use IDs 1002 + groupId. Deleting
+    a group must drop the dead per-group workspace and shift later per-group
+    IDs down. Otherwise the workspace named after the deleted group hangs
+    around with stale refs.
+    """
+    _add_group_with_datasets(api_client, "G0", widget_type=0, dataset_count=1)
+    _add_group_with_datasets(api_client, "G1", widget_type=0, dataset_count=1)
+    _add_group_with_datasets(api_client, "G2", widget_type=0, dataset_count=1)
+    time.sleep(0.3)
+
+    _customize_set(api_client, True)
+    time.sleep(0.2)
+
+    before = _list_workspaces(api_client)["workspaces"]
+    per_group_before = sorted(w["id"] for w in before
+                              if 1002 <= w["id"] < 5000)
+    assert per_group_before == [1002, 1003, 1004], (
+        f"Expected per-group IDs [1002,1003,1004], got {per_group_before}"
+    )
+
+    _select_group(api_client, group_id=1)
+    api_client.command("project.group.delete")
+    time.sleep(0.3)
+
+    after = _list_workspaces(api_client)["workspaces"]
+    per_group_after = sorted(w["id"] for w in after
+                             if 1002 <= w["id"] < 5000)
+    assert per_group_after == [1002, 1003], (
+        f"Expected per-group IDs [1002,1003] after deleting group 1, "
+        f"got {per_group_after}"
+    )
+
+
+@pytest.mark.project
+def test_user_deleted_auto_workspace_stays_deleted(api_client, clean_state):
+    """
+    In customize mode, a user-deleted per-group auto workspace must not be
+    resurrected by the next groupsChanged tick. The merge logic uses
+    m_autoSnapshot to distinguish "never seen" from "explicitly deleted".
+    """
+    _add_group_with_datasets(api_client, "G0", widget_type=0, dataset_count=1)
+    _add_group_with_datasets(api_client, "G1", widget_type=0, dataset_count=1)
+    time.sleep(0.3)
+
+    _customize_set(api_client, True)
+    time.sleep(0.2)
+
+    before = _list_workspaces(api_client)["workspaces"]
+    per_group_ids = [w["id"] for w in before if w["id"] >= 1002 and w["id"] < 5000]
+    if not per_group_ids:
+        pytest.skip("No per-group auto workspaces produced for this project")
+
+    target = per_group_ids[0]
+    _delete_workspace(api_client, target)
+    time.sleep(0.15)
+
+    # Trigger a groupsChanged-like structural edit (rename a group via update path
+    # is overkill -- just add another group, which is enough to fire the merge).
+    _add_group_with_datasets(api_client, "G2", widget_type=0, dataset_count=1)
+    time.sleep(0.3)
+
+    after_ids = [w["id"] for w in _list_workspaces(api_client)["workspaces"]]
+    assert target not in after_ids, (
+        f"Workspace {target} resurrected after user deleted it"
+    )
+
+
+@pytest.mark.project
+def test_adding_group_after_user_workspace_does_not_overwrite(api_client, clean_state):
+    """
+    Concrete repro of the collision: with the reserved-range fix, adding a
+    new group after a user workspace must not change the user workspace's
+    title or contents.
+    """
+    _add_group_with_datasets(api_client, "G0", widget_type=0, dataset_count=1)
+    time.sleep(0.3)
+
+    user_wid = _add_workspace(api_client, "Hand-picked")["id"]
+    time.sleep(0.15)
+
+    # Add several groups; auto IDs grow but never overlap user_wid (>=5000)
+    for i in range(1, 4):
+        _add_group_with_datasets(api_client, f"G{i}", widget_type=0, dataset_count=1)
+        time.sleep(0.15)
+
+    after = _list_workspaces(api_client)["workspaces"]
+    user_ws = next((w for w in after if w["id"] == user_wid), None)
+    assert user_ws is not None, "User workspace disappeared after adding groups"
+    assert user_ws["title"] == "Hand-picked", (
+        f"User workspace title was overwritten: {user_ws['title']!r}"
+    )
 
 
 # ---------------------------------------------------------------------------

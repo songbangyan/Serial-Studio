@@ -27,6 +27,7 @@
 
 #include "API/CommandRegistry.h"
 #include "API/SchemaBuilder.h"
+#include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/ProjectModel.h"
 
@@ -41,6 +42,15 @@
 [[nodiscard]] static auto findWorkspace(const std::vector<DataModel::Workspace>& ws, int wid)
 {
   return std::find_if(ws.begin(), ws.end(), [wid](const auto& w) { return w.workspaceId == wid; });
+}
+
+/**
+ * @brief Returns true when the project model is in ProjectFile mode and ready
+ *        to accept workspace mutations.
+ */
+[[nodiscard]] static bool inProjectFileMode()
+{
+  return AppState::instance().operationMode() == SerialStudio::ProjectFile;
 }
 
 /**
@@ -253,6 +263,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::get(const QString& id,
 API::CommandResponse API::Handlers::WorkspacesHandler::add(const QString& id,
                                                            const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   const QString title = params.value(QStringLiteral("title")).toString(QStringLiteral("Workspace"));
 
   const int newId = DataModel::ProjectModel::instance().addWorkspace(title);
@@ -274,6 +288,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::add(const QString& id,
 API::CommandResponse API::Handlers::WorkspacesHandler::remove(const QString& id,
                                                               const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   if (!params.contains(QStringLiteral("id")))
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: id"));
@@ -302,6 +320,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::remove(const QString& id,
 API::CommandResponse API::Handlers::WorkspacesHandler::rename(const QString& id,
                                                               const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   if (!params.contains(QStringLiteral("id")))
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: id"));
@@ -343,6 +365,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::autoGenerate(const QStrin
 {
   Q_UNUSED(params)
 
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   const int firstId = DataModel::ProjectModel::instance().autoGenerateWorkspaces();
 
   QJsonObject result;
@@ -377,6 +403,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeGet(const QStrin
 API::CommandResponse API::Handlers::WorkspacesHandler::customizeSet(const QString& id,
                                                                     const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   if (!params.contains(QStringLiteral("enabled")))
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
@@ -404,6 +434,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeSet(const QStrin
 API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& id,
                                                                  const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   const QStringList required{
     QStringLiteral("workspaceId"),
     QStringLiteral("widgetType"),
@@ -453,6 +487,10 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
 API::CommandResponse API::Handlers::WorkspacesHandler::widgetRemove(const QString& id,
                                                                     const QJsonObject& params)
 {
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
   const QStringList required{
     QStringLiteral("workspaceId"),
     QStringLiteral("widgetType"),

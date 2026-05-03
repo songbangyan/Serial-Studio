@@ -1851,15 +1851,9 @@ void DataModel::ProjectModel::loadWidgetSettingsAndWorkspaces(const QJsonObject&
 {
   m_widgetSettings = json.value(Keys::WidgetSettings).toObject();
 
-  // Customised workspaces load verbatim; auto list is regenerated after groups parse
+  // Customise list loads verbatim; auto list regenerates after groups parse
   m_workspaces.clear();
   m_customizeWorkspaces = json.value(Keys::CustomizeWorkspaces).toBool(false);
-
-  // Pre-v3.3 files have no customize flag; promote on a non-empty workspaces array
-  const bool isLegacyFormat = !json.contains(Keys::CustomizeWorkspaces);
-  if (isLegacyFormat && json.contains(Keys::Workspaces)
-      && !json.value(Keys::Workspaces).toArray().isEmpty())
-    m_customizeWorkspaces = true;
 
   if (m_customizeWorkspaces && json.contains(Keys::Workspaces)) {
     const auto wsArray = json.value(Keys::Workspaces).toArray();
@@ -2228,8 +2222,9 @@ void DataModel::ProjectModel::deleteCurrentGroup()
   if (m_customizeWorkspaces)
     shiftWorkspaceRefsAfterGroupDelete(gid, deletedTypeCounts);
 
-  // Hidden-group IDs are post-renumber too; keep them aligned
+  // Hidden-group IDs and layout:N widgetSettings are post-renumber too
   shiftHiddenGroupIdsAfterGroupDelete(gid);
+  shiftLayoutKeysAfterGroupDelete(gid);
 
   Q_EMIT groupsChanged();
   Q_EMIT groupDeleted();
@@ -2332,8 +2327,9 @@ void DataModel::ProjectModel::deleteCurrentDataset()
     if (m_customizeWorkspaces)
       shiftWorkspaceRefsAfterGroupDelete(groupId, deletedTypeCounts);
 
-    // Hidden-group IDs are post-renumber too; keep them aligned
+    // Hidden-group IDs and layout:N widgetSettings are post-renumber too
     shiftHiddenGroupIdsAfterGroupDelete(groupId);
+    shiftLayoutKeysAfterGroupDelete(groupId);
 
     Q_EMIT groupsChanged();
     Q_EMIT datasetDeleted(-1);
@@ -3272,10 +3268,10 @@ void DataModel::ProjectModel::setGroupLayout(const int groupId, const QJsonObjec
 //     editor never opens empty. Refresh m_autoSnapshot.
 //   - Customized -> Auto: discard user list, regenerate from groups.
 //
-// Auto-IDs use the >= 1000 reserved range:
-//   1000 = Overview, 1001 = All Data, 1002 + groupId = per-group.
-// User-defined IDs are also >= 1000 and never collide with auto-IDs because
-// addWorkspace picks max+1.
+// Workspace ID layout (see WorkspaceIds:: in Frame.h):
+//   [1000, 5000) = auto IDs   (Overview=1000, AllData=1001, per-group=1002+gid)
+//   [5000, ...)  = user IDs   (addWorkspace picks max(>=5000)+1)
+// Disjoint ranges -- a future group can never claim an ID a user picked.
 //
 // m_hiddenGroupIds removes per-group entries from buildAutoWorkspaces output;
 // it is independent of customize state and survives Customize toggles.
@@ -3297,14 +3293,10 @@ int DataModel::ProjectModel::addWorkspace(const QString& title)
   if (!m_customizeWorkspaces)
     setCustomizeWorkspaces(true);
 
-  // Reserve [1000, 5000) for auto IDs (Overview=1000, AllData=1001, per-group
-  // 1002+groupId). User IDs start at kUserIdStart so new groups never collide
-  // with hand-picked workspaces, and legacy projects with maxGroupId > 3998
-  // still cannot collide.
-  static constexpr int kUserIdStart = 5000;
-  int maxId                         = kUserIdStart - 1;
+  // Reserve [AutoStart, UserStart) for auto IDs; user IDs start at UserStart
+  int maxId = WorkspaceIds::UserStart - 1;
   for (const auto& ws : m_workspaces)
-    if (ws.workspaceId >= kUserIdStart && ws.workspaceId > maxId)
+    if (ws.workspaceId >= WorkspaceIds::UserStart && ws.workspaceId > maxId)
       maxId = ws.workspaceId;
 
   DataModel::Workspace ws;
@@ -4098,15 +4090,10 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
   if (eligibleGroups == 0)
     return result;
 
-  // Fixed workspace ID slots -- stable across group add/remove
-  static constexpr int kOverviewId      = 1000;
-  static constexpr int kAllDataId       = 1001;
-  static constexpr int kPerGroupIdStart = 1002;
-
   // "Overview" workspace -- first so users land here by default
   if (overviewRefs.size() >= 2) {
     DataModel::Workspace ws;
-    ws.workspaceId = kOverviewId;
+    ws.workspaceId = WorkspaceIds::Overview;
     ws.title       = tr("Overview");
     ws.icon        = QStringLiteral("qrc:/icons/panes/overview.svg");
     ws.widgetRefs  = overviewRefs;
@@ -4116,7 +4103,7 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
   // "All Data" -- every widget across every group.
   if (eligibleGroups >= 2) {
     DataModel::Workspace ws;
-    ws.workspaceId = kAllDataId;
+    ws.workspaceId = WorkspaceIds::AllData;
     ws.title       = tr("All Data");
     ws.icon        = QStringLiteral("qrc:/icons/panes/dashboard.svg");
     ws.widgetRefs  = allRefs;
@@ -4133,7 +4120,7 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
       continue;
 
     DataModel::Workspace ws;
-    ws.workspaceId = kPerGroupIdStart + group.groupId;
+    ws.workspaceId = WorkspaceIds::PerGroupStart + group.groupId;
     ws.title       = group.title;
     ws.widgetRefs  = it.value();
     result.push_back(std::move(ws));
@@ -4196,12 +4183,16 @@ bool DataModel::ProjectModel::mergeAutoWorkspaceUpdates()
     auto snapIt = findByIdConst(m_autoSnapshot, cur.workspaceId);
 
     if (userIt == m_workspaces.end()) {
+      // Was in snapshot but not in user list -> user deleted it; don't resurrect
+      if (snapIt != m_autoSnapshot.end())
+        continue;
+
       m_workspaces.push_back(cur);
       dirty = true;
       continue;
     }
 
-    if (cur.workspaceId >= 1002 && userIt->title != cur.title) {
+    if (cur.workspaceId >= WorkspaceIds::PerGroupStart && userIt->title != cur.title) {
       userIt->title = cur.title;
       dirty         = true;
     }
@@ -4262,7 +4253,7 @@ int DataModel::ProjectModel::autoGenerateWorkspaces()
 
   // Post-condition: non-empty workspaces, ids in reserved range
   Q_ASSERT(!m_workspaces.empty());
-  Q_ASSERT(m_workspaces.front().workspaceId >= 1000);
+  Q_ASSERT(m_workspaces.front().workspaceId >= WorkspaceIds::AutoStart);
 
   setModified(true);
   if (flagChanged)
@@ -4382,7 +4373,19 @@ void DataModel::ProjectModel::shiftWorkspaceRefsAfterGroupDelete(
   Q_ASSERT(deletedGid >= 0);
   Q_ASSERT(m_customizeWorkspaces);
 
+  const int deletedAutoId = WorkspaceIds::PerGroupStart + deletedGid;
+
+  // Drop the per-group auto workspace whose group is gone; user IDs untouched
+  m_workspaces.erase(
+    std::remove_if(m_workspaces.begin(),
+                   m_workspaces.end(),
+                   [deletedAutoId](const Workspace& w) { return w.workspaceId == deletedAutoId; }),
+    m_workspaces.end());
+
   for (auto& ws : m_workspaces) {
+    if (ws.workspaceId > deletedAutoId && ws.workspaceId < WorkspaceIds::UserStart)
+      ws.workspaceId -= 1;
+
     // Drop refs pointing at the deleted group
     ws.widgetRefs.erase(
       std::remove_if(ws.widgetRefs.begin(),
@@ -4425,6 +4428,55 @@ void DataModel::ProjectModel::shiftHiddenGroupIdsAfterGroupDelete(int deletedGid
   }
 
   m_hiddenGroupIds = std::move(updated);
+}
+
+/**
+ * @brief Updates layout:N widgetSettings entries after a group renumber.
+ *
+ * Drops the deleted group's layout entry and shifts later layout:N keys down
+ * by 1 so each group's saved dashboard layout follows the new groupId. Without
+ * this, the surviving "Group N+1" inherits the deleted group's window layout.
+ */
+void DataModel::ProjectModel::shiftLayoutKeysAfterGroupDelete(int deletedGid)
+{
+  if (m_widgetSettings.isEmpty())
+    return;
+
+  const auto keys = m_widgetSettings.keys();
+  bool changed    = false;
+
+  // First pass: drop the deleted group's layout
+  if (m_widgetSettings.contains(Keys::layoutKey(deletedGid))) {
+    m_widgetSettings.remove(Keys::layoutKey(deletedGid));
+    changed = true;
+  }
+
+  // Second pass: shift later layouts down in ascending groupId order
+  const QString prefix = QStringLiteral("layout:");
+  QList<QPair<int, QJsonObject>> moves;
+  for (const auto& key : keys) {
+    if (!key.startsWith(prefix))
+      continue;
+
+    bool ok      = false;
+    const int id = key.mid(prefix.length()).toInt(&ok);
+    if (!ok || id <= deletedGid)
+      continue;
+
+    moves.append({id, m_widgetSettings.value(key).toObject()});
+  }
+
+  std::sort(
+    moves.begin(), moves.end(), [](const auto& a, const auto& b) { return a.first < b.first; });
+
+  for (const auto& move : moves) {
+    m_widgetSettings.remove(Keys::layoutKey(move.first));
+    m_widgetSettings.insert(Keys::layoutKey(move.first - 1), move.second);
+    changed = true;
+  }
+
+  if (changed)
+    Q_EMIT widgetSettingsChanged();
 }
 
 /**

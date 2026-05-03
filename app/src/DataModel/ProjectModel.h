@@ -356,6 +356,8 @@ private:
 
   void shiftHiddenGroupIdsAfterGroupDelete(int deletedGid);
 
+  void shiftLayoutKeysAfterGroupDelete(int deletedGid);
+
   bool mergeAutoWorkspaceUpdates();
 
 private:

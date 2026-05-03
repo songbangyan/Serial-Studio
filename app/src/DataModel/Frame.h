@@ -176,6 +176,22 @@ inline QString layoutKey(int groupId)
 }
 }  // namespace Keys
 
+namespace WorkspaceIds {
+/**
+ * @brief Reserved workspace ID slots and the auto/user range boundary.
+ *
+ * Auto IDs occupy [AutoStart, UserStart): Overview = 1000, AllData = 1001,
+ * per-group = PerGroupStart + groupId. User-defined workspaces start at
+ * UserStart so a future group can never claim an ID a user picked, and
+ * mergeAutoWorkspaceUpdates can never confuse the two.
+ */
+inline constexpr int AutoStart     = 1000;
+inline constexpr int Overview      = 1000;
+inline constexpr int AllData       = 1001;
+inline constexpr int PerGroupStart = 1002;
+inline constexpr int UserStart     = 5000;
+}  // namespace WorkspaceIds
+
 namespace DataModel {
 
 //--------------------------------------------------------------------------------------------------

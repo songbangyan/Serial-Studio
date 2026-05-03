@@ -477,7 +477,7 @@ void UI::Taskbar::setActiveGroupId(int groupId)
 #endif
 
   // Populate the rest from either a user workspace or an auto-generated group
-  if (groupId >= 1000)
+  if (groupId >= WorkspaceIds::AutoStart)
     populateTaskbarFromWorkspace(groupId);
 
   else
@@ -1731,7 +1731,7 @@ void UI::Taskbar::navigateToWidget(int windowId, int groupId)
   }
 
   // For user-defined workspaces, add the widget and show it
-  if (m_activeGroupId >= 1000) {
+  if (m_activeGroupId >= WorkspaceIds::AutoStart) {
     addWidgetToActiveWorkspace(windowId);
     QTimer::singleShot(100, this, [this, windowId]() {
       auto* window = windowData(windowId);
@@ -1795,15 +1795,14 @@ void UI::Taskbar::deleteWorkspace(int workspaceId)
 
   if (pm->customizeWorkspaces()) {
     // In customize mode, user owns m_workspaces and can delete any entry
-    if (workspaceId >= 1000)
+    if (workspaceId >= WorkspaceIds::AutoStart)
       pm->deleteWorkspace(workspaceId);
     else
       return;
   } else {
-    // Auto mode: per-group workspaces map to group IDs via the 1002 offset
-    static constexpr int kPerGroupIdStart = 1002;
-    if (workspaceId >= kPerGroupIdStart)
-      pm->hideGroup(workspaceId - kPerGroupIdStart);
+    // Auto mode: per-group workspaces map back to group IDs
+    if (workspaceId >= WorkspaceIds::PerGroupStart)
+      pm->hideGroup(workspaceId - WorkspaceIds::PerGroupStart);
     else
       return;
   }
@@ -1823,7 +1822,7 @@ void UI::Taskbar::deleteWorkspace(int workspaceId)
  */
 void UI::Taskbar::renameWorkspace(int workspaceId, const QString& name)
 {
-  if (workspaceId < 1000)
+  if (workspaceId < WorkspaceIds::AutoStart)
     return;
 
   DataModel::ProjectModel::instance().renameWorkspace(workspaceId, name);
@@ -1838,7 +1837,7 @@ void UI::Taskbar::renameWorkspace(int workspaceId, const QString& name)
  */
 void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
 {
-  if (m_activeGroupId < 1000)
+  if (m_activeGroupId < WorkspaceIds::AutoStart)
     return;
 
   // Find the widget info from fullModel
@@ -1880,7 +1879,7 @@ void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
  */
 void UI::Taskbar::removeWidgetFromActiveWorkspace(int windowId)
 {
-  if (m_activeGroupId < 1000)
+  if (m_activeGroupId < WorkspaceIds::AutoStart)
     return;
 
   // Resolve the widget info that identifies the ref to remove
@@ -1940,7 +1939,7 @@ void UI::Taskbar::removeWorkspaceTaskbarRow(int windowId)
 QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
 {
   QVariantList ids;
-  if (workspaceId < 1000)
+  if (workspaceId < WorkspaceIds::AutoStart)
     return ids;
 
   const auto& workspaces = DataModel::ProjectModel::instance().activeWorkspaces();
@@ -1974,7 +1973,7 @@ QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
  */
 void UI::Taskbar::setWorkspaceWidgets(int workspaceId, const QVariantList& windowIds)
 {
-  if (workspaceId < 1000)
+  if (workspaceId < WorkspaceIds::AutoStart)
     return;
 
   auto* pm = &DataModel::ProjectModel::instance();
