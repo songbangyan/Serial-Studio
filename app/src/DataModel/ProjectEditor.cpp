@@ -1197,6 +1197,9 @@ void DataModel::ProjectEditor::appendActionTreeItems(QStandardItem* root)
     actionItem->setData(-1, TreeViewFrameIndex);
     actionItem->setData("qrc:/icons/project-editor/treeview/action.svg", TreeViewIcon);
     actionItem->setData(action.title, TreeViewText);
+    actionItem->setData(KindAction, TreeItemKind);
+    actionItem->setData(action.actionId, TreeItemId);
+    actionItem->setData(-1, TreeItemParentId);
     root->appendRow(actionItem);
     m_actionItems.insert(actionItem, action);
   }
@@ -1230,6 +1233,9 @@ void DataModel::ProjectEditor::appendDatasetChildren(QStandardItem* groupItem,
     datasetItem->setData(dataset.sourceId, TreeViewSourceId);
     datasetItem->setData(QString(), TreeViewSourceName);
     datasetItem->setData(dataset.virtual_, TreeViewVirtual);
+    datasetItem->setData(KindDataset, TreeItemKind);
+    datasetItem->setData(dataset.datasetId, TreeItemId);
+    datasetItem->setData(group.groupId, TreeItemParentId);
     groupItem->appendRow(datasetItem);
     m_datasetItems.insert(datasetItem, dataset);
   }
@@ -1275,6 +1281,9 @@ void DataModel::ProjectEditor::appendOutputWidgetChildren(QStandardItem* groupIt
     owItem->setData(-2, TreeViewFrameIndex);
     owItem->setData(ow.sourceId, TreeViewSourceId);
     owItem->setData(QString(), TreeViewSourceName);
+    owItem->setData(KindOutputWidget, TreeItemKind);
+    owItem->setData(ow.widgetId, TreeItemId);
+    owItem->setData(group.groupId, TreeItemParentId);
     groupItem->appendRow(owItem);
     m_outputWidgetItems.insert(owItem, ow);
   }
@@ -1333,6 +1342,9 @@ void DataModel::ProjectEditor::appendGroupTreeItems(QStandardItem* root,
     groupItem->setData(group.title, TreeViewText);
     groupItem->setData(QString(), TreeViewSourceName);
     groupItem->setData(group.sourceId, TreeViewSourceId);
+    groupItem->setData(KindGroup, TreeItemKind);
+    groupItem->setData(group.groupId, TreeItemId);
+    groupItem->setData(-1, TreeItemParentId);
 
     // Force-expand groups that matched via a descendant when filtering
     if (filterActive)
@@ -1464,6 +1476,9 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
     wsItem->setData(ws.icon.isEmpty() ? "qrc:/icons/project-editor/treeview/group.svg" : ws.icon,
                     TreeViewIcon);
     wsItem->setData(-1, TreeViewFrameIndex);
+    wsItem->setData(KindWorkspace, TreeItemKind);
+    wsItem->setData(ws.workspaceId, TreeItemId);
+    wsItem->setData(-1, TreeItemParentId);
     wsRoot->appendRow(wsItem);
     m_workspaceItems.insert(wsItem, ws.workspaceId);
   }
@@ -4405,4 +4420,133 @@ QVariantList DataModel::ProjectEditor::allWidgetsSummary() const
   }
 
   return result;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Reorder API: button/keyboard wrappers + drag-drop request handler
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Moves the currently selected group by one step (direction = -1 up, +1 down).
+ */
+bool DataModel::ProjectEditor::moveCurrentGroup(int direction)
+{
+  if (m_currentView != GroupView)
+    return false;
+
+  const int gid = m_selectedGroup.groupId;
+  if (gid < 0)
+    return false;
+
+  const int n      = DataModel::ProjectModel::instance().groupCount();
+  const int target = gid + (direction < 0 ? -1 : 1);
+  if (target < 0 || target >= n)
+    return false;
+
+  m_pendingSelectionKind    = PendingSelectionKind::Group;
+  m_pendingSelectionGroupId = target;
+  m_pendingSelectionItemId  = -1;
+  DataModel::ProjectModel::instance().moveGroup(gid, target);
+  return true;
+}
+
+/**
+ * @brief Moves the currently selected dataset within its group.
+ */
+bool DataModel::ProjectEditor::moveCurrentDataset(int direction)
+{
+  if (m_currentView != DatasetView)
+    return false;
+
+  const int gid = m_selectedDataset.groupId;
+  const int did = m_selectedDataset.datasetId;
+  if (gid < 0 || did < 0)
+    return false;
+
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+  if (static_cast<size_t>(gid) >= groups.size())
+    return false;
+
+  const int n      = static_cast<int>(groups[gid].datasets.size());
+  const int target = did + (direction < 0 ? -1 : 1);
+  if (target < 0 || target >= n)
+    return false;
+
+  m_pendingSelectionKind    = PendingSelectionKind::Dataset;
+  m_pendingSelectionGroupId = gid;
+  m_pendingSelectionItemId  = target;
+  DataModel::ProjectModel::instance().moveDataset(gid, did, target);
+  return true;
+}
+
+/**
+ * @brief Moves the currently selected action up or down in the actions list.
+ */
+bool DataModel::ProjectEditor::moveCurrentAction(int direction)
+{
+  if (m_currentView != ActionView)
+    return false;
+
+  const int aid = m_selectedAction.actionId;
+  if (aid < 0)
+    return false;
+
+  const int n      = static_cast<int>(DataModel::ProjectModel::instance().actions().size());
+  const int target = aid + (direction < 0 ? -1 : 1);
+  if (target < 0 || target >= n)
+    return false;
+
+  DataModel::ProjectModel::instance().moveAction(aid, target);
+  return true;
+}
+
+/**
+ * @brief Moves the currently selected output widget within its group.
+ */
+bool DataModel::ProjectEditor::moveCurrentOutputWidget(int direction)
+{
+  if (m_currentView != OutputWidgetView)
+    return false;
+
+  const int gid = m_selectedOutputWidget.groupId;
+  const int wid = m_selectedOutputWidget.widgetId;
+  if (gid < 0 || wid < 0)
+    return false;
+
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+  if (static_cast<size_t>(gid) >= groups.size())
+    return false;
+
+  const int n      = static_cast<int>(groups[gid].outputWidgets.size());
+  const int target = wid + (direction < 0 ? -1 : 1);
+  if (target < 0 || target >= n)
+    return false;
+
+  DataModel::ProjectModel::instance().moveOutputWidget(gid, wid, target);
+  return true;
+}
+
+/**
+ * @brief Moves a workspace by one step in the editor list.
+ */
+bool DataModel::ProjectEditor::moveWorkspace(int workspaceId, int direction)
+{
+  if (workspaceId < WorkspaceIds::UserStart)
+    return false;
+
+  const auto& list = DataModel::ProjectModel::instance().editorWorkspaces();
+  int currentIdx   = -1;
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (list[i].workspaceId == workspaceId) {
+      currentIdx = static_cast<int>(i);
+      break;
+    }
+  }
+
+  if (currentIdx < 0)
+    return false;
+
+  const int target = currentIdx + (direction < 0 ? -1 : 1);
+  DataModel::ProjectModel::instance().moveWorkspace(workspaceId, target);
+  return true;
 }

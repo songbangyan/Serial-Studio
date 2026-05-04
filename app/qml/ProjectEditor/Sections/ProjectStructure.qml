@@ -145,9 +145,43 @@ Widgets.Pane {
       }
 
       //
+      // Reorder the current selection (group/dataset/action/workspace)
+      //
+      function reorderCurrentSelection(direction) {
+        const view = Cpp_JSON_ProjectEditor.currentView
+        if (view === ProjectEditor.GroupView)
+          return Cpp_JSON_ProjectEditor.moveCurrentGroup(direction)
+
+        if (view === ProjectEditor.DatasetView)
+          return Cpp_JSON_ProjectEditor.moveCurrentDataset(direction)
+
+        if (view === ProjectEditor.ActionView)
+          return Cpp_JSON_ProjectEditor.moveCurrentAction(direction)
+
+        if (view === ProjectEditor.OutputWidgetView)
+          return Cpp_JSON_ProjectEditor.moveCurrentOutputWidget(direction)
+
+        if (view === ProjectEditor.WorkspaceView)
+          return Cpp_JSON_ProjectEditor.moveWorkspace(
+                   Cpp_JSON_ProjectEditor.selectedWorkspaceId, direction)
+
+        return false
+      }
+
+      //
       // Keyboard navigation
       //
       Keys.onPressed: (event) => {
+                        // Alt+Up / Alt+Down -- reorder the current selection
+                        if ((event.modifiers & Qt.AltModifier)
+                            && (event.key === Qt.Key_Up || event.key === Qt.Key_Down)) {
+                          const dir = event.key === Qt.Key_Up ? -1 : 1
+                          if (treeView.reorderCurrentSelection(dir))
+                            event.accepted = true
+
+                          return
+                        }
+
                         // Move down to the next sibling (or parent if collapsed)
                         if (event.key === Qt.Key_Down) {
                           let nextIndex = treeView.index(treeView.currentRow + 1, treeView.currentColumn)
@@ -192,6 +226,13 @@ Widgets.Pane {
 
         readonly property real padding: 4
         readonly property real indentation: 16
+
+        readonly property int itemKind: model.treeItemKind === undefined
+                                        ? ProjectEditor.KindNone
+                                        : model.treeItemKind
+        readonly property int itemId: model.treeItemId === undefined ? -1 : model.treeItemId
+        readonly property int itemParentId: model.treeItemParentId === undefined
+                                            ? -1 : model.treeItemParentId
 
         //
         // Restore expanded state from C++ model
@@ -244,7 +285,7 @@ Widgets.Pane {
         }
 
         //
-        // Item background
+        // Item background + click/right-click handler
         //
         Rectangle {
           id: background
@@ -254,10 +295,94 @@ Widgets.Pane {
 
           MouseArea {
             anchors.fill: parent
-            onClicked: onLabelClicked()
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            onClicked: (mouse) => {
+              if (mouse.button === Qt.RightButton) {
+                if (item.itemKind !== ProjectEditor.KindNone) {
+                  onLabelClicked()
+                  contextMenu.popup()
+                }
+
+                return
+              }
+
+              onLabelClicked()
+            }
             onDoubleClicked: onLabelDoubleClicked()
           }
         }
+
+        //
+        // Move the row up (-1) or down (+1) via the project model
+        //
+        function moveItemBy(direction) {
+          if (item.itemKind === ProjectEditor.KindGroup)
+            Cpp_JSON_ProjectModel.moveGroup(item.itemId, item.itemId + direction)
+          else if (item.itemKind === ProjectEditor.KindDataset)
+            Cpp_JSON_ProjectModel.moveDataset(item.itemParentId,
+                                              item.itemId, item.itemId + direction)
+          else if (item.itemKind === ProjectEditor.KindAction)
+            Cpp_JSON_ProjectModel.moveAction(item.itemId, item.itemId + direction)
+          else if (item.itemKind === ProjectEditor.KindOutputWidget)
+            Cpp_JSON_ProjectModel.moveOutputWidget(item.itemParentId,
+                                                   item.itemId, item.itemId + direction)
+          else if (item.itemKind === ProjectEditor.KindWorkspace)
+            Cpp_JSON_ProjectEditor.moveWorkspace(item.itemId, direction)
+        }
+
+        //
+        // Right-click context menu (only for reorderable rows)
+        //
+        Menu {
+          id: contextMenu
+
+          MenuItem {
+            text: qsTr("Move Up")
+            onTriggered: item.moveItemBy(-1)
+          }
+
+          MenuItem {
+            text: qsTr("Move Down")
+            onTriggered: item.moveItemBy(1)
+          }
+
+          MenuSeparator {}
+
+          MenuItem {
+            text: qsTr("Duplicate")
+            visible: item.itemKind === ProjectEditor.KindGroup
+                     || item.itemKind === ProjectEditor.KindDataset
+                     || item.itemKind === ProjectEditor.KindAction
+                     || item.itemKind === ProjectEditor.KindOutputWidget
+            onTriggered: {
+              if (item.itemKind === ProjectEditor.KindGroup)
+                Cpp_JSON_ProjectModel.duplicateCurrentGroup()
+              else if (item.itemKind === ProjectEditor.KindDataset)
+                Cpp_JSON_ProjectModel.duplicateCurrentDataset()
+              else if (item.itemKind === ProjectEditor.KindAction)
+                Cpp_JSON_ProjectModel.duplicateCurrentAction()
+              else if (item.itemKind === ProjectEditor.KindOutputWidget)
+                Cpp_JSON_ProjectModel.duplicateCurrentOutputWidget()
+            }
+          }
+
+          MenuItem {
+            text: qsTr("Delete")
+            onTriggered: {
+              if (item.itemKind === ProjectEditor.KindGroup)
+                Cpp_JSON_ProjectModel.deleteCurrentGroup()
+              else if (item.itemKind === ProjectEditor.KindDataset)
+                Cpp_JSON_ProjectModel.deleteCurrentDataset()
+              else if (item.itemKind === ProjectEditor.KindAction)
+                Cpp_JSON_ProjectModel.deleteCurrentAction()
+              else if (item.itemKind === ProjectEditor.KindOutputWidget)
+                Cpp_JSON_ProjectModel.deleteCurrentOutputWidget()
+              else if (item.itemKind === ProjectEditor.KindWorkspace)
+                Cpp_JSON_ProjectModel.confirmDeleteWorkspace(item.itemId)
+            }
+          }
+        }
+
 
         //
         // Item controls

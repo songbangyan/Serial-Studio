@@ -205,8 +205,22 @@ public:
     TreeViewSourceName = Qt::UserRole + 14,
     TreeViewSourceId   = Qt::UserRole + 15,
     TreeViewVirtual    = Qt::UserRole + 16,
+
+    TreeItemKind     = Qt::UserRole + 17,
+    TreeItemId       = Qt::UserRole + 18,
+    TreeItemParentId = Qt::UserRole + 19,
   };
   Q_ENUM(CustomRoles)
+
+  enum ItemKind {
+    KindNone = 0,
+    KindGroup,
+    KindDataset,
+    KindWorkspace,
+    KindAction,
+    KindOutputWidget,
+  };
+  Q_ENUM(ItemKind)
 
   [[nodiscard]] CurrentView currentView() const;
   [[nodiscard]] QString selectedText() const;
@@ -272,6 +286,12 @@ public slots:
   void setSelectedOutputWidgetTransmitFunction(const QString& code);
   void setCurrentGroupPainterCode(const QString& code);
   void openTransformEditor();
+
+  Q_INVOKABLE [[nodiscard]] bool moveCurrentGroup(int direction);
+  Q_INVOKABLE [[nodiscard]] bool moveCurrentDataset(int direction);
+  Q_INVOKABLE [[nodiscard]] bool moveCurrentAction(int direction);
+  Q_INVOKABLE [[nodiscard]] bool moveCurrentOutputWidget(int direction);
+  Q_INVOKABLE [[nodiscard]] bool moveWorkspace(int workspaceId, int direction);
 
 private slots:
   void scheduleTreeRebuild();
@@ -462,6 +482,9 @@ public:
     names.insert(ProjectEditor::TreeViewSourceName,   BAL("treeViewSourceName"));
     names.insert(ProjectEditor::TreeViewSourceId,     BAL("treeViewSourceId"));
     names.insert(ProjectEditor::TreeViewVirtual,      BAL("treeViewVirtual"));
+    names.insert(ProjectEditor::TreeItemKind,         BAL("treeItemKind"));
+    names.insert(ProjectEditor::TreeItemId,           BAL("treeItemId"));
+    names.insert(ProjectEditor::TreeItemParentId,     BAL("treeItemParentId"));
 #undef BAL
     // clang-format on
 

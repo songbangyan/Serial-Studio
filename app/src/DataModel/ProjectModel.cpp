@@ -2407,6 +2407,463 @@ void DataModel::ProjectModel::duplicateCurrentAction()
 }
 
 //--------------------------------------------------------------------------------------------------
+// Group / dataset / workspace / action reorder
+//--------------------------------------------------------------------------------------------------
+
+namespace detail {
+/**
+ * @brief Stable anchor for a workspace ref across group/dataset reorders.
+ */
+struct RefAnchor {
+  int widgetType;
+  int sourceGid;
+  int datasetFrameIndex;
+  bool isGroupOrLed;
+};
+}  // namespace detail
+
+/**
+ * @brief Resolves a workspace ref into a stable RefAnchor before a reorder.
+ */
+static detail::RefAnchor anchorRef(const DataModel::WidgetRef& r,
+                                   const std::vector<DataModel::Group>& groups)
+{
+  detail::RefAnchor a;
+  a.widgetType        = r.widgetType;
+  a.sourceGid         = r.groupId;
+  a.datasetFrameIndex = -1;
+  a.isGroupOrLed      = false;
+
+  if (r.groupId < 0 || static_cast<size_t>(r.groupId) >= groups.size())
+    return a;
+
+  const auto& g            = groups[r.groupId];
+  const auto groupKey      = SerialStudio::getDashboardWidget(g);
+  const bool emptyOutPanel = g.groupType == DataModel::GroupType::Output && g.outputWidgets.empty();
+  const bool groupRef = SerialStudio::groupWidgetEligibleForWorkspace(groupKey) && !emptyOutPanel
+                     && static_cast<int>(groupKey) == r.widgetType;
+  const bool ledAggregate = (r.widgetType == static_cast<int>(SerialStudio::DashboardLED));
+  if (groupRef || ledAggregate) {
+    a.isGroupOrLed = true;
+    return a;
+  }
+
+  int slot = 0;
+  for (const auto& d : g.datasets) {
+    const auto keys = SerialStudio::getDashboardWidgets(d);
+    for (const auto& k : keys) {
+      if (static_cast<int>(k) != r.widgetType)
+        continue;
+
+      if (!SerialStudio::datasetWidgetEligibleForWorkspace(k))
+        continue;
+
+      if (slot == r.relativeIndex) {
+        a.datasetFrameIndex = d.index;
+        return a;
+      }
+
+      slot += 1;
+    }
+  }
+
+  return a;
+}
+
+/**
+ * @brief Re-resolves a RefAnchor into a per-type slot index in the given group.
+ *        Returns -1 if the anchor's dataset is not present.
+ */
+static int slotForAnchor(const detail::RefAnchor& a, const DataModel::Group& g)
+{
+  if (a.datasetFrameIndex < 0)
+    return -1;
+
+  int slot = 0;
+  for (const auto& d : g.datasets) {
+    const auto keys = SerialStudio::getDashboardWidgets(d);
+    for (const auto& k : keys) {
+      if (static_cast<int>(k) != a.widgetType)
+        continue;
+
+      if (!SerialStudio::datasetWidgetEligibleForWorkspace(k))
+        continue;
+
+      if (d.index == a.datasetFrameIndex)
+        return slot;
+
+      slot += 1;
+    }
+  }
+
+  return -1;
+}
+
+/**
+ * @brief Snapshots one anchor per workspace ref before a reorder.
+ */
+static std::vector<std::vector<detail::RefAnchor>> snapshotAllRefs(
+  const std::vector<DataModel::Workspace>& workspaces, const std::vector<DataModel::Group>& groups)
+{
+  std::vector<std::vector<detail::RefAnchor>> out;
+  out.resize(workspaces.size());
+  for (size_t w = 0; w < workspaces.size(); ++w) {
+    const auto& ws = workspaces[w];
+    auto& bucket   = out[w];
+    bucket.reserve(ws.widgetRefs.size());
+    for (const auto& r : ws.widgetRefs)
+      bucket.push_back(anchorRef(r, groups));
+  }
+  return out;
+}
+
+/**
+ * @brief Walks one workspace's refs against the new group/dataset layout,
+ *        rewriting groupId and relativeIndex from each anchor.
+ */
+static void resolveOneWorkspaceRefs(DataModel::Workspace& ws,
+                                    const std::vector<detail::RefAnchor>& src,
+                                    const std::vector<DataModel::Group>& groups,
+                                    const std::vector<int>& oldToNewGid)
+{
+  Q_ASSERT(src.size() == ws.widgetRefs.size());
+  const bool useMap = !oldToNewGid.empty();
+
+  for (size_t i = 0; i < ws.widgetRefs.size(); ++i) {
+    auto& r       = ws.widgetRefs[i];
+    const auto& a = src[i];
+
+    if (a.sourceGid < 0)
+      continue;
+
+    if (useMap) {
+      if (static_cast<size_t>(a.sourceGid) >= oldToNewGid.size())
+        continue;
+
+      r.groupId = oldToNewGid[static_cast<size_t>(a.sourceGid)];
+    }
+
+    if (a.isGroupOrLed)
+      continue;
+
+    if (static_cast<size_t>(r.groupId) >= groups.size())
+      continue;
+
+    const int newSlot = slotForAnchor(a, groups[r.groupId]);
+    if (newSlot >= 0)
+      r.relativeIndex = newSlot;
+  }
+}
+
+/**
+ * @brief Moves a group from one position to another, preserving widget settings,
+ *        workspace refs, hidden state, and auto-workspace IDs across the shift.
+ */
+void DataModel::ProjectModel::moveGroup(int fromGroupId, int toGroupId)
+{
+  const int n = static_cast<int>(m_groups.size());
+  if (fromGroupId < 0 || fromGroupId >= n)
+    return;
+
+  const int target = std::clamp(toGroupId, 0, n - 1);
+  if (target == fromGroupId)
+    return;
+
+  // Build oldGid -> newGid map driven by the rotation about to happen
+  std::vector<int> oldToNewGid(static_cast<size_t>(n));
+  for (int i = 0; i < n; ++i)
+    oldToNewGid[static_cast<size_t>(i)] = i;
+
+  if (fromGroupId < target)
+    for (int i = fromGroupId + 1; i <= target; ++i)
+      oldToNewGid[static_cast<size_t>(i)] = i - 1;
+
+  else
+    for (int i = target; i < fromGroupId; ++i)
+      oldToNewGid[static_cast<size_t>(i)] = i + 1;
+
+  oldToNewGid[static_cast<size_t>(fromGroupId)] = target;
+
+  // Snapshot ref anchors before any mutation
+  std::vector<std::vector<detail::RefAnchor>> anchors;
+  if (m_customizeWorkspaces)
+    anchors = snapshotAllRefs(m_workspaces, m_groups);
+
+  // Apply the rotation in the underlying vector
+  auto group = m_groups[fromGroupId];
+  m_groups.erase(m_groups.begin() + fromGroupId);
+  m_groups.insert(m_groups.begin() + target, group);
+
+  // Renumber group + dataset.groupId fields
+  remapGroupIdsAfterReorder(oldToNewGid);
+
+  // Side tables that key by groupId
+  remapLayoutKeysAfterReorder(oldToNewGid);
+  remapHiddenGroupIdsAfterReorder(oldToNewGid);
+  remapAutoWorkspaceIdsAfterReorder(oldToNewGid);
+
+  // Re-resolve workspace refs against the new layout (auto refs regenerate on groupsChanged)
+  if (m_customizeWorkspaces)
+    for (size_t w = 0; w < m_workspaces.size(); ++w)
+      resolveOneWorkspaceRefs(m_workspaces[w], anchors[w], m_groups, oldToNewGid);
+
+  if (m_selectedGroup.groupId == fromGroupId)
+    m_selectedGroup = m_groups[target];
+
+  Q_EMIT groupsChanged();
+  Q_EMIT widgetSettingsChanged();
+  setModified(true);
+}
+
+/**
+ * @brief Moves a dataset within its group, renumbering datasetIds and re-resolving
+ *        workspace refs in customise mode.
+ */
+void DataModel::ProjectModel::moveDataset(int groupId, int fromDatasetId, int toDatasetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  auto& datasets = m_groups[groupId].datasets;
+  const int n    = static_cast<int>(datasets.size());
+  if (fromDatasetId < 0 || fromDatasetId >= n)
+    return;
+
+  const int target = std::clamp(toDatasetId, 0, n - 1);
+  if (target == fromDatasetId)
+    return;
+
+  // Snapshot ref anchors before mutating
+  std::vector<std::vector<detail::RefAnchor>> anchors;
+  if (m_customizeWorkspaces)
+    anchors = snapshotAllRefs(m_workspaces, m_groups);
+
+  // Apply the rotation
+  auto dataset = datasets[fromDatasetId];
+  datasets.erase(datasets.begin() + fromDatasetId);
+  datasets.insert(datasets.begin() + target, dataset);
+
+  for (size_t i = 0; i < datasets.size(); ++i)
+    datasets[i].datasetId = static_cast<int>(i);
+
+  // Resolve refs against the new layout using each anchor's stable Dataset::index
+  if (m_customizeWorkspaces)
+    for (size_t w = 0; w < m_workspaces.size(); ++w)
+      resolveOneWorkspaceRefs(m_workspaces[w], anchors[w], m_groups, {});
+
+  if (m_selectedDataset.groupId == groupId && m_selectedDataset.datasetId == fromDatasetId)
+    m_selectedDataset = datasets[target];
+
+  Q_EMIT groupsChanged();
+  setModified(true);
+}
+
+/**
+ * @brief Moves a workspace to the given index in the editor list.
+ *        Auto workspaces (id < UserStart) are pinned to the top and ignored.
+ */
+void DataModel::ProjectModel::moveWorkspace(int workspaceId, int targetIndex)
+{
+  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  if (workspaceId < WorkspaceIds::UserStart)
+    return;
+
+  if (!m_customizeWorkspaces)
+    setCustomizeWorkspaces(true);
+
+  auto it = std::find_if(m_workspaces.begin(), m_workspaces.end(), [workspaceId](const auto& ws) {
+    return ws.workspaceId == workspaceId;
+  });
+
+  if (it == m_workspaces.end())
+    return;
+
+  const int from = static_cast<int>(std::distance(m_workspaces.begin(), it));
+
+  // Compute the lowest legal slot (everything before that is auto)
+  int firstUserSlot = 0;
+  for (const auto& ws : m_workspaces) {
+    if (ws.workspaceId >= WorkspaceIds::UserStart)
+      break;
+
+    firstUserSlot += 1;
+  }
+
+  const int last   = static_cast<int>(m_workspaces.size()) - 1;
+  const int target = std::clamp(targetIndex, firstUserSlot, last);
+  if (target == from)
+    return;
+
+  auto ws = *it;
+  m_workspaces.erase(it);
+  m_workspaces.insert(m_workspaces.begin() + target, ws);
+
+  setModified(true);
+  Q_EMIT editorWorkspacesChanged();
+  Q_EMIT activeWorkspacesChanged();
+}
+
+/**
+ * @brief Moves an action within the project actions list, renumbering actionIds.
+ */
+void DataModel::ProjectModel::moveAction(int fromActionId, int toActionId)
+{
+  const int n = static_cast<int>(m_actions.size());
+  if (fromActionId < 0 || fromActionId >= n)
+    return;
+
+  const int target = std::clamp(toActionId, 0, n - 1);
+  if (target == fromActionId)
+    return;
+
+  auto action = m_actions[fromActionId];
+  m_actions.erase(m_actions.begin() + fromActionId);
+  m_actions.insert(m_actions.begin() + target, action);
+
+  for (size_t i = 0; i < m_actions.size(); ++i)
+    m_actions[i].actionId = static_cast<int>(i);
+
+  if (m_selectedAction.actionId == fromActionId)
+    m_selectedAction = m_actions[target];
+
+  Q_EMIT actionsChanged();
+  setModified(true);
+}
+
+/**
+ * @brief Moves an output widget within its group's outputWidgets list.
+ */
+void DataModel::ProjectModel::moveOutputWidget(int groupId, int fromWidgetId, int toWidgetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  auto& widgets = m_groups[groupId].outputWidgets;
+  const int n   = static_cast<int>(widgets.size());
+  if (fromWidgetId < 0 || fromWidgetId >= n)
+    return;
+
+  const int target = std::clamp(toWidgetId, 0, n - 1);
+  if (target == fromWidgetId)
+    return;
+
+  auto widget = widgets[fromWidgetId];
+  widgets.erase(widgets.begin() + fromWidgetId);
+  widgets.insert(widgets.begin() + target, widget);
+
+  for (size_t i = 0; i < widgets.size(); ++i)
+    widgets[i].widgetId = static_cast<int>(i);
+
+  if (m_selectedOutputWidget.groupId == groupId && m_selectedOutputWidget.widgetId == fromWidgetId)
+    m_selectedOutputWidget = widgets[target];
+
+  Q_EMIT groupsChanged();
+  setModified(true);
+}
+
+/**
+ * @brief Renumbers Group::groupId (and child Dataset::groupId) to match the new vector order.
+ */
+void DataModel::ProjectModel::remapGroupIdsAfterReorder(const std::vector<int>& oldToNewGid)
+{
+  Q_ASSERT(oldToNewGid.size() == m_groups.size());
+
+  for (size_t i = 0; i < m_groups.size(); ++i) {
+    auto& g   = m_groups[i];
+    g.groupId = static_cast<int>(i);
+    for (auto& d : g.datasets)
+      d.groupId = g.groupId;
+  }
+
+  Q_UNUSED(oldToNewGid);
+}
+
+/**
+ * @brief Updates m_hiddenGroupIds so each hidden ID follows its renamed group.
+ */
+void DataModel::ProjectModel::remapHiddenGroupIdsAfterReorder(const std::vector<int>& oldToNewGid)
+{
+  if (m_hiddenGroupIds.isEmpty())
+    return;
+
+  QSet<int> updated;
+  for (const int id : std::as_const(m_hiddenGroupIds)) {
+    if (id < 0 || static_cast<size_t>(id) >= oldToNewGid.size())
+      continue;
+
+    updated.insert(oldToNewGid[static_cast<size_t>(id)]);
+  }
+
+  m_hiddenGroupIds = std::move(updated);
+}
+
+/**
+ * @brief Rewrites every layout:N widgetSettings entry to use the new groupId.
+ */
+void DataModel::ProjectModel::remapLayoutKeysAfterReorder(const std::vector<int>& oldToNewGid)
+{
+  if (m_widgetSettings.isEmpty())
+    return;
+
+  const QString prefix = QStringLiteral("layout:");
+  QMap<int, QJsonObject> snapshot;
+
+  // Snapshot every layout:N entry (keyed by old groupId)
+  for (const auto& key : m_widgetSettings.keys()) {
+    if (!key.startsWith(prefix))
+      continue;
+
+    bool ok      = false;
+    const int id = key.mid(prefix.length()).toInt(&ok);
+    if (!ok || id < 0 || static_cast<size_t>(id) >= oldToNewGid.size())
+      continue;
+
+    snapshot.insert(id, m_widgetSettings.value(key).toObject());
+    m_widgetSettings.remove(key);
+  }
+
+  // Re-insert under the new groupId
+  for (auto it = snapshot.constBegin(); it != snapshot.constEnd(); ++it) {
+    const int newId = oldToNewGid[static_cast<size_t>(it.key())];
+    m_widgetSettings.insert(Keys::layoutKey(newId), it.value());
+  }
+}
+
+/**
+ * @brief Renames per-group auto workspaces (PerGroupStart + groupId) so they
+ *        track their group across a reorder.
+ */
+void DataModel::ProjectModel::remapAutoWorkspaceIdsAfterReorder(const std::vector<int>& oldToNewGid)
+{
+  for (auto& ws : m_workspaces) {
+    if (ws.workspaceId < WorkspaceIds::PerGroupStart || ws.workspaceId >= WorkspaceIds::UserStart)
+      continue;
+
+    const int oldGid = ws.workspaceId - WorkspaceIds::PerGroupStart;
+    if (oldGid < 0 || static_cast<size_t>(oldGid) >= oldToNewGid.size())
+      continue;
+
+    ws.workspaceId = WorkspaceIds::PerGroupStart + oldToNewGid[static_cast<size_t>(oldGid)];
+  }
+
+  // Keep per-group autos sorted by their new groupId so the editor order is stable
+  std::stable_sort(
+    m_workspaces.begin(), m_workspaces.end(), [](const Workspace& a, const Workspace& b) {
+      const bool aUser = a.workspaceId >= WorkspaceIds::UserStart;
+      const bool bUser = b.workspaceId >= WorkspaceIds::UserStart;
+      if (aUser != bUser)
+        return !aUser;
+
+      if (!aUser && !bUser)
+        return a.workspaceId < b.workspaceId;
+
+      return false;
+    });
+}
+
+//--------------------------------------------------------------------------------------------------
 // Output widget CRUD
 //--------------------------------------------------------------------------------------------------
 

@@ -425,10 +425,7 @@ void Sessions::Player::onLoadFinished(const PlayerSessionPayloadPtr& payload)
   const auto mode = AppState::instance().operationMode();
   if (mode == SerialStudio::ProjectFile) {
     alignColumnsToProject();
-
-    const auto& sources = DataModel::ProjectModel::instance().sources();
-    if (sources.size() > 1)
-      buildMultiSourceMapping();
+    buildMultiSourceMapping();
   } else {
     QStringList headers;
     headers.reserve(static_cast<int>(m_columnUniqueIds.size()));
@@ -523,6 +520,8 @@ void Sessions::Player::clearLocalState()
   m_timestampsNs.clear();
   m_columnToSource.clear();
   m_sourceColumnCount.clear();
+  m_sourceMaxIndex.clear();
+  m_sourceSlotUid.clear();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -797,28 +796,69 @@ void Sessions::Player::alignColumnsToProject()
 }
 
 /**
- * @brief Builds the column->sourceId map; must run after alignColumnsToProject.
+ * @brief Records one dataset's uid + per-(sourceId,index) slot pick during mapping build.
+ */
+void Sessions::Player::pickSlotForDataset(const DataModel::Group& g,
+                                          const DataModel::Dataset& d,
+                                          QMap<int, int>& uidToSource,
+                                          QHash<QPair<int, int>, int>& slotPick,
+                                          QSet<QPair<int, int>>& slotPickIsTransformFree)
+{
+  const int uid = DataModel::dataset_unique_id(g, d);
+  uidToSource.insert(uid, g.sourceId);
+
+  if (d.index <= 0)
+    return;
+
+  // Datasets sharing dataset.index collapse to the same channel slot
+  m_sourceMaxIndex[g.sourceId] = std::max(m_sourceMaxIndex.value(g.sourceId, 0), d.index);
+
+  // Prefer a transform-free uid for the slot so replay re-applies transforms cleanly
+  const auto key       = qMakePair(g.sourceId, d.index);
+  const bool noXform   = d.transformCode.isEmpty();
+  const auto pickIt    = slotPick.constFind(key);
+  const bool unfilled  = pickIt == slotPick.constEnd();
+  const bool replacing = !unfilled && noXform && !slotPickIsTransformFree.contains(key);
+
+  if (!unfilled && !replacing)
+    return;
+
+  slotPick.insert(key, uid);
+  if (noXform)
+    slotPickIsTransformFree.insert(key);
+}
+
+/**
+ * @brief Builds source/index mappings used by injectFrame; runs for any source count.
  */
 void Sessions::Player::buildMultiSourceMapping()
 {
   m_columnToSource.clear();
   m_sourceColumnCount.clear();
-  m_uidToParser.clear();
   m_sourceMaxIndex.clear();
+  m_sourceSlotUid.clear();
+
+  // Pick a canonical uid per (sourceId, parserIndex) slot
+  QHash<QPair<int, int>, int> slotPick;
+  QSet<QPair<int, int>> slotPickIsTransformFree;
 
   // Recompute uniqueId locally and capture dataset.index per uid
   QMap<int, int> uidToSource;
   const auto& groups = DataModel::ProjectModel::instance().groups();
-  for (const auto& g : groups) {
-    for (const auto& d : g.datasets) {
-      const int uid = DataModel::dataset_unique_id(g, d);
-      uidToSource.insert(uid, g.sourceId);
+  for (const auto& g : groups)
+    for (const auto& d : g.datasets)
+      pickSlotForDataset(g, d, uidToSource, slotPick, slotPickIsTransformFree);
 
-      // Datasets sharing dataset.index collapse to the same channel slot
-      if (d.index > 0) {
-        m_uidToParser.insert(uid, qMakePair(g.sourceId, d.index));
-        m_sourceMaxIndex[g.sourceId] = std::max(m_sourceMaxIndex.value(g.sourceId, 0), d.index);
-      }
+  // Materialize the per-source slot tables: index 1..maxIndex -> canonical uid
+  for (auto it = m_sourceMaxIndex.constBegin(); it != m_sourceMaxIndex.constEnd(); ++it) {
+    const int srcId  = it.key();
+    const int maxIdx = it.value();
+    auto& slotList   = m_sourceSlotUid[srcId];
+    slotList.assign(static_cast<size_t>(maxIdx), -1);
+    for (int idx = 1; idx <= maxIdx; ++idx) {
+      const auto pickIt = slotPick.constFind(qMakePair(srcId, idx));
+      if (pickIt != slotPick.constEnd())
+        slotList[static_cast<size_t>(idx - 1)] = pickIt.value();
     }
   }
 
@@ -840,19 +880,17 @@ void Sessions::Player::buildMultiSourceMapping()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Reconstructs a CSV-style payload for the given timestamp.
+ * @brief Reads the readings row for @p timestampNs into a uid -> cell text map.
  */
-QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
+QHash<int, QString> Sessions::Player::buildFrameAt(qint64 timestampNs)
 {
-  QStringList cells;
-  cells.reserve(static_cast<int>(m_columnUniqueIds.size()));
-  for (size_t i = 0; i < m_columnUniqueIds.size(); ++i)
-    cells.append(QString());
+  QHash<int, QString> uidValues;
+  uidValues.reserve(static_cast<int>(m_columnUniqueIds.size()));
 
   m_sourcesAtCurrentTs.clear();
 
   if (!m_db) [[unlikely]]
-    return QByteArray();
+    return uidValues;
 
   // Lazy-prepare the per-frame fetch query once and reuse it across ticks
   if (!m_frameQueryPrepared) {
@@ -869,7 +907,7 @@ QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
 
   if (!m_frameQuery->exec()) [[unlikely]] {
     qWarning() << "[Sessions::Player] frame query failed:" << m_frameQuery->lastError().text();
-    return QByteArray();
+    return uidValues;
   }
 
   while (m_frameQuery->next()) {
@@ -880,10 +918,10 @@ QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
 
     const bool isNumeric = m_frameQuery->value(3).toInt() != 0;
     if (isNumeric) {
-      const double v    = m_frameQuery->value(1).toDouble();
-      cells[it.value()] = QString::number(v, 'g', 17);
+      const double v = m_frameQuery->value(1).toDouble();
+      uidValues[uid] = QString::number(v, 'g', 17);
     } else {
-      cells[it.value()] = m_frameQuery->value(2).toString();
+      uidValues[uid] = m_frameQuery->value(2).toString();
     }
 
     // Track which sources contributed data at this timestamp
@@ -893,63 +931,60 @@ QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
   }
 
   m_frameQuery->finish();
-
-  QByteArray frame = cells.join(',').toUtf8();
-  frame.append('\n');
-  return frame;
+  return uidValues;
 }
 
 /**
- * @brief Pushes @p frame into the live pipeline via ConnectionManager.
+ * @brief Assembles per-source CSV payloads slotted by dataset.index and injects them.
  */
-void Sessions::Player::injectFrame(const QByteArray& frame)
+void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
 {
-  if (frame.isEmpty() || (frame.size() == 1 && frame.at(0) == '\n'))
+  if (uidValues.isEmpty() || m_sourcesAtCurrentTs.isEmpty())
+    return;
+
+  // Build one CSV per source slotted by dataset.index using the canonical uid
+  QMap<int, QByteArray> sourcePayloads;
+  for (int srcId : std::as_const(m_sourcesAtCurrentTs)) {
+    const auto slotIt = m_sourceSlotUid.constFind(srcId);
+    if (slotIt == m_sourceSlotUid.constEnd())
+      continue;
+
+    const auto& slotList = slotIt.value();
+    if (slotList.empty())
+      continue;
+
+    QStringList cells;
+    cells.reserve(static_cast<int>(slotList.size()));
+    for (size_t i = 0; i < slotList.size(); ++i) {
+      const int uid    = slotList[i];
+      const auto valIt = (uid >= 0) ? uidValues.constFind(uid) : uidValues.constEnd();
+      cells.append(valIt != uidValues.constEnd() ? valIt.value() : QString());
+    }
+
+    QByteArray payload = cells.join(',').toUtf8();
+    payload.append('\n');
+    sourcePayloads.insert(srcId, std::move(payload));
+  }
+
+  if (sourcePayloads.isEmpty())
     return;
 
   if (!m_multiSource) {
-    IO::ConnectionManager::instance().processPayload(frame);
+    IO::ConnectionManager::instance().processPayload(sourcePayloads.first());
     return;
   }
 
-  // Multi-source: synthesize per-source channel arrays via column -> (sourceId, parserIndex)
-  const auto fields = QString::fromUtf8(frame).trimmed().split(',');
+  // Combined payload feeds the console/API; per-source payloads drive parsing
+  QByteArray combined;
+  for (auto it = sourcePayloads.constBegin(); it != sourcePayloads.constEnd(); ++it) {
+    if (!combined.isEmpty())
+      combined.append(' ');
 
-  // Allocate per-source channel arrays with maxIndex slots.
-  QHash<int, QStringList> sourceChannels;
-  for (auto it = m_sourceMaxIndex.constBegin(); it != m_sourceMaxIndex.constEnd(); ++it)
-    if (m_sourcesAtCurrentTs.contains(it.key()))
-      sourceChannels[it.key()] = QStringList(it.value(), QString());
-
-  for (int col = 0; col < fields.size() && col < static_cast<int>(m_columnUniqueIds.size());
-       ++col) {
-    const int uid  = m_columnUniqueIds[static_cast<size_t>(col)];
-    const auto pIt = m_uidToParser.constFind(uid);
-    if (pIt == m_uidToParser.constEnd())
-      continue;
-
-    const int srcId     = pIt.value().first;
-    const int parserIdx = pIt.value().second;
-    if (!m_sourcesAtCurrentTs.contains(srcId))
-      continue;
-
-    auto cit = sourceChannels.find(srcId);
-    if (cit == sourceChannels.end())
-      continue;
-
-    auto& slotList = cit.value();
-    if (parserIdx >= 1 && parserIdx <= slotList.size())
-      slotList[parserIdx - 1] = fields[col];
+    combined.append(it.value().chopped(1));
   }
 
-  if (sourceChannels.isEmpty())
-    return;
-
-  QMap<int, QByteArray> sourcePayloads;
-  for (auto it = sourceChannels.constBegin(); it != sourceChannels.constEnd(); ++it)
-    sourcePayloads[it.key()] = it.value().join(',').toUtf8() + '\n';
-
-  IO::ConnectionManager::instance().processMultiSourcePayload(frame, sourcePayloads);
+  combined.append('\n');
+  IO::ConnectionManager::instance().processMultiSourcePayload(combined, sourcePayloads);
 }
 
 //--------------------------------------------------------------------------------------------------

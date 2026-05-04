@@ -137,6 +137,32 @@ Widgets.Pane {
           Widgets.ToolbarButton {
             iconSize: 24
             toolbarButton: false
+            text: qsTr("Move Up")
+            Layout.alignment: Qt.AlignVCenter
+            ToolTip.text: qsTr("Move the selected workspace up")
+            enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
+                     && Cpp_JSON_ProjectEditor.selectedWorkspaceId >= 5000
+            onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(
+                         Cpp_JSON_ProjectEditor.selectedWorkspaceId, -1)
+            icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+          }
+
+          Widgets.ToolbarButton {
+            iconSize: 24
+            toolbarButton: false
+            text: qsTr("Move Down")
+            Layout.alignment: Qt.AlignVCenter
+            ToolTip.text: qsTr("Move the selected workspace down")
+            enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
+                     && Cpp_JSON_ProjectEditor.selectedWorkspaceId >= 5000
+            onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(
+                         Cpp_JSON_ProjectEditor.selectedWorkspaceId, 1)
+            icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+          }
+
+          Widgets.ToolbarButton {
+            iconSize: 24
+            toolbarButton: false
             text: qsTr("Add Workspace")
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add workspace")

@@ -17,6 +17,7 @@
 # AI stuff
 .claude
 .code-report
+.doc-report
 
 # General caches
 .cache

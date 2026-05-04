@@ -14,7 +14,6 @@
 #  include "UI/Widgets/PainterContext.h"
 
 #  include <cmath>
-
 #  include <QDir>
 #  include <QFileInfo>
 #  include <QFontMetricsF>

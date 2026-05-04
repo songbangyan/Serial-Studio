@@ -315,6 +315,8 @@
         <file>icons/project-editor/actions/import-table.svg</file>
         <file>icons/project-editor/actions/insert-constant.svg</file>
         <file>icons/project-editor/actions/led.svg</file>
+        <file>icons/project-editor/actions/move-down.svg</file>
+        <file>icons/project-editor/actions/move-up.svg</file>
         <file>icons/project-editor/actions/output-button.svg</file>
         <file>icons/project-editor/actions/output-knob.svg</file>
         <file>icons/project-editor/actions/output-panel.svg</file>

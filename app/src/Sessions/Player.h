@@ -17,6 +17,7 @@
 
 #  include <optional>
 #  include <QElapsedTimer>
+#  include <QHash>
 #  include <QKeyEvent>
 #  include <QMap>
 #  include <QObject>
@@ -30,6 +31,11 @@
 #  include "Sessions/PlayerLoaderWorker.h"
 
 class QThread;
+
+namespace DataModel {
+struct Group;
+struct Dataset;
+}  // namespace DataModel
 
 namespace Sessions {
 
@@ -123,9 +129,14 @@ private:
 
   void alignColumnsToProject();
   void buildMultiSourceMapping();
+  void pickSlotForDataset(const DataModel::Group& g,
+                          const DataModel::Dataset& d,
+                          QMap<int, int>& uidToSource,
+                          QHash<QPair<int, int>, int>& slotPick,
+                          QSet<QPair<int, int>>& slotPickIsTransformFree);
 
-  [[nodiscard]] QByteArray buildFrameAt(qint64 timestampNs);
-  void injectFrame(const QByteArray& frame);
+  [[nodiscard]] QHash<int, QString> buildFrameAt(qint64 timestampNs);
+  void injectFrame(const QHash<int, QString>& uidValues);
   void processFrameBatch(int startFrame, int endFrame);
 
   void updateTimestampDisplay();
@@ -163,8 +174,8 @@ private:
 
   QSet<int> m_sourcesAtCurrentTs;
 
-  QHash<int, QPair<int, int>> m_uidToParser;
   QHash<int, int> m_sourceMaxIndex;
+  QHash<int, std::vector<int>> m_sourceSlotUid;
 
   bool m_preSessionCaptured;
   SerialStudio::OperationMode m_preSessionOperationMode;

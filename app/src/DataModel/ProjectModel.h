@@ -241,6 +241,12 @@ public slots:
   void duplicateCurrentAction();
   void duplicateCurrentDataset();
 
+  void moveGroup(int fromGroupId, int toGroupId);
+  void moveDataset(int groupId, int fromDatasetId, int toDatasetId);
+  void moveWorkspace(int workspaceId, int targetIndex);
+  void moveAction(int fromActionId, int toActionId);
+  void moveOutputWidget(int groupId, int fromWidgetId, int toWidgetId);
+
   void ensureValidGroup();
   void addDataset(const SerialStudio::DatasetOption options);
   void ensurePainterDatasets(int groupId, const QVariantList& specs);
@@ -358,6 +364,11 @@ private:
   void shiftHiddenGroupIdsAfterGroupDelete(int deletedGid);
 
   void shiftLayoutKeysAfterGroupDelete(int deletedGid);
+
+  void remapGroupIdsAfterReorder(const std::vector<int>& oldToNewGid);
+  void remapHiddenGroupIdsAfterReorder(const std::vector<int>& oldToNewGid);
+  void remapLayoutKeysAfterReorder(const std::vector<int>& oldToNewGid);
+  void remapAutoWorkspaceIdsAfterReorder(const std::vector<int>& oldToNewGid);
 
   bool mergeAutoWorkspaceUpdates();
 
