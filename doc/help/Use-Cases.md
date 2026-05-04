@@ -14,6 +14,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 - [Medical and Health Devices](#medical-and-health-devices)
 - [Industrial and Manufacturing](#industrial-and-manufacturing)
 - [Home Automation](#home-automation)
+- [Custom Visualizations (Painter Widget)](#custom-visualizations-painter-widget)
 
 ---
 
@@ -613,6 +614,104 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** ESP32 + DS18B20 sensors + WiFi
 **Data Analysis:** CSV export identifies inefficient operation times
 **Energy Savings:** 15% reduction after optimizing thermostat schedule
+
+---
+
+## Custom Visualizations (Painter Widget)
+
+The Painter widget is the escape hatch when none of the built-in widgets render
+your data the way you need. You write a `paint(ctx, w, h)` callback in
+JavaScript and Serial Studio hands you a Canvas2D-style context backed by a
+QPainter. Optional `onFrame()` lets you accumulate per-frame state (ring
+buffers, peak holds, integrators) before each repaint. A 250 ms watchdog
+catches infinite loops, so a bad script can't lock the dashboard.
+
+It's a Pro feature.
+
+### Phosphor-style Oscilloscope
+**Problem:** The built-in line plot doesn't capture the look of a CRT scope —
+no afterglow trace, no persistence, no XY mode for Lissajous figures.
+
+**Solution:** Use the Painter widget with the bundled `Oscilloscope` template:
+- Two channels rendered with adjustable persistence (each frame is composited
+  onto a slowly fading bitmap, mimicking phosphor decay)
+- Trigger level and graticule drawn directly in the script
+- Swap to the `XY scope` template for Lissajous patterns from a function
+  generator
+
+**Hardware:** Any UART/USB device pushing two analog channels at >=1 kHz
+**Pro Feature Used:** Painter widget, `oscilloscope.js` / `xy_scope.js` templates
+
+---
+
+### Artificial Horizon for Drones / Model Aircraft
+**Problem:** A 3D attitude widget is overkill — pilots want a flat instrument
+that mimics a real attitude indicator with pitch ladder, roll bank, and a
+fixed aircraft symbol.
+
+**Solution:** Painter widget with the `Artificial horizon` template:
+- Pitch and roll datasets bound to the IMU output of the flight controller
+- Sky / ground gradient rotates with roll and translates with pitch
+- Pitch ladder, roll arc, and centre crosshair drawn in pure JS so colours,
+  font, and tick spacing match the rest of your panel
+
+**Hardware:** Pixhawk / Betaflight FC streaming MAVLink
+**Pro Feature Used:** Painter widget, `horizon.js` template
+
+---
+
+### Lab Equipment Mimic
+**Problem:** A research group wants their data acquisition dashboard to look
+like the analog meters on the bench instrument they're replacing — same
+needle, same arc, same coloured zones — so technicians don't have to relearn
+the panel.
+
+**Solution:** Painter widget with the `Dial gauge` template, customised:
+- Replace the default arc colours with the green / yellow / red zones from
+  the original instrument
+- Add a tachometer-style needle with smooth interpolation across frames
+- Persistent script state keeps the needle's previous position so it sweeps
+  rather than snaps when a new sample arrives
+
+**Hardware:** Any sensor exposing a single bounded value (load cell,
+thermocouple, RPM encoder)
+**Pro Feature Used:** Painter widget, `dial_gauge.js` template
+
+---
+
+### Audio VU Meter and Multi-Channel Bargraphs
+**Problem:** An audio engineer needs broadcast-style VU meters with peak hold
+across two or more channels, displayed alongside the rest of the telemetry.
+
+**Solution:** Painter widget with the `Audio VU meter` and `Bars with peak
+hold` templates:
+- VU meter ballistics (300 ms integration, 1.5 s peak decay) implemented in
+  the script's `onFrame()` hook
+- Peak hold markers persist for a configurable hold time then decay
+- Combine with the Audio driver to monitor a live microphone or line input
+
+**Hardware:** Any audio input device (USB mic, audio interface, computer
+sound card)
+**Pro Feature Used:** Painter widget, Audio driver, `audio_meter.js` /
+`bar_peak_hold.js` templates
+
+---
+
+### Order-Tracking and Polar Diagnostics
+**Problem:** A vibration analyst wants a polar plot of magnitude vs. angle
+for rotating-machinery diagnostics — something between a Bode plot and a
+Nyquist plot — that the built-in widgets don't provide.
+
+**Solution:** Painter widget with the `Polar plot` template:
+- Pairs of (angle, magnitude) datasets plotted on a polar grid
+- Trace history kept in a script-level ring buffer so multiple revolutions
+  show as overlaid curves
+- Pair with the Waterfall widget on the same dashboard for Campbell-mode
+  spectral analysis
+
+**Hardware:** Accelerometer + tachometer on the rotating shaft
+**Pro Feature Used:** Painter widget, Waterfall widget, `polar_plot.js`
+template
 
 ---
 
