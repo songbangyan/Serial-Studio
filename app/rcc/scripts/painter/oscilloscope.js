@@ -1,10 +1,20 @@
 // Oscilloscope.
 //
-// Per-channel trace with phosphor-style afterglow on a CRT background.
-// Channels are spread vertically so traces don't overlap.
+// Per-channel trace with a phosphor-green CRT background. Channels are
+// spread vertically so traces don't overlap. Kept dark on purpose -- the
+// "back-lit instrument" look is what makes a scope recognisable as a
+// scope. The cream-paper card frame around the screen ties it back to the
+// rest of the template family.
 
 const HISTORY = 256;
 const traces  = [];
+
+const SCREEN_BG   = "#06140a";
+const GRID        = "#0c3a1c";
+const GRID_MAJOR  = "#155e30";
+const TRACE       = "#22c55e";
+const TRACE_GLOW  = "#86efac";
+const LABEL       = "#bbf7d0";
 
 function onFrame() {
   while (traces.length < datasets.length) traces.push([]);
@@ -19,30 +29,69 @@ function onFrame() {
 }
 
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#06140a";
+  // Cream paper background framing the dark instrument screen.
+  ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#e7e5de";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, w - 2, h - 2);
 
-  ctx.strokeStyle = "#0c3a1c";
-  ctx.lineWidth   = 1;
+  // Header strip.
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 11px sans-serif";
+  ctx.textAlign = "start";
+  ctx.fillText("OSCILLOSCOPE", 14, 18);
+  ctx.fillStyle = "#64748b";
+  ctx.font = "10px sans-serif";
+  ctx.textAlign = "end";
+  ctx.fillText(datasets.length + (datasets.length === 1 ? " channel" : " channels"),
+               w - 14, 18);
+  ctx.fillStyle = "#e5e7eb";
+  ctx.fillRect(14, 22, w - 28, 1);
+
+  // CRT screen (a dark recessed panel inside the card area).
+  const padX = 14;
+  const padTop = 30;
+  const padBot = 14;
+  const sx = padX;
+  const sy = padTop;
+  const sw = w - padX * 2;
+  const sh = h - padTop - padBot;
+
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(sx + 1, sy + 2, sw, sh);
+  ctx.fillStyle = SCREEN_BG;
+  ctx.fillRect(sx, sy, sw, sh);
+
+  // Major + minor grid (10 vertical x 8 horizontal divisions).
   for (let i = 1; i < 10; ++i) {
-    const x = (w / 10) * i;
+    const x = sx + (sw / 10) * i;
+    ctx.strokeStyle = (i === 5) ? GRID_MAJOR : GRID;
+    ctx.lineWidth   = (i === 5) ? 1.5 : 1;
     ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
+    ctx.moveTo(x, sy);
+    ctx.lineTo(x, sy + sh);
     ctx.stroke();
   }
   for (let i = 1; i < 8; ++i) {
-    const y = (h / 8) * i;
+    const y = sy + (sh / 8) * i;
+    ctx.strokeStyle = (i === 4) ? GRID_MAJOR : GRID;
+    ctx.lineWidth   = (i === 4) ? 1.5 : 1;
     ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
+    ctx.moveTo(sx, y);
+    ctx.lineTo(sx + sw, y);
     ctx.stroke();
   }
+
+  // Outer phosphor bezel.
+  ctx.strokeStyle = "#0a3a1c";
+  ctx.lineWidth   = 1;
+  ctx.strokeRect(sx + 0.5, sy + 0.5, sw - 1, sh - 1);
 
   if (datasets.length === 0) return;
 
   const lanes = datasets.length;
-  const laneH = h / lanes;
+  const laneH = sh / lanes;
 
   for (let i = 0; i < traces.length; ++i) {
     const t  = traces[i];
@@ -50,23 +99,42 @@ function paint(ctx, w, h) {
     const ds = datasets[i];
     const lo = ds.min;
     const hi = ds.max;
-    const cy = laneH * (i + 0.5);
+    const span = (hi - lo) || 1;
+    const cy = sy + laneH * (i + 0.5);
 
-    ctx.strokeStyle = "#22c55e";
-    ctx.lineWidth   = 2;
-    ctx.beginPath();
-    for (let k = 0; k < t.length; ++k) {
-      const x = (k / (HISTORY - 1)) * w;
-      const n = (t[k] - lo) / ((hi - lo) || 1);
-      const y = cy - (n - 0.5) * laneH * 0.85;
-      k === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    function trace_path() {
+      ctx.beginPath();
+      for (let k = 0; k < t.length; ++k) {
+        const x = sx + (k / (HISTORY - 1)) * sw;
+        const n = (t[k] - lo) / span;
+        const y = cy - (n - 0.5) * laneH * 0.85;
+        if (k === 0) ctx.moveTo(x, y);
+        else         ctx.lineTo(x, y);
+      }
+      ctx.stroke();
     }
-    ctx.stroke();
 
-    ctx.fillStyle    = "#86efac";
-    ctx.font         = "10px monospace";
+    // Glow underlay (wider, lighter shade).
+    ctx.strokeStyle = TRACE_GLOW;
+    ctx.lineWidth   = 4;
+    ctx.globalAlpha = 0.18;
+    trace_path();
+    ctx.globalAlpha = 1;
+
+    // Crisp trace on top.
+    ctx.strokeStyle = TRACE;
+    ctx.lineWidth   = 2;
+    trace_path();
+
+    // Channel tag.
+    ctx.fillStyle    = LABEL;
+    ctx.font         = "bold 10px monospace";
+    ctx.textAlign    = "start";
     ctx.textBaseline = "top";
-    ctx.fillText("CH" + (i + 1) + " " + ds.title, 6, i * laneH + 4);
+    ctx.fillText("CH" + (i + 1) + "  " + (ds.title || ""),
+                 sx + 8, sy + i * laneH + 6);
   }
+
   ctx.textBaseline = "alphabetic";
+  ctx.textAlign    = "start";
 }

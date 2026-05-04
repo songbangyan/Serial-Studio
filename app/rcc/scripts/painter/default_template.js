@@ -1,6 +1,6 @@
 // Default painter template.
 //
-// Renders datasets[0..2] as an X/Y/Z position indicator. The dot's planar
+// Renders datasets[0..2] as an X / Y / Z position indicator. The dot's planar
 // position follows (X, Y); its size and colour follow Z. Edit this script
 // freely -- it's a starting point.
 //
@@ -17,20 +17,31 @@
 // parsed frame (history buffers, smoothing, etc.) before paint() runs.
 
 function paint(ctx, w, h) {
-  // Background
-  ctx.fillStyle = "#0d1117";
+  // Cream paper background + vignette.
+  ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#e7e5de";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, w - 2, h - 2);
 
-  // Title
-  ctx.fillStyle = "#cbd5e1";
-  ctx.font      = "bold 14px sans-serif";
-  ctx.fillText(group.title || "Painter", 12, 22);
+  // Header strip.
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 11px sans-serif";
+  ctx.textAlign = "start";
+  ctx.fillText((group.title || "PAINTER").toUpperCase(), 14, 18);
+  ctx.fillStyle = "#64748b";
+  ctx.font = "10px sans-serif";
+  ctx.textAlign = "end";
+  ctx.fillText("XY  /  Z", w - 14, 18);
+  ctx.fillStyle = "#e5e7eb";
+  ctx.fillRect(14, 22, w - 28, 1);
 
-  // Need at least X and Y to draw the indicator
   if (datasets.length < 2) {
-    ctx.fillStyle = "#94a3b8";
-    ctx.font      = "12px monospace";
-    ctx.fillText("Add at least 2 datasets (X, Y) to see the indicator.", 12, 44);
+    ctx.fillStyle = "#64748b";
+    ctx.font = "12px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("Add at least 2 datasets (X, Y) to see the indicator.",
+                 w / 2, h / 2);
     return;
   }
 
@@ -38,22 +49,26 @@ function paint(ctx, w, h) {
   const dsY = datasets[1];
   const dsZ = datasets.length >= 3 ? datasets[2] : null;
 
-  // Plot box, leaving room for axes labels and the side panel
-  const padL = 36;
-  const padR = 140;
-  const padT = 36;
-  const padB = 28;
+  // Plot card with shadow + border.
+  const padL = 50;
+  const padR = 132;
+  const padT = 38;
+  const padB = 38;
   const plotW = Math.max(1, w - padL - padR);
   const plotH = Math.max(1, h - padT - padB);
   const cx    = padL + plotW * 0.5;
   const cy    = padT + plotH * 0.5;
 
-  // Frame
-  ctx.strokeStyle = "#1f2937";
-  ctx.lineWidth   = 1;
-  ctx.strokeRect(padL, padT, plotW, plotH);
+  ctx.fillStyle = "#e2e8f0";
+  ctx.fillRect(padL + 1, padT + 2, plotW, plotH);
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(padL, padT, plotW, plotH);
+  ctx.strokeStyle = "#d4d4d8";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(padL + 0.5, padT + 0.5, plotW - 1, plotH - 1);
 
-  // Cross-hair grid
+  // Cross-hair grid.
+  ctx.strokeStyle = "#e2e8f0";
   ctx.beginPath();
   ctx.moveTo(padL, cy);
   ctx.lineTo(padL + plotW, cy);
@@ -61,7 +76,23 @@ function paint(ctx, w, h) {
   ctx.lineTo(cx, padT + plotH);
   ctx.stroke();
 
-  // Map X/Y values to plot coordinates
+  // Quarter divisions (subtle dotted feel via dashed slate ticks).
+  ctx.strokeStyle = "#eef2f7";
+  for (let i = 1; i < 4; ++i) {
+    const x = padL + (plotW / 4) * i;
+    const y = padT + (plotH / 4) * i;
+    if (i !== 2) {
+      ctx.beginPath();
+      ctx.moveTo(x, padT);
+      ctx.lineTo(x, padT + plotH);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(padL + plotW, y);
+      ctx.stroke();
+    }
+  }
+
   function norm(v, lo, hi) {
     if (!Number.isFinite(v) || hi <= lo) return 0.5;
     return Math.max(0, Math.min(1, (v - lo) / (hi - lo)));
@@ -72,57 +103,71 @@ function paint(ctx, w, h) {
   const px = padL + nx * plotW;
   const py = padT + (1 - ny) * plotH;
 
-  // Z drives both colour (cool -> warm) and dot size
+  // Z drives both the dot size and the accent colour.
   let nz = 0.5;
-  let zText = "—";
+  let zText = "--";
   if (dsZ && Number.isFinite(dsZ.value)) {
     nz = norm(dsZ.value, dsZ.min, dsZ.max);
     zText = dsZ.value.toFixed(2) + (dsZ.units ? " " + dsZ.units : "");
   }
-  const hue  = 220 - nz * 220;        // 220° (blue) -> 0° (red)
-  const dotR = 6 + nz * 14;
+  let dotColor = "#10b981";
+  if (nz > 0.85) dotColor = "#dc2626";
+  else if (nz > 0.66) dotColor = "#f59e0b";
+  else if (nz < 0.20) dotColor = "#0ea5e9";
+  const dotR = 6 + nz * 12;
 
-  // Soft halo. moveTo before each arc -- PainterContext::arc maps to
-  // QPainterPath::arcTo which connects the implicit (0,0) origin to the
-  // arc start with a straight line; without moveTo a fill encloses that
-  // chord and a stroke draws it as a stray streak.
-  ctx.fillStyle = `hsla(${hue}, 80%, 55%, 0.18)`;
+  // Crosshairs from the dot to the axes.
+  ctx.strokeStyle = "#cbd5e1";
+  ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.moveTo(px + dotR * 2.6, py);
-  ctx.arc(px, py, dotR * 2.6, 0, Math.PI * 2);
+  ctx.moveTo(padL, py);
+  ctx.lineTo(px, py);
+  ctx.moveTo(px, padT + plotH);
+  ctx.lineTo(px, py);
+  ctx.stroke();
+
+  // Soft halo (lighter shade of the dot colour). Halos use the same
+  // moveTo-before-arc discipline as the rest of the templates.
+  ctx.fillStyle = "#fee2e2";
+  if (dotColor === "#10b981") ctx.fillStyle = "#dcfce7";
+  if (dotColor === "#f59e0b") ctx.fillStyle = "#fef3c7";
+  if (dotColor === "#0ea5e9") ctx.fillStyle = "#e0f2fe";
+  ctx.beginPath();
+  ctx.moveTo(px + dotR * 2.2, py);
+  ctx.arc(px, py, dotR * 2.2, 0, Math.PI * 2);
   ctx.fill();
 
-  // Filled dot
-  ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
+  // Filled dot.
+  ctx.fillStyle = dotColor;
   ctx.beginPath();
   ctx.moveTo(px + dotR, py);
   ctx.arc(px, py, dotR, 0, Math.PI * 2);
   ctx.fill();
 
-  // Outline + center pip
-  ctx.strokeStyle = "#0d1117";
+  // White outline + dark centre pip.
+  ctx.strokeStyle = "#ffffff";
   ctx.lineWidth   = 2;
   ctx.beginPath();
   ctx.moveTo(px + dotR, py);
   ctx.arc(px, py, dotR, 0, Math.PI * 2);
   ctx.stroke();
 
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = "#0f172a";
   ctx.beginPath();
   ctx.moveTo(px + 2, py);
   ctx.arc(px, py, 2, 0, Math.PI * 2);
   ctx.fill();
 
-  // Axes labels (bottom + left)
-  ctx.fillStyle    = "#94a3b8";
-  ctx.font         = "11px monospace";
+  // Axis labels.
+  ctx.fillStyle    = "#475569";
+  ctx.font         = "10px sans-serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "top";
   ctx.fillText(dsX.title + (dsX.units ? " (" + dsX.units + ")" : ""),
-               cx, padT + plotH + 6);
+               cx, padT + plotH + 8);
 
   ctx.save();
-  ctx.translate(padL - 24, cy);
+  ctx.translate(padL - 28, cy);
   ctx.rotate(-Math.PI * 0.5);
   ctx.textAlign    = "center";
   ctx.textBaseline = "middle";
@@ -131,22 +176,43 @@ function paint(ctx, w, h) {
   ctx.textAlign    = "start";
   ctx.textBaseline = "alphabetic";
 
-  // Side panel: live values
-  const panelX = padL + plotW + 16;
+  // Side panel: per-channel readouts as small "stat" cards.
+  const panelX = padL + plotW + 14;
   const panelY = padT;
+  const cardW  = w - panelX - 14;
+  const cardH  = 30;
+  const gap    = 6;
 
-  ctx.fillStyle = "#cbd5e1";
-  ctx.font      = "11px sans-serif";
-  ctx.fillText("X", panelX, panelY + 12);
-  ctx.fillText("Y", panelX, panelY + 36);
-  if (dsZ) ctx.fillText("Z", panelX, panelY + 60);
+  function stat_card(i, tag, value, color) {
+    const y = panelY + i * (cardH + gap);
+    // Card.
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillRect(panelX + 1, y + 2, cardW, cardH);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(panelX, y, cardW, cardH);
+    ctx.strokeStyle = "#d4d4d8";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(panelX + 0.5, y + 0.5, cardW - 1, cardH - 1);
+    // Accent strip.
+    ctx.fillStyle = color;
+    ctx.fillRect(panelX, y, 3, cardH);
+    // Tag.
+    ctx.fillStyle = "#64748b";
+    ctx.font = "bold 9px sans-serif";
+    ctx.textAlign = "start";
+    ctx.fillText(tag, panelX + 8, y + 12);
+    // Value.
+    ctx.fillStyle = "#0f172a";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText(value, panelX + 8, y + 25);
+  }
 
-  ctx.fillStyle = "#fff";
-  ctx.font      = "bold 13px monospace";
-  ctx.fillText((Number.isFinite(dsX.value) ? dsX.value.toFixed(2) : "—") +
-               (dsX.units ? " " + dsX.units : ""), panelX + 16, panelY + 12);
-  ctx.fillText((Number.isFinite(dsY.value) ? dsY.value.toFixed(2) : "—") +
-               (dsY.units ? " " + dsY.units : ""), panelX + 16, panelY + 36);
-  if (dsZ)
-    ctx.fillText(zText, panelX + 16, panelY + 60);
+  const xText = (Number.isFinite(dsX.value) ? dsX.value.toFixed(2) : "--") +
+                (dsX.units ? " " + dsX.units : "");
+  const yText = (Number.isFinite(dsY.value) ? dsY.value.toFixed(2) : "--") +
+                (dsY.units ? " " + dsY.units : "");
+
+  stat_card(0, "X", xText, "#0ea5e9");
+  stat_card(1, "Y", yText, "#10b981");
+  if (dsZ) stat_card(2, "Z", zText, dotColor);
 }

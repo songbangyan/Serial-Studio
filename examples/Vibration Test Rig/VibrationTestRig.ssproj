@@ -50,7 +50,7 @@
                     "fftMin": -60,
                     "fftSamples": 256,
                     "fftSamplingRate": 1000,
-                    "graph": false,
+                    "graph": true,
                     "groupId": 1,
                     "index": 3,
                     "led": false,
@@ -77,7 +77,7 @@
                     "fftMin": -60,
                     "fftSamples": 256,
                     "fftSamplingRate": 1000,
-                    "graph": false,
+                    "graph": true,
                     "groupId": 1,
                     "index": 4,
                     "led": false,
@@ -312,7 +312,9 @@
     "title": "Vibration Test Rig",
     "widgetSettings": {
         "17:0:1": {
-            "colorMap": 5
+            "axisVisible": true,
+            "colorMap": 4,
+            "colorbarVisible": true
         },
         "activeGroup": 5000,
         "layout:1000": {
@@ -405,7 +407,7 @@
                 "geometries": [
                     {
                         "height": 493,
-                        "id": 6,
+                        "id": 8,
                         "state": "normal",
                         "width": 509,
                         "x": 4,
@@ -430,7 +432,7 @@
                 ],
                 "userReordered": false,
                 "windowOrder": [
-                    6,
+                    8,
                     0,
                     1
                 ]
@@ -444,7 +446,7 @@
                         "height": 247,
                         "id": 3,
                         "state": "normal",
-                        "width": 509,
+                        "width": 340,
                         "x": 4,
                         "y": 4
                     },
@@ -452,33 +454,51 @@
                         "height": 247,
                         "id": 2,
                         "state": "normal",
-                        "width": 509,
-                        "x": 512,
+                        "width": 340,
+                        "x": 343,
                         "y": 4
-                    },
-                    {
-                        "height": 247,
-                        "id": 4,
-                        "state": "normal",
-                        "width": 509,
-                        "x": 4,
-                        "y": 250
                     },
                     {
                         "height": 247,
                         "id": 5,
                         "state": "normal",
-                        "width": 509,
-                        "x": 512,
+                        "width": 340,
+                        "x": 682,
+                        "y": 4
+                    },
+                    {
+                        "height": 247,
+                        "id": 6,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 4,
+                        "y": 250
+                    },
+                    {
+                        "height": 247,
+                        "id": 7,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 343,
+                        "y": 250
+                    },
+                    {
+                        "height": 247,
+                        "id": 4,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 682,
                         "y": 250
                     }
                 ],
-                "userReordered": false,
+                "userReordered": true,
                 "windowOrder": [
                     3,
                     2,
-                    4,
-                    5
+                    5,
+                    6,
+                    7,
+                    4
                 ]
             }
         }
@@ -526,12 +546,17 @@
                 {
                     "groupId": 3,
                     "relativeIndex": 1,
+                    "widgetType": 11
+                },
+                {
+                    "groupId": 1,
+                    "relativeIndex": 1,
                     "widgetType": 9
                 },
                 {
-                    "groupId": 3,
-                    "relativeIndex": 1,
-                    "widgetType": 11
+                    "groupId": 1,
+                    "relativeIndex": 2,
+                    "widgetType": 9
                 }
             ],
             "workspaceId": 5001

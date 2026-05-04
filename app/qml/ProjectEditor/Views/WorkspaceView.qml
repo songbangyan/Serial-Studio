@@ -201,6 +201,16 @@ Widgets.Pane {
         delegate: Widgets.ProjectTableRow {
           id: refRow
 
+          readonly property bool typeKnown: (modelData.widgetTypeName || "").length > 0
+          readonly property bool groupResolved: modelData.groupTitle.length > 0
+          readonly property bool unknownRow: !refRow.groupResolved && !refRow.typeKnown
+          readonly property bool unresolvedRow: !refRow.groupResolved && refRow.typeKnown
+          readonly property color rowTextColor: refRow.unknownRow
+                                                ? Cpp_ThemeManager.colors["alarm"]
+                                                : (refRow.unresolvedRow
+                                                   ? Cpp_ThemeManager.colors["error"]
+                                                   : refRow.textColor)
+
           RowLayout {
             spacing: 0
             anchors.fill: parent
@@ -213,7 +223,7 @@ Widgets.Pane {
               text: modelData.groupTitle.length > 0
                     ? modelData.groupTitle
                     : qsTr("(unknown)")
-              color: refRow.textColor
+              color: refRow.rowTextColor
               font: Cpp_Misc_CommonFonts.monoFont
             }
 
@@ -231,7 +241,7 @@ Widgets.Pane {
               text: modelData.datasetTitle.length > 0
                     ? modelData.datasetTitle
                     : qsTr("(group widget)")
-              color: refRow.textColor
+              color: refRow.rowTextColor
               font: Cpp_Misc_CommonFonts.monoFont
             }
 
@@ -242,14 +252,53 @@ Widgets.Pane {
             }
 
             Label {
-              Layout.preferredWidth: 100
-              Layout.alignment: Qt.AlignVCenter
-              leftPadding: 8
               opacity: 0.7
-              text: modelData.widgetTypeName || ""
-              color: refRow.textColor
-              font: Cpp_Misc_CommonFonts.uiFont
+              leftPadding: 8
               elide: Text.ElideRight
+              Layout.preferredWidth: 100
+              color: refRow.rowTextColor
+              Layout.alignment: Qt.AlignVCenter
+              font: Cpp_Misc_CommonFonts.uiFont
+              text: modelData.widgetTypeName || qsTr("(unknown)")
+            }
+
+            Rectangle {
+              implicitWidth: 1
+              Layout.fillHeight: true
+              color: refRow.separatorColor
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+            }
+
+            Item {
+              Layout.fillHeight: true
+              Layout.preferredWidth: 40
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+
+              ToolButton {
+                id: removeBtn
+
+                padding: 2
+                flat: true
+                icon.width: 16
+                icon.height: 16
+                implicitWidth: 32
+                hoverEnabled: true
+                ToolTip.delay: 400
+                implicitHeight: 26
+                anchors.centerIn: parent
+                ToolTip.visible: hovered
+                icon.color: "transparent"
+                icon.source: "qrc:/icons/buttons/trash.svg"
+                ToolTip.text: qsTr("Remove widget from workspace")
+
+                background: Rectangle {
+                  border.width: 0
+                  color: "transparent"
+                }
+
+                onClicked: Cpp_JSON_ProjectModel.removeWidgetFromWorkspace(
+                             root.workspaceId, index)
+              }
             }
           }
         }

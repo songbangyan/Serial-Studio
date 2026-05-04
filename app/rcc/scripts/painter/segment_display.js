@@ -1,7 +1,9 @@
 // 7-segment LCD display.
 //
-// Renders datasets[0..N-1] as classic 7-segment digits stacked in rows.
-// Demonstrates path-based glyph composition without needing a font.
+// Renders datasets[0..N-1] as classic 7-segment digits stacked in rows --
+// the same look as a calculator or a desktop multimeter. Each row sits
+// inside a recessed "screen" panel with a soft mint background and dark
+// segments, with faint "ghost" segments showing the unlit cells.
 
 const SEG = {
   // Segments per digit: a, b, c, d, e, f, g
@@ -19,62 +21,110 @@ const SEG = {
   " ": [0, 0, 0, 0, 0, 0, 0]
 };
 
-function drawDigit(ctx, x, y, w, h, ch, color) {
+const ON_COLOR  = "#0f172a";
+const OFF_COLOR = "#cbd5e1";
+const SCREEN_BG = "#dcfce7";
+
+function drawDigit(ctx, x, y, w, h, ch) {
   const segs = SEG[ch] || SEG[" "];
-  const t    = Math.max(2, h * 0.08);
-  const onCol = color;
-  const offCol = "rgba(255, 255, 255, 0.05)";
+  const t    = Math.max(2, h * 0.10);
 
   function bar(px, py, pw, ph, on) {
-    ctx.fillStyle = on ? onCol : offCol;
+    ctx.fillStyle = on ? ON_COLOR : OFF_COLOR;
     ctx.fillRect(px, py, pw, ph);
   }
 
-  bar(x + t, y,                   w - 2 * t, t, segs[0]);  // a
-  bar(x + w - t, y + t,           t, h * 0.5 - t * 1.5, segs[1]);  // b
-  bar(x + w - t, y + h * 0.5 + t * 0.5, t, h * 0.5 - t * 1.5, segs[2]);  // c
-  bar(x + t, y + h - t,           w - 2 * t, t, segs[3]);  // d
-  bar(x,     y + h * 0.5 + t * 0.5, t, h * 0.5 - t * 1.5, segs[4]);  // e
-  bar(x,     y + t,               t, h * 0.5 - t * 1.5, segs[5]);  // f
-  bar(x + t, y + h * 0.5 - t * 0.5, w - 2 * t, t, segs[6]);  // g
+  bar(x + t, y,                       w - 2 * t, t, segs[0]);                   // a
+  bar(x + w - t, y + t,               t,         h * 0.5 - t * 1.5, segs[1]);   // b
+  bar(x + w - t, y + h * 0.5 + t * 0.5, t,       h * 0.5 - t * 1.5, segs[2]);   // c
+  bar(x + t, y + h - t,               w - 2 * t, t, segs[3]);                   // d
+  bar(x,     y + h * 0.5 + t * 0.5,   t,         h * 0.5 - t * 1.5, segs[4]);   // e
+  bar(x,     y + t,                   t,         h * 0.5 - t * 1.5, segs[5]);   // f
+  bar(x + t, y + h * 0.5 - t * 0.5,   w - 2 * t, t, segs[6]);                   // g
 }
 
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#000";
+  // Cream paper background + vignette.
+  ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#e7e5de";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 
-  const rows = datasets.length;
-  const rowH = (h - 8) / rows;
+  // Header.
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "bold 11px sans-serif";
+  ctx.textAlign = "start";
+  ctx.fillText("7-SEGMENT  READOUT", 14, 18);
+  ctx.fillStyle = "#64748b";
+  ctx.font = "10px sans-serif";
+  ctx.textAlign = "end";
+  ctx.fillText(datasets.length + (datasets.length === 1 ? " channel" : " channels"),
+               w - 14, 18);
+  ctx.fillStyle = "#e5e7eb";
+  ctx.fillRect(14, 22, w - 28, 1);
 
-  for (let i = 0; i < rows; ++i) {
-    const ds = datasets[i];
-    const v  = Number.isFinite(ds.value) ? ds.value : 0;
-    const txt = v.toFixed(1).padStart(7, " ");
-    const yT  = 4 + i * rowH;
+  // Per-row stacked layout.
+  const padX = 14;
+  const padTop = 32;
+  const padBot = 14;
+  const gap  = 8;
+  const rowH = (h - padTop - padBot - gap * (datasets.length - 1)) / datasets.length;
 
-    ctx.fillStyle    = "#475569";
-    ctx.font         = "10px sans-serif";
-    ctx.textBaseline = "top";
-    ctx.fillText(ds.title + (ds.units ? " (" + ds.units + ")" : ""), 8, yT);
+  for (let i = 0; i < datasets.length; ++i) {
+    const ds  = datasets[i];
+    const y0  = padTop + i * (rowH + gap);
+    const v   = Number.isFinite(ds.value) ? ds.value : 0;
+    const txt = v.toFixed(1).padStart(6, " ");
 
-    const dh = rowH - 22;
+    // "Screen" panel (mint background simulating a backlit LCD).
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillRect(padX + 1, y0 + 2, w - padX * 2, rowH);
+    ctx.fillStyle = SCREEN_BG;
+    ctx.fillRect(padX, y0, w - padX * 2, rowH);
+    ctx.strokeStyle = "#10b981";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(padX + 0.5, y0 + 0.5, w - padX * 2 - 1, rowH - 1);
+
+    // Title strip.
+    ctx.fillStyle = "#065f46";
+    ctx.font = "bold 9px sans-serif";
+    ctx.textAlign = "start";
+    ctx.textBaseline = "alphabetic";
+    ctx.fillText((ds.title || ("CH " + (i + 1))).toUpperCase(),
+                 padX + 8, y0 + 12);
+    if (ds.units) {
+      ctx.fillStyle = "#047857";
+      ctx.font = "9px sans-serif";
+      ctx.textAlign = "end";
+      ctx.fillText(ds.units, w - padX - 8, y0 + 12);
+    }
+
+    // Digits.
+    const dh = Math.max(12, rowH - 22);
     const dw = dh * 0.55;
-    const totalW = txt.length * (dw + dw * 0.18);
-    const xT = (w - totalW) * 0.5;
+    const dgap = dw * 0.20;
+    const totalW = txt.length * (dw + dgap);
+    const xT = padX + (w - padX * 2 - totalW) * 0.5;
+    const yT = y0 + 16;
 
     let cx = xT;
     for (let k = 0; k < txt.length; ++k) {
       const ch = txt[k];
       if (ch === ".") {
-        ctx.fillStyle = "#22d3ee";
-        ctx.fillRect(cx - dw * 0.12, yT + 18 + dh - dw * 0.18, dw * 0.18, dw * 0.18);
+        // Decimal point as a small square at baseline.
+        ctx.fillStyle = ON_COLOR;
+        ctx.fillRect(cx - dw * 0.10, yT + dh - dw * 0.18,
+                     dw * 0.18, dw * 0.18);
         continue;
       }
-      drawDigit(ctx, cx, yT + 18, dw, dh, ch, "#22d3ee");
-      cx += dw + dw * 0.18;
+      drawDigit(ctx, cx, yT, dw, dh, ch);
+      cx += dw + dgap;
     }
   }
+
   ctx.textBaseline = "alphabetic";
+  ctx.textAlign    = "start";
 }

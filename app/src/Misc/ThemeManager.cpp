@@ -118,10 +118,7 @@ static QVector<QPair<QColor, QColor>> extractDeviceColors(const QJsonObject& col
  * It installs an event filter to listen for system-wide palette changes,
  * responding to changes by updating the application theme accordingly.
  */
-Misc::ThemeManager::ThemeManager()
-  : m_theme(0)
-  , m_applyingTheme(false)
-  , m_persistSettings(true)
+Misc::ThemeManager::ThemeManager() : m_theme(0), m_applyingTheme(false), m_persistSettings(true)
 {
   // Set built-in theme files (others available as extensions)
   // clang-format off
