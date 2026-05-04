@@ -1,27 +1,27 @@
 # Painter widget
 
-The Painter is a Pro dashboard widget that gives you a blank canvas and a `paint(ctx, w, h)` callback. If the built-in widgets don't draw what you have in mind — a phosphor-style oscilloscope, a polar plot, a one-off mimic of a piece of lab equipment — write twenty lines of JavaScript and you're done. Every other dashboard widget is a fixed visualization with a few configuration knobs. The Painter is the escape hatch.
+The Painter is a Pro dashboard widget that exposes a JavaScript `paint(ctx, w, h)` callback. The script renders directly into the widget's bitmap on every dashboard tick. Use it when no built-in widget covers the visualization required by the project.
 
-It's a Pro feature.
+Painter is a Pro feature.
 
-## What it is, in one breath
+## Pipeline
 
 ```mermaid
 flowchart LR
     A["Frame arrives"] --> B["onFrame()<br/>(optional)"]
     B --> C["paint(ctx, w, h)"]
-    C --> D["Pixels on the dashboard"]
+    C --> D["Widget bitmap"]
 ```
 
-Each Painter widget is bound to one group. On every dashboard tick:
+Each Painter widget is bound to one project group. On every dashboard tick:
 
 1. Serial Studio updates the group's datasets with the latest parsed values.
-2. If your script defines `onFrame()`, it runs once. This is where you advance state — push a sample into a ring buffer, decay a peak hold, integrate an angle.
-3. `paint(ctx, w, h)` runs. `ctx` is a Canvas2D-shaped context, `w`/`h` are the widget's pixel size. Whatever you draw lands on the dashboard.
+2. If the script defines `onFrame()`, it runs once. Use it to advance time-domain state such as ring buffers, peak-hold decay, or accumulated angles.
+3. `paint(ctx, w, h)` runs. `ctx` is a Canvas2D-shaped context, `w` and `h` are the widget's pixel dimensions. The result is composited onto the dashboard.
 
-There's no scene graph, no retained-mode anything, no QML. You get a `QPainter` wrapped in a `CanvasRenderingContext2D` API and you draw. Frames are repainted at the dashboard refresh rate (24 Hz by default) regardless of how fast data arrives.
+The context is a `QPainter` exposed through a `CanvasRenderingContext2D`-style API. The widget repaints at the dashboard refresh rate (24 Hz by default), independent of the data rate.
 
-## The script
+## Script structure
 
 A Painter script defines two functions: `paint()` (required) and `onFrame()` (optional).
 
@@ -41,19 +41,17 @@ function paint(ctx, w, h) {
 }
 ```
 
-That's the whole widget. No `onFrame()`, no state, just read the current value each tick and paint it.
-
 ### `paint(ctx, w, h)`
 
-Called every UI tick. Always runs. The current path is cleared at the top of each call (you start with an empty path) and the bitmap is wiped to transparent, but `fillStyle`, `strokeStyle`, `font`, the transform, and the rest of the context state persist from the previous frame. If you've ever set `globalAlpha = 0.5` halfway through a `paint()` and forgotten to restore it, every subsequent frame still has 50 % alpha. Either set the values you need at the top of every call, or wrap modifications in `save()` / `restore()`.
+Called every UI tick. The bitmap is cleared to transparent before the call, and the path is empty. All other context state (`fillStyle`, `strokeStyle`, `font`, `globalAlpha`, transform, line styles) persists from the previous frame. Set every property on which the frame depends at the top of `paint()`, or wrap mid-frame changes in `save()` / `restore()` pairs.
 
-The function should return quickly. Aim for under 10 ms. Above 30 ms, two ticks in a row, Serial Studio surfaces a soft warning in the widget's status — paint isn't blocked, but you're behind the refresh rate. A 250 ms watchdog interrupts the script if it ever locks up, so an infinite loop won't freeze the dashboard.
+The function should return in under 10 ms to keep up with the refresh rate. If `paint()` exceeds 30 ms on two consecutive ticks the widget surfaces a slow-paint warning. A 250 ms watchdog terminates the script if a single call does not return.
 
 ### `onFrame()`
 
-Called once per dashboard tick, before `paint()`. Optional. Both functions run on every tick regardless of whether the widget is currently visible, so a Painter on a hidden workspace tab still maintains its state — switch back to the tab and history buffers, peak holds, and integrators are caught up.
+Called once per dashboard tick, immediately before `paint()`. Optional. Both functions run on every tick regardless of widget visibility, so a Painter on a hidden workspace tab continues to update its state.
 
-The reason `onFrame()` exists as a separate hook is separation of concerns: `onFrame()` for the time-domain stuff (push a sample, decay a peak, increment a counter), `paint()` for the rendering. Keeping them apart makes the script much easier to read once it grows past a single function.
+`onFrame()` is the place for time-domain bookkeeping: pushing samples into history buffers, decaying peak holds, integrating a phase angle. Keeping that logic out of `paint()` makes both functions easier to read and review.
 
 ```javascript
 const HISTORY = 256;
@@ -85,17 +83,15 @@ function paint(ctx, w, h) {
 
 ### Persistent state
 
-Variables declared at the top of the file (`const`, `let`, `var`) live for as long as the widget exists. They keep their values between calls. That's how the example above accumulates a 256-sample history across hundreds of frames without re-allocating each tick.
+Variables declared at the top of the script (`const`, `let`, `var`) live for the lifetime of the widget and retain their values between calls. State is reset when the script is recompiled (Apply in the editor) or when the widget is destroyed (project closed, group deleted). Disconnecting and reconnecting the device does not reset state.
 
-State is reset when the script is recompiled (Apply in the editor) or when the widget is destroyed (project closed, group deleted). Disconnecting the device does **not** reset state — your peak-hold values, your trace buffers, your phase accumulators all survive a reconnect.
+## Globals
 
-## What's in scope
-
-Three globals are always available inside `paint()` and `onFrame()`.
+Three globals are available inside `paint()` and `onFrame()`.
 
 ### `datasets`
 
-An array-like view of the group's datasets. `datasets.length` is the count, `datasets[i]` is the i-th dataset. Each dataset is a frozen object with the fields below — they're getters, so they always return the current value, no need to refresh anything.
+An array-like view of the group's datasets. `datasets.length` returns the count, `datasets[i]` returns the i-th dataset. Each dataset is a frozen object with the fields below. The fields are getters and always return the current value.
 
 | Field        | Type    | Description |
 |--------------|---------|-------------|
@@ -108,19 +104,19 @@ An array-like view of the group's datasets. `datasets.length` is the count, `dat
 | `rawValue`   | number  | Pre-transform numeric value. |
 | `text`       | string  | Post-transform string value. |
 | `rawText`    | string  | Pre-transform string value. |
-| `min`, `max` | number  | "Best" range — falls back through widget bounds → plot bounds → FFT bounds. |
-| `widgetMin`, `widgetMax` | number | Widget-specific bounds (`wgtMin`/`wgtMax`). |
+| `min`, `max` | number  | Effective range. Falls back through widget bounds, plot bounds, then FFT bounds. |
+| `widgetMin`, `widgetMax` | number | Widget-specific bounds (`wgtMin` / `wgtMax`). |
 | `plotMin`, `plotMax`     | number | Plot bounds. |
 | `fftMin`, `fftMax`       | number | FFT bounds. |
 | `alarmLow`, `alarmHigh`  | number | Alarm thresholds. |
 | `ledHigh`                | number | LED activation threshold. |
 | `hasPlot`, `hasFft`, `hasLed` | boolean | Visualization flags from the project. |
 
-`datasets` itself is a Proxy: out-of-range indices return `undefined`, and you can't add or remove entries.
+`datasets` is implemented as a Proxy. Out-of-range indices return `undefined`; entries cannot be added or removed.
 
 ### `group`
 
-Metadata about the group this Painter is bound to.
+Metadata about the group bound to this Painter.
 
 | Field      | Type    | Description |
 |------------|---------|-------------|
@@ -138,43 +134,43 @@ Metadata about the current dashboard tick.
 | `number`       | number  | Monotonic frame counter, starting from 1. |
 | `timestampMs`  | number  | Wall-clock timestamp in milliseconds since epoch. |
 
-`frame.timestampMs` is the right thing for animations and timers — it's monotonic at the millisecond level and doesn't care about garbage collection pauses or repaint hiccups.
+`frame.timestampMs` is the dashboard's reference clock. Use it for animation timing in preference to `Date.now()` so timestamps remain consistent across widgets.
 
 ### `console`
 
-`console.log`, `console.info`, `console.debug`, `console.warn`, `console.error` route to the Painter widget's console output (visible in the editor while you're authoring). Same calling convention as a browser console. Useful for one-off debugging; expensive when called every tick, so strip it out before you ship.
+`console.log`, `console.info`, `console.debug`, `console.warn`, and `console.error` route to the Painter widget's console output, which is visible in the script editor. Each call has the same signature as the browser console.
 
-## The drawing API
+## Drawing API
 
-The context object passed to `paint()` is intentionally Canvas2D-shaped. If you've drawn on an HTML `<canvas>`, you already know the API. The list below is what's actually wired to QPainter — anything not on it isn't supported.
+The context exposes a Canvas2D-style API backed by `QPainter`. The list below is the full set of supported methods and properties; calls outside this list will throw.
 
 ### State
 
 | Property       | Notes |
 |----------------|-------|
-| `fillStyle`    | CSS-style color string (`"#22c55e"`, `"rgba(255,0,0,0.5)"`, named colors). |
-| `strokeStyle`  | Same as fillStyle. |
+| `fillStyle`    | CSS color string (`"#22c55e"`, `"rgba(255,0,0,0.5)"`, named colors). |
+| `strokeStyle`  | Same syntax as `fillStyle`. |
 | `lineWidth`    | Pixels. |
 | `lineCap`      | `"butt"`, `"round"`, `"square"`. |
 | `lineJoin`     | `"miter"`, `"round"`, `"bevel"`. |
-| `font`         | CSS-style font shorthand (`"bold 14px monospace"`, `"12px sans-serif"`). |
-| `textAlign`    | `"left"`/`"start"`, `"center"`, `"right"`/`"end"`. |
+| `font`         | CSS font shorthand (`"bold 14px monospace"`, `"12px sans-serif"`). |
+| `textAlign`    | `"left"` / `"start"`, `"center"`, `"right"` / `"end"`. |
 | `textBaseline` | `"alphabetic"`, `"top"`, `"middle"`, `"bottom"`, `"hanging"`. |
 | `globalAlpha`  | 0.0 to 1.0. |
 
-`save()` / `restore()` push and pop the full state stack including the transform.
+`save()` and `restore()` push and pop the full state stack, including the current transform.
 
-**No gradient or pattern objects.** Canvas2D's `createLinearGradient` / `createRadialGradient` / `createPattern` are not implemented. `fillStyle` and `strokeStyle` only accept color strings. To approximate a gradient, draw a stack of solid-color rectangles or arcs in adjacent slices — every shipped template that "looks gradient" (the audio meter, the dial gauge, the progress rings) is doing exactly that.
+Gradient and pattern objects are not implemented. `createLinearGradient`, `createRadialGradient`, and `createPattern` are unavailable. `fillStyle` and `strokeStyle` accept color strings only. To approximate a gradient, draw a stack of solid-color rectangles or arcs.
 
 ### Transforms
 
-`translate(x, y)`, `rotate(radians)`, `scale(sx, sy)`, `resetTransform()`. Rotations are in **radians**, like Canvas2D — wrap with `* Math.PI / 180` if your data is in degrees.
+`translate(x, y)`, `rotate(radians)`, `scale(sx, sy)`, `resetTransform()`. Rotations are in radians. Convert from degrees with `* Math.PI / 180`.
 
 ### Paths
 
-`beginPath()`, `closePath()`, `moveTo(x, y)`, `lineTo(x, y)`, `rect(x, y, w, h)`, `arc(x, y, r, startRad, endRad, counterClockwise=false)`, `quadraticCurveTo(cpx, cpy, x, y)`, `bezierCurveTo(c1x, c1y, c2x, c2y, x, y)`. Then `fill()`, `stroke()`, or `clip()` to commit.
+`beginPath()`, `closePath()`, `moveTo(x, y)`, `lineTo(x, y)`, `rect(x, y, w, h)`, `arc(x, y, r, startRad, endRad, counterClockwise=false)`, `quadraticCurveTo(cpx, cpy, x, y)`, `bezierCurveTo(c1x, c1y, c2x, c2y, x, y)`. Commit with `fill()`, `stroke()`, or `clip()`.
 
-**Always `moveTo()` to the arc's start point before calling `arc()`.** `PainterContext::arc` maps to `QPainterPath::arcTo`, which connects the path's current cursor (the implicit origin (0, 0) immediately after `beginPath()`) to the arc's start with a straight line. If you skip the `moveTo`, the chord becomes part of the path: a stroke draws a stray streak across the widget; a fill encloses the chord; a clip cuts a wedge out of your clipping region. The fix is one line:
+`arc()` requires a preceding `moveTo()` to the arc's start point. The implementation maps to `QPainterPath::arcTo`, which connects the path's current cursor to the arc's start with an implicit line. Without the `moveTo`, the cursor is at the origin (0, 0) and the chord becomes part of the path. A subsequent `stroke()` strokes the chord, `fill()` encloses it, and `clip()` removes a wedge from the clipping region.
 
 ```javascript
 ctx.beginPath();
@@ -183,22 +179,22 @@ ctx.arc(cx, cy, r, startA, endA);
 ctx.stroke();
 ```
 
-For full circles (`0` to `Math.PI * 2`), the simplest cursor is `moveTo(cx + r, cy)`. Every shipped template follows this convention.
+For full circles, `moveTo(cx + r, cy)` is sufficient.
 
 ### Direct shapes
 
-`fillRect(x, y, w, h)`, `strokeRect(x, y, w, h)`, `clearRect(x, y, w, h)`. These bypass the path machinery — useful for backgrounds and grids.
+`fillRect(x, y, w, h)`, `strokeRect(x, y, w, h)`, `clearRect(x, y, w, h)`. These bypass the path and are appropriate for backgrounds and grids.
 
 ### Text
 
-`fillText(text, x, y)`, `strokeText(text, x, y)`, `measureTextWidth(text)`. Honors `font`, `textAlign`, and `textBaseline`.
+`fillText(text, x, y)`, `strokeText(text, x, y)`, `measureTextWidth(text)`. Honors the current `font`, `textAlign`, and `textBaseline`. Note that `measureTextWidth` returns a number directly, not a metrics object.
 
 ### Images
 
-`drawImage(src, x, y)` and `drawImageScaled(src, x, y, w, h)`. The `src` string is resolved through a small sandbox: `qrc:/` resources, the project file's directory, and the user's Documents folder are allowed. Anything else (`/etc/passwd`, `C:/Windows/...`) is rejected, so a malicious project file can't read arbitrary files off the host.
+`drawImage(src, x, y)` and `drawImageScaled(src, x, y, w, h)`. The `src` string is resolved through a sandbox: `qrc:/` resources, the project file's directory, and the user's Documents folder are accepted. Other paths are rejected.
 
 ```javascript
-ctx.drawImage("logo.png", 12, 12);                        // resolved relative to the project
+ctx.drawImage("logo.png", 12, 12);                        // relative to the project
 ctx.drawImage("qrc:/icons/dashboard-large/painter.svg",   // bundled resource
               0, 0);
 ```
@@ -207,15 +203,13 @@ ctx.drawImage("qrc:/icons/dashboard-large/painter.svg",   // bundled resource
 
 1. Open the **Project Editor** (toolbar wrench, or `Ctrl+Shift+P` / `Cmd+Shift+P`).
 2. Click **Add Painter** in the toolbar. A new Painter group is created with a default template attached.
-3. Add datasets to the group the same way you would for a Data Grid or MultiPlot. The script will see them through the `datasets` global.
+3. Add datasets to the group. The script accesses them through the `datasets` global.
 4. Select the group in the tree and click **Edit Code** to open the script editor.
-5. Pick a built-in template from the dropdown to start from something concrete, or write from scratch. Click **Apply** to compile and reload.
-
-The template dropdown is the fastest way to get a feel for the API. Every template is a small, self-contained script — read three of them and you'll know everything in this document.
+5. Optionally select a built-in template from the dropdown. Click **Apply** to compile and reload.
 
 ## Built-in templates
 
-Eighteen ready-to-use scripts ship with Serial Studio. Most use the light-theme card aesthetic described in [Composition and visual style](#composition-and-visual-style); the instrument-style templates (oscilloscope, radar sweep, artificial horizon) keep the back-lit look that's expected of those visualizations. Pick the one closest to what you want and modify it.
+Eighteen templates ship with Serial Studio. Most use the light-theme card layout described in [Composition reference](#composition-reference). The instrument-style templates (oscilloscope, radar sweep, artificial horizon) use a dark instrument-panel layout.
 
 | Template                | Datasets needed | What it draws |
 |-------------------------|-----------------|---------------|
@@ -231,32 +225,30 @@ Eighteen ready-to-use scripts ship with Serial Studio. Most use the light-theme 
 | Polar plot              | 2N (angle, mag) | Multi-trace polar coordinate plot. |
 | Progress rings          | 1+              | Concentric ring gauges. |
 | Radar sweep             | 2N (az, range)  | Sweeping radar PPI with target blips. |
-| 7-segment display       | 1+              | Retro segmented numeric readout. |
+| 7-segment display       | 1+              | Segmented numeric readout. |
 | Sparkline grid          | N               | One mini line chart per dataset. |
 | Status grid             | 1+              | Tile grid with values and color-coded states. |
 | Strip chart             | 1+              | Multi-trace rolling line chart. |
 | Vector field            | 2N (Vx, Vy)     | Vector arrows on a grid. |
 | XY scope (Lissajous)    | 2 per pair      | XY mode oscilloscope. |
 
-Templates live under `app/rcc/scripts/painter/`. They're plain `.js` files — copy one out of the resource bundle, edit it, paste it back into the editor.
+Templates are stored as plain `.js` files under `app/rcc/scripts/painter/`.
 
-## Composition and visual style
+## Composition reference
 
-The bundled templates share a deliberate visual language so that several Painter widgets on the same dashboard look like they came from the same designer. None of this is enforced by the engine — you can render anything you want — but if you want a polished result that screenshots well, the patterns below are worth borrowing.
+The bundled templates use a shared visual layout. None of this is enforced by the engine; the patterns are documented here so user-authored Painters can match the built-in style when desired.
 
-### Background, vignette, card
-
-A two-tone background reads as "finished" instead of "draft":
+### Background and card
 
 ```javascript
-ctx.fillStyle = "#f5f5f1";        // cream paper
+ctx.fillStyle = "#f5f5f1";        // background
 ctx.fillRect(0, 0, w, h);
-ctx.strokeStyle = "#e7e5de";      // subtle vignette frame
+ctx.strokeStyle = "#e7e5de";      // outer border
 ctx.lineWidth = 2;
 ctx.strokeRect(1, 1, w - 2, h - 2);
 ```
 
-Inside that, a white "card" with a 1 px border and a faint drop shadow gives the content something to sit on:
+A white card with border and drop shadow holds the content:
 
 ```javascript
 const pad = 14;
@@ -269,11 +261,11 @@ ctx.lineWidth = 1;
 ctx.strokeRect(pad + 0.5, pad + 0.5, w - pad * 2 - 1, h - pad * 2 - 1);
 ```
 
-The 0.5 pixel offset on `strokeRect` is the difference between a crisp 1 px border and a fuzzy 2 px ghost — see "Lines look fuzzy" under Common mistakes.
+The 0.5-pixel offset on `strokeRect` aligns the stroke to a single pixel column. See "Lines look fuzzy" under [Common errors](#common-errors).
 
 ### Header strip
 
-Every card-based template carries a header: a small all-caps title in slate (`#0f172a`), an optional secondary label in muted gray (`#64748b`) on the opposite side, and a 1 px rule (`#e5e7eb`) underneath:
+A header consists of a left-aligned bold title, an optional right-aligned secondary label, and a 1-pixel rule:
 
 ```javascript
 ctx.fillStyle = "#0f172a";
@@ -290,11 +282,11 @@ ctx.fillStyle = "#e5e7eb";
 ctx.fillRect(pad + 12, headerY + 12, w - (pad + 12) * 2, 1);
 ```
 
-The double space in `"STEREO  VU"` is intentional: a poor-man's letter-spacing for an upper-case header without bringing in a custom font.
+The double space in `"STEREO  VU"` widens the inter-letter spacing without requiring a font change.
 
-### Segmented bars instead of gradients
+### Segmented bars
 
-The engine has no `createLinearGradient`, but a stack of solid-colored segments looks like an LED meter and reads better in screenshots than a continuous gradient anyway. The trick is to draw every segment in two states — saturated when "lit", pastel when not — so the meter's full range is visible even at silence:
+Because gradients are not available, the templates draw bars as a sequence of solid-color segments. Each segment is rendered in one of two states (lit or unlit) so the full range of the bar remains visible:
 
 ```javascript
 const SEGMENTS = 32;
@@ -308,11 +300,11 @@ for (let i = 0; i < SEGMENTS; ++i) {
 }
 ```
 
-The same trick (`zone(v0, v1, color)` in the dial gauge, `unlit/lit` arrays in the bars-with-peak-hold) gives you discrete tri-zone coloring (green / amber / red) in two lines instead of building a gradient.
+The dial gauge and progress rings templates apply the same approach to colored arc zones.
 
 ### Peak hold marker
 
-A 2 px dark line with a 1 px halo on each side reads as a "peak indicator" without needing a glow shader:
+A dark 2-pixel core with a 1-pixel light halo on each side gives a peak indicator that remains visible across light and dark backgrounds:
 
 ```javascript
 const px = x + w * peak;
@@ -323,9 +315,9 @@ ctx.fillStyle = "#0f172a";        // core
 ctx.fillRect(px - 1, y - 3, 2, h + 6);
 ```
 
-### Typography hierarchy
+### Typography
 
-Three fonts cover almost every layout:
+Three font roles cover most layouts:
 
 | Role            | Font spec                       | Color      |
 |-----------------|---------------------------------|------------|
@@ -333,7 +325,7 @@ Three fonts cover almost every layout:
 | Body label      | `"10px sans-serif"`             | `#64748b`  |
 | Numeric value   | `"bold 18px sans-serif"`        | `#0f172a`  |
 
-For numeric value + units side-by-side, measure the value's width with the value's own font, then advance the cursor:
+To place a value and a unit label side by side, measure the value with the value's own font:
 
 ```javascript
 ctx.font = "bold 18px sans-serif";
@@ -345,29 +337,23 @@ ctx.font      = "10px sans-serif";
 ctx.fillText(units, x + valueW + 6, y);
 ```
 
-Centering text — never measure first, just set the alignment:
+For centered text, prefer `textAlign` over a measured offset:
 
 ```javascript
 ctx.textAlign = "center";
 ctx.fillText(label, cx, y);
 ```
 
-### Light vs dark themes
+### Light and dark themes
 
-The bundled templates ship in a light theme (cream paper background, slate text, saturated accent colors) because:
+The bundled templates default to a light theme (cream background, slate text, saturated accent colors). The instrument-style templates (`oscilloscope`, `radar_sweep`, `horizon`) use a dark instrument-panel theme inside the same card frame. Pick the theme that matches the visualization's reference: an oscilloscope is recognizable as one only when rendered on a dark CRT background; a tank-level readout is not.
 
-- Screenshots and printed reports look professional out of the box.
-- A light Painter sitting next to a dark Plot or Plot3D widget reads as a deliberate design choice.
-- High-contrast accent colors (emerald / amber / crimson) pop against cream in a way they don't pop against navy.
+### Sizing
 
-A few templates intentionally stay dark — `oscilloscope`, `radar_sweep`, `horizon` — because the visual reference is a back-lit instrument, and dark is what makes them recognizable. If you're starting from scratch, default to light unless you have a specific instrument-panel reason not to.
-
-### Sizing and centering
-
-Compute available area, fit your content into the smaller dimension, then center horizontally. This is the difference between a widget that renders cleanly at any aspect ratio and one that overflows when the user resizes a workspace tab:
+Compute the available area first, fit content into the smaller dimension, and center horizontally. Hard-coded fractional positions like `cy = h * 0.55` look correct at one aspect ratio and break at others.
 
 ```javascript
-const labelH = 36;                          // reserve for bottom labels
+const labelH = 36;                          // reserved for bottom labels
 const margin = 12;
 const availW = w - margin * 2;
 const availH = h - margin * 2 - labelH;
@@ -376,13 +362,11 @@ const cx     = w / 2;
 const cy     = margin + r + 8;
 ```
 
-Avoid hard-coding heights like `cy = h * 0.55` — they look right at one aspect ratio and break at every other.
-
 ## Examples
 
 ### Sparkline
 
-A 60-sample rolling trace with a filled area and a "now" dot. Showcases the basic `onFrame` + `paint` split and the light card aesthetic.
+A 60-sample rolling trace with a filled area and a marker at the latest sample.
 
 ```javascript
 const HISTORY = 60;
@@ -398,7 +382,6 @@ function onFrame() {
 }
 
 function paint(ctx, w, h) {
-  // Cream paper background + vignette.
   ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = "#e7e5de";
@@ -410,7 +393,7 @@ function paint(ctx, w, h) {
   const ds   = datasets[0];
   const span = (ds.max - ds.min) || 1;
 
-  // Filled area under the line (light blue).
+  // Filled area under the line.
   ctx.fillStyle = "#dbeafe";
   ctx.beginPath();
   ctx.moveTo(0, h);
@@ -424,7 +407,7 @@ function paint(ctx, w, h) {
   ctx.closePath();
   ctx.fill();
 
-  // Line on top.
+  // Line on top of the fill.
   ctx.strokeStyle = "#2563eb";
   ctx.lineWidth   = 1.5;
   ctx.beginPath();
@@ -441,11 +424,10 @@ function paint(ctx, w, h) {
 
 ### Tank level with alarm coloring
 
-Reads a single dataset, fills a "tank" silhouette in segmented steps, and switches the fluid colour through green / amber / red as it crosses the alarm thresholds. Demonstrates the segmented-fill technique, the light card layout, and the centered numeric readout.
+Renders one dataset as a segmented vertical fill. The fill color switches through green, amber, and red based on the dataset's alarm thresholds.
 
 ```javascript
 function paint(ctx, w, h) {
-  // Cream paper background.
   ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = "#e7e5de";
@@ -459,7 +441,7 @@ function paint(ctx, w, h) {
   const span = (ds.max - ds.min) || 1;
   const norm = Math.max(0, Math.min(1, (v - ds.min) / span));
 
-  // Card.
+  // Card with header.
   const pad = 16;
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(pad, pad + 22, w - pad * 2, h - pad * 2 - 22);
@@ -467,7 +449,6 @@ function paint(ctx, w, h) {
   ctx.lineWidth = 1;
   ctx.strokeRect(pad + 0.5, pad + 22 + 0.5, w - pad * 2 - 1, h - pad * 2 - 23);
 
-  // Header.
   ctx.fillStyle = "#0f172a";
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
@@ -486,12 +467,12 @@ function paint(ctx, w, h) {
   ctx.fillStyle = "#f1f5f9";
   ctx.fillRect(tx, ty, tw, th);
 
-  // Pick a colour by alarm zone.
+  // Color selection based on alarms.
   let color = "#10b981";
   if (Number.isFinite(ds.alarmHigh) && v >= ds.alarmHigh) color = "#dc2626";
   else if (norm > 0.85) color = "#f59e0b";
 
-  // Segmented fill -- 20 horizontal slices, bottom-up.
+  // Segmented fill, bottom-up.
   const SLICES = 20;
   const sliceH = (th - 4) / SLICES;
   const filled = Math.round(norm * SLICES);
@@ -500,12 +481,11 @@ function paint(ctx, w, h) {
     ctx.fillRect(tx + 2, ty + th - (i + 1) * sliceH - 2, tw - 4, sliceH - 1);
   }
 
-  // Tank frame.
   ctx.strokeStyle = "#94a3b8";
   ctx.lineWidth = 1;
   ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, th - 1);
 
-  // Centered numeric readout below the tank.
+  // Numeric readout below the tank.
   ctx.fillStyle = "#0f172a";
   ctx.font = "bold 16px sans-serif";
   ctx.textAlign = "center";
@@ -518,7 +498,7 @@ function paint(ctx, w, h) {
 
 ### Polar bug indicator
 
-Two datasets — bearing (degrees) and range (0–1) — plotted as a "bug" on a polar grid. Notice the `moveTo` before every `arc()` so the chord from the implicit origin doesn't show up across the dial.
+Two datasets, bearing in degrees and range in 0..1, plotted as a marker on a polar grid. Each `arc()` is preceded by a `moveTo()` to its start point.
 
 ```javascript
 function paint(ctx, w, h) {
@@ -534,7 +514,7 @@ function paint(ctx, w, h) {
   const cy = h / 2;
   const r  = Math.min(w, h) * 0.42;
 
-  // Concentric range rings -- each arc starts with a moveTo.
+  // Concentric range rings.
   ctx.strokeStyle = "#cbd5e1";
   ctx.lineWidth   = 1;
   for (let i = 1; i <= 4; ++i) {
@@ -545,7 +525,7 @@ function paint(ctx, w, h) {
     ctx.stroke();
   }
 
-  // Bearing spokes.
+  // Bearing spokes every 30 degrees.
   ctx.strokeStyle = "#e2e8f0";
   for (let deg = 0; deg < 360; deg += 30) {
     const a = (deg - 90) * Math.PI / 180;
@@ -555,7 +535,7 @@ function paint(ctx, w, h) {
     ctx.stroke();
   }
 
-  // The bug.
+  // Marker.
   const bearing = datasets[0].value;
   const range   = Math.max(0, Math.min(1, datasets[1].value));
   const a       = (bearing - 90) * Math.PI / 180;
@@ -568,7 +548,7 @@ function paint(ctx, w, h) {
   ctx.arc(x, y, 6, 0, Math.PI * 2);
   ctx.fill();
 
-  // Read-out at the bottom.
+  // Readout.
   ctx.fillStyle    = "#0f172a";
   ctx.font         = "bold 12px sans-serif";
   ctx.textAlign    = "center";
@@ -581,38 +561,32 @@ function paint(ctx, w, h) {
 
 ## Performance
 
-The Painter pipeline is designed for 24 Hz repaint of moderately complex scenes — a few hundred line segments, a couple hundred filled shapes, ten or so text labels. That's well within the budget on any modern machine.
+The Painter pipeline targets 24 Hz repaint of moderately complex scenes: a few hundred line segments, a few hundred filled shapes, and on the order of ten text labels per frame.
 
-If your script is slow, the usual culprits are:
+Common causes of slow paints:
 
-- **Allocating in the hot path.** `for (const ds of datasets)` is fine. `datasets.map(d => d.value)` allocates a new array every frame. So does `ds.title.toUpperCase()` if you call it in a tight loop. Cache once in `onFrame()` if the cost isn't trivial.
-- **Calling `measureTextWidth()` per label.** It's a real metrics call into Qt. If your label set is fixed, measure once when you compile and store the widths.
-- **Drawing thousands of points without batching.** A single `beginPath()` / many `lineTo()` / one `stroke()` is one QPainter call. A `beginPath()` / `lineTo()` / `stroke()` per point is thousands. Same shape, three orders of magnitude difference in cost.
-- **`drawImage` from disk every frame.** The path is hashed and the image is cached, but you still pay the lookup. Pre-resolve to a `qrc:/` path or read the image once at the top of the script and reuse it.
+- **Allocation in the paint path.** Iterating with `for (const ds of datasets)` is fine. `datasets.map(d => d.value)` allocates a new array each frame. So does `ds.title.toUpperCase()` inside a tight loop. Move the work into `onFrame()` and cache the result if the cost is non-trivial.
+- **`measureTextWidth()` per label.** Each call is a real metrics call into Qt. Measure fixed labels once at compile time and cache the width.
+- **One `stroke()` per point.** A single `beginPath()` followed by many `lineTo()` calls and one `stroke()` is one QPainter call. A `beginPath()`, `lineTo()`, `stroke()` per point is N calls.
+- **`drawImage` from disk every frame.** The path is hashed and the image is cached, but the lookup is not free. Pre-resolve to `qrc:/` paths or read the image once at the top of the script and reuse it.
 
-The watchdog interrupts the script if it runs longer than 250 ms, which is forgiving — you'd have to be doing something genuinely pathological to hit it. The soft slow-paint warning kicks in at 30 ms over two consecutive ticks.
+The 250 ms watchdog terminates the script if a single `paint()` or `onFrame()` call exceeds it. The 30 ms slow-paint warning fires after two consecutive ticks over budget.
 
-## Common mistakes
+## Common errors
 
 ### `ReferenceError: datasets is not defined`
 
-**Symptom:** The script compiles but throws this error from inside `paint()` or `onFrame()`.
+The bridge globals are always defined when the script runs. If this error appears, the engine is failing to bootstrap. Check the script editor's status bar for a `bootstrap:` message and report the issue if no message is shown.
 
-**Fix:** You're probably running an older Serial Studio build. Update to the current release — the bridge globals are always defined when the script runs. If you're on the current release, check the editor's status bar for a `bootstrap:` error: that's the engine telling you something is wrong with its setup, not with your code.
+### Widget renders once and then freezes
 
-### The widget renders once and then freezes
+`paint()` or `onFrame()` is throwing an exception, which sets `runtimeOk` to false. The error message is shown next to the widget. Common causes: indexing `datasets[0]` when the group is empty; dividing by `(ds.max - ds.min)` when both are zero; calling `.toFixed()` on `undefined`.
 
-**Symptom:** Initial frame looks right, then nothing changes even though data is flowing.
+### A diagonal line crosses the arc
 
-**Fix:** You almost certainly have an exception inside `paint()` or `onFrame()` that's flipping `runtimeOk` to false. The error message shows up next to the widget. Common cases: reading `datasets[0]` when the group is empty, dividing by `(ds.max - ds.min)` when both are zero, calling `.toFixed()` on `undefined`. Guard your accesses.
+`arc()` does not start a new subpath. Immediately after `beginPath()` the path cursor is at the implicit origin (0, 0); the first `arc()` call connects that origin to the arc's start with an implicit `lineTo`. A subsequent `stroke()` strokes the chord; `fill()` encloses it; `clip()` removes a wedge from the clipping region.
 
-### A stray diagonal line crosses my arc
-
-**Symptom:** A circular gauge or progress ring renders the arc plus a straight line cutting from one corner of the widget to the arc's start point.
-
-**Fix:** `arc()` does *not* implicitly start a new subpath — it appends to whatever the current path was. Right after `beginPath()` the cursor is at the implicit origin (0, 0), and the first thing `arc()` does is connect that origin to the arc's start with a `lineTo`. When you then `stroke()`, the chord gets stroked alongside the arc; when you `fill()` or `clip()`, the chord is enclosed.
-
-Add a `moveTo()` to the arc's start point right after `beginPath()`:
+Add a `moveTo()` to the arc's start point:
 
 ```javascript
 ctx.beginPath();
@@ -621,63 +595,61 @@ ctx.arc(cx, cy, r, startA, endA);
 ctx.stroke();
 ```
 
-For full circles, `moveTo(cx + r, cy)` does the job.
+For full circles, `moveTo(cx + r, cy)` is sufficient.
 
 ### `createLinearGradient is not a function`
 
-**Symptom:** The script throws this on first paint.
-
-**Fix:** Gradient and pattern objects aren't implemented in PainterContext. Stack solid-colored rectangles or arcs instead. The audio meter, dial gauge, and progress rings templates all simulate a gradient with adjacent fills — read one of them for the pattern.
+Gradient and pattern objects are not implemented. Replace gradients with stacked solid-color rectangles or arcs. The audio meter, dial gauge, and progress rings templates use this approach.
 
 ### `measureText is not a function`
 
-**Symptom:** A line like `ctx.measureText(label).width` throws.
-
-**Fix:** The function is `measureTextWidth(text)` and it returns the number directly — no `.width` property:
+The function is `measureTextWidth(text)` and it returns a number, not a metrics object:
 
 ```javascript
-const w = ctx.measureTextWidth("hello");   // returns 38.5 or similar
+const w = ctx.measureTextWidth("hello");
 ```
 
-Better still, use `ctx.textAlign = "center"` to center text without measuring at all.
+For centered text, prefer `ctx.textAlign = "center"` over measuring.
 
 ### Lines look fuzzy
 
-**Symptom:** Thin lines render with anti-aliased blur instead of crisp pixels.
+Canvas2D pixel coordinates address the boundaries between pixels. A 1-pixel line at integer Y is split between two rows and rendered as a 2-pixel anti-aliased band. Offset by 0.5 (`ctx.moveTo(x, y + 0.5)`) or set `ctx.lineWidth = 1` and round coordinates.
 
-**Fix:** Canvas2D pixel coordinates address the *corners* between pixels. A 1-pixel line at integer Y is half on the row above and half on the row below. Add 0.5: `ctx.moveTo(x, y + 0.5)`. Or set `ctx.lineWidth = 1` explicitly and round your coordinates.
+### Colors do not match what was set
 
-### Colors don't match what I wrote
-
-**Symptom:** A `"rgba(255,0,0,0.5)"` fill doesn't look half-transparent.
-
-**Fix:** The context state (`fillStyle`, `strokeStyle`, `globalAlpha`, transform, ...) carries over between `paint()` calls. If a previous frame ended with `globalAlpha = 0.5`, the next frame starts with it. Either set every property you depend on at the top of `paint()`, or wrap mid-frame changes in matched `save()` / `restore()` pairs. Bitmap pixels are wiped between frames; context state is not.
+Context state (`fillStyle`, `strokeStyle`, `globalAlpha`, transform, line styles) carries over between `paint()` calls. If a previous frame ended with `globalAlpha = 0.5`, the next frame starts with the same value. Set every state property the frame depends on at the top of `paint()`, or wrap mid-frame changes in matched `save()` / `restore()` pairs. Bitmap pixels are wiped between frames; context state is not.
 
 ### State leaks between channels
 
-**Symptom:** Two datasets seem to share a buffer when they shouldn't.
+The script has a single global scope per Painter widget, not per dataset. A top-level `let trace = []` is one buffer shared across all datasets. Use an array indexed by dataset index instead:
 
-**Fix:** The script has one global scope per Painter widget, not per dataset. If you write `let trace = []`, that's *one* trace shared across every dataset. Use an array indexed by dataset index instead — every template that needs per-channel state does it that way.
+```javascript
+const traces = [];
+function onFrame() {
+  while (traces.length < datasets.length) traces.push([]);
+  for (let i = 0; i < datasets.length; ++i) {
+    traces[i].push(datasets[i].value);
+  }
+}
+```
 
 ### `drawImage` shows nothing
 
-**Symptom:** No error, no image, just blank space.
+The image path resolver accepts `qrc:/` resources, paths relative to the project file's directory, and paths under the user's Documents folder. Other paths are rejected. A rejected path produces a `drawImage:` entry in `lastError`, visible in the editor status bar.
 
-**Fix:** The path resolver only allows `qrc:/`, the project's directory, and `~/Documents`. If your image lives anywhere else, copy it next to your project file. The widget will surface a `drawImage:` error in `lastError` if the path is rejected — check the status bar.
+## Recommendations
 
-## Tips
-
-- Start from a template. The eighteen scripts that ship with Serial Studio cover most of the common shapes — picking the closest one and modifying it is faster than writing from scratch.
-- Keep `paint()` pure. Move every "what changed since last frame" piece into `onFrame()`. The widget gets easier to reason about as soon as `paint()` is just a function of the current state.
-- Use `frame.timestampMs` for time, not `Date.now()`. They behave the same on this scale, but `frame.timestampMs` is what the rest of the dashboard uses, so timestamps line up across widgets.
-- If a Painter is doing something a built-in widget could do — a single bar, a single gauge, a basic line plot — use the built-in. The Painter is for when nothing else fits.
-- The `console` output is throttled to whatever the dashboard refresh rate is, so a `console.log` per tick is at most 24 lines per second. Useful while debugging, expensive in shipped projects.
-- For complex scripts, name the helpers. A 200-line `paint()` is hard to read; a `paint()` that calls `drawGrid(ctx, w, h)`, `drawTraces(ctx, w, h)`, `drawLegend(ctx, w, h)` is straightforward.
+- Start from a built-in template and modify it. The eighteen bundled scripts cover most common shapes.
+- Keep `paint()` free of per-tick state mutation. Move bookkeeping into `onFrame()` so `paint()` is a function of the current state.
+- Use `frame.timestampMs` for animation timing instead of `Date.now()`.
+- If a built-in widget covers the visualization, use the built-in widget. The Painter is appropriate when no other widget fits.
+- `console.log` is throttled to the dashboard refresh rate (24 lines per second by default). Useful during development; remove from shipped projects.
+- For scripts longer than around 100 lines, split rendering into named helpers (`drawGrid`, `drawTraces`, `drawLegend`).
 
 ## See also
 
-- [Widget Reference](Widget-Reference.md): the full list of built-in dashboard widgets. Reach for the Painter when none of them fit.
-- [Frame Parser Scripting](JavaScript-API.md): the JavaScript engine on the *receiving* side of the pipeline. Same engine type, different role.
-- [Output Controls](Output-Controls.md): user-scripted widgets that send data *to* the device. The other half of the scripting story.
-- [Dataset Value Transforms](Dataset-Transforms.md): per-dataset scripts for calibration and filtering. Run before the Painter sees the value.
+- [Widget Reference](Widget-Reference.md): the full list of built-in dashboard widgets.
+- [Frame Parser Scripting](JavaScript-API.md): the JavaScript engine on the receiving side of the data pipeline.
+- [Output Controls](Output-Controls.md): user-scripted widgets that send data to the device.
+- [Dataset Value Transforms](Dataset-Transforms.md): per-dataset scripts for calibration and filtering.
 - [Project Editor](Project-Editor.md): adding groups, datasets, and Painter widgets to a project.

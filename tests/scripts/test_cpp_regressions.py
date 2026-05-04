@@ -27,7 +27,10 @@ def test_project_model_save_returns_real_result():
 
 def test_hal_write_api_uses_signed_sizes():
     hal = _read("app/src/IO/HAL_Driver.h")
-    assert "[[nodiscard]] virtual qint64 write(const QByteArray& data) = 0;" in hal
+    assert re.search(
+        r"\[\[nodiscard\]\] virtual qint64 write\(const QByteArray& data\)\s*=\s*0;",
+        hal,
+    )
 
     for rel in [
         "app/src/IO/Drivers/UART.h",

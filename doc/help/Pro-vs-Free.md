@@ -278,20 +278,20 @@ function parse(frame) {
 
 ### Painter Widget
 
-**What it is:** A blank canvas and a JavaScript `paint(ctx, w, h)` callback. Whatever you draw lands on the dashboard. The escape hatch when none of the built-in widgets match what you have in mind.
+**What it is:** A user-scripted dashboard widget. The script defines a JavaScript `paint(ctx, w, h)` callback that renders directly into the widget's bitmap on every dashboard tick. Use it when no built-in widget covers the required visualization.
 
 **How it works:**
-- Each Painter is bound to one group. Reads the group's datasets through a `datasets` global, and frame metadata through `frame.number` / `frame.timestampMs`.
-- Optional `onFrame()` runs once per tick before `paint()` — for advancing state (ring buffers, peak-hold decay, integrators).
-- Canvas2D-shaped drawing API (`fillRect`, `arc`, `bezierCurveTo`, `fillText`, `drawImage`, the usual). If you've drawn on an HTML canvas, you already know it.
-- Eighteen built-in templates: oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, XY scope, and more — pick one, modify it, ship.
-- Watchdog-protected (250 ms hard cap) so a runaway script never freezes the dashboard.
+- Each Painter widget is bound to one project group. The script reads group datasets through a `datasets` global and dashboard tick metadata through `frame.number` / `frame.timestampMs`.
+- An optional `onFrame()` callback runs once per tick before `paint()` for time-domain bookkeeping (ring buffers, peak-hold decay, integrators).
+- The drawing API is Canvas2D-shaped (`fillRect`, `arc`, `bezierCurveTo`, `fillText`, `drawImage`, transforms, paths). Gradient and pattern objects are not implemented.
+- Eighteen built-in templates ship with Serial Studio, including oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, and XY scope. Templates are plain `.js` files and can be copied as starting points.
+- A 250 ms watchdog terminates the script if a single call does not return.
 
 **Use cases:**
-- Mimics of bench equipment (CRT scope, VU meter, segmented displays)
-- Mission-specific layouts that don't fit any standard widget
-- Quick one-off visualizations during prototyping
+- Bench equipment mimics (CRT scope, VU meter, segmented display)
+- Project-specific layouts that do not fit a standard widget
 - Domain-specific instruments (radar PPI, polar plots, vector fields, attitude indicators)
+- One-off visualizations during prototyping
 
 **Learn more:** [Painter Widget](Painter-Widget.md)
 

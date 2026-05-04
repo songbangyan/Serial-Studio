@@ -13,6 +13,8 @@
 
 #  include "UI/Widgets/PainterContext.h"
 
+#  include <cmath>
+
 #  include <QDir>
 #  include <QFileInfo>
 #  include <QFontMetricsF>
@@ -491,15 +493,22 @@ void Widgets::PainterContext::arc(
   if (r <= 0.0)
     return;
 
-  // QPainterPath::arcTo wants degrees, sweep, and a bounding rect
+  // Wrap into Canvas2D direction (CW = positive, CCW = negative); Qt sweep is the negation.
+  constexpr qreal kTau = 2.0 * M_PI;
+  const qreal raw      = endRad - startRad;
+  qreal sweepRad;
+  if (std::abs(raw) >= kTau)
+    sweepRad = counterClockwise ? -kTau : kTau;
+  else {
+    sweepRad = std::fmod(raw, kTau);
+    if (!counterClockwise && sweepRad < 0.0)
+      sweepRad += kTau;
+    else if (counterClockwise && sweepRad > 0.0)
+      sweepRad -= kTau;
+  }
+
   const qreal startDeg = -qRadiansToDegrees(startRad);
-  qreal sweepDeg       = -qRadiansToDegrees(endRad - startRad);
-
-  if (counterClockwise && sweepDeg > 0.0)
-    sweepDeg -= 360.0;
-  else if (!counterClockwise && sweepDeg < 0.0)
-    sweepDeg += 360.0;
-
+  const qreal sweepDeg = -qRadiansToDegrees(sweepRad);
   const QRectF box(x - r, y - r, 2.0 * r, 2.0 * r);
   m_path.arcTo(box, startDeg, sweepDeg);
 }

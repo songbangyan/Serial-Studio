@@ -619,97 +619,95 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 ## Custom Visualizations (Painter Widget)
 
-The Painter widget is the escape hatch when none of the built-in widgets render
-your data the way you need. You write a `paint(ctx, w, h)` callback in
-JavaScript and Serial Studio hands you a Canvas2D-style context backed by a
-QPainter. Optional `onFrame()` lets you accumulate per-frame state (ring
-buffers, peak holds, integrators) before each repaint. A 250 ms watchdog
-catches infinite loops, so a bad script can't lock the dashboard.
+The Painter widget exposes a JavaScript `paint(ctx, w, h)` callback against a
+Canvas2D-style context backed by QPainter. An optional `onFrame()` runs once per
+dashboard tick before `paint()` for time-domain bookkeeping (ring buffers, peak
+hold decay, integrators). A 250 ms watchdog terminates the script if a single
+call does not return.
 
-It's a Pro feature.
+Painter is a Pro feature.
 
 ### Phosphor-style Oscilloscope
-**Problem:** The built-in line plot doesn't capture the look of a CRT scope —
-no afterglow trace, no persistence, no XY mode for Lissajous figures.
+**Problem:** The built-in line plot does not match the appearance of a CRT
+scope: no persistence trace, no afterglow, no XY mode for Lissajous patterns.
 
-**Solution:** Use the Painter widget with the bundled `Oscilloscope` template:
-- Two channels rendered with adjustable persistence (each frame is composited
-  onto a slowly fading bitmap, mimicking phosphor decay)
-- Trigger level and graticule drawn directly in the script
-- Swap to the `XY scope` template for Lissajous patterns from a function
-  generator
+**Solution:** The bundled `Oscilloscope` template renders one or more channels
+on a phosphor-green CRT background:
+- Per-channel traces drawn with a glow underlay and a crisp foreground line
+- 10 x 8 graticule with a brighter centre cross
+- Switch to the `XY scope` template for Lissajous patterns from two synchronous
+  channels
 
-**Hardware:** Any UART/USB device pushing two analog channels at >=1 kHz
+**Hardware:** Any UART/USB device pushing one or more analog channels.
 **Pro Feature Used:** Painter widget, `oscilloscope.js` / `xy_scope.js` templates
 
 ---
 
 ### Artificial Horizon for Drones / Model Aircraft
-**Problem:** A 3D attitude widget is overkill — pilots want a flat instrument
-that mimics a real attitude indicator with pitch ladder, roll bank, and a
-fixed aircraft symbol.
+**Problem:** A 3D attitude widget is more than required for a pilot view; the
+intended display is a flat attitude indicator with pitch ladder, roll bank, and
+a fixed aircraft symbol.
 
-**Solution:** Painter widget with the `Artificial horizon` template:
-- Pitch and roll datasets bound to the IMU output of the flight controller
-- Sky / ground gradient rotates with roll and translates with pitch
-- Pitch ladder, roll arc, and centre crosshair drawn in pure JS so colours,
-  font, and tick spacing match the rest of your panel
+**Solution:** The bundled `Artificial horizon` template binds two datasets
+(pitch and roll, in degrees):
+- Sky and ground regions rotate with roll and translate with pitch
+- Pitch ladder ticks every 10°, with numeric labels every 30°
+- Fixed yellow aircraft symbol over the rotating background
 
-**Hardware:** Pixhawk / Betaflight FC streaming MAVLink
+**Hardware:** Pixhawk / Betaflight flight controller streaming MAVLink, or any
+source providing pitch and roll.
 **Pro Feature Used:** Painter widget, `horizon.js` template
 
 ---
 
 ### Lab Equipment Mimic
-**Problem:** A research group wants their data acquisition dashboard to look
-like the analog meters on the bench instrument they're replacing — same
-needle, same arc, same coloured zones — so technicians don't have to relearn
-the panel.
+**Problem:** A test bench dashboard needs to reproduce the appearance of the
+analog meter on the instrument it replaces, so operators do not need to relearn
+the panel layout.
 
-**Solution:** Painter widget with the `Dial gauge` template, customised:
-- Replace the default arc colours with the green / yellow / red zones from
-  the original instrument
-- Add a tachometer-style needle with smooth interpolation across frames
-- Persistent script state keeps the needle's previous position so it sweeps
-  rather than snaps when a new sample arrives
+**Solution:** Start from the `Dial gauge` template and modify the colour zones,
+tick layout, and label fonts to match the original instrument:
+- Adjust the green / amber / red zone thresholds to match the instrument
+- Replace the dial face colours and tick marks
+- Add a smoothing filter in `onFrame()` so the needle sweeps across samples
+  rather than snapping to each new value
 
 **Hardware:** Any sensor exposing a single bounded value (load cell,
-thermocouple, RPM encoder)
+thermocouple, RPM encoder).
 **Pro Feature Used:** Painter widget, `dial_gauge.js` template
 
 ---
 
 ### Audio VU Meter and Multi-Channel Bargraphs
-**Problem:** An audio engineer needs broadcast-style VU meters with peak hold
-across two or more channels, displayed alongside the rest of the telemetry.
+**Problem:** An audio engineer requires VU-style meters with peak hold across
+two or more channels alongside other telemetry.
 
-**Solution:** Painter widget with the `Audio VU meter` and `Bars with peak
-hold` templates:
-- VU meter ballistics (300 ms integration, 1.5 s peak decay) implemented in
-  the script's `onFrame()` hook
-- Peak hold markers persist for a configurable hold time then decay
-- Combine with the Audio driver to monitor a live microphone or line input
+**Solution:** The bundled `Audio VU meter` and `Bars with peak hold` templates
+render segmented LED-style bars with peak markers:
+- Saturated colours for active segments, pastel colours for inactive segments,
+  so the full range is always visible
+- Peak markers held for a configurable interval, then decayed at a fixed rate
+- Pairs with the Audio driver to read live microphone or line input
 
-**Hardware:** Any audio input device (USB mic, audio interface, computer
-sound card)
+**Hardware:** Any audio input device (USB microphone, audio interface, sound
+card input).
 **Pro Feature Used:** Painter widget, Audio driver, `audio_meter.js` /
 `bar_peak_hold.js` templates
 
 ---
 
 ### Order-Tracking and Polar Diagnostics
-**Problem:** A vibration analyst wants a polar plot of magnitude vs. angle
-for rotating-machinery diagnostics — something between a Bode plot and a
-Nyquist plot — that the built-in widgets don't provide.
+**Problem:** Rotating-machinery diagnostics require a polar plot of magnitude
+versus angle that the built-in widgets do not provide.
 
-**Solution:** Painter widget with the `Polar plot` template:
-- Pairs of (angle, magnitude) datasets plotted on a polar grid
-- Trace history kept in a script-level ring buffer so multiple revolutions
-  show as overlaid curves
-- Pair with the Waterfall widget on the same dashboard for Campbell-mode
-  spectral analysis
+**Solution:** The bundled `Polar plot` template draws pairs of datasets as
+(angle, magnitude) rays on a polar grid:
+- Concentric range rings and 30° bearing spokes
+- One coloured ray per dataset pair, with a halo marker at the tip
+- Combine with the Waterfall widget for Campbell-mode spectral analysis on
+  the same dashboard
 
-**Hardware:** Accelerometer + tachometer on the rotating shaft
+**Hardware:** Accelerometer plus tachometer on the rotating shaft.
 **Pro Feature Used:** Painter widget, Waterfall widget, `polar_plot.js`
 template
 

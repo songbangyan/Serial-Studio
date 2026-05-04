@@ -539,12 +539,13 @@ API::CommandResponse API::Handlers::ProjectHandler::getStatus(const QString& id,
   auto& project = DataModel::ProjectModel::instance();
 
   QJsonObject result;
-  result[QStringLiteral("title")]        = project.title();
-  result[QStringLiteral("filePath")]     = project.jsonFilePath();
-  result[QStringLiteral("modified")]     = project.modified();
-  result[QStringLiteral("groupCount")]   = project.groupCount();
-  result[QStringLiteral("datasetCount")] = project.datasetCount();
-  result[QStringLiteral("actionCount")]  = static_cast<int>(project.actions().size());
+  result[QStringLiteral("title")]                      = project.title();
+  result[QStringLiteral("filePath")]                   = project.jsonFilePath();
+  result[QStringLiteral("modified")]                   = project.modified();
+  result[QStringLiteral("groupCount")]                 = project.groupCount();
+  result[QStringLiteral("datasetCount")]               = project.datasetCount();
+  result[QStringLiteral("actionCount")]                = static_cast<int>(project.actions().size());
+  result[QStringLiteral("containsCommercialFeatures")] = project.containsCommercialFeatures();
 
   return CommandResponse::makeSuccess(id, result);
 }
@@ -1441,12 +1442,12 @@ API::CommandResponse API::Handlers::ProjectHandler::loadIntoFrameBuilder(const Q
   auto& project = DataModel::ProjectModel::instance();
   auto& builder = DataModel::FrameBuilder::instance();
 
-  const bool hasImageGroup =
+  const bool hasDatasetlessGroup =
     std::any_of(project.groups().begin(), project.groups().end(), [](const DataModel::Group& g) {
-      return g.widget == QLatin1String("image");
+      return g.widget == QLatin1String("image") || g.widget == QLatin1String("painter");
     });
 
-  if (project.groupCount() == 0 || (project.datasetCount() == 0 && !hasImageGroup)) {
+  if (project.groupCount() == 0 || (project.datasetCount() == 0 && !hasDatasetlessGroup)) {
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Project has no groups or datasets"));
   }

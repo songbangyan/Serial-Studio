@@ -115,12 +115,12 @@ flowchart TD
 ### Painter (Pro)
 
 - Widget key: `"painter"`.
-- User-scripted Canvas2D widget. Defines a `paint(ctx, w, h)` (and optional `onFrame()`) callback in JavaScript and Serial Studio renders whatever the script draws.
-- Comes with eighteen built-in templates: oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, XY scope, and more.
-- Reads the group's datasets through a `datasets` global; reads frame metadata through `frame.number` / `frame.timestampMs`.
-- Best for: anything no built-in widget covers — bespoke instrument mimics, mission-specific layouts, lab-equipment-style readouts.
-- Repaints at the dashboard refresh rate (24 Hz default). Watchdog-protected against runaway scripts (250 ms hard cap).
-- See the dedicated [Painter Widget](Painter-Widget.md) reference for the full API.
+- User-scripted dashboard widget. The script defines a JavaScript `paint(ctx, w, h)` callback (and an optional `onFrame()` callback) that renders directly into the widget's bitmap on every dashboard tick.
+- Eighteen built-in templates ship with Serial Studio: oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, XY scope, and others.
+- The script reads the group's datasets through a `datasets` global and dashboard tick metadata through `frame.number` / `frame.timestampMs`.
+- Best for visualizations not covered by any built-in widget: instrument mimics, project-specific layouts, lab-equipment-style readouts.
+- Repaints at the dashboard refresh rate (24 Hz by default). A 250 ms watchdog terminates the script if a single call does not return.
+- See the [Painter Widget](Painter-Widget.md) reference for the full API.
 - Pro license required.
 
 ## Dataset widgets
