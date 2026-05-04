@@ -21,6 +21,7 @@
 
 #include "MQTT/Client.h"
 
+#include <QApplication>
 #include <QFile>
 #include <QFileDialog>
 #include <QInputDialog>
@@ -674,16 +675,15 @@ void MQTT::Client::setMqttVersion(const quint8 version)
 void MQTT::Client::addCaCertificates()
 {
   auto* dialog =
-    new QFileDialog(nullptr,
+    new QFileDialog(qApp->activeWindow(),
                     tr("Select PEM Certificates Directory"),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
 
   dialog->setFileMode(QFileDialog::Directory);
   dialog->setOption(QFileDialog::ShowDirsOnly, true);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
-    dialog->deleteLater();
-
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       m_sslConfiguration.addCaCertificates(path);
   });

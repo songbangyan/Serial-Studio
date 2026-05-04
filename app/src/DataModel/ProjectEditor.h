@@ -106,6 +106,13 @@ class ProjectEditor : public QObject {
              READ  selectedSourceFrameParserCode
              WRITE setSelectedSourceFrameParserCode
              NOTIFY selectedSourceFrameParserCodeChanged)
+  Q_PROPERTY(QString currentGroupPainterCode
+             READ  currentGroupPainterCode
+             WRITE setCurrentGroupPainterCode
+             NOTIFY currentGroupPainterCodeChanged)
+  Q_PROPERTY(bool currentGroupIsPainter
+             READ currentGroupIsPainter
+             NOTIFY editableOptionsChanged)
   Q_PROPERTY(QString treeSearchQuery
              READ  treeSearchQuery
              WRITE setTreeSearchQuery
@@ -124,6 +131,7 @@ signals:
   void selectedUserTableChanged();
   void selectedWorkspaceIdChanged();
   void selectedSourceFrameParserCodeChanged();
+  void currentGroupPainterCodeChanged();
   void groupModelChanged();
   void sourceModelChanged();
   void currentViewChanged();
@@ -215,6 +223,10 @@ public:
   [[nodiscard]] int selectedSourceId() const noexcept;
   [[nodiscard]] int selectedSourceBusType() const noexcept;
   [[nodiscard]] QString selectedSourceFrameParserCode() const;
+  [[nodiscard]] QString currentGroupPainterCode() const;
+  [[nodiscard]] bool currentGroupIsPainter() const;
+  [[nodiscard]] int currentGroupId() const;
+  Q_INVOKABLE [[nodiscard]] QVariantList currentGroupDatasetsForPreview() const;
 
   [[nodiscard]] CustomModel* treeModel() const;
   [[nodiscard]] QItemSelectionModel* selectionModel() const;
@@ -258,6 +270,7 @@ public slots:
   void selectFrameParser(int sourceId);
   void setSelectedSourceFrameParserCode(const QString& code);
   void setSelectedOutputWidgetTransmitFunction(const QString& code);
+  void setCurrentGroupPainterCode(const QString& code);
   void openTransformEditor();
 
 private slots:

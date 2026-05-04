@@ -110,7 +110,6 @@ set(QT_MODULES
   Core5Compat
   LinguistTools
   QuickControls2
-  WebEngineQuick
 )
 
 # Specify required libraries for FOSS version
@@ -127,8 +126,13 @@ set(QT_LIBS
   Qt6::SerialPort
   Qt6::Core5Compat
   Qt6::QuickControls2
-  Qt6::WebEngineQuick
 )
+
+# WebEngine -- gated by WITH_WEBENGINE so Linux builds can opt out
+if(WITH_WEBENGINE)
+  list(APPEND QT_MODULES WebEngineQuick)
+  list(APPEND QT_LIBS Qt6::WebEngineQuick)
+endif()
 
 # Add required modules for Pro version if needed
 if(BUILD_COMMERCIAL)
@@ -273,6 +277,7 @@ set(SOURCES
   src/IO/FrameReader.cpp
   src/DataModel/FrameParser.cpp
   src/DataModel/JsScriptEngine.cpp
+  src/DataModel/JsWatchdog.cpp
   src/DataModel/LuaScriptEngine.cpp
   src/DataModel/LuaCompat.cpp
   src/DataModel/ScriptTemplates.cpp
@@ -379,6 +384,7 @@ set(HEADERS
   src/DataModel/FrameParser.h
   src/DataModel/IScriptEngine.h
   src/DataModel/JsScriptEngine.h
+  src/DataModel/JsWatchdog.h
   src/DataModel/LuaScriptEngine.h
   src/DataModel/LuaCompat.h
   src/DataModel/ScriptTemplates.h
@@ -484,6 +490,7 @@ set(QML_SOURCES
   qml/Widgets/BigButton.qml
   qml/Widgets/InfoBullet.qml
   qml/Widgets/FileDropArea.qml
+  qml/Widgets/MarkdownTextView.qml
   qml/Widgets/MenuButton.qml
   qml/Widgets/MiniWindow.qml
   qml/Widgets/Pane.qml
@@ -505,6 +512,12 @@ set(QML_SOURCES
   qml/DialogLoader.qml
   qml/main.qml
 )
+
+# WebEngine-only QML -- skipped when WITH_WEBENGINE=OFF so the QtWebEngine
+# import never has to resolve at QML-cache build time.
+if(WITH_WEBENGINE)
+  list(APPEND QML_SOURCES qml/Widgets/MarkdownWebView.qml)
+endif()
 
 # Add commercial source files
 if(BUILD_COMMERCIAL)
@@ -532,6 +545,10 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/ImageView.h
     src/UI/Widgets/ImageExport.h
     src/UI/Widgets/Waterfall.h
+    src/UI/Widgets/Painter.h
+    src/UI/Widgets/PainterContext.h
+    src/UI/Widgets/PainterDataBridge.h
+    src/DataModel/PainterCodeEditor.h
     src/UI/ImageProvider.h
     src/DataModel/DBCImporter.h
     src/DataModel/ModbusMapImporter.h
@@ -582,6 +599,10 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/ImageView.cpp
     src/UI/Widgets/ImageExport.cpp
     src/UI/Widgets/Waterfall.cpp
+    src/UI/Widgets/Painter.cpp
+    src/UI/Widgets/PainterContext.cpp
+    src/UI/Widgets/PainterDataBridge.cpp
+    src/DataModel/PainterCodeEditor.cpp
     src/UI/ImageProvider.cpp
     src/DataModel/DBCImporter.cpp
     src/DataModel/ModbusMapImporter.cpp
@@ -634,7 +655,10 @@ if(BUILD_COMMERCIAL)
     qml/Widgets/Dashboard/Plot3D.qml
     qml/Widgets/Dashboard/ImageView.qml
     qml/Widgets/Dashboard/NotificationLog.qml
+    qml/Widgets/Dashboard/Painter.qml
     qml/Widgets/Dashboard/Waterfall.qml
+    qml/ProjectEditor/Dialogs/PainterCodeDialog.qml
+    qml/ProjectEditor/Dialogs/PainterTestDialog.qml
     qml/Widgets/Dashboard/Output/DashboardButton.qml
     qml/Widgets/Dashboard/Output/DashboardSlider.qml
     qml/Widgets/Dashboard/Output/DashboardToggle.qml

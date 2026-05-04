@@ -1,0 +1,64 @@
+/*
+ * Serial Studio
+ * https://serial-studio.com/
+ *
+ * Copyright (C) 2020-2026 Alex Spataru
+ *
+ * This file is dual-licensed:
+ *
+ * - Under the GNU GPLv3 (or later) for builds that exclude Pro modules.
+ * - Under the Serial Studio Commercial License for builds that include
+ *   any Pro functionality.
+ *
+ * You must comply with the terms of one of these licenses, depending
+ * on your use case.
+ *
+ * For GPL terms, see <https://www.gnu.org/licenses/gpl-3.0.html>
+ * For commercial terms, see LICENSE_COMMERCIAL.md in the project root.
+ *
+ * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
+ */
+
+#pragma once
+
+#include <QJSEngine>
+#include <QJSValue>
+#include <QString>
+#include <QTimer>
+
+namespace DataModel {
+
+/**
+ * @brief Runtime watchdog for QJSEngine calls.
+ *
+ * Wraps a single-shot QTimer that flips QJSEngine::setInterrupted() once a
+ * configurable budget elapses. Use call() to invoke a JS function under the
+ * timer; the budget is reset and re-armed for every call.
+ *
+ * The watchdog does not own the engine -- it borrows a pointer that must
+ * outlive the watchdog instance (typical pattern: same owner holds both).
+ */
+class JsWatchdog {
+public:
+  explicit JsWatchdog(QJSEngine* engine, int budgetMs = 1000, QString tag = QString());
+  ~JsWatchdog() = default;
+
+  JsWatchdog(const JsWatchdog&)            = delete;
+  JsWatchdog& operator=(const JsWatchdog&) = delete;
+
+  [[nodiscard]] QJSValue call(QJSValue& fn, const QJSValueList& args);
+  [[nodiscard]] QJSValue call(QJSValue& fn, QJSValue thisObj, const QJSValueList& args);
+
+  [[nodiscard]] int budgetMs() const noexcept;
+  void setBudgetMs(int ms) noexcept;
+
+  [[nodiscard]] bool lastCallTimedOut() const noexcept;
+
+private:
+  QJSEngine* m_engine;
+  QTimer m_timer;
+  QString m_tag;
+  bool m_lastTimedOut;
+};
+
+}  // namespace DataModel

@@ -251,51 +251,6 @@ Widgets.Pane {
               font: Cpp_Misc_CommonFonts.uiFont
               elide: Text.ElideRight
             }
-
-            Rectangle {
-              Layout.fillHeight: true
-              color: refRow.separatorColor
-              implicitWidth: visible ? 1 : 0
-              Layout.preferredWidth: visible ? 1 : 0
-              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
-            }
-
-            Item {
-              Layout.fillHeight: true
-              Layout.preferredWidth: visible ? 40 : 0
-              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
-
-              ToolButton {
-                id: removeBtn
-
-                width: 40
-                height: 26
-                padding: 2
-                flat: true
-                icon.width: 16
-                icon.height: 16
-                hoverEnabled: true
-                anchors.centerIn: parent
-                icon.color: "transparent"
-                icon.source: "qrc:/icons/buttons/trash.svg"
-
-                background: Rectangle {
-                  border.width: 0
-                  color: "transparent"
-                }
-
-                ToolTip.delay: 400
-                ToolTip.visible: hovered
-                ToolTip.text: qsTr("Remove from workspace")
-
-                onClicked: Cpp_JSON_ProjectModel.removeWidgetFromWorkspace(
-                  root.workspaceId,
-                  modelData.widgetType,
-                  modelData.groupId,
-                  modelData.relativeIndex
-                )
-              }
-            }
           }
         }
 

@@ -136,6 +136,10 @@ inline constexpr KeyView ImgMode("imgDetectionMode");
 inline constexpr KeyView ImgStart("imgStartSequence");
 inline constexpr KeyView ImgEnd("imgEndSequence");
 
+// Painter-group keys
+inline constexpr KeyView PainterCode("painterCode");
+inline constexpr KeyView HideOnDashboard("hideOnDashboard");
+
 // Dashboard layout keys
 inline constexpr KeyView DashboardLayout("dashboardLayout");
 inline constexpr KeyView ActiveGroupId("activeGroupId");
@@ -368,42 +372,43 @@ static_assert(sizeof(OutputWidget) % alignof(OutputWidget) == 0, "Unaligned Outp
  * graphing. Fully aligned and stack-optimized.
  */
 struct alignas(8) Dataset {
-  int index              = 0;      ///< Frame offset index
-  int xAxisId            = -1;     ///< Optional reference to x-axis dataset
-  int waterfallYAxis     = 0;      ///< Y source for the waterfall -- 0 = Time, N = dataset.index
-  int groupId            = 0;      ///< Owning group ID
-  int sourceId           = 0;      ///< Source this dataset belongs to
-  int uniqueId           = 0;      ///< Unique ID within frame
-  int datasetId          = 0;      ///< Unique ID within group
-  int fftSamples         = 256;    ///< Number of samples for FFT
-  int fftSamplingRate    = 100;    ///< Sampling rate for FFT
-  int transformLanguage  = -1;     ///< Transform script language (-1 = unset, 0 = JS, 1 = Lua)
-  bool fft               = false;  ///< Enables FFT processing
-  bool led               = false;  ///< Enables LED widget
-  bool log               = false;  ///< Enables logging
-  bool plt               = false;  ///< Enables plotting
-  bool waterfall         = false;  ///< Enables waterfall (spectrogram) widget -- Pro
-  bool alarmEnabled      = false;  ///< Enable/disable alarm values
-  bool overviewDisplay   = false;  ///< Show in overview
-  bool isNumeric         = false;  ///< True if value was parsed as numeric
-  bool virtual_          = false;  ///< True if dataset is generated rather than parsed directly
-  double fftMin          = 0;      ///< Minimum value (for FFT)
-  double fftMax          = 0;      ///< Maximum value (for FFT)
-  double pltMin          = 0;      ///< Minimum value (for plots)
-  double pltMax          = 0;      ///< Maximum value (for plots)
-  double wgtMin          = 0;      ///< Minimum value (for widgets)
-  double wgtMax          = 0;      ///< Maximum value (for widgets)
-  double ledHigh         = 80;     ///< LED activation threshold
-  double alarmLow        = 20;     ///< Low alarm threshold
-  double alarmHigh       = 80;     ///< High alarm threshold
-  double numericValue    = 0;      ///< Parsed numeric value after transforms
-  double rawNumericValue = 0;      ///< Parsed numeric value before transforms
-  QString value;                   ///< Raw string value after transforms
-  QString rawValue;                ///< Raw string value before transforms
-  QString title;                   ///< Human-readable title
-  QString units;                   ///< Measurement units (e.g., degC)
-  QString widget;                  ///< Widget type (bar, gauge, etc.)
-  QString transformCode;           ///< Optional per-dataset transform script
+  int index             = 0;      ///< Frame offset index
+  int xAxisId           = -1;     ///< Optional reference to x-axis dataset
+  int waterfallYAxis    = 0;      ///< Y source for the waterfall -- 0 = Time, N = dataset.index
+  int groupId           = 0;      ///< Owning group ID
+  int sourceId          = 0;      ///< Source this dataset belongs to
+  int uniqueId          = 0;      ///< Unique ID within frame
+  int datasetId         = 0;      ///< Unique ID within group
+  int fftSamples        = 256;    ///< Number of samples for FFT
+  int fftSamplingRate   = 100;    ///< Sampling rate for FFT
+  int transformLanguage = -1;     ///< Transform script language (-1 = unset, 0 = JS, 1 = Lua)
+  bool fft              = false;  ///< Enables FFT processing
+  bool led              = false;  ///< Enables LED widget
+  bool log              = false;  ///< Enables logging
+  bool plt              = false;  ///< Enables plotting
+  bool waterfall        = false;  ///< Enables waterfall (spectrogram) widget -- Pro
+  bool alarmEnabled     = false;  ///< Enable/disable alarm values
+  bool overviewDisplay  = false;  ///< Show in overview
+  bool isNumeric        = false;  ///< True if value was parsed as numeric
+  bool virtual_         = false;  ///< True if dataset is generated rather than parsed directly
+  bool hideOnDashboard  = false;  ///< Suppress dataset-level dashboard tile (painter still sees it)
+  double fftMin         = 0;      ///< Minimum value (for FFT)
+  double fftMax         = 0;      ///< Maximum value (for FFT)
+  double pltMin         = 0;      ///< Minimum value (for plots)
+  double pltMax         = 0;      ///< Maximum value (for plots)
+  double wgtMin         = 0;      ///< Minimum value (for widgets)
+  double wgtMax         = 0;      ///< Maximum value (for widgets)
+  double ledHigh        = 80;     ///< LED activation threshold
+  double alarmLow       = 20;     ///< Low alarm threshold
+  double alarmHigh      = 80;     ///< High alarm threshold
+  double numericValue   = 0;      ///< Parsed numeric value after transforms
+  double rawNumericValue = 0;     ///< Parsed numeric value before transforms
+  QString value;                  ///< Raw string value after transforms
+  QString rawValue;               ///< Raw string value before transforms
+  QString title;                  ///< Human-readable title
+  QString units;                  ///< Measurement units (e.g., degC)
+  QString widget;                 ///< Widget type (bar, gauge, etc.)
+  QString transformCode;          ///< Optional per-dataset transform script
 };
 
 static_assert(sizeof(Dataset) % alignof(Dataset) == 0, "Unaligned Dataset struct");
@@ -435,6 +440,7 @@ struct alignas(8) Group {
   QString imgDetectionMode;                 ///< "autodetect" | "manual" (default: "autodetect")
   QString imgStartSequence;                 ///< Hex start delimiter (manual mode only)
   QString imgEndSequence;                   ///< Hex end delimiter (manual mode only)
+  QString painterCode;                      ///< User JS for painter widget (paint/onFrame)
 };
 
 static_assert(sizeof(Group) % alignof(Group) == 0, "Unaligned Group struct");
@@ -1045,6 +1051,9 @@ void read_io_settings(QByteArray& frameStart,
   if (d.virtual_)
     obj.insert(Keys::Virtual, true);
 
+  if (d.hideOnDashboard)
+    obj.insert(Keys::HideOnDashboard, true);
+
   return obj;
 }
 
@@ -1082,6 +1091,9 @@ void read_io_settings(QByteArray& frameStart,
     obj.insert(Keys::ImgStart, g.imgStartSequence);
     obj.insert(Keys::ImgEnd, g.imgEndSequence);
   }
+
+  if (g.widget.simplified() == QLatin1String("painter") && !g.painterCode.isEmpty())
+    obj.insert(Keys::PainterCode, g.painterCode);
 
   if (!g.outputWidgets.empty()) {
     QJsonArray owArray;
@@ -1275,6 +1287,7 @@ void read_io_settings(QByteArray& frameStart,
   d.transformCode     = obj.value(Keys::TransformCode).toString();
   d.transformLanguage = ss_jsr(obj, Keys::TransformLanguage, -1).toInt();
   d.virtual_          = ss_jsr(obj, Keys::Virtual, false).toBool();
+  d.hideOnDashboard   = ss_jsr(obj, Keys::HideOnDashboard, false).toBool();
 
   if (!d.value.isEmpty())
     d.numericValue = d.value.toDouble(&d.isNumeric);
@@ -1348,13 +1361,14 @@ void read_io_settings(QByteArray& frameStart,
   const auto gtVal     = ss_jsr(obj, Keys::GroupType, 0).toInt();
   const auto groupType = static_cast<GroupType>(qBound(0, gtVal, 1));
 
-  const bool isImageGroup  = (widget == QLatin1String("image"));
-  const bool isOutputGroup = (groupType == GroupType::Output);
+  const bool isImageGroup   = (widget == QLatin1String("image"));
+  const bool isOutputGroup  = (groupType == GroupType::Output);
+  const bool isPainterGroup = (widget == QLatin1String("painter"));
 
   if (title.isEmpty())
     return false;
 
-  if (array.isEmpty() && !isImageGroup && !isOutputGroup)
+  if (array.isEmpty() && !isImageGroup && !isOutputGroup && !isPainterGroup)
     return false;
 
   g.title     = title;
@@ -1369,6 +1383,10 @@ void read_io_settings(QByteArray& frameStart,
     g.imgEndSequence   = ss_jsr(obj, Keys::ImgEnd, "").toString();
     return true;
   }
+
+  // Painter groups carry user JS plus optional datasets; don't early-return
+  if (widget == QLatin1String("painter"))
+    g.painterCode = ss_jsr(obj, Keys::PainterCode, "").toString();
 
   g.datasets.clear();
   g.datasets.reserve(array.count());

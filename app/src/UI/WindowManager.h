@@ -23,9 +23,12 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMap>
 #include <QObject>
 #include <QQuickItem>
+#include <QRect>
 #include <QSettings>
+#include <QVector>
 
 namespace UI {
 class Taskbar;
@@ -79,6 +82,7 @@ public:
   [[nodiscard]] Q_INVOKABLE int zOrder(QQuickItem* item) const;
   [[nodiscard]] Q_INVOKABLE QJsonObject serializeLayout() const;
   [[nodiscard]] Q_INVOKABLE bool restoreLayout(const QJsonObject& layout);
+  [[nodiscard]] int firstTileWindowId() const;
 
   enum class ResizeEdge {
     None,
@@ -107,6 +111,8 @@ public slots:
   void setBackgroundImage(const QString& path);
   void setAutoLayoutEnabled(const bool enabled);
   void registerWindow(const int id, QQuickItem* item);
+  void reconcileWindowOrder(const QVector<int>& taskbarOrder);
+  void preloadPendingGeometries(const QJsonObject& layout);
 
 private:
   [[nodiscard]] int getIdForWindow(QQuickItem* item) const;
@@ -131,11 +137,13 @@ private:
   int m_zCounter;
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;
+  bool m_userReordered;
   QString m_backgroundImage;
 
   QVector<int> m_windowOrder;
   QMap<int, QQuickItem*> m_windows;
   QMap<QQuickItem*, int> m_windowZ;
+  QMap<int, QRect> m_pendingGeometries;
 
   ResizeEdge m_resizeEdge;
 

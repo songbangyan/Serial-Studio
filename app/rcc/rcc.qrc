@@ -222,6 +222,7 @@
         <file>icons/dashboard-large/multiplot.svg</file>
         <file>icons/dashboard-large/notification-log.svg</file>
         <file>icons/dashboard-large/output-panel.svg</file>
+        <file>icons/dashboard-large/painter.svg</file>
         <file>icons/dashboard-large/plot.svg</file>
         <file>icons/dashboard-large/plot3d.svg</file>
         <file>icons/dashboard-large/terminal.svg</file>
@@ -240,6 +241,7 @@
         <file>icons/dashboard-small/multiplot.svg</file>
         <file>icons/dashboard-small/notification-log.svg</file>
         <file>icons/dashboard-small/output-panel.svg</file>
+        <file>icons/dashboard-small/painter.svg</file>
         <file>icons/dashboard-small/plot.svg</file>
         <file>icons/dashboard-small/plot3d.svg</file>
         <file>icons/dashboard-small/terminal.svg</file>
@@ -371,6 +373,7 @@
         <file>icons/project-editor/toolbar/add-output-slider.svg</file>
         <file>icons/project-editor/toolbar/add-output-textfield.svg</file>
         <file>icons/project-editor/toolbar/add-output-toggle.svg</file>
+        <file>icons/project-editor/toolbar/add-painter.svg</file>
         <file>icons/project-editor/toolbar/add-plot.svg</file>
         <file>icons/project-editor/toolbar/add-plot3d.svg</file>
         <file>icons/project-editor/toolbar/device.svg</file>
@@ -564,6 +567,25 @@
         <file>scripts/output/simple_command.js</file>
         <file>scripts/output/slcan_command.js</file>
         <file>scripts/output/templates.json</file>
+        <file>scripts/painter/audio_meter.js</file>
+        <file>scripts/painter/bar_peak_hold.js</file>
+        <file>scripts/painter/clock_face.js</file>
+        <file>scripts/painter/default_template.js</file>
+        <file>scripts/painter/dial_gauge.js</file>
+        <file>scripts/painter/heatmap.js</file>
+        <file>scripts/painter/horizon.js</file>
+        <file>scripts/painter/led_matrix.js</file>
+        <file>scripts/painter/oscilloscope.js</file>
+        <file>scripts/painter/polar_plot.js</file>
+        <file>scripts/painter/progress_rings.js</file>
+        <file>scripts/painter/radar_sweep.js</file>
+        <file>scripts/painter/segment_display.js</file>
+        <file>scripts/painter/sparklines.js</file>
+        <file>scripts/painter/status_grid.js</file>
+        <file>scripts/painter/strip_chart.js</file>
+        <file>scripts/painter/vector_field.js</file>
+        <file>scripts/painter/xy_scope.js</file>
+        <file>scripts/painter/templates.json</file>
         <file>scripts/parser/js/at_commands.js</file>
         <file>scripts/parser/js/base64_encoded.js</file>
         <file>scripts/parser/js/batched_sensor_data.js</file>
@@ -701,5 +723,7 @@
         <file>themes/fluent-light.json</file>
         <file>markdown-viewer.html</file>
         <file>icons/dashboard-buttons/camcoder.svg</file>
+        <file>icons/project-editor/actions/edit-code.svg</file>
+        <file>icons/project-editor/treeview/painter.svg</file>
     </qresource>
 </RCC>

@@ -35,7 +35,10 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QFileOpenEvent>
-#include <QtWebEngineQuick>
+
+#ifdef SERIAL_STUDIO_WITH_WEBENGINE
+#  include <QtWebEngineQuick>
+#endif
 
 #include "AppState.h"
 #include "DataModel/ProjectModel.h"
@@ -191,7 +194,10 @@ void prepareEnvironment(int& argc, char**& argv, const QString& shortcutPath)
 
   auto policy = Qt::HighDpiScaleFactorRoundingPolicy::PassThrough;
   QApplication::setHighDpiScaleFactorRoundingPolicy(policy);
+
+#ifdef SERIAL_STUDIO_WITH_WEBENGINE
   QtWebEngineQuick::initialize();
+#endif
 }
 
 /**

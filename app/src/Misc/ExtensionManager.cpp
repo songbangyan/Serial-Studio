@@ -21,6 +21,7 @@
 
 #include "Misc/ExtensionManager.h"
 
+#include <QApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QFile>
@@ -528,19 +529,17 @@ void Misc::ExtensionManager::resetRepositories()
  */
 void Misc::ExtensionManager::browseLocalRepo()
 {
-  auto* dialog =
-    new QFileDialog(nullptr, tr("Select Extension Repository Folder"), QDir::homePath());
+  auto* dialog = new QFileDialog(
+    qApp->activeWindow(), tr("Select Extension Repository Folder"), QDir::homePath());
 
   dialog->setFileMode(QFileDialog::Directory);
   dialog->setOption(QFileDialog::ShowDirsOnly, true);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
-    dialog->deleteLater();
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       addRepository(path);
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }

@@ -84,6 +84,20 @@ option(ENABLE_PGO              "Enable Profile-Guided Optimization"    OFF)
 option(BUILD_COMMERCIAL        "Enable commercial features"            OFF)
 option(ENABLE_GRPC             "Enable gRPC server support"            OFF)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+   set(_default_with_webengine OFF)
+else()
+   set(_default_with_webengine ON)
+endif()
+option(WITH_WEBENGINE          "Build against Qt WebEngine (markdown viewers, PDF reports)" ${_default_with_webengine})
+
+if(WITH_WEBENGINE)
+   add_compile_definitions(SERIAL_STUDIO_WITH_WEBENGINE)
+   message(STATUS "WITH_WEBENGINE=ON, building with Qt WebEngine support")
+else()
+   message(STATUS "WITH_WEBENGINE=OFF, markdown viewers will use Qt rich-text and reports will be HTML-only")
+endif()
+
 #---------------------------------------------------------------------------------------------------
 # Commercial build credentials
 #---------------------------------------------------------------------------------------------------

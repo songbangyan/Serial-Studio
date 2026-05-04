@@ -255,7 +255,6 @@ double Widgets::Bar::normalizedAlarmHigh() const noexcept
  */
 void Widgets::Bar::updateData()
 {
-  // Read latest value from dashboard and clamp to valid range
   if (!isEnabled())
     return;
 

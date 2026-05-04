@@ -51,7 +51,6 @@
  */
 inline float blackman_harris_coeff(unsigned int i, unsigned int N)
 {
-  // Handle degenerate window size
   if (N <= 1)
     return 1.0f;
 

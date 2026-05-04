@@ -1345,6 +1345,10 @@ void UI::Dashboard::processDatasetIntoWidgetMaps(const DataModel::Dataset& datas
     m_datasets.insert(dataset.index, d);
   }
 
+  // hideOnDashboard suppresses dataset-level tiles; painter still sees the dataset
+  if (dataset.hideOnDashboard)
+    return;
+
   // Route dataset into per-widget-type lists (LEDs go to the group panel)
   auto keys = SerialStudio::getDashboardWidgets(dataset);
   for (const auto& widgetKey : std::as_const(keys)) {
@@ -1439,12 +1443,34 @@ void UI::Dashboard::buildWidgetGroups(const DataModel::Frame& frame, bool pro)
 
     // Append fallback 3D plot widget
     if (key == SerialStudio::DashboardPlot3D && !pro) {
-      m_widgetGroups.remove(key);
+      auto& bucket = m_widgetGroups[key];
+      if (!bucket.isEmpty() && bucket.last().groupId == group.groupId)
+        bucket.removeLast();
+
+      if (bucket.isEmpty())
+        m_widgetGroups.remove(key);
+
       auto copy  = group;
       copy.title = tr("%1 (Fallback)").arg(group.title);
       m_widgetGroups[SerialStudio::DashboardMultiPlot].append(copy);
       relabelGroupAsMultiplotFallback(group.groupId, copy.title);
     }
+
+#ifdef BUILD_COMMERCIAL
+    // Painter (Pro): GPL builds fall back to a data grid so the group still renders
+    if (key == SerialStudio::DashboardPainter && !pro) {
+      auto& bucket = m_widgetGroups[key];
+      if (!bucket.isEmpty() && bucket.last().groupId == group.groupId)
+        bucket.removeLast();
+
+      if (bucket.isEmpty())
+        m_widgetGroups.remove(key);
+
+      auto copy  = group;
+      copy.title = tr("%1 (Fallback)").arg(group.title);
+      m_widgetGroups[SerialStudio::DashboardDataGrid].append(copy);
+    }
+#endif
 
     // Append multiplot & 3D plot to accelerometer widget
     if (key == SerialStudio::DashboardAccelerometer) {
@@ -2081,6 +2107,7 @@ void UI::Dashboard::configureActions(const DataModel::Frame& frame)
     }
   }
 
+  // Clear all timers
   m_timers.clear();
   m_repeatCounters.clear();
 
@@ -2094,17 +2121,21 @@ void UI::Dashboard::configureActions(const DataModel::Frame& frame)
     return;
   }
 
+  // Execute actions & start timers (if needed)
   for (int i = 0; i < m_actions.count(); ++i) {
+    // Action does not have a timer, skip
     const auto& action = m_actions[i];
     if (action.timerMode == DataModel::TimerMode::Off)
       continue;
 
+    // Obtain the interval
     const auto interval = action.timerIntervalMs;
     if (interval <= 0) {
       qWarning() << "Interval for action" << action.title << "must be greater than 0!";
       continue;
     }
 
+    // Configure the timer
     auto* timer = new QTimer(this);
     timer->setInterval(interval);
     timer->setTimerType(Qt::PreciseTimer);
@@ -2123,6 +2154,7 @@ void UI::Dashboard::configureActions(const DataModel::Frame& frame)
                  || action.autoExecuteOnConnect))
       timer->start();
 
+    // Register the timer
     m_timers.insert(i, timer);
   }
 

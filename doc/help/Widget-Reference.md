@@ -16,6 +16,7 @@ flowchart TD
 
     Group --> G1["Data Grid · MultiPlot<br/>Accelerometer · Gyroscope"]
     Group --> G2["GPS Map · LED Panel<br/>3D Plot · Image View"]
+    Group --> G3["Painter (user-scripted)"]
 
     Dataset --> D1["Plot · FFT Plot · Waterfall<br/>Bar · Gauge · Compass"]
 ```
@@ -111,6 +112,17 @@ flowchart TD
 - No datasets required inside the group. The widget reads raw image bytes directly from the transport stream.
 - Pro license required.
 
+### Painter (Pro)
+
+- Widget key: `"painter"`.
+- User-scripted Canvas2D widget. Defines a `paint(ctx, w, h)` (and optional `onFrame()`) callback in JavaScript and Serial Studio renders whatever the script draws.
+- Comes with eighteen built-in templates: oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, XY scope, and more.
+- Reads the group's datasets through a `datasets` global; reads frame metadata through `frame.number` / `frame.timestampMs`.
+- Best for: anything no built-in widget covers — bespoke instrument mimics, mission-specific layouts, lab-equipment-style readouts.
+- Repaints at the dashboard refresh rate (24 Hz default). Watchdog-protected against runaway scripts (250 ms hard cap).
+- See the dedicated [Painter Widget](Painter-Widget.md) reference for the full API.
+- Pro license required.
+
 ## Dataset widgets
 
 ### Plot
@@ -184,6 +196,7 @@ flowchart TD
 | LED Panel     | Group   | auto           | 1+           | `led: true`, `ledHigh`                       |
 | 3D Plot       | Group   | `plot3d`       | 3            | x, y, z coords (Pro)                         |
 | Image View    | Group   | `image`        | 0            | binary stream (Pro)                          |
+| Painter       | Group   | `painter`      | 0+           | user `paint(ctx, w, h)` JS script (Pro)      |
 | Plot          | Dataset | auto           | —            | `graph: true`, `pltMin`/`pltMax`             |
 | FFT Plot      | Dataset | auto           | —            | `fft: true`, `fftSamples`, `fftSamplingRate` |
 | Waterfall     | Dataset | auto           | —            | `waterfall: true`, FFT fields, `waterfallYAxis` (Pro) |

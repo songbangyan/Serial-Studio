@@ -21,6 +21,7 @@
 
 #include "DataModel/JsCodeEditor.h"
 
+#include <QApplication>
 #include <QCoreApplication>
 #include <QDesktopServices>
 #include <QFile>
@@ -334,10 +335,11 @@ void DataModel::JsCodeEditor::import()
   const auto filter = (m_language == 1) ? QStringLiteral("*.lua") : QStringLiteral("*.js");
   const auto title =
     (m_language == 1) ? tr("Select Lua file to import") : tr("Select Javascript file to import");
-  auto* dialog = new QFileDialog(nullptr, title, QDir::homePath(), filter);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), title, QDir::homePath(), filter);
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty()) {
       QFile file(path);
       if (file.open(QFile::ReadOnly)) {
@@ -346,7 +348,6 @@ void DataModel::JsCodeEditor::import()
         apply();
       }
     }
-    dialog->deleteLater();
   });
 
   dialog->open();

@@ -391,6 +391,7 @@ Item {
       case "gyroscope":      return base + "gyroscope.svg"
       case "gps":            return base + "gps.svg"
       case "image":          return base + "image.svg"
+      case "painter":        return base + "painter.svg"
       case "plot3d":         return base + "plot3d.svg"
       case "datagrid":       return base + "datagrid.svg"
       default:               return base + "group.svg"

@@ -39,8 +39,21 @@
 #ifdef BUILD_COMMERCIAL
 #  include "UI/Widgets/ImageView.h"
 #  include "UI/Widgets/Output/Panel.h"
+#  include "UI/Widgets/Painter.h"
 #  include "UI/Widgets/Plot3D.h"
 #  include "UI/Widgets/Waterfall.h"
+
+/**
+ * @brief Builds a painter widget for slot @p index, seeding its user code from the project.
+ */
+[[nodiscard]] static QQuickItem* makePainterWidget(int index, QQuickItem* parent)
+{
+  auto* p = new Widgets::Painter(index, parent);
+  const auto& group =
+    UI::Dashboard::instance().getGroupWidget(SerialStudio::DashboardPainter, index);
+  p->setUserCode(group.painterCode);
+  return p;
+}
 #endif
 
 //--------------------------------------------------------------------------------------------------
@@ -278,6 +291,10 @@ void UI::DashboardWidget::setWidgetIndex(const int index)
       case SerialStudio::DashboardWaterfall:
         m_dbWidget = new Widgets::Waterfall(relativeIndex(), this);
         m_qmlPath  = "qrc:/serial-studio.com/gui/qml/Widgets/Dashboard/Waterfall.qml";
+        break;
+      case SerialStudio::DashboardPainter:
+        m_dbWidget = makePainterWidget(relativeIndex(), this);
+        m_qmlPath  = "qrc:/serial-studio.com/gui/qml/Widgets/Dashboard/Painter.qml";
         break;
 #endif
 

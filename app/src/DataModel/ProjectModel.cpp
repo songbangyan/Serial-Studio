@@ -22,6 +22,7 @@
 #include "DataModel/ProjectModel.h"
 
 #include <algorithm>
+#include <QApplication>
 #include <QCryptographicHash>
 #include <QDirIterator>
 #include <QFile>
@@ -101,6 +102,9 @@ static bool collectGroupDatasetRefs(const DataModel::Group& group,
 {
   bool groupHasLed = false;
   for (const auto& ds : group.datasets) {
+    if (ds.hideOnDashboard)
+      continue;
+
     const auto keys = SerialStudio::getDashboardWidgets(ds);
     for (const auto& k : keys)
       if (appendDatasetRef(k, group.groupId, datasetIdx, groupRefs, allRefs))
@@ -1041,14 +1045,7 @@ void DataModel::ProjectModel::restoreSourceSettings(int sourceId)
   if (!driver)
     return;
 
-  for (auto it = source.connectionSettings.constBegin(); it != source.connectionSettings.constEnd();
-       ++it)
-    driver->setDriverProperty(it.key(), it.value().toVariant());
-
-  // Try to match saved hardware identifiers to currently available devices
-  const auto deviceIdVal = source.connectionSettings.value(QStringLiteral("deviceId"));
-  if (deviceIdVal.isObject())
-    driver->selectByIdentifier(deviceIdVal.toObject());
+  driver->applyConnectionSettings(source.connectionSettings);
 }
 
 /**
@@ -1148,16 +1145,17 @@ bool DataModel::ProjectModel::saveJsonFile(const bool askPath)
 
   // Prompt for a save location if no file path is set
   if (jsonFilePath().isEmpty() || askPath) {
-    auto* dialog = new QFileDialog(nullptr,
+    auto* dialog = new QFileDialog(qApp->activeWindow(),
                                    tr("Save Serial Studio Project"),
                                    jsonProjectsPath() + "/" + title() + ".ssproj",
                                    tr("Serial Studio Project Files (*.ssproj)"));
 
     dialog->setAcceptMode(QFileDialog::AcceptSave);
     dialog->setFileMode(QFileDialog::AnyFile);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
 
     // Track whether the user accepted; finished() fires on both accept/reject
-    auto* accepted = new bool(false);
+    auto accepted = std::make_shared<bool>(false);
     connect(dialog, &QFileDialog::fileSelected, this, [this, accepted](const QString& path) {
       if (path.isEmpty())
         return;
@@ -1180,11 +1178,8 @@ bool DataModel::ProjectModel::saveJsonFile(const bool askPath)
       (void)finalizeProjectSave();
     });
 
-    connect(dialog, &QFileDialog::finished, this, [this, dialog, accepted](int) {
-      const bool ok = *accepted;
-      delete accepted;
-      dialog->deleteLater();
-      Q_EMIT saveDialogCompleted(ok);
+    connect(dialog, &QFileDialog::finished, this, [this, accepted](int) {
+      Q_EMIT saveDialogCompleted(*accepted);
     });
 
     dialog->open();
@@ -1570,16 +1565,17 @@ void DataModel::ProjectModel::setFrameDetection(const SerialStudio::FrameDetecti
  */
 void DataModel::ProjectModel::openJsonFile()
 {
-  auto* dialog = new QFileDialog(
-    nullptr, tr("Select Project File"), jsonProjectsPath(), tr("Project Files (*.json *.ssproj)"));
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
+                                 tr("Select Project File"),
+                                 jsonProjectsPath(),
+                                 tr("Project Files (*.json *.ssproj)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       openJsonFile(path);
-
-    dialog->deleteLater();
   });
 
   dialog->open();
@@ -2358,17 +2354,24 @@ void DataModel::ProjectModel::deleteCurrentDataset()
  */
 void DataModel::ProjectModel::duplicateCurrentGroup()
 {
-  // Build the cloned group with reassigned dataset indices
-  DataModel::Group group;
-  group.groupId = m_groups.size();
-  group.widget  = m_selectedGroup.widget;
-  group.title   = tr("%1 (Copy)").arg(m_selectedGroup.title);
+  // Clone every group-level field; only groupId + title get rewritten
+  DataModel::Group group = m_selectedGroup;
+  group.groupId          = m_groups.size();
+  group.title            = tr("%1 (Copy)").arg(m_selectedGroup.title);
+  group.datasets.clear();
+  group.outputWidgets.clear();
 
   for (size_t i = 0; i < m_selectedGroup.datasets.size(); ++i) {
     auto dataset    = m_selectedGroup.datasets[i];
     dataset.groupId = group.groupId;
     dataset.index   = nextDatasetIndex() + static_cast<int>(i);
     group.datasets.push_back(dataset);
+  }
+
+  for (const auto& ow : m_selectedGroup.outputWidgets) {
+    auto copy    = ow;
+    copy.groupId = group.groupId;
+    group.outputWidgets.push_back(copy);
   }
 
   m_groups.push_back(group);
@@ -2802,6 +2805,46 @@ void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption optio
 }
 
 /**
+ * @brief Appends template-defined datasets to a painter group when the group
+ *        has fewer than the spec demands. Existing datasets are preserved.
+ *
+ * `specs` entries may carry { title, units, min, max }; missing fields fall
+ * back to safe defaults.
+ */
+void DataModel::ProjectModel::ensurePainterDatasets(int groupId, const QVariantList& specs)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  if (specs.isEmpty())
+    return;
+
+  auto& grp          = m_groups[groupId];
+  const int existing = static_cast<int>(grp.datasets.size());
+  bool changed       = false;
+
+  for (int i = existing; i < specs.size(); ++i) {
+    const auto map = specs.at(i).toMap();
+    DataModel::Dataset ds;
+    ds.groupId   = groupId;
+    ds.datasetId = static_cast<int>(grp.datasets.size());
+    ds.index     = nextDatasetIndex();
+    ds.title     = map.value(QStringLiteral("title"), tr("Channel %1").arg(i + 1)).toString();
+    ds.units     = map.value(QStringLiteral("units")).toString();
+    ds.wgtMin    = map.value(QStringLiteral("min"), 0.0).toDouble();
+    ds.wgtMax    = map.value(QStringLiteral("max"), 100.0).toDouble();
+    grp.datasets.push_back(std::move(ds));
+    changed = true;
+  }
+
+  if (changed) {
+    m_selectedGroup = grp;
+    Q_EMIT groupsChanged();
+    setModified(true);
+  }
+}
+
+/**
  * @brief Toggles a dataset option flag on the currently selected dataset.
  */
 void DataModel::ProjectModel::changeDatasetOption(const SerialStudio::DatasetOption option,
@@ -2968,12 +3011,18 @@ bool DataModel::ProjectModel::confirmGroupWidgetChange(DataModel::Group& grp,
   if (grp.datasets.empty())
     return true;
 
+  // Painter is data-agnostic; preserve datasets unconditionally
+  if (widget == SerialStudio::Painter) {
+    grp.widget = "painter";
+    return true;
+  }
+
   // Compatible widget swap: keep datasets, reset to plain group
   const bool compatibleTarget =
     (widget == SerialStudio::DataGrid || widget == SerialStudio::MultiPlot
      || widget == SerialStudio::NoGroupWidget);
-  const bool compatibleSource =
-    (grp.widget == "multiplot" || grp.widget == "datagrid" || grp.widget == "");
+  const bool compatibleSource = (grp.widget == "multiplot" || grp.widget == "datagrid"
+                                 || grp.widget == "painter" || grp.widget == "");
   if (compatibleTarget && compatibleSource) {
     grp.widget = "";
     return true;
@@ -3017,6 +3066,14 @@ bool DataModel::ProjectModel::applyGroupWidget(DataModel::Group& grp,
 
   if (widget == SerialStudio::ImageView) {
     grp.widget = "image";
+    return true;
+  }
+
+  if (widget == SerialStudio::Painter) {
+    grp.widget = "painter";
+    if (grp.datasets.empty())
+      return populateFixedLayoutGroup(grp, widget);
+
     return true;
   }
 
@@ -3087,6 +3144,20 @@ bool DataModel::ProjectModel::populateFixedLayoutGroup(DataModel::Group& grp,
       {tr("X"), tr("Y"), tr("Z")},
       {      0,       0,       0},
       {      0,       0,       0},
+      false
+    };
+    populateThreeAxisDatasets(grp, baseIndex, layout);
+    return true;
+  }
+
+  if (widget == SerialStudio::Painter) {
+    ThreeAxisLayout layout{
+      "painter",
+      {     "",      "",      ""},
+      {     "",      "",      ""},
+      {tr("X"), tr("Y"), tr("Z")},
+      {   -100,    -100,    -100},
+      {    100,     100,     100},
       false
     };
     populateThreeAxisDatasets(grp, baseIndex, layout);
@@ -4341,6 +4412,9 @@ QMap<int, int> DataModel::ProjectModel::widgetTypeCountsForGroup(const Group& g)
   // Dataset widgets; LED collapses to a single per-group entry
   bool groupHasLed = false;
   for (const auto& ds : g.datasets) {
+    if (ds.hideOnDashboard)
+      continue;
+
     const auto keys = SerialStudio::getDashboardWidgets(ds);
     for (const auto& k : keys) {
       if (k == SerialStudio::DashboardLED) {

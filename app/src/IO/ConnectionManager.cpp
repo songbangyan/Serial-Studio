@@ -299,15 +299,7 @@ IO::HAL_Driver* IO::ConnectionManager::driverForEditing(int deviceId)
 
   if (!srcPtr->connectionSettings.isEmpty()) {
     m_syncingFromProject = true;
-    for (auto it = srcPtr->connectionSettings.constBegin();
-         it != srcPtr->connectionSettings.constEnd();
-         ++it)
-      uiDrv->setDriverProperty(it.key(), it.value().toVariant());
-
-    const auto deviceIdVal = srcPtr->connectionSettings.value(QStringLiteral("deviceId"));
-    if (deviceIdVal.isObject())
-      uiDrv->selectByIdentifier(deviceIdVal.toObject());
-
+    uiDrv->applyConnectionSettings(srcPtr->connectionSettings);
     m_syncingFromProject = false;
   }
 
@@ -1045,9 +1037,7 @@ void IO::ConnectionManager::syncUiDriverFromSource0()
   // Apply saved connection settings to the UI driver
   HAL_Driver* uiDriver = uiDriverForBusType(newType);
   if (uiDriver && !src.connectionSettings.isEmpty())
-    for (auto it = src.connectionSettings.constBegin(); it != src.connectionSettings.constEnd();
-         ++it)
-      uiDriver->setDriverProperty(it.key(), it.value().toVariant());
+    uiDriver->applyConnectionSettings(src.connectionSettings);
 
   m_syncingFromProject = false;
   Q_EMIT driverChanged();
@@ -1133,15 +1123,8 @@ void IO::ConnectionManager::buildDeviceForSource(const DataModel::Source& src,
     return;
 
   // Apply saved connection settings (port, baud, device index, etc.)
-  if (!src.connectionSettings.isEmpty()) {
-    for (auto it = src.connectionSettings.constBegin(); it != src.connectionSettings.constEnd();
-         ++it)
-      driver->setDriverProperty(it.key(), it.value().toVariant());
-
-    const auto deviceIdVal = src.connectionSettings.value(QStringLiteral("deviceId"));
-    if (deviceIdVal.isObject())
-      driver->selectByIdentifier(deviceIdVal.toObject());
-  }
+  if (!src.connectionSettings.isEmpty())
+    driver->applyConnectionSettings(src.connectionSettings);
 
   // Wrap driver in a DeviceManager (owns driver + thread + FrameReader)
   auto* rawDriver = driver.get();

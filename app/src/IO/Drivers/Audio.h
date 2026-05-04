@@ -124,6 +124,7 @@ public:
   [[nodiscard]] qint64 write(const QByteArray& data) override;
   [[nodiscard]] bool open(const QIODevice::OpenMode mode) override;
   bool selectByIdentifier(const QJsonObject& id) override;
+  void applyConnectionSettings(const QJsonObject& settings) override;
   [[nodiscard]] QJsonObject deviceIdentifier() const override;
   [[nodiscard]] QList<IO::DriverProperty> driverProperties() const override;
 

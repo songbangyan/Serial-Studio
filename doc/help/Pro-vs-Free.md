@@ -12,7 +12,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 **Pro version:**
 - Everything in the free version, plus:
 - Advanced protocols: MQTT, Modbus, CAN Bus, Audio Input, raw USB, HID, Process I/O.
-- Pro widgets: 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera feed).
+- Pro widgets: 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera feed), Painter (user-scripted Canvas2D widget).
 - Binary Direct mode (high-performance parsing).
 - MDF4 file export and playback.
 - Commercial use rights.
@@ -62,6 +62,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 | | XY Plot (phase diagrams) | ❌ | ✅ |
 | | Waterfall (spectrogram, order tracking) | ❌ | ✅ |
 | | Image View (live camera/image feed) | ❌ | ✅ |
+| | Painter (user-scripted Canvas2D widget) | ❌ | ✅ |
 | **Data Export** | | | |
 | | CSV Export | ✅ | ✅ |
 | | CSV Playback/Import | ✅ | ✅ |
@@ -272,6 +273,27 @@ function parse(frame) {
 - Capturing transient frequency events (chirps, harmonics)
 
 **Learn more:** [Widget Reference - Waterfall](Widget-Reference.md#waterfall-pro)
+
+---
+
+### Painter Widget
+
+**What it is:** A blank canvas and a JavaScript `paint(ctx, w, h)` callback. Whatever you draw lands on the dashboard. The escape hatch when none of the built-in widgets match what you have in mind.
+
+**How it works:**
+- Each Painter is bound to one group. Reads the group's datasets through a `datasets` global, and frame metadata through `frame.number` / `frame.timestampMs`.
+- Optional `onFrame()` runs once per tick before `paint()` — for advancing state (ring buffers, peak-hold decay, integrators).
+- Canvas2D-shaped drawing API (`fillRect`, `arc`, `bezierCurveTo`, `fillText`, `drawImage`, the usual). If you've drawn on an HTML canvas, you already know it.
+- Eighteen built-in templates: oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, XY scope, and more — pick one, modify it, ship.
+- Watchdog-protected (250 ms hard cap) so a runaway script never freezes the dashboard.
+
+**Use cases:**
+- Mimics of bench equipment (CRT scope, VU meter, segmented displays)
+- Mission-specific layouts that don't fit any standard widget
+- Quick one-off visualizations during prototyping
+- Domain-specific instruments (radar PPI, polar plots, vector fields, attitude indicators)
+
+**Learn more:** [Painter Widget](Painter-Widget.md)
 
 ---
 
@@ -632,7 +654,7 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 |---|--------------|-----|
 | **Best for** | Hobbyists, students, open-source | Professionals, businesses, industry |
 | **Protocols** | Basic (Serial, Network, BLE) | Advanced (MQTT, Modbus, CAN, Audio, Raw USB, HID, Process I/O) |
-| **Widgets** | Standard | Standard + 3D Plot, XY Plot, Waterfall, Image View |
+| **Widgets** | Standard | Standard + 3D Plot, XY Plot, Waterfall, Image View, Painter |
 | **Performance** | Hex/Base64 decoding | Binary Direct mode |
 | **Export** | CSV | CSV + MDF4 |
 | **Commercial use** | ❌ | ✅ |

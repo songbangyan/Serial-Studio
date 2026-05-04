@@ -15,6 +15,7 @@
 
 #  include "Sessions/DatabaseManager.h"
 
+#  include <QApplication>
 #  include <QCoreApplication>
 #  include <QCryptographicHash>
 #  include <QDateTime>
@@ -400,20 +401,18 @@ QString Sessions::DatabaseManager::canonicalDbPath(const QString& projectTitle)
  */
 void Sessions::DatabaseManager::openDatabase()
 {
-  auto* dialog = new QFileDialog(nullptr,
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Open Session File"),
                                  Misc::WorkspaceManager::instance().path("Session Databases"),
                                  tr("Session files (*.db)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       openDatabase(path);
-
-    dialog->deleteLater();
   });
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
   dialog->open();
 }
 
@@ -807,33 +806,50 @@ void Sessions::DatabaseManager::exportSessionToPdf(int sessionId, const QVariant
   else
     opts.format = HtmlReportOptions::Format::Pdf;
 
-  auto launch = [this, sessionId](HtmlReportOptions opts) {
-    m_pendingPdfOpts      = std::move(opts);
-    m_pendingPdfSessionId = sessionId;
-    m_pendingPdfActive    = true;
-
-    const bool reportBusy = (m_pendingPdfOpts.format != HtmlReportOptions::Format::Html);
-    if (reportBusy) {
-      m_pdfExportBusy     = true;
-      m_pdfExportProgress = 0.0;
-      m_pdfExportStatus   = tr("Loading session data…");
-      Q_EMIT pdfExportBusyChanged();
-      Q_EMIT pdfExportProgressChanged();
-    }
-
-    QMetaObject::invokeMethod(m_worker,
-                              "runReportDataLoad",
-                              Qt::QueuedConnection,
-                              Q_ARG(int, sessionId),
-                              Q_ARG(bool, m_pendingPdfOpts.includeCharts),
-                              Q_ARG(int, 10000));
-  };
+#  ifndef SERIAL_STUDIO_WITH_WEBENGINE
+  // No WebEngine -> users print from the browser; coerce to HTML up front
+  opts.format = HtmlReportOptions::Format::Html;
+#  endif
 
   if (!opts.outputPath.isEmpty()) {
-    launch(std::move(opts));
+    launchPdfExport(sessionId, std::move(opts));
     return;
   }
 
+  requestPdfOutputPath(sessionId, std::move(opts));
+}
+
+/**
+ * @brief Stages PDF render context and asks the worker for the session payload.
+ */
+void Sessions::DatabaseManager::launchPdfExport(int sessionId, HtmlReportOptions opts)
+{
+  m_pendingPdfOpts      = std::move(opts);
+  m_pendingPdfSessionId = sessionId;
+  m_pendingPdfActive    = true;
+
+  const bool reportBusy = (m_pendingPdfOpts.format != HtmlReportOptions::Format::Html);
+  if (reportBusy) {
+    m_pdfExportBusy     = true;
+    m_pdfExportProgress = 0.0;
+    m_pdfExportStatus   = tr("Loading session data…");
+    Q_EMIT pdfExportBusyChanged();
+    Q_EMIT pdfExportProgressChanged();
+  }
+
+  QMetaObject::invokeMethod(m_worker,
+                            "runReportDataLoad",
+                            Qt::QueuedConnection,
+                            Q_ARG(int, sessionId),
+                            Q_ARG(bool, m_pendingPdfOpts.includeCharts),
+                            Q_ARG(int, 10000));
+}
+
+/**
+ * @brief Opens a Save dialog for the report path and launches the export on accept.
+ */
+void Sessions::DatabaseManager::requestPdfOutputPath(int sessionId, HtmlReportOptions opts)
+{
   const bool wantsPdf  = (opts.format != HtmlReportOptions::Format::Html);
   const QString ext    = wantsPdf ? QStringLiteral("pdf") : QStringLiteral("html");
   const QString title  = wantsPdf ? tr("Save PDF Report") : tr("Save HTML Report");
@@ -851,16 +867,15 @@ void Sessions::DatabaseManager::exportSessionToPdf(int sessionId, const QVariant
                             : sanitiseTitleForPath(opts.documentTitle);
   const QString suggested = QStringLiteral("%1/%2.%3").arg(dir, baseName, ext);
 
-  auto* dialog = new QFileDialog(nullptr, title, suggested, filter);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), title, suggested, filter);
   dialog->setAcceptMode(QFileDialog::AcceptSave);
   dialog->setFileMode(QFileDialog::AnyFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
   connect(dialog,
           &QFileDialog::fileSelected,
           this,
-          [this, dialog, opts, ext, launch](const QString& path) mutable {
-            dialog->deleteLater();
-
+          [this, opts, ext, sessionId](const QString& path) mutable {
             if (path.isEmpty()) {
               Q_EMIT pdfExportFinished(QString(), false);
               return;
@@ -872,8 +887,11 @@ void Sessions::DatabaseManager::exportSessionToPdf(int sessionId, const QVariant
               finalPath += dot;
 
             opts.outputPath = finalPath;
-            launch(std::move(opts));
+            launchPdfExport(sessionId, std::move(opts));
           });
+
+  connect(
+    dialog, &QFileDialog::rejected, this, [this] { Q_EMIT pdfExportFinished(QString(), false); });
 
   dialog->open();
 }
@@ -957,13 +975,15 @@ void Sessions::DatabaseManager::renderReportFromPayload(const ReportPayloadPtr& 
  */
 void Sessions::DatabaseManager::pickReportLogo()
 {
-  auto* dialog = new QFileDialog(
-    nullptr, tr("Select logo image"), QString(), tr("Images (*.png *.jpg *.jpeg *.svg)"));
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
+                                 tr("Select logo image"),
+                                 QString(),
+                                 tr("Images (*.png *.jpg *.jpeg *.svg)"));
   dialog->setAcceptMode(QFileDialog::AcceptOpen);
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
-    dialog->deleteLater();
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       Q_EMIT reportLogoPicked(path);
   });

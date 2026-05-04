@@ -194,7 +194,6 @@ const QString& Widgets::Plot::xLabel() const noexcept
  */
 void Widgets::Plot::draw(QXYSeries* series)
 {
-  // Refresh data, replace series points, and recalculate axis scale
   if (series) {
     updateData();
     series->replace(m_data);
@@ -308,7 +307,6 @@ void Widgets::Plot::updateData()
  */
 void Widgets::Plot::updateRange()
 {
-  // Update X-axis range from dataset or default sample count
   if (VALIDATE_WIDGET(SerialStudio::DashboardPlot, m_index)) {
     const auto& yD = GET_DATASET(SerialStudio::DashboardPlot, m_index);
     if (yD.xAxisId > 0) {
@@ -461,8 +459,6 @@ bool Widgets::Plot::computeMinMaxValues(double& min,
 void Widgets::Plot::padDerivedRange(double& min, double& max, const bool addPadding)
 {
   applyAxisPadding(min, max, addPadding);
-
-  // Round to integer numbers
   max = std::ceil(max);
   min = std::floor(min);
   if (DSP::almostEqual(max, min) && addPadding) {

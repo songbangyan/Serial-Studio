@@ -118,7 +118,10 @@ static QVector<QPair<QColor, QColor>> extractDeviceColors(const QJsonObject& col
  * It installs an event filter to listen for system-wide palette changes,
  * responding to changes by updating the application theme accordingly.
  */
-Misc::ThemeManager::ThemeManager() : m_theme(0), m_applyingTheme(false)
+Misc::ThemeManager::ThemeManager()
+  : m_theme(0)
+  , m_applyingTheme(false)
+  , m_persistSettings(true)
 {
   // Set built-in theme files (others available as extensions)
   // clang-format off
@@ -332,7 +335,8 @@ void Misc::ThemeManager::setTheme(const int index)
   // Persist by name so addon changes don't shift the selected theme
   m_theme     = filteredIndex;
   m_themeName = m_availableThemes.at(filteredIndex);
-  m_settings.setValue("ApplicationThemeName", m_themeName);
+  if (m_persistSettings)
+    m_settings.setValue("ApplicationThemeName", m_themeName);
 
   // Load theme (dark/light) automagically
   if (m_themeName == QStringLiteral("System")) {
@@ -389,6 +393,14 @@ void Misc::ThemeManager::setTheme(const int index)
 
     m_applyingTheme = false;
   });
+}
+
+/**
+ * @brief Toggles whether theme changes get written to QSettings.
+ */
+void Misc::ThemeManager::setSettingsPersistent(const bool persistent)
+{
+  m_persistSettings = persistent;
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -23,9 +23,9 @@
 
 #include <QJSEngine>
 #include <QJSValue>
-#include <QTimer>
 
 #include "DataModel/IScriptEngine.h"
+#include "DataModel/JsWatchdog.h"
 
 namespace DataModel {
 
@@ -67,7 +67,7 @@ private:
   QJSEngine m_engine;
   QJSValue m_parseFunction;
   QJSValue m_hexToArray;
-  QTimer m_watchdog;
+  JsWatchdog m_watchdog;
 };
 
 }  // namespace DataModel

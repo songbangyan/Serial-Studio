@@ -56,32 +56,22 @@ Widgets.MiniWindow {
   readonly property int minimumHeight: 320
 
   //
-  // Button events
+  // Button events -- promote root to active before/after the action so the
+  // taskbar model never lags behind the window the user just acted on
   //
-  onCloseClicked: taskBar.closeWindow(root)
-  onRestoreClicked: taskBar.activeWindow = root
-  onMinimizeClicked: taskBar.minimizeWindow(root)
-  onMaximizeClicked: taskBar.activeWindow = root
-  onExternalWindowClicked: externalWindowLoader.active = true
-
-  //
-  // Right-click context menu for workspace management
-  //
-  TapHandler {
-    acceptedButtons: Qt.RightButton
-    onTapped: widgetContextMenu.popup()
+  onCloseClicked: {
+    taskBar.activeWindow = root
+    taskBar.closeWindow(root)
   }
-
-  Menu {
-    id: widgetContextMenu
-
-    MenuItem {
-      text: qsTr("Remove from Workspace")
-      enabled: taskBar.activeGroupId >= 1000
-      onTriggered: {
-        taskBar.removeWidgetFromActiveWorkspace(root.widgetIndex)
-      }
-    }
+  onRestoreClicked: taskBar.activeWindow = root
+  onMinimizeClicked: {
+    taskBar.activeWindow = root
+    taskBar.minimizeWindow(root)
+  }
+  onMaximizeClicked: taskBar.activeWindow = root
+  onExternalWindowClicked: {
+    taskBar.activeWindow = root
+    externalWindowLoader.active = true
   }
 
   //

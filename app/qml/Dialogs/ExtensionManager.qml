@@ -22,7 +22,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtWebEngine
 
 import "../Widgets"
 
@@ -38,35 +37,9 @@ SmartDialog {
   preferredHeight: layout.implicitHeight
 
   property bool showRepos: false
-  property bool readmeViewReady: false
   readonly property int toolbarHeight: 40
   property bool showDetail: Cpp_ExtensionManager.selectedIndex >= 0
   property bool fetchingData: Cpp_ExtensionManager.loading && Cpp_ExtensionManager.count === 0
-
-  function pushReadme() {
-    if (!readmeViewReady || !readmeView.visible)
-      return
-
-    var md = Cpp_ExtensionManager.selectedReadme
-    if (!md || md === "") {
-      readmeView.runJavaScript(
-        "document.getElementById('content').innerHTML = '<p style=\"opacity:0.5\">No description available.</p>';")
-      return
-    }
-
-    var escaped = md.replace(/\\/g, '\\\\')
-                    .replace(/`/g, '\\`')
-                    .replace(/\$/g, '\\$')
-    readmeView.runJavaScript("renderMarkdown(`" + escaped + "`);")
-  }
-
-  function pushReadmeTheme() {
-    if (!readmeViewReady)
-      return
-
-    var json = Cpp_HelpCenter.themeColors
-    readmeView.runJavaScript("setTheme(" + json + ");")
-  }
 
   onVisibleChanged: {
     if (visible) {
@@ -868,56 +841,28 @@ SmartDialog {
               border.color: Cpp_ThemeManager.colors["groupbox_border"]
             }
 
-            WebEngineView {
-              id: readmeView
+            Loader {
+              id: readmeLoader
 
               anchors.margins: 2
               anchors.fill: parent
-              backgroundColor: "transparent"
-              url: "qrc:/markdown-viewer.html"
-              settings.localContentCanAccessRemoteUrls: true
 
-              onLoadingChanged: function(loadRequest) {
-                if (loadRequest.status === WebEngineView.LoadSucceededStatus) {
-                  root.readmeViewReady = true
-                  root.pushReadmeTheme()
-                  root.pushReadme()
+              Component.onCompleted: {
+                if (Cpp_HasWebEngine) {
+                  readmeLoader.setSource(
+                    "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownWebView.qml",
+                    {
+                      "markdown": Qt.binding(function() { return Cpp_ExtensionManager.selectedReadme }),
+                      "emitCopyToast": false
+                    })
+                } else {
+                  readmeLoader.setSource(
+                    "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownTextView.qml",
+                    {
+                      "markdown": Qt.binding(function() { return Cpp_ExtensionManager.selectedReadme }),
+                      "placeholderText": qsTr("No description available.")
+                    })
                 }
-              }
-
-              //
-              // Survive Chromium render-process death instead of crashing.
-              //
-              onRenderProcessTerminated: function(terminationStatus, exitCode) {
-                console.warn("ExtensionManager readme view: render process terminated",
-                             terminationStatus, "exit", exitCode)
-                root.readmeViewReady = false
-              }
-
-              onNavigationRequested: function(request) {
-                var url = request.url.toString()
-                if (url.startsWith("qrc:"))
-                  return
-
-                request.reject()
-                if (url.startsWith("ext:"))
-                  Qt.openUrlExternally(url.substring(4))
-                else if (!url.startsWith("copy:") && !url.startsWith("nav:"))
-                  Qt.openUrlExternally(url)
-              }
-            }
-
-            Connections {
-              target: Cpp_ExtensionManager
-              function onSelectedReadmeChanged() {
-                root.pushReadme()
-              }
-            }
-
-            Connections {
-              target: Cpp_HelpCenter
-              function onThemeColorsChanged() {
-                root.pushReadmeTheme()
               }
             }
           }

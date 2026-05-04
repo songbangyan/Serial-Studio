@@ -25,6 +25,7 @@
 #include <QQuickItem>
 #include <QStandardItemModel>
 #include <QVariantList>
+#include <QVector>
 
 #include "UI/WidgetRegistry.h"
 #include "UI/WindowManager.h"
@@ -143,10 +144,13 @@ public:
 
   [[nodiscard]] bool hasMaximizedWindow() const;
 
+  Q_INVOKABLE [[nodiscard]] QQuickItem* firstWindow() const;
   Q_INVOKABLE [[nodiscard]] QQuickItem* windowData(const int id) const;
   Q_INVOKABLE [[nodiscard]] QVariantList workspaceWidgetIds(int workspaceId) const;
   Q_INVOKABLE [[nodiscard]] TaskbarModel::WindowState windowState(QQuickItem* window) const;
   Q_INVOKABLE [[nodiscard]] QQuickItem* nextActiveWindow(int delta) const;
+
+  [[nodiscard]] QVector<int> taskbarWindowIds() const;
 
 public slots:
   void saveLayout();

@@ -29,6 +29,7 @@ Widgets.SmartDialog {
   preferredWidth: layout.implicitWidth
   preferredHeight: layout.implicitHeight
 
+  property string themeName: ""
   property string shortcutTitle: ""
   property string iconPathValue: ""
   property string lastErrorText: ""
@@ -54,8 +55,12 @@ Widgets.SmartDialog {
       userPickedIcon = false
       lastErrorText = ""
       taskbarMode = "shown"
+      themeName = ""
       if (taskbarModeCombo)
         taskbarModeCombo.currentIndex = 0
+
+      if (themeCombo)
+        themeCombo.currentIndex = 0
     }
   }
 
@@ -117,7 +122,8 @@ Widgets.SmartDialog {
             sessionExport.checked,
             consoleExport.checked,
             root.taskbarMode,
-            root.selectedTaskbarButtons())
+            root.selectedTaskbarButtons(),
+            root.themeName)
     }
   }
 
@@ -371,6 +377,28 @@ Widgets.SmartDialog {
           } Item {
             implicitHeight: 2
             Layout.columnSpan: 2
+          }
+
+          Label {
+            text: qsTr("Theme")
+            color: Cpp_ThemeManager.colors["text"]
+          } ComboBox {
+            id: themeCombo
+
+            currentIndex: 0
+            Layout.fillWidth: false
+            Layout.minimumWidth: 220
+            Layout.alignment: Qt.AlignRight
+            model: {
+              const items = [{ value: "", label: qsTr("Same as Serial Studio") }]
+              const themes = Cpp_ThemeManager.availableThemes
+              for (let i = 0; i < themes.length; ++i)
+                items.push({ value: themes[i], label: themes[i] })
+
+              return items
+            }
+            textRole: "label"
+            onActivated: root.themeName = model[currentIndex].value
           }
 
           Label {

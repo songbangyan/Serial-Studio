@@ -176,29 +176,6 @@ Item {
     return (value / scaleFactor).toFixed(decimals) + suffix
   }
 
-  //
-  // Round an axis maximum up to the next multiple of @a interval
-  //
-  function closeAxisMax(min, max, interval) {
-    if (!isFinite(max) || !isFinite(interval) || interval <= 0)
-      return max
-
-    const span = max - min
-    if (span <= 0)
-      return max
-
-    // Anchor on min so ceiling lands on a tick relative to tickAnchor
-    const offset = max - min
-    const ticks  = Math.ceil(offset / interval - 1e-9)
-    return min + ticks * interval
-  }
-
-  //
-  // Break the circular dep with xTickInterval/yTickInterval
-  //
-  readonly property real xMaxClosed: closeAxisMax(xMin, xMax, smartIntervalX(xMin, xMax))
-  readonly property real yMaxClosed: closeAxisMax(yMin, yMax, smartIntervalY(yMin, yMax))
-
   function isPointVisible(worldX, worldY) {
     return worldX >= xVisibleMin && worldX <= xVisibleMax &&
            worldY >= yVisibleMin && worldY <= yVisibleMax
@@ -209,10 +186,10 @@ Item {
   //
   readonly property real xVisibleMax: xVisibleMin + xVisibleRange
   readonly property real yVisibleMax: yVisibleMin + yVisibleRange
-  readonly property real xVisibleRange: (xMaxClosed - xMin) / _axisX.zoom
-  readonly property real yVisibleRange: (yMaxClosed - yMin) / _axisY.zoom
-  readonly property real xVisibleMin: xMin + (xMaxClosed - xMin) / 2 + _axisX.pan - xVisibleRange / 2
-  readonly property real yVisibleMin: yMin + (yMaxClosed - yMin) / 2 + _axisY.pan - yVisibleRange / 2
+  readonly property real xVisibleRange: (xMax - xMin) / _axisX.zoom
+  readonly property real yVisibleRange: (yMax - yMin) / _axisY.zoom
+  readonly property real xVisibleMin: xMin + (xMax - xMin) / 2 + _axisX.pan - xVisibleRange / 2
+  readonly property real yVisibleMin: yMin + (yMax - yMin) / 2 + _axisY.pan - yVisibleRange / 2
 
   //
   // Dynamic tick intervals based on visible range and available space
@@ -546,10 +523,11 @@ Item {
       id: _axisY
 
       min: root.yMin
+      max: root.yMax
       subTickCount: 1
-      max: root.yMaxClosed
       tickAnchor: root.yMin
       visible: root.yLabelVisible
+      tickInterval: root.yTickInterval
 
       labelDelegate: Item {
         id: _yLabelItem
@@ -578,10 +556,11 @@ Item {
       id: _axisX
 
       min: root.xMin
+      max: root.xMax
       subTickCount: 1
-      max: root.xMaxClosed
       tickAnchor: root.xMin
       visible: root.xLabelVisible
+      tickInterval: root.xTickInterval
 
       labelDelegate: Item {
         id: _xLabelItem

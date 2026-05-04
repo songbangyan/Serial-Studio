@@ -22,6 +22,7 @@
 
 #include "DataModel/DBCImporter.h"
 
+#include <QApplication>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -110,15 +111,14 @@ QString DataModel::DBCImporter::messageInfo(int index) const
 void DataModel::DBCImporter::importDBC()
 {
   const auto p = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-  auto* dialog =
-    new QFileDialog(nullptr, tr("Import DBC File"), p, tr("DBC Files (*.dbc);;All Files (*)"));
+  auto* dialog = new QFileDialog(
+    qApp->activeWindow(), tr("Import DBC File"), p, tr("DBC Files (*.dbc);;All Files (*)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       showPreview(path);
-
-    dialog->deleteLater();
   });
 
   dialog->open();

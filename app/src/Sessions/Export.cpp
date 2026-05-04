@@ -78,14 +78,19 @@ void Sessions::ExportWorker::closeResources()
 
   finalizeSession();
 
-  m_readingQuery.clear();
-  m_rawBytesQuery.clear();
-  m_tableSnapshotQuery.clear();
+  m_readingQuery.reset();
+  m_rawBytesQuery.reset();
+  m_tableSnapshotQuery.reset();
 
-  const auto connName = m_db.connectionName();
-  m_db.close();
-  m_db = QSqlDatabase();
-  QSqlDatabase::removeDatabase(connName);
+  QString connName;
+  if (m_db) {
+    connName = m_db->connectionName();
+    m_db->close();
+  }
+
+  m_db.reset();
+  if (!connName.isEmpty())
+    QSqlDatabase::removeDatabase(connName);
 
   m_dbOpen         = false;
   m_sessionId      = -1;
@@ -150,17 +155,20 @@ void Sessions::ExportWorker::writeFrameReadings(const DataModel::TimestampedFram
  */
 void Sessions::ExportWorker::bindAndInsertReading(qint64 ns, const DataModel::Dataset& dataset)
 {
-  m_readingQuery.bindValue(0, m_sessionId);
-  m_readingQuery.bindValue(1, ns);
-  m_readingQuery.bindValue(2, dataset.uniqueId);
-  m_readingQuery.bindValue(3, dataset.rawNumericValue);
-  m_readingQuery.bindValue(4, dataset.rawValue);
-  m_readingQuery.bindValue(5, dataset.numericValue);
-  m_readingQuery.bindValue(6, dataset.value);
-  m_readingQuery.bindValue(7, dataset.isNumeric ? 1 : 0);
+  if (!m_readingQuery) [[unlikely]]
+    return;
 
-  if (!m_readingQuery.exec()) [[unlikely]]
-    qWarning() << "[SQLite] Insert reading failed:" << m_readingQuery.lastError().text();
+  m_readingQuery->bindValue(0, m_sessionId);
+  m_readingQuery->bindValue(1, ns);
+  m_readingQuery->bindValue(2, dataset.uniqueId);
+  m_readingQuery->bindValue(3, dataset.rawNumericValue);
+  m_readingQuery->bindValue(4, dataset.rawValue);
+  m_readingQuery->bindValue(5, dataset.numericValue);
+  m_readingQuery->bindValue(6, dataset.value);
+  m_readingQuery->bindValue(7, dataset.isNumeric ? 1 : 0);
+
+  if (!m_readingQuery->exec()) [[unlikely]]
+    qWarning() << "[SQLite] Insert reading failed:" << m_readingQuery->lastError().text();
 }
 
 /**
@@ -183,14 +191,14 @@ void Sessions::ExportWorker::processItems(const std::vector<DataModel::Timestamp
   }
 
   // Batch writes into a single transaction
-  m_db.transaction();
+  m_db->transaction();
   for (const auto& frame : items)
     writeFrameReadings(frame);
 
   // Roll back on failure
-  if (!m_db.commit()) [[unlikely]] {
-    qWarning() << "[Sessions::Export] commit() failed:" << m_db.lastError().text();
-    m_db.rollback();
+  if (!m_db->commit()) [[unlikely]] {
+    qWarning() << "[Sessions::Export] commit() failed:" << m_db->lastError().text();
+    m_db->rollback();
   }
 }
 
@@ -213,15 +221,17 @@ void Sessions::ExportWorker::createDatabase(const DataModel::Frame& frame)
   // Open or reuse the database
   const auto dt          = QDateTime::currentDateTime();
   const QString connName = QStringLiteral("ss_sqlite_%1").arg(dt.toMSecsSinceEpoch());
-  m_db                   = QSqlDatabase::addDatabase("QSQLITE", connName);
-  m_db.setDatabaseName(dbPath);
-  if (!m_db.open()) {
-    qWarning() << "[SQLite] Cannot open database:" << m_db.lastError().text();
+  m_db.emplace(QSqlDatabase::addDatabase("QSQLITE", connName));
+  m_db->setDatabaseName(dbPath);
+  if (!m_db->open()) {
+    qWarning() << "[SQLite] Cannot open database:" << m_db->lastError().text();
+    m_db.reset();
+    QSqlDatabase::removeDatabase(connName);
     return;
   }
 
   // Performance pragmas
-  QSqlQuery pragma(m_db);
+  QSqlQuery pragma(*m_db);
   pragma.exec("PRAGMA journal_mode=WAL");
   pragma.exec("PRAGMA synchronous=NORMAL");
   pragma.exec("PRAGMA busy_timeout=5000");
@@ -233,8 +243,8 @@ void Sessions::ExportWorker::createDatabase(const DataModel::Frame& frame)
   insertSession(frame, dt);
   if (m_sessionId < 0) [[unlikely]] {
     qWarning() << "[SQLite] Aborting database open -- session row was not inserted";
-    m_db.close();
-    m_db = QSqlDatabase();
+    m_db->close();
+    m_db.reset();
     QSqlDatabase::removeDatabase(connName);
     return;
   }
@@ -264,11 +274,14 @@ void Sessions::ExportWorker::createSchema(QSqlQuery& q)
  */
 void Sessions::ExportWorker::insertSession(const DataModel::Frame& frame, const QDateTime& dt)
 {
+  if (!m_db) [[unlikely]]
+    return;
+
   // Serialize a replayable project JSON
   const auto projectJson =
     QString::fromUtf8(QJsonDocument(buildReplayProjectJson(frame)).toJson(QJsonDocument::Compact));
 
-  QSqlQuery q(m_db);
+  QSqlQuery q(*m_db);
   q.prepare("INSERT INTO sessions "
             "(project_title, started_at, project_json) "
             "VALUES (?, ?, ?)");
@@ -313,7 +326,10 @@ void Sessions::ExportWorker::writeColumnDefs(const DataModel::Frame& frame)
     return;
   }
 
-  QSqlQuery colQuery(m_db);
+  if (!m_db) [[unlikely]]
+    return;
+
+  QSqlQuery colQuery(*m_db);
   if (!colQuery.prepare("INSERT INTO columns (session_id, unique_id, source_id, source_title, "
                         "                     group_title, title, units, widget, is_virtual) "
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
@@ -322,7 +338,7 @@ void Sessions::ExportWorker::writeColumnDefs(const DataModel::Frame& frame)
     return;
   }
 
-  m_db.transaction();
+  m_db->transaction();
   int written = 0;
   for (const auto& col : m_schema.columns) {
     colQuery.bindValue(0, m_sessionId);
@@ -341,7 +357,7 @@ void Sessions::ExportWorker::writeColumnDefs(const DataModel::Frame& frame)
     }
     ++written;
   }
-  m_db.commit();
+  m_db->commit();
 
   if (written == 0) {
     qWarning() << "[Sessions::Export] writeColumnDefs: 0 rows inserted out of"
@@ -354,13 +370,16 @@ void Sessions::ExportWorker::writeColumnDefs(const DataModel::Frame& frame)
  */
 void Sessions::ExportWorker::storeProjectMetadata(const DataModel::Frame& frame)
 {
+  if (!m_db) [[unlikely]]
+    return;
+
   // Same replayable snapshot the session row uses
   const auto json =
     QString::fromUtf8(QJsonDocument(buildReplayProjectJson(frame)).toJson(QJsonDocument::Compact));
   const auto now = QDateTime::currentDateTime().toString(Qt::ISODate);
 
-  m_db.transaction();
-  QSqlQuery q(m_db);
+  m_db->transaction();
+  QSqlQuery q(*m_db);
 
   q.prepare("INSERT OR REPLACE INTO project_metadata (key, value) VALUES ('project_json', ?)");
   q.bindValue(0, json);
@@ -378,7 +397,7 @@ void Sessions::ExportWorker::storeProjectMetadata(const DataModel::Frame& frame)
   q.bindValue(0, now);
   q.exec();
 
-  m_db.commit();
+  m_db->commit();
 }
 
 /**
@@ -453,22 +472,25 @@ QJsonObject Sessions::ExportWorker::buildReplayProjectJson(const DataModel::Fram
  */
 void Sessions::ExportWorker::prepareHotpathQueries()
 {
+  if (!m_db) [[unlikely]]
+    return;
+
   // Readings (one row per dataset per frame)
-  m_readingQuery = QSqlQuery(m_db);
-  m_readingQuery.prepare(
+  m_readingQuery.emplace(*m_db);
+  m_readingQuery->prepare(
     "INSERT INTO readings "
     "(session_id, timestamp_ns, unique_id, raw_numeric_value, raw_string_value, "
     " final_numeric_value, final_string_value, is_numeric) "
     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
   // Raw device bytes (separate stream, batched on its own queue)
-  m_rawBytesQuery = QSqlQuery(m_db);
-  m_rawBytesQuery.prepare("INSERT INTO raw_bytes (session_id, timestamp_ns, device_id, data) "
-                          "VALUES (?, ?, ?, ?)");
+  m_rawBytesQuery.emplace(*m_db);
+  m_rawBytesQuery->prepare("INSERT INTO raw_bytes (session_id, timestamp_ns, device_id, data) "
+                           "VALUES (?, ?, ?, ?)");
 
   // Snapshots of user data tables taken per frame
-  m_tableSnapshotQuery = QSqlQuery(m_db);
-  m_tableSnapshotQuery.prepare(
+  m_tableSnapshotQuery.emplace(*m_db);
+  m_tableSnapshotQuery->prepare(
     "INSERT INTO table_snapshots "
     "(session_id, timestamp_ns, table_name, register_name, numeric_value, string_value) "
     "VALUES (?, ?, ?, ?, ?, ?)");
@@ -481,11 +503,14 @@ void Sessions::ExportWorker::writeRawBytes()
 {
   Q_ASSERT(m_dbOpen);
 
+  if (!m_db || !m_rawBytesQuery) [[unlikely]]
+    return;
+
   constexpr size_t kMaxRawBatch = 1000;
   TimestampedRawBytes entry;
   size_t count = 0;
 
-  m_db.transaction();
+  m_db->transaction();
   while (count < kMaxRawBatch && m_rawQueue->try_dequeue(entry)) {
     const auto elapsed = entry.data->timestamp - m_steadyBaseline;
     qint64 ns          = std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count();
@@ -498,17 +523,18 @@ void Sessions::ExportWorker::writeRawBytes()
 
     m_lastRawBytesNs = ns;
 
-    m_rawBytesQuery.bindValue(0, m_sessionId);
-    m_rawBytesQuery.bindValue(1, ns);
-    m_rawBytesQuery.bindValue(2, entry.deviceId);
-    m_rawBytesQuery.bindValue(3, entry.data && entry.data->data ? *entry.data->data : QByteArray());
+    m_rawBytesQuery->bindValue(0, m_sessionId);
+    m_rawBytesQuery->bindValue(1, ns);
+    m_rawBytesQuery->bindValue(2, entry.deviceId);
+    m_rawBytesQuery->bindValue(3,
+                               entry.data && entry.data->data ? *entry.data->data : QByteArray());
 
-    if (!m_rawBytesQuery.exec()) [[unlikely]]
-      qWarning() << "[SQLite] Insert raw_bytes failed:" << m_rawBytesQuery.lastError().text();
+    if (!m_rawBytesQuery->exec()) [[unlikely]]
+      qWarning() << "[SQLite] Insert raw_bytes failed:" << m_rawBytesQuery->lastError().text();
 
     ++count;
   }
-  m_db.commit();
+  m_db->commit();
 }
 
 /**
@@ -516,10 +542,10 @@ void Sessions::ExportWorker::writeRawBytes()
  */
 void Sessions::ExportWorker::finalizeSession()
 {
-  if (m_sessionId < 0 || !m_db.isOpen())
+  if (m_sessionId < 0 || !m_db || !m_db->isOpen())
     return;
 
-  QSqlQuery q(m_db);
+  QSqlQuery q(*m_db);
   q.prepare("UPDATE sessions SET ended_at = ? WHERE session_id = ?");
   q.bindValue(0, QDateTime::currentDateTime().toString(Qt::ISODate));
   q.bindValue(1, m_sessionId);

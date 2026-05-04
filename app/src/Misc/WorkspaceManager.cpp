@@ -21,6 +21,7 @@
 
 #include "WorkspaceManager.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QFileDialog>
 #include <QStandardPaths>
@@ -135,14 +136,13 @@ void Misc::WorkspaceManager::reset()
 void Misc::WorkspaceManager::selectPath()
 {
   // Show a directory picker for the new workspace location
-  auto* dialog = new QFileDialog(nullptr, tr("Select Workspace Location"), m_path);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Select Workspace Location"), m_path);
 
   dialog->setFileMode(QFileDialog::Directory);
   dialog->setOption(QFileDialog::ShowDirsOnly, true);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
-    dialog->deleteLater();
-
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (path.isEmpty())
       return;
 

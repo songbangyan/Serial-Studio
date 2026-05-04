@@ -329,6 +329,57 @@ QQuickItem* UI::Taskbar::windowData(const int id) const
 }
 
 /**
+ * @brief Returns the QQuickItem for the visually-first tile.
+ *
+ * Prefers the window at slot 0 of the WindowManager's current order so the
+ * focus highlight tracks what the user sees on the leftmost tile, even when
+ * the saved order differs from taskbar row order. Falls back to taskbar row
+ * 0 when the window manager has no registered windows yet (early callers).
+ */
+QQuickItem* UI::Taskbar::firstWindow() const
+{
+  if (m_windowManager) {
+    const int wid = m_windowManager->firstTileWindowId();
+    if (wid >= 0) {
+      if (auto* item = windowData(wid))
+        return item;
+    }
+  }
+
+  if (!m_taskbarButtons || m_taskbarButtons->rowCount() == 0)
+    return nullptr;
+
+  auto* row = m_taskbarButtons->item(0);
+  if (!row)
+    return nullptr;
+
+  return windowData(row->data(TaskbarModel::WindowIdRole).toInt());
+}
+
+/**
+ * @brief Returns the windowIds of the visible taskbar buttons in row order.
+ */
+QVector<int> UI::Taskbar::taskbarWindowIds() const
+{
+  QVector<int> ids;
+  if (!m_taskbarButtons)
+    return ids;
+
+  ids.reserve(m_taskbarButtons->rowCount());
+  for (int i = 0; i < m_taskbarButtons->rowCount(); ++i) {
+    auto* row = m_taskbarButtons->item(i);
+    if (!row)
+      continue;
+
+    const int wid = row->data(TaskbarModel::WindowIdRole).toInt();
+    if (wid >= 0)
+      ids.append(wid);
+  }
+
+  return ids;
+}
+
+/**
  * @brief Returns the current state of a window widget.
  *
  * Given a QQuickItem window, this function:
@@ -469,6 +520,12 @@ void UI::Taskbar::setActiveGroupId(int groupId)
 
   m_activeWindow  = nullptr;
   m_activeGroupId = groupId;
+
+  // Pre-stash saved geometries before delegates paint to avoid minimumSize flash
+  if (m_windowManager && AppState::instance().operationMode() == SerialStudio::ProjectFile) {
+    const auto layout = DataModel::ProjectModel::instance().groupLayout(groupId);
+    m_windowManager->preloadPendingGeometries(layout);
+  }
 
   // Add global overview rows first (terminal, then notification log)
   cloneSpecialOverviewRow(SerialStudio::DashboardTerminal);
@@ -808,6 +865,7 @@ void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
 
   // Associate window with its internal ID
   m_windowIDs.insert(window, id);
+
   if (m_windowManager)
     m_windowManager->registerWindow(id, window);
 
@@ -819,25 +877,28 @@ void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
 
   // Restore saved layout once all windows are registered
   if (m_windowIDs.count() >= m_taskbarButtons->rowCount() && m_windowManager) {
-    // Anchor the snap indicator on first drag by focusing the first window
-    if (!m_activeWindow && m_taskbarButtons->rowCount() > 0) {
-      auto firstItem     = m_taskbarButtons->item(0);
-      const int windowId = firstItem ? firstItem->data(TaskbarModel::WindowIdRole).toInt() : -1;
-      if (auto* firstWindow = windowData(windowId))
-        setActiveWindow(firstWindow);
-    }
-
     m_restoringLayout = true;
     const auto opMode = AppState::instance().operationMode();
+    bool restored     = false;
     if (opMode == SerialStudio::ProjectFile) {
       const auto layout = DataModel::ProjectModel::instance().groupLayout(m_activeGroupId);
-      if (!layout.isEmpty() && m_windowManager->restoreLayout(layout)) {
-        m_restoringLayout = false;
-        return;
-      }
+      if (!layout.isEmpty() && m_windowManager->restoreLayout(layout))
+        restored = true;
     }
 
-    m_windowManager->loadLayout();
+    // Sync window manager order to taskbar order, preserving user drag-reorders
+    m_windowManager->reconcileWindowOrder(taskbarWindowIds());
+
+    if (!restored)
+      m_windowManager->loadLayout();
+
+    // Anchor focus to the visually-first tile, not taskbar row 0
+    const int firstTileId = m_windowManager->firstTileWindowId();
+    if (firstTileId >= 0) {
+      if (auto* firstTile = windowData(firstTileId))
+        setActiveWindow(firstTile);
+    }
+
     m_restoringLayout = false;
   }
 }

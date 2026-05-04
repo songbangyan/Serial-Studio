@@ -79,7 +79,6 @@ Widgets::Gauge::Gauge(const int index, QQuickItem* parent) : Bar(index, parent, 
  */
 void Widgets::Gauge::updateData()
 {
-  // Read latest value from dashboard and clamp to valid range
   if (!isEnabled())
     return;
 

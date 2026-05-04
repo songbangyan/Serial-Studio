@@ -135,7 +135,7 @@ void Sessions::Player::shutdown()
  */
 bool Sessions::Player::isOpen() const
 {
-  return m_db.isOpen() && m_sessionId >= 0 && !m_timestampsNs.empty();
+  return m_db && m_db->isOpen() && m_sessionId >= 0 && !m_timestampsNs.empty();
 }
 
 /**
@@ -255,21 +255,19 @@ void Sessions::Player::toggle()
  */
 void Sessions::Player::openFile()
 {
-  auto* dialog = new QFileDialog(nullptr,
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Open Session File"),
                                  Misc::WorkspaceManager::instance().path("Session Databases"),
                                  tr("Session files (*.db)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       openFile(path);
-
-    dialog->deleteLater();
   });
 
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
   dialog->open();
 }
 
@@ -466,14 +464,14 @@ bool Sessions::Player::openLocalDb(const QString& filePath)
 {
   m_connectionName = QStringLiteral("ss_sqlite_player_%1").arg(QDateTime::currentMSecsSinceEpoch());
 
-  m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
-  m_db.setDatabaseName(filePath);
-  if (!m_db.open()) {
+  m_db.emplace(QSqlDatabase::addDatabase("QSQLITE", m_connectionName));
+  m_db->setDatabaseName(filePath);
+  if (!m_db->open()) {
     Misc::Utilities::showMessageBox(tr("Cannot open session file"),
                                     tr("Check file permissions and try again."),
                                     QMessageBox::Critical);
     const QString conn = m_connectionName;
-    m_db               = QSqlDatabase();
+    m_db.reset();
     if (!conn.isEmpty())
       QSqlDatabase::removeDatabase(conn);
 
@@ -481,7 +479,7 @@ bool Sessions::Player::openLocalDb(const QString& filePath)
     return false;
   }
 
-  QSqlQuery pragma(m_db);
+  QSqlQuery pragma(*m_db);
   pragma.exec("PRAGMA journal_mode=WAL");
   pragma.exec("PRAGMA busy_timeout=5000");
   return true;
@@ -492,15 +490,17 @@ bool Sessions::Player::openLocalDb(const QString& filePath)
  */
 void Sessions::Player::teardownLocalDb()
 {
-  m_frameQuery.clear();
-  m_frameQuery         = QSqlQuery();
+  if (m_frameQuery)
+    m_frameQuery->clear();
+
+  m_frameQuery.reset();
   m_frameQueryPrepared = false;
 
-  if (m_db.isOpen())
-    m_db.close();
+  if (m_db && m_db->isOpen())
+    m_db->close();
 
   const QString conn = m_connectionName;
-  m_db               = QSqlDatabase();
+  m_db.reset();
   if (!conn.isEmpty())
     QSqlDatabase::removeDatabase(conn);
 
@@ -851,36 +851,39 @@ QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
 
   m_sourcesAtCurrentTs.clear();
 
+  if (!m_db) [[unlikely]]
+    return QByteArray();
+
   // Lazy-prepare the per-frame fetch query once and reuse it across ticks
   if (!m_frameQueryPrepared) {
-    m_frameQuery = QSqlQuery(m_db);
-    m_frameQuery.setForwardOnly(true);
-    m_frameQuery.prepare("SELECT unique_id, raw_numeric_value, raw_string_value, is_numeric "
-                         "FROM readings WHERE session_id = ? AND timestamp_ns = ? "
-                         "ORDER BY reading_id");
+    m_frameQuery.emplace(*m_db);
+    m_frameQuery->setForwardOnly(true);
+    m_frameQuery->prepare("SELECT unique_id, raw_numeric_value, raw_string_value, is_numeric "
+                          "FROM readings WHERE session_id = ? AND timestamp_ns = ? "
+                          "ORDER BY reading_id");
     m_frameQueryPrepared = true;
   }
 
-  m_frameQuery.bindValue(0, m_sessionId);
-  m_frameQuery.bindValue(1, timestampNs);
+  m_frameQuery->bindValue(0, m_sessionId);
+  m_frameQuery->bindValue(1, timestampNs);
 
-  if (!m_frameQuery.exec()) [[unlikely]] {
-    qWarning() << "[Sessions::Player] frame query failed:" << m_frameQuery.lastError().text();
+  if (!m_frameQuery->exec()) [[unlikely]] {
+    qWarning() << "[Sessions::Player] frame query failed:" << m_frameQuery->lastError().text();
     return QByteArray();
   }
 
-  while (m_frameQuery.next()) {
-    const int uid = m_frameQuery.value(0).toInt();
+  while (m_frameQuery->next()) {
+    const int uid = m_frameQuery->value(0).toInt();
     const auto it = m_uidToColumn.constFind(uid);
     if (it == m_uidToColumn.constEnd())
       continue;
 
-    const bool isNumeric = m_frameQuery.value(3).toInt() != 0;
+    const bool isNumeric = m_frameQuery->value(3).toInt() != 0;
     if (isNumeric) {
-      const double v    = m_frameQuery.value(1).toDouble();
+      const double v    = m_frameQuery->value(1).toDouble();
       cells[it.value()] = QString::number(v, 'g', 17);
     } else {
-      cells[it.value()] = m_frameQuery.value(2).toString();
+      cells[it.value()] = m_frameQuery->value(2).toString();
     }
 
     // Track which sources contributed data at this timestamp
@@ -889,7 +892,7 @@ QByteArray Sessions::Player::buildFrameAt(qint64 timestampNs)
       m_sourcesAtCurrentTs.insert(srcIt.value());
   }
 
-  m_frameQuery.finish();
+  m_frameQuery->finish();
 
   QByteArray frame = cells.join(',').toUtf8();
   frame.append('\n');

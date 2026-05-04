@@ -21,6 +21,7 @@
 
 #include "DataModel/ProjectEditor.h"
 
+#include <cmath>
 #include <memory>
 #include <QDirIterator>
 #include <QFileInfo>
@@ -68,6 +69,7 @@ typedef enum {
   kDatasetView_FFT_SamplingRate,
   kDatasetView_xAxis,
   kDatasetView_Overview,
+  kDatasetView_HideOnDashboard,
   kDatasetView_TransformCode,
   kDatasetView_Virtual,
 } DatasetItem;
@@ -654,7 +656,7 @@ bool DataModel::ProjectEditor::currentGroupIsEditable() const
 {
   if (m_currentView == GroupView) {
     const auto& widget = m_selectedGroup.widget;
-    if (widget != "" && widget != "multiplot" && widget != "datagrid")
+    if (widget != "" && widget != "multiplot" && widget != "datagrid" && widget != "painter")
       return false;
   }
 
@@ -671,7 +673,7 @@ bool DataModel::ProjectEditor::currentDatasetIsEditable() const
     const auto groupId = m_selectedDataset.groupId;
     if (groups.size() > static_cast<size_t>(groupId)) {
       const auto& widget = groups[groupId].widget;
-      if (widget != "" && widget != "multiplot" && widget != "datagrid")
+      if (widget != "" && widget != "multiplot" && widget != "datagrid" && widget != "painter")
         return false;
     }
   }
@@ -779,6 +781,65 @@ void DataModel::ProjectEditor::setSelectedSourceFrameParserCode(const QString& c
   m_selectedSource.frameParserCode = code;
   DataModel::ProjectModel::instance().updateSourceFrameParser(m_selectedSource.sourceId, code);
   Q_EMIT selectedSourceFrameParserCodeChanged();
+}
+
+/**
+ * @brief Returns the JS code attached to the selected painter group.
+ */
+QString DataModel::ProjectEditor::currentGroupPainterCode() const
+{
+  return m_selectedGroup.painterCode;
+}
+
+/**
+ * @brief Returns true when the selected group is a painter widget.
+ */
+bool DataModel::ProjectEditor::currentGroupIsPainter() const
+{
+  return m_selectedGroup.widget == QLatin1String("painter");
+}
+
+/**
+ * @brief Returns the current group's ID, or -1 when no group is selected.
+ */
+int DataModel::ProjectEditor::currentGroupId() const
+{
+  return m_selectedGroup.groupId;
+}
+
+/**
+ * @brief Builds a QVariantList describing the current group's datasets so
+ *        QML preview tooling can seed simulated values that mirror the real
+ *        configuration (titles, units, min/max bounds).
+ */
+QVariantList DataModel::ProjectEditor::currentGroupDatasetsForPreview() const
+{
+  QVariantList out;
+  out.reserve(static_cast<int>(m_selectedGroup.datasets.size()));
+  for (const auto& ds : m_selectedGroup.datasets) {
+    QVariantMap m;
+    m.insert(QStringLiteral("title"), ds.title);
+    m.insert(QStringLiteral("units"), ds.units);
+    m.insert(QStringLiteral("min"), ds.wgtMin);
+    m.insert(QStringLiteral("max"), ds.wgtMax);
+    const double mid = (ds.wgtMax + ds.wgtMin) * 0.5;
+    m.insert(QStringLiteral("value"), std::isfinite(mid) ? mid : 0.0);
+    out.append(m);
+  }
+  return out;
+}
+
+/**
+ * @brief Replaces the painter code on the selected group.
+ */
+void DataModel::ProjectEditor::setCurrentGroupPainterCode(const QString& code)
+{
+  if (m_selectedGroup.painterCode == code)
+    return;
+
+  m_selectedGroup.painterCode = code;
+  DataModel::ProjectModel::instance().updateGroup(m_selectedGroup.groupId, m_selectedGroup, false);
+  Q_EMIT currentGroupPainterCodeChanged();
 }
 
 /**
@@ -2476,6 +2537,25 @@ void DataModel::ProjectEditor::addGeneralSection(CustomModel* model,
                        ParameterDescription);
   model->appendRow(virtualItem);
 
+  // hideOnDashboard checkbox: only emitted for datasets inside a painter group
+  const auto& parentGroups = pm.groups();
+  const bool insidePainter =
+    (dataset.groupId >= 0 && static_cast<size_t>(dataset.groupId) < parentGroups.size()
+     && parentGroups[dataset.groupId].widget == QLatin1String("painter"));
+  if (insidePainter) {
+    auto* hideItem = new QStandardItem();
+    hideItem->setEditable(true);
+    hideItem->setData(true, Active);
+    hideItem->setData(CheckBox, WidgetType);
+    hideItem->setData(dataset.hideOnDashboard, EditableValue);
+    hideItem->setData(kDatasetView_HideOnDashboard, ParameterType);
+    hideItem->setData(tr("Hide on Dashboard"), ParameterName);
+    hideItem->setData(tr("Suppress this dataset's standalone dashboard tile; the painter "
+                         "widget can still read its values"),
+                      ParameterDescription);
+    model->appendRow(hideItem);
+  }
+
   auto* indexItem = new QStandardItem();
   indexItem->setEditable(!dataset.virtual_);
   indexItem->setData(!dataset.virtual_, Active);
@@ -2920,6 +3000,7 @@ void DataModel::ProjectEditor::generateComboBoxModels()
   m_groupWidgets.insert(QStringLiteral("accelerometer"), tr("Accelerometer"));
   m_groupWidgets.insert(QStringLiteral("plot3d"), tr("3D Plot"));
   m_groupWidgets.insert(QStringLiteral("image"), tr("Image View"));
+  m_groupWidgets.insert(QStringLiteral("painter"), tr("Painter Widget"));
   m_groupWidgets.insert(QLatin1String(""), tr("None"));
 
   // Dataset widgets
@@ -3083,6 +3164,7 @@ bool DataModel::ProjectEditor::applyGroupWidgetEdit(int widgetIdx, int groupId)
     {     "datagrid",      SerialStudio::DataGrid},
     {       "plot3d",        SerialStudio::Plot3D},
     {        "image",     SerialStudio::ImageView},
+    {      "painter",       SerialStudio::Painter},
     {             "", SerialStudio::NoGroupWidget},
   };
 
@@ -3446,6 +3528,9 @@ void DataModel::ProjectEditor::onDatasetFlagItemChanged(QStandardItem* item,
     case kDatasetView_AlarmEnabled:
       dataset.alarmEnabled = value.toBool();
       buildDatasetModel(dataset);
+      break;
+    case kDatasetView_HideOnDashboard:
+      dataset.hideOnDashboard = value.toBool();
       break;
     default:
       break;

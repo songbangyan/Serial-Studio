@@ -22,6 +22,7 @@
 
 #include "IO/Drivers/Process.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -375,18 +376,15 @@ void IO::Drivers::Process::browseExecutable()
                      ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                      : QFileInfo(m_executable).absolutePath();
 
-  auto* dialog = new QFileDialog(nullptr, tr("Select Executable"), start);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Select Executable"), start);
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       setExecutable(path);
-
-    dialog->deleteLater();
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }
@@ -400,19 +398,16 @@ void IO::Drivers::Process::browseWorkingDir()
                      ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                      : m_workingDir;
 
-  auto* dialog = new QFileDialog(nullptr, tr("Select Working Directory"), start);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Select Working Directory"), start);
 
   dialog->setFileMode(QFileDialog::Directory);
   dialog->setOption(QFileDialog::ShowDirsOnly, true);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       setWorkingDir(path);
-
-    dialog->deleteLater();
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }
@@ -426,18 +421,15 @@ void IO::Drivers::Process::browsePipePath()
                      ? QStandardPaths::writableLocation(QStandardPaths::HomeLocation)
                      : QFileInfo(m_pipePath).absolutePath();
 
-  auto* dialog = new QFileDialog(nullptr, tr("Select Named Pipe / FIFO"), start);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Select Named Pipe / FIFO"), start);
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       setPipePath(path);
-
-    dialog->deleteLater();
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }

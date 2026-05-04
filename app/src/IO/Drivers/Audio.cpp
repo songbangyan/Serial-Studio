@@ -1512,3 +1512,100 @@ bool IO::Drivers::Audio::selectByIdentifier(const QJsonObject& id)
 
   return true;
 }
+
+/**
+ * @brief Atomically restores Audio settings, resolving sub-settings by value.
+ */
+void IO::Drivers::Audio::applyConnectionSettings(const QJsonObject& settings)
+{
+  if (settings.isEmpty() || isOpen())
+    return;
+
+  // Resolve input device by stable name first, fall back to saved index
+  const auto deviceId     = settings.value(QStringLiteral("deviceId")).toObject();
+  const auto savedDevName = deviceId.value(QStringLiteral("inputDeviceName")).toString();
+  const int savedDevIndex = settings.value(QStringLiteral("inputDevice")).toInt(-1);
+
+  int deviceIndex = -1;
+  if (!savedDevName.isEmpty()) {
+    for (int i = 0; i < m_inputDevices.size(); ++i) {
+      if (QString::fromUtf8(m_inputDevices[i].name) == savedDevName) {
+        deviceIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (deviceIndex < 0 && savedDevIndex >= 0 && savedDevIndex < m_inputDevices.size())
+    deviceIndex = savedDevIndex;
+
+  if (deviceIndex < 0 || deviceIndex >= m_inputCapabilities.size())
+    return;
+
+  // Bind the input device without cascading the sub-setting reset
+  m_selectedInputDevice = deviceIndex;
+  const auto& caps      = m_inputCapabilities[deviceIndex];
+
+  // Resolve sample rate by Hz first, fall back to saved index, then to OS default
+  const int savedRateHz    = deviceId.value(QStringLiteral("sampleRateValue")).toInt(0);
+  const int savedRateIndex = settings.value(QStringLiteral("sampleRate")).toInt(-1);
+
+  int rateIndex = -1;
+  if (savedRateHz > 0)
+    rateIndex = caps.supportedSampleRates.indexOf(savedRateHz);
+
+  if (rateIndex < 0 && savedRateIndex >= 0 && savedRateIndex < caps.supportedSampleRates.size())
+    rateIndex = savedRateIndex;
+
+  if (rateIndex < 0) {
+#ifdef Q_OS_WIN
+    rateIndex = caps.supportedSampleRates.indexOf(22050);
+#else
+    rateIndex = caps.supportedSampleRates.indexOf(44100);
+#endif
+  }
+
+  if (rateIndex < 0)
+    rateIndex = 0;
+
+  // Resolve sample format by name first, fall back to saved index
+  const auto savedFmtName = deviceId.value(QStringLiteral("formatName")).toString();
+  const int savedFmtIndex = settings.value(QStringLiteral("inputFormat")).toInt(-1);
+  const auto fmtNames     = inputSampleFormats();
+
+  int fmtIndex = -1;
+  if (!savedFmtName.isEmpty())
+    fmtIndex = fmtNames.indexOf(savedFmtName);
+
+  if (fmtIndex < 0 && savedFmtIndex >= 0 && savedFmtIndex < caps.supportedFormats.size())
+    fmtIndex = savedFmtIndex;
+
+  if (fmtIndex < 0)
+    fmtIndex = 0;
+
+  // Resolve channel count by value first, fall back to saved index
+  const int savedChCount = deviceId.value(QStringLiteral("channelCount")).toInt(0);
+  const int savedChIndex = settings.value(QStringLiteral("inputChannels")).toInt(-1);
+
+  int chIndex = -1;
+  if (savedChCount > 0)
+    chIndex = caps.supportedChannelCounts.indexOf(savedChCount);
+
+  if (chIndex < 0 && savedChIndex >= 0 && savedChIndex < caps.supportedChannelCounts.size())
+    chIndex = savedChIndex;
+
+  if (chIndex < 0)
+    chIndex = 0;
+
+  // Commit all four indices atomically and rebuild m_config in one shot
+  m_selectedSampleRate                = rateIndex;
+  m_selectedInputSampleFormat         = fmtIndex;
+  m_selectedInputChannelConfiguration = chIndex;
+
+  m_config.sampleRate       = caps.supportedSampleRates[rateIndex];
+  m_config.capture.format   = caps.supportedFormats[fmtIndex];
+  m_config.capture.channels = caps.supportedChannelCounts[chIndex];
+
+  Q_EMIT inputSettingsChanged();
+  Q_EMIT configurationChanged();
+}

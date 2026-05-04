@@ -396,21 +396,18 @@ void MDF4::Player::toggle()
  */
 void MDF4::Player::openFile()
 {
-  auto* dialog = new QFileDialog(nullptr,
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Select MDF4 file"),
                                  Misc::WorkspaceManager::instance().path("MDF4"),
                                  tr("MDF4 files (*.mf4 *.dat)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       openFile(path);
-
-    dialog->deleteLater();
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }

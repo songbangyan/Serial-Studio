@@ -24,7 +24,9 @@
 
 #  include "Sessions/ReportData.h"
 
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
 class QWebEnginePage;
+#  endif
 
 namespace Sessions {
 
@@ -94,6 +96,8 @@ private:
   [[nodiscard]] static QString readResource(const QString& path);
 
   void writeHtmlArtifact(const QString& htmlPath, const QString& html, bool& success);
+
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   void startPdfRender(const QString& html, const QString& pdfPath);
   void startPrinting();
   void probeReadiness();
@@ -101,6 +105,7 @@ private:
 private slots:
   void onLoadFinished(bool ok);
   void onPdfPrintingFinished(const QString& filePath, bool success);
+#  endif
 
 private:
   ReportData m_data;
@@ -112,9 +117,11 @@ private:
   QString m_htmlPath;
   bool m_htmlWritten;
 
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   QWebEnginePage* m_page;
   bool m_printStarted;
   int m_readinessAttempts;
+#  endif
 };
 
 }  // namespace Sessions

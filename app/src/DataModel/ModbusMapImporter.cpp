@@ -22,6 +22,7 @@
 
 #include "DataModel/ModbusMapImporter.h"
 
+#include <QApplication>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -284,16 +285,16 @@ void DataModel::ModbusMapImporter::importRegisterMap()
 {
   const auto home = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
 
-  auto* dialog = new QFileDialog(nullptr, tr("Import Modbus Register Map"), home);
+  auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Import Modbus Register Map"), home);
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
   dialog->setNameFilter(
     tr("Modbus Register Maps (*.csv *.xml *.json);;CSV Files (*.csv);;XML Files "
        "(*.xml);;JSON Files (*.json);;All Files (*)"));
 
   connect(dialog, &QFileDialog::fileSelected, this, &DataModel::ModbusMapImporter::showPreview);
-  connect(dialog, &QFileDialog::finished, dialog, &QObject::deleteLater);
 
-  dialog->show();
+  dialog->open();
 }
 
 /**

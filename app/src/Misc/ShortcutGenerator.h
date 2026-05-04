@@ -89,7 +89,8 @@ public slots:
                 bool sessionExport,
                 bool consoleExport,
                 const QString& taskbarMode,
-                const QStringList& taskbarButtons);
+                const QStringList& taskbarButtons,
+                const QString& themeName);
 
   void deleteShortcut(const QString& shortcutPath);
 
@@ -103,7 +104,8 @@ private:
                                            bool sessionExport,
                                            bool consoleExport,
                                            const QString& taskbarMode,
-                                           const QStringList& taskbarButtons) const;
+                                           const QStringList& taskbarButtons,
+                                           const QString& themeName) const;
 
   [[nodiscard]] bool writeShortcutFile(const QString& outputPath,
                                        const QString& title,

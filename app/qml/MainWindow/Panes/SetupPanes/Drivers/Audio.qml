@@ -127,6 +127,9 @@ Item {
       model: Cpp_IO_Audio.inputDeviceList
       currentIndex: Cpp_IO_Audio.selectedInputDevice
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -149,6 +152,9 @@ Item {
       visible: count > 0 && _inDev.visible
       currentIndex: Cpp_IO_Audio.selectedSampleRate
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -171,6 +177,9 @@ Item {
       model: Cpp_IO_Audio.inputSampleFormats
       currentIndex: Cpp_IO_Audio.selectedInputSampleFormat
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -193,6 +202,9 @@ Item {
       model: Cpp_IO_Audio.inputChannelConfigurations
       currentIndex: Cpp_IO_Audio.selectedInputChannelConfiguration
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -227,6 +239,9 @@ Item {
       model: Cpp_IO_Audio.outputDeviceList
       currentIndex: Cpp_IO_Audio.selectedOutputDevice
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -249,6 +264,9 @@ Item {
       model: Cpp_IO_Audio.outputSampleFormats
       currentIndex: Cpp_IO_Audio.selectedOutputSampleFormat
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 
@@ -271,6 +289,9 @@ Item {
       model: Cpp_IO_Audio.outputChannelConfigurations
       currentIndex: Cpp_IO_Audio.selectedOutputChannelConfiguration
       onCurrentIndexChanged: {
+        if (count <= 0)
+          return
+
         if (currentIndex < 0 || count <= currentIndex)
           currentIndex = 0
 

@@ -49,6 +49,7 @@
 #  include "Licensing/Trial.h"
 #  include "MDF4/Export.h"
 #  include "Misc/ShortcutGenerator.h"
+#  include "Misc/ThemeManager.h"
 #  include "Sessions/Export.h"
 #endif
 
@@ -100,6 +101,7 @@ void CLI::registerOptions()
   m_parser.addOption(m_opts.fileTransmissionOpt);
   m_parser.addOption(m_opts.taskbarModeOpt);
   m_parser.addOption(m_opts.taskbarButtonsOpt);
+  m_parser.addOption(m_opts.themeOpt);
   m_parser.addOption(m_opts.activateOpt);
   m_parser.addOption(m_opts.deactivateOpt);
   m_parser.addOption(m_opts.modbusRtuOpt);
@@ -497,6 +499,38 @@ void CLI::applyOperatorTaskbarSettings()
 }
 
 /**
+ * @brief Activates the theme named by --theme, if any. Falls through silently
+ *        when the option is missing or the name does not match an installed
+ *        theme. Designed to run before the QML scene is built so the dashboard
+ *        opens directly in the requested palette.
+ */
+void CLI::applyThemeOverride()
+{
+  if (!m_parser.isSet(m_opts.themeOpt))
+    return;
+
+  const QString name = m_parser.value(m_opts.themeOpt).trimmed();
+  if (name.isEmpty())
+    return;
+
+  auto& tm                  = Misc::ThemeManager::instance();
+  const QStringList& themes = tm.availableThemes();
+  const int idx             = themes.indexOf(name);
+  if (idx < 0) {
+    qWarning().noquote() << "[CLI] Unknown --theme value:" << name
+                         << "-- available themes:" << themes;
+    return;
+  }
+
+  // Operator-mode shortcuts must not overwrite the user's persisted theme
+  if (runtimeMode())
+    tm.setSettingsPersistent(false);
+
+  if (tm.theme() != idx)
+    tm.setTheme(idx);
+}
+
+/**
  * @brief Configures runtime/operator-mode export, dashboard, and taskbar overrides.
  */
 void CLI::applyOperatorRuntimeSettings()
@@ -507,6 +541,7 @@ void CLI::applyOperatorRuntimeSettings()
   Console::Export::instance().setSettingsPersistent(false);
   UI::Dashboard::instance().setSettingsPersistent(false);
   UI::TaskbarSettings::instance().setSettingsPersistent(false);
+  Misc::ThemeManager::instance().setSettingsPersistent(false);
 
   CSV::Export::instance().setExportEnabled(m_parser.isSet(m_opts.csvExportOpt));
   MDF4::Export::instance().setExportEnabled(m_parser.isSet(m_opts.mdfExportOpt));

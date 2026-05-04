@@ -183,6 +183,19 @@ public:
     return false;
   }
 
+  virtual void applyConnectionSettings(const QJsonObject& settings)
+  {
+    if (settings.isEmpty())
+      return;
+
+    for (auto it = settings.constBegin(); it != settings.constEnd(); ++it)
+      setDriverProperty(it.key(), it.value().toVariant());
+
+    const auto deviceIdVal = settings.value(QStringLiteral("deviceId"));
+    if (deviceIdVal.isObject())
+      (void)selectByIdentifier(deviceIdVal.toObject());
+  }
+
 public slots:
   virtual void setDriverProperty(const QString& key, const QVariant& value) = 0;
 

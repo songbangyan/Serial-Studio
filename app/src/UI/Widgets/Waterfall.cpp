@@ -112,7 +112,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
   t = qBound(0.0, t, 1.0);
 
   switch (map) {
-    // Viridis -- perceptually-uniform sequential map (Matplotlib standard)
+    // Viridis
     case Viridis: {
       static constexpr double r[] = {
         0.267, 0.282, 0.253, 0.207, 0.164, 0.135, 0.135, 0.267, 0.478, 0.741, 0.993};
@@ -123,7 +123,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
       return interpolateLut(r, g, b, 11, t);
     }
 
-    // Inferno -- black, red, orange, yellow
+    // Inferno
     case Inferno: {
       static constexpr double r[] = {0.001, 0.099, 0.301, 0.527, 0.733, 0.882, 0.973, 0.988};
       static constexpr double g[] = {0.000, 0.034, 0.064, 0.117, 0.214, 0.388, 0.626, 0.998};
@@ -131,7 +131,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
       return interpolateLut(r, g, b, 8, t);
     }
 
-    // Magma -- black, purple, pink, cream
+    // Magma
     case Magma: {
       static constexpr double r[] = {0.001, 0.146, 0.421, 0.715, 0.928, 0.987, 0.987};
       static constexpr double g[] = {0.000, 0.060, 0.139, 0.215, 0.473, 0.749, 0.991};
@@ -139,7 +139,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
       return interpolateLut(r, g, b, 7, t);
     }
 
-    // Plasma -- purple, pink, orange, yellow
+    // Plasma
     case Plasma: {
       static constexpr double r[] = {0.050, 0.286, 0.530, 0.741, 0.892, 0.969, 0.940};
       static constexpr double g[] = {0.030, 0.010, 0.140, 0.347, 0.560, 0.789, 0.975};
@@ -147,7 +147,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
       return interpolateLut(r, g, b, 7, t);
     }
 
-    // Turbo -- Google's improved Jet replacement
+    // Turbo
     case Turbo: {
       static constexpr double r[] = {0.190, 0.275, 0.247, 0.085, 0.152, 0.617, 0.964, 0.974, 0.479};
       static constexpr double g[] = {0.072, 0.366, 0.703, 0.916, 0.988, 0.983, 0.787, 0.317, 0.016};
@@ -155,7 +155,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
       return interpolateLut(r, g, b, 9, t);
     }
 
-    // Jet -- classic blue, cyan, green, yellow, red
+    // Jet
     case Jet: {
       const double v = t;
       const double r = qBound(0.0, qMin(4.0 * v - 1.5, 4.5 - 4.0 * v), 1.0);
@@ -165,7 +165,7 @@ QRgb Widgets::Waterfall::sampleColorMap(int map, double t)
         static_cast<int>(r * 255.0), static_cast<int>(g * 255.0), static_cast<int>(b * 255.0));
     }
 
-    // Hot -- black, red, yellow, white
+    // Hot
     case Hot: {
       const double v = t;
       const double r = qBound(0.0, 3.0 * v, 1.0);
@@ -714,7 +714,6 @@ void Widgets::Waterfall::updateData()
       const double v     = it->numericValue;
       const double range = m_yMax - m_yMin;
       if (range > 0.0) {
-        // High Y value at top, low at bottom (standard Campbell convention)
         const double t = qBound(0.0, (v - m_yMin) / range, 1.0);
         const int row =
           qBound(0, static_cast<int>((1.0 - t) * (m_image.height() - 1)), m_image.height() - 1);
@@ -724,6 +723,7 @@ void Widgets::Waterfall::updateData()
   } else {
     writeRow(m_smoothed.data(), spectrumSize);
   }
+
   update();
 }
 
@@ -1575,9 +1575,7 @@ void Widgets::Waterfall::onThemeChanged()
   m_innerBg         = theme.getColor(QStringLiteral("widget_base"));
   m_borderColor     = theme.getColor(QStringLiteral("widget_border"));
   m_textColor       = theme.getColor(QStringLiteral("widget_text"));
-
-  // Grid lines = border color at low alpha so they don't overpower the data
-  m_gridColor = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
+  m_gridColor       = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
 
   markAxisDirty();
 }

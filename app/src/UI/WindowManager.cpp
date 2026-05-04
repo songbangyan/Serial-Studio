@@ -22,8 +22,10 @@
 #include "WindowManager.h"
 
 #include <optional>
+#include <QApplication>
 #include <QFile>
 #include <QFileDialog>
+#include <QSet>
 #include <QStandardPaths>
 #include <QtMath>
 #include <QUrl>
@@ -76,6 +78,18 @@ static std::optional<QRect> computeSnapRect(
     return QRect(cw / 2, 0, cw / 2, ch);
 
   return std::nullopt;
+}
+
+/**
+ * @brief Returns true if any tracked window is currently in the maximized state.
+ */
+static bool anyWindowMaximized(const QMap<int, QQuickItem*>& windows)
+{
+  for (auto* win : std::as_const(windows))
+    if (win && win->state() == "maximized")
+      return true;
+
+  return false;
 }
 
 /**
@@ -331,6 +345,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_zCounter(1)
   , m_layoutRestored(false)
   , m_autoLayoutEnabled(true)
+  , m_userReordered(false)
   , m_resizeEdge(ResizeEdge::None)
   , m_snapIndicatorVisible(false)
   , m_taskbar(nullptr)
@@ -441,6 +456,21 @@ int UI::WindowManager::zOrder(QQuickItem* item) const
   return -1;
 }
 
+/**
+ * @brief Returns the windowId of the visually-first tile, or -1 if none.
+ *
+ * The visually-first tile is the window placed at slot 0 of the current
+ * window order -- after reconcile, this matches what the user sees on the
+ * leftmost (or topmost) tile, regardless of taskbar row order.
+ */
+int UI::WindowManager::firstTileWindowId() const
+{
+  if (m_windowOrder.isEmpty())
+    return -1;
+
+  return m_windowOrder.first();
+}
+
 //--------------------------------------------------------------------------------------------------
 // Layout management
 //--------------------------------------------------------------------------------------------------
@@ -484,8 +514,9 @@ QJsonObject UI::WindowManager::serializeLayout() const
   for (int id : m_windowOrder)
     orderArray.append(id);
 
-  layout["windowOrder"] = orderArray;
-  layout["autoLayout"]  = m_autoLayoutEnabled;
+  layout["windowOrder"]   = orderArray;
+  layout["autoLayout"]    = m_autoLayoutEnabled;
+  layout["userReordered"] = m_userReordered;
 
   return layout;
 }
@@ -512,6 +543,7 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
     return false;
 
   bool autoLayout = layout["autoLayout"].toBool(true);
+  m_userReordered = layout["userReordered"].toBool(false);
 
   // Restore window order, appending any unsaved windows at the end
   if (layout.contains("windowOrder")) {
@@ -531,26 +563,32 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
     m_windowOrder = newOrder;
   }
 
-  // Restore individual window positions and sizes in manual mode
+  // Restore window positions in manual mode; stash unregistered ones for first paint
+  m_pendingGeometries.clear();
   if (!autoLayout && layout.contains("geometries")) {
     QJsonArray geometries = layout["geometries"].toArray();
     for (const auto& val : std::as_const(geometries)) {
       QJsonObject winGeom = val.toObject();
       int id              = winGeom["id"].toInt(-1);
-
-      auto* win = m_windows.value(id);
-      if (!win)
+      if (id < 0)
         continue;
 
-      double x = winGeom["x"].toDouble(0);
-      double y = winGeom["y"].toDouble(0);
-      double w = winGeom["width"].toDouble(200);
-      double h = winGeom["height"].toDouble(150);
+      const int x = static_cast<int>(winGeom["x"].toDouble(0));
+      const int y = static_cast<int>(winGeom["y"].toDouble(0));
+      const int w = static_cast<int>(winGeom["width"].toDouble(200));
+      const int h = static_cast<int>(winGeom["height"].toDouble(150));
+      const QRect geom(x, y, w, h);
 
-      win->setX(x);
-      win->setY(y);
-      win->setWidth(w);
-      win->setHeight(h);
+      auto* win = m_windows.value(id);
+      if (win) {
+        win->setX(geom.x());
+        win->setY(geom.y());
+        win->setWidth(geom.width());
+        win->setHeight(geom.height());
+      }
+
+      // Stash for late-arriving (or re-arriving) registrations
+      m_pendingGeometries.insert(id, geom);
     }
 
     constrainWindows();
@@ -573,6 +611,87 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
 }
 
 /**
+ * @brief Pre-stashes saved geometries so registerWindow can apply them
+ *        per-window before first paint, avoiding the minimumSize flash.
+ *
+ * Call this at workspace activation, before any delegates start registering,
+ * so each window snaps to its saved geometry on creation rather than after
+ * the last sibling delegate finishes loading.
+ */
+void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
+{
+  m_pendingGeometries.clear();
+  if (layout.isEmpty() || !layout.contains("geometries"))
+    return;
+
+  // Only preload manual-mode layouts; auto-layout recomputes geometries
+  if (layout["autoLayout"].toBool(true))
+    return;
+
+  const QJsonArray geometries = layout["geometries"].toArray();
+  for (const auto& val : std::as_const(geometries)) {
+    const QJsonObject winGeom = val.toObject();
+    const int id              = winGeom["id"].toInt(-1);
+    if (id < 0)
+      continue;
+
+    const int x = static_cast<int>(winGeom["x"].toDouble(0));
+    const int y = static_cast<int>(winGeom["y"].toDouble(0));
+    const int w = static_cast<int>(winGeom["width"].toDouble(200));
+    const int h = static_cast<int>(winGeom["height"].toDouble(150));
+    m_pendingGeometries.insert(id, QRect(x, y, w, h));
+  }
+}
+
+/**
+ * @brief Reconciles m_windowOrder against the authoritative taskbar order.
+ *
+ * Keeps user drag-reorders for windows the taskbar still presents, drops
+ * entries the taskbar no longer presents, and appends new taskbar entries
+ * (e.g. freshly registered windows) at the tail in taskbar order. Only
+ * triggers a relayout if the resulting order actually changed.
+ */
+void UI::WindowManager::reconcileWindowOrder(const QVector<int>& taskbarOrder)
+{
+  // Build the set of windowIds the taskbar currently presents
+  QSet<int> taskbarSet;
+  taskbarSet.reserve(taskbarOrder.size());
+  for (int id : taskbarOrder)
+    taskbarSet.insert(id);
+
+  QVector<int> reconciled;
+  reconciled.reserve(taskbarOrder.size());
+  QSet<int> seen;
+
+  // Honor user drag order for windows still present; drop the rest
+  if (m_userReordered) {
+    for (int id : std::as_const(m_windowOrder)) {
+      if (taskbarSet.contains(id) && !seen.contains(id)) {
+        reconciled.append(id);
+        seen.insert(id);
+      }
+    }
+  }
+
+  // Append remaining taskbar entries in taskbar order
+  for (int id : taskbarOrder) {
+    if (!seen.contains(id)) {
+      reconciled.append(id);
+      seen.insert(id);
+    }
+  }
+
+  if (reconciled == m_windowOrder)
+    return;
+
+  m_windowOrder = std::move(reconciled);
+
+  // Tile only when all windows are registered; otherwise wait for registerWindow
+  if (m_windowOrder.size() == taskbarOrder.size())
+    triggerLayoutUpdate();
+}
+
+/**
  * @brief Clears all tracked windows, z-order, and geometry.
  *        Resets the z-order counter.
  */
@@ -588,7 +707,9 @@ void UI::WindowManager::clear()
   m_resizeWindow         = nullptr;
   m_focusedWindow        = nullptr;
   m_layoutRestored       = false;
+  m_userReordered        = false;
   m_snapIndicatorVisible = false;
+  m_pendingGeometries.clear();
 
   // Re-enable auto layout if it was disabled
   if (!m_autoLayoutEnabled) {
@@ -649,6 +770,10 @@ void UI::WindowManager::autoLayout()
   if (canvasW <= 0 || canvasH <= 0)
     return;
 
+  // A maximized window owns the canvas; skip retiling
+  if (anyWindowMaximized(m_windows))
+    return;
+
   // Collect visible normal-state windows in display order
   QList<QQuickItem*> windows;
   for (int id : std::as_const(m_windowOrder)) {
@@ -705,6 +830,10 @@ void UI::WindowManager::cascadeLayout()
   const int canvasH = static_cast<int>(height());
 
   if (canvasW <= 0 || canvasH <= 0)
+    return;
+
+  // A maximized window owns the canvas; skip cascading
+  if (anyWindowMaximized(m_windows))
     return;
 
   // Collect visible normal-state windows
@@ -806,19 +935,18 @@ void UI::WindowManager::clearBackgroundImage()
 void UI::WindowManager::selectBackgroundImage()
 {
   // Configure and show the image picker dialog
-  auto* dialog = new QFileDialog(nullptr,
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Select Background Image"),
                                  QStandardPaths::writableLocation(QStandardPaths::PicturesLocation),
                                  tr("Images (*.png *.jpg *.jpeg *.bmp)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  // Apply selected image and clean up dialog
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  // Apply selected image once the user picks a file
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       setBackgroundImage(QUrl::fromLocalFile(path).toString());
-
-    dialog->deleteLater();
   });
 
   dialog->open();
@@ -873,6 +1001,16 @@ void UI::WindowManager::registerWindow(const int id, QQuickItem* item)
   m_windowZ[item] = ++m_zCounter;
   item->setZ(m_windowZ[item]);
   setZ(m_zCounter + 1);
+
+  // Apply pending saved geometry before first paint to avoid minimumSize flash
+  auto pending = m_pendingGeometries.find(id);
+  if (pending != m_pendingGeometries.end()) {
+    item->setX(pending.value().x());
+    item->setY(pending.value().y());
+    item->setWidth(pending.value().width());
+    item->setHeight(pending.value().height());
+    m_pendingGeometries.erase(pending);
+  }
 
   Q_EMIT zCounterChanged();
   Q_EMIT zOrderChanged(item);
@@ -1578,7 +1716,8 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
       if (draggedId >= 0 && targetId >= 0 && currentIndex >= 0 && newIndex >= 0
           && newIndex != currentIndex) {
         std::swap(m_windowOrder[currentIndex], m_windowOrder[newIndex]);
-        reordered = true;
+        m_userReordered = true;
+        reordered       = true;
       }
     }
 

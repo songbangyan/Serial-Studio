@@ -74,7 +74,6 @@ QString Widgets::Compass::text() const noexcept
  */
 void Widgets::Compass::updateData()
 {
-  // Validate widget state and fetch latest compass heading
   if (!isEnabled())
     return;
 
@@ -86,18 +85,15 @@ void Widgets::Compass::updateData()
   if (!DSP::notEqual(value, m_value))
     return;
 
-  // Clamp and format the compass value
   m_value = qMin(360.0, qMax(0.0, value));
   m_text  = FMT_VAL(m_value, dataset);
 
-  // Pad angle to 3 characters to avoid UI jiggling
   const int deg = qCeil(m_value);
   if (deg < 10)
     m_text.prepend(QStringLiteral("  "));
   else if (deg < 100)
     m_text.prepend(QStringLiteral(" "));
 
-  // Append direction and notify UI
   m_text += QStringLiteral(" ") + cardinalDirection(m_value);
   Q_EMIT updated();
 }

@@ -137,7 +137,8 @@ QStringList Misc::ShortcutGenerator::buildArguments(const QString& projectFile,
                                                     bool sessionExport,
                                                     bool consoleExport,
                                                     const QString& taskbarMode,
-                                                    const QStringList& taskbarButtons) const
+                                                    const QStringList& taskbarButtons,
+                                                    const QString& themeName) const
 {
   QStringList args;
   const QString resolvedProject =
@@ -180,6 +181,11 @@ QStringList Misc::ShortcutGenerator::buildArguments(const QString& projectFile,
     args << taskbarButtons.join(QLatin1Char(','));
   }
 
+  // Empty themeName == "Same as Serial Studio" -- inherit whatever the user has set globally
+  const QString trimmedTheme = themeName.trimmed();
+  if (!trimmedTheme.isEmpty())
+    args << QStringLiteral("--theme") << trimmedTheme;
+
   return args;
 }
 
@@ -202,7 +208,8 @@ void Misc::ShortcutGenerator::generate(const QString& outputPath,
                                        bool sessionExport,
                                        bool consoleExport,
                                        const QString& taskbarMode,
-                                       const QStringList& taskbarButtons)
+                                       const QStringList& taskbarButtons,
+                                       const QString& themeName)
 {
   if (!hasProLicense()) {
     Q_EMIT shortcutFailed(tr("A Pro license is required to generate shortcuts."));
@@ -235,7 +242,8 @@ void Misc::ShortcutGenerator::generate(const QString& outputPath,
                                     sessionExport,
                                     consoleExport,
                                     taskbarMode,
-                                    taskbarButtons);
+                                    taskbarButtons,
+                                    themeName);
 
   // Pass shortcut path so a relaunch can offer to delete it if the project is gone
   args << QStringLiteral("--shortcut-path") << resolvedPath;

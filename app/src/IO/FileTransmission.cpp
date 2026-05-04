@@ -264,12 +264,12 @@ QStringList IO::FileTransmission::transferModes() const
  */
 void IO::FileTransmission::openFile()
 {
-  auto* dialog = new QFileDialog(nullptr, tr("Select file to transmit"), QDir::homePath());
+  auto* dialog =
+    new QFileDialog(qApp->activeWindow(), tr("Select file to transmit"), QDir::homePath());
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
-    dialog->deleteLater();
-
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (path.isEmpty())
       return;
 

@@ -94,6 +94,10 @@ struct CliOptions {
     "mode"};
   QCommandLineOption taskbarButtonsOpt{
     "taskbar-buttons", "Comma-separated taskbar pin IDs for operator mode (Pro)", "ids"};
+  QCommandLineOption themeOpt{
+    "theme",
+    "Override the application theme by name (e.g. \"Iconic\", \"Light\", \"System\") (Pro)",
+    "name"};
   QCommandLineOption activateOpt{
     "activate", "Activate a license key and exit (for CI/headless setup)", "key"};
   QCommandLineOption deactivateOpt{
@@ -161,6 +165,7 @@ public:
   void applyBusConfiguration();
 
 #ifdef BUILD_COMMERCIAL
+  void applyThemeOverride();
   void applyOperatorRuntimeSettings();
   void applyExportToggles();
 #endif

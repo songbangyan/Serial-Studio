@@ -35,8 +35,11 @@
 #  include <QTextStream>
 #  include <QTimer>
 #  include <QUrl>
-#  include <QWebEnginePage>
-#  include <QWebEngineProfile>
+
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
+#    include <QWebEnginePage>
+#    include <QWebEngineProfile>
+#  endif
 
 #  include "DataModel/Frame.h"
 
@@ -147,9 +150,11 @@ static QString formatDate(const QString& iso)
 Sessions::HtmlReport::HtmlReport(QObject* parent)
   : QObject(parent)
   , m_htmlWritten(false)
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   , m_page(nullptr)
   , m_printStarted(false)
   , m_readinessAttempts(0)
+#  endif
 {}
 
 /**
@@ -157,10 +162,12 @@ Sessions::HtmlReport::HtmlReport(QObject* parent)
  */
 Sessions::HtmlReport::~HtmlReport()
 {
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   if (m_page) {
     m_page->deleteLater();
     m_page = nullptr;
   }
+#  endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -208,6 +215,11 @@ void Sessions::HtmlReport::render(const ReportData& data,
   m_series = std::move(series);
   m_opts   = opts;
 
+#  ifndef SERIAL_STUDIO_WITH_WEBENGINE
+  // No WebEngine -> always emit HTML; users print from the browser
+  m_opts.format = HtmlReportOptions::Format::Html;
+#  endif
+
   Q_EMIT progress(tr("Assembling report…"), 0.10);
 
   // Build the single HTML string -- used for both outputs
@@ -232,25 +244,27 @@ void Sessions::HtmlReport::render(const ReportData& data,
 
   // Write the HTML artifact whenever the user asked for it
   bool htmlOk = true;
-  if (opts.format == HtmlReportOptions::Format::Html
-      || opts.format == HtmlReportOptions::Format::Both) {
+  if (m_opts.format == HtmlReportOptions::Format::Html
+      || m_opts.format == HtmlReportOptions::Format::Both) {
     writeHtmlArtifact(m_htmlPath, m_htmlCache, htmlOk);
     m_htmlWritten = htmlOk;
   }
 
   // HTML-only path finishes synchronously
-  if (opts.format == HtmlReportOptions::Format::Html) {
+  if (m_opts.format == HtmlReportOptions::Format::Html) {
     Q_EMIT finished(m_htmlPath, htmlOk);
     return;
   }
 
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   // Otherwise fire the async PDF render (fails fast if HTML write errored)
-  if (!htmlOk && opts.format == HtmlReportOptions::Format::Both) {
+  if (!htmlOk && m_opts.format == HtmlReportOptions::Format::Both) {
     Q_EMIT finished(m_htmlPath, false);
     return;
   }
 
   startPdfRender(m_htmlCache, m_pdfPath);
+#  endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -821,6 +835,8 @@ void Sessions::HtmlReport::writeHtmlArtifact(const QString& htmlPath,
   success = (out.error() == QFileDevice::NoError);
 }
 
+#  ifdef SERIAL_STUDIO_WITH_WEBENGINE
+
 //--------------------------------------------------------------------------------------------------
 // PDF render pipeline
 //--------------------------------------------------------------------------------------------------
@@ -920,5 +936,7 @@ void Sessions::HtmlReport::onPdfPrintingFinished(const QString& filePath, bool s
   Q_UNUSED(filePath);
   Q_EMIT finished(m_pdfPath, success);
 }
+
+#  endif  // SERIAL_STUDIO_WITH_WEBENGINE
 
 #endif  // BUILD_COMMERCIAL

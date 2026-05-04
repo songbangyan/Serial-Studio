@@ -24,7 +24,6 @@ import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Effects
-import QtWebEngine
 
 import "../Widgets"
 
@@ -53,45 +52,6 @@ SmartDialog {
   // Track fetch state
   //
   property bool fetchingData: Cpp_Examples.count === 0 && Cpp_Examples.searchFilter === ""
-
-  //
-  // Track whether the WebView HTML shell is ready to receive content
-  //
-  property bool readmeViewReady: false
-
-  //
-  // Push markdown content into the WebView via JS
-  //
-  function pushReadme() {
-    if (!readmeViewReady || !readmeView.visible)
-      return
-
-    var md = Cpp_Examples.selectedReadme
-    if (!md || md === "") {
-      if (Cpp_Examples.loading)
-        readmeView.runJavaScript("document.getElementById('content').innerHTML = '<p style=\"opacity:0.5\">Loading...</p>';")
-      else
-        readmeView.runJavaScript("document.getElementById('content').innerHTML = '<p style=\"opacity:0.5\">No README available.</p>';")
-
-      return
-    }
-
-    var escaped = md.replace(/\\/g, '\\\\')
-                    .replace(/`/g, '\\`')
-                    .replace(/\$/g, '\\$')
-    readmeView.runJavaScript("renderMarkdown(`" + escaped + "`);")
-  }
-
-  //
-  // Push theme colors into the WebView
-  //
-  function pushReadmeTheme() {
-    if (!readmeViewReady)
-      return
-
-    var json = Cpp_HelpCenter.themeColors
-    readmeView.runJavaScript("setTheme(" + json + ");")
-  }
 
   //
   // Fetch manifest when dialog opens
@@ -597,7 +557,7 @@ SmartDialog {
           anchors.fill: parent
 
           //
-          // README panel (WebEngineView)
+          // README panel -- WebEngine when available, plain rich-text otherwise
           //
           Item {
             Layout.fillWidth: true
@@ -611,80 +571,38 @@ SmartDialog {
               border.color: Cpp_ThemeManager.colors["groupbox_border"]
             }
 
-            WebEngineView {
-              id: readmeView
+            Loader {
+              id: readmeLoader
 
               anchors.margins: 2
               anchors.fill: parent
-              backgroundColor: "transparent"
-              url: "qrc:/markdown-viewer.html"
-              settings.localContentCanAccessRemoteUrls: true
 
-              onLoadingChanged: function(loadRequest) {
-                if (loadRequest.status === WebEngineView.LoadSucceededStatus) {
-                  root.readmeViewReady = true
-                  root.pushReadmeTheme()
-                  root.pushReadme()
+              Component.onCompleted: {
+                if (Cpp_HasWebEngine) {
+                  readmeLoader.setSource(
+                    "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownWebView.qml",
+                    { "markdown": Qt.binding(function() { return Cpp_Examples.selectedReadme }) })
+                } else {
+                  readmeLoader.setSource(
+                    "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownTextView.qml",
+                    {
+                      "markdown": Qt.binding(function() { return Cpp_Examples.selectedReadme }),
+                      "placeholderText": Qt.binding(function() {
+                        return Cpp_Examples.loading
+                               ? qsTr("Loading...")
+                               : qsTr("No README available.")
+                      })
+                    })
                 }
               }
 
-              //
-              // Survive Chromium render-process death instead of crashing.
-              //
-              onRenderProcessTerminated: function(terminationStatus, exitCode) {
-                console.warn("ExamplesBrowser readme view: render process terminated",
-                             terminationStatus, "exit", exitCode)
-                root.readmeViewReady = false
-              }
-
-              onNavigationRequested: function(request) {
-                var url = request.url.toString()
-
-                //
-                // Allow initial page load from qrc
-                //
-                if (url.startsWith("qrc:"))
-                  return
-
-                //
-                // Copy code to clipboard
-                //
-                if (url.startsWith("copy:")) {
-                  request.reject()
-                  var text = decodeURIComponent(url.substring(5))
-                  Cpp_Misc_Utilities.copyText(text)
-                  exCopyToast.show()
-                  return
+              onLoaded: {
+                if (Cpp_HasWebEngine && readmeLoader.item) {
+                  readmeLoader.item.copyRequested.connect(exCopyToast.show)
+                  readmeLoader.item.navigationRejected.connect(function(link) {
+                    Qt.openUrlExternally(link)
+                  })
                 }
-
-                //
-                // Open all links externally
-                //
-                request.reject()
-                if (url.startsWith("ext:"))
-                  Qt.openUrlExternally(url.substring(4))
-                else if (url.startsWith("nav:"))
-                  Qt.openUrlExternally(url.substring(4))
-              }
-            }
-
-            //
-            // React to content changes
-            //
-            Connections {
-              target: Cpp_Examples
-              function onSelectedReadmeChanged() {
-                root.pushReadme()
-              }
-            }
-
-            //
-            // React to theme changes
-            //
-            Connections {
-              target: Cpp_HelpCenter
-              function onThemeColorsChanged() {
-                root.pushReadmeTheme()
               }
             }
 

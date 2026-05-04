@@ -79,6 +79,7 @@
 #ifdef BUILD_COMMERCIAL
 #  include "DataModel/DBCImporter.h"
 #  include "DataModel/ModbusMapImporter.h"
+#  include "DataModel/PainterCodeEditor.h"
 #  include "Licensing/LemonSqueezy.h"
 #  include "Licensing/Trial.h"
 #  include "Misc/ShortcutGenerator.h"
@@ -89,6 +90,7 @@
 #  include "UI/ImageProvider.h"
 #  include "UI/Widgets/ImageExport.h"
 #  include "UI/Widgets/ImageView.h"
+#  include "UI/Widgets/Painter.h"
 #  include "UI/Widgets/Plot3D.h"
 #  include "UI/Widgets/Waterfall.h"
 #endif
@@ -349,6 +351,8 @@ void Misc::ModuleManager::registerQmlTypes()
   qmlRegisterType<Widgets::Plot3D>("SerialStudio", 1, 0, "Plot3DWidget");
   qmlRegisterType<Widgets::ImageView>("SerialStudio", 1, 0, "ImageViewModel");
   qmlRegisterType<Widgets::Waterfall>("SerialStudio", 1, 0, "WaterfallModel");
+  qmlRegisterType<Widgets::Painter>("SerialStudio", 1, 0, "PainterWidget");
+  qmlRegisterType<DataModel::PainterCodeEditor>("SerialStudio", 1, 0, "PainterCodeEditor");
 #endif
 
   // Register JSON custom items
@@ -571,6 +575,12 @@ void Misc::ModuleManager::registerAppMetadataProperties(QQmlContext* ctx, bool g
   const bool qtCommercialAvailable = false;
 #endif
 
+#ifdef SERIAL_STUDIO_WITH_WEBENGINE
+  const bool webEngineAvailable = true;
+#else
+  const bool webEngineAvailable = false;
+#endif
+
   ctx->setContextProperty("Cpp_AppName", APP_NAME);
   ctx->setContextProperty("Cpp_BuildDate", QStringLiteral(__DATE__));
   ctx->setContextProperty("Cpp_BuildTime", QStringLiteral(__TIME__));
@@ -582,6 +592,7 @@ void Misc::ModuleManager::registerAppMetadataProperties(QQmlContext* ctx, bool g
   ctx->setContextProperty("Cpp_UpdaterEnabled", autoUpdaterEnabled());
   ctx->setContextProperty("Cpp_CommercialBuild", qtCommercialAvailable);
   ctx->setContextProperty("Cpp_GrpcAvailable", grpcAvailable);
+  ctx->setContextProperty("Cpp_HasWebEngine", webEngineAvailable);
   ctx->setContextProperty("Cpp_AppOrganizationDomain", APP_SUPPORT_URL);
 
 #ifdef ENABLE_GRPC

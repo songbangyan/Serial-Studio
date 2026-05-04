@@ -21,7 +21,7 @@ Widgets.SmartDialog {
   // Window options
   //
   staysOnTop: true
-  title: qsTr("Generate PDF Report")
+  title: Cpp_HasWebEngine ? qsTr("Generate PDF Report") : qsTr("Generate Report")
 
   //
   // Direct CSD size hints (bypasses Page implicit-size propagation)
@@ -557,8 +557,9 @@ Widgets.SmartDialog {
         icon.width: 16
         icon.height: 16
         highlighted: true
-        text: qsTr("Export PDF")
-        icon.source: "qrc:/icons/buttons/pdf.svg"
+        text: Cpp_HasWebEngine ? qsTr("Export PDF") : qsTr("Export HTML")
+        icon.source: Cpp_HasWebEngine ? "qrc:/icons/buttons/pdf.svg"
+                                      : "qrc:/icons/buttons/html.svg"
         icon.color: Cpp_ThemeManager.colors["button_text"]
         enabled: _coverCheck.checked
                  || _metadataCheck.checked
@@ -567,7 +568,7 @@ Widgets.SmartDialog {
         onClicked: {
           root.persistPreferences()
           root.close()
-          root.dispatchExport("pdf")
+          root.dispatchExport(Cpp_HasWebEngine ? "pdf" : "html")
         }
       }
     }

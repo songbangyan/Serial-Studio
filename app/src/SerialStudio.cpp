@@ -104,6 +104,9 @@ bool SerialStudio::commercialCfg(const QVector<DataModel::Group>& g)
     if (group.widget == QStringLiteral("image"))
       return true;
 
+    if (group.widget == QStringLiteral("painter"))
+      return true;
+
     for (const auto& dataset : std::as_const((group.datasets))) {
       if (dataset.xAxisId > 0)
         return true;
@@ -138,6 +141,9 @@ bool SerialStudio::commercialCfg(const std::vector<DataModel::Group>& g)
       return true;
 
     if (group.widget == QStringLiteral("image"))
+      return true;
+
+    if (group.widget == QStringLiteral("painter"))
       return true;
 
     for (const auto& dataset : std::as_const((group.datasets))) {
@@ -179,6 +185,7 @@ bool SerialStudio::isGroupWidget(const DashboardWidget widget)
     case DashboardImageView:
     case DashboardOutputPanel:
     case DashboardNotificationLog:
+    case DashboardPainter:
 #endif
       return true;
     default:
@@ -271,6 +278,9 @@ QString SerialStudio::dashboardWidgetIcon(const DashboardWidget w, const bool la
       break;
     case DashboardWaterfall:
       return iconPath + "waterfall.svg";
+      break;
+    case DashboardPainter:
+      return iconPath + "painter.svg";
       break;
 #endif
     case DashboardNoWidget:
@@ -391,6 +401,9 @@ QString SerialStudio::dashboardWidgetTitle(const DashboardWidget w)
     case DashboardWaterfall:
       return tr("Waterfalls");
       break;
+    case DashboardPainter:
+      return tr("Painter Widgets");
+      break;
 #endif
     case DashboardNoWidget:
       return "";
@@ -447,6 +460,13 @@ SerialStudio::DashboardWidget SerialStudio::getDashboardWidget(const DataModel::
 
   if (widget == "notification-log")
     return DashboardNotificationLog;
+
+  if (widget == "painter")
+    return DashboardPainter;
+#else
+  // GPL fallback: render painter groups as a data grid
+  if (widget == "painter")
+    return DashboardDataGrid;
 #endif
 
   return DashboardNoWidget;
@@ -524,6 +544,9 @@ QString SerialStudio::groupWidgetId(const GroupWidget widget)
     case ImageView:
       return "image";
       break;
+    case Painter:
+      return "painter";
+      break;
 #endif
     case NoGroupWidget:
       return "";
@@ -563,6 +586,9 @@ SerialStudio::GroupWidget SerialStudio::groupWidgetFromId(const QString& id)
 #ifdef BUILD_COMMERCIAL
   if (id == "image")
     return ImageView;
+
+  if (id == "painter")
+    return Painter;
 #endif
 
   return NoGroupWidget;

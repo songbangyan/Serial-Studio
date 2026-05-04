@@ -15,6 +15,7 @@
 
 #ifdef BUILD_COMMERCIAL
 
+#  include <optional>
 #  include <QElapsedTimer>
 #  include <QKeyEvent>
 #  include <QMap>
@@ -134,8 +135,8 @@ private:
   QThread* m_workerThread;
   PlayerLoaderWorker* m_worker;
 
-  QSqlDatabase m_db;
-  QSqlQuery m_frameQuery;
+  std::optional<QSqlDatabase> m_db;
+  std::optional<QSqlQuery> m_frameQuery;
   bool m_frameQueryPrepared;
   QString m_filePath;
   QString m_connectionName;

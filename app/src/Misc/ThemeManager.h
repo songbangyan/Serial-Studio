@@ -92,6 +92,7 @@ public:
 
 public slots:
   void setTheme(int index);
+  void setSettingsPersistent(bool persistent);
   void onExtensionInstalled(const QString& id);
   void onExtensionUninstalled(const QString& id);
 
@@ -120,6 +121,7 @@ private:
   QMap<QString, QJsonObject> m_themes;
 
   bool m_applyingTheme;
+  bool m_persistSettings;
   QVector<QColor> m_widgetColors;
   QVector<QPair<QColor, QColor>> m_deviceColors;
 };

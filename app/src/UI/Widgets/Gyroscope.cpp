@@ -205,6 +205,7 @@ void Widgets::Gyroscope::updateData()
   // EMA filter for smooth display, then normalize each angle to [-180, 180]
   applyEmaUpdate(yawInput, rollInput, pitchInput, hasYaw, hasRoll, hasPitch);
 
+  // Define angle normalization lambda
   auto normalizeAngle = [](double angle) -> double {
     angle = std::fmod(angle + 180.0, 360.0);
     if (angle < 0)
@@ -213,6 +214,7 @@ void Widgets::Gyroscope::updateData()
     return angle - 180.0;
   };
 
+  // Normalize angles
   m_yaw   = normalizeAngle(m_yaw);
   m_roll  = normalizeAngle(m_roll);
   m_pitch = normalizeAngle(m_pitch);

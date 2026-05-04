@@ -198,6 +198,8 @@ private:
   void setBusy(bool busy);
   void renderReportFromPayload(const ReportPayloadPtr& payload);
   void runRestoreProjectFromJson(const QString& json);
+  void launchPdfExport(int sessionId, HtmlReportOptions opts);
+  void requestPdfOutputPath(int sessionId, HtmlReportOptions opts);
 
   static void createSchemaSessionTables(QSqlQuery& q);
   static void migrateColumnsTable(QSqlQuery& q);

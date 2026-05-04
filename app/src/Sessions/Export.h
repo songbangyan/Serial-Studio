@@ -14,6 +14,7 @@
 #pragma once
 
 #include <atomic>
+#include <optional>
 #include <QMutex>
 #include <QObject>
 #include <QSettings>
@@ -81,14 +82,14 @@ private:
 private:
   bool m_dbOpen;
   int m_sessionId;
-  QSqlDatabase m_db;
+  std::optional<QSqlDatabase> m_db;
   DataModel::ExportSchema m_schema;
   DataModel::TimestampedFrame::SteadyTimePoint m_steadyBaseline;
   qint64 m_lastRawBytesNs;
 
-  QSqlQuery m_readingQuery;
-  QSqlQuery m_rawBytesQuery;
-  QSqlQuery m_tableSnapshotQuery;
+  std::optional<QSqlQuery> m_readingQuery;
+  std::optional<QSqlQuery> m_rawBytesQuery;
+  std::optional<QSqlQuery> m_tableSnapshotQuery;
 
   moodycamel::ReaderWriterQueue<TimestampedRawBytes>* m_rawQueue;
   std::atomic<int>* m_operationMode;

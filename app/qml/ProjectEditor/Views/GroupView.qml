@@ -66,6 +66,22 @@ Widgets.Pane {
       bottomMargin: -10
     }
 
+    Loader {
+      id: painterCodeDialog
+
+      active: false
+      asynchronous: false
+      source: "qrc:/serial-studio.com/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml"
+
+      function showDialog() {
+        painterCodeDialog.active = true
+        if (painterCodeDialog.item) {
+          painterCodeDialog.item.closing.connect(() => painterCodeDialog.active = false)
+          painterCodeDialog.item.showDialog()
+        }
+      }
+    }
+
     ColumnLayout {
       spacing: 0
       anchors.fill: parent
@@ -276,6 +292,20 @@ Widgets.Pane {
             onClicked: Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputKnob)
             ToolTip.text: qsTr("Add a rotary knob for setpoint control")
             icon.source: "qrc:/icons/project-editor/actions/add-output-knob.svg"
+          }
+
+          //
+          // Painter widget: edit-code button (Pro)
+          //
+          Widgets.ToolbarButton {
+            iconSize: 24
+            toolbarButton: false
+            text: qsTr("Edit Code")
+            Layout.alignment: Qt.AlignVCenter
+            onClicked: painterCodeDialog.showDialog()
+            visible: Cpp_JSON_ProjectEditor.currentGroupIsPainter
+            icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+            ToolTip.text: qsTr("Edit the JavaScript that draws this painter widget")
           }
 
           //

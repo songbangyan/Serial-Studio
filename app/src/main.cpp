@@ -129,6 +129,10 @@ int main(int argc, char** argv)
   if (!cli.verifyShortcutProject())
     return EXIT_SUCCESS;
 
+#ifdef BUILD_COMMERCIAL
+  cli.applyThemeOverride();
+#endif
+
   Misc::ModuleManager moduleManager;
   if (!bootstrapModuleManager(moduleManager, cli, headless, shortcutPath)) {
     qCritical() << "Critical QML error";

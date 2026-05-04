@@ -243,6 +243,7 @@ public slots:
 
   void ensureValidGroup();
   void addDataset(const SerialStudio::DatasetOption options);
+  void ensurePainterDatasets(int groupId, const QVariantList& specs);
   void changeDatasetOption(const SerialStudio::DatasetOption option, const bool checked);
 
   void addAction();

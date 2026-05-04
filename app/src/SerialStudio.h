@@ -123,6 +123,7 @@ public:
     NoGroupWidget,
     Plot3D,
     ImageView,
+    Painter,
   };
   Q_ENUM(GroupWidget)
 
@@ -181,6 +182,7 @@ public:
     DashboardOutputPanel,
     DashboardNotificationLog,
     DashboardWaterfall,
+    DashboardPainter,
 #endif
   };
   Q_ENUM(DashboardWidget)

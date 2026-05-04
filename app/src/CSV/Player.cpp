@@ -202,21 +202,18 @@ void CSV::Player::toggle()
 void CSV::Player::openFile()
 {
   // Display file selection dialog for CSV files
-  auto* dialog = new QFileDialog(nullptr,
+  auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Select CSV file"),
                                  Misc::WorkspaceManager::instance().path("CSV"),
                                  tr("CSV files (*.csv)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
+  dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-  connect(dialog, &QFileDialog::fileSelected, this, [this, dialog](const QString& path) {
+  connect(dialog, &QFileDialog::fileSelected, this, [this](const QString& path) {
     if (!path.isEmpty())
       openFile(path);
-
-    dialog->deleteLater();
   });
-
-  connect(dialog, &QFileDialog::rejected, dialog, &QFileDialog::deleteLater);
 
   dialog->open();
 }

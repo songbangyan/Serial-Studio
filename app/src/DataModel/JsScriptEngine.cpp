@@ -210,6 +210,7 @@ static QList<QStringList> convertJsResult(const QJSValue& jsResult)
  * @brief Constructs the JS engine with safe extensions and the runtime watchdog.
  */
 DataModel::JsScriptEngine::JsScriptEngine()
+  : m_watchdog(&m_engine, kRuntimeWatchdogMs, QStringLiteral("JsScriptEngine"))
 {
   m_engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
 
@@ -218,10 +219,6 @@ DataModel::JsScriptEngine::JsScriptEngine()
 
   // Expose tableGet / tableSet / datasetGetRaw / datasetGetFinal
   DataModel::FrameBuilder::instance().injectTableApiJS(&m_engine);
-
-  m_watchdog.setSingleShot(true);
-  m_watchdog.setInterval(kRuntimeWatchdogMs);
-  QObject::connect(&m_watchdog, &QTimer::timeout, [this]() { m_engine.setInterrupted(true); });
 }
 
 /**
@@ -257,18 +254,7 @@ QJSValue DataModel::JsScriptEngine::guardedCall(QJSValueList& args)
   Q_ASSERT(m_parseFunction.isCallable());
   Q_ASSERT(!args.isEmpty());
 
-  m_engine.setInterrupted(false);
-  m_watchdog.start();
-  const auto result = m_parseFunction.call(args);
-  m_watchdog.stop();
-
-  if (m_engine.isInterrupted()) [[unlikely]] {
-    m_engine.setInterrupted(false);
-    qWarning() << "[JsScriptEngine] Script execution timed out after" << kRuntimeWatchdogMs
-               << "ms -- interrupted";
-  }
-
-  return result;
+  return m_watchdog.call(m_parseFunction, args);
 }
 
 /**

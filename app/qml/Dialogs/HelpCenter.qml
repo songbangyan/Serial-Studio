@@ -22,7 +22,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
-import QtWebEngine
 
 import "../Widgets"
 
@@ -53,42 +52,6 @@ SmartDialog {
                | Qt.WindowTitleHint
                | Qt.WindowCloseButtonHint
                | Qt.WindowMinMaxButtonsHint
-  }
-
-  //
-  // Track whether the WebView HTML shell is ready to receive content
-  //
-  property bool webViewReady: false
-
-  //
-  // Push markdown content into the WebView via JS
-  //
-  function pushContent() {
-    if (!webViewReady || !contentView.visible)
-      return
-
-    var md = Cpp_HelpCenter.pageContent
-    if (md === "") {
-      contentView.runJavaScript("document.getElementById('content').innerHTML = '';")
-      return
-    }
-
-    // Escape the markdown for safe JS string injection
-    var escaped = md.replace(/\\/g, '\\\\')
-                    .replace(/`/g, '\\`')
-                    .replace(/\$/g, '\\$')
-    contentView.runJavaScript("renderMarkdown(`" + escaped + "`);")
-  }
-
-  //
-  // Push theme colors into the WebView
-  //
-  function pushTheme() {
-    if (!webViewReady)
-      return
-
-    var json = Cpp_HelpCenter.themeColors
-    contentView.runJavaScript("setTheme(" + json + ");")
   }
 
   //
@@ -253,7 +216,7 @@ SmartDialog {
       }
 
       //
-      // Right content area -- WebEngineView
+      // Right content area -- markdown viewer
       //
       Item {
         Layout.fillWidth: true
@@ -289,116 +252,32 @@ SmartDialog {
         }
 
         //
-        // WebEngineView for rendered markdown
+        // Rendered markdown -- WebEngine when available, plain rich-text otherwise.
         //
-        WebEngineView {
-          id: contentView
+        Loader {
+          id: contentLoader
 
           anchors.margins: 2
           anchors.fill: parent
-          backgroundColor: "transparent"
-          url: "qrc:/markdown-viewer.html"
           visible: Cpp_HelpCenter.pageContent !== ""
-          settings.localContentCanAccessRemoteUrls: true
 
-          //
-          // WebView is ready once the HTML shell has loaded
-          //
-          onLoadingChanged: function(loadRequest) {
-            if (loadRequest.status === WebEngineView.LoadSucceededStatus) {
-              root.webViewReady = true
-              root.pushTheme()
-              root.pushContent()
-            }
+          Component.onCompleted: {
+            contentLoader.setSource(
+              Cpp_HasWebEngine
+                ? "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownWebView.qml"
+                : "qrc:/serial-studio.com/gui/qml/Widgets/MarkdownTextView.qml",
+              { "markdown": Qt.binding(function() { return Cpp_HelpCenter.pageContent }) })
           }
 
-          //
-          // Recover gracefully if the Chromium render process dies
-          // (e.g. GPU sandbox failure on Linux) instead of crashing SS.
-          //
-          onRenderProcessTerminated: function(terminationStatus, exitCode) {
-            console.warn("HelpCenter content view: render process terminated",
-                         terminationStatus, "exit", exitCode)
-            root.webViewReady = false
-          }
-
-          //
-          // Handle navigation requests from the page (link clicks)
-          //
-          onNavigationRequested: function(request) {
-            var url = request.url.toString()
-
-            //
-            // Allow initial page load from qrc
-            //
-            if (url.startsWith("qrc:"))
-              return
-
-            //
-            // External link -- open in browser
-            //
-            if (url.startsWith("ext:")) {
-              request.reject()
-              Qt.openUrlExternally(url.substring(4))
-              return
+          onLoaded: {
+            if (Cpp_HasWebEngine && contentLoader.item) {
+              contentLoader.item.copyRequested.connect(copyToast.show)
+              contentLoader.item.navigationRejected.connect(function(link) {
+                var decoded = decodeURIComponent(link)
+                if (!Cpp_HelpCenter.navigateToPage(decoded))
+                  Qt.openUrlExternally(decoded)
+              })
             }
-
-            //
-            // Copy code to clipboard
-            //
-            if (url.startsWith("copy:")) {
-              request.reject()
-              var text = decodeURIComponent(url.substring(5))
-              Cpp_Misc_Utilities.copyText(text)
-              copyToast.show()
-              return
-            }
-
-            //
-            // Internal page navigation
-            //
-            if (url.startsWith("nav:")) {
-              request.reject()
-              var link = url.substring(4)
-
-              //
-              // Decode percent-encoded characters
-              //
-              link = decodeURIComponent(link)
-
-              //
-              // Try internal navigation
-              //
-              if (!Cpp_HelpCenter.navigateToPage(link))
-                Qt.openUrlExternally(link)
-
-              return
-            }
-
-            //
-            // Block all other navigations
-            //
-            request.reject()
-          }
-        }
-
-        //
-        // React to content changes from C++
-        //
-        Connections {
-          target: Cpp_HelpCenter
-          function onPageContentChanged() {
-            root.pushContent()
-          }
-        }
-
-        //
-        // React to theme changes from C++
-        //
-        Connections {
-          target: Cpp_HelpCenter
-          function onThemeColorsChanged() {
-            root.pushTheme()
           }
         }
 

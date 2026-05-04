@@ -145,6 +145,15 @@ Item {
 
         Component.onCompleted: root.taskBar.registerWindow(widgetIndex, this)
       }
+
+      onCountChanged: {
+        if (count !== taskBar.taskbarButtons.rowCount())
+          return
+
+        const firstWindow = taskBar.firstWindow()
+        if (firstWindow)
+          taskBar.activeWindow = firstWindow
+      }
     }
 
     //

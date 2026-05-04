@@ -413,6 +413,20 @@ Rectangle {
         onClicked: Cpp_JSON_ProjectModel.addGroup(qsTr("Image View"), SerialStudio.ImageView)
       }
 
+      Widgets.ToolbarButton {
+        readonly property bool _hasPro: Cpp_CommercialBuild
+                                        && (Cpp_Licensing_LemonSqueezy.isActivated
+                                            || Cpp_Licensing_Trial.trialEnabled)
+
+        text: qsTr("Painter")
+        Layout.alignment: Qt.AlignVCenter
+        icon.source: "qrc:/icons/project-editor/toolbar/add-painter.svg"
+        ToolTip.text: _hasPro
+                      ? qsTr("Add a custom JavaScript-rendered painter widget")
+                      : qsTr("Painter widgets require a Pro license — adding one will fall back to a data grid")
+        onClicked: Cpp_JSON_ProjectModel.addGroup(qsTr("Painter Widget"), SerialStudio.Painter)
+      }
+
       GridLayout {
         rows: 3
         columns: 2

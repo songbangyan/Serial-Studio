@@ -217,7 +217,7 @@ Item {
     }
 
     //
-    // Help center -- synchronous load (WebEngineView races on Linux otherwise)
+    // Help center -- synchronous load (WebEngineView races otherwise)
     //
     DialogLoader {
       id: helpCenter
