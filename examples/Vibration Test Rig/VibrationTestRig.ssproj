@@ -1,0 +1,276 @@
+{
+    "actions": [
+    ],
+    "groups": [
+        {
+            "datasets": [
+                {
+                    "alarmEnabled": false,
+                    "alarmHigh": 0,
+                    "alarmLow": 0,
+                    "datasetId": 0,
+                    "fft": true,
+                    "fftMax": 3,
+                    "fftMin": -3,
+                    "fftSamples": 512,
+                    "fftSamplingRate": 1000,
+                    "graph": false,
+                    "groupId": 0,
+                    "index": 1,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "numericValue": 0,
+                    "plotMax": 3,
+                    "plotMin": -3,
+                    "title": "Vibration",
+                    "units": "g",
+                    "value": "",
+                    "waterfall": true,
+                    "waterfallYAxis": 2,
+                    "widget": "",
+                    "widgetMax": 3,
+                    "widgetMin": -3,
+                    "xAxis": 0
+                }
+            ],
+            "title": "Vibration waterfall (Campbell mode)",
+            "widget": ""
+        },
+        {
+            "datasets": [
+                {
+                    "alarmEnabled": false,
+                    "alarmHigh": 0,
+                    "alarmLow": 0,
+                    "datasetId": 0,
+                    "fft": false,
+                    "fftMax": 6,
+                    "fftMin": -60,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 1000,
+                    "graph": false,
+                    "groupId": 1,
+                    "index": 3,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "numericValue": 0,
+                    "plotMax": 6,
+                    "plotMin": -60,
+                    "title": "Mic L",
+                    "units": "dB",
+                    "value": "",
+                    "widget": "",
+                    "widgetMax": 6,
+                    "widgetMin": -60,
+                    "xAxis": 0
+                },
+                {
+                    "alarmEnabled": false,
+                    "alarmHigh": 0,
+                    "alarmLow": 0,
+                    "datasetId": 1,
+                    "fft": false,
+                    "fftMax": 6,
+                    "fftMin": -60,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 1000,
+                    "graph": false,
+                    "groupId": 1,
+                    "index": 4,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "numericValue": 0,
+                    "plotMax": 6,
+                    "plotMin": -60,
+                    "title": "Mic R",
+                    "units": "dB",
+                    "value": "",
+                    "widget": "",
+                    "widgetMax": 6,
+                    "widgetMin": -60,
+                    "xAxis": 0
+                }
+            ],
+            "painterCode": "// Stereo VU meter driven by mic_left + mic_right (dB FS).\n// datasets[0] = left, datasets[1] = right.\n\nconst HOLD_MS = 1500;\nlet peakL = -60, peakR = -60;\nlet holdL = 0,   holdR = 0;\n\nfunction db_to_norm(db) {\n  const lo = -60, hi = 6;\n  return Math.max(0, Math.min(1, (db - lo) / (hi - lo)));\n}\n\nfunction paint_bar(ctx, x, y, w, h, level, peak) {\n  // background\n  ctx.fillStyle = \"#0c0f14\";\n  ctx.fillRect(x, y, w, h);\n\n  // gradient: green -> yellow -> red, mapped to dB zones\n  const g = ctx.createLinearGradient(x, 0, x + w, 0);\n  g.addColorStop(0.00, \"#16a34a\");\n  g.addColorStop(0.70, \"#facc15\");\n  g.addColorStop(0.90, \"#f97316\");\n  g.addColorStop(1.00, \"#ef4444\");\n  ctx.fillStyle = g;\n  ctx.fillRect(x, y, w * level, h);\n\n  // peak hold marker\n  ctx.fillStyle = \"#ffffff\";\n  ctx.fillRect(x + w * peak - 1, y - 2, 2, h + 4);\n\n  // border\n  ctx.strokeStyle = \"#1f2937\";\n  ctx.lineWidth = 1;\n  ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);\n}\n\nfunction onFrame() {\n  if (datasets.length < 2) return;\n  const now = Date.now();\n  const l = datasets[0].value;\n  const r = datasets[1].value;\n\n  if (l > peakL) { peakL = l; holdL = now; }\n  else if (now - holdL > HOLD_MS) { peakL = Math.max(-60, peakL - 0.4); }\n\n  if (r > peakR) { peakR = r; holdR = now; }\n  else if (now - holdR > HOLD_MS) { peakR = Math.max(-60, peakR - 0.4); }\n}\n\nfunction paint(ctx, w, h) {\n  ctx.fillStyle = \"#0b1220\";\n  ctx.fillRect(0, 0, w, h);\n\n  if (datasets.length < 2) return;\n\n  ctx.fillStyle = \"#cbd5e1\";\n  ctx.font = \"bold 13px sans-serif\";\n  ctx.fillText(\"L\", 6, h / 2 - 8);\n  ctx.fillText(\"R\", 6, h / 2 + 28);\n\n  const x = 28, bw = w - 40, bh = 18;\n  paint_bar(ctx, x, h / 2 - 22, bw, bh, db_to_norm(datasets[0].value), db_to_norm(peakL));\n  paint_bar(ctx, x, h / 2 + 14, bw, bh, db_to_norm(datasets[1].value), db_to_norm(peakR));\n\n  ctx.fillStyle = \"#94a3b8\";\n  ctx.font = \"10px sans-serif\";\n  const labels = [\"-60\", \"-40\", \"-20\", \"-10\", \"-3\", \"0\", \"+6\"];\n  const dbs    = [-60,   -40,   -20,   -10,   -3,    0,    6];\n  for (let i = 0; i < labels.length; ++i) {\n    const px = x + bw * db_to_norm(dbs[i]);\n    ctx.fillText(labels[i], px - 8, h / 2 + 50);\n    ctx.fillStyle = \"#334155\";\n    ctx.fillRect(px, h / 2 - 26, 1, 4);\n    ctx.fillRect(px, h / 2 + 32, 1, 4);\n    ctx.fillStyle = \"#94a3b8\";\n  }\n}\n",
+            "title": "Audio VU (Painter)",
+            "widget": "painter"
+        },
+        {
+            "datasets": [
+                {
+                    "alarmEnabled": false,
+                    "alarmHigh": 0,
+                    "alarmLow": 0,
+                    "datasetId": 0,
+                    "fft": false,
+                    "fftMax": 3,
+                    "fftMin": 0,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 1000,
+                    "graph": false,
+                    "groupId": 2,
+                    "index": 1,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "numericValue": 0,
+                    "plotMax": 3,
+                    "plotMin": 0,
+                    "title": "Vibration",
+                    "units": "g",
+                    "value": "",
+                    "widget": "",
+                    "widgetMax": 3,
+                    "widgetMin": 0,
+                    "xAxis": 0
+                }
+            ],
+            "painterCode": "// Smoothed dial gauge for peak vibration amplitude.\n// datasets[0] = vibration channel (g).\n\nconst PEAK_HOLD_MS = 1200;\nlet smoothed = 0;\nlet peak     = 0;\nlet peakAt   = 0;\nconst ALPHA  = 0.18;\n\nfunction onFrame() {\n  if (datasets.length === 0) return;\n  const v = Math.abs(datasets[0].value);\n  smoothed += ALPHA * (v - smoothed);\n\n  const now = Date.now();\n  if (v > peak) { peak = v; peakAt = now; }\n  else if (now - peakAt > PEAK_HOLD_MS) { peak = Math.max(0, peak - 0.04); }\n}\n\nfunction paint(ctx, w, h) {\n  ctx.fillStyle = \"#0b1220\";\n  ctx.fillRect(0, 0, w, h);\n\n  const cx = w / 2, cy = h * 0.62;\n  const r  = Math.min(w, h * 1.4) * 0.4;\n  const a0 = Math.PI * 0.85;\n  const a1 = Math.PI * 2.15;\n  const ds = (datasets.length > 0) ? datasets[0] : null;\n  const min = ds ? ds.min : 0;\n  const max = ds ? ds.max : 5;\n  const span = (max - min) || 1;\n\n  // coloured arc zones\n  function zone(v0, v1, color) {\n    const t0 = a0 + (a1 - a0) * ((v0 - min) / span);\n    const t1 = a0 + (a1 - a0) * ((v1 - min) / span);\n    ctx.beginPath();\n    ctx.arc(cx, cy, r, t0, t1);\n    ctx.lineWidth = 14;\n    ctx.strokeStyle = color;\n    ctx.stroke();\n  }\n  zone(min,            min + span * 0.6, \"#16a34a\");\n  zone(min + span * 0.6, min + span * 0.85, \"#facc15\");\n  zone(min + span * 0.85, max,             \"#ef4444\");\n\n  // tick marks\n  ctx.strokeStyle = \"#cbd5e1\";\n  ctx.lineWidth = 2;\n  for (let i = 0; i <= 10; ++i) {\n    const t = a0 + (a1 - a0) * (i / 10);\n    const x0 = cx + Math.cos(t) * (r - 18);\n    const y0 = cy + Math.sin(t) * (r - 18);\n    const x1 = cx + Math.cos(t) * (r - 6);\n    const y1 = cy + Math.sin(t) * (r - 6);\n    ctx.beginPath();\n    ctx.moveTo(x0, y0);\n    ctx.lineTo(x1, y1);\n    ctx.stroke();\n  }\n\n  // peak marker\n  if (peak > 0) {\n    const tp = a0 + (a1 - a0) * ((peak - min) / span);\n    ctx.strokeStyle = \"#fbbf24\";\n    ctx.lineWidth = 3;\n    ctx.beginPath();\n    ctx.moveTo(cx + Math.cos(tp) * (r - 22), cy + Math.sin(tp) * (r - 22));\n    ctx.lineTo(cx + Math.cos(tp) * (r + 4),  cy + Math.sin(tp) * (r + 4));\n    ctx.stroke();\n  }\n\n  // needle\n  const t = a0 + (a1 - a0) * ((smoothed - min) / span);\n  ctx.strokeStyle = \"#f8fafc\";\n  ctx.lineWidth = 3;\n  ctx.beginPath();\n  ctx.moveTo(cx, cy);\n  ctx.lineTo(cx + Math.cos(t) * (r - 10), cy + Math.sin(t) * (r - 10));\n  ctx.stroke();\n\n  ctx.fillStyle = \"#f8fafc\";\n  ctx.beginPath();\n  ctx.arc(cx, cy, 6, 0, Math.PI * 2);\n  ctx.fill();\n\n  // label\n  ctx.fillStyle = \"#e2e8f0\";\n  ctx.font = \"bold 16px sans-serif\";\n  const txt = smoothed.toFixed(2) + \" g\";\n  const tw = ctx.measureText(txt).width;\n  ctx.fillText(txt, cx - tw / 2, h - 14);\n\n  ctx.fillStyle = \"#94a3b8\";\n  ctx.font = \"11px sans-serif\";\n  const ptxt = \"peak \" + peak.toFixed(2) + \" g\";\n  const ptw = ctx.measureText(ptxt).width;\n  ctx.fillText(ptxt, cx - ptw / 2, h - 30);\n}\n",
+            "title": "Vibration peak dial (Painter)",
+            "widget": "painter"
+        },
+        {
+            "datasets": [
+                {
+                    "alarmEnabled": false,
+                    "alarmHigh": 0,
+                    "alarmLow": 0,
+                    "datasetId": 0,
+                    "fft": false,
+                    "fftMax": 5500,
+                    "fftMin": 0,
+                    "fftSamples": 256,
+                    "fftSamplingRate": 1000,
+                    "graph": true,
+                    "groupId": 3,
+                    "index": 2,
+                    "led": false,
+                    "ledHigh": 1,
+                    "log": false,
+                    "numericValue": 0,
+                    "plotMax": 5500,
+                    "plotMin": 0,
+                    "title": "Motor RPM",
+                    "units": "rpm",
+                    "value": "",
+                    "widget": "",
+                    "widgetMax": 5500,
+                    "widgetMin": 0,
+                    "xAxis": 0
+                }
+            ],
+            "title": "RPM trend",
+            "widget": ""
+        }
+    ],
+    "hexadecimalDelimiters": false,
+    "pointCount": 1000,
+    "schemaVersion": 1,
+    "sources": [
+        {
+            "busType": 1,
+            "checksum": "",
+            "checksumAlgorithm": "",
+            "connection": {
+                "address": "127.0.0.1",
+                "socketTypeIndex": 1,
+                "udpLocalPort": 9000,
+                "udpMulticast": false,
+                "udpRemotePort": 9000
+            },
+            "decoder": 0,
+            "decoderMethod": 0,
+            "frameDetection": 0,
+            "frameEnd": "\n",
+            "frameParserCode": "/**\n * Comma-Separated Values (CSV) Parser\n *\n * Parses comma-separated data into an array of values.\n *\n * INPUT FORMAT: \"vibration,rpm,mic_left,mic_right\"\n * OUTPUT ARRAY: [\"vibration\", \"rpm\", \"mic_left\", \"mic_right\"]\n *\n * Note: Frame delimiters are automatically removed by Serial Studio.\n */\n\nfunction parse(frame) {\n  return frame.split(',');\n}\n",
+            "frameStart": "",
+            "hexadecimalDelimiters": false,
+            "sourceId": 0,
+            "title": "Vibration Test Rig (UDP)"
+        }
+    ],
+    "title": "Vibration Test Rig",
+    "widgetSettings": {
+        "activeGroup": 1004,
+        "layout:1000": {
+            "data": {
+                "autoLayout": true,
+                "geometries": [
+                    {
+                        "height": 493,
+                        "id": 0,
+                        "state": "normal",
+                        "width": 509,
+                        "x": 4,
+                        "y": 4
+                    },
+                    {
+                        "height": 493,
+                        "id": 1,
+                        "state": "normal",
+                        "width": 509,
+                        "x": 512,
+                        "y": 4
+                    }
+                ],
+                "userReordered": false,
+                "windowOrder": [
+                    0,
+                    1
+                ]
+            }
+        },
+        "layout:1002": {
+            "data": {
+                "autoLayout": true,
+                "geometries": [
+                    {
+                        "height": 493,
+                        "id": 2,
+                        "state": "normal",
+                        "width": 509,
+                        "x": 4,
+                        "y": 4
+                    },
+                    {
+                        "height": 493,
+                        "id": 4,
+                        "state": "normal",
+                        "width": 509,
+                        "x": 512,
+                        "y": 4
+                    }
+                ],
+                "userReordered": true,
+                "windowOrder": [
+                    2,
+                    4
+                ]
+            }
+        },
+        "layout:1003": {
+            "data": {
+                "autoLayout": true,
+                "geometries": [
+                    {
+                        "height": 493,
+                        "id": 0,
+                        "state": "normal",
+                        "width": 1018,
+                        "x": 4,
+                        "y": 4
+                    }
+                ],
+                "userReordered": false,
+                "windowOrder": [
+                    0
+                ]
+            }
+        }
+    },
+    "writerVersion": "3.2.7",
+    "writerVersionAtCreation": "3.2.7"
+}

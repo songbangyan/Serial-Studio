@@ -31,6 +31,7 @@ You can also browse and download examples directly from Serial Studio via **Help
 | [System Monitor](System%20Monitor) | Live CPU, memory, disk, and network dashboard | Intermediate | Yes |
 | [TinyGPS](TinyGPS) | GPS location tracker with map widget | Beginner | |
 | [UDP Function Generator](UDP%20Function%20Generator) | Multi-waveform signal generator over UDP | Beginner | |
+| [Vibration Test Rig](Vibration%20Test%20Rig) | Motor RPM sweep driving a Campbell-mode waterfall and two scripted Painter widgets | Intermediate | Yes |
 
 ## Getting started
 

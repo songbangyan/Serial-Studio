@@ -252,5 +252,16 @@
     "projectFileName": "",
     "hasScreenshot": true,
     "requiresPro": false
+  },
+  {
+    "id": "Vibration Test Rig",
+    "title": "Vibration Test Rig (Painter + Waterfall)",
+    "description": "Simulates a motor sweeping RPM with imbalance, bearing-defect harmonics, and stereo enclosure noise. Drives a Campbell-mode waterfall and two scripted Painter widgets (audio VU meter, smoothed dial gauge) from one UDP stream.",
+    "category": "Simulation",
+    "difficulty": "Intermediate",
+    "hasProjectFile": true,
+    "projectFileName": "VibrationTestRig.ssproj",
+    "hasScreenshot": false,
+    "requiresPro": true
   }
 ]
