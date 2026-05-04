@@ -17,6 +17,9 @@ function paint(ctx, w, h) {
 
   ctx.save();
   ctx.beginPath();
+  // moveTo before arc so the chord from origin to the arc start isn't
+  // included in the clip region.
+  ctx.moveTo(cx + r, cy);
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.clip();
 
@@ -73,6 +76,7 @@ function paint(ctx, w, h) {
   ctx.strokeStyle = "#888";
   ctx.lineWidth   = 1.5;
   ctx.beginPath();
+  ctx.moveTo(cx + r, cy);
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.stroke();
 

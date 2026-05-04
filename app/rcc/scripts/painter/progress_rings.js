@@ -1,54 +1,83 @@
 // Progress rings.
 //
-// Each dataset becomes a circular ring filled in proportion to its value.
-// Multiple rings stack visually so users see overall completion at a glance.
+// One circular ring per dataset, filled proportionally to its value. Rings
+// arrange into a grid that fits the widget bounds at any aspect ratio.
+//
+// IMPORTANT: each partial value-arc is preceded by a moveTo at the arc's
+// start point so PainterContext::arc (which maps to QPainterPath::arcTo)
+// doesn't draw a stray chord from the implicit origin to the arc start.
 
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#0b1220";
+  // Cream paper background.
+  ctx.fillStyle = "#f5f5f1";
   ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = "#e7e5de";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 
-  const cols = Math.min(datasets.length, 4);
-  const rows = Math.ceil(datasets.length / cols);
-  const cw   = w / cols;
-  const ch   = h / rows;
-  const colors = ["#22d3ee", "#a78bfa", "#34d399", "#fbbf24",
-                  "#f472b6", "#60a5fa", "#facc15", "#f87171"];
+  const colors = [
+    "#10b981", "#6366f1", "#f59e0b", "#dc2626",
+    "#0ea5e9", "#a855f7", "#22c55e", "#f97316"
+  ];
 
-  for (let i = 0; i < datasets.length; ++i) {
-    const r  = Math.floor(i / cols);
-    const c  = i % cols;
-    const cx = cw * c + cw * 0.5;
-    const cy = ch * r + ch * 0.5;
-    const rr = Math.min(cw, ch) * 0.38;
-    const ds = datasets[i];
-    const v  = Number.isFinite(ds.value) ? ds.value : 0;
-    const norm = Math.max(0, Math.min(1, (v - ds.min) / ((ds.max - ds.min) || 1)));
+  // Lay rings out on a grid that prefers near-square cells.
+  const n    = datasets.length;
+  const cols = Math.min(n, Math.max(1, Math.round(Math.sqrt(n * w / h))));
+  const rows = Math.ceil(n / cols);
+  const pad  = 12;
+  const cw   = (w - pad * 2) / cols;
+  const ch   = (h - pad * 2) / rows;
 
-    ctx.strokeStyle = "#1f2937";
-    ctx.lineWidth   = 14;
-    ctx.lineCap     = "round";
+  for (let i = 0; i < n; ++i) {
+    const row  = Math.floor(i / cols);
+    const col  = i % cols;
+    const cx   = pad + cw * col + cw * 0.5;
+    const cy   = pad + ch * row + ch * 0.5 - 6;
+    const rr   = Math.max(10, Math.min(cw, ch) * 0.38 - 4);
+    const ds   = datasets[i];
+    const v    = Number.isFinite(ds.value) ? ds.value : 0;
+    const span = (ds.max - ds.min) || 1;
+    const norm = Math.max(0, Math.min(1, (v - ds.min) / span));
+    const color = colors[i % colors.length];
+
+    // Track ring (full circle, stroke).
+    ctx.strokeStyle = "#e2e8f0";
+    ctx.lineWidth   = 12;
+    ctx.lineCap     = "butt";
     ctx.beginPath();
+    ctx.moveTo(cx + rr, cy);
     ctx.arc(cx, cy, rr, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = colors[i % colors.length];
-    ctx.beginPath();
-    ctx.arc(cx, cy, rr, -Math.PI * 0.5, -Math.PI * 0.5 + Math.PI * 2 * norm);
-    ctx.stroke();
-    ctx.lineCap = "butt";
+    // Value arc.
+    if (norm > 0) {
+      const startA = -Math.PI * 0.5;
+      const endA   = startA + Math.PI * 2 * norm;
+      ctx.strokeStyle = color;
+      ctx.lineCap     = "round";
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(startA) * rr, cy + Math.sin(startA) * rr);
+      ctx.arc(cx, cy, rr, startA, endA);
+      ctx.stroke();
+      ctx.lineCap = "butt";
+    }
 
-    ctx.fillStyle    = "#fff";
-    ctx.font         = "bold 18px monospace";
+    // Centre value (% of range) and small title underneath.
+    ctx.fillStyle    = "#0f172a";
+    ctx.font         = "bold 18px sans-serif";
     ctx.textAlign    = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText((norm * 100).toFixed(0) + "%", cx, cy - 4);
+    ctx.fillText((norm * 100).toFixed(0) + "%", cx, cy);
 
-    ctx.fillStyle = "#94a3b8";
-    ctx.font      = "11px sans-serif";
-    ctx.fillText(ds.title.substring(0, 14), cx, cy + 16);
+    ctx.fillStyle    = "#64748b";
+    ctx.font         = "10px sans-serif";
+    ctx.textBaseline = "alphabetic";
+    const title = (ds.title || "").substring(0, 16);
+    ctx.fillText(title, cx, cy + rr + 18);
   }
-  ctx.textAlign = "start";
+
+  ctx.textAlign    = "start";
   ctx.textBaseline = "alphabetic";
 }

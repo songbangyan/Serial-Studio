@@ -36,6 +36,7 @@ function paint(ctx, w, h) {
     ctx.strokeStyle = "#1f2937";
     ctx.lineWidth   = 1;
     ctx.beginPath();
+    ctx.moveTo(cx + arrowMax, cy);
     ctx.arc(cx, cy, arrowMax, 0, Math.PI * 2);
     ctx.stroke();
 

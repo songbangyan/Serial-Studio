@@ -82,6 +82,7 @@ function paint(ctx, w, h) {
     const ly = cy - ((last[1] - (yLo + yHi) * 0.5) / ((yHi - yLo) || 1)) * sz * 2;
     ctx.fillStyle = colors[p % colors.length];
     ctx.beginPath();
+    ctx.moveTo(lx + 3, ly);
     ctx.arc(lx, ly, 3, 0, Math.PI * 2);
     ctx.fill();
 

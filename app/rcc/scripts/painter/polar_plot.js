@@ -11,12 +11,15 @@ function paint(ctx, w, h) {
   const cy = h * 0.5;
   const r  = Math.min(w, h) * 0.42;
 
-  // Concentric rings
+  // Concentric rings. moveTo before each arc so the chord from the
+  // implicit origin to the arc start isn't stroked alongside the ring.
   ctx.strokeStyle = "#26313d";
   ctx.lineWidth   = 1;
   for (let i = 1; i <= 4; ++i) {
+    const rr = (r / 4) * i;
     ctx.beginPath();
-    ctx.arc(cx, cy, (r / 4) * i, 0, Math.PI * 2);
+    ctx.moveTo(cx + rr, cy);
+    ctx.arc(cx, cy, rr, 0, Math.PI * 2);
     ctx.stroke();
   }
 
@@ -50,6 +53,7 @@ function paint(ctx, w, h) {
 
     ctx.fillStyle = "#22d3ee";
     ctx.beginPath();
+    ctx.moveTo(x + 3, y);
     ctx.arc(x, y, 3, 0, Math.PI * 2);
     ctx.fill();
   }

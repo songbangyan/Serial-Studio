@@ -40,8 +40,10 @@ function paint(ctx, w, h) {
   ctx.strokeStyle = "#0f6b3a";
   ctx.lineWidth   = 1;
   for (let i = 1; i <= 4; ++i) {
+    const rr = (r / 4) * i;
     ctx.beginPath();
-    ctx.arc(cx, cy, (r / 4) * i, 0, Math.PI * 2);
+    ctx.moveTo(cx + rr, cy);
+    ctx.arc(cx, cy, rr, 0, Math.PI * 2);
     ctx.stroke();
   }
 
@@ -77,6 +79,7 @@ function paint(ctx, w, h) {
     ctx.globalAlpha = 1 - age;
     ctx.fillStyle   = "#bbf7d0";
     ctx.beginPath();
+    ctx.moveTo(x + 4, y);
     ctx.arc(x, y, 4, 0, Math.PI * 2);
     ctx.fill();
   }

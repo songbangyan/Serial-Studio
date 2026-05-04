@@ -82,15 +82,20 @@ function paint(ctx, w, h) {
   const hue  = 220 - nz * 220;        // 220° (blue) -> 0° (red)
   const dotR = 6 + nz * 14;
 
-  // Soft halo
+  // Soft halo. moveTo before each arc -- PainterContext::arc maps to
+  // QPainterPath::arcTo which connects the implicit (0,0) origin to the
+  // arc start with a straight line; without moveTo a fill encloses that
+  // chord and a stroke draws it as a stray streak.
   ctx.fillStyle = `hsla(${hue}, 80%, 55%, 0.18)`;
   ctx.beginPath();
+  ctx.moveTo(px + dotR * 2.6, py);
   ctx.arc(px, py, dotR * 2.6, 0, Math.PI * 2);
   ctx.fill();
 
   // Filled dot
   ctx.fillStyle = `hsl(${hue}, 80%, 55%)`;
   ctx.beginPath();
+  ctx.moveTo(px + dotR, py);
   ctx.arc(px, py, dotR, 0, Math.PI * 2);
   ctx.fill();
 
@@ -98,11 +103,13 @@ function paint(ctx, w, h) {
   ctx.strokeStyle = "#0d1117";
   ctx.lineWidth   = 2;
   ctx.beginPath();
+  ctx.moveTo(px + dotR, py);
   ctx.arc(px, py, dotR, 0, Math.PI * 2);
   ctx.stroke();
 
   ctx.fillStyle = "#fff";
   ctx.beginPath();
+  ctx.moveTo(px + 2, py);
   ctx.arc(px, py, 2, 0, Math.PI * 2);
   ctx.fill();
 
