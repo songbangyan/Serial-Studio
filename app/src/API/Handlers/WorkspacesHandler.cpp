@@ -30,6 +30,7 @@
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/ProjectModel.h"
+#include "SerialStudio.h"
 
 //--------------------------------------------------------------------------------------------------
 // Local helpers
@@ -68,6 +69,27 @@
   }
 
   return arr;
+}
+
+/**
+ * @brief Returns the deduped DashboardWidget enums a group can render.
+ */
+[[nodiscard]] static QList<int> compatibleWidgetTypes(const DataModel::Group& group)
+{
+  QList<int> out;
+  const auto group_widget = static_cast<int>(SerialStudio::getDashboardWidget(group));
+  if (group_widget != SerialStudio::DashboardNoWidget)
+    out.append(group_widget);
+
+  for (const auto& ds : group.datasets) {
+    for (const auto w : SerialStudio::getDashboardWidgets(ds)) {
+      const auto v = static_cast<int>(w);
+      if (!out.contains(v))
+        out.append(v);
+    }
+  }
+
+  return out;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -162,21 +184,64 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
 {
   auto& registry = CommandRegistry::instance();
 
+  // SerialStudio::DashboardWidget enums valid as workspace tiles (no Terminal/NoWidget)
+  const QJsonArray kWidgetTypeValues = {
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+#ifdef BUILD_COMMERCIAL
+    14,
+    15,
+    16,
+    17,
+    18,
+#endif
+  };
+
   const auto addSchema = API::makeSchema({
-    {  QStringLiteral("workspaceId"),QStringLiteral("integer"),QStringLiteral("Workspace id")                                                                },
-    {   QStringLiteral("widgetType"),
+    {  QStringLiteral("workspaceId"),
      QStringLiteral("integer"),
-     QStringLiteral("SerialStudio.DashboardWidget enum")                                                    },
-    {      QStringLiteral("groupId"), QStringLiteral("integer"),           QStringLiteral("Source group id")},
+     QStringLiteral("Workspace id from project.workspaces.list (workspace IDs are >= 1000)")},
+    API::enumProp(QStringLiteral("widgetType"),
+                  QStringLiteral("DashboardWidget enum: 1=DataGrid, "
+                                 "2=MultiPlot, 3=Accelerometer, "
+                                 "4=Gyroscope, 5=GPS, 6=Plot3D, "
+                                 "7=FFT, 8=LED, 9=Plot, 10=Bar, "
+                                 "11=Gauge, 12=Compass, "
+                                 "14=ImageView (Pro), "
+                                 "15=OutputPanel (Pro), "
+                                 "16=NotificationLog (Pro), "
+                                 "17=Waterfall (Pro), "
+                                 "18=Painter (Pro). DO NOT pass 0 -- "
+                                 "that is Terminal, not a tile."),
+                  kWidgetTypeValues),
+    {      QStringLiteral("groupId"),
+     QStringLiteral("integer"),
+     QStringLiteral("groupId from project.groups.list. Use group.id, NOT the array index.") },
     {QStringLiteral("relativeIndex"),
      QStringLiteral("integer"),
-     QStringLiteral("Per-type running widget counter in project order")                                     }
+     QStringLiteral("Almost always 0. This is a per-(widgetType,groupId) "
+     "deduplication counter -- it is NOT a dataset index. Pass 0 "
+     "unless you are intentionally adding a second tile with the "
+     "same widgetType and groupId to the same workspace.")                                  }
   });
-  registry.registerCommand(
-    QStringLiteral("project.workspaces.widgets.add"),
-    QStringLiteral("Add a widget ref (params: workspaceId, widgetType, groupId, relativeIndex)"),
-    addSchema,
-    &widgetAdd);
+  registry.registerCommand(QStringLiteral("project.workspaces.widgets.add"),
+                           QStringLiteral("Pin a visualization tile onto a workspace. The tile "
+                                          "renders the dashboard widget of the given widgetType "
+                                          "fed by the given groupId. Read project.groups.list "
+                                          "and project.workspaces.list first to get valid IDs "
+                                          "and the group's compatibleWidgetTypes."),
+                           addSchema,
+                           &widgetAdd);
 
   const auto removeSchema = API::makeSchema({
     {  QStringLiteral("workspaceId"),QStringLiteral("integer"),QStringLiteral("Workspace id")                                                                },
@@ -462,6 +527,23 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
   const int gid      = params.value(QStringLiteral("groupId")).toInt();
   const int relIndex = params.value(QStringLiteral("relativeIndex")).toInt();
 
+  // Reject DashboardTerminal / DashboardNoWidget with actionable errors
+  if (wtype == SerialStudio::DashboardTerminal)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("widgetType=0 is DashboardTerminal, not a workspace "
+                     "tile. Pick a real visualization type from the "
+                     "group's compatibleWidgetTypes "
+                     "(see project.groups.list)."));
+
+  if (wtype == SerialStudio::DashboardNoWidget)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("widgetType=13 is DashboardNoWidget. Pick a real "
+                     "visualization type."));
+
   // Validate the target workspace exists; reject stale IDs explicitly
   const auto& wsList = pm.editorWorkspaces();
   const auto exists  = std::any_of(
@@ -469,6 +551,36 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
   if (!exists)
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace not found: %1").arg(wid));
+
+  // Validate widgetType matches one the target group can render
+  const auto& groups  = DataModel::ProjectModel::instance().groups();
+  const auto group_it = std::find_if(
+    groups.begin(), groups.end(), [gid](const DataModel::Group& g) { return g.groupId == gid; });
+  if (group_it == groups.end())
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Group not found: %1. Use group.id from "
+                                                     "project.groups.list, not the array index.")
+                                        .arg(gid));
+
+  const auto compatible = compatibleWidgetTypes(*group_it);
+  if (!compatible.contains(wtype)) {
+    QStringList compat_strs;
+    for (int v : compatible)
+      compat_strs.append(QString::number(v));
+
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("widgetType=%1 is not compatible with group %2 "
+                     "('%3'). Compatible widgetTypes for this group: "
+                     "[%4]. Either pick one of those, or change the "
+                     "group's widget / dataset flags first.")
+        .arg(wtype)
+        .arg(gid)
+        .arg(group_it->title)
+        .arg(compat_strs.join(QStringLiteral(", "))));
+  }
 
   pm.addWidgetToWorkspace(wid, wtype, gid, relIndex);
 

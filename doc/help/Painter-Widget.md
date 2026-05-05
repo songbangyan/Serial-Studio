@@ -209,7 +209,7 @@ ctx.drawImage("qrc:/icons/dashboard-large/painter.svg",   // bundled resource
 
 ## Built-in templates
 
-Eighteen templates ship with Serial Studio. Most use the light-theme card layout described in [Composition reference](#composition-reference). The instrument-style templates (oscilloscope, radar sweep, artificial horizon) use a dark instrument-panel layout.
+Eighteen templates are bundled with Serial Studio. Most use the light-theme card layout described in [Composition reference](#composition-reference). The instrument-style templates (oscilloscope, radar sweep, artificial horizon) use a dark instrument-panel layout.
 
 | Template                | Datasets needed | What it draws |
 |-------------------------|-----------------|---------------|

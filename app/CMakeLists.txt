@@ -247,6 +247,7 @@ set(SOURCES
   src/API/CommandHandler.cpp
   src/API/MCPHandler.cpp
   src/API/PathPolicy.cpp
+  src/API/EnumLabels.cpp
   src/API/Handlers/IOManagerHandler.cpp
   src/API/Handlers/UARTHandler.cpp
   src/API/Handlers/NetworkHandler.cpp
@@ -345,6 +346,7 @@ set(HEADERS
   src/API/CommandHandler.h
   src/API/MCPHandler.h
   src/API/PathPolicy.h
+  src/API/EnumLabels.h
   src/API/Handlers/IOManagerHandler.h
   src/API/Handlers/UARTHandler.h
   src/API/Handlers/NetworkHandler.h
@@ -418,6 +420,7 @@ set(HEADERS
 
 # Specify required QML files for FOSS version
 set(QML_SOURCES
+  qml/AI/ProUpgradeNotice.qml
   qml/Dialogs/About.qml
   qml/Dialogs/Acknowledgements.qml
   qml/Dialogs/AccelerometerConfigDialog.qml
@@ -573,6 +576,21 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Output/Panel.h
     src/UI/Widgets/Output/PanelLayout.h
     src/Misc/ShortcutGenerator.h
+    src/AI/Logging.h
+    src/AI/KeyVault.h
+    src/AI/CommandRegistry.h
+    src/AI/ToolDispatcher.h
+    src/AI/Assistant.h
+    src/AI/SseEventReader.h
+    src/AI/ContextBuilder.h
+    src/AI/Conversation.h
+    src/AI/Providers/Provider.h
+    src/AI/Providers/AnthropicProvider.h
+    src/AI/Providers/AnthropicReply.h
+    src/AI/Providers/OpenAIProvider.h
+    src/AI/Providers/OpenAIReply.h
+    src/AI/Providers/GeminiProvider.h
+    src/AI/Providers/GeminiReply.h
   )
   set(SOURCES
     ${SOURCES}
@@ -627,6 +645,20 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Output/Panel.cpp
     src/UI/Widgets/Output/PanelLayout.cpp
     src/Misc/ShortcutGenerator.cpp
+    src/AI/Logging.cpp
+    src/AI/KeyVault.cpp
+    src/AI/CommandRegistry.cpp
+    src/AI/ToolDispatcher.cpp
+    src/AI/Assistant.cpp
+    src/AI/SseEventReader.cpp
+    src/AI/ContextBuilder.cpp
+    src/AI/Conversation.cpp
+    src/AI/Providers/AnthropicProvider.cpp
+    src/AI/Providers/AnthropicReply.cpp
+    src/AI/Providers/OpenAIProvider.cpp
+    src/AI/Providers/OpenAIReply.cpp
+    src/AI/Providers/GeminiProvider.cpp
+    src/AI/Providers/GeminiReply.cpp
   )
 
   if(WIN32)
@@ -664,6 +696,11 @@ if(BUILD_COMMERCIAL)
     qml/Widgets/Dashboard/Output/DashboardToggle.qml
     qml/Widgets/Dashboard/Output/DashboardTextField.qml
     qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml
+    qml/AI/AssistantPanel.qml
+    qml/AI/KeyManagerDialog.qml
+    qml/AI/MessageBubble.qml
+    qml/AI/MessageList.qml
+    qml/AI/ToolCallCard.qml
   )
 endif()
 

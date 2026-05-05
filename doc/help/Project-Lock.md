@@ -2,7 +2,7 @@
 
 A password gate for the Project Editor. Lock a project once, and from that point on the editor opens behind a blurred "Project Locked" screen until someone enters the password. The dashboard keeps running normally — only editing is gated.
 
-This is a deliberately lightweight feature. The goal is **operator/engineer separation**: keep curious operators from rewiring frame parsers or moving widgets around mid-shift, without pretending to defend against an attacker with a text editor and ten minutes.
+This is a lightweight feature by design. The goal is **operator/engineer separation**: keep curious operators from rewiring frame parsers or moving widgets around mid-shift, without pretending to defend against an attacker with a text editor and ten minutes.
 
 > **Pro feature.** Lock is part of the commercial build. Locked projects still open under GPL builds — the editor is just hidden the same way it is in Pro.
 
@@ -133,7 +133,7 @@ Not directly. The `lockProject()` slot is editor-only. Scripted deployments shou
 Open the `.ssproj` file in any text editor and delete the `passwordHash` line. Save. The next open will be unlocked. This is intentional — see the threat model above.
 
 **Does the lock travel with the project file?**
-Yes. The hash is part of the project JSON. Email it, commit it, ship it on a USB stick — it's locked everywhere it lands.
+Yes. The hash is part of the project JSON. Email it, commit it, copy it onto a USB stick -- it stays locked wherever the file goes.
 
 **Does the lock affect the API or MCP commands?**
 No. The lock is purely a UI gate around the Project Editor. The API still serves frames, the MCP server still answers commands, and all scripting endpoints continue to work.

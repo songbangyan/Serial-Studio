@@ -122,7 +122,7 @@ Each drone has six widget groups on the dashboard.
 
 ## Flight models
 
-Both drones start grounded at their helipads near Zermatt. Send `TKO` to launch. Takeoff is intentionally very fast (reaches cruise altitude in about 2 seconds) so dashboard changes show up immediately during demos.
+Both drones start grounded at their helipads near Zermatt. Send `TKO` to launch. Takeoff reaches cruise altitude in about 2 seconds so dashboard changes show up immediately during demos.
 
 **Drone Alpha**, Zermatt village helipad (46.0207°N, 7.7491°E):
 

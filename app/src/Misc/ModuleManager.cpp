@@ -77,6 +77,7 @@
 #include "UI/WindowManager.h"
 
 #ifdef BUILD_COMMERCIAL
+#  include "AI/Assistant.h"
 #  include "DataModel/DBCImporter.h"
 #  include "DataModel/ModbusMapImporter.h"
 #  include "DataModel/PainterCodeEditor.h"
@@ -547,6 +548,7 @@ void Misc::ModuleManager::registerCommercialContextProperties(QQmlContext* ctx)
   ctx->setContextProperty("Cpp_Sessions_Player", &Sessions::Player::instance());
   ctx->setContextProperty("Cpp_Sessions_Manager", &Sessions::DatabaseManager::instance());
   ctx->setContextProperty("Cpp_ShortcutGenerator", &Misc::ShortcutGenerator::instance());
+  ctx->setContextProperty("Cpp_AI_Assistant", &AI::Assistant::instance());
 }
 #endif
 

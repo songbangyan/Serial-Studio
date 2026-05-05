@@ -1,6 +1,6 @@
 # MQTT integration
 
-MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe messaging protocol built for constrained devices and unreliable networks. Serial Studio Pro includes an MQTT client that can subscribe to broker topics to receive telemetry, or publish incoming frame data to a broker for other apps to consume. This is a Pro feature.
+MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe messaging protocol designed for constrained devices and unreliable networks. Serial Studio Pro includes an MQTT client that can subscribe to broker topics to receive telemetry, or publish incoming frame data to a broker for other apps to consume. This is a Pro feature.
 
 ## MQTT architecture
 

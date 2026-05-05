@@ -261,6 +261,19 @@ Rectangle {
         ToolTip.text: qsTr("Browse and install extensions")
       }
 
+      Widgets.ToolbarButton {
+        text: qsTr("Assistant")
+        Layout.alignment: Qt.AlignLeft
+        onClicked: {
+          if (app.proVersion)
+            app.showAIAssistant()
+          else
+            app.showAIProUpgradeNotice()
+        }
+        icon.source: "qrc:/icons/toolbar/ai.svg"
+        ToolTip.text: qsTr("Chat with an AI to build and edit your project")
+      }
+
       Loader {
         Layout.fillHeight: true
         active: Cpp_CommercialBuild

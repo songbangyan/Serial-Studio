@@ -24,6 +24,7 @@
 #include <QJsonArray>
 
 #include "API/CommandRegistry.h"
+#include "API/EnumLabels.h"
 #include "DataModel/Frame.h"
 #include "IO/ConnectionManager.h"
 
@@ -272,21 +273,43 @@ API::CommandResponse API::Handlers::IOManagerHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  auto& manager = IO::ConnectionManager::instance();
+  auto& manager     = IO::ConnectionManager::instance();
+  const int busInt  = static_cast<int>(manager.busType());
+  const bool ok     = manager.configurationOk();
+  const bool live   = manager.isConnected();
+  const bool paused = manager.paused();
 
   QJsonObject result;
-  result[QStringLiteral("isConnected")]     = manager.isConnected();
-  result[QStringLiteral("paused")]          = manager.paused();
-  result[Keys::BusType]                     = static_cast<int>(manager.busType());
-  result[QStringLiteral("configurationOk")] = manager.configurationOk();
+  result[QStringLiteral("isConnected")]     = live;
+  result[QStringLiteral("paused")]          = paused;
+  result[Keys::BusType]                     = busInt;
+  result[QStringLiteral("busTypeLabel")]    = API::EnumLabels::busTypeLabel(busInt);
+  result[QStringLiteral("busTypeSlug")]     = API::EnumLabels::busTypeSlug(busInt);
+  result[QStringLiteral("configurationOk")] = ok;
   result[QStringLiteral("readOnly")]        = manager.readOnly();
   result[QStringLiteral("readWrite")]       = manager.readWrite();
 
-  // Include bus type name
+  // Include bus type name (legacy field, kept for back-compat)
   const auto& availableBuses = manager.availableBuses();
-  const int busTypeIndex     = static_cast<int>(manager.busType());
-  if (busTypeIndex >= 0 && busTypeIndex < availableBuses.count())
-    result[QStringLiteral("busTypeName")] = availableBuses.at(busTypeIndex);
+  if (busInt >= 0 && busInt < availableBuses.count())
+    result[QStringLiteral("busTypeName")] = availableBuses.at(busInt);
+
+  // Human-readable summary line for the AI
+  QString summary;
+  if (live)
+    summary = QStringLiteral("Connected via %1%2.")
+                .arg(API::EnumLabels::busTypeLabel(busInt))
+                .arg(paused ? QStringLiteral(" (paused)") : QString());
+  else if (!ok)
+    summary = QStringLiteral("Not connected. The %1 driver is not fully "
+                             "configured yet.")
+                .arg(API::EnumLabels::busTypeLabel(busInt));
+  else
+    summary = QStringLiteral("Not connected. %1 is configured and ready "
+                             "to open.")
+                .arg(API::EnumLabels::busTypeLabel(busInt));
+
+  result[QStringLiteral("_summary")] = summary;
 
   return CommandResponse::makeSuccess(id, result);
 }

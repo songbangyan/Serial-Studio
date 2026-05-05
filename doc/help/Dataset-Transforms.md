@@ -65,7 +65,7 @@ If the function returns `nil` (Lua), `undefined`/`NaN`/`Infinity` (JS), or if an
 
 Variables declared at the top level of the transform code (outside the `transform()` function) persist between frames. That's how filters, accumulators, and other stateful transforms keep state across calls.
 
-The key rule: use `local` (Lua) or `var` (JavaScript) at the top of the file. Don't rely on bare globals. Serial Studio deliberately isolates each dataset's top-level state so two datasets using the same template (for example two EMAs on two different channels) can't clobber each other's variables.
+The key rule: use `local` (Lua) or `var` (JavaScript) at the top of the file. Don't rely on bare globals. Serial Studio isolates each dataset's top-level state so two datasets using the same template (for example two EMAs on two different channels) can't clobber each other's variables.
 
 **Lua: declare `local` at the top of the file:**
 

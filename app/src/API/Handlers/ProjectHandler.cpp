@@ -27,6 +27,7 @@
 #include <QJsonObject>
 
 #include "API/CommandRegistry.h"
+#include "API/EnumLabels.h"
 #include "API/PathPolicy.h"
 #include "API/SchemaBuilder.h"
 #include "AppState.h"
@@ -36,6 +37,16 @@
 #include "DataModel/ProjectModel.h"
 #include "IO/ConnectionManager.h"
 #include "SerialStudio.h"
+
+/** @brief Appends a dataset's compatible DashboardWidget enums to compat (deduped). */
+static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& compat)
+{
+  for (const auto w : SerialStudio::getDashboardWidgets(ds)) {
+    const auto v = static_cast<int>(w);
+    if (!compat.contains(v))
+      compat.append(v);
+  }
+}
 
 //--------------------------------------------------------------------------------------------------
 // Command registration
@@ -405,14 +416,18 @@ void API::Handlers::ProjectHandler::registerListCommands()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Create new project
+ * @brief Reset the active project to a blank slate.
  */
 API::CommandResponse API::Handlers::ProjectHandler::fileNew(const QString& id,
                                                             const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  Q_UNUSED(params);
 
+  DataModel::ProjectModel::instance().setSuppressMessageBoxes(true);
   DataModel::ProjectModel::instance().newJsonFile();
+  DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
+
+  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
 
   QJsonObject result;
   result[QStringLiteral("created")] = true;
@@ -1162,10 +1177,58 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
   const auto& groups = DataModel::ProjectModel::instance().groups();
 
   QJsonArray groups_array;
-  for (const auto& group : groups)
-    groups_array.append(DataModel::serialize(group));
+  for (const auto& group : groups) {
+    QJsonObject obj = DataModel::serialize(group);
+
+    obj[QStringLiteral("datasetCount")] = static_cast<int>(group.datasets.size());
+
+    // Dataset titles + units to disambiguate groups beyond "groupId N"
+    QJsonArray ds_summary;
+    for (const auto& ds : group.datasets) {
+      QJsonObject d;
+      d[QStringLiteral("index")] = ds.index;
+      d[QStringLiteral("title")] = ds.title;
+      if (!ds.units.isEmpty())
+        d[QStringLiteral("units")] = ds.units;
+
+      ds_summary.append(d);
+    }
+    obj[QStringLiteral("datasetSummary")] = ds_summary;
+
+    // Precomputed DashboardWidget enums accepted by workspace-add for this group
+    QJsonArray compat;
+    const auto group_w = static_cast<int>(SerialStudio::getDashboardWidget(group));
+    if (group_w != SerialStudio::DashboardNoWidget)
+      compat.append(group_w);
+
+    for (const auto& ds : group.datasets)
+      appendDatasetWidgetTypes(ds, compat);
+
+    obj[QStringLiteral("compatibleWidgetTypes")] = compat;
+
+    groups_array.append(obj);
+  }
+
+  QString summary;
+  if (groups.empty()) {
+    summary = QStringLiteral("No groups configured.");
+  } else {
+    QStringList names;
+    for (const auto& g : groups) {
+      const auto widgetStr = g.widget.simplified();
+      names.append(
+        QStringLiteral("\"%1\"%2")
+          .arg(g.title)
+          .arg(widgetStr.isEmpty() ? QString() : QStringLiteral(" (%1)").arg(widgetStr)));
+    }
+    summary = QStringLiteral("%1 group%2: %3.")
+                .arg(groups.size())
+                .arg(groups.size() == 1 ? QString() : QStringLiteral("s"))
+                .arg(names.join(QStringLiteral(", ")));
+  }
 
   QJsonObject result;
+  result[QStringLiteral("_summary")]   = summary;
   result[QStringLiteral("groups")]     = groups_array;
   result[QStringLiteral("groupCount")] = static_cast<int>(groups.size());
   return CommandResponse::makeSuccess(id, result);
@@ -1188,15 +1251,57 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 
   for (const auto& group : groups) {
     for (const auto& dataset : group.datasets) {
-      QJsonObject dataset_obj                   = DataModel::serialize(dataset);
+      QJsonObject dataset_obj = DataModel::serialize(dataset);
+
       dataset_obj[QStringLiteral("groupId")]    = group.groupId;
       dataset_obj[QStringLiteral("groupTitle")] = group.title;
+
+      // Visualization flags rolled into one comma-separated summary string
+      QStringList enabled;
+      if (dataset.plt)
+        enabled.append(QStringLiteral("plot"));
+
+      if (dataset.fft)
+        enabled.append(QStringLiteral("FFT"));
+
+      if (dataset.led)
+        enabled.append(QStringLiteral("LED"));
+
+      if (dataset.log)
+        enabled.append(QStringLiteral("log"));
+
+      if (dataset.waterfall)
+        enabled.append(QStringLiteral("waterfall"));
+
+      if (dataset.alarmEnabled)
+        enabled.append(QStringLiteral("alarm"));
+
+      if (!dataset.widget.isEmpty())
+        enabled.append(dataset.widget);
+
+      dataset_obj[QStringLiteral("enabledFeatures")] =
+        enabled.isEmpty() ? QStringLiteral("plain numeric") : enabled.join(QStringLiteral(", "));
+
+      dataset_obj[QStringLiteral("hasTransform")] = !dataset.transformCode.isEmpty();
+      dataset_obj[QStringLiteral("isVirtual")]    = dataset.virtual_;
+
       datasets_array.append(dataset_obj);
       ++total_datasets;
     }
   }
 
+  QString summary;
+  if (total_datasets == 0) {
+    summary = QStringLiteral("No datasets configured.");
+  } else {
+    summary = QStringLiteral("%1 datasets across %2 group%3.")
+                .arg(total_datasets)
+                .arg(groups.size())
+                .arg(groups.size() == 1 ? QString() : QStringLiteral("s"));
+  }
+
   QJsonObject result;
+  result[QStringLiteral("_summary")]     = summary;
   result[QStringLiteral("datasets")]     = datasets_array;
   result[QStringLiteral("datasetCount")] = total_datasets;
   return CommandResponse::makeSuccess(id, result);

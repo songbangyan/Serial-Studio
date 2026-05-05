@@ -109,10 +109,10 @@ python3 csv2wav.py input.csv [output.wav] [--rate <hz>] [--in_format <type>]
 - `--in_format`: input format (`float32`, `int16`, `int24`, `int32`, `uint8`).
 
 > [!TIP]
-> For advanced resampling, route audio through a [virtual loopback device](https://existential.audio/blackhole/) and set the target frequency with [Serial Studio](https://github.com/Serial-Studio/Serial-Studio). Then run `csv2wav.py` to export at the new frequency. This trick often delivers some of the cleanest downsampling results you'll hear, nice for slowed and reverb style mixes.
+> For advanced resampling, route audio through a [virtual loopback device](https://existential.audio/blackhole/) and set the target frequency with [Serial Studio](https://github.com/Serial-Studio/Serial-Studio). Then run `csv2wav.py` to export at the new frequency. This produces clean downsampling results suitable for slowed and reverb style mixes.
 
 ## Troubleshooting
 
-- **WAV plays silence.** Check whether your CSV actually has audio values, or just zeros.
+- **WAV plays silence.** Check whether your CSV has audio values, or just zeros.
 - **Distortion.** Input values may exceed [-1, 1]. Normalize or rescale properly.
 - **Wrong channel order.** Check that your audio source is mapped correctly in Serial Studio.

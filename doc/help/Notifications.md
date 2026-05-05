@@ -63,7 +63,7 @@ Five functions are available everywhere:
 
 ### Argument overloads
 
-Every `notifyInfo` / `notifyWarning` / `notifyCritical` / `notifyClear` accepts one, two, or three arguments. When you don't pass a channel, the event lands on the default `"Dashboard"` channel:
+Every `notifyInfo` / `notifyWarning` / `notifyCritical` / `notifyClear` accepts one, two, or three arguments. When you don't pass a channel, the event is posted to the default `"Dashboard"` channel:
 
 | Arguments                              | Behaviour                                                                  |
 |----------------------------------------|----------------------------------------------------------------------------|
@@ -239,7 +239,7 @@ function transform(value) {
 
 ### Example 5: single-argument shorthand from a frame parser
 
-A parser detects a bad checksum. Post a one-liner without specifying a channel; the event lands on the default `"Dashboard"` channel:
+A parser detects a bad checksum. Post a one-liner without specifying a channel; the event is posted to the default `"Dashboard"` channel:
 
 **Lua:**
 

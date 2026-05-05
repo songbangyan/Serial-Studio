@@ -59,8 +59,8 @@ Serial/UART is the most common way to connect microcontrollers to a computer. It
 **Platform considerations:**
 
 - **Linux:** The user has to belong to the `dialout` (or `uucp`) group to access `/dev/ttyUSBx` and `/dev/ttyACMx` without root.
-- **Windows:** CH340 and PL2303 adapters may need a manually installed driver. FTDI and CP210x drivers ship with Windows 10+.
-- **macOS:** Most USB-serial adapters work out of the box on macOS 11+. Older CP210x chips may need a signed kext or VCP driver.
+- **Windows:** CH340 and PL2303 adapters may need a manually installed driver. FTDI and CP210x drivers are bundled with Windows 10+.
+- **macOS:** Most USB-serial adapters work without setup on macOS 11+. Older CP210x chips may need a signed kext or VCP driver.
 
 ---
 
@@ -136,7 +136,7 @@ These protocols need a Serial Studio Pro license.
 
 ### MQTT
 
-MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe messaging protocol built for constrained devices and unreliable networks. Serial Studio Pro can act as an MQTT subscriber (receiving telemetry from a broker) or as a publisher (forwarding received frame data to a broker).
+MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe messaging protocol designed for constrained devices and unreliable networks. Serial Studio Pro can act as an MQTT subscriber (receiving telemetry from a broker) or as a publisher (forwarding received frame data to a broker).
 
 **When to use it:**
 

@@ -23,8 +23,10 @@
 
 #include <QJsonArray>
 #include <QMetaObject>
+#include <QStringList>
 
 #include "API/CommandRegistry.h"
+#include "API/EnumLabels.h"
 #include "API/SchemaBuilder.h"
 #include "AppState.h"
 #include "DataModel/Frame.h"
@@ -161,27 +163,53 @@ API::CommandResponse API::Handlers::SourceHandler::sourceList(const QString& id,
 {
   (void)params;
 
-  // Build per-source metadata array
+  // Per-source metadata: raw enum + human-readable label
   const auto& sources = DataModel::ProjectModel::instance().sources();
   QJsonArray arr;
   for (const auto& src : sources) {
     QJsonObject obj;
-    obj[Keys::SourceId]                   = src.sourceId;
-    obj[Keys::Title]                      = src.title;
-    obj[Keys::BusType]                    = src.busType;
-    obj[Keys::FrameStart]                 = src.frameStart;
-    obj[Keys::FrameEnd]                   = src.frameEnd;
-    obj[Keys::ChecksumAlgorithm]          = src.checksumAlgorithm;
-    obj[Keys::FrameDetection]             = src.frameDetection;
-    obj[Keys::DecoderMethod]              = src.decoderMethod;
-    obj[Keys::HexadecimalDelimiters]      = src.hexadecimalDelimiters;
-    obj[QStringLiteral("hasFrameParser")] = !src.frameParserCode.isEmpty();
+    obj[Keys::SourceId]                 = src.sourceId;
+    obj[Keys::Title]                    = src.title;
+    obj[Keys::BusType]                  = src.busType;
+    obj[QStringLiteral("busTypeLabel")] = EnumLabels::busTypeLabel(src.busType);
+    obj[QStringLiteral("busTypeSlug")]  = EnumLabels::busTypeSlug(src.busType);
+    obj[Keys::FrameStart]               = src.frameStart;
+    obj[Keys::FrameEnd]                 = src.frameEnd;
+    obj[Keys::ChecksumAlgorithm]        = src.checksumAlgorithm;
+    obj[Keys::FrameDetection]           = src.frameDetection;
+    obj[QStringLiteral("frameDetectionLabel")] =
+      EnumLabels::frameDetectionLabel(src.frameDetection);
+    obj[Keys::DecoderMethod]                  = src.decoderMethod;
+    obj[QStringLiteral("decoderMethodLabel")] = EnumLabels::decoderMethodLabel(src.decoderMethod);
+    obj[Keys::HexadecimalDelimiters]          = src.hexadecimalDelimiters;
+    obj[QStringLiteral("hasFrameParser")]     = !src.frameParserCode.isEmpty();
+    obj[Keys::FrameParserLanguage]            = src.frameParserLanguage;
     arr.append(obj);
   }
 
+  // Human-readable summary so the AI doesn't have to invent one.
+  QString summary;
+  if (sources.empty()) {
+    summary = QStringLiteral("No sources are configured.");
+  } else if (sources.size() == 1) {
+    const auto& s = sources.front();
+    summary       = QStringLiteral("One source: \"%1\" via %2, frames %3.")
+                .arg(s.title,
+                     EnumLabels::busTypeLabel(s.busType),
+                     EnumLabels::frameDetectionLabel(s.frameDetection));
+  } else {
+    QStringList names;
+    for (const auto& s : sources)
+      names.append(QStringLiteral("\"%1\" (%2)").arg(s.title, EnumLabels::busTypeSlug(s.busType)));
+
+    summary =
+      QStringLiteral("%1 sources: %2.").arg(sources.size()).arg(names.join(QStringLiteral(", ")));
+  }
+
   QJsonObject result;
-  result[Keys::Sources]           = arr;
-  result[QStringLiteral("count")] = static_cast<int>(sources.size());
+  result[QStringLiteral("_summary")] = summary;
+  result[Keys::Sources]              = arr;
+  result[QStringLiteral("count")]    = static_cast<int>(sources.size());
   return CommandResponse::makeSuccess(id, result);
 }
 

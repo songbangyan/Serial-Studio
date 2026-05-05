@@ -1,0 +1,154 @@
+# AI Assistant
+
+A chat-based assistant that lives inside Serial Studio and edits the project for you. Open it from the toolbar (the small spark icon, next to *Open Project*) or from the **Project Editor** toolbar, describe what you want to build, and the assistant configures sources, groups, datasets, frame parsers, transforms, output widgets, painters, and workspaces by calling the same in-process API your scripts and the MCP server already use.
+
+It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, or Google Gemini) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected.
+
+> **Pro feature.** The Assistant button is visible in GPL builds, but clicking it opens an upgrade notice. The Pro build is what wires the chat to a provider. Operator deployments (`--runtime`) hide the Assistant entirely; it is a build-time author tool, not something you ship to operators.
+
+## What it can do
+
+The assistant talks to Serial Studio through the same command surface as the MCP/JSON-RPC API — see the [API Reference](API-Reference.md) for the full list. The short version: anything you can do in the Project Editor, the assistant can do for you, with two important caveats:
+
+- **It does not connect, disconnect, or change driver settings** while you are mid-shift. Anything that pokes the running connection (open/close port, change baud rate, change Modbus slave, toggle MQTT) is permanently blocked from the AI surface so a wrong answer cannot knock you offline.
+- **It can read documentation.** When you ask about a feature it doesn't already know, it pulls the relevant page from `doc/help/` directly off the Serial Studio repo so its answer matches the version you are running.
+
+Typical things people ask it to do:
+
+- "List the sources in this project."
+- "Add a UART source for an Arduino at 115 200 baud, frame end on `\n`."
+- "Write a CSV frame parser for me — three floats and a status byte."
+- "Suggest dashboard widgets for this data."
+- "Build me a workspace called *Engine* with the RPM gauge, oil-pressure plot, and the alarm panel."
+- "Add a moving-average transform to dataset *Speed*."
+- "Open the painter widget docs and walk me through writing one for a compass."
+
+The four chips on the empty-conversation card are starter prompts — click one to drop it into the input box and edit before sending.
+
+---
+
+## Picking a provider
+
+Three providers are wired in. They all do roughly the same job; the trade-offs are price, speed, and how generous the free tier is.
+
+| Provider | Default model | What it costs | What it does well |
+|---|---|---|---|
+| **Anthropic** (Claude) | Haiku 4.5 | ~$1 / $5 per million tokens (in/out) | Default. Streaming, tool use, prompt caching, extended thinking on Sonnet/Opus. Sonnet 4.6 and Opus 4.7 are also selectable for harder tasks. |
+| **OpenAI** | GPT-4.1 mini | Pay-per-token; mini tier is cheap | GPT-4.1, GPT-4o, GPT-4o mini also available. |
+| **Google Gemini** | 2.5 Flash | Generous free tier (rate-limited via AI Studio) | 2.5 Flash and 2.0 Flash run on the free tier. 2.5 Pro is paid. |
+
+You switch providers from the footer combo box. Each provider keeps its own model selection — Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
+
+> **Anthropic is the primary target.** Prompt caching, adaptive thinking budgets, and the curated essential-tool set are all tuned for Claude. The other two work, and work well, but Anthropic is what gets the sharpest behavior by default.
+
+### Getting a key
+
+The empty-conversation card has a **Get a key from <provider>** link that opens the right signup page. Once you have the key, click **Open API Key Setup** (or the wrench icon in the footer), paste the key, and save. The key is checked, redacted in the UI (you only ever see the last few characters), and persisted under your local app settings encrypted with a per-machine key.
+
+You can change provider, change model, or revoke a key at any time from the same dialog. Revoking a key clears it from disk; revoking the active provider's key drops you back to the welcome screen until you paste a new one.
+
+---
+
+## How a turn works
+
+```mermaid
+flowchart TD
+    A["You type a message"] --> B["Assistant streams its reply<br/>(text + tool calls)"]
+    B --> C{"Tool call?"}
+    C -- "Read-only<br/>(safe)" --> D["Auto-executed,<br/>result fed back to model"]
+    C -- "Mutating<br/>(confirm)" --> E["Card shows in chat<br/>with Approve / Deny buttons"]
+    C -- "Connection / runtime<br/>(blocked)" --> F["Refused.<br/>Model is told and continues."]
+    E -- "Approve" --> D
+    E -- "Deny" --> G["Reported back to model;<br/>turn continues"]
+    D --> B
+    G --> B
+    B --> H["Final answer in chat"]
+```
+
+Each tool call shows up in the chat as a small expandable card with the command name, the arguments, and (after it runs) the result. You can click the card to inspect what was sent and what came back — useful when you want to learn the underlying API, or when something goes sideways.
+
+### The three safety tiers
+
+Every command is tagged at startup. There are three buckets:
+
+| Tier | Behavior | Examples |
+|---|---|---|
+| **Safe** | Auto-runs. No prompt. Read-only inspection. | `project.groups.list`, `dashboard.getStatus`, `io.driver.uart.getPortList`, every `get*` and `*.list` |
+| **Confirm** | Card with **Approve** / **Deny** buttons. Anything that mutates the project counts. | `project.group.add`, `project.dataset.update`, `project.workspaces.add`, `project.file.save` |
+| **Blocked** | Refused outright. The model is told it isn't available. | `io.manager.connect`, `io.manager.disconnect`, `console.send`, `licensing.activate`, `mqtt.toggleConnection`, every driver `set*` |
+
+You can approve a single call (**Approve**) or, when the assistant queues several mutations in a row, approve the whole group at once (**Approve all of these**). Denial is logged and the assistant is told — it will usually offer an alternative or back off, not retry blindly.
+
+The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers.
+
+---
+
+## The composer
+
+The bar at the bottom is the input. It has three controls:
+
+- **Text field** — type your prompt, press **Enter** to send.
+- **Trash icon** — wipes the conversation. Cached prompt context is kept on the provider side (cheaper for follow-ups), but the history shown in the panel is cleared.
+- **Send / Cancel** — round button on the far right. While the model is generating, the icon flips to **Cancel** and clicking it stops the stream. Anything already produced stays in the chat.
+
+While the assistant is working you'll see a thin animated stripe under the message list. The footer **Status** pill shows *Working* or *Ready* and, when prompt caching is in use, how many cached tokens the current turn read from or wrote to the cache.
+
+---
+
+## Privacy and what gets sent
+
+Read this before pasting anything sensitive. Every message you send goes to the provider you chose. Specifically:
+
+- **Sent on every turn**: your message, the conversation history so far, the tool catalog, and a snapshot of the live project state (sources, groups, datasets, frame parser code, transforms, etc — the same JSON your `.ssproj` would contain). Frame parser scripts and transform scripts are part of that snapshot.
+- **Not sent**: live telemetry data, your raw serial bytes, your dashboard frames, your CSV/MDF4 logs, your session database, the API key for any *other* provider.
+- **Stored where**: the API key is encrypted on this machine via Serial Studio's per-machine key derivation. The conversation history lives only in memory for the current panel session — closing the dialog (or clicking the trash) clears it.
+
+If your project file contains commercial firmware code or proprietary protocol notes inside frame parsers or transforms, that text will travel to the provider with each turn. Treat the provider's data-handling policy as the relevant constraint, not Serial Studio's.
+
+---
+
+## Documentation lookup
+
+The assistant can pull `doc/help/*.md` pages directly off the Serial Studio GitHub repo when it needs them. You'll see this as a tool call named `meta.fetchHelp` with a path like `Painter-Widget` or `JavaScript-API`. It is read-only and Safe. The first call usually grabs `help.json` (the page index), the second pulls the relevant page.
+
+For scripting, there's a parallel surface called `meta.fetchScriptingDocs` that returns the API reference for one of six scripting contexts (frame parser JS, frame parser Lua, dataset transform JS, dataset transform Lua, output widget JS, painter JS). The assistant is wired to call this **before** writing or modifying any script — that's why frame parsers it generates use real APIs and not made-up function names.
+
+---
+
+## Frequently asked
+
+**Does the assistant work offline?**
+No. It needs a network connection to reach the provider you picked. The rest of Serial Studio works offline regardless.
+
+**Can I use a self-hosted model (Ollama, LM Studio, llama.cpp, vLLM)?**
+Not yet. The three providers wired in v3.3 are Anthropic, OpenAI, and Google Gemini. A custom-endpoint slot is on the roadmap.
+
+**Can I see what the assistant is about to do before it does it?**
+Yes — that's exactly what the **Confirm** tier is for. The card shows the command name and the full arguments object before you approve.
+
+**Can the assistant connect or disconnect my device?**
+No. Connection-state changes (`io.manager.connect`, `io.manager.disconnect`, `io.manager.setPaused`, every `set*` on every driver) are permanently blocked. The assistant can read your device list and your current configuration, but it can't pick up the receiver.
+
+**Can it write data to my device?**
+No. `console.send`, `licensing.*` mutations, and `mqtt.toggleConnection` are blocked. If you want the assistant to drive a device, build an [Output Control](Output-Controls.md) and let it generate the JavaScript for you — *you* press the button.
+
+**Why does my project state show up in the prompt?**
+So the assistant can answer "what sources are configured?", "which datasets feed this group?", or "is the frame parser doing what I think it is?" without first running ten read-only tool calls. The state snapshot lives outside the cached prefix so it can change between turns without invalidating the cache.
+
+**The assistant suggested an API call that doesn't exist.**
+Tell it; it will usually call `meta.listCommands` or `meta.describeCommand` to recover. If you keep hitting hallucinated commands on a given provider, switch to a stronger model (Sonnet 4.6 or Opus 4.7 on Anthropic, GPT-4.1 on OpenAI, 2.5 Pro on Gemini).
+
+**Where do I report a bug or a wrong answer?**
+File an issue on the Serial Studio GitHub repo. Include the prompt, the reply, and ideally the project file (or a stripped-down repro). Provider name and model help too.
+
+---
+
+## See also
+
+- [API Reference](API-Reference.md): the command surface the assistant calls into.
+- [Project Editor](Project-Editor.md): the editor the assistant edits on your behalf.
+- [Frame Parser Scripting](JavaScript-API.md): JavaScript and Lua frame parser API.
+- [Dataset Value Transforms](Dataset-Transforms.md): per-dataset transform scripts.
+- [Painter Widget](Painter-Widget.md): the painter API the assistant references when asked to write one.
+- [Output Controls](Output-Controls.md): output widget framework, including transmit-function generation.
+- [Pro vs Free Features](Pro-vs-Free.md): what's included with a Pro license.

@@ -24,6 +24,7 @@
 #include <QJsonArray>
 
 #include "API/CommandRegistry.h"
+#include "API/EnumLabels.h"
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
@@ -294,15 +295,19 @@ API::CommandResponse API::Handlers::DashboardHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  const auto mode     = AppState::instance().operationMode();
-  const int modeIndex = static_cast<int>(mode);
-  const int fps       = Misc::TimerEvents::instance().fps();
-  const int points    = UI::Dashboard::instance().points();
+  const auto mode      = AppState::instance().operationMode();
+  const int modeIndex  = static_cast<int>(mode);
+  const int fps        = Misc::TimerEvents::instance().fps();
+  const int points     = UI::Dashboard::instance().points();
+  const int widgetCnt  = UI::Dashboard::instance().totalWidgetCount();
+  const int datasetCnt = static_cast<int>(UI::Dashboard::instance().datasets().size());
 
   QJsonObject result;
-  result[QStringLiteral("operationMode")] = modeIndex;
+  result[QStringLiteral("operationMode")]      = modeIndex;
+  result[QStringLiteral("operationModeLabel")] = API::EnumLabels::operationModeLabel(modeIndex);
+  result[QStringLiteral("operationModeSlug")]  = API::EnumLabels::operationModeSlug(modeIndex);
 
-  // Bounds-guarded mode name -- same rationale as getOperationMode
+  // Bounds-guarded mode name -- legacy field for back-compat
   static const QStringList kModeNames = {
     QStringLiteral("ProjectFile"), QStringLiteral("ConsoleOnly"), QStringLiteral("QuickPlot")};
   result[QStringLiteral("operationModeName")] = (modeIndex >= 0 && modeIndex < kModeNames.size())
@@ -310,8 +315,19 @@ API::CommandResponse API::Handlers::DashboardHandler::getStatus(const QString& i
                                                 : QStringLiteral("Unknown");
   result[QStringLiteral("fps")]               = fps;
   result[QStringLiteral("points")]            = points;
-  result[QStringLiteral("widgetCount")]       = UI::Dashboard::instance().totalWidgetCount();
-  result[QStringLiteral("datasetCount")]      = UI::Dashboard::instance().datasets().size();
+  result[QStringLiteral("widgetCount")]       = widgetCnt;
+  result[QStringLiteral("datasetCount")]      = datasetCnt;
+
+  result[QStringLiteral("_summary")] =
+    QStringLiteral("Dashboard mode: %1. %2 widget%3 visible across %4 dataset%5, "
+                   "rendering at %6 fps with %7 points retained per series.")
+      .arg(API::EnumLabels::operationModeLabel(modeIndex))
+      .arg(widgetCnt)
+      .arg(widgetCnt == 1 ? QString() : QStringLiteral("s"))
+      .arg(datasetCnt)
+      .arg(datasetCnt == 1 ? QString() : QStringLiteral("s"))
+      .arg(fps)
+      .arg(points);
 
   return CommandResponse::makeSuccess(id, result);
 }

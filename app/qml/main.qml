@@ -118,6 +118,8 @@ Item {
       projectEditorLoader.item.visible = false
 
     dbExplorerLoader.close()
+    aiAssistantLoader.close()
+    aiProUpgradeLoader.close()
     quitTimer.restart()
   }
 
@@ -413,6 +415,24 @@ Item {
   }
 
   //
+  // AI assistant (Pro, author-only) -- lazy DialogLoader, hosts a SmartWindow
+  //
+  DialogLoader {
+    id: aiAssistantLoader
+
+    source: "qrc:/serial-studio.com/gui/qml/AI/AssistantPanel.qml"
+  }
+
+  //
+  // AI Pro-upgrade notice -- shown on non-Pro builds when the AI button is clicked
+  //
+  DialogLoader {
+    id: aiProUpgradeLoader
+
+    source: "qrc:/serial-studio.com/gui/qml/AI/ProUpgradeNotice.qml"
+  }
+
+  //
   // Show the main window
   //
   function showMainWindow() {
@@ -557,5 +577,21 @@ Item {
   function showShortcutGenerator() {
     if (Cpp_CommercialBuild && !app.runtimeMode)
       shortcutGeneratorDialog.activate()
+  }
+
+  //
+  // AI assistant -- Pro, author-only
+  //
+  function showAIAssistant() {
+    if (Cpp_CommercialBuild && !app.runtimeMode)
+      aiAssistantLoader.activate()
+  }
+
+  //
+  // AI Pro-upgrade notice -- shown on non-Pro builds when the AI button is clicked
+  //
+  function showAIProUpgradeNotice() {
+    if (!app.runtimeMode)
+      aiProUpgradeLoader.activate()
   }
 }

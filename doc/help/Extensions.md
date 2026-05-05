@@ -78,7 +78,7 @@ If a plugin isn't available for your platform, the Install button is disabled an
 
 ## Repositories
 
-A repository is a URL pointing to a `manifest.json` file that lists available extensions. Serial Studio ships with a default community repository.
+A repository is a URL pointing to a `manifest.json` file that lists available extensions. Serial Studio is bundled with a default community repository.
 
 ### Managing repositories (Pro)
 

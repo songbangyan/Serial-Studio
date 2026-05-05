@@ -465,7 +465,7 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the full guide.
 
 **macOS:**
 
-- Install a driver if needed (modern macOS ships with most).
+- Install a driver if needed (modern macOS includes most).
 - Check `/dev/tty.usbserial-*` or `/dev/tty.usbmodem-*`.
 
 **Linux:**
@@ -590,7 +590,7 @@ Check current pricing at [serial-studio.com](https://serial-studio.com). Typical
 - **Individual license:** around $9.99/month, or $179.00 one-time.
 - **Team and enterprise licenses:** discounts available.
 
-The official binary ships with a 14-day free trial.
+The official binary includes a 14-day free trial.
 
 ---
 
@@ -782,7 +782,7 @@ Not directly in the current version. Today, Serial Studio is mainly a receive-an
 
 ### Can I integrate Serial Studio with my CI/CD pipeline?
 
-Serial Studio is primarily a GUI app, not built for headless automation. That said:
+Serial Studio is primarily a GUI app and does not support headless automation. That said:
 
 - Serial Studio exports CSV in real time.
 - Write a script that watches the CSV file and validates the data.
@@ -883,7 +883,7 @@ The Image View widget runs an independent frame reader alongside the telemetry p
 **Quick setup:**
 
 1. In the Project Editor, add a new group and set its widget type to **Image View**.
-2. Leave detection mode as **Autodetect** (works for most cameras out of the box).
+2. Leave detection mode as **Autodetect** (works for most cameras with no setup).
 3. Load your project and connect. The widget shows "Waiting for image…" until the first frame arrives.
 
 **Mixed telemetry and image stream.**

@@ -120,6 +120,14 @@ if [[ -f scripts/code-verify.py ]]; then
     python3 scripts/code-verify.py --check > /dev/null || echo "code-verify --check found issues"
 fi
 
+# documentation-verify scans Markdown (doc/help, README.md, AGENTS.md, examples/)
+# for AI-narration / marketing-copy patterns and writes `.doc-report` at the
+# repo root. It's read-only — no auto-fix — so reviewers can spot regressions.
+if [[ -f scripts/documentation-verify.py ]]; then
+    echo "Running documentation-verify..."
+    python3 scripts/documentation-verify.py --quiet || echo "documentation-verify found issues"
+fi
+
 # Get a list of changed files (unstaged + staged)
 echo "Checking for changes..."
 CHANGED=$(git status --short)

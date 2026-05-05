@@ -15,6 +15,7 @@
   { "id": "notifications", "title": "Notifications", "section": "Configuration", "file": "Notifications.md" },
   { "id": "data-tables", "title": "Data Tables", "section": "Configuration", "file": "Data-Tables.md" },
   { "id": "extensions", "title": "Extensions", "section": "Configuration", "file": "Extensions.md" },
+  { "id": "ai-assistant", "title": "AI Assistant", "section": "Configuration", "file": "AI-Assistant.md" },
   { "id": "communication-protocols", "title": "Communication Protocols", "section": "Connectivity", "file": "Communication-Protocols.md" },
   { "id": "protocol-setup-guides", "title": "Protocol Setup Guides", "section": "Connectivity", "file": "Protocol-Setup-Guides.md" },
   { "id": "mqtt-integration", "title": "MQTT Integration", "section": "Connectivity", "file": "MQTT-Integration.md" },

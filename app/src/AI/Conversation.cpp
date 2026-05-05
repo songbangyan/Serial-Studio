@@ -1,0 +1,1363 @@
+/*
+ * Serial Studio - https://serial-studio.com/
+ *
+ * Copyright (C) 2020-2025 Alex Spataru <https://aspatru.com>
+ *
+ * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
+ */
+
+#include "AI/Conversation.h"
+
+#include <QJsonDocument>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QTextDocument>
+#include <QUrl>
+
+#include "AI/Assistant.h"
+#include "AI/CommandRegistry.h"
+#include "AI/ContextBuilder.h"
+#include "AI/Logging.h"
+#include "AI/Providers/Provider.h"
+#include "AI/ToolDispatcher.h"
+#include "Licensing/CommercialToken.h"
+
+//--------------------------------------------------------------------------------------------------
+// Construction / destruction
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Creates an idle conversation; provider and dispatcher are wired later. */
+AI::Conversation::Conversation(QObject* parent)
+  : QObject(parent)
+  , m_provider(nullptr)
+  , m_dispatcher(nullptr)
+  , m_reply(nullptr)
+  , m_assistantIndex(-1)
+  , m_thinkingIsSynthetic(false)
+  , m_outstandingToolResults(0)
+  , m_toolCallCount(0)
+  , m_cancelled(false)
+  , m_busy(false)
+  , m_lastAwaitingFlag(false)
+  , m_streamFlushTimer(new QTimer(this))
+  , m_streamDirty(false)
+{
+  // 30 Hz UI refresh: responsive without re-emitting on every provider chunk
+  m_streamFlushTimer->setInterval(33);
+  m_streamFlushTimer->setSingleShot(false);
+  connect(m_streamFlushTimer, &QTimer::timeout, this, &Conversation::flushPendingStreamUpdate);
+}
+
+/** @brief Aborts any in-flight reply and frees owned resources. */
+AI::Conversation::~Conversation()
+{
+  teardownReply();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Wiring
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Sets the active provider. The conversation does not take ownership. */
+void AI::Conversation::setProvider(Provider* provider)
+{
+  m_provider = provider;
+}
+
+/** @brief Sets the tool dispatcher. The conversation does not take ownership. */
+void AI::Conversation::setDispatcher(ToolDispatcher* dispatcher)
+{
+  m_dispatcher = dispatcher;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Property getters
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Returns the QVariantList of UI message rows. */
+QVariantList AI::Conversation::messages() const
+{
+  return m_uiMessages;
+}
+
+/** @brief Returns true when a request is in flight or a tool batch is pending. */
+bool AI::Conversation::busy() const noexcept
+{
+  return m_busy;
+}
+
+/** @brief Returns true when at least one tool call is awaiting user approval. */
+bool AI::Conversation::awaitingConfirmation() const noexcept
+{
+  return !m_awaitingConfirm.isEmpty();
+}
+
+/** @brief Returns the most recent error message, or empty. */
+QString AI::Conversation::lastError() const noexcept
+{
+  return m_lastError;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Public slots
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Sends a new user message after gating on Pro and idle state. */
+void AI::Conversation::start(const QString& userText)
+{
+  const auto trimmed = userText.trimmed();
+  if (trimmed.isEmpty())
+    return;
+
+  // Pro tier guard
+  const auto& tk = Licensing::CommercialToken::current();
+  if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro) {
+    setLastError(tr("AI Assistant requires a Pro license"));
+    Q_EMIT errorOccurred(m_lastError);
+    return;
+  }
+
+  if (!m_provider || !m_dispatcher) {
+    setLastError(tr("AI subsystem not initialized"));
+    Q_EMIT errorOccurred(m_lastError);
+    return;
+  }
+
+  if (m_busy) {
+    setLastError(tr("Already busy with a previous request"));
+    Q_EMIT errorOccurred(m_lastError);
+    return;
+  }
+
+  m_cancelled     = false;
+  m_toolCallCount = 0;
+  m_currentStopReason.clear();
+  setLastError(QString());
+
+  appendUserMessage(trimmed);
+  setBusy(true);
+  issueRequest();
+}
+
+/** @brief Aborts the in-flight reply and cancels any pending confirmations. */
+void AI::Conversation::cancel()
+{
+  m_cancelled = true;
+  m_streamFlushTimer->stop();
+  m_streamDirty = false;
+  if (m_reply)
+    m_reply->abort();
+
+  if (!m_awaitingConfirm.isEmpty()) {
+    for (auto it = m_awaitingConfirm.constBegin(); it != m_awaitingConfirm.constEnd(); ++it)
+      updateToolCallCard(it.key(), CallStatus::Denied);
+
+    m_awaitingConfirm.clear();
+    setAwaitingConfirmation(false);
+  }
+
+  setBusy(false);
+}
+
+/** @brief Approves a pending Confirm-tagged tool call by id. */
+void AI::Conversation::approveToolCall(const QString& callId)
+{
+  const auto it = m_awaitingConfirm.constFind(callId);
+  if (it == m_awaitingConfirm.constEnd())
+    return;
+
+  const auto pending = it.value();
+  m_awaitingConfirm.erase(it);
+  setAwaitingConfirmation(!m_awaitingConfirm.isEmpty());
+
+  runToolCall(callId, pending.name, pending.arguments, /*autoConfirmSafe=*/true);
+
+  if (m_outstandingToolResults == 0 && !m_awaitingConfirm.isEmpty())
+    return;
+
+  if (m_outstandingToolResults == 0)
+    resumeAfterToolBatch();
+}
+
+/** @brief Denies a pending Confirm-tagged tool call and feeds back a denial result. */
+void AI::Conversation::denyToolCall(const QString& callId)
+{
+  const auto it = m_awaitingConfirm.constFind(callId);
+  if (it == m_awaitingConfirm.constEnd())
+    return;
+
+  const auto pending = it.value();
+  m_awaitingConfirm.erase(it);
+  setAwaitingConfirmation(!m_awaitingConfirm.isEmpty());
+
+  QJsonObject denial;
+  denial[QStringLiteral("ok")]    = false;
+  denial[QStringLiteral("error")] = QStringLiteral("user_denied");
+  recordToolResult(callId, pending.name, denial);
+  updateToolCallCard(callId, CallStatus::Denied);
+
+  --m_outstandingToolResults;
+  if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty())
+    resumeAfterToolBatch();
+}
+
+/** @brief Approves every pending Confirm whose tool name starts with prefix. */
+void AI::Conversation::approveToolCallGroup(const QString& family)
+{
+  if (family.isEmpty())
+    return;
+
+  // Snapshot first -- approveToolCall mutates the map under us.
+  QStringList ids;
+  for (auto it = m_awaitingConfirm.constBegin(); it != m_awaitingConfirm.constEnd(); ++it)
+    if (it.value().name.startsWith(family + QLatin1Char('.')) || it.value().name == family)
+      ids.append(it.key());
+
+  for (const auto& id : ids)
+    approveToolCall(id);
+}
+
+/** @brief Denies every pending Confirm whose tool name starts with prefix. */
+void AI::Conversation::denyToolCallGroup(const QString& family)
+{
+  if (family.isEmpty())
+    return;
+
+  QStringList ids;
+  for (auto it = m_awaitingConfirm.constBegin(); it != m_awaitingConfirm.constEnd(); ++it)
+    if (it.value().name.startsWith(family + QLatin1Char('.')) || it.value().name == family)
+      ids.append(it.key());
+
+  for (const auto& id : ids)
+    denyToolCall(id);
+}
+
+/** @brief Clears history and UI state. Aborts any in-flight reply. */
+void AI::Conversation::clear()
+{
+  cancel();
+  m_history = QJsonArray();
+  m_uiMessages.clear();
+  m_assistantIndex = -1;
+  m_assistantText.clear();
+  m_pendingToolUseBlocks    = QJsonArray();
+  m_pendingToolResultBlocks = QJsonArray();
+  m_outstandingToolResults  = 0;
+  m_awaitingConfirm.clear();
+  setLastError(QString());
+  Q_EMIT messagesChanged();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Reply slot handlers
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Appends streamed text and schedules a coalesced UI refresh. */
+void AI::Conversation::onPartialText(const QString& chunk)
+{
+  if (m_cancelled || m_assistantIndex < 0)
+    return;
+
+  // First real text token: drop the synthetic "Sending..." placeholder
+  if (m_thinkingIsSynthetic && !m_assistantThinking.isEmpty()) {
+    m_assistantThinking.clear();
+    m_thinkingIsSynthetic = false;
+  }
+
+  m_assistantText.append(chunk);
+  m_streamDirty = true;
+  if (!m_streamFlushTimer->isActive())
+    m_streamFlushTimer->start();
+}
+
+/** @brief Appends streamed thinking text to the live assistant preamble. */
+void AI::Conversation::onPartialThinking(const QString& chunk)
+{
+  if (m_cancelled || m_assistantIndex < 0)
+    return;
+
+  // Real thinking from the provider supersedes any synthetic placeholder
+  if (m_thinkingIsSynthetic) {
+    m_assistantThinking.clear();
+    m_thinkingIsSynthetic = false;
+  }
+
+  m_assistantThinking.append(chunk);
+  m_streamDirty = true;
+  if (!m_streamFlushTimer->isActive())
+    m_streamFlushTimer->start();
+}
+
+/** @brief Pushes accumulated text/thinking into the live row. Coalesced. */
+void AI::Conversation::flushPendingStreamUpdate()
+{
+  if (!m_streamDirty) {
+    m_streamFlushTimer->stop();
+    return;
+  }
+
+  m_streamDirty = false;
+
+  if (m_assistantIndex < 0 || m_assistantIndex >= m_uiMessages.size())
+    return;
+
+  auto map = m_uiMessages.at(m_assistantIndex).toMap();
+  map.insert(QStringLiteral("text"), m_assistantText);
+  map.insert(QStringLiteral("thinking"), m_assistantThinking);
+  map.insert(QStringLiteral("streaming"), true);
+  m_uiMessages[m_assistantIndex] = map;
+  Q_EMIT messagesChanged();
+}
+
+/** @brief Records a tool-use request and dispatches per safety tag. */
+void AI::Conversation::onToolCallRequested(const QString& callId,
+                                           const QString& name,
+                                           const QJsonObject& arguments)
+{
+  if (m_cancelled)
+    return;
+
+  ++m_toolCallCount;
+  if (m_toolCallCount > kMaxToolCalls) {
+    qCWarning(serialStudioAI) << "Tool-call budget exceeded; aborting";
+    if (m_reply)
+      m_reply->abort();
+
+    setLastError(tr("Tool-call budget exceeded"));
+    Q_EMIT errorOccurred(m_lastError);
+    return;
+  }
+
+  // Mirror tool_use into the canonical assistant message (Anthropic requirement)
+  QJsonObject toolUseBlock;
+  toolUseBlock[QStringLiteral("type")]  = QStringLiteral("tool_use");
+  toolUseBlock[QStringLiteral("id")]    = callId;
+  toolUseBlock[QStringLiteral("name")]  = name;
+  toolUseBlock[QStringLiteral("input")] = arguments;
+  m_pendingToolUseBlocks.append(toolUseBlock);
+
+  ++m_outstandingToolResults;
+
+  if (dispatchMetaTool(callId, name, arguments))
+    return;
+
+  dispatchByCallSafety(callId, name, arguments);
+}
+
+/** @brief Auto-handles meta-tool calls; returns true when consumed. */
+bool AI::Conversation::dispatchMetaTool(const QString& callId,
+                                        const QString& name,
+                                        const QJsonObject& arguments)
+{
+  if (name == QStringLiteral("meta.listCommands")) {
+    appendToolCallCard(callId, name, arguments, CallStatus::Running);
+    const auto prefix = arguments.value(QStringLiteral("prefix")).toString();
+    const auto reply  = m_dispatcher->listCommands(prefix);
+    recordToolResult(callId, name, reply);
+    updateToolCallCard(callId, CallStatus::Done, reply);
+    --m_outstandingToolResults;
+    return true;
+  }
+
+  if (name == QStringLiteral("meta.describeCommand")) {
+    runMetaDescribe(callId, name, arguments);
+    return true;
+  }
+
+  if (name == QStringLiteral("meta.executeCommand")) {
+    const auto target    = arguments.value(QStringLiteral("name")).toString();
+    const auto innerArgs = arguments.value(QStringLiteral("arguments")).toObject();
+
+    if (target.isEmpty()) {
+      QJsonObject err;
+      err[QStringLiteral("ok")]    = false;
+      err[QStringLiteral("error")] = QStringLiteral("missing_name");
+      appendToolCallCard(callId, name, arguments, CallStatus::Error);
+      recordToolResult(callId, name, err);
+      updateToolCallCard(callId, CallStatus::Error, err);
+      --m_outstandingToolResults;
+      return true;
+    }
+
+    dispatchByCallSafety(callId, target, innerArgs);
+    return true;
+  }
+
+  if (name == QStringLiteral("meta.fetchHelp")) {
+    const auto path = arguments.value(QStringLiteral("path")).toString();
+    appendToolCallCard(callId, name, arguments, CallStatus::Running);
+    fetchHelpPage(callId, path);
+    return true;
+  }
+
+  if (name == QStringLiteral("meta.fetchScriptingDocs")) {
+    runMetaScriptingDocs(callId, name, arguments);
+    return true;
+  }
+
+  if (name == QStringLiteral("meta.howTo")) {
+    runMetaHowTo(callId, name, arguments);
+    return true;
+  }
+
+  return false;
+}
+
+/** @brief meta.describeCommand handler: returns command schema or not_found. */
+void AI::Conversation::runMetaDescribe(const QString& callId,
+                                       const QString& name,
+                                       const QJsonObject& arguments)
+{
+  appendToolCallCard(callId, name, arguments, CallStatus::Running);
+  const auto target = arguments.value(QStringLiteral("name")).toString();
+  QJsonObject reply;
+  if (target.isEmpty()) {
+    reply[QStringLiteral("ok")]    = false;
+    reply[QStringLiteral("error")] = QStringLiteral("missing_name");
+  } else {
+    const auto desc = m_dispatcher->describeCommand(target);
+    if (desc.isEmpty()) {
+      reply[QStringLiteral("ok")]    = false;
+      reply[QStringLiteral("error")] = QStringLiteral("not_found");
+      reply[QStringLiteral("name")]  = target;
+    } else {
+      reply[QStringLiteral("ok")]      = true;
+      reply[QStringLiteral("command")] = desc;
+    }
+  }
+  recordToolResult(callId, name, reply);
+  updateToolCallCard(callId,
+                     reply.value(QStringLiteral("ok")).toBool() ? CallStatus::Done
+                                                                : CallStatus::Error,
+                     reply);
+  --m_outstandingToolResults;
+}
+
+/** @brief meta.fetchScriptingDocs handler: returns the canonical doc body for a kind. */
+void AI::Conversation::runMetaScriptingDocs(const QString& callId,
+                                            const QString& name,
+                                            const QJsonObject& arguments)
+{
+  appendToolCallCard(callId, name, arguments, CallStatus::Running);
+  const auto kind = arguments.value(QStringLiteral("kind")).toString();
+  const auto body = ContextBuilder::scriptingDocFor(kind);
+
+  QJsonObject result;
+  if (body.isEmpty()) {
+    result[QStringLiteral("ok")] = false;
+    result[QStringLiteral("error")] =
+      QStringLiteral("Unknown kind '%1'. Valid: frame_parser_js, "
+                     "frame_parser_lua, transform_js, transform_lua, "
+                     "output_widget_js, painter_js.")
+        .arg(kind);
+    updateToolCallCard(callId, CallStatus::Error, result);
+  } else {
+    result[QStringLiteral("ok")]      = true;
+    result[QStringLiteral("kind")]    = kind;
+    result[QStringLiteral("content")] = body;
+    updateToolCallCard(callId, CallStatus::Done, result);
+  }
+
+  recordToolResult(callId, name, result);
+  --m_outstandingToolResults;
+}
+
+/** @brief meta.howTo handler: returns a canned step-by-step recipe by task id. */
+void AI::Conversation::runMetaHowTo(const QString& callId,
+                                    const QString& name,
+                                    const QJsonObject& arguments)
+{
+  appendToolCallCard(callId, name, arguments, CallStatus::Running);
+  const auto task   = arguments.value(QStringLiteral("task")).toString();
+  const auto recipe = ContextBuilder::howToRecipe(task);
+
+  QJsonObject result;
+  if (recipe.isEmpty()) {
+    result[QStringLiteral("ok")] = false;
+    result[QStringLiteral("error")] =
+      QStringLiteral("Unknown task '%1'. Valid tasks: %2")
+        .arg(task, ContextBuilder::howToTasks().join(QStringLiteral(", ")));
+    updateToolCallCard(callId, CallStatus::Error, result);
+  } else {
+    result[QStringLiteral("ok")]    = true;
+    result[QStringLiteral("task")]  = task;
+    result[QStringLiteral("steps")] = recipe;
+    updateToolCallCard(callId, CallStatus::Done, result);
+  }
+
+  recordToolResult(callId, name, result);
+  --m_outstandingToolResults;
+}
+
+/** @brief Routes a non-meta tool call by its CommandRegistry safety tag. */
+void AI::Conversation::dispatchByCallSafety(const QString& callId,
+                                            const QString& name,
+                                            const QJsonObject& arguments)
+{
+  const auto safety = AI::CommandRegistry::instance().safetyOf(name);
+  qCDebug(serialStudioAI) << "Tool call" << name << "safety=" << static_cast<int>(safety);
+
+  if (safety == Safety::Blocked) {
+    QJsonObject denial;
+    denial[QStringLiteral("ok")]    = false;
+    denial[QStringLiteral("error")] = QStringLiteral("blocked");
+    appendToolCallCard(callId, name, arguments, CallStatus::Blocked);
+    recordToolResult(callId, name, denial);
+    updateToolCallCard(callId, CallStatus::Blocked, denial);
+    --m_outstandingToolResults;
+    return;
+  }
+
+  if (safety == Safety::Confirm) {
+    appendToolCallCard(callId, name, arguments, CallStatus::AwaitingConfirm);
+    PendingCall pending;
+    pending.name      = name;
+    pending.arguments = arguments;
+    m_awaitingConfirm.insert(callId, pending);
+    setAwaitingConfirmation(true);
+    return;
+  }
+
+  appendToolCallCard(callId, name, arguments, CallStatus::Running);
+  runToolCall(callId, name, arguments, /*autoConfirmSafe=*/true);
+}
+
+/** @brief Handles end-of-stream: either continue with tool results or end the turn. */
+void AI::Conversation::onReplyFinished()
+{
+  // Flush coalesced text before end-of-stream so the bubble is complete
+  m_streamFlushTimer->stop();
+  if (m_streamDirty)
+    flushPendingStreamUpdate();
+
+  if (m_cancelled) {
+    teardownReply();
+    setBusy(false);
+    return;
+  }
+
+  // Persist the assistant message into history (with any tool_use blocks).
+  if (!m_assistantText.isEmpty() || !m_pendingToolUseBlocks.isEmpty()) {
+    QJsonArray content;
+    if (!m_assistantText.isEmpty()) {
+      QJsonObject text;
+      text[QStringLiteral("type")] = QStringLiteral("text");
+      text[QStringLiteral("text")] = m_assistantText;
+      content.append(text);
+    }
+    for (const auto& tu : m_pendingToolUseBlocks)
+      content.append(tu);
+
+    QJsonObject assistant;
+    assistant[QStringLiteral("role")]    = QStringLiteral("assistant");
+    assistant[QStringLiteral("content")] = content;
+    m_history.append(assistant);
+  }
+
+  // Stop the typing indicator; insert a placeholder for empty assistant rows
+  if (m_assistantIndex >= 0 && m_assistantIndex < m_uiMessages.size()) {
+    auto map = m_uiMessages.at(m_assistantIndex).toMap();
+    map.insert(QStringLiteral("streaming"), false);
+
+    const auto rowText  = map.value(QStringLiteral("text")).toString();
+    const auto rowCalls = map.value(QStringLiteral("toolCalls")).toList();
+    if (rowText.isEmpty() && rowCalls.isEmpty()) {
+      map.insert(QStringLiteral("text"),
+                 tr("(The model returned an empty response. Try "
+                    "rephrasing, switching to a different model, or "
+                    "checking that the request is allowed by the "
+                    "provider's safety filters.)"));
+    }
+
+    m_uiMessages[m_assistantIndex] = map;
+    Q_EMIT messagesChanged();
+  }
+
+  m_pendingToolUseBlocks = QJsonArray();
+  m_assistantText.clear();
+  m_assistantThinking.clear();
+  m_assistantIndex = -1;
+
+  teardownReply();
+
+  // Outstanding tool-call confirmation: Approve/Deny will trigger resume
+  if (!m_awaitingConfirm.isEmpty())
+    return;
+
+  // Tool calls still in flight (e.g. async meta.fetchHelp): completion resumes
+  if (m_outstandingToolResults > 0)
+    return;
+
+  // Pending tool_result blocks must be flushed: Anthropic rejects unmatched tool_use
+  if (!m_pendingToolResultBlocks.isEmpty()) {
+    resumeAfterToolBatch();
+    return;
+  }
+
+  // Stream ended with no tool activity -> turn is over.
+  setBusy(false);
+}
+
+/** @brief Records a network or stream error and ends the turn. */
+void AI::Conversation::onReplyError(const QString& message)
+{
+  qCWarning(serialStudioAI) << "Reply error:" << message;
+  setLastError(message);
+  Q_EMIT errorOccurred(message);
+
+  // Flush partial text so the user sees how far the model got before the error
+  m_streamFlushTimer->stop();
+  if (m_streamDirty)
+    flushPendingStreamUpdate();
+
+  if (m_assistantIndex >= 0 && m_assistantIndex < m_uiMessages.size()) {
+    auto map = m_uiMessages.at(m_assistantIndex).toMap();
+    map.insert(QStringLiteral("streaming"), false);
+    m_uiMessages[m_assistantIndex] = map;
+  }
+
+  // Surface the error as its own chat row so long messages aren't clipped
+  QVariantMap errorRow;
+  errorRow[QStringLiteral("role")]      = QStringLiteral("error");
+  errorRow[QStringLiteral("text")]      = message;
+  errorRow[QStringLiteral("toolCalls")] = QVariantList();
+  m_uiMessages.append(errorRow);
+  Q_EMIT messagesChanged();
+
+  m_assistantText.clear();
+  m_assistantThinking.clear();
+  m_assistantIndex       = -1;
+  m_pendingToolUseBlocks = QJsonArray();
+  teardownReply();
+  setBusy(false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Internals
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Issues a fresh request to the active provider with the current history. */
+void AI::Conversation::issueRequest()
+{
+  Q_ASSERT(m_provider);
+  Q_ASSERT(m_dispatcher);
+
+  // Compact older tool_result blocks before serializing
+  ageHistoryToolResults();
+
+  beginAssistantMessage();
+
+  // Synthetic status line until the first byte arrives (covers OpenAI/Gemini)
+  m_assistantThinking   = tr("Sending request to %1...").arg(m_provider->displayName());
+  m_thinkingIsSynthetic = true;
+  if (m_assistantIndex >= 0 && m_assistantIndex < m_uiMessages.size()) {
+    auto map = m_uiMessages.at(m_assistantIndex).toMap();
+    map.insert(QStringLiteral("thinking"), m_assistantThinking);
+    m_uiMessages[m_assistantIndex] = map;
+    Q_EMIT messagesChanged();
+  }
+
+  m_reply = m_provider->sendMessage(m_history, dispatcherTools());
+  if (!m_reply) {
+    setLastError(tr("Provider returned no reply"));
+    Q_EMIT errorOccurred(m_lastError);
+    setBusy(false);
+    return;
+  }
+
+  connect(m_reply, &Reply::partialText, this, &Conversation::onPartialText);
+  connect(m_reply, &Reply::partialThinking, this, &Conversation::onPartialThinking);
+  connect(m_reply, &Reply::toolCallRequested, this, &Conversation::onToolCallRequested);
+  connect(m_reply, &Reply::finished, this, &Conversation::onReplyFinished);
+  connect(m_reply, &Reply::errorOccurred, this, &Conversation::onReplyError);
+  connect(m_reply, &Reply::cacheStatsAvailable, this, [](int read, int created) {
+    Assistant::instance().reportCacheStats(read, created);
+  });
+}
+
+/** @brief Stubs older tool_result blocks; keeps the kKeepRecentUserTurns most recent verbatim. */
+void AI::Conversation::ageHistoryToolResults()
+{
+  constexpr int kKeepRecentUserTurns = 2;
+
+  // Walk history backward; age out user turns past the kKeepRecentUserTurns window
+  int recentToolResultTurns = 0;
+  for (int i = m_history.size() - 1; i >= 0; --i) {
+    auto msg = m_history.at(i).toObject();
+    if (msg.value(QStringLiteral("role")).toString() != QStringLiteral("user"))
+      continue;
+
+    const auto contentValue = msg.value(QStringLiteral("content"));
+    if (!contentValue.isArray())
+      continue;
+
+    auto blocks        = contentValue.toArray();
+    bool hasToolResult = false;
+    for (const auto& bv : blocks)
+      if (bv.toObject().value(QStringLiteral("type")).toString() == QStringLiteral("tool_result")) {
+        hasToolResult = true;
+        break;
+      }
+
+    if (!hasToolResult)
+      continue;
+
+    if (recentToolResultTurns < kKeepRecentUserTurns) {
+      ++recentToolResultTurns;
+      continue;
+    }
+
+    // Older turn: stub each tool_result block's content
+    QJsonArray newBlocks;
+    bool mutated = false;
+    for (const auto& bv : blocks) {
+      auto block = bv.toObject();
+      if (block.value(QStringLiteral("type")).toString() == QStringLiteral("tool_result")
+          && block.value(QStringLiteral("content")).toString().size() > 64) {
+        block[QStringLiteral("content")] = QStringLiteral("[result elided -- ask again if needed]");
+        mutated                          = true;
+      }
+      newBlocks.append(block);
+    }
+    if (mutated) {
+      msg[QStringLiteral("content")] = newBlocks;
+      m_history[i]                   = msg;
+    }
+  }
+}
+
+/** @brief Fetches a Serial Studio help page asynchronously and feeds the
+ *         result back via recordToolResult + resumeAfterToolBatch.
+ *
+ *  Resolves a bare page name (e.g. "Home", "Frame-Parser", "Actions")
+ *  to the raw markdown source on GitHub:
+ *    https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/master/doc/help/<page>.md
+ *
+ *  Full URLs on raw.githubusercontent.com, github.com, or
+ *  serial-studio.com are also accepted as-is. Other hosts are rejected.
+ */
+void AI::Conversation::fetchHelpPage(const QString& callId, const QString& path)
+{
+  static const QString kHelpBase = QStringLiteral("https://raw.githubusercontent.com/Serial-Studio/"
+                                                  "Serial-Studio/master/doc/help/");
+
+  QUrl url;
+  if (path.startsWith(QStringLiteral("http"), Qt::CaseInsensitive)) {
+    url = QUrl(path);
+  } else {
+    QString page = path;
+    if (page.startsWith('/'))
+      page.remove(0, 1);
+
+    if (page.isEmpty())
+      page = QStringLiteral("Home");
+
+    if (!page.endsWith(QStringLiteral(".md"), Qt::CaseInsensitive))
+      page += QStringLiteral(".md");
+
+    url = QUrl(kHelpBase + page);
+  }
+
+  const auto host    = url.host();
+  const bool allowed = host.endsWith(QStringLiteral("githubusercontent.com"))
+                    || host.endsWith(QStringLiteral("github.com"))
+                    || host.endsWith(QStringLiteral("serial-studio.com"));
+
+  if (!url.isValid() || !allowed) {
+    QJsonObject err;
+    err[QStringLiteral("ok")]    = false;
+    err[QStringLiteral("error")] = QStringLiteral("Only github.com / raw.githubusercontent.com / "
+                                                  "serial-studio.com URLs are allowed");
+    err[QStringLiteral("url")]   = url.toString();
+    recordToolResult(callId, QStringLiteral("meta.fetchHelp"), err);
+    updateToolCallCard(callId, CallStatus::Error, err);
+    --m_outstandingToolResults;
+    if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty()
+        && (!m_reply || m_reply == nullptr))
+      resumeAfterToolBatch();
+    return;
+  }
+
+  qCDebug(serialStudioAI) << "meta.fetchHelp" << url.toString();
+
+  QNetworkRequest req(url);
+  req.setRawHeader("User-Agent", "SerialStudio-AIAssistant");
+  req.setRawHeader("Accept", "text/markdown,text/plain;q=0.9,text/html;q=0.5");
+  req.setTransferTimeout(15 * 1000);
+  auto* reply = m_helpFetchNam.get(req);
+
+  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, url]() {
+    completeHelpFetch(callId, url, reply);
+  });
+}
+
+/** @brief Finalizes a meta.fetchHelp request: parses the body, records, resumes. */
+void AI::Conversation::completeHelpFetch(const QString& callId,
+                                         const QUrl& url,
+                                         QNetworkReply* reply)
+{
+  const auto status    = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+  const auto netError  = reply->error();
+  const auto host      = url.host();
+  const auto path      = url.path();
+  const bool isHelpDoc = host.endsWith(QStringLiteral("githubusercontent.com"))
+                      && path.contains(QStringLiteral("/doc/help/"));
+
+  QJsonObject result;
+  result[QStringLiteral("url")] = url.toString();
+
+  // 404 on doc/help/<page>.md: redirect to help.json instead of a bare 404
+  if (status == 404 && isHelpDoc && !path.endsWith(QStringLiteral("help.json"))) {
+    reply->deleteLater();
+    fetchHelpIndex(callId, url);
+    return;
+  }
+
+  if (netError != QNetworkReply::NoError) {
+    result[QStringLiteral("ok")]    = false;
+    result[QStringLiteral("error")] = reply->errorString();
+  } else {
+    const auto bytes         = reply->readAll();
+    const bool isRawMarkdown = host.endsWith(QStringLiteral("githubusercontent.com"))
+                            || path.endsWith(QStringLiteral(".md"), Qt::CaseInsensitive);
+
+    QString text;
+    if (isRawMarkdown) {
+      text = QString::fromUtf8(bytes);
+    } else {
+      QTextDocument doc;
+      doc.setHtml(QString::fromUtf8(bytes));
+      text = doc.toPlainText();
+    }
+
+    // Cap to 32 KB; recordToolResult truncates at 4 KB but pre-trim is cleaner
+    constexpr int kMaxBytes = 32 * 1024;
+    if (text.size() > kMaxBytes)
+      text = text.left(kMaxBytes) + QStringLiteral("\n... [truncated]");
+
+    result[QStringLiteral("ok")]      = true;
+    result[QStringLiteral("content")] = text;
+  }
+
+  reply->deleteLater();
+
+  recordToolResult(callId, QStringLiteral("meta.fetchHelp"), result);
+  updateToolCallCard(callId,
+                     result.value(QStringLiteral("ok")).toBool() ? CallStatus::Done
+                                                                 : CallStatus::Error,
+                     result);
+  --m_outstandingToolResults;
+
+  if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty() && !m_reply)
+    resumeAfterToolBatch();
+}
+
+/** @brief Fetches help.json so a guessed page-name 404 can be self-corrected. */
+void AI::Conversation::fetchHelpIndex(const QString& callId, const QUrl& missedUrl)
+{
+  static const QUrl kIndexUrl(
+    QStringLiteral("https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/"
+                   "master/doc/help/help.json"));
+
+  qCDebug(serialStudioAI) << "meta.fetchHelp redirect-to-index after 404:" << missedUrl.toString();
+
+  QNetworkRequest req(kIndexUrl);
+  req.setRawHeader("User-Agent", "SerialStudio-AIAssistant");
+  req.setRawHeader("Accept", "application/json");
+  req.setTransferTimeout(15 * 1000);
+  auto* reply = m_helpFetchNam.get(req);
+
+  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, missedUrl]() {
+    QJsonObject result;
+    result[QStringLiteral("url")]        = missedUrl.toString();
+    result[QStringLiteral("redirected")] = true;
+
+    if (reply->error() != QNetworkReply::NoError) {
+      result[QStringLiteral("ok")] = false;
+      result[QStringLiteral("error")] =
+        QStringLiteral("404 on '%1', and the help index also failed: %2")
+          .arg(missedUrl.toString(), reply->errorString());
+    } else {
+      const auto bytes             = reply->readAll();
+      result[QStringLiteral("ok")] = true;
+      result[QStringLiteral("note")] =
+        QStringLiteral("The page '%1' does not exist. Below is the full "
+                       "help index (help.json). Each entry has an `id` "
+                       "and a `file` -- pass the file name (without the "
+                       ".md extension and with hyphens preserved) to "
+                       "meta.fetchHelp on the next call. Common "
+                       "mistakes: pass 'Painter-Widget' not 'Painter', "
+                       "'API-Reference' not 'API'.")
+          .arg(missedUrl.toString());
+      result[QStringLiteral("content")] = QString::fromUtf8(bytes);
+    }
+
+    reply->deleteLater();
+
+    recordToolResult(callId, QStringLiteral("meta.fetchHelp"), result);
+    updateToolCallCard(callId,
+                       result.value(QStringLiteral("ok")).toBool() ? CallStatus::Done
+                                                                   : CallStatus::Error,
+                       result);
+    --m_outstandingToolResults;
+
+    if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty() && !m_reply)
+      resumeAfterToolBatch();
+  });
+}
+
+/** @brief Adds a user message to both history and the UI message list. */
+void AI::Conversation::appendUserMessage(const QString& text)
+{
+  QJsonObject content;
+  content[QStringLiteral("type")] = QStringLiteral("text");
+  content[QStringLiteral("text")] = text;
+
+  QJsonObject userMsg;
+  userMsg[QStringLiteral("role")]    = QStringLiteral("user");
+  userMsg[QStringLiteral("content")] = QJsonArray{content};
+  m_history.append(userMsg);
+
+  QVariantMap row;
+  row[QStringLiteral("role")]      = QStringLiteral("user");
+  row[QStringLiteral("text")]      = text;
+  row[QStringLiteral("toolCalls")] = QVariantList();
+  m_uiMessages.append(row);
+  Q_EMIT messagesChanged();
+}
+
+/** @brief Adds a placeholder assistant row that subsequent deltas fill. */
+void AI::Conversation::beginAssistantMessage()
+{
+  m_assistantText.clear();
+  m_assistantThinking.clear();
+  QVariantMap row;
+  row[QStringLiteral("role")]      = QStringLiteral("assistant");
+  row[QStringLiteral("text")]      = QString();
+  row[QStringLiteral("thinking")]  = QString();
+  row[QStringLiteral("streaming")] = true;
+  row[QStringLiteral("toolCalls")] = QVariantList();
+  m_uiMessages.append(row);
+  m_assistantIndex = m_uiMessages.size() - 1;
+  Q_EMIT messagesChanged();
+}
+
+/** @brief Returns "discovery" for read-only / meta calls, "execution" otherwise. */
+static QString toolCallCategory(const QString& name)
+{
+  if (name.startsWith(QStringLiteral("meta.")))
+    return QStringLiteral("discovery");
+
+  if (AI::CommandRegistry::instance().safetyOf(name) == AI::Safety::Safe)
+    return QStringLiteral("discovery");
+
+  return QStringLiteral("execution");
+}
+
+/** @brief Adds a ToolCallCard payload to the active assistant message. */
+void AI::Conversation::appendToolCallCard(const QString& callId,
+                                          const QString& name,
+                                          const QJsonObject& arguments,
+                                          CallStatus status)
+{
+  if (m_assistantIndex < 0 || m_assistantIndex >= m_uiMessages.size())
+    return;
+
+  auto map   = m_uiMessages.at(m_assistantIndex).toMap();
+  auto calls = map.value(QStringLiteral("toolCalls")).toList();
+
+  // Family = tool name minus last dot-segment; siblings batched in QML
+  QString family    = name;
+  const int lastDot = family.lastIndexOf(QLatin1Char('.'));
+  if (lastDot > 0)
+    family.truncate(lastDot);
+
+  QVariantMap card;
+  card[QStringLiteral("callId")]   = callId;
+  card[QStringLiteral("name")]     = name;
+  card[QStringLiteral("family")]   = family;
+  card[QStringLiteral("category")] = toolCallCategory(name);
+  card[QStringLiteral("args")]     = QJsonDocument(arguments).toJson(QJsonDocument::Indented);
+  card[QStringLiteral("status")]   = static_cast<int>(status);
+  card[QStringLiteral("result")]   = QString();
+
+  calls.append(card);
+  map.insert(QStringLiteral("toolCalls"), calls);
+  m_uiMessages[m_assistantIndex] = map;
+  Q_EMIT messagesChanged();
+}
+
+/** @brief Updates the status (and optional result) of an existing ToolCallCard. */
+void AI::Conversation::updateToolCallCard(const QString& callId,
+                                          CallStatus status,
+                                          const QJsonObject& result)
+{
+  for (int i = m_uiMessages.size() - 1; i >= 0; --i) {
+    auto map     = m_uiMessages.at(i).toMap();
+    auto calls   = map.value(QStringLiteral("toolCalls")).toList();
+    bool changed = false;
+    for (int c = 0; c < calls.size(); ++c) {
+      auto card = calls.at(c).toMap();
+      if (card.value(QStringLiteral("callId")).toString() != callId)
+        continue;
+
+      card.insert(QStringLiteral("status"), static_cast<int>(status));
+      if (!result.isEmpty())
+        card.insert(QStringLiteral("result"),
+                    QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Indented)));
+
+      calls[c] = card;
+      changed  = true;
+      break;
+    }
+    if (changed) {
+      map.insert(QStringLiteral("toolCalls"), calls);
+      m_uiMessages[i] = map;
+      Q_EMIT messagesChanged();
+      return;
+    }
+  }
+}
+
+/** @brief Executes a single tool call and feeds its result back. */
+void AI::Conversation::runToolCall(const QString& callId,
+                                   const QString& name,
+                                   const QJsonObject& arguments,
+                                   bool autoConfirmSafe)
+{
+  // Ensure a card exists (Confirm path or Approve path)
+  bool found = false;
+  for (int i = m_uiMessages.size() - 1; i >= 0 && !found; --i) {
+    const auto map   = m_uiMessages.at(i).toMap();
+    const auto calls = map.value(QStringLiteral("toolCalls")).toList();
+    for (const auto& cv : calls)
+      if (cv.toMap().value(QStringLiteral("callId")).toString() == callId) {
+        found = true;
+        break;
+      }
+  }
+  if (!found)
+    appendToolCallCard(callId, name, arguments, CallStatus::Running);
+  else
+    updateToolCallCard(callId, CallStatus::Running);
+
+  const auto reply = m_dispatcher->executeCommand(name, arguments, autoConfirmSafe);
+  const bool ok    = reply.value(QStringLiteral("ok")).toBool();
+  qCDebug(serialStudioAI) << "Tool" << name << "result_ok=" << ok;
+
+  recordToolResult(callId, name, reply);
+  updateToolCallCard(callId, ok ? CallStatus::Done : CallStatus::Error, reply);
+  --m_outstandingToolResults;
+}
+
+/** @brief Stores a tool_result block to be sent back in the next request. */
+void AI::Conversation::recordToolResult(const QString& callId,
+                                        const QString& name,
+                                        const QJsonObject& payload)
+{
+  // Cap a single tool result at ~4KB to keep the context bounded
+  constexpr int kMaxToolResultBytes = 4 * 1024;
+  auto contentBytes                 = QJsonDocument(payload).toJson(QJsonDocument::Compact);
+  if (contentBytes.size() > kMaxToolResultBytes) {
+    const auto kept = contentBytes.left(kMaxToolResultBytes - 64);
+    contentBytes =
+      kept + "... [truncated " + QByteArray::number(contentBytes.size() - kept.size()) + " bytes]";
+    qCDebug(serialStudioAI) << "Tool result for" << name << "truncated to" << contentBytes.size()
+                            << "bytes";
+  }
+
+  QJsonObject block;
+  block[QStringLiteral("type")]        = QStringLiteral("tool_result");
+  block[QStringLiteral("tool_use_id")] = callId;
+  block[QStringLiteral("content")]     = QString::fromUtf8(contentBytes);
+  // Carry tool name for non-Anthropic providers (Gemini functionResponse needs it)
+  if (!name.isEmpty())
+    block[QStringLiteral("_tool_name")] = name;
+
+  m_pendingToolResultBlocks.append(block);
+}
+
+/** @brief Sends the accumulated tool_result blocks and continues the turn. */
+void AI::Conversation::resumeAfterToolBatch()
+{
+  if (m_cancelled) {
+    setBusy(false);
+    return;
+  }
+
+  if (m_pendingToolResultBlocks.isEmpty()) {
+    setBusy(false);
+    return;
+  }
+
+  QJsonObject userMsg;
+  userMsg[QStringLiteral("role")]    = QStringLiteral("user");
+  userMsg[QStringLiteral("content")] = m_pendingToolResultBlocks;
+  m_history.append(userMsg);
+
+  m_pendingToolResultBlocks = QJsonArray();
+  m_outstandingToolResults  = 0;
+
+  issueRequest();
+}
+
+/** @brief Disconnects and deletes the active reply, if any. */
+void AI::Conversation::teardownReply()
+{
+  if (!m_reply)
+    return;
+
+  m_reply->disconnect(this);
+  m_reply->deleteLater();
+  m_reply = nullptr;
+}
+
+/** @brief Sets and notifies the busy property. */
+void AI::Conversation::setBusy(bool busy)
+{
+  if (m_busy == busy)
+    return;
+
+  m_busy = busy;
+  Q_EMIT busyChanged();
+}
+
+/** @brief Notifies awaitingConfirmation when the underlying flag flips. */
+void AI::Conversation::setAwaitingConfirmation(bool flag)
+{
+  if (m_lastAwaitingFlag == flag)
+    return;
+
+  m_lastAwaitingFlag = flag;
+  Q_EMIT awaitingConfirmationChanged();
+}
+
+/** @brief Sets and notifies the lastError property. */
+void AI::Conversation::setLastError(const QString& message)
+{
+  if (m_lastError == message)
+    return;
+
+  m_lastError = message;
+  Q_EMIT lastErrorChanged();
+}
+
+/** @brief Builds a single meta-tool definition for the discovery surface. */
+static QJsonObject makeMetaTool(const QString& name,
+                                const QString& description,
+                                const QJsonObject& schema)
+{
+  QJsonObject tool;
+  tool[QStringLiteral("name")]         = name;
+  tool[QStringLiteral("description")]  = description;
+  tool[QStringLiteral("input_schema")] = schema;
+  return tool;
+}
+
+/** @brief Returns the schema { type:object, properties:{<key>:propSchema}, required:[<key>] }. */
+static QJsonObject objectSchemaWithProperty(const QString& key,
+                                            const QJsonObject& propSchema,
+                                            bool required)
+{
+  QJsonObject schema;
+  schema[QStringLiteral("type")] = QStringLiteral("object");
+  QJsonObject props;
+  props[key]                           = propSchema;
+  schema[QStringLiteral("properties")] = props;
+  if (required)
+    schema[QStringLiteral("required")] = QJsonArray{key};
+
+  return schema;
+}
+
+/** @brief Returns a string-typed property schema with description (and optional enum). */
+static QJsonObject stringProp(const QString& description, const QJsonArray& enumValues = {})
+{
+  QJsonObject prop;
+  prop[QStringLiteral("type")]        = QStringLiteral("string");
+  prop[QStringLiteral("description")] = description;
+  if (!enumValues.isEmpty())
+    prop[QStringLiteral("enum")] = enumValues;
+
+  return prop;
+}
+
+/** @brief Builds the four core meta tools (list / describe / execute / fetchHelp). */
+static void appendCoreMetaTools(QJsonArray& out)
+{
+  {
+    auto schema = objectSchemaWithProperty(
+      QStringLiteral("prefix"),
+      stringProp(QStringLiteral("Optional dotted prefix filter, e.g. \"project.\" or "
+                                "\"io.driver.\".")),
+      false);
+    out.append(makeMetaTool(QStringLiteral("meta.listCommands"),
+                            QStringLiteral("List every available command (name + 1-line "
+                                           "description). Use this first when you need a command "
+                                           "you haven't seen yet. Optionally filter by dotted "
+                                           "prefix."),
+                            schema));
+  }
+
+  {
+    auto schema = objectSchemaWithProperty(
+      QStringLiteral("name"),
+      stringProp(QStringLiteral("Exact command name as returned by meta.listCommands.")),
+      true);
+    out.append(makeMetaTool(
+      QStringLiteral("meta.describeCommand"),
+      QStringLiteral("Fetch the full input schema and description for one command. "
+                     "Call this before meta.executeCommand on any unfamiliar command."),
+      schema));
+  }
+
+  {
+    QJsonObject schema;
+    schema[QStringLiteral("type")] = QStringLiteral("object");
+    QJsonObject props;
+    props[QStringLiteral("name")] = stringProp(QStringLiteral("Command name to invoke."));
+    QJsonObject argsProp;
+    argsProp[QStringLiteral("type")] = QStringLiteral("object");
+    argsProp[QStringLiteral("description")] =
+      QStringLiteral("Arguments object matching the command's input schema.");
+    props[QStringLiteral("arguments")]   = argsProp;
+    schema[QStringLiteral("properties")] = props;
+    schema[QStringLiteral("required")]   = QJsonArray{QStringLiteral("name")};
+    out.append(makeMetaTool(QStringLiteral("meta.executeCommand"),
+                            QStringLiteral("Execute any command by name with an arguments object. "
+                                           "Use this for commands that aren't directly in your "
+                                           "tool list."),
+                            schema));
+  }
+
+  {
+    auto schema = objectSchemaWithProperty(
+      QStringLiteral("path"),
+      stringProp(QStringLiteral("Either \"help.json\" (the index -- pass this FIRST "
+                                "if you don't already know the exact page name), or "
+                                "a bare page name from the index's `file` field "
+                                "without the .md extension (e.g. \"Painter-Widget\", "
+                                "\"Frame-Parser\", \"Project-Editor\", "
+                                "\"API-Reference\"). Multi-word names use hyphens. "
+                                "Full URLs on github.com / raw.githubusercontent.com "
+                                "/ serial-studio.com are also accepted. A 404 on a "
+                                "guessed page auto-redirects to help.json so you "
+                                "can correct the name on the next call.")),
+      true);
+    out.append(makeMetaTool(QStringLiteral("meta.fetchHelp"),
+                            QStringLiteral("Fetch a Serial Studio documentation page from "
+                                           "the canonical doc/help markdown source. Pass "
+                                           "\"help.json\" first to discover available pages "
+                                           "(returns a JSON array of {id, title, section, "
+                                           "file}), then pass the chosen file name to fetch "
+                                           "the markdown body. Use whenever the user asks "
+                                           "about features, concepts, or workflows -- never "
+                                           "guess from training data."),
+                            schema));
+  }
+}
+
+/** @brief Builds the meta.fetchScriptingDocs + meta.howTo tools. */
+static void appendDocMetaTools(QJsonArray& out)
+{
+  {
+    auto kindProp =
+      stringProp(QStringLiteral("Which scripting reference to fetch. Each returns the canonical "
+                                "API surface, idiomatic patterns, and worked examples for that "
+                                "scripting context."),
+                 QJsonArray{QStringLiteral("frame_parser_js"),
+                            QStringLiteral("frame_parser_lua"),
+                            QStringLiteral("transform_js"),
+                            QStringLiteral("transform_lua"),
+                            QStringLiteral("output_widget_js"),
+                            QStringLiteral("painter_js")});
+    auto schema = objectSchemaWithProperty(QStringLiteral("kind"), kindProp, true);
+    out.append(makeMetaTool(QStringLiteral("meta.fetchScriptingDocs"),
+                            QStringLiteral("Fetch the Serial Studio scripting reference for one "
+                                           "of the six scripting contexts (frame parser JS / "
+                                           "Lua, value transform JS / Lua, output-widget JS, "
+                                           "painter JS). Call this BEFORE writing or modifying "
+                                           "any user script -- the available APIs differ "
+                                           "between contexts and you must not invent function "
+                                           "names. Returns markdown."),
+                            schema));
+  }
+
+  {
+    QJsonArray taskEnum;
+    for (const auto& t : AI::ContextBuilder::howToTasks())
+      taskEnum.append(t);
+
+    auto taskProp =
+      stringProp(QStringLiteral("Which workflow recipe to fetch. Each returns a numbered list "
+                                "of the exact tool calls to make in order, with the parameters "
+                                "and gotchas that the API surface alone won't tell you."),
+                 taskEnum);
+    auto schema = objectSchemaWithProperty(QStringLiteral("task"), taskProp, true);
+    out.append(makeMetaTool(QStringLiteral("meta.howTo"),
+                            QStringLiteral("Fetch a step-by-step recipe for a common Serial "
+                                           "Studio workflow. Call this BEFORE acting on any "
+                                           "request that matches one of the recipe ids "
+                                           "(adding a painter, building an executive "
+                                           "dashboard, attaching an output widget, etc). "
+                                           "Recipes are short and authoritative -- follow "
+                                           "them in order rather than improvising."),
+                            schema));
+  }
+}
+
+/** @brief Returns the AI tool surface: 3 meta tools + a small curated set. */
+QJsonArray AI::Conversation::dispatcherTools() const
+{
+  if (!m_dispatcher)
+    return {};
+
+  // Discovery-first: 3 meta tools + curated essentials (~13 tools, ~8KB cached)
+  QJsonArray remapped;
+
+  appendCoreMetaTools(remapped);
+  appendDocMetaTools(remapped);
+
+  static const QStringList kEssentials = {
+    QStringLiteral("project.file.new"),
+    QStringLiteral("project.file.open"),
+    QStringLiteral("project.file.save"),
+    QStringLiteral("project.groups.list"),
+    QStringLiteral("project.datasets.list"),
+    QStringLiteral("project.source.list"),
+    QStringLiteral("project.workspaces.list"),
+    QStringLiteral("project.parser.getCode"),
+    QStringLiteral("project.frameParser.getConfig"),
+    QStringLiteral("io.manager.getStatus"),
+  };
+
+  const auto raw = m_dispatcher->availableTools();
+
+  auto append = [&remapped](const QJsonObject& obj) {
+    auto schema = obj.value(QStringLiteral("inputSchema")).toObject();
+    if (!schema.contains(QStringLiteral("type")))
+      schema[QStringLiteral("type")] = QStringLiteral("object");
+
+    if (!schema.contains(QStringLiteral("properties")))
+      schema[QStringLiteral("properties")] = QJsonObject();
+
+    QJsonObject tool;
+    tool[QStringLiteral("name")]         = obj.value(QStringLiteral("name"));
+    tool[QStringLiteral("description")]  = obj.value(QStringLiteral("description"));
+    tool[QStringLiteral("input_schema")] = schema;
+    remapped.append(tool);
+  };
+
+  // Add essentials first
+  for (const auto& essentialName : kEssentials) {
+    for (const auto& v : raw) {
+      const auto obj = v.toObject();
+      if (obj.value(QStringLiteral("name")).toString() == essentialName) {
+        append(obj);
+        break;
+      }
+    }
+  }
+
+  return remapped;
+}

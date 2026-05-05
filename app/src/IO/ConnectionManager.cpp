@@ -706,12 +706,12 @@ void IO::ConnectionManager::setupExternalConnections()
           this,
           &IO::ConnectionManager::busListChanged);
 
-  // Rebuild DeviceManagers when the project's source list changes
+  // Rebuild DeviceManagers inline with project source-list changes (DirectConnection)
   connect(&DataModel::ProjectModel::instance(),
           &DataModel::ProjectModel::sourceStructureChanged,
           this,
           &IO::ConnectionManager::rebuildDevices,
-          Qt::QueuedConnection);
+          Qt::DirectConnection);
 
   // Recreate FrameReader when frame config changes (delimiters, detection mode)
   connect(

@@ -284,7 +284,7 @@ function parse(frame) {
 - Each Painter widget is bound to one project group. The script reads group datasets through a `datasets` global and dashboard tick metadata through `frame.number` / `frame.timestampMs`.
 - An optional `onFrame()` callback runs once per tick before `paint()` for time-domain bookkeeping (ring buffers, peak-hold decay, integrators).
 - The drawing API is Canvas2D-shaped (`fillRect`, `arc`, `bezierCurveTo`, `fillText`, `drawImage`, transforms, paths). Gradient and pattern objects are not implemented.
-- Eighteen built-in templates ship with Serial Studio, including oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, and XY scope. Templates are plain `.js` files and can be copied as starting points.
+- Eighteen built-in templates are bundled with Serial Studio, including oscilloscope, sparkline grid, dial gauge, polar plot, radar sweep, artificial horizon, heatmap, LED matrix, vector field, and XY scope. Templates are plain `.js` files and can be copied as starting points.
 - A 250 ms watchdog terminates the script if a single call does not return.
 
 **Use cases:**

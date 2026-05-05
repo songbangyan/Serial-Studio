@@ -323,7 +323,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Hardware:** PEAK PCAN-USB, Vector VN1630, SocketCAN interface, or virtual CAN for testing
 **Data Protocol:** CAN Bus with DBC file for signal database
-**Key Benefit:** Professional-grade CAN Bus monitoring without expensive Vector/PEAK software
+**Key Benefit:** CAN Bus monitoring without expensive Vector/PEAK software
 **Example:** Monitor engine ECU during test drive, recording 50+ signals at 100 Hz
 
 ---
@@ -747,7 +747,7 @@ template
 
 ## Community Contributions
 
-Have you used Serial Studio in a unique way? We'd love to hear about it!
+Have you used Serial Studio in a unique way? We'd like to hear about it.
 
 - **Submit your use case:** Open a GitHub issue with the "Use Case" label
 - **Share on social media:** Tag @serialstudio.app on Instagram

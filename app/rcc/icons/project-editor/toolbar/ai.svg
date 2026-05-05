@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24pt" height="24pt" viewBox="0 0 24 24" version="1.1">
+<g id="surface_ai_pe">
+  <circle cx="12" cy="12" r="11.1" style="fill:rgb(72.156864%,58.039218%,86.274511%);stroke:none"/>
+  <circle cx="12" cy="12" r="11.4" style="fill:none;stroke:rgb(47.843137%,34.901962%,67.450981%);stroke-width:0.6"/>
+  <path style="fill:rgb(100%,100%,100%);stroke:none" d="M 11.5 5 L 12.7 8.6 L 16.3 9.8 L 12.7 11 L 11.5 14.6 L 10.3 11 L 6.7 9.8 L 10.3 8.6 Z M 11.5 5 "/>
+  <path style="fill:rgb(100%,100%,100%);stroke:none" d="M 16.5 14 L 17.1 15.8 L 18.9 16.4 L 17.1 17 L 16.5 18.8 L 15.9 17 L 14.1 16.4 L 15.9 15.8 Z M 16.5 14 "/>
+</g>
+</svg>

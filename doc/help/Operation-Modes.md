@@ -6,7 +6,7 @@ Serial Studio has three parsing modes that determine how incoming data is interp
 
 The three modes, in order of increasing complexity:
 
-1. **Console Only.** No parsing, no dashboard. Raw bytes stream to the terminal so you can inspect what your device is actually sending.
+1. **Console Only.** No parsing, no dashboard. Raw bytes stream to the terminal so you can inspect what your device is sending.
 2. **Quick Plot.** Automatic CSV plotting with zero configuration.
 3. **Project File.** A `.ssproj` project file on the host defines the dashboard, and the device sends raw values (CSV, binary, or anything a frame parser can decode).
 
@@ -56,12 +56,12 @@ Console Only is not a parsing mode. No widgets render, no CSV export, no frame p
 
 ### When to use it
 
-- Figuring out what protocol your device is actually using.
+- Figuring out what protocol your device is using.
 - Verifying baud rate / pin wiring / framing before you commit to a project file.
 - Debugging a stream that isn't being parsed correctly in another mode.
 - Interactively driving a device with a simple text protocol (AT commands, CLI, and so on).
 
-Once you've confirmed the data looks sane, switch to Quick Plot or Project File to actually visualize it.
+Once you've confirmed the data looks sane, switch to Quick Plot or Project File to visualize it.
 
 ---
 
@@ -127,7 +127,7 @@ Pick the "Parse via JSON Project File" radio button in the Setup panel. Then loa
 - **Frame parser script.** An optional `parse(frame)` function (Lua or JavaScript) can transform arbitrary protocols into the array of values Serial Studio expects.
 - **Multi-source.** A single project file can define multiple data sources, each with its own connection, frame detection, and decoder settings.
 
-This mode gives you access to every widget type and configuration option in Serial Studio. It's the most commonly used mode for real-world projects.
+This mode provides access to every widget type and configuration option in Serial Studio. It's the most commonly used mode for real-world projects.
 
 ### Frame detection methods
 
@@ -256,4 +256,4 @@ If you're hooking up a new device and don't yet know what it sends, start in **C
 
 Once you can see clean comma-separated numbers in the console, switch to **Quick Plot**. You'll get a dashboard with one plot per CSV field in seconds, with no configuration.
 
-Once you need more control (specific widget types, unit labels, alarm thresholds, a polished dashboard layout, binary protocol parsing, or multiple concurrent data sources), move to **Project File** mode. Open the Project Editor, define your groups and datasets, save a `.ssproj` file, and load it from the Setup panel. This is the recommended mode for most real-world projects.
+Once you need more control (specific widget types, unit labels, alarm thresholds, a custom dashboard layout, binary protocol parsing, or multiple concurrent data sources), move to **Project File** mode. Open the Project Editor, define your groups and datasets, save a `.ssproj` file, and load it from the Setup panel. This is the recommended mode for most real-world projects.

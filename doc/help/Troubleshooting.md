@@ -204,7 +204,7 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Check your device's code or documentation
    - Try common baud rates: 9600, 19200, 38400, 57600, 115200
 
-2. **Verify device is actually transmitting:**
+2. **Verify device is transmitting:**
    - Use Arduino IDE Serial Monitor or another terminal to confirm data output
    - Check device code has `Serial.println()` or equivalent
    - Verify device is powered and running (LED blink, etc.)
@@ -866,4 +866,4 @@ All gauges show "NaN"
 
 ---
 
-**Still stuck?** Don't hesitate to ask for help on [GitHub Discussions](https://github.com/Serial-Studio/Serial-Studio/discussions). The community is here to help!
+**Still stuck?** Ask for help on [GitHub Discussions](https://github.com/Serial-Studio/Serial-Studio/discussions). The community is there to help.

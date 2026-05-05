@@ -111,12 +111,12 @@ The toolbar runs along the top of the window:
 - **Project controls.** Open, save, and edit project files. The wrench icon opens the Project Editor.
 - **I/O interface selector.** Choose between Serial Port, Network Socket, Bluetooth LE, and in Pro: MQTT, Modbus, CAN Bus, Audio, USB, HID, or Process.
 - **Connect/Disconnect button.** Starts or stops the data connection.
-- **Examples browser.** Load example projects that ship with Serial Studio to see working configurations.
+- **Examples browser.** Load example projects bundled with Serial Studio to see working configurations.
 - **CSV playback controls.** Replay previously recorded sessions.
 
 ### 2. Console (center, default view)
 
-When you first connect, the console panel shows raw incoming data from your device. You can switch between ASCII and hexadecimal display. The console is handy for checking that your device is actually sending data before you configure a dashboard.
+When you first connect, the console panel shows raw incoming data from your device. You can switch between ASCII and hexadecimal display. The console is handy for confirming that your device is sending data before you configure a dashboard.
 
 ### 3. Dashboard (center, replaces the console)
 
@@ -137,7 +137,7 @@ You can collapse the Setup panel by clicking its header to give the Dashboard mo
 
 ## Your first connection: Quick Plot mode
 
-This is the fastest way to get data on screen. We'll use an Arduino as the example, but the approach works with any device that sends comma-separated values over a serial port.
+This is the fastest way to get data on screen. The example uses an Arduino, but the approach works with any device that sends comma-separated values over a serial port.
 
 ### Step 1: prepare your device
 
@@ -192,7 +192,7 @@ That's all. No project file, no JSON, just connect and visualize.
 
 ## Your first connection: Project File mode
 
-Project File mode gives you full control over how Serial Studio interprets your data and what widgets show up on the dashboard. You create a `.ssproj` project file in the built-in Project Editor, and Serial Studio uses it to parse incoming data and build the dashboard. It's the recommended mode for most real-world projects.
+Project File mode provides full control over how Serial Studio interprets your data and what widgets show up on the dashboard. You create a `.ssproj` project file in the built-in Project Editor, and Serial Studio uses it to parse incoming data and build the dashboard. It's the recommended mode for most real-world projects.
 
 ### Step 1: open the Project Editor
 
@@ -235,7 +235,7 @@ Console Only is a diagnostic mode. Serial Studio doesn't try to parse anything; 
 4. Raw bytes appear in the terminal. Toggle between ASCII and hexadecimal display from the console toolbar.
 5. Use the input box at the bottom of the console to send bytes back to the device.
 
-No dashboard, no CSV export, no parsing. Once the stream looks correct, switch to Quick Plot or Project File to actually visualize the data.
+No dashboard, no CSV export, no parsing. Once the stream looks correct, switch to Quick Plot or Project File to visualize the data.
 
 ---
 
@@ -275,7 +275,7 @@ Quick Plot treats each line as a frame and each comma-separated field as a datas
 | Dashboard generated  | From the project file |
 | Best for             | Production telemetry, complex protocols, multi-sensor systems |
 
-This mode gives you full control: define frame delimiters, map data fields to datasets, pick widget types, set units and ranges, configure alarms, add FFT analysis, write frame parser scripts (Lua or JavaScript) for binary protocols, and add per-dataset value transforms for calibration and filtering. Project File mode also supports multiple data sources for multi-device setups (Pro). It's the recommended mode for most real-world projects.
+This mode provides full control: define frame delimiters, map data fields to datasets, pick widget types, set units and ranges, configure alarms, add FFT analysis, write frame parser scripts (Lua or JavaScript) for binary protocols, and add per-dataset value transforms for calibration and filtering. Project File mode also supports multiple data sources for multi-device setups (Pro). It's the recommended mode for most real-world projects.
 
 ---
 
@@ -291,13 +291,13 @@ This mode gives you full control: define frame delimiters, map data fields to da
 
 - Check the baud rate matches your device configuration exactly.
 - Make sure no other app (like the Arduino IDE Serial Monitor) has the port open. Only one app can use a serial port at a time.
-- Check the device is actually sending data. A logic analyzer or second terminal program is handy for confirming.
+- Confirm the device is sending data. A logic analyzer or second terminal program is handy for verifying this.
 - Try disconnecting and reconnecting.
 
 ### Console shows data but no dashboard
 
 - In Quick Plot mode, make sure the device sends comma-separated numeric values terminated by a newline. Non-numeric text (other than numbers, commas, and whitespace) blocks parsing.
-- In Project File mode, check that your frame delimiters match what the device actually sends. Switch to Console Only mode to inspect the raw stream, then come back once you know the framing.
+- In Project File mode, check that your frame delimiters match what the device sends. Switch to Console Only mode to inspect the raw stream, then come back once you know the framing.
 - If nothing parses, try Console Only first. If the raw bytes look wrong there, it's a connection/baud/wiring problem, not a parsing problem.
 
 ### Garbled or corrupted data in the console
@@ -334,7 +334,7 @@ Now that you've made your first connection, here are the recommended paths from 
 
 ### Explore examples
 
-Click **Examples** in the toolbar to browse working project files that ship with Serial Studio, including GPS trackers, IMU visualizers, and sensor dashboards. Opening an example is one of the best ways to see how project files are structured.
+Click **Examples** in the toolbar to browse working project files bundled with Serial Studio, including GPS trackers, IMU visualizers, and sensor dashboards. Opening an example is one of the best ways to see how project files are structured.
 
 ### Get help
 

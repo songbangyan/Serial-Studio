@@ -1,6 +1,6 @@
 # Become an Affiliate
 
-If you write tutorials, make videos, blog, or run a social account, you can earn money by helping more people find Serial Studio. The affiliate program is built for content creators, educators, publishers, and community builders who want to recommend the app and earn a commission on successful referrals.
+If you write tutorials, make videos, blog, or run a social account, you can earn money by helping more people find Serial Studio. The affiliate program is for content creators, educators, publishers, and community builders who want to recommend the app and earn a commission on successful referrals.
 
 #### Why promote Serial Studio?
 

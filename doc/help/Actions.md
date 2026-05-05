@@ -147,7 +147,7 @@ Toggle an LED on or off with each click:
 
 **Fix:**
 
-1. Check the Console view to confirm the data is actually being sent.
+1. Check the Console view to confirm the data is being sent.
 2. Make sure the EOL setting matches what the device firmware expects. Many embedded parsers need `\n` or `\r\n`.
 3. If you're in binary mode, make sure the hex string is valid and well-formatted (pairs of hex digits, optionally separated by spaces).
 4. In multi-source projects, check that the Target Device is set correctly.

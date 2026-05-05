@@ -727,5 +727,14 @@
         <file>icons/dashboard-buttons/camcoder.svg</file>
         <file>icons/project-editor/actions/edit-code.svg</file>
         <file>icons/project-editor/treeview/painter.svg</file>
+        <file>icons/toolbar/ai.svg</file>
+        <file>icons/project-editor/toolbar/ai.svg</file>
+        <file>ai/command_safety.json</file>
+        <file>ai/docs/frame_parser_js.md</file>
+        <file>ai/docs/frame_parser_lua.md</file>
+        <file>ai/docs/transform_js.md</file>
+        <file>ai/docs/transform_lua.md</file>
+        <file>ai/docs/output_widget_js.md</file>
+        <file>ai/docs/painter_js.md</file>
     </qresource>
 </RCC>

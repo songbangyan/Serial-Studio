@@ -51,7 +51,7 @@ The frame builder turns each complete frame into a structured record of groups a
 3. Auto-generate a Data Grid group and a MultiPlot group.
 4. Assign values to auto-created datasets.
 
-No project file needed. This mode is built for rapid prototyping with CSV-formatted serial output.
+No project file needed. This mode targets rapid prototyping with CSV-formatted serial output.
 
 ### Project File mode
 
@@ -86,7 +86,7 @@ When CSV export, MDF4 export, the session database, or the API server is active,
 
 **No data in the console.** Check driver configuration: correct port, baud rate, IP address, or BLE characteristic.
 
-**Data in the console but no dashboard.** Check the operation mode. Make sure frame delimiters match what your device actually sends. In Project File mode, make sure the frame parser returns valid arrays or tables.
+**Data in the console but no dashboard.** Check the operation mode. Make sure frame delimiters match what your device sends. In Project File mode, make sure the frame parser returns valid arrays or tables.
 
 **Garbled data.** Wrong baud rate, wrong decoder, or mismatched delimiters. Compare the raw console output against your expected format.
 

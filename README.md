@@ -19,7 +19,7 @@ It runs on Windows, macOS, Linux, and Raspberry Pi.
 
 **Connect to almost anything.** Serial/UART, Bluetooth LE, TCP/UDP, CAN Bus, Modbus TCP/RTU, MQTT, Audio, raw USB (libusb), HID (gamepads, custom devices), and Process I/O. One project can talk to several devices at once, each on its own protocol.
 
-**Visualize data live.** 15+ widget types: line plots, XY plots, gauges, bar charts, GPS maps, FFT spectrum, waterfall (spectrogram), accelerometer, gyroscope, compass, data grids, 3D views, and live camera feed. When none of the built-ins fit, the **Painter** widget gives you a `paint(ctx, w, h)` JavaScript callback with a Canvas2D-style API and ships ~17 templates (oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, and more) so you can draw exactly what your data looks like. 60 FPS with under 50 ms latency.
+**Visualize data live.** 15+ widget types: line plots, XY plots, gauges, bar charts, GPS maps, FFT spectrum, waterfall (spectrogram), accelerometer, gyroscope, compass, data grids, 3D views, and live camera feed. When none of the built-ins fit, the **Painter** widget exposes a `paint(ctx, w, h)` JavaScript callback with a Canvas2D-style API and ships ~17 templates (oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, and more) so you can draw exactly what your data looks like. 60 FPS with under 50 ms latency.
 
 **Configure dashboards without custom code.** The Project Editor lets you define groups, datasets, and widgets through structured forms, closer to editing a schema than coding a UI. Or skip the project file entirely with Quick Plot: print comma-separated values from your device and see them plot instantly. Workspaces split large projects into focused tabs, with a taskbar search for big setups.
 
@@ -197,24 +197,24 @@ Minimum:
 - **Qt 6.7 or later** (6.9.2 recommended). Required modules: QtCore, QtGui, QtWidgets, QtSerialPort, QtNetwork, QtCharts, QtSvg, QtBluetooth, QtQuick.
 - **C++20 compiler:** GCC 10+ (Linux), Clang 12+ (macOS), or MSVC 2019+ (Windows).
 - **CMake 3.16 or later.**
-- Platform toolchain (see below).
+- Platform toolchain (see [Platform specifics](#platform-specifics)).
 
-Platform specifics:
+#### Platform specifics
 
-#### Linux
+##### Linux
 
 ```bash
 sudo apt install libgl1-mesa-dev build-essential
 ```
 
-#### macOS
+##### macOS
 
 ```bash
 xcode-select --install
 brew install qt@6
 ```
 
-#### Windows
+##### Windows
 
 Visual Studio 2019 or later with the C++ workload, and Qt from the official installer.
 

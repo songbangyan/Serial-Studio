@@ -505,6 +505,15 @@ Rectangle {
       Layout.alignment: Qt.AlignVCenter
 
       Widgets.ToolbarButton {
+        text: qsTr("Assistant")
+        Layout.alignment: Qt.AlignVCenter
+        ToolTip.text: qsTr("Open the Assistant")
+        icon.source: "qrc:/icons/project-editor/toolbar/ai.svg"
+        onClicked: app.proVersion ? app.showAIAssistant()
+                                  : app.showAIProUpgradeNotice()
+      }
+
+      Widgets.ToolbarButton {
         text: qsTr("Help Center")
         Layout.alignment: Qt.AlignVCenter
         onClicked: app.showHelpCenter("project-editor")
