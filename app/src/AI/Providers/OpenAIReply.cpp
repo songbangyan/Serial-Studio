@@ -24,7 +24,7 @@
 #include "Misc/JsonValidator.h"
 
 static constexpr int kInitialResponseTimeoutMs = 30 * 1000;
-static const char* const kOpenAIEndpoint = "https://api.openai.com/v1/chat/completions";
+static const char* const kOpenAIEndpoint       = "https://api.openai.com/v1/chat/completions";
 static const char* const kOpenAIAuthHeader     = "Authorization";
 
 /** @brief Resolves a sanitized tool name back to its dotted canonical form. */
@@ -100,8 +100,7 @@ void AI::OpenAIReply::issueRequest()
   QNetworkRequest req((QUrl(m_endpointUrl)));
   req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
   if (!m_authHeader.isEmpty() && !m_apiKey.isEmpty())
-    req.setRawHeader(m_authHeader.toUtf8(),
-                     QStringLiteral("Bearer %1").arg(m_apiKey).toUtf8());
+    req.setRawHeader(m_authHeader.toUtf8(), QStringLiteral("Bearer %1").arg(m_apiKey).toUtf8());
 
   req.setRawHeader("accept", "text/event-stream");
   req.setTransferTimeout(kInitialResponseTimeoutMs);

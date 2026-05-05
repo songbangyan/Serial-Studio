@@ -51,10 +51,10 @@ bool AI::KeyVault::hasKey(ProviderId provider) const
 /** @brief Returns true when at least one provider has a key stored. */
 bool AI::KeyVault::hasAnyKey() const
 {
-  for (int i = 0; i < kProviderCount; ++i) {
+  for (int i = 0; i < kProviderCount; ++i)
     if (hasKey(static_cast<ProviderId>(i)))
       return true;
-  }
+
   return false;
 }
 

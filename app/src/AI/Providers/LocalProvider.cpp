@@ -258,9 +258,8 @@ void AI::LocalProvider::refreshModels()
 AI::Reply* AI::LocalProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   if (m_baseUrl.isEmpty())
-    return new detail::ImmediateErrorReplyLP(
-      QObject::tr("No local model server URL configured. "
-                  "Open Manage Keys to set one."));
+    return new detail::ImmediateErrorReplyLP(QObject::tr("No local model server URL configured. "
+                                                         "Open Manage Keys to set one."));
 
   // Flatten Anthropic-shaped system blocks into a single string
   const auto systemBlocks = ContextBuilder::buildSystemArray(false);
@@ -290,10 +289,6 @@ AI::Reply* AI::LocalProvider::sendMessage(const QJsonArray& history, const QJson
   qCDebug(serialStudioAI) << "Local request:" << chatEndpoint() << "tools=" << tools.size()
                           << "history=" << history.size() << "bytes=" << bytes.size();
 
-  return new OpenAIReply(m_nam,
-                         chatEndpoint(),
-                         QString(),
-                         QString(),
-                         bytes,
-                         QStringLiteral("Local"));
+  return new OpenAIReply(
+    m_nam, chatEndpoint(), QString(), QString(), bytes, QStringLiteral("Local"));
 }

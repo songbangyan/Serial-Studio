@@ -43,7 +43,9 @@ namespace AI {
  * and on baseUrl changes, with a static fallback so the UI is never
  * empty when the local server is offline.
  */
-class LocalProvider : public QObject, public Provider {
+class LocalProvider
+  : public QObject
+  , public Provider {
   Q_OBJECT
 
 public:

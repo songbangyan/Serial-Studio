@@ -402,8 +402,7 @@ void AI::Assistant::restoreModelSelections()
     if (!p)
       continue;
 
-    // The Local provider learns its model list asynchronously; accept whatever
-    // was last selected and let the provider validate on use.
+    // Local provider's model list arrives asynchronously; trust the stored id
     if (i == static_cast<int>(ProviderId::Local)) {
       p->setCurrentModel(stored);
       continue;
