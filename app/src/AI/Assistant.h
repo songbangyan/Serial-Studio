@@ -105,6 +105,8 @@ public:
   Q_INVOKABLE [[nodiscard]] QStringList availableModels(int providerIdx) const;
   Q_INVOKABLE [[nodiscard]] QString currentModel(int providerIdx) const;
   Q_INVOKABLE [[nodiscard]] QString modelDisplayName(int providerIdx, const QString& modelId) const;
+  Q_INVOKABLE [[nodiscard]] bool requiresApiKey(int providerIdx) const;
+  Q_INVOKABLE [[nodiscard]] QString localBaseUrl() const;
 
   void reportCacheStats(int readTokens, int createdTokens);
 
@@ -117,6 +119,8 @@ public slots:
   void setKey(int providerIdx, const QString& plaintext);
   void setModel(int providerIdx, const QString& model);
   void clearKey(int providerIdx);
+  void setLocalBaseUrl(const QString& url);
+  void refreshLocalModels();
   void sendMessage(const QString& userText);
   void cancel();
   void approveToolCall(const QString& callId);
@@ -143,6 +147,8 @@ private:
   std::unique_ptr<Provider> m_anthropic;
   std::unique_ptr<Provider> m_openai;
   std::unique_ptr<Provider> m_gemini;
+  std::unique_ptr<Provider> m_deepseek;
+  std::unique_ptr<Provider> m_local;
   std::unique_ptr<ToolDispatcher> m_dispatcher;
   std::unique_ptr<Conversation> m_conversation;
   int m_currentProvider;

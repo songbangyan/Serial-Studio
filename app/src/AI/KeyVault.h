@@ -29,7 +29,12 @@ enum class ProviderId : int {
   Anthropic = 0,
   OpenAI    = 1,
   Gemini    = 2,
+  DeepSeek  = 3,
+  Local     = 4,
 };
+
+/** @brief Total number of AI providers wired into the Assistant. */
+inline constexpr int kProviderCount = 5;
 
 /**
  * @brief RAII helper that best-effort scrubs a QString on destruction.

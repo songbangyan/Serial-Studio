@@ -2,7 +2,7 @@
 
 A chat-based assistant that lives inside Serial Studio and edits the project for you. Open it from the toolbar (the small spark icon, next to *Open Project*) or from the **Project Editor** toolbar, describe what you want to build, and the assistant configures sources, groups, datasets, frame parsers, transforms, output widgets, painters, and workspaces by calling the same in-process API your scripts and the MCP server already use.
 
-It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, or Google Gemini) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected.
+It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, Google Gemini, DeepSeek, or a local model server) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected. The local-server option lets you run everything offline against Ollama, llama.cpp, LM Studio, or vLLM.
 
 > **Pro feature.** The Assistant button is visible in GPL builds, but clicking it opens an upgrade notice. The Pro build is what wires the chat to a provider. Operator deployments (`--runtime`) hide the Assistant entirely; it is a build-time author tool, not something you ship to operators.
 
@@ -29,17 +29,29 @@ The four chips on the empty-conversation card are starter prompts — click one 
 
 ## Picking a provider
 
-Three providers are wired in. They all do roughly the same job; the trade-offs are price, speed, and how generous the free tier is.
+Five providers are wired in. They all do roughly the same job; the trade-offs are price, speed, how generous the free tier is, and whether the data ever leaves your machine.
 
 | Provider | Default model | What it costs | What it does well |
 |---|---|---|---|
 | **Anthropic** (Claude) | Haiku 4.5 | ~$1 / $5 per million tokens (in/out) | Default. Streaming, tool use, prompt caching, extended thinking on Sonnet/Opus. Sonnet 4.6 and Opus 4.7 are also selectable for harder tasks. |
 | **OpenAI** | GPT-4.1 mini | Pay-per-token; mini tier is cheap | GPT-4.1, GPT-4o, GPT-4o mini also available. |
 | **Google Gemini** | 2.5 Flash | Generous free tier (rate-limited via AI Studio) | 2.5 Flash and 2.0 Flash run on the free tier. 2.5 Pro is paid. |
+| **DeepSeek** | deepseek-chat (V3) | Often the cheapest cloud option for tool use | OpenAI-compatible API. `deepseek-reasoner` (R1) is also selectable. |
+| **Local model** | (whatever your server has loaded) | Free | OpenAI-compatible local endpoint. Works with Ollama (default `http://localhost:11434/v1`), llama.cpp's `llama-server`, LM Studio, or vLLM. The model list is queried live from `/v1/models`. Nothing leaves your machine. |
 
 You switch providers from the footer combo box. Each provider keeps its own model selection — Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
 
-> **Anthropic is the primary target.** Prompt caching, adaptive thinking budgets, and the curated essential-tool set are all tuned for Claude. The other two work, and work well, but Anthropic is what gets the sharpest behavior by default.
+> **Anthropic is the primary target.** Prompt caching, adaptive thinking budgets, and the curated essential-tool set are all tuned for Claude. The others work, and work well, but Anthropic is what gets the sharpest behavior by default.
+
+### Local models
+
+The Local provider doesn't take an API key — it takes a base URL. Default is Ollama on `http://localhost:11434/v1`. To point at a different server, open **Manage Keys**, edit the URL field on the Local card, and click **Apply**. Common alternatives:
+
+- LM Studio: `http://localhost:1234/v1`
+- llama.cpp `llama-server`: `http://localhost:8080/v1`
+- vLLM: `http://localhost:8000/v1`
+
+Whatever models are installed on the server show up in the model picker. Click the refresh icon next to the URL field to re-query the list after pulling a new model. Tool use works on any model that supports the OpenAI function-calling shape — most modern Llama, Qwen, DeepSeek, and Mistral fine-tunes do, but small models will struggle with multi-step tool chains.
 
 ### Getting a key
 
@@ -118,10 +130,10 @@ For scripting, there's a parallel surface called `meta.fetchScriptingDocs` that 
 ## Frequently asked
 
 **Does the assistant work offline?**
-No. It needs a network connection to reach the provider you picked. The rest of Serial Studio works offline regardless.
+Yes, with the **Local model** provider. Point it at Ollama, llama.cpp, LM Studio, or vLLM running on your machine and the Assistant works fully offline. The cloud providers (Anthropic, OpenAI, Gemini, DeepSeek) need a network connection. The rest of Serial Studio works offline regardless.
 
 **Can I use a self-hosted model (Ollama, LM Studio, llama.cpp, vLLM)?**
-Not yet. The three providers wired in v3.3 are Anthropic, OpenAI, and Google Gemini. A custom-endpoint slot is on the roadmap.
+Five providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, and a Local provider that talks to any OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM). The Local provider's base URL is user-configurable, so any other compatible endpoint works without a code change.
 
 **Can I see what the assistant is about to do before it does it?**
 Yes — that's exactly what the **Confirm** tier is for. The card shows the command name and the full arguments object before you approve.

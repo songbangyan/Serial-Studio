@@ -13,7 +13,9 @@
 #include "AI/Conversation.h"
 #include "AI/Logging.h"
 #include "AI/Providers/AnthropicProvider.h"
+#include "AI/Providers/DeepSeekProvider.h"
 #include "AI/Providers/GeminiProvider.h"
+#include "AI/Providers/LocalProvider.h"
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/ToolDispatcher.h"
 #include "Licensing/CommercialToken.h"
@@ -47,7 +49,7 @@ AI::Assistant::Assistant()
 
   // Restore previously-selected provider; clamp to a valid index.
   const int storedProvider = m_settings.value(QStringLiteral("ai/currentProvider"), 0).toInt();
-  if (storedProvider >= 0 && storedProvider < 3)
+  if (storedProvider >= 0 && storedProvider < kProviderCount)
     m_currentProvider = storedProvider;
 
   m_conversation->setDispatcher(m_dispatcher.get());
@@ -72,10 +74,14 @@ int AI::Assistant::currentProvider() const noexcept
   return m_currentProvider;
 }
 
-/** @brief Returns true if any provider has a stored key. */
+/** @brief Returns true if any provider has a stored key, or the Local provider is wired. */
 bool AI::Assistant::hasAnyKey() const
 {
-  return m_vault.hasAnyKey();
+  if (m_vault.hasAnyKey())
+    return true;
+
+  // The Local provider doesn't need an API key; treat its presence as "ready"
+  return m_local != nullptr;
 }
 
 /** @brief Returns true when the running build holds a valid Pro license token. */
@@ -122,6 +128,12 @@ QStringList AI::Assistant::providerNames() const
   if (m_gemini)
     names.append(m_gemini->displayName());
 
+  if (m_deepseek)
+    names.append(m_deepseek->displayName());
+
+  if (m_local)
+    names.append(m_local->displayName());
+
   return names;
 }
 
@@ -129,9 +141,13 @@ QStringList AI::Assistant::providerNames() const
 // QML-invokable per-provider queries
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns true when the provider at the given index has a stored key. */
+/** @brief Returns true when the provider at the given index is ready to use. */
 bool AI::Assistant::hasKey(int providerIdx) const
 {
+  // The Local provider is always "ready" -- it needs a base URL, not an API key
+  if (static_cast<ProviderId>(providerIdx) == ProviderId::Local)
+    return m_local != nullptr;
+
   return m_vault.hasKey(static_cast<ProviderId>(providerIdx));
 }
 
@@ -345,7 +361,7 @@ void AI::Assistant::onConversationError(const QString& message)
 // Helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Constructs the three provider adapters with key-getter lambdas. */
+/** @brief Constructs the provider adapters with key-getter lambdas. */
 void AI::Assistant::rebuildProviders()
 {
   m_anthropic = std::make_unique<AnthropicProvider>(
@@ -354,6 +370,14 @@ void AI::Assistant::rebuildProviders()
     std::make_unique<OpenAIProvider>(*m_nam, [this]() { return m_vault.key(ProviderId::OpenAI); });
   m_gemini =
     std::make_unique<GeminiProvider>(*m_nam, [this]() { return m_vault.key(ProviderId::Gemini); });
+  m_deepseek = std::make_unique<DeepSeekProvider>(
+    *m_nam, [this]() { return m_vault.key(ProviderId::DeepSeek); });
+
+  auto* local = new LocalProvider(*m_nam);
+  connect(local, &LocalProvider::modelsChanged, this, []() {
+    qCDebug(serialStudioAI) << "Local model list updated";
+  });
+  m_local.reset(local);
 }
 
 /** @brief Points the conversation at the currently selected provider. */
@@ -369,7 +393,7 @@ void AI::Assistant::rewireConversationProvider()
 void AI::Assistant::restoreModelSelections()
 {
   m_settings.beginGroup(QStringLiteral("ai/model"));
-  for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < kProviderCount; ++i) {
     const auto stored = m_settings.value(modelSettingsKey(i)).toString();
     if (stored.isEmpty())
       continue;
@@ -377,6 +401,13 @@ void AI::Assistant::restoreModelSelections()
     auto* p = providerAt(i);
     if (!p)
       continue;
+
+    // The Local provider learns its model list asynchronously; accept whatever
+    // was last selected and let the provider validate on use.
+    if (i == static_cast<int>(ProviderId::Local)) {
+      p->setCurrentModel(stored);
+      continue;
+    }
 
     // Drop stored model ids no longer offered by the provider
     if (!p->availableModels().contains(stored)) {
@@ -401,6 +432,10 @@ QString AI::Assistant::modelSettingsKey(int providerIdx)
       return QStringLiteral("openai");
     case ProviderId::Gemini:
       return QStringLiteral("gemini");
+    case ProviderId::DeepSeek:
+      return QStringLiteral("deepseek");
+    case ProviderId::Local:
+      return QStringLiteral("local");
   }
   return QStringLiteral("unknown");
 }
@@ -415,6 +450,41 @@ AI::Provider* AI::Assistant::providerAt(int idx) const
       return m_openai.get();
     case ProviderId::Gemini:
       return m_gemini.get();
+    case ProviderId::DeepSeek:
+      return m_deepseek.get();
+    case ProviderId::Local:
+      return m_local.get();
   }
   return nullptr;
+}
+
+/** @brief Returns true when the given provider needs a stored API key. */
+bool AI::Assistant::requiresApiKey(int providerIdx) const
+{
+  return static_cast<ProviderId>(providerIdx) != ProviderId::Local;
+}
+
+/** @brief Returns the configured base URL of the local model provider. */
+QString AI::Assistant::localBaseUrl() const
+{
+  if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get()))
+    return lp->baseUrl();
+
+  return LocalProvider::defaultBaseUrl();
+}
+
+/** @brief Updates the local-model base URL and triggers a fresh model query. */
+void AI::Assistant::setLocalBaseUrl(const QString& url)
+{
+  if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get())) {
+    lp->setBaseUrl(url);
+    Q_EMIT keysChanged();
+  }
+}
+
+/** @brief Re-queries the local model list (typically after the user edits the URL). */
+void AI::Assistant::refreshLocalModels()
+{
+  if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get()))
+    lp->refreshModels();
 }

@@ -3,6 +3,13 @@
  *
  * Copyright (C) 2020-2025 Alex Spataru <https://aspatru.com>
  *
+ * This file is part of the proprietary feature set of Serial Studio
+ * and is licensed under the Serial Studio Commercial License.
+ *
+ * Redistribution, modification, or use of this file in any form
+ * is permitted only under the terms of a valid commercial license
+ * obtained from the author.
+ *
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
@@ -17,16 +24,15 @@ class QNetworkAccessManager;
 namespace AI {
 
 /**
- * @brief Callable returning the API key for the active provider.
+ * @brief DeepSeek adapter on top of the OpenAI-compatible Chat Completions transport.
+ *
+ * DeepSeek exposes the same request/response shape as OpenAI under
+ * https://api.deepseek.com/v1/chat/completions, so this provider reuses
+ * the OpenAI translation helpers and the OpenAIReply streaming pipe.
  */
-using KeyGetter = std::function<QString()>;
-
-/**
- * @brief OpenAI Chat Completions adapter (first-slice stub).
- */
-class OpenAIProvider : public Provider {
+class DeepSeekProvider : public Provider {
 public:
-  OpenAIProvider(QNetworkAccessManager& nam, KeyGetter keyGetter);
+  DeepSeekProvider(QNetworkAccessManager& nam, std::function<QString()> keyGetter);
 
   [[nodiscard]] QString displayName() const override;
   [[nodiscard]] QString keyVendorUrl() const override;
@@ -36,18 +42,9 @@ public:
 
   [[nodiscard]] Reply* sendMessage(const QJsonArray& history, const QJsonArray& tools) override;
 
-  [[nodiscard]] static QJsonArray translateHistory(const QJsonArray& history,
-                                                   const QString& systemText);
-  [[nodiscard]] static QJsonArray translateTools(const QJsonArray& tools);
-
 private:
-  static void translateBlocks(const QJsonArray& blocks,
-                              QString& textAccumulator,
-                              QJsonArray& toolCalls,
-                              QJsonArray& toolResultMessages);
-
   QNetworkAccessManager& m_nam;
-  KeyGetter m_keyGetter;
+  std::function<QString()> m_keyGetter;
 };
 
 }  // namespace AI

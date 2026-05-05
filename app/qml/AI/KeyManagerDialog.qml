@@ -40,6 +40,15 @@ Widgets.SmartDialog {
       return qsTr("Google Gemini. The default is Gemini 2.0 Flash, which "
               + "has a generous free tier (subject to rate limits). "
               + "Gemini 1.5 Pro and Gemini 1.5 Flash are also available.")
+    } else if (idx === 3) {
+      return qsTr("DeepSeek. OpenAI-compatible API. The default is "
+              + "deepseek-chat (V3). deepseek-reasoner (R1) is also "
+              + "available. Often the cheapest cloud option for tool use.")
+    } else if (idx === 4) {
+      return qsTr("Local model server. Works with any OpenAI-compatible "
+              + "endpoint -- Ollama, llama.cpp's llama-server, LM Studio, "
+              + "or vLLM. Nothing leaves your machine. The model list is "
+              + "queried live from the server.")
     }
     return ""
   }
@@ -153,11 +162,12 @@ Widgets.SmartDialog {
           }
 
           //
-          // Key field row
+          // Key field row -- only shown for cloud providers that need an API key
           //
           RowLayout {
             spacing: 6
             Layout.fillWidth: true
+            visible: Cpp_AI_Assistant.requiresApiKey(providerIdx)
 
             TextField {
               id: keyField
@@ -166,7 +176,7 @@ Widgets.SmartDialog {
               font: Cpp_Misc_CommonFonts.monoFont
               echoMode: revealed ? TextInput.Normal : TextInput.Password
               placeholderText: providerCard.hasKey
-                               ? qsTr("A key is on file — paste a new one to replace it")
+                               ? qsTr("A key is on file -- paste a new one to replace it")
                                : qsTr("Paste your API key here")
             }
 
@@ -225,6 +235,63 @@ Widgets.SmartDialog {
               icon.color: Cpp_ThemeManager.colors["alarm"]
               icon.source: "qrc:/icons/buttons/trash.svg"
               onClicked: Cpp_AI_Assistant.clearKey(providerIdx)
+            }
+          }
+
+          //
+          // Local-server URL row -- shown only for the Local provider
+          //
+          RowLayout {
+            spacing: 6
+            Layout.fillWidth: true
+            visible: !Cpp_AI_Assistant.requiresApiKey(providerIdx)
+
+            TextField {
+              id: urlField
+
+              Layout.fillWidth: true
+              font: Cpp_Misc_CommonFonts.monoFont
+              text: Cpp_AI_Assistant.localBaseUrl()
+              placeholderText: qsTr("http://localhost:11434/v1")
+            }
+
+            ToolButton {
+              text: qsTr("Install Ollama")
+              ToolTip.text: qsTr("Open the Ollama download page")
+              ToolTip.visible: hovered
+              ToolTip.delay: 400
+              display: AbstractButton.TextBesideIcon
+              font: Cpp_Misc_CommonFonts.uiFont
+              icon.color: Cpp_ThemeManager.colors["text"]
+              icon.source: "qrc:/icons/buttons/website.svg"
+              onClicked: Qt.openUrlExternally(Cpp_AI_Assistant.keyVendorUrl(providerIdx))
+            }
+
+            ToolButton {
+              text: qsTr("Apply")
+              display: AbstractButton.TextBesideIcon
+              enabled: urlField.text.length > 0
+              font: Cpp_Misc_CommonFonts.uiFont
+              icon.color: Cpp_ThemeManager.colors["text"]
+              icon.source: "qrc:/icons/buttons/save.svg"
+              onClicked: {
+                Cpp_AI_Assistant.setLocalBaseUrl(urlField.text)
+                if (Cpp_AI_Assistant.currentProvider !== providerIdx)
+                  Cpp_AI_Assistant.selectProvider(providerIdx)
+
+                root.close()
+              }
+            }
+
+            ToolButton {
+              text: ""
+              display: AbstractButton.IconOnly
+              ToolTip.text: qsTr("Re-query the model list")
+              ToolTip.visible: hovered
+              ToolTip.delay: 400
+              icon.color: Cpp_ThemeManager.colors["text"]
+              icon.source: "qrc:/icons/buttons/refresh.svg"
+              onClicked: Cpp_AI_Assistant.refreshLocalModels()
             }
           }
         }

@@ -51,7 +51,11 @@ bool AI::KeyVault::hasKey(ProviderId provider) const
 /** @brief Returns true when at least one provider has a key stored. */
 bool AI::KeyVault::hasAnyKey() const
 {
-  return hasKey(ProviderId::Anthropic) || hasKey(ProviderId::OpenAI) || hasKey(ProviderId::Gemini);
+  for (int i = 0; i < kProviderCount; ++i) {
+    if (hasKey(static_cast<ProviderId>(i)))
+      return true;
+  }
+  return false;
 }
 
 /** @brief Decrypts and returns the plaintext key for the given provider. */
@@ -109,9 +113,8 @@ void AI::KeyVault::clearKey(ProviderId provider)
 /** @brief Removes the stored key for every provider. */
 void AI::KeyVault::clearAllKeys()
 {
-  clearKey(ProviderId::Anthropic);
-  clearKey(ProviderId::OpenAI);
-  clearKey(ProviderId::Gemini);
+  for (int i = 0; i < kProviderCount; ++i)
+    clearKey(static_cast<ProviderId>(i));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -137,6 +140,10 @@ QString AI::KeyVault::settingsKey(ProviderId provider)
       return QStringLiteral("openai");
     case ProviderId::Gemini:
       return QStringLiteral("gemini");
+    case ProviderId::DeepSeek:
+      return QStringLiteral("deepseek");
+    case ProviderId::Local:
+      return QStringLiteral("local");
   }
 
   return QStringLiteral("unknown");

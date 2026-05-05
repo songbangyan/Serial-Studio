@@ -40,6 +40,14 @@ public:
               const QByteArray& requestBody,
               QObject* parent = nullptr);
 
+  OpenAIReply(QNetworkAccessManager& nam,
+              const QString& endpointUrl,
+              const QString& authHeader,
+              const QString& apiKey,
+              const QByteArray& requestBody,
+              const QString& providerLabel,
+              QObject* parent = nullptr);
+
   void abort() override;
 
 private:
@@ -62,8 +70,14 @@ private:
   void finishWithError(const QString& message);
 
 private:
+  void issueRequest();
+
+private:
   QNetworkAccessManager& m_nam;
+  QString m_endpointUrl;
+  QString m_authHeader;
   QString m_apiKey;
+  QString m_providerLabel;
   QByteArray m_requestBody;
   QNetworkReply* m_reply;
   SseEventReader* m_sse;

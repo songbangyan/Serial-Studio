@@ -591,6 +591,8 @@ if(BUILD_COMMERCIAL)
     src/AI/Providers/OpenAIReply.h
     src/AI/Providers/GeminiProvider.h
     src/AI/Providers/GeminiReply.h
+    src/AI/Providers/DeepSeekProvider.h
+    src/AI/Providers/LocalProvider.h
   )
   set(SOURCES
     ${SOURCES}
@@ -659,6 +661,8 @@ if(BUILD_COMMERCIAL)
     src/AI/Providers/OpenAIReply.cpp
     src/AI/Providers/GeminiProvider.cpp
     src/AI/Providers/GeminiReply.cpp
+    src/AI/Providers/DeepSeekProvider.cpp
+    src/AI/Providers/LocalProvider.cpp
   )
 
   if(WIN32)

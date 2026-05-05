@@ -24,7 +24,8 @@
 #include "Misc/JsonValidator.h"
 
 static constexpr int kInitialResponseTimeoutMs = 30 * 1000;
-static const char* const kEndpoint             = "https://api.openai.com/v1/chat/completions";
+static const char* const kOpenAIEndpoint = "https://api.openai.com/v1/chat/completions";
+static const char* const kOpenAIAuthHeader     = "Authorization";
 
 /** @brief Resolves a sanitized tool name back to its dotted canonical form. */
 static QString resolveCanonicalToolName(const QString& sanitized)
@@ -54,14 +55,34 @@ static QString resolveCanonicalToolName(const QString& sanitized)
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Issues the POST and wires SSE / network slots. */
+/** @brief Convenience constructor for the canonical OpenAI Chat Completions endpoint. */
 AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
                              const QString& apiKey,
                              const QByteArray& requestBody,
                              QObject* parent)
+  : OpenAIReply(nam,
+                QString::fromUtf8(kOpenAIEndpoint),
+                QString::fromUtf8(kOpenAIAuthHeader),
+                apiKey,
+                requestBody,
+                QStringLiteral("OpenAI"),
+                parent)
+{}
+
+/** @brief Generic constructor for any OpenAI-compatible endpoint (DeepSeek, Local, etc.). */
+AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
+                             const QString& endpointUrl,
+                             const QString& authHeader,
+                             const QString& apiKey,
+                             const QByteArray& requestBody,
+                             const QString& providerLabel,
+                             QObject* parent)
   : Reply(parent)
   , m_nam(nam)
+  , m_endpointUrl(endpointUrl)
+  , m_authHeader(authHeader)
   , m_apiKey(apiKey)
+  , m_providerLabel(providerLabel)
   , m_requestBody(requestBody)
   , m_reply(nullptr)
   , m_sse(new SseEventReader(this))
@@ -70,16 +91,26 @@ AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
   connect(m_sse, &SseEventReader::frameReceived, this, &OpenAIReply::onSseEvent);
   connect(m_sse, &SseEventReader::parseError, this, &OpenAIReply::onSseError);
 
-  QNetworkRequest req((QUrl(QString::fromUtf8(kEndpoint))));
+  issueRequest();
+}
+
+/** @brief Builds the request, sets headers, and connects QNetworkReply slots. */
+void AI::OpenAIReply::issueRequest()
+{
+  QNetworkRequest req((QUrl(m_endpointUrl)));
   req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
-  req.setRawHeader("Authorization", QStringLiteral("Bearer %1").arg(apiKey).toUtf8());
+  if (!m_authHeader.isEmpty() && !m_apiKey.isEmpty())
+    req.setRawHeader(m_authHeader.toUtf8(),
+                     QStringLiteral("Bearer %1").arg(m_apiKey).toUtf8());
+
   req.setRawHeader("accept", "text/event-stream");
   req.setTransferTimeout(kInitialResponseTimeoutMs);
 
-  qCDebug(serialStudioAI) << "POST openai key=" << KeyVault::redact(apiKey)
-                          << "body_bytes=" << requestBody.size();
+  qCDebug(serialStudioAI) << "POST" << m_providerLabel << m_endpointUrl
+                          << "key=" << KeyVault::redact(m_apiKey)
+                          << "body_bytes=" << m_requestBody.size();
 
-  m_reply = m_nam.post(req, requestBody);
+  m_reply = m_nam.post(req, m_requestBody);
   m_reply->setParent(this);
 
   connect(m_reply, &QNetworkReply::readyRead, this, &OpenAIReply::onReplyReadyRead);
@@ -124,7 +155,7 @@ void AI::OpenAIReply::onSseEvent(const QString& name, const QJsonObject& data)
 /** @brief Logs but does not abort on transient SSE parse errors. */
 void AI::OpenAIReply::onSseError(const QString& reason)
 {
-  qCWarning(serialStudioAI) << "OpenAI SSE parse error:" << reason;
+  qCWarning(serialStudioAI) << m_providerLabel << "SSE parse error:" << reason;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -201,7 +232,7 @@ void AI::OpenAIReply::emitPendingToolCalls()
 
     const auto result = Misc::JsonValidator::parseAndValidate(payload, limits);
     if (!result.valid || !result.document.isObject()) {
-      qCWarning(serialStudioAI) << "OpenAI tool args invalid for" << state.name << ":"
+      qCWarning(serialStudioAI) << m_providerLabel << "tool args invalid for" << state.name << ":"
                                 << result.errorMessage;
       state.emitted = true;
       continue;
@@ -273,7 +304,7 @@ void AI::OpenAIReply::onReplyFinished()
     else if (status == 429)
       finishWithError(tr("Rate limited: %1").arg(msg));
     else
-      finishWithError(tr("OpenAI %1: %2").arg(status).arg(msg));
+      finishWithError(tr("%1 %2: %3").arg(m_providerLabel).arg(status).arg(msg));
 
     return;
   }

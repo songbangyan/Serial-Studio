@@ -87,7 +87,7 @@ public:
     return m_currentModel.isEmpty() ? defaultModel() : m_currentModel;
   }
 
-  void setCurrentModel(const QString& model)
+  virtual void setCurrentModel(const QString& model)
   {
     if (model.isEmpty() || !availableModels().contains(model))
       return;
