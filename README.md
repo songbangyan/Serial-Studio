@@ -31,6 +31,8 @@ It runs on Windows, macOS, Linux, and Raspberry Pi.
 
 **Automate and integrate.** A TCP API on port 7777 exposes 290+ commands for programmatic control. An MCP server lets AI models like Claude drive the app directly for automated analysis.
 
+**Chat with your data.** A built-in AI Assistant panel lets you talk to your live dashboard from inside Serial Studio. Bring your own API key for OpenAI, Anthropic, or Google Gemini and ask the model to explain a spike, summarize a session, tweak a parser, or send a command back to the device. The model uses the same TCP API to read datasets, trigger actions, and reason about what's coming off the wire.
+
 **Industrial and automotive ready.** A Modbus register-map importer (CSV/XML/JSON) builds a ready-to-use project straight from vendor documentation. DBC files import decoded CAN signals.
 
 New here? The [help center](https://serial-studio.com/help) has FAQs, use cases, and comparisons with similar tools.
@@ -112,6 +114,7 @@ An ARM64 AppImage is available for Raspberry Pi and similar boards. Performance 
 - **Image view:** live JPEG or PNG camera streams alongside telemetry on the same connection (Pro).
 - **Multi-device:** several devices in one project, each with its own protocol (Pro).
 - **TCP API on port 7777:** 290+ commands for programmatic control (see the [API client example](./examples/API%20Test)).
+- **AI Assistant (Pro):** built-in chat panel for OpenAI, Anthropic, and Google Gemini. Bring your own API key, then ask the model to inspect live data, summarize a session, or send commands back to the device.
 - **AI integration:** Claude and other models via the Model Context Protocol (see [MCP Client](./examples/MCP%20Client)).
 - **Fast and cross-platform:** 60 FPS, under 50 ms latency, on Windows 10/11, macOS 11+ (Intel and Apple Silicon), Linux x64, and Raspberry Pi ARM64.
 - **Dual licensed:** open source GPL-3.0 core with proprietary Pro features (see [LICENSE.md](LICENSE.md)).
