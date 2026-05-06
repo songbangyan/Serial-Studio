@@ -196,6 +196,13 @@ void prepareEnvironment(int& argc, char**& argv, const QString& shortcutPath)
   QApplication::setHighDpiScaleFactorRoundingPolicy(policy);
 
 #ifdef SERIAL_STUDIO_WITH_WEBENGINE
+#  if defined(Q_OS_LINUX)
+  // QtWebEngineProcess can't read the AppImage FUSE squashfs from inside a
+  // namespace sandbox; disable it before initialize() reads the env var.
+  if (!qEnvironmentVariableIsSet("QTWEBENGINE_DISABLE_SANDBOX")
+      && !qEnvironmentVariableIsSet("QTWEBENGINE_CHROMIUM_FLAGS"))
+    qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-namespace-sandbox");
+#  endif
   QtWebEngineQuick::initialize();
 #endif
 }
