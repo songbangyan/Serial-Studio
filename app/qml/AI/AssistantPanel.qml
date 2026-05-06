@@ -119,6 +119,70 @@ Widgets.SmartDialog {
             }
           }
 
+          //
+          // Conversation starters grouped by category; shuffleSuggestions()
+          // picks one per category each time the welcome card becomes visible.
+          //
+          readonly property var suggestionPool: ({
+            "discovery": [
+              qsTr("Help me discover Serial Studio's features"),
+              qsTr("What can this app do for my telemetry?"),
+              qsTr("Walk me through what this project already contains"),
+              qsTr("List the sources in this project")
+            ],
+            "concepts": [
+              qsTr("What is a session database, and why would I use one?"),
+              qsTr("CSV vs MDF4 export — what is the difference?"),
+              qsTr("What is a frame parser, and when do I need one?"),
+              qsTr("When should I use Lua vs JavaScript for the parser?"),
+              qsTr("Plot, Bar, and Gauge — when to use each?"),
+              qsTr("What is the difference between a transform and a frame parser?")
+            ],
+            "setup": [
+              qsTr("Add a UART source for an Arduino"),
+              qsTr("Set up an IMU project from scratch"),
+              qsTr("Configure an MQTT subscriber"),
+              qsTr("Add a CAN bus source"),
+              qsTr("Set up a Modbus poller"),
+              qsTr("Add a network (TCP/UDP) source")
+            ],
+            "parsers": [
+              qsTr("Write a CSV frame parser for me"),
+              qsTr("Help me parse a JSON frame"),
+              qsTr("Add an EMA smoothing transform to a dataset"),
+              qsTr("Decode hexadecimal frames"),
+              qsTr("Calibrate a sensor with a linear transform")
+            ],
+            "visualize": [
+              qsTr("Suggest dashboard widgets for my data"),
+              qsTr("Build an executive overview workspace"),
+              qsTr("Add a painter widget for a custom visualization"),
+              qsTr("Show Plot, FFT, and Waterfall for one dataset"),
+              qsTr("Group my datasets into useful workspaces")
+            ]
+          })
+
+          property var displayedSuggestions: []
+
+          function shuffleSuggestions() {
+            var picks = []
+            var pool = welcomeCard.suggestionPool
+            for (var category in pool) {
+              var list = pool[category]
+              if (!list || list.length === 0)
+                continue
+
+              picks.push(list[Math.floor(Math.random() * list.length)])
+            }
+            displayedSuggestions = picks
+          }
+
+          Component.onCompleted: shuffleSuggestions()
+          onVisibleChanged: {
+            if (visible)
+              shuffleSuggestions()
+          }
+
           ColumnLayout {
             id: welcomeColumn
 
@@ -217,12 +281,7 @@ Widgets.SmartDialog {
               visible: welcomeCard.hasActiveKey
 
               Repeater {
-                model: [
-                  qsTr("List the sources in this project"),
-                  qsTr("Add a UART source for an Arduino"),
-                  qsTr("Write a CSV frame parser for me"),
-                  qsTr("Suggest dashboard widgets for my data")
-                ]
+                model: welcomeCard.displayedSuggestions
 
                 delegate: AbstractButton {
                   id: chip
