@@ -494,8 +494,11 @@ void CLI::applyOperatorTaskbarSettings()
     tbs.setAutohide(false);
   }
 
-  if (m_parser.isSet(m_opts.taskbarButtonsOpt))
-    tbs.setPinnedButtons(splitTaskbarButtonIds(m_parser.value(m_opts.taskbarButtonsOpt)));
+  // Missing flag means the deploy dialog left the pin list empty; do not fall back to persisted defaults
+  const QStringList pinned = m_parser.isSet(m_opts.taskbarButtonsOpt)
+                               ? splitTaskbarButtonIds(m_parser.value(m_opts.taskbarButtonsOpt))
+                               : QStringList{};
+  tbs.setPinnedButtons(pinned);
 }
 
 /**

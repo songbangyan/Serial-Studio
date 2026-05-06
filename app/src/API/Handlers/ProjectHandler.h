@@ -62,6 +62,7 @@ private:
   static CommandResponse datasetDelete(const QString& id, const QJsonObject& params);
   static CommandResponse datasetDuplicate(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetOption(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetSetOptions(const QString& id, const QJsonObject& params);
 
   static CommandResponse actionAdd(const QString& id, const QJsonObject& params);
   static CommandResponse actionDelete(const QString& id, const QJsonObject& params);

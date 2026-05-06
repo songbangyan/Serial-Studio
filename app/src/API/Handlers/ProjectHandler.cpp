@@ -52,6 +52,32 @@ static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& c
   }
 }
 
+/** @brief Returns the DatasetOption bitflag value of @a ds (1=Plot, 2=FFT, ...). */
+static int datasetOptionsBitflag(const DataModel::Dataset& ds)
+{
+  int flags = SerialStudio::DatasetGeneric;
+  if (ds.plt)
+    flags |= SerialStudio::DatasetPlot;
+
+  if (ds.fft)
+    flags |= SerialStudio::DatasetFFT;
+
+  if (ds.led)
+    flags |= SerialStudio::DatasetLED;
+
+  if (ds.waterfall)
+    flags |= SerialStudio::DatasetWaterfall;
+
+  if (ds.widget == QStringLiteral("bar"))
+    flags |= SerialStudio::DatasetBar;
+  else if (ds.widget == QStringLiteral("gauge"))
+    flags |= SerialStudio::DatasetGauge;
+  else if (ds.widget == QStringLiteral("compass"))
+    flags |= SerialStudio::DatasetCompass;
+
+  return flags;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Command registration
 //--------------------------------------------------------------------------------------------------
@@ -309,19 +335,52 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setOption"),
-    QStringLiteral("Toggle a dataset option by id "
-                   "(params: groupId, datasetId, option, enabled)"),
+    QStringLiteral("Toggle one DatasetOption flag on a dataset. Updates the group's "
+                   "compatibleWidgetTypes immediately so project.workspace.addWidget "
+                   "will accept the corresponding DashboardWidget enum.\n"
+                   "option values (DatasetOption bitflag):\n"
+                   "  1  = Plot (time-series; JSON key 'graph')\n"
+                   "  2  = FFT\n"
+                   "  4  = Bar     (mutually exclusive with Gauge / Compass)\n"
+                   "  8  = Gauge   (mutually exclusive with Bar / Compass)\n"
+                   "  16 = Compass (mutually exclusive with Bar / Gauge)\n"
+                   "  32 = LED\n"
+                   "  64 = Waterfall (Pro)\n"
+                   "Pass exactly ONE bit -- use project.dataset.setOptions to apply "
+                   "several at once, or project.dataset.update to mix with other "
+                   "field edits."),
     makeSchema({
       {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
       { QStringLiteral("option"),
        QStringLiteral("integer"),
-       QStringLiteral("Dataset option flag to toggle")                                                    },
+       QStringLiteral("DatasetOption bitflag value (1, 2, 4, 8, 16, 32, or 64)")                          },
       {QStringLiteral("enabled"),
        QStringLiteral("boolean"),
        QStringLiteral("Whether to enable or disable the option")                                          }
   }),
     &datasetSetOption);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.setOptions"),
+    QStringLiteral("Apply several DatasetOption flags at once. Pass `options` as the "
+                   "bitwise OR of the flags you want enabled; any flag NOT set in the "
+                   "value is disabled. Bits: 1=Plot, 2=FFT, 4=Bar, 8=Gauge, "
+                   "16=Compass, 32=LED, 64=Waterfall (Pro). Bar/Gauge/Compass are "
+                   "mutually exclusive -- if more than one is set, the highest bit "
+                   "wins. Updates the group's compatibleWidgetTypes immediately."),
+    makeSchema({
+      { QStringLiteral("groupId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Owning group id")                                              },
+      {           Keys::DatasetId,
+       QStringLiteral("integer"),
+       QStringLiteral("Dataset id within the group")                                  },
+      {QStringLiteral("options"),
+       QStringLiteral("integer"),
+       QStringLiteral("Bitwise OR of DatasetOption flags (e.g. 67 = Plot|FFT|Waterfall)")}
+  }),
+    &datasetSetOptions);
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setVirtual"),
@@ -835,9 +894,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
 
   const int groupId = params.value(QStringLiteral("groupId")).toInt();
   const int options = params.value(QStringLiteral("options")).toInt();
-  if (options < 0 || options > 0b00111111)
+  if (options < 0 || options > 0b01111111)
     return CommandResponse::makeError(
-      id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-63 (bit flags)"));
+      id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-127 (bit flags)"));
 
   auto& project      = DataModel::ProjectModel::instance();
   const auto& groups = project.groups();
@@ -845,9 +904,54 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
-  // addDataset() reads m_selectedGroup; select first, then add.
+  // Headline flag drives the auto-generated title; remaining bits are applied below
+  SerialStudio::DatasetOption headline = SerialStudio::DatasetGeneric;
+  for (const auto cand :
+       {SerialStudio::DatasetPlot,
+        SerialStudio::DatasetFFT,
+        SerialStudio::DatasetBar,
+        SerialStudio::DatasetGauge,
+        SerialStudio::DatasetCompass,
+        SerialStudio::DatasetLED,
+        SerialStudio::DatasetWaterfall}) {
+    if (options & cand) {
+      headline = cand;
+      break;
+    }
+  }
+
   project.setSelectedGroup(groups[groupId]);
-  project.addDataset(static_cast<SerialStudio::DatasetOption>(options));
+  project.addDataset(headline);
+
+  // Apply any remaining bits on top of the headline-seeded dataset
+  const int remaining = options & ~static_cast<int>(headline);
+  if (remaining != 0) {
+    const auto& post   = project.groups();
+    const int newIndex = static_cast<int>(post[groupId].datasets.size()) - 1;
+    if (newIndex >= 0) {
+      DataModel::Dataset d = post[groupId].datasets[newIndex];
+      if (remaining & SerialStudio::DatasetPlot)
+        d.plt = true;
+
+      if (remaining & SerialStudio::DatasetFFT)
+        d.fft = true;
+
+      if (remaining & SerialStudio::DatasetLED)
+        d.led = true;
+
+      if (remaining & SerialStudio::DatasetWaterfall)
+        d.waterfall = true;
+
+      if (remaining & SerialStudio::DatasetCompass)
+        d.widget = QStringLiteral("compass");
+      else if (remaining & SerialStudio::DatasetGauge)
+        d.widget = QStringLiteral("gauge");
+      else if (remaining & SerialStudio::DatasetBar)
+        d.widget = QStringLiteral("bar");
+
+      project.updateDataset(groupId, newIndex, d, /*rebuildTree=*/true);
+    }
+  }
 
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
@@ -977,6 +1081,66 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
   result[Keys::DatasetId]           = datasetId;
   result[QStringLiteral("option")]  = option;
   result[QStringLiteral("enabled")] = enabled;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Apply a bitmask of DatasetOption flags in one call.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QString& id,
+                                                                      const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  if (!params.contains(QStringLiteral("options")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: options"));
+
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  const int options   = params.value(QStringLiteral("options")).toInt();
+
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  DataModel::Dataset d = groups[groupId].datasets[datasetId];
+  d.plt                = (options & SerialStudio::DatasetPlot) != 0;
+  d.fft                = (options & SerialStudio::DatasetFFT) != 0;
+  d.led                = (options & SerialStudio::DatasetLED) != 0;
+  d.waterfall          = (options & SerialStudio::DatasetWaterfall) != 0;
+
+  // widget string is a one-of group; Compass beats Gauge beats Bar when caller passes more than one
+  if (options & SerialStudio::DatasetCompass)
+    d.widget = QStringLiteral("compass");
+  else if (options & SerialStudio::DatasetGauge)
+    d.widget = QStringLiteral("gauge");
+  else if (options & SerialStudio::DatasetBar)
+    d.widget = QStringLiteral("bar");
+  else if (d.widget == QStringLiteral("bar") || d.widget == QStringLiteral("gauge")
+           || d.widget == QStringLiteral("compass"))
+    d.widget = QString();
+
+  project.updateDataset(groupId, datasetId, d, /*rebuildTree=*/true);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[Keys::DatasetId]           = datasetId;
+  result[QStringLiteral("options")] = options;
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1512,6 +1676,12 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
       if (!ds.units.isEmpty())
         d[QStringLiteral("units")] = ds.units;
 
+      d[QStringLiteral("enabledOptions")] = datasetOptionsBitflag(ds);
+
+      QJsonArray ds_compat;
+      appendDatasetWidgetTypes(ds, ds_compat);
+      d[QStringLiteral("enabledWidgetTypes")] = ds_compat;
+
       ds_summary.append(d);
     }
     obj[QStringLiteral("datasetSummary")] = ds_summary;
@@ -1605,6 +1775,13 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 
       dataset_obj[QStringLiteral("enabledFeatures")] =
         enabled.isEmpty() ? QStringLiteral("plain numeric") : enabled.join(QStringLiteral(", "));
+
+      // Machine-readable twins of enabledFeatures (bitflag + DashboardWidget enum array)
+      dataset_obj[QStringLiteral("enabledOptions")] = datasetOptionsBitflag(dataset);
+
+      QJsonArray ds_widget_types;
+      appendDatasetWidgetTypes(dataset, ds_widget_types);
+      dataset_obj[QStringLiteral("enabledWidgetTypes")] = ds_widget_types;
 
       dataset_obj[QStringLiteral("hasTransform")] = !dataset.transformCode.isEmpty();
       dataset_obj[QStringLiteral("isVirtual")]    = dataset.virtual_;
@@ -1936,9 +2113,11 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
   registry.registerCommand(
     QStringLiteral("project.dataset.update"),
     QStringLiteral("Patch dataset fields by id (params: groupId, datasetId, plus any of "
-                   "title, units, widget, xAxisId, waterfallYAxis, fftMin, fftMax, "
-                   "pltMin, pltMax, wgtMin, wgtMax, alarmLow, alarmHigh, ledHigh, "
-                   "transformCode)"),
+                   "title, units, widget, graph, fft, led, waterfall, xAxisId, "
+                   "waterfallYAxis, fftMin, fftMax, pltMin, pltMax, wgtMin, wgtMax, "
+                   "alarmLow, alarmHigh, ledHigh, transformCode). The boolean fields "
+                   "graph/fft/led/waterfall toggle the same flags as project.dataset."
+                   "setOption -- use them here when patching multiple fields at once."),
     makeSchema({
       {QStringLiteral("groupId"), QStringLiteral("integer"),   QStringLiteral("Target group id")},
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Target dataset id")}
@@ -2164,6 +2343,25 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
     d.widget    = params.value(QStringLiteral("widget")).toString();
     rebuildTree = true;
   }
+
+  // Visualization booleans share the project JSON keys (graph/fft/led/waterfall)
+  if (params.contains(Keys::Graph)) {
+    d.plt       = params.value(Keys::Graph).toBool();
+    rebuildTree = true;
+  }
+  if (params.contains(Keys::FFT)) {
+    d.fft       = params.value(Keys::FFT).toBool();
+    rebuildTree = true;
+  }
+  if (params.contains(Keys::LED)) {
+    d.led       = params.value(Keys::LED).toBool();
+    rebuildTree = true;
+  }
+  if (params.contains(Keys::Waterfall)) {
+    d.waterfall = params.value(Keys::Waterfall).toBool();
+    rebuildTree = true;
+  }
+
   if (params.contains(QStringLiteral("xAxisId")))
     d.xAxisId = params.value(QStringLiteral("xAxisId")).toInt();
 

@@ -688,6 +688,18 @@ class SerialStudioClient:
             },
         )
 
+    def set_dataset_options(
+        self, group_id: int, dataset_id: int, options: int
+    ) -> None:
+        self.command(
+            "project.dataset.setOptions",
+            {
+                "groupId": group_id,
+                "datasetId": dataset_id,
+                "options": options,
+            },
+        )
+
     def add_action(self) -> int:
         """
         Add an action and return its actionId.

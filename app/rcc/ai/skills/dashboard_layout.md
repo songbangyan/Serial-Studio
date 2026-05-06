@@ -7,28 +7,29 @@ datasets.
 ## Widget catalog
 
 Widgets are the things you see on the dashboard. They are NOT the same
-as a group's `widgetType` (that decides the group SHAPE, not what tiles
-render). Use the `DashboardWidget` enum for `project.workspace.addWidget`:
+as a group's `widget` string (that decides the group SHAPE, not what
+tiles render). Use the `DashboardWidget` enum for
+`project.workspace.addWidget`:
 
 ```
-0  = DashboardTerminal      (DON'T pick this for tiles - it's the console)
+0  = DashboardTerminal           (DON'T pick this for tiles - it's the console)
 1  = DashboardDataGrid
 2  = DashboardMultiPlot
-3  = DashboardFFT
-4  = DashboardGPS
-5  = DashboardAccelerometer
-6  = DashboardGyroscope
-7  = DashboardCompass
+3  = DashboardAccelerometer
+4  = DashboardGyroscope
+5  = DashboardGPS
+6  = DashboardPlot3D              (Pro)
+7  = DashboardFFT
 8  = DashboardLED
 9  = DashboardPlot
 10 = DashboardBar
 11 = DashboardGauge
-12 = (reserved)
-13 = DashboardImageView           (Pro)
-14 = DashboardPlot3D              (Pro)
+12 = DashboardCompass
+13 = DashboardNoWidget            (sentinel; never pin this)
+14 = DashboardImageView           (Pro)
 15 = DashboardOutputPanel         (Pro; ALL output widgets in a group on one tile)
-16 = DashboardWaterfall           (Pro)
-17 = (reserved)
+16 = DashboardNotificationLog     (Pro)
+17 = DashboardWaterfall           (Pro)
 18 = DashboardPainter             (Pro)
 ```
 
@@ -36,6 +37,49 @@ Each group/dataset is "compatible" with a subset of these. Use
 `project.group.list` and read each group's `compatibleWidgetTypes`
 array — the workspace-add command validates against it and rejects
 mismatches.
+
+## Three numbering systems — JSON key vs option bitflag vs widget enum
+
+The same visualization choice shows up in three places with three
+different names and numbers. Mixing them up is the most common source
+of "I enabled it but the workspace still won't accept it" confusion.
+
+| Visualization | JSON key (`.ssproj`) | `DatasetOption` bitflag (`setOption`) | `DashboardWidget` enum (`addWidget`) |
+|---------------|----------------------|---------------------------------------|--------------------------------------|
+| Plot          | `graph: true`        | `1`  (DatasetPlot)                    | `9`  (DashboardPlot)                 |
+| FFT           | `fft: true`          | `2`  (DatasetFFT)                     | `7`  (DashboardFFT)                  |
+| Bar           | `widget: "bar"`      | `4`  (DatasetBar)                     | `10` (DashboardBar)                  |
+| Gauge         | `widget: "gauge"`    | `8`  (DatasetGauge)                   | `11` (DashboardGauge)                |
+| Compass       | `widget: "compass"`  | `16` (DatasetCompass)                 | `12` (DashboardCompass)              |
+| LED           | `led: true`          | `32` (DatasetLED)                     | `8`  (DashboardLED)                  |
+| Waterfall     | `waterfall: true`    | `64` (DatasetWaterfall)               | `17` (DashboardWaterfall) (Pro)      |
+
+Notes:
+- Bar / Gauge / Compass are **mutually exclusive** — a dataset's `widget`
+  string holds at most one of them. The `setOption` calls reflect that:
+  enabling Bar clears Gauge and Compass on the same dataset.
+- Plot / FFT / LED / Waterfall are **independent flags** — a dataset can
+  have Plot + FFT + Waterfall all on at once, and the group's
+  `compatibleWidgetTypes` will list all three.
+- `compatibleWidgetTypes` is computed live from the dataset flags + the
+  group's own `widget` string. Toggling a dataset option immediately
+  expands or shrinks the group's compatible set; you do not need a
+  separate group-level configuration.
+
+## How to enable a workspace tile from scratch
+
+If `addWidget` rejects your `widgetType` with "not compatible with group N":
+
+1. Pick the right dataset in that group.
+2. Look up the bitflag value from the table above (Plot is `1`, FFT is
+   `2`, Waterfall is `64`).
+3. `project.dataset.setOption{groupId, datasetId, option, enabled: true}`,
+   OR `project.dataset.setOptions{groupId, datasetId, options: <bitflag>}`
+   to set several at once,
+   OR `project.dataset.update{groupId, datasetId, graph: true, fft: true,
+   waterfall: true}` to set them inline alongside other field edits.
+4. Re-run `addWidget` — `compatibleWidgetTypes` now includes the
+   corresponding `DashboardWidget` enum.
 
 ## Workspaces
 
@@ -87,15 +131,58 @@ When the user asks for "an overview" or "executive dashboard":
    - Gauge (11) for single scalars with min/max
    - MultiPlot (2) for related time-series
    - DataGrid (1) for tabular reads
-   - Compass (7) for headings
+   - Compass (12) for headings
    - Bar (10) for bounded levels
    - LED (8) for booleans/alarms
+   - Plot (9) for single time-series
+   - FFT (7) for spectra of audio / vibration / signals
+   - Waterfall (17, Pro) for spectrograms
 4. NEVER widgetType=0 (Terminal).
 5. Show the user the curated list in chat BEFORE pushing. Let them
    confirm or redirect.
 6. `setCustomizeMode{enabled: true}`, `workspace.add{title: 'Overview',
    icon: 'qrc:/icons/panes/overview.svg'}` (always provide an icon),
    then `addWidget` for each pick.
+
+## Recipe — Plot + FFT + Waterfall on the same dataset
+
+Goal: one workspace tab that shows the time-domain signal, its FFT, and
+a waterfall (Pro) for the same audio/vibration channel.
+
+```
+// 1. Find the dataset's groupId and datasetId.
+project.group.list                 -> note groupId for the channel
+project.dataset.list               -> note datasetId within that group
+
+// 2. Enable all three visualizations on the dataset in one shot.
+project.dataset.setOptions {
+  groupId: <gid>,
+  datasetId: <did>,
+  options: 67                      // 1 (Plot) | 2 (FFT) | 64 (Waterfall)
+}
+
+// 3. Customize mode is required for any workspace edit.
+project.workspace.setCustomizeMode { enabled: true }
+
+// 4. Create the workspace.
+project.workspace.add { title: "Signal Analysis",
+                        icon: "qrc:/icons/panes/dashboard.svg" }
+// -> { id: <wsId> }
+
+// 5. Pin all three tiles. relativeIndex is 0 for each — it's only > 0
+//    when adding a second tile of the same widgetType+groupId.
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: 9,
+                              groupId: <gid>, relativeIndex: 0 }   // Plot
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: 7,
+                              groupId: <gid>, relativeIndex: 0 }   // FFT
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: 17,
+                              groupId: <gid>, relativeIndex: 0 }   // Waterfall
+```
+
+Common mistake: setting `widgetType: 1` (Plot bitflag) instead of
+`widgetType: 9` (DashboardPlot enum). The bitflag is only for
+`setOption` / `setOptions`; `addWidget` always takes the
+`DashboardWidget` enum.
 
 ## Common gotchas
 

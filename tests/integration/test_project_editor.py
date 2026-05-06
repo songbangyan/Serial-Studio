@@ -230,6 +230,20 @@ def test_dataset_option_toggle(api_client, clean_state):
 
 
 @pytest.mark.project
+def test_dataset_set_options_bitfield(api_client, clean_state):
+    """project.dataset.setOptions applies several bits in one call and surfaces them in dataset.list."""
+    gid = api_client.add_group("Audio")
+    api_client.add_dataset(gid)
+    g, d = _last_dataset(api_client)
+
+    plot_fft_waterfall = 1 | 2 | 64
+    api_client.set_dataset_options(g, d, options=plot_fft_waterfall)
+
+    datasets = {(x["groupId"], x["datasetId"]): x for x in api_client.list_datasets()}
+    assert datasets[(g, d)]["enabledOptions"] == plot_fft_waterfall
+
+
+@pytest.mark.project
 def test_dataset_update_field_patch(api_client, clean_state):
     """project.dataset.update can patch title and units in one call."""
     gid = api_client.add_group("G")

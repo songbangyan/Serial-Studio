@@ -71,6 +71,57 @@
 }
 
 /**
+ * @brief Returns a hint on how to unlock @a wtype on @a group, or empty when none applies.
+ */
+[[nodiscard]] static QString unlockHint(int wtype, int gid)
+{
+  switch (wtype) {
+    case SerialStudio::DashboardPlot:
+      return QStringLiteral(" To enable widgetType=9 (Plot), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:1, enabled:true}.")
+        .arg(gid);
+    case SerialStudio::DashboardFFT:
+      return QStringLiteral(" To enable widgetType=7 (FFT), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:2, enabled:true}.")
+        .arg(gid);
+    case SerialStudio::DashboardBar:
+      return QStringLiteral(" To enable widgetType=10 (Bar), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:4, enabled:true} (clears Gauge/Compass).")
+        .arg(gid);
+    case SerialStudio::DashboardGauge:
+      return QStringLiteral(" To enable widgetType=11 (Gauge), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:8, enabled:true} (clears Bar/Compass).")
+        .arg(gid);
+    case SerialStudio::DashboardCompass:
+      return QStringLiteral(" To enable widgetType=12 (Compass), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:16, enabled:true} (clears Bar/Gauge).")
+        .arg(gid);
+    case SerialStudio::DashboardLED:
+      return QStringLiteral(" To enable widgetType=8 (LED), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:32, enabled:true}.")
+        .arg(gid);
+#ifdef BUILD_COMMERCIAL
+    case SerialStudio::DashboardWaterfall:
+      return QStringLiteral(" To enable widgetType=17 (Waterfall), call "
+                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
+                            "option:64, enabled:true}.")
+        .arg(gid);
+#endif
+    default:
+      return QStringLiteral(" widgetType=%1 is a group-shape widget -- change "
+                            "the group's widget string via project.group.update "
+                            "instead of a dataset option.")
+        .arg(wtype);
+  }
+}
+
+/**
  * @brief Returns the deduped DashboardWidget enums a group can render.
  */
 [[nodiscard]] static QList<int> compatibleWidgetTypes(const DataModel::Group& group)
@@ -624,12 +675,12 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
       ErrorCode::InvalidParam,
       QStringLiteral("widgetType=%1 is not compatible with group %2 "
                      "('%3'). Compatible widgetTypes for this group: "
-                     "[%4]. Either pick one of those, or change the "
-                     "group's widget / dataset flags first.")
+                     "[%4].%5")
         .arg(wtype)
         .arg(gid)
         .arg(group_it->title)
-        .arg(compat_strs.join(QStringLiteral(", "))));
+        .arg(compat_strs.join(QStringLiteral(", ")))
+        .arg(unlockHint(wtype, gid)));
   }
 
   pm.addWidgetToWorkspace(wid, wtype, gid, relIndex);
