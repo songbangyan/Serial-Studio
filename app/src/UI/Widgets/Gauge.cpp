@@ -30,15 +30,6 @@
 
 /**
  * @brief Constructs a Gauge widget.
- *
- * Initializes a gauge-specific data model by bypassing the default Bar
- * initialization logic and loading values from the DashboardGauge dataset.
- *
- * This constructor disables the automatic Bar dataset loading by passing
- * `false` to the Bar constructor, and instead applies custom Gauge setup.
- *
- * @param index Dataset index for the gauge.
- * @param parent Optional QML parent item.
  */
 Widgets::Gauge::Gauge(const int index, QQuickItem* parent) : Bar(index, parent, false)
 {
@@ -71,11 +62,6 @@ Widgets::Gauge::Gauge(const int index, QQuickItem* parent) : Bar(index, parent, 
 
 /**
  * @brief Updates the gauge value from the dashboard source.
- *
- * Reads the current numeric value from the DashboardBar dataset and clamps
- * it to the configured min/max range. Emits `updated()` if the value changes.
- *
- * This function overrides Bar's logic to retrieve data from a different source.
  */
 void Widgets::Gauge::updateData()
 {

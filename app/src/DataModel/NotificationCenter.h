@@ -35,9 +35,8 @@ struct lua_State;
 namespace DataModel {
 
 /**
- * @class NotificationCenter
- * @brief Central in-memory event bus (ring buffer, dedup, tray) for dashboard
- *        notifications. Main thread only -- workers route via QueuedConnection.
+ * @brief Central in-memory event bus (ring buffer, dedup, tray) for dashboard notifications. Main
+ * thread only -- workers route via QueuedConnection.
  */
 class NotificationCenter : public QObject {
   // clang-format off

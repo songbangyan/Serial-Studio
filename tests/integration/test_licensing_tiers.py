@@ -150,10 +150,10 @@ def test_variant_name_consistent_with_tier(api_client):
 @pytest.mark.integration
 def test_trial_tier_is_trial(api_client):
     """When trial is enabled, featureTier should be Trial (value 2)."""
-    if not api_client.command_exists("licensing.trial.getStatus"):
+    if not api_client.command_exists("licensing.getTrialStatus"):
         pytest.skip("trial API not available")
 
-    trial = api_client.command("licensing.trial.getStatus")
+    trial = api_client.command("licensing.getTrialStatus")
     status = api_client.command("licensing.getStatus")
 
     if trial.get("trialEnabled") and not status.get("isActivated"):
@@ -169,7 +169,7 @@ def test_trial_tier_is_trial(api_client):
 @pytest.mark.integration
 def test_guards_still_pass_with_new_tiers(api_client):
     """All license guards must still pass after the tier enum change."""
-    result = api_client.command("licensing.guardStatus")
+    result = api_client.command("licensing.getGuardStatus")
 
     assert result.get("allOk") is True, \
         f"License guards failed after tier changes: {result.get('failures')}"

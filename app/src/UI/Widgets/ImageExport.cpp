@@ -46,11 +46,6 @@
 
 /**
  * @brief Stops every active recorder and waits for muxer trailers to flush.
- *
- * Skips the QEventLoop spin used in mid-session stops -- the worker thread is
- * winding down here, and re-entering its own event loop from inside a
- * destructor risks deadlocks and PAC failures on macOS 26 if a queued signal
- * fires after the recorder has already started disposing of its private d-ptr.
  */
 Widgets::VideoExportWorker::~VideoExportWorker()
 {
@@ -83,8 +78,6 @@ bool Widgets::VideoExportWorker::isResourceOpen() const
 
 /**
  * @brief Stops every active recorder, finalising each .mp4 trailer.
- *
- * Called on full disconnect or application shutdown.
  */
 void Widgets::VideoExportWorker::closeResources()
 {

@@ -28,10 +28,28 @@ public:
   static void registerCommands();
 
 private:
+  static void registerLifecycleCommands();
+  static void registerBrowsingCommands();
+  static void registerTagCommands();
+
   static CommandResponse getStatus(const QString& id, const QJsonObject& params);
   static CommandResponse setExportEnabled(const QString& id, const QJsonObject& params);
   static CommandResponse close(const QString& id, const QJsonObject& params);
   static CommandResponse getCanonicalDbPath(const QString& id, const QJsonObject& params);
+
+  static CommandResponse openDatabase(const QString& id, const QJsonObject& params);
+  static CommandResponse list(const QString& id, const QJsonObject& params);
+  static CommandResponse get(const QString& id, const QJsonObject& params);
+  static CommandResponse deleteSession(const QString& id, const QJsonObject& params);
+  static CommandResponse setNotes(const QString& id, const QJsonObject& params);
+  static CommandResponse replay(const QString& id, const QJsonObject& params);
+  static CommandResponse exportToCsv(const QString& id, const QJsonObject& params);
+  static CommandResponse listTags(const QString& id, const QJsonObject& params);
+  static CommandResponse addTag(const QString& id, const QJsonObject& params);
+  static CommandResponse deleteTag(const QString& id, const QJsonObject& params);
+  static CommandResponse renameTag(const QString& id, const QJsonObject& params);
+  static CommandResponse assignTag(const QString& id, const QJsonObject& params);
+  static CommandResponse removeTag(const QString& id, const QJsonObject& params);
 };
 
 }  // namespace Handlers

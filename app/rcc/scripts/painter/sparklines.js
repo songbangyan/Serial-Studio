@@ -34,9 +34,9 @@ function trend_dir(t) {
 
 function paint(ctx, w, h) {
   // Cream paper background.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -56,18 +56,19 @@ function paint(ctx, w, h) {
     const x  = padX + c * (cw + gap);
     const y  = padY + r * (ch + gap);
     const ds = datasets[i];
+    const traceColor = theme.widget_colors[i % theme.widget_colors.length];
 
     // Card with shadow.
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(x + 1, y + 2, cw, ch);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(x, y, cw, ch);
-    ctx.strokeStyle = "#d4d4d8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, cw - 1, ch - 1);
 
     // Title.
-    ctx.fillStyle    = "#475569";
+    ctx.fillStyle    = theme.placeholder_text;
     ctx.font         = "bold 10px sans-serif";
     ctx.textAlign    = "start";
     ctx.textBaseline = "alphabetic";
@@ -78,7 +79,7 @@ function paint(ctx, w, h) {
     if (dir !== 0) {
       const ax = x + cw - 14;
       const ay = y + 14;
-      ctx.fillStyle = dir > 0 ? "#10b981" : "#dc2626";
+      ctx.fillStyle = dir > 0 ? theme.widget_highlight : theme.alarm;
       ctx.beginPath();
       if (dir > 0) {
         ctx.moveTo(ax, ay - 4);
@@ -94,14 +95,14 @@ function paint(ctx, w, h) {
     }
 
     // Current value (large).
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font      = "bold 18px sans-serif";
     const valTxt  = Number.isFinite(ds.value) ? ds.value.toFixed(2) : "--";
     ctx.fillText(valTxt, x + 10, y + 38);
 
     if (ds.units) {
       const valW = ctx.measureTextWidth(valTxt);
-      ctx.fillStyle = "#64748b";
+      ctx.fillStyle = theme.placeholder_text;
       ctx.font      = "10px sans-serif";
       ctx.fillText(ds.units, x + 14 + valW, y + 38);
     }
@@ -117,7 +118,8 @@ function paint(ctx, w, h) {
       const top = py - ph;
 
       // Fill under the line.
-      ctx.fillStyle = "#dbeafe";
+      ctx.fillStyle = traceColor;
+      ctx.globalAlpha = 0.18;
       ctx.beginPath();
       ctx.moveTo(px, py);
       for (let k = 0; k < t.length; ++k) {
@@ -129,9 +131,10 @@ function paint(ctx, w, h) {
       ctx.lineTo(px + (t.length - 1) / (HISTORY - 1) * pw, py);
       ctx.closePath();
       ctx.fill();
+      ctx.globalAlpha = 1;
 
       // Line on top.
-      ctx.strokeStyle = "#2563eb";
+      ctx.strokeStyle = traceColor;
       ctx.lineWidth   = 1.5;
       ctx.beginPath();
       for (let k = 0; k < t.length; ++k) {
@@ -147,7 +150,7 @@ function paint(ctx, w, h) {
       const lastN  = (t[t.length - 1] - ds.min) / span;
       const lastY  = py - Math.max(0, Math.min(1, lastN)) * ph;
       const lastX  = px + ((t.length - 1) / (HISTORY - 1)) * pw;
-      ctx.fillStyle = "#2563eb";
+      ctx.fillStyle = traceColor;
       ctx.beginPath();
       ctx.moveTo(lastX + 3, lastY);
       ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);

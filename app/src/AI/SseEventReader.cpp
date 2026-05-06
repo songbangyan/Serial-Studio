@@ -122,7 +122,6 @@ void AI::SseEventReader::parseFrameLines(const QByteArray& frame,
 /** @brief Validates and emits a single SSE event after JSON parsing. */
 void AI::SseEventReader::emitFrame(const QString& name, const QByteArray& data)
 {
-  // Anthropic's keep-alive
   if (name == QStringLiteral("ping"))
     return;
 

@@ -34,16 +34,27 @@ That means top-level `var/let/const` are private per dataset, even when
 several datasets in the same source share a JS engine. Two datasets can
 both define `let alpha = 0.2` without clobbering each other.
 
-## Data table API
+## Data table API — the central data bus
 
-Transforms can read from and write to two kinds of registers:
+Transforms read from and write to two kinds of registers.
 
-- The **system table** (`__datasets__`): two registers per dataset,
-  `raw:<uniqueId>` and `final:<uniqueId>`. Populated by the FrameBuilder
-  during parsing. Read-only from a transform.
-- **User tables**: defined in the project's "tables" section. Each register
-  is `Constant` (read-only at runtime) or `Computed` (resets per frame,
-  writable from transforms).
+**System table** (`__datasets__`, always present): two registers per
+dataset, `raw:<uniqueId>` and `final:<uniqueId>`, populated by the
+FrameBuilder during parsing. Read-only from a transform. You almost
+never read it via `tableGet` — use the convenience helpers below, which
+are faster and more legible.
+
+**User tables**: defined in the project (create via
+`project.dataTable.add` + `project.dataTable.addRegister`). Each register
+is one of two types:
+
+- `Constant` — single immutable value across the session. Set once at
+  declaration; every `tableGet` returns it. Use for calibration
+  coefficients, lookup tables, configuration flags.
+- `Computed` — resets to its `defaultValue` at the **start of every
+  parsed frame**. Writable from transforms via `tableSet`. Use for
+  per-frame accumulators, derived values, intermediate results another
+  transform reads later in the same frame.
 
 Functions injected into your scope:
 
@@ -54,8 +65,11 @@ datasetGetRaw(uniqueId)                        // raw value of any dataset
 datasetGetFinal(uniqueId)                      // final value of an EARLIER dataset (this frame)
 ```
 
-`uniqueId` is the dataset's stable string identifier (set in the project
-editor; visible in the Project Editor's dataset detail).
+`uniqueId` is a stable INTEGER that uniquely identifies a dataset across
+the project. It comes back from `project.dataset.list` (under
+`uniqueId`) and from `project.group.list` (under `datasetSummary[].uniqueId`).
+Compute manually as `sourceId * 1_000_000 + groupId * 10_000 + datasetId`
+if needed, but prefer reading it from the API.
 
 ## Processing order
 
@@ -67,6 +81,20 @@ can read:
 
 Trying to read `datasetGetFinal` of a dataset processed later returns `0`
 without error.
+
+## When to use a table vs a transform local
+
+- **Per-dataset state** (EMA across frames, last-seen value, deadband
+  hysteresis): use a top-level `let`/`var` in your transform script. The
+  IIFE wrapping keeps each dataset's locals private. Cheaper than a
+  table register.
+- **Shared state across datasets** (calibration constants used by N
+  channels, a global counter, lookup tables): use a Constant or Computed
+  register in a user table.
+- **Cross-dataset derived values within one frame** (compute speed from
+  dx and dt that arrive in the same frame): use `datasetGetRaw` to read a
+  peer dataset, OR write to a Computed register in the earlier transform
+  and `tableGet` it from the later one.
 
 ## Examples
 
@@ -95,12 +123,31 @@ function transform(value) {
 }
 ```
 
-### Cross-dataset compute (dataset 'speed' from dx and dt)
+### Cross-dataset compute (speed from dx and dt)
+
+`uniqueId` is a number, not a name. Read it from
+`project.dataset.list` and pin it in a top-level constant.
 
 ```js
+const DT_MS_UID = 10003;       // <- from project.dataset.list
+
 function transform(dx) {
-  const dt = datasetGetRaw('dt_ms');
+  const dt = datasetGetRaw(DT_MS_UID);
   return dt > 0 ? (dx / dt) * 1000 : 0;
+}
+```
+
+### Per-frame accumulator via Computed register
+
+```js
+// Computed register "FuelTotal" with defaultValue 0; resets each frame.
+function transform(litresPerHour) {
+  // ms since last frame, populated by an earlier transform on dt_ms
+  const dtMs = tableGet('FrameTimer', 'dtMs');
+  const delta = (litresPerHour / 3600.0) * (dtMs / 1000.0);
+  const total = tableGet('Trip', 'litresUsed') + delta;
+  tableSet('Trip', 'litresUsed', total);
+  return total;
 }
 ```
 

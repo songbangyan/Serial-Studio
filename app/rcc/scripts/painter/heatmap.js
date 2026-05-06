@@ -60,22 +60,22 @@ function viridis(t) {
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("HEATMAP", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(datasets.length + " channels  /  viridis", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   if (rows.length === 0 || datasets.length === 0) return;
@@ -92,9 +92,9 @@ function paint(ctx, w, h) {
   const cardW = w - padX * 2;
   const cardH = h - padTop - padBot;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(cardX + 1, cardY + 2, cardW, cardH);
-  ctx.fillStyle = "#000000";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(cardX, cardY, cardW, cardH);
 
   const plotX = cardX + 1;
@@ -116,12 +116,12 @@ function paint(ctx, w, h) {
   }
 
   // Card border on top.
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(cardX + 0.5, cardY + 0.5, cardW - 1, cardH - 1);
 
   // Vertical separator before the colour scale.
-  ctx.fillStyle = "#1f2937";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(plotX + plotW, plotY, 1, plotH);
 
   // Colour scale (10 segments, value labels at top + bottom).
@@ -133,12 +133,12 @@ function paint(ctx, w, h) {
     ctx.fillStyle = viridis(t);
     ctx.fillRect(scaleX, plotY + i * segH, scaleW, segH + 1);
   }
-  ctx.strokeStyle = "#94a3b8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(scaleX + 0.5, plotY + 0.5, scaleW - 1, plotH - 1);
 
   // Scale labels.
-  ctx.fillStyle    = "#0f172a";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "9px sans-serif";
   ctx.textAlign    = "start";
   ctx.textBaseline = "alphabetic";
@@ -146,7 +146,7 @@ function paint(ctx, w, h) {
   ctx.fillText(lastLo.toFixed(2), scaleX + scaleW + 4, plotY + plotH - 2);
 
   // Time axis caption (newest right, oldest left).
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "9px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("oldest", plotX, h - padBot + 14);

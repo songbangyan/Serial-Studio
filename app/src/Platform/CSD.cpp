@@ -96,7 +96,6 @@ static bool isFixedSizeWindow(const QWindow* window)
 
 /**
  * @brief Constructs a Titlebar.
- * @param parent Parent QQuickItem.
  */
 Titlebar::Titlebar(QQuickItem* parent)
   : QQuickPaintedItem(parent)
@@ -124,7 +123,6 @@ Titlebar::Titlebar(QQuickItem* parent)
 
 /**
  * @brief Paints the title bar.
- * @param painter QPainter used for rendering.
  */
 void Titlebar::paint(QPainter* painter)
 {
@@ -232,7 +230,6 @@ QColor Titlebar::foregroundColor() const
 
 /**
  * @brief Sets the title bar text.
- * @param title New title string.
  */
 void Titlebar::setTitle(const QString& title)
 {
@@ -245,7 +242,6 @@ void Titlebar::setTitle(const QString& title)
 
 /**
  * @brief Sets the window active state.
- * @param active New active state.
  */
 void Titlebar::setWindowActive(bool active)
 {
@@ -258,7 +254,6 @@ void Titlebar::setWindowActive(bool active)
 
 /**
  * @brief Sets the title bar background color.
- * @param color New background color.
  */
 void Titlebar::setBackgroundColor(const QColor& color)
 {
@@ -271,7 +266,6 @@ void Titlebar::setBackgroundColor(const QColor& color)
 
 /**
  * @brief Returns the bounding rectangle for a window control button.
- * @param button Button type to query.
  */
 QRectF Titlebar::buttonRect(Button button) const
 {
@@ -284,7 +278,6 @@ QRectF Titlebar::buttonRect(Button button) const
 
 /**
  * @brief Returns the button (if any) at the given position.
- * @param pos Position in item coordinates.
  */
 Titlebar::Button Titlebar::buttonAt(const QPointF& pos) const
 {
@@ -304,7 +297,6 @@ Titlebar::Button Titlebar::buttonAt(const QPointF& pos) const
 
 /**
  * @brief Returns true if a button should be shown based on window flags.
- * @param button Button type to query.
  */
 bool Titlebar::shouldShowButton(Button button) const
 {
@@ -346,7 +338,6 @@ bool Titlebar::shouldShowButton(Button button) const
 
 /**
  * @brief Returns the background rectangle for drawing button hover/press states.
- * @param button Button type to query.
  */
 QRectF Titlebar::buttonBackgroundRect(Button button) const
 {
@@ -494,9 +485,6 @@ QPixmap Titlebar::renderColorizedSvg(const QString& svgPath,
 
 /**
  * @brief Draws a window control button with an SVG icon.
- * @param painter Painter to use.
- * @param button  Button type to draw.
- * @param svgPath Path to the SVG icon resource.
  */
 void Titlebar::drawButton(QPainter* painter, Button button, const QString& svgPath)
 {
@@ -549,7 +537,6 @@ void Titlebar::mouseUngrabEvent()
 
 /**
  * @brief Handles mouse press events.
- * @param event Mouse event.
  */
 void Titlebar::mousePressEvent(QMouseEvent* event)
 {
@@ -567,7 +554,6 @@ void Titlebar::mousePressEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse release events.
- * @param event Mouse event.
  */
 void Titlebar::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -599,7 +585,6 @@ void Titlebar::mouseReleaseEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse move events for window dragging.
- * @param event Mouse event.
  */
 void Titlebar::mouseMoveEvent(QMouseEvent* event)
 {
@@ -627,7 +612,6 @@ void Titlebar::mouseMoveEvent(QMouseEvent* event)
 
 /**
  * @brief Toggles the window maximized state on double-click.
- * @param event Mouse event.
  */
 void Titlebar::mouseDoubleClickEvent(QMouseEvent* event)
 {
@@ -651,7 +635,6 @@ void Titlebar::mouseDoubleClickEvent(QMouseEvent* event)
 
 /**
  * @brief Handles hover move events to update button hover states.
- * @param event Hover event.
  */
 void Titlebar::hoverMoveEvent(QHoverEvent* event)
 {
@@ -664,7 +647,6 @@ void Titlebar::hoverMoveEvent(QHoverEvent* event)
 
 /**
  * @brief Handles hover leave events to clear button hover states.
- * @param event Hover event.
  */
 void Titlebar::hoverLeaveEvent(QHoverEvent* event)
 {
@@ -681,7 +663,6 @@ void Titlebar::hoverLeaveEvent(QHoverEvent* event)
 
 /**
  * @brief Constructs a Frame.
- * @param parent Parent QQuickItem.
  */
 Frame::Frame(QQuickItem* parent)
   : QQuickPaintedItem(parent), m_shadowRadius(CSD::ShadowRadius), m_shadowEnabled(true)
@@ -693,7 +674,6 @@ Frame::Frame(QQuickItem* parent)
 
 /**
  * @brief Paints the window frame including shadow and background.
- * @param painter QPainter used for rendering.
  */
 void Frame::paint(QPainter* painter)
 {
@@ -755,7 +735,6 @@ bool Frame::shadowEnabled() const
 
 /**
  * @brief Sets the shadow blur radius.
- * @param radius New radius in pixels.
  */
 void Frame::setShadowRadius(int radius)
 {
@@ -769,7 +748,6 @@ void Frame::setShadowRadius(int radius)
 
 /**
  * @brief Enables or disables shadow rendering.
- * @param enabled True to enable shadows, false to disable.
  */
 void Frame::setShadowEnabled(bool enabled)
 {
@@ -835,7 +813,6 @@ void Frame::regenerateShadow()
 
 /**
  * @brief Generates a shadow corner tile image.
- * @param size Shadow blur radius in pixels.
  */
 QImage Frame::generateShadowCorner(int size)
 {
@@ -864,7 +841,6 @@ QImage Frame::generateShadowCorner(int size)
 
 /**
  * @brief Constructs a Border.
- * @param parent Parent QQuickItem.
  */
 Border::Border(QQuickItem* parent) : QQuickPaintedItem(parent)
 {
@@ -876,7 +852,6 @@ Border::Border(QQuickItem* parent) : QQuickPaintedItem(parent)
 
 /**
  * @brief Paints the window border.
- * @param painter QPainter used for rendering.
  */
 void Border::paint(QPainter* painter)
 {
@@ -893,9 +868,6 @@ void Border::paint(QPainter* painter)
 
 /**
  * @brief Constructs a Window decorator.
- * @param window QWindow to decorate.
- * @param color  Optional custom title bar color (hex string).
- * @param parent Parent QObject.
  */
 Window::Window(QWindow* window, const QString& color, QObject* parent)
   : QObject(parent)
@@ -1062,7 +1034,6 @@ int Window::titleBarHeight() const
 
 /**
  * @brief Sets a custom color for the title bar.
- * @param color Color as a hex string (empty to use theme default).
  */
 void Window::setColor(const QString& color)
 {
@@ -1360,7 +1331,6 @@ void Window::updateTheme()
 
 /**
  * @brief Reparents a child item to the content container.
- * @param child Item to reparent.
  */
 void Window::reparentChildToContainer(QQuickItem* child)
 {
@@ -1380,7 +1350,6 @@ void Window::reparentChildToContainer(QQuickItem* child)
 
 /**
  * @brief Returns the resize edge flags at the given position.
- * @param pos Position in window coordinates.
  */
 Window::ResizeEdge Window::edgeAt(const QPointF& pos) const
 {
@@ -1413,7 +1382,6 @@ Window::ResizeEdge Window::edgeAt(const QPointF& pos) const
 
 /**
  * @brief Returns the cursor shape for a resize edge.
- * @param edge Resize edge.
  */
 Qt::CursorShape Window::cursorForEdge(ResizeEdge edge) const
 {
@@ -1437,7 +1405,6 @@ Qt::CursorShape Window::cursorForEdge(ResizeEdge edge) const
 
 /**
  * @brief Converts internal ResizeEdge to Qt::Edges flags.
- * @param edge Internal resize edge value.
  */
 Qt::Edges Window::qtEdgesFromResizeEdge(ResizeEdge edge) const
 {
@@ -1461,8 +1428,6 @@ Qt::Edges Window::qtEdgesFromResizeEdge(ResizeEdge edge) const
 
 /**
  * @brief Event filter for window resize and content reparenting.
- * @param watched Object being watched.
- * @param event   Event to process.
  */
 bool Window::eventFilter(QObject* watched, QEvent* event)
 {

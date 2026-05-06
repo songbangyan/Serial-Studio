@@ -48,7 +48,7 @@ def test_malformed_json_resilience(
     device_simulator.send_frame(malformed_frame)
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application crashed or disconnected on malformed JSON"
 
 
@@ -78,7 +78,7 @@ def test_binary_garbage_flood(api_client, device_simulator, clean_state):
         time.sleep(0.05)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application crashed on binary garbage"
 
 
@@ -108,7 +108,7 @@ def test_frame_corruption(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on corrupted frames"
 
 
@@ -138,7 +138,7 @@ def test_partial_frames(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on partial frames"
 
 
@@ -169,7 +169,7 @@ def test_oversized_frame_handling(api_client, device_simulator, clean_state):
     device_simulator.send_frame(oversized)
     time.sleep(2.0)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application crashed on oversized frame"
 
 
@@ -199,7 +199,7 @@ def test_numeric_edge_cases(api_client, device_simulator, clean_state, edge_case
     device_simulator.send_frame(edge_frame)
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], f"Application failed on edge case: {edge_case['title']}"
 
 
@@ -243,7 +243,7 @@ def test_unicode_handling(api_client, device_simulator, clean_state, unicode_str
     device_simulator.send_frame(unicode_frame)
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on Unicode edge case"
 
 
@@ -271,7 +271,7 @@ def test_delimiter_confusion(api_client, device_simulator, clean_state, confusin
     device_simulator.send_frame(confusing_frame)
     time.sleep(0.3)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on delimiter confusion"
 
 
@@ -295,7 +295,7 @@ def test_rapid_fire_frames(api_client, device_simulator, clean_state):
 
     time.sleep(1.0)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on rapid-fire frames"
 
 
@@ -326,7 +326,7 @@ def test_mixed_valid_invalid_frames(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on mixed valid/invalid frames"
 
 
@@ -363,7 +363,7 @@ def test_null_byte_injection(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on null byte injection"
 
 
@@ -399,7 +399,7 @@ def test_checksum_brute_force(api_client, device_simulator, clean_state):
         time.sleep(0.02)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed during checksum brute force"
 
 
@@ -424,7 +424,7 @@ def test_concurrent_rapid_reconnection(api_client, device_simulator, clean_state
         time.sleep(0.2)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert not status["isConnected"], "Should be disconnected after test"
 
 
@@ -459,7 +459,7 @@ def test_memory_stress_repeated_large_frames(api_client, device_simulator, clean
     device_simulator.send_frames(frames, interval_seconds=0.05)
     time.sleep(3.0)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed during memory stress test"
 
 
@@ -494,7 +494,7 @@ def test_fragmented_frame_reassembly(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on fragmented frames"
 
 
@@ -531,7 +531,7 @@ def test_json_depth_bomb(api_client, device_simulator, clean_state):
     device_simulator.send_frame(nested_frame)
     time.sleep(1.0)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application crashed on JSON depth bomb"
 
 
@@ -567,7 +567,7 @@ def test_empty_and_whitespace_frames(api_client, device_simulator, clean_state):
         time.sleep(0.1)
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed on empty/whitespace frames"
 
 
@@ -622,5 +622,5 @@ def test_random_fuzz_chaos(api_client, device_simulator, clean_state):
         time.sleep(random.uniform(0.001, 0.05))
 
     time.sleep(1.0)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Application failed during random chaos fuzzing"

@@ -65,21 +65,44 @@ void API::Handlers::SourceHandler::registerCommands()
   }),
     &sourceDelete);
 
-  registry.registerCommand(QStringLiteral("project.source.update"),
-                           QStringLiteral("Update source fields (Commercial)"),
-                           makeSchema(
-                             {
-                               {QString(Keys::SourceId),
-                                QStringLiteral("integer"),
-                                QStringLiteral("Source ID to update")}
+  registry.registerCommand(
+    QStringLiteral("project.source.update"),
+    QStringLiteral("Patch source fields by id (Commercial). Required: sourceId. Optional "
+                   "fields: title, busType, frameStart, frameEnd, checksumAlgorithm, "
+                   "frameDetection, decoderMethod, hexadecimalDelimiters."),
+    makeSchema(
+      {
+        {QString(Keys::SourceId),
+         QStringLiteral("integer"),
+         QStringLiteral("Source ID to update")}
   },
-                             {{QStringLiteral("title"),
-                               QStringLiteral("string"),
-                               QStringLiteral("New title for the source")},
-                              {QString(Keys::BusType),
-                               QStringLiteral("integer"),
-                               QStringLiteral("Bus type index (0=UART, 1=Network, ...)")}}),
-                           &sourceUpdate);
+      {{QStringLiteral("title"),
+        QStringLiteral("string"),
+        QStringLiteral("New title for the source")},
+       {QString(Keys::BusType),
+        QStringLiteral("integer"),
+        QStringLiteral("Bus type index (0=UART, 1=Network, 2=BLE, 3=Audio, "
+                       "4=Modbus, 5=CANBus, 6=USB, 7=HID, 8=Process)")},
+       {QString(Keys::FrameStart),
+        QStringLiteral("string"),
+        QStringLiteral("Hex start delimiter for the frame")},
+       {QString(Keys::FrameEnd),
+        QStringLiteral("string"),
+        QStringLiteral("Hex end delimiter for the frame")},
+       {QString(Keys::ChecksumAlgorithm),
+        QStringLiteral("string"),
+        QStringLiteral("Checksum algorithm name (none, crc8, crc16, crc32, ...)")},
+       {QString(Keys::FrameDetection),
+        QStringLiteral("integer"),
+        QStringLiteral("Frame detection enum (0=EndDelimiter, 1=StartAndEndDelimiter, "
+                       "2=NoDelimiters)")},
+       {QString(Keys::DecoderMethod),
+        QStringLiteral("integer"),
+        QStringLiteral("Decoder method enum (0=PlainText, 1=Hex, 2=Base64)")},
+       {QString(Keys::HexadecimalDelimiters),
+        QStringLiteral("boolean"),
+        QStringLiteral("Interpret frameStart/frameEnd as hex byte sequences")}}),
+    &sourceUpdate);
 
   registerPropertyCommands();
   registerFrameParserCommands();
@@ -105,7 +128,7 @@ void API::Handlers::SourceHandler::registerPropertyCommands()
     &sourceSetProperty);
 
   registry.registerCommand(
-    QStringLiteral("project.source.configure"),
+    QStringLiteral("project.source.setProperties"),
     QStringLiteral("Set multiple driver properties at once (params: sourceId, settings)"),
     makeSchema({
       {   QString(Keys::SourceId),QStringLiteral("integer"),QStringLiteral("Source ID")                           },
@@ -116,7 +139,7 @@ void API::Handlers::SourceHandler::registerPropertyCommands()
     &sourceConfigure);
 
   registry.registerCommand(
-    QStringLiteral("project.source.getConfiguration"),
+    QStringLiteral("project.source.getConfig"),
     QStringLiteral("Get full source configuration (params: sourceId)"),
     makeSchema({
       {QString(Keys::SourceId), QStringLiteral("integer"), QStringLiteral("Source ID")}
@@ -384,11 +407,6 @@ API::CommandResponse API::Handlers::SourceHandler::sourceConfigure(const QString
 
 /**
  * @brief Sets a driver connection property for a source.
- *
- * Uses driverForEditing() to resolve the correct UI-config driver for the
- * source's bus type (avoiding activeUiDriver() which depends on m_busType
- * and may not match the source's bus type). Also syncs the change to the
- * live driver so projectConfigurationOk() sees the new value.
  */
 API::CommandResponse API::Handlers::SourceHandler::sourceSetProperty(const QString& id,
                                                                      const QJsonObject& params)

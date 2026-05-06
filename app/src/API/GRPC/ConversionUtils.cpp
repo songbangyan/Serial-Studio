@@ -36,14 +36,6 @@ google::protobuf::Struct API::GRPC::ConversionUtils::toProtoStruct(const QJsonOb
 
 /**
  * @brief Converts a QJsonValue to a google.protobuf.Value.
- *
- * Maps Qt JSON types to their protobuf equivalents:
- * - Null -> null_value
- * - Bool -> bool_value
- * - Double -> number_value
- * - String -> string_value
- * - Array -> list_value
- * - Object -> struct_value
  */
 google::protobuf::Value API::GRPC::ConversionUtils::toProtoValue(const QJsonValue& json, int depth)
 {
@@ -114,8 +106,6 @@ QJsonObject API::GRPC::ConversionUtils::toQJsonObject(const google::protobuf::St
 
 /**
  * @brief Converts a google.protobuf.Value to a QJsonValue.
- *
- * Maps protobuf value kinds to their Qt JSON equivalents.
  */
 QJsonValue API::GRPC::ConversionUtils::toQJsonValue(const google::protobuf::Value& proto, int depth)
 {
@@ -174,10 +164,6 @@ static inline void setNumber(google::protobuf::Struct& s, const char* key, doubl
 
 /**
  * @brief Converts a Frame directly to a protobuf Struct.
- *
- * This fast path avoids the QJsonObject intermediary, going straight from
- * the C++ Frame/Group/Dataset structs to protobuf Struct fields. Only the
- * fields needed by streaming clients are included.
  */
 google::protobuf::Struct API::GRPC::ConversionUtils::frameToProtoStruct(
   const DataModel::Frame& frame)

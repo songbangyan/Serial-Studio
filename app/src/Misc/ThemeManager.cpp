@@ -59,13 +59,6 @@ static QVariantMap jsonObjectToVariantMap(const QJsonObject& obj)
 
 /**
  * @brief Extracts a vector of QColor objects from a JSON object.
- *
- * Reads the array at the "widget_colors" key from the input QJsonObject.
- * For each string in the array, constructs a QColor and adds it to the
- * result vector. Non-string entries are ignored.
- *
- * @return QVector<QColor> containing a QColor for each valid string in
- *                         the "widget_colors" array.
  */
 static QVector<QColor> extractWidgetColors(const QJsonObject& colorsObject)
 {
@@ -82,11 +75,6 @@ static QVector<QColor> extractWidgetColors(const QJsonObject& colorsObject)
 
 /**
  * @brief Extracts device color gradient pairs from a JSON object.
- *
- * Reads the array at the "device_colors" key. Each element must be an object
- * with "top" and "bottom" hex string keys. Returns up to 10 pairs.
- *
- * @return QVector of (top, bottom) QColor pairs for each device slot.
  */
 static QVector<QPair<QColor, QColor>> extractDeviceColors(const QJsonObject& colorsObject)
 {
@@ -111,12 +99,6 @@ static QVector<QPair<QColor, QColor>> extractDeviceColors(const QJsonObject& col
 
 /**
  * @brief Constructs the ThemeManager object and initializes theme loading.
- *
- * The constructor sets up the @c ThemeManager by loading available themes from
- * JSON files located in the specified resource directory.
- *
- * It installs an event filter to listen for system-wide palette changes,
- * responding to changes by updating the application theme accordingly.
  */
 Misc::ThemeManager::ThemeManager() : m_theme(0), m_applyingTheme(false), m_persistSettings(true)
 {
@@ -202,7 +184,6 @@ Misc::ThemeManager::ThemeManager() : m_theme(0), m_applyingTheme(false), m_persi
 
 /**
  * @brief Provides a reference to the singleton instance of the ThemeManager.
- * @return Reference to the static instance of the ThemeManager.
  */
 Misc::ThemeManager& Misc::ThemeManager::instance()
 {
@@ -216,7 +197,6 @@ Misc::ThemeManager& Misc::ThemeManager::instance()
 
 /**
  * @brief Retrieves the current theme index.
- * @return The index of the currently active theme.
  */
 int Misc::ThemeManager::theme() const
 {
@@ -225,7 +205,6 @@ int Misc::ThemeManager::theme() const
 
 /**
  * @brief Retrieves the current name of the loaded theme.
- * @return The index of the currently active theme.
  */
 const QString& Misc::ThemeManager::themeName() const
 {
@@ -234,11 +213,6 @@ const QString& Misc::ThemeManager::themeName() const
 
 /**
  * @brief Returns the current theme's color map.
- *
- * The map contains key-value pairs where each key is a color role and the value
- * is its color, typically represented as a hex string (e.g., "#RRGGBB").
- *
- * @return const reference to a QVariantMap of color definitions.
  */
 const QVariantMap& Misc::ThemeManager::colors() const
 {
@@ -247,11 +221,6 @@ const QVariantMap& Misc::ThemeManager::colors() const
 
 /**
  * @brief Returns the current theme's parameter map.
- *
- * Theme parameters may include additional metadata like icon paths or
- * editor theme identifiers used to configure the application appearance.
- *
- * @return const reference to a QVariantMap of theme parameters.
  */
 const QVariantMap& Misc::ThemeManager::parameters() const
 {
@@ -260,14 +229,6 @@ const QVariantMap& Misc::ThemeManager::parameters() const
 
 /**
  * @brief Returns the list of widget accent colors defined in the current theme.
- *
- * This corresponds to the "widget_colors" array in the theme's "colors"
- * section. These colors are typically used for dynamic UI elements such as
- * highlights, indicators, or charts where a sequence of accent colors is
- * required.
- *
- * @return const reference to a QVector of QColor objects representing the
- * widget colors.
  */
 const QVector<QColor>& Misc::ThemeManager::widgetColors() const
 {
@@ -276,12 +237,6 @@ const QVector<QColor>& Misc::ThemeManager::widgetColors() const
 
 /**
  * @brief Returns the list of per-device caption gradient color pairs.
- *
- * Each pair contains a (top, bottom) gradient color for use in dashboard
- * MiniWindow captions. Designed to harmonize with each theme's chrome while
- * providing distinct, readable per-device tints.
- *
- * @return const reference to a QVector of (top, bottom) QColor pairs.
  */
 const QVector<QPair<QColor, QColor>>& Misc::ThemeManager::deviceColors() const
 {
@@ -290,7 +245,6 @@ const QVector<QPair<QColor, QColor>>& Misc::ThemeManager::deviceColors() const
 
 /**
  * @brief Returns a list of theme names that are available.
- * @return QStringList containing the names of all loaded themes.
  */
 const QStringList& Misc::ThemeManager::availableThemes() const
 {
@@ -299,8 +253,6 @@ const QStringList& Misc::ThemeManager::availableThemes() const
 
 /**
  * @brief Returns a @c QColor object for the given component @a name.
- * @param name
- * @return QColor
  */
 QColor Misc::ThemeManager::getColor(const QString& name) const
 {
@@ -316,11 +268,6 @@ QColor Misc::ThemeManager::getColor(const QString& name) const
 
 /**
  * @brief Sets the current theme to the theme at the specified index.
- *
- * @param index The index of the theme in the available themes list to set as
- * the current theme.
- *
- * Emits the @c themeChanged signal upon successful theme change.
  */
 void Misc::ThemeManager::setTheme(const int index)
 {
@@ -405,22 +352,8 @@ void Misc::ThemeManager::setSettingsPersistent(const bool persistent)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Applies the system-resolved theme (Light or Dark) without changing
- * the selected theme index.
- *
- * This method inspects the system's current color palette and dynamically
- * resolves whether the Light or Dark theme should be applied visually.
- *
- * It updates the internal theme data and color scheme used throughout the
- * application UI, without changing the user-selected theme index
- * (which remains as "System").
- *
- * This ensures that when "System" is selected, the app visually tracks the
- * system's theme preference while preserving user settings and theme list
- * integrity.
- *
- * @note This function is automatically invoked during startup or when the
- *       system palette changes, but only when the selected theme is "System".
+ * @brief Applies the system-resolved theme (Light or Dark) without changing the selected theme
+ * index.
  */
 void Misc::ThemeManager::loadSystemTheme()
 {
@@ -463,24 +396,7 @@ void Misc::ThemeManager::loadSystemTheme()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Updates the localized names of available themes based on current UI
- *        language.
- *
- * This method rebuilds the `m_availableThemeNames` list by extracting the
- * appropriate translation for each theme from its `translations` object in the
- * theme JSON data. It uses the current language as returned by
- * `Misc::Translator::instance().language()` to select the corresponding
- * translation key (e.g. "es_MX", "de_DE", etc).
- *
- * If a translation is missing or empty, the theme's default `title` is used as
- * fallback. The "System" theme is handled separately and translated via
- * `tr("System")`.
- *
- * After rebuilding the list, the `languageChanged()` signal is emitted to
- * notify the UI of the updated theme names.
- *
- * @see Misc::Translator::language()
- * @see availableThemes()
+ * @brief Updates the localized names of available themes based on current UI language.
  */
 void Misc::ThemeManager::updateLocalizedThemeNames()
 {
@@ -571,16 +487,6 @@ void Misc::ThemeManager::updateLocalizedThemeNames()
 
 /**
  * @brief Event filter to intercept application-wide events.
- *
- * This method is an overridden event filter that specifically listens for the
- * @c QEvent::ApplicationPaletteChange event.
- *
- * When this event is detected, it triggers a theme update to match the new
- * system palette.
- *
- * @param watched The object where the event originated.
- * @param event The event that is being filtered.
- * @return true if the event was handled and should not be processed further
  */
 
 bool Misc::ThemeManager::eventFilter(QObject* watched, QEvent* event)
@@ -601,13 +507,6 @@ bool Misc::ThemeManager::eventFilter(QObject* watched, QEvent* event)
 
 /**
  * @brief Scans the user addons directory for installed theme JSON files.
- *
- * Valid themes are appended to the available themes list after built-in
- * themes but before the "System" entry. Each theme JSON must have a
- * "title" and "colors" object to be considered valid.
- *
- * For user themes, the code-editor-theme parameter is rewritten to an
- * absolute path so the editor can load the XML from disk.
  */
 void Misc::ThemeManager::loadUserThemes()
 {
@@ -715,8 +614,6 @@ void Misc::ThemeManager::onExtensionInstalled(const QString& id)
 
 /**
  * @brief Reloads user themes when an addon is uninstalled.
- *
- * Falls back to Default if the current theme was uninstalled.
  */
 void Misc::ThemeManager::onExtensionUninstalled(const QString& id)
 {

@@ -81,15 +81,15 @@ def _connect_and_send(api_client, device_simulator):
 
 @pytest.mark.project
 def test_project_file_save_and_reload(api_client, clean_state, tmp_path):
-    """project.file.save writes a valid JSON file that can be reopened."""
+    """project.save writes a valid JSON file that can be reopened."""
     proj_path = tmp_path / "save_test.ssproj"
     _write_project(proj_path)
 
-    open_result = api_client.command("project.file.open", {"filePath": str(proj_path)})
+    open_result = api_client.command("project.open", {"filePath": str(proj_path)})
     assert open_result.get("filePath")
     time.sleep(0.3)
 
-    save_result = api_client.command("project.file.save")
+    save_result = api_client.command("project.save")
     assert save_result.get("saved") is True
     assert save_result.get("filePath")
     time.sleep(0.2)
@@ -105,9 +105,9 @@ def test_widget_settings_persisted_in_saved_file(api_client, clean_state, tmp_pa
     proj_path = tmp_path / "ws_persist.ssproj"
     _write_project(proj_path, extra={_WS_KEY: _SAMPLE_WIDGET_SETTINGS})
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
-    api_client.command("project.file.save")
+    api_client.command("project.save")
     time.sleep(0.2)
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
@@ -128,7 +128,7 @@ def test_widget_settings_survive_connect_disconnect(
     proj_path = tmp_path / "ws_survive_disconnect.ssproj"
     _write_project(proj_path, extra={_WS_KEY: _SAMPLE_WIDGET_SETTINGS})
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
 
     _connect_and_send(api_client, device_simulator)
@@ -158,9 +158,9 @@ def test_layout_stored_inside_widget_settings(api_client, clean_state, tmp_path)
     proj_path = tmp_path / "legacy_layout.ssproj"
     proj_path.write_text(json.dumps(legacy_project, indent=2), encoding="utf-8")
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
-    api_client.command("project.file.save")
+    api_client.command("project.save")
     time.sleep(0.2)
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
@@ -184,9 +184,9 @@ def test_layout_and_widget_settings_coexist(api_client, clean_state, tmp_path):
     proj_path = tmp_path / "coexist.ssproj"
     _write_project(proj_path, extra={_WS_KEY: ws})
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
-    api_client.command("project.file.save")
+    api_client.command("project.save")
     time.sleep(0.2)
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
@@ -207,7 +207,7 @@ def test_layout_survives_connect_disconnect(
     proj_path = tmp_path / "layout_survive.ssproj"
     _write_project(proj_path, extra={_WS_KEY: ws})
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
 
     _connect_and_send(api_client, device_simulator)
@@ -226,15 +226,15 @@ def test_layout_survives_connect_disconnect(
 
 @pytest.mark.project
 def test_exported_json_matches_file_on_disk(api_client, clean_state, tmp_path):
-    """project.exportJson and project.file.save must agree on widgetSettings."""
+    """project.exportJson and project.save must agree on widgetSettings."""
     proj_path = tmp_path / "export_vs_disk.ssproj"
     _write_project(proj_path, extra={_WS_KEY: _SAMPLE_WIDGET_SETTINGS})
 
-    api_client.command("project.file.open", {"filePath": str(proj_path)})
+    api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
 
     exported = api_client.command("project.exportJson")["config"]
-    api_client.command("project.file.save")
+    api_client.command("project.save")
     time.sleep(0.2)
 
     disk = json.loads(proj_path.read_text(encoding="utf-8"))

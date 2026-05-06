@@ -23,20 +23,20 @@ from utils import APIError
 # ---------------------------------------------------------------------------
 
 def _list_tables(api_client):
-    return api_client.command("project.tables.list")
+    return api_client.command("project.dataTable.list")
 
 
 def _add_table(api_client, name="Shared Table"):
-    return api_client.command("project.tables.add", {"name": name})
+    return api_client.command("project.dataTable.add", {"name": name})
 
 
 def _get_table(api_client, name):
-    return api_client.command("project.tables.get", {"name": name})
+    return api_client.command("project.dataTable.get", {"name": name})
 
 
 def _add_register(api_client, table, name, computed=True, value=0):
     return api_client.command(
-        "project.tables.register.add",
+        "project.dataTable.addRegister",
         {"table": table, "name": name, "computed": computed, "value": value},
     )
 
@@ -44,23 +44,23 @@ def _add_register(api_client, table, name, computed=True, value=0):
 def _update_register(api_client, table, name, **kwargs):
     payload = {"table": table, "name": name}
     payload.update(kwargs)
-    return api_client.command("project.tables.register.update", payload)
+    return api_client.command("project.dataTable.updateRegister", payload)
 
 
 def _delete_register(api_client, table, name):
     return api_client.command(
-        "project.tables.register.delete", {"table": table, "name": name}
+        "project.dataTable.deleteRegister", {"table": table, "name": name}
     )
 
 
 def _rename_table(api_client, old, new):
     return api_client.command(
-        "project.tables.rename", {"oldName": old, "newName": new}
+        "project.dataTable.rename", {"oldName": old, "newName": new}
     )
 
 
 def _delete_table(api_client, name):
-    return api_client.command("project.tables.delete", {"name": name})
+    return api_client.command("project.dataTable.delete", {"name": name})
 
 
 # ---------------------------------------------------------------------------
@@ -199,7 +199,7 @@ def test_add_string_register_preserves_type(api_client, clean_state):
     # Use update path since add's value param is untyped — we drop through
     # jsonToVariant which respects string JSON values.
     api_client.command(
-        "project.tables.register.add",
+        "project.dataTable.addRegister",
         {"table": "T", "name": "label", "computed": False, "value": "hello"},
     )
 
@@ -324,7 +324,7 @@ def test_tables_persist_through_json_roundtrip(api_client, clean_state, tmp_path
     time.sleep(0.2)
     assert _list_tables(api_client)["count"] == 0
 
-    api_client.command("project.loadFromJSON", {"config": project_json})
+    api_client.command("project.loadJson", {"config": project_json})
     time.sleep(0.3)
 
     # Verify tables restored

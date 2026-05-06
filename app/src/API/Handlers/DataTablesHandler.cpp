@@ -68,9 +68,6 @@
 
 /**
  * @brief Builds the property descriptor for a table register's defaultValue.
- *
- * The defaultValue accepts either a number or a string, which makeSchema()
- * cannot express. Helpers below splice this object into manually-built schemas.
  */
 [[nodiscard]] static QJsonObject defaultValueProp()
 {
@@ -97,12 +94,12 @@ void API::Handlers::DataTablesHandler::registerTableQueryCommands()
 {
   auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("project.tables.list"),
+  registry.registerCommand(QStringLiteral("project.dataTable.list"),
                            QStringLiteral("List all user-defined data tables"),
                            API::emptySchema(),
                            &tablesList);
   registry.registerCommand(
-    QStringLiteral("project.tables.get"),
+    QStringLiteral("project.dataTable.get"),
     QStringLiteral("Return the register list for a table (params: name)"),
     API::makeSchema({
       {QStringLiteral("name"), QStringLiteral("string"), QStringLiteral("Table name")}
@@ -118,7 +115,7 @@ void API::Handlers::DataTablesHandler::registerTableMutationCommands()
   auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
-    QStringLiteral("project.tables.add"),
+    QStringLiteral("project.dataTable.add"),
     QStringLiteral("Create a new empty table (params: name=\"Shared Table\")"),
     API::makeSchema(
       {
@@ -128,14 +125,14 @@ void API::Handlers::DataTablesHandler::registerTableMutationCommands()
         QStringLiteral("Desired table name (uniquified on collision)")}}),
     &tableAdd);
   registry.registerCommand(
-    QStringLiteral("project.tables.delete"),
+    QStringLiteral("project.dataTable.delete"),
     QStringLiteral("Delete a table (params: name)"),
     API::makeSchema({
       {QStringLiteral("name"), QStringLiteral("string"), QStringLiteral("Table name")}
   }),
     &tableDelete);
   registry.registerCommand(
-    QStringLiteral("project.tables.rename"),
+    QStringLiteral("project.dataTable.rename"),
     QStringLiteral("Rename a table (params: oldName, newName)"),
     API::makeSchema({
       {QStringLiteral("oldName"), QStringLiteral("string"), QStringLiteral("Current table name")},
@@ -173,13 +170,13 @@ void API::Handlers::DataTablesHandler::registerRegisterCommands()
   addSchema[QStringLiteral("required")] =
     QJsonArray{QStringLiteral("table"), QStringLiteral("name")};
   registry.registerCommand(
-    QStringLiteral("project.tables.register.add"),
+    QStringLiteral("project.dataTable.addRegister"),
     QStringLiteral("Append a register (params: table, name, computed=true, defaultValue=0)"),
     addSchema,
     &registerAdd);
 
   registry.registerCommand(
-    QStringLiteral("project.tables.register.delete"),
+    QStringLiteral("project.dataTable.deleteRegister"),
     QStringLiteral("Delete a register (params: table, name)"),
     API::makeSchema({
       {QStringLiteral("table"), QStringLiteral("string"), QStringLiteral("Owning table name")},
@@ -212,7 +209,7 @@ void API::Handlers::DataTablesHandler::registerRegisterCommands()
   updSchema[QStringLiteral("required")] =
     QJsonArray{QStringLiteral("table"), QStringLiteral("name")};
   registry.registerCommand(
-    QStringLiteral("project.tables.register.update"),
+    QStringLiteral("project.dataTable.updateRegister"),
     QStringLiteral("Update a register (params: table, name, newName?, computed?, defaultValue?)"),
     updSchema,
     &registerUpdate);
@@ -282,8 +279,6 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableGet(const QString& i
 
 /**
  * @brief Creates a new table with the given (optional) name.
- *
- * @return Actual name used after uniquification.
  */
 API::CommandResponse API::Handlers::DataTablesHandler::tableAdd(const QString& id,
                                                                 const QJsonObject& params)

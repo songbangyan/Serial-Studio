@@ -14,14 +14,17 @@
 #  include "UI/Widgets/Painter.h"
 
 #  include <chrono>
+#  include <cmath>
 #  include <QDateTime>
 #  include <QFileInfo>
 #  include <QPainter>
+#  include <QQuickWindow>
 
 #  include "AppState.h"
 #  include "DataModel/Frame.h"
 #  include "DataModel/FrameBuilder.h"
 #  include "DataModel/NotificationCenter.h"
+#  include "Misc/ThemeManager.h"
 #  include "Misc/TimerEvents.h"
 #  include "SerialStudio.h"
 #  include "UI/Dashboard.h"
@@ -33,11 +36,6 @@ static constexpr int kSlowPaintMs       = 30;
 
 /**
  * @brief Returns the JS bootstrap that exposes bridge globals + redirects console.
- *
- * Uses plain top-level assignments (not an IIFE) so any bootstrap error surfaces
- * with a usable line/column. Does not lock the bridge globals -- if user code
- * shadows `datasets` / `group` / `frame`, that's their problem, but the engine
- * stays usable. Re-running the bootstrap on the same engine is idempotent.
  */
 [[nodiscard]] static QString jsBootstrap()
 {
@@ -156,8 +154,15 @@ Widgets::Painter::Painter(int index, QQuickItem* parent)
 
   // Install the JS-side bridge wrappers (datasets/group/frame/console) before any user code runs
   installBootstrap();
+  installTheme();
 
   connect(m_bridge, &PainterDataBridge::consoleLine, this, &Painter::consoleLine);
+
+  // Re-inject theme and force recompile on palette change
+  connect(&Misc::ThemeManager::instance(), &Misc::ThemeManager::themeChanged, this, [this]() {
+    installTheme();
+    m_compileDirty = true;
+  });
 
   connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Painter::updateData);
   connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [this] {
@@ -188,7 +193,7 @@ void Widgets::Painter::paint(QPainter* painter)
   if (m_cache.isNull())
     return;
 
-  painter->drawImage(QPointF(0.0, 0.0), m_cache);
+  painter->drawImage(QRectF(0.0, 0.0, width(), height()), m_cache);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -244,10 +249,6 @@ void Widgets::Painter::setPreviewMode(bool enabled)
 
 /**
  * @brief Pushes a list of synthetic dataset values into the preview group.
- *
- * Each entry may carry { title, value, units, min, max, alarmLow, alarmHigh }.
- * Missing fields default to sane values. Indices and uniqueIds are auto-assigned
- * so cross-references inside the user script behave reasonably.
  */
 void Widgets::Painter::setSimulatedDatasets(const QVariantList& datasets)
 {
@@ -395,6 +396,30 @@ void Widgets::Painter::installBootstrap()
 }
 
 /**
+ * @brief Snapshots the ThemeManager palette into a frozen `theme` global.
+ */
+void Widgets::Painter::installTheme()
+{
+  const auto& palette = Misc::ThemeManager::instance().colors();
+  auto themeObject    = m_engine.newObject();
+  for (auto it = palette.constBegin(); it != palette.constEnd(); ++it) {
+    const auto v = it.value();
+    if (v.typeId() == QMetaType::QVariantList || v.typeId() == QMetaType::QStringList) {
+      // Expose array-typed palette entries as real JS arrays
+      const auto list = v.toList();
+      auto jsArray    = m_engine.newArray(static_cast<quint32>(list.size()));
+      for (int i = 0; i < list.size(); ++i)
+        jsArray.setProperty(static_cast<quint32>(i), list.at(i).toString());
+
+      themeObject.setProperty(it.key(), jsArray);
+    } else {
+      themeObject.setProperty(it.key(), v.toString());
+    }
+  }
+  m_engine.globalObject().setProperty(QStringLiteral("theme"), themeObject);
+}
+
+/**
  * @brief Returns a tiny built-in script used when the group has no painterCode.
  */
 QString Widgets::Painter::fallbackTemplate()
@@ -474,19 +499,24 @@ void Widgets::Painter::invalidateCompilation()
  */
 void Widgets::Painter::renderFrame()
 {
-  const QSize size(qMax(1, int(width())), qMax(1, int(height())));
-  if (size != m_cacheSize) {
-    m_cache     = QImage(size, QImage::Format_ARGB32_Premultiplied);
-    m_cacheSize = size;
+  const qreal dpr = qMax<qreal>(1.0, window() ? window()->effectiveDevicePixelRatio() : 1.0);
+  const QSize logical(qMax(1, int(width())), qMax(1, int(height())));
+  const QSize physical(qMax(1, int(std::ceil(logical.width() * dpr))),
+                       qMax(1, int(std::ceil(logical.height() * dpr))));
+
+  if (physical != m_cacheSize || !qFuzzyCompare(m_cache.devicePixelRatio(), dpr)) {
+    m_cache = QImage(physical, QImage::Format_ARGB32_Premultiplied);
+    m_cache.setDevicePixelRatio(dpr);
+    m_cacheSize = physical;
   }
 
   m_cache.fill(Qt::transparent);
 
   QPainter qp(&m_cache);
-  m_ctx->beginFrame(&qp, size.width(), size.height());
+  m_ctx->beginFrame(&qp, logical.width(), logical.height());
 
   QJSValueList args;
-  args << m_ctxValue << QJSValue(double(size.width())) << QJSValue(double(size.height()));
+  args << m_ctxValue << QJSValue(double(logical.width())) << QJSValue(double(logical.height()));
   const auto t0 = std::chrono::steady_clock::now();
   auto r        = m_watchdog.call(m_paintFn, args);
   const auto dt =

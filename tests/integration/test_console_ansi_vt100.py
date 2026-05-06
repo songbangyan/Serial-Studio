@@ -79,7 +79,7 @@ def console_session(api_client, device_simulator, clean_state):
 @pytest.mark.integration
 def test_ansi_colors_default_off(api_client, clean_state):
     """ANSI color support should default to off on a fresh session."""
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     # The field may not be present in older builds; skip if absent
     if "ansiColors" in config:
         assert config["ansiColors"] is False
@@ -91,7 +91,7 @@ def test_console_clear_before_ansi_session(api_client, clean_state):
     result = api_client.command("console.clear")
     assert result.get("cleared") is True
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", 0) == 0
 
 
@@ -110,7 +110,7 @@ def test_standard_ansi_foreground_colors(console_session):
         payload = f"{ESC}[{code}mcolor {code - 30}\n".encode()
         _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -124,7 +124,7 @@ def test_standard_ansi_background_colors(console_session):
         payload = f"{ESC}[{code}mbg {code - 40}\n".encode()
         _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -138,7 +138,7 @@ def test_bright_ansi_foreground_colors(console_session):
         payload = f"{ESC}[{code}mbright {code - 90}\n".encode()
         _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -152,7 +152,7 @@ def test_bright_ansi_background_colors(console_session):
         payload = f"{ESC}[{code}mbright bg {code - 100}\n".encode()
         _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -168,7 +168,7 @@ def test_ansi_reset_code(console_session):
     ).encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -186,7 +186,7 @@ def test_ansi_combined_sgr_parameters(console_session):
     ]
     _feed(device_simulator, "".join(sequences).encode())
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -202,7 +202,7 @@ def test_ansi_256_color_foreground(console_session):
     lines = "".join(f"{ESC}[38;5;{i}mfg256-{i}{ESC}[0m\n" for i in sample_indices)
     _feed(device_simulator, lines.encode(), delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -216,7 +216,7 @@ def test_ansi_256_color_background(console_session):
     lines = "".join(f"{ESC}[48;5;{i}mbg256-{i}{ESC}[0m\n" for i in sample_indices)
     _feed(device_simulator, lines.encode(), delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -239,7 +239,7 @@ def test_ansi_rgb_color_foreground(console_session):
     )
     _feed(device_simulator, lines.encode(), delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -262,7 +262,7 @@ def test_vt100_cursor_position_sequence(console_session):
     ]
     _feed(device_simulator, "\n".join(sequences).encode())
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -275,7 +275,7 @@ def test_vt100_backspace_handling(console_session):
     payload = b"Hello\x08\x08World\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -294,7 +294,7 @@ def test_truncated_escape_sequence(console_session):
     _feed(device_simulator, b"\x1b")
     _feed(device_simulator, b"normal text after bare ESC\n")
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -310,7 +310,7 @@ def test_truncated_csi_sequence(console_session):
     # Now send valid data; parser must recover
     _feed(device_simulator, b"mrecovered\n")
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -323,7 +323,7 @@ def test_nested_escape_sequences(console_session):
     payload = f"{ESC}[31m{ESC}[1m{ESC}[4m{ESC}[42mstacked\n{ESC}[0m".encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -338,7 +338,7 @@ def test_very_long_sgr_parameter_list(console_session):
     payload = f"{ESC}[{params}mtext\n".encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -351,7 +351,7 @@ def test_huge_numeric_sgr_parameter(console_session):
     payload = f"{ESC}[999999mtext{ESC}[0m\n".encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -365,7 +365,7 @@ def test_negative_looking_sgr_parameter(console_session):
     payload = b"\x1b[-1mtext\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -386,7 +386,7 @@ def test_non_sgr_csi_sequences(console_session):
     payload = "\n".join(sequences).encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -399,7 +399,7 @@ def test_osc_title_sequence(console_session):
     payload = f"{ESC}]0;Serial Studio Test\x07normal text\n".encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -418,7 +418,7 @@ def test_private_mode_sequences(console_session):
     payload = "".join(sequences) + "visible text\n"
     _feed(device_simulator, payload.encode())
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -431,7 +431,7 @@ def test_null_bytes_in_stream(console_session):
     payload = b"before\x00after\nmore\x00data\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -444,7 +444,7 @@ def test_high_byte_values_in_stream(console_session):
     payload = bytes(range(0x80, 0x100)) + b"\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -462,7 +462,7 @@ def test_mixed_utf8_and_ansi(console_session):
     ).encode("utf-8")
     _feed(device_simulator, payload, delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -486,7 +486,7 @@ def test_buffer_fills_to_max_and_rolls(console_session):
     for _ in range(13):               # 1300 lines total
         _feed(device_simulator, chunk.encode(), delay=0.05)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -502,7 +502,7 @@ def test_rapid_ansi_color_switching(console_session):
     line = "".join(f"{ESC}[{c}mX" for c in (colors * 72)[:500]) + f"{ESC}[0m\n"
     _feed(device_simulator, line.encode(), delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -517,7 +517,7 @@ def test_flood_with_plain_text(console_session):
         _feed(device_simulator, chunk.encode(), delay=0.02)
 
     time.sleep(0.5)
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -530,7 +530,7 @@ def test_very_long_single_line(console_session):
     payload = (b"X" * 65536) + b"\n"
     _feed(device_simulator, payload, delay=0.5)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -549,7 +549,7 @@ def test_alternating_ansi_and_plain_lines(console_session):
 
     _feed(device_simulator, "".join(lines).encode(), delay=0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -573,7 +573,7 @@ def test_clear_during_active_feed(console_session):
     assert result.get("cleared") is True
 
     _feed(device_simulator, b"after clear\n")
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -587,7 +587,7 @@ def test_repeated_clear_cycles(console_session):
         result = api_client.command("console.clear")
         assert result.get("cleared") is True
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -606,7 +606,7 @@ def test_escape_at_end_of_buffer(console_session):
     time.sleep(0.05)
     _feed(device_simulator, b"[32m continuation\n")
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -619,7 +619,7 @@ def test_bare_carriage_return(console_session):
     payload = b"line one\roverwritten\nline two\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -632,7 +632,7 @@ def test_crlf_line_endings(console_session):
     payload = b"line 1\r\nline 2\r\nline 3\r\n"
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -645,7 +645,7 @@ def test_ansi_with_empty_parameter(console_session):
     payload = f"before{ESC}[mafter\n".encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -660,7 +660,7 @@ def test_cursor_home_then_overwrite(console_session):
     ).encode()
     _feed(device_simulator, payload)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -680,7 +680,7 @@ def test_display_mode_switch_during_ansi_feed(console_session):
     time.sleep(0.05)
     _feed(device_simulator, f"{ESC}[32mback to plain\n".encode(), delay=0.05)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0
 
 
@@ -695,5 +695,5 @@ def test_all_sgr_attribute_codes(console_session):
     lines = "".join(f"{ESC}[{c}mattr-{c}{ESC}[0m\n" for c in sgr_codes)
     _feed(device_simulator, lines.encode(), delay=0.2)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) >= 0

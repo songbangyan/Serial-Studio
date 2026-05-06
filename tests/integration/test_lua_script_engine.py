@@ -4,7 +4,7 @@ Lua Script Engine Integration Tests
 Exercises the new DataModel::LuaScriptEngine through the public API.
 
 Most tests use the project.frameParser.setLanguage API command added in v3.3
-to switch source 0 between JavaScript and Lua, then project.parser.setCode to
+to switch source 0 between JavaScript and Lua, then project.frameParser.setCode to
 install a Lua parse() function. This avoids the loadFromJSON dance for every
 test and makes each test a tight three-step sequence:
     create_new_project -> set_frame_parser_language(1) -> parser.setCode
@@ -49,7 +49,7 @@ def _setup_parser_project(
 ) -> None:
     """Create a ProjectFile project with the given parser code and language.
 
-    Uses the language= parameter on project.parser.setCode so the switch +
+    Uses the language= parameter on project.frameParser.setCode so the switch +
     validation happens atomically. Raises APIError if parser_code fails to
     load — callers that expect errors should wrap in pytest.raises.
     """
@@ -66,7 +66,7 @@ def _setup_parser_project(
     )
     time.sleep(0.1)
     for _ in dataset_titles:
-        api_client.command("project.dataset.add", {"options": 1})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
         time.sleep(0.05)
 
     # Switch to ProjectFile operation mode with /* */ delimiters
@@ -83,7 +83,7 @@ def _setup_parser_project(
 
     # Atomic language + code install (validation errors raise APIError)
     api_client.command(
-        "project.parser.setCode",
+        "project.frameParser.setCode",
         {"code": parser_code, "language": language, "sourceId": 0},
     )
     time.sleep(0.2)
@@ -104,7 +104,7 @@ def _try_install_lua(api_client, lua_code: str, dataset_titles=None) -> None:
 
 
 def _get_parser_code(api_client, source_id: int = 0) -> str:
-    result = api_client.command("project.parser.getCode", {"sourceId": source_id})
+    result = api_client.command("project.frameParser.getCode", {"sourceId": source_id})
     return result.get("code", "")
 
 
@@ -277,8 +277,8 @@ def test_lua_parse_end_to_end_csv(api_client, device_simulator, clean_state):
     )
 
     # Sync the in-memory project into the FrameBuilder
-    load_result = api_client.command("project.loadIntoFrameBuilder")
-    assert load_result.get("loaded"), "project.loadIntoFrameBuilder must succeed"
+    load_result = api_client.command("project.activate")
+    assert load_result.get("loaded"), "project.activate must succeed"
     time.sleep(0.2)
 
     # Connect a simulated device via the TCP fixture
@@ -455,7 +455,7 @@ def test_lua_returns_1d_table(api_client, device_simulator, clean_state):
 
     _setup_lua_project(api_client, lua_code, dataset_titles=["a", "b", "c"])
 
-    load_result = api_client.command("project.loadIntoFrameBuilder")
+    load_result = api_client.command("project.activate")
     assert load_result.get("loaded")
     time.sleep(0.2)
 
@@ -482,7 +482,7 @@ def test_lua_returns_2d_table_multi_frame(api_client, device_simulator, clean_st
 
     _setup_lua_project(api_client, lua_code, dataset_titles=["a", "b", "c"])
 
-    load_result = api_client.command("project.loadIntoFrameBuilder")
+    load_result = api_client.command("project.activate")
     assert load_result.get("loaded")
     time.sleep(0.2)
 

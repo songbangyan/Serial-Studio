@@ -23,9 +23,9 @@ from utils.api_client import SerialStudioClient  # noqa: E402
 
 REQUIRED_FIELDS = {
     "project.source.list": ["_summary"],
-    "project.groups.list": ["_summary"],
-    "project.datasets.list": ["_summary"],
-    "io.manager.getStatus": ["_summary", "busTypeLabel", "busTypeSlug"],
+    "project.group.list": ["_summary"],
+    "project.dataset.list": ["_summary"],
+    "io.getStatus": ["_summary", "busTypeLabel", "busTypeSlug"],
     "dashboard.getStatus": ["_summary", "operationModeLabel", "operationModeSlug"],
 }
 
@@ -59,13 +59,13 @@ def main() -> int:
                             print(f"  MISSING in source: {k}")
                             failures += 1
 
-            if command == "project.groups.list":
+            if command == "project.group.list":
                 for grp in resp.get("groups", []):
                     if "datasetCount" not in grp:
                         print("  MISSING in group: datasetCount")
                         failures += 1
 
-            if command == "project.datasets.list":
+            if command == "project.dataset.list":
                 for ds in resp.get("datasets", []):
                     for k in ("enabledFeatures", "hasTransform", "isVirtual"):
                         if k not in ds:

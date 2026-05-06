@@ -241,6 +241,13 @@ public slots:
   void duplicateCurrentAction();
   void duplicateCurrentDataset();
 
+  void deleteGroup(int groupId);
+  void duplicateGroup(int groupId);
+  void deleteDataset(int groupId, int datasetId);
+  void duplicateDataset(int groupId, int datasetId);
+  void deleteAction(int actionId);
+  void duplicateAction(int actionId);
+
   void moveGroup(int fromGroupId, int toGroupId);
   void moveDataset(int groupId, int fromDatasetId, int toDatasetId);
   void moveWorkspace(int workspaceId, int targetIndex);
@@ -303,6 +310,8 @@ public slots:
 
   void deleteWorkspace(int workspaceId);
   void renameWorkspace(int workspaceId, const QString& title);
+  void updateWorkspace(
+    int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon);
   void addWidgetToWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
   void removeWidgetFromWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
 
@@ -320,6 +329,8 @@ public slots:
   void setOutputWidgetIcon(const QString& icon);
   void deleteCurrentOutputWidget();
   void duplicateCurrentOutputWidget();
+  void deleteOutputWidget(int groupId, int widgetId);
+  void duplicateOutputWidget(int groupId, int widgetId);
   void updateOutputWidget(int groupId,
                           int widgetId,
                           const DataModel::OutputWidget& widget,

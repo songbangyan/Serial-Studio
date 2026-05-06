@@ -272,9 +272,6 @@ void UI::TaskbarSettings::movePinnedButton(const QString& id, int targetIndex)
 
 /**
  * @brief Adds @a id to or removes it from the pinned list, preserving order.
- *
- * Pinning re-inserts the entry at its canonical position when previously
- * unknown so a freshly-enabled button doesn't always land at the end.
  */
 void UI::TaskbarSettings::setButtonPinned(const QString& id, bool pinned)
 {

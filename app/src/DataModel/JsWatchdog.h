@@ -30,13 +30,6 @@ namespace DataModel {
 
 /**
  * @brief Runtime watchdog for QJSEngine calls.
- *
- * Wraps a single-shot QTimer that flips QJSEngine::setInterrupted() once a
- * configurable budget elapses. Use call() to invoke a JS function under the
- * timer; the budget is reset and re-armed for every call.
- *
- * The watchdog does not own the engine -- it borrows a pointer that must
- * outlive the watchdog instance (typical pattern: same owner holds both).
  */
 class JsWatchdog {
 public:

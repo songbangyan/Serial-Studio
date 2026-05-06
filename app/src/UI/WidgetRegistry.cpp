@@ -34,7 +34,6 @@ UI::WidgetRegistry::WidgetRegistry()
 
 /**
  * @brief Retrieves the singleton instance of the WidgetRegistry.
- * @return Reference to the singleton WidgetRegistry instance.
  */
 UI::WidgetRegistry& UI::WidgetRegistry::instance()
 {
@@ -83,12 +82,6 @@ bool UI::WidgetRegistry::isInBatchUpdate() const
 
 /**
  * @brief Creates a new widget and assigns a unique ID.
- * @param type The widget type (from SerialStudio::DashboardWidget).
- * @param title Display title for the widget.
- * @param groupId The parent group ID (-1 for standalone widgets like terminal).
- * @param datasetIndex Dataset index for dataset widgets (-1 for group widgets).
- * @param isGroupWidget True if this is a group-level widget.
- * @return The newly assigned widget ID.
  */
 UI::WidgetID UI::WidgetRegistry::createWidget(SerialStudio::DashboardWidget type,
                                               const QString& title,
@@ -121,8 +114,6 @@ UI::WidgetID UI::WidgetRegistry::createWidget(SerialStudio::DashboardWidget type
 
 /**
  * @brief Retrieves widget information by ID.
- * @param id The widget ID.
- * @return Widget info, or invalid info (id=0) if not found.
  */
 UI::WidgetInfo UI::WidgetRegistry::widgetInfo(UI::WidgetID id) const
 {
@@ -131,8 +122,6 @@ UI::WidgetInfo UI::WidgetRegistry::widgetInfo(UI::WidgetID id) const
 
 /**
  * @brief Checks if a widget ID exists in the registry.
- * @param id The widget ID to check.
- * @return True if the widget exists.
  */
 bool UI::WidgetRegistry::contains(UI::WidgetID id) const
 {
@@ -141,7 +130,6 @@ bool UI::WidgetRegistry::contains(UI::WidgetID id) const
 
 /**
  * @brief Gets all widget IDs in creation order.
- * @return Vector of all registered widget IDs.
  */
 QVector<UI::WidgetID> UI::WidgetRegistry::allWidgetIds() const
 {
@@ -150,8 +138,6 @@ QVector<UI::WidgetID> UI::WidgetRegistry::allWidgetIds() const
 
 /**
  * @brief Gets widget IDs filtered by type.
- * @param type The widget type to filter by.
- * @return Vector of matching widget IDs in creation order.
  */
 QVector<UI::WidgetID> UI::WidgetRegistry::widgetIdsByType(SerialStudio::DashboardWidget type) const
 {
@@ -165,8 +151,6 @@ QVector<UI::WidgetID> UI::WidgetRegistry::widgetIdsByType(SerialStudio::Dashboar
 
 /**
  * @brief Gets widget IDs filtered by group.
- * @param groupId The group ID to filter by.
- * @return Vector of matching widget IDs in creation order.
  */
 QVector<UI::WidgetID> UI::WidgetRegistry::widgetIdsByGroup(int groupId) const
 {
@@ -180,9 +164,6 @@ QVector<UI::WidgetID> UI::WidgetRegistry::widgetIdsByGroup(int groupId) const
 
 /**
  * @brief Gets the Nth widget ID of a specific type.
- * @param type The widget type.
- * @param relativeIndex The index among widgets of this type.
- * @return The widget ID, or kInvalidWidgetId if not found.
  */
 UI::WidgetID UI::WidgetRegistry::widgetIdByTypeAndIndex(SerialStudio::DashboardWidget type,
                                                         int relativeIndex) const
@@ -222,7 +203,6 @@ void UI::WidgetRegistry::clear()
 
 /**
  * @brief Destroys a widget and removes it from the registry.
- * @param id The widget ID to destroy.
  */
 void UI::WidgetRegistry::destroyWidget(UI::WidgetID id)
 {
@@ -240,10 +220,6 @@ void UI::WidgetRegistry::destroyWidget(UI::WidgetID id)
 
 /**
  * @brief Updates widget metadata.
- * @param id The widget ID to update.
- * @param title New title (empty string keeps current title).
- * @param icon New icon path (empty string keeps current icon).
- * @param userData Optional user data to associate with widget.
  */
 void UI::WidgetRegistry::updateWidget(UI::WidgetID id,
                                       const QString& title,

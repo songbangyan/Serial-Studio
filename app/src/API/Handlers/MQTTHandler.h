@@ -61,7 +61,6 @@ private:
   static CommandResponse setPeerVerifyDepth(const QString& id, const QJsonObject& params);
   static CommandResponse connect(const QString& id, const QJsonObject& params);
   static CommandResponse disconnect(const QString& id, const QJsonObject& params);
-  static CommandResponse toggleConnection(const QString& id, const QJsonObject& params);
   static CommandResponse regenerateClientId(const QString& id, const QJsonObject& params);
 
   static CommandResponse getConfiguration(const QString& id, const QJsonObject& params);

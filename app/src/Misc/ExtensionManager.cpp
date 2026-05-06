@@ -75,9 +75,6 @@ static QVariantMap selectPlatformOverride(const QVariantMap& platforms, const QS
 
 /**
  * @brief Constructs the ExtensionManager singleton.
- *
- * Loads the repository list from QSettings and reads the local installed
- * manifest from disk.
  */
 Misc::ExtensionManager::ExtensionManager()
   : m_loading(false)
@@ -477,10 +474,6 @@ void Misc::ExtensionManager::removeRepository(int index)
 
 /**
  * @brief Resets the repository list and uninstalls all extensions.
- *
- * Prompts the user for confirmation before proceeding. Stops all running
- * plugins, removes all installed extension files, and restores the default
- * community repository URL.
  */
 void Misc::ExtensionManager::resetRepositories()
 {
@@ -550,9 +543,6 @@ void Misc::ExtensionManager::browseLocalRepo()
 
 /**
  * @brief Downloads and installs the currently selected addon.
- *
- * Builds a download queue from the extension's file list, creates the local
- * directory, and starts sequential file downloads.
  */
 void Misc::ExtensionManager::installExtension()
 {
@@ -681,13 +671,8 @@ void Misc::ExtensionManager::uninstallExtension()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Checks installed extensions against the catalog and auto-updates
- *        any that have a newer version available.
- *
- * Builds a queue of extension IDs that need updating, then processes them
- * one at a time by selecting each in the filtered list and calling
- * installExtension(). For remote installs (async), the next update is
- * triggered after extensionInstalled fires.
+ * @brief Checks installed extensions against the catalog and auto-updates any that have a newer
+ * version available.
  */
 void Misc::ExtensionManager::autoUpdateExtensions()
 {
@@ -808,9 +793,6 @@ void Misc::ExtensionManager::onManifestReply()
 
 /**
  * @brief Handles an extension metadata (info.json) fetch response.
- *
- * Resolves file paths relative to the extension.json location and appends
- * the extension to the catalog.
  */
 void Misc::ExtensionManager::onExtensionMetaReply()
 {
@@ -933,8 +915,6 @@ void Misc::ExtensionManager::downloadNextFile()
 
 /**
  * @brief Applies search and category filters to rebuild the filtered list.
- *
- * Injects installation status into each extension entry for QML display.
  */
 void Misc::ExtensionManager::applyFilter()
 {
@@ -1137,9 +1117,6 @@ QVariantMap Misc::ExtensionManager::loadPluginMetadata(const QString& iid)
 
 /**
  * @brief Rebuilds the installed plugins list for the start menu / toolbar.
- *
- * Uses a metadata cache to avoid re-reading info.json from disk on every call.
- * Only emits installedPluginsChanged() if the list actually changed.
  */
 void Misc::ExtensionManager::rebuildInstalledPlugins()
 {
@@ -1198,9 +1175,6 @@ QString Misc::ExtensionManager::installedManifestPath() const
 
 /**
  * @brief Returns the platform key for the current OS and CPU architecture.
- *
- * Format is "os/arch" where os is one of "darwin", "windows", "linux"
- * and arch is one of "arm64", "x86_64".
  */
 QString Misc::ExtensionManager::currentPlatformKey() const
 {
@@ -1224,16 +1198,6 @@ QString Misc::ExtensionManager::currentPlatformKey() const
 
 /**
  * @brief Resolves platform-specific overrides from a plugin's metadata.
- *
- * If the metadata contains a "platforms" object, the function looks for the
- * current platform key (e.g. "darwin/arm64"), then falls back to a wildcard
- * key (e.g. "darwin/\*"), and finally returns the top-level fields.
- *
- * The returned object always contains "entry", "runtime", "terminal", and
- * "files" keys -- merging the platform override on top of the base metadata.
- *
- * @param meta The parsed info.json content.
- * @return Resolved metadata object with platform-appropriate values.
  */
 QJsonObject Misc::ExtensionManager::resolvePlatform(const QJsonObject& meta) const
 {
@@ -1322,10 +1286,6 @@ void Misc::ExtensionManager::stopSelectedPlugin()
 
 /**
  * @brief Launches an installed plugin by ID.
- *
- * Reads the plugin's metadata to find the entry point script, then starts
- * it as a child process. The plugin is expected to connect to the API server
- * on port 7777 to interact with Serial Studio.
  */
 void Misc::ExtensionManager::launchPlugin(const QString& id)
 {
@@ -1774,9 +1734,6 @@ void Misc::ExtensionManager::stopPlugin(const QString& id)
 
 /**
  * @brief Stops all running plugins. Called on application shutdown.
- *
- * Saves the list of running plugin IDs to QSettings so they can be
- * restored on the next launch.
  */
 void Misc::ExtensionManager::stopAllPlugins()
 {
@@ -1807,10 +1764,6 @@ void Misc::ExtensionManager::stopAllPlugins()
 
 /**
  * @brief Restores plugins that were running in the previous session.
- *
- * Reads the saved plugin ID list from QSettings and launches each one,
- * skipping any plugins that the user manually closed during the current
- * dashboard session.
  */
 void Misc::ExtensionManager::restoreRunningPlugins()
 {
@@ -1836,11 +1789,6 @@ void Misc::ExtensionManager::restoreRunningPlugins()
 
 /**
  * @brief Reacts to dashboard availability changes.
- *
- * When the dashboard becomes available, restores previously-running plugins.
- * When the dashboard hides, stops all running plugins (saving their IDs for
- * later restore). User-closed plugins are tracked separately so they are not
- * relaunched automatically.
  */
 void Misc::ExtensionManager::onDashboardAvailableChanged()
 {
@@ -1902,9 +1850,6 @@ void Misc::ExtensionManager::onPluginFinished(const QString& id)
 
 /**
  * @brief Loads a manifest.json from a local filesystem directory.
- *
- * Supports both direct paths to manifest.json and directory paths
- * (in which case manifest.json is appended automatically).
  */
 void Misc::ExtensionManager::loadLocalManifest(const QString& repoPath)
 {
@@ -2003,12 +1948,6 @@ void Misc::ExtensionManager::writeExtensionFile(QNetworkReply* reply)
 
 /**
  * @brief Validates that a resolved file path stays within the expected base directory.
- *
- * Prevents path traversal attacks (e.g. "../../etc/passwd") from manifest data.
- *
- * @param filePath The resolved absolute path to validate.
- * @param baseDir  The directory the path must stay within.
- * @return True if the path is safe, false if it escapes baseDir.
  */
 bool Misc::ExtensionManager::isPathSafe(const QString& filePath, const QString& baseDir) const
 {

@@ -37,22 +37,39 @@
  */
 void API::Handlers::IOManagerHandler::registerCommands()
 {
+  registerConnectionCommands();
+  registerBusConfigCommands();
+  registerQueryCommands();
+}
+
+/** @brief Register connect/disconnect/setPaused lifecycle commands. */
+void API::Handlers::IOManagerHandler::registerConnectionCommands()
+{
   auto& registry = CommandRegistry::instance();
 
-  // Empty schema for parameterless commands
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
   emptySchema.insert(QStringLiteral("properties"), QJsonObject());
 
-  registry.registerCommand(QStringLiteral("io.manager.connect"),
-                           QStringLiteral("Connect to the currently configured device"),
-                           emptySchema,
-                           &connect);
+  registry.registerCommand(
+    QStringLiteral("io.connect"),
+    QStringLiteral("Open the I/O connection using the active bus type's currently-"
+                   "configured device + parameters. Configure FIRST -- the active "
+                   "bus's setters (io.uart.setDevice + setBaudRate, "
+                   "io.network.setRemoteAddress + setTcpPort, io.ble.selectDevice, "
+                   "etc.) must already be set. Use io.getStatus to verify "
+                   "configurationOk before connecting. Idempotent if already "
+                   "connected to the same device."),
+    emptySchema,
+    &connect);
 
-  registry.registerCommand(QStringLiteral("io.manager.disconnect"),
-                           QStringLiteral("Disconnect from the current device"),
-                           emptySchema,
-                           &disconnect);
+  registry.registerCommand(
+    QStringLiteral("io.disconnect"),
+    QStringLiteral("Close the active I/O connection. Safe to call when already "
+                   "disconnected. Does NOT reset the configuration -- the next "
+                   "io.connect will reuse the same device + params."),
+    emptySchema,
+    &disconnect);
 
   {
     QJsonObject props;
@@ -64,29 +81,52 @@ void API::Handlers::IOManagerHandler::registerCommands()
     schema[QStringLiteral("type")]       = QStringLiteral("object");
     schema[QStringLiteral("properties")] = props;
     schema[QStringLiteral("required")]   = QJsonArray{QStringLiteral("paused")};
-    registry.registerCommand(QStringLiteral("io.manager.setPaused"),
-                             QStringLiteral("Pause or resume data streaming (params: paused)"),
-                             schema,
-                             &setPaused);
+    registry.registerCommand(
+      QStringLiteral("io.setPaused"),
+      QStringLiteral("Pause or resume frame processing without disconnecting. The "
+                     "device keeps streaming bytes; we drop them on the floor. Use "
+                     "this when the user wants to inspect the current dashboard "
+                     "state without it scrolling, or when running an export and the "
+                     "user doesn't want new frames mid-export."),
+      schema,
+      &setPaused);
   }
+}
+
+/** @brief Register setBusType + writeData configuration commands. */
+void API::Handlers::IOManagerHandler::registerBusConfigCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   {
     QJsonObject props;
     props[Keys::BusType] = QJsonObject{
       {       QStringLiteral("type"),QStringLiteral("integer")                                     },
       {QStringLiteral("description"),
-       QStringLiteral(
-       "Bus type (0=UART, 1=Network, 2=BLE, 3=Audio, 4=Modbus, 5=CAN, 6=USB, 7=HID, 8=Process)")  },
-      {       QStringLiteral("enum"),                        QJsonArray{0, 1, 2, 3, 4, 5, 6, 7, 8}},
-      {    QStringLiteral("default"),                                                            0}
+       QStringLiteral("0=UART (serial port; most embedded boards), "
+       "1=Network (TCP/UDP client/server), "
+       "2=BLE (BLE GATT characteristic; Pro), "
+       "3=Audio (microphone-as-data; Pro), "
+       "4=Modbus (RTU/TCP; Pro), "
+       "5=CAN (CANopen; Pro), "
+       "6=USB (raw USB endpoints via libusb; Pro), "
+       "7=HID (HID via hidapi; Pro), "
+       "8=Process (spawn a subprocess and read its stdout; Pro).")               },
+      {       QStringLiteral("enum"),       QJsonArray{0, 1, 2, 3, 4, 5, 6, 7, 8}},
+      {    QStringLiteral("default"),                                           0}
     };
     QJsonObject schema;
     schema[QStringLiteral("type")]       = QStringLiteral("object");
     schema[QStringLiteral("properties")] = props;
     schema[QStringLiteral("required")]   = QJsonArray{QString(Keys::BusType)};
     registry.registerCommand(
-      QStringLiteral("io.manager.setBusType"),
-      QStringLiteral("Set the bus type (params: busType - 0=UART, 1=Network, 2=BLE)"),
+      QStringLiteral("io.setBusType"),
+      QStringLiteral("Switch the active bus. CRITICAL: this discards the previous "
+                     "bus's runtime config (port, baud rate, host, etc. are NOT "
+                     "carried over). After switching, configure the new bus with "
+                     "its setters before calling io.connect. The project's source "
+                     "list is independent -- this only affects what's currently "
+                     "live."),
       schema,
       &setBusType);
   }
@@ -94,29 +134,55 @@ void API::Handlers::IOManagerHandler::registerCommands()
   {
     QJsonObject props;
     props[QStringLiteral("data")] = QJsonObject{
-      {       QStringLiteral("type"),                                 QStringLiteral("string")},
-      {QStringLiteral("description"), QStringLiteral("Base64-encoded data to write to device")}
+      {       QStringLiteral("type"),QStringLiteral("string")},
+      {QStringLiteral("description"),
+       QStringLiteral("Base64-encoded raw bytes to transmit. The device receives "
+       "the decoded bytes verbatim -- no line ending appended, no "
+       "encoding applied. For text + line ending, use console.send "
+       "instead.")       }
     };
     QJsonObject schema;
     schema[QStringLiteral("type")]       = QStringLiteral("object");
     schema[QStringLiteral("properties")] = props;
     schema[QStringLiteral("required")]   = QJsonArray{QStringLiteral("data")};
     registry.registerCommand(
-      QStringLiteral("io.manager.writeData"),
-      QStringLiteral("Write raw data to device (params: data - base64 encoded)"),
+      QStringLiteral("io.writeData"),
+      QStringLiteral("Transmit raw bytes to the device (params: data - base64 "
+                     "encoded). Hardware-write: the user is shown the exact bytes "
+                     "and approves each call, even when auto-approve is on. "
+                     "Failure modes: not connected (connection_lost), bus busy "
+                     "(bus_busy). Prefer console.send for text protocols."),
       schema,
       &writeData);
   }
+}
 
-  registry.registerCommand(QStringLiteral("io.manager.getStatus"),
-                           QStringLiteral("Get current connection status and configuration"),
-                           emptySchema,
-                           &getStatus);
+/** @brief Register io.getStatus and io.listBuses query commands. */
+void API::Handlers::IOManagerHandler::registerQueryCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("io.manager.getAvailableBuses"),
-                           QStringLiteral("Get list of available bus types"),
-                           emptySchema,
-                           &getAvailableBuses);
+  QJsonObject emptySchema;
+  emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  emptySchema.insert(QStringLiteral("properties"), QJsonObject());
+
+  registry.registerCommand(
+    QStringLiteral("io.getStatus"),
+    QStringLiteral("Returns the current connection state: isConnected, paused, "
+                   "busType + busTypeLabel, configurationOk (true when the active "
+                   "bus has enough config to call io.connect), readOnly/readWrite "
+                   "capability flags. Call this first when the user reports a "
+                   "connection issue."),
+    emptySchema,
+    &getStatus);
+
+  registry.registerCommand(
+    QStringLiteral("io.listBuses"),
+    QStringLiteral("Returns the list of bus types this build supports. Pro builds "
+                   "have all 9; GPL builds only ship UART/Network/BLE/Audio. Use "
+                   "before io.setBusType to confirm the bus is available."),
+    emptySchema,
+    &getAvailableBuses);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -177,7 +243,6 @@ API::CommandResponse API::Handlers::IOManagerHandler::disconnect(const QString& 
 
 /**
  * @brief Pause or resume data streaming
- * @param params Requires "paused" (bool)
  */
 API::CommandResponse API::Handlers::IOManagerHandler::setPaused(const QString& id,
                                                                 const QJsonObject& params)
@@ -197,7 +262,6 @@ API::CommandResponse API::Handlers::IOManagerHandler::setPaused(const QString& i
 
 /**
  * @brief Set the bus type
- * @param params Requires Keys::BusType (int: 0=UART, 1=Network, 2=BLE)
  */
 API::CommandResponse API::Handlers::IOManagerHandler::setBusType(const QString& id,
                                                                  const QJsonObject& params)
@@ -228,7 +292,6 @@ API::CommandResponse API::Handlers::IOManagerHandler::setBusType(const QString& 
 
 /**
  * @brief Write raw data to the connected device
- * @param params Requires "data" (string - base64 encoded)
  */
 API::CommandResponse API::Handlers::IOManagerHandler::writeData(const QString& id,
                                                                 const QJsonObject& params)

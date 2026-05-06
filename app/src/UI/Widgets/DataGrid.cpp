@@ -30,12 +30,6 @@
 
 /**
  * @brief Constructs a DataGrid widget and initializes it with dashboard data.
- *
- * Sets up the static table with dataset titles and initial values,
- * applies default fonts, and connects to the dashboard update signal.
- *
- * @param index Index of the data grid group in the dashboard model.
- * @param parent Optional parent QQuickItem.
  */
 Widgets::DataGrid::DataGrid(const int index, QQuickItem* parent)
   : StaticTable(parent), m_index(index), m_paused(false)
@@ -70,10 +64,6 @@ Widgets::DataGrid::DataGrid(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns whether the DataGrid is paused.
- *
- * When paused, incoming updates are ignored.
- *
- * @return True if updates are paused, false otherwise.
  */
 bool Widgets::DataGrid::paused() const noexcept
 {
@@ -86,11 +76,6 @@ bool Widgets::DataGrid::paused() const noexcept
 
 /**
  * @brief Sets the paused state of the DataGrid.
- *
- * If unpaused, triggers an immediate update.
- * Emits pausedChanged() if the state changes.
- *
- * @param paused New paused state.
  */
 void Widgets::DataGrid::setPaused(const bool paused)
 {
@@ -126,10 +111,6 @@ void Widgets::DataGrid::onFontsChanged()
 
 /**
  * @brief Updates the displayed values in the DataGrid.
- *
- * Reads the latest dataset values from the dashboard and updates the table
- * if there are any changes. Units are appended to values when applicable.
- * Skips execution if paused or if the widget index is invalid.
  */
 void Widgets::DataGrid::updateData()
 {
@@ -157,9 +138,12 @@ void Widgets::DataGrid::updateData()
     // Guard against stale row count (issue #307)
     if (rows.count() <= rowIndex || rows[rowIndex].count() <= valueIndex) {
       QList<QStringList> r;
+      // first-build / row-mismatch path; not per-frame
+      // code-verify off
       r.append({tr("Title"), tr("Value")});
       for (const auto& ds : group.datasets)
         r.append(getRow(ds));
+      // code-verify on
 
       setData(r);
       return;
@@ -184,12 +168,6 @@ void Widgets::DataGrid::updateData()
 
 /**
  * @brief Generates a table row from a dataset.
- *
- * Constructs a QStringList containing the dataset's title and value.
- * Units are appended to the value if present.
- *
- * @param dataset The dataset from which to generate the row.
- * @return A QStringList with two entries: title and value.
  */
 QStringList Widgets::DataGrid::getRow(const DataModel::Dataset& dataset)
 {

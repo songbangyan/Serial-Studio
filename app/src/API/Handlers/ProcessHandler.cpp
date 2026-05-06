@@ -30,7 +30,7 @@ void API::Handlers::ProcessHandler::registerCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
-  registry.registerCommand(QStringLiteral("io.driver.process.setMode"),
+  registry.registerCommand(QStringLiteral("io.process.setMode"),
                            QStringLiteral("Set driver mode (params: mode - 0=Launch, 1=NamedPipe)"),
                            makeSchema({
                              {QStringLiteral("mode"),
@@ -40,7 +40,7 @@ void API::Handlers::ProcessHandler::registerCommands()
                            &setMode);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.process.setExecutable"),
+    QStringLiteral("io.process.setExecutable"),
     QStringLiteral("Set executable path for Launch mode (params: executable)"),
     makeSchema({
       {QStringLiteral("executable"),
@@ -50,7 +50,7 @@ void API::Handlers::ProcessHandler::registerCommands()
     &setExecutable);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.process.setArguments"),
+    QStringLiteral("io.process.setArguments"),
     QStringLiteral("Set command-line arguments for Launch mode (params: arguments)"),
     makeSchema({
       {QStringLiteral("arguments"),
@@ -60,7 +60,7 @@ void API::Handlers::ProcessHandler::registerCommands()
     &setArguments);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.process.setWorkingDir"),
+    QStringLiteral("io.process.setWorkingDir"),
     QStringLiteral("Set working directory for Launch mode (params: workingDir)"),
     makeSchema({
       {QStringLiteral("workingDir"),
@@ -70,7 +70,7 @@ void API::Handlers::ProcessHandler::registerCommands()
     &setWorkingDir);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.process.setPipePath"),
+    QStringLiteral("io.process.setPipePath"),
     QStringLiteral("Set named pipe / FIFO path for NamedPipe mode (params: pipePath)"),
     makeSchema({
       {QStringLiteral("pipePath"),
@@ -79,12 +79,12 @@ void API::Handlers::ProcessHandler::registerCommands()
   }),
     &setPipePath);
 
-  registry.registerCommand(QStringLiteral("io.driver.process.getRunningProcesses"),
+  registry.registerCommand(QStringLiteral("io.process.listRunning"),
                            QStringLiteral("Refresh and return the list of running processes"),
                            empty,
                            &getRunningProcesses);
 
-  registry.registerCommand(QStringLiteral("io.driver.process.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.process.getConfig"),
                            QStringLiteral("Get complete Process driver configuration"),
                            empty,
                            &getConfiguration);
@@ -96,7 +96,6 @@ void API::Handlers::ProcessHandler::registerCommands()
 
 /**
  * @brief Set the driver mode.
- * @param params Requires "mode" (int: 0=Launch, 1=NamedPipe)
  */
 API::CommandResponse API::Handlers::ProcessHandler::setMode(const QString& id,
                                                             const QJsonObject& params)
@@ -123,7 +122,6 @@ API::CommandResponse API::Handlers::ProcessHandler::setMode(const QString& id,
 
 /**
  * @brief Set the executable path for Launch mode.
- * @param params Requires "executable" (string, absolute path)
  */
 API::CommandResponse API::Handlers::ProcessHandler::setExecutable(const QString& id,
                                                                   const QJsonObject& params)
@@ -148,7 +146,6 @@ API::CommandResponse API::Handlers::ProcessHandler::setExecutable(const QString&
 
 /**
  * @brief Set the command-line arguments for Launch mode.
- * @param params Requires "arguments" (string, shell-style argument string)
  */
 API::CommandResponse API::Handlers::ProcessHandler::setArguments(const QString& id,
                                                                  const QJsonObject& params)
@@ -168,7 +165,6 @@ API::CommandResponse API::Handlers::ProcessHandler::setArguments(const QString& 
 
 /**
  * @brief Set the working directory for Launch mode.
- * @param params Requires "workingDir" (string, absolute directory path)
  */
 API::CommandResponse API::Handlers::ProcessHandler::setWorkingDir(const QString& id,
                                                                   const QJsonObject& params)
@@ -188,7 +184,6 @@ API::CommandResponse API::Handlers::ProcessHandler::setWorkingDir(const QString&
 
 /**
  * @brief Set the named pipe / FIFO path for NamedPipe mode.
- * @param params Requires "pipePath" (string)
  */
 API::CommandResponse API::Handlers::ProcessHandler::setPipePath(const QString& id,
                                                                 const QJsonObject& params)
@@ -212,9 +207,6 @@ API::CommandResponse API::Handlers::ProcessHandler::setPipePath(const QString& i
 
 /**
  * @brief Refresh and return the list of running processes.
- *
- * Calls refreshProcessList() and returns the updated list -- useful for
- * picking a process from which to derive a named-pipe path.
  */
 API::CommandResponse API::Handlers::ProcessHandler::getRunningProcesses(const QString& id,
                                                                         const QJsonObject& params)

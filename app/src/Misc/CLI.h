@@ -130,11 +130,6 @@ struct CliOptions {
 
 /**
  * @brief Parses and applies the command-line interface for Serial Studio.
- *
- * Owns the QCommandLineParser, all CLI options, and every "apply X to runtime"
- * helper. main() instantiates one CLI, calls @c process() before constructing
- * dependent subsystems, then calls the apply* methods after the QML interface
- * is up.
  */
 class CLI {
 public:

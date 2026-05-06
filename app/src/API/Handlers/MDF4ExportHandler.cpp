@@ -50,7 +50,7 @@ void API::Handlers::MDF4ExportHandler::registerCommands()
     req.append("enabled");
     setEnabledSchema.insert("required", req);
   }
-  registry.registerCommand(QStringLiteral("mdf4.export.setEnabled"),
+  registry.registerCommand(QStringLiteral("mdf4Export.setEnabled"),
                            QStringLiteral("Enable or disable MDF4 export"),
                            setEnabledSchema,
                            &setEnabled);
@@ -58,7 +58,7 @@ void API::Handlers::MDF4ExportHandler::registerCommands()
   QJsonObject closeSchema;
   closeSchema.insert("type", "object");
   closeSchema.insert("properties", QJsonObject());
-  registry.registerCommand(QStringLiteral("mdf4.export.close"),
+  registry.registerCommand(QStringLiteral("mdf4Export.close"),
                            QStringLiteral("Close the current MDF4 file"),
                            closeSchema,
                            &close);
@@ -67,7 +67,7 @@ void API::Handlers::MDF4ExportHandler::registerCommands()
   QJsonObject getStatusSchema;
   getStatusSchema.insert("type", "object");
   getStatusSchema.insert("properties", QJsonObject());
-  registry.registerCommand(QStringLiteral("mdf4.export.getStatus"),
+  registry.registerCommand(QStringLiteral("mdf4Export.getStatus"),
                            QStringLiteral("Get MDF4 export status"),
                            getStatusSchema,
                            &getStatus);
@@ -79,7 +79,6 @@ void API::Handlers::MDF4ExportHandler::registerCommands()
 
 /**
  * @brief Enable or disable MDF4 export
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::MDF4ExportHandler::setEnabled(const QString& id,
                                                                   const QJsonObject& params)

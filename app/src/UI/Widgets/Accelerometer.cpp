@@ -30,8 +30,6 @@
 
 /**
  * @brief Constructs an Accelerometer widget.
- * @param index The index of the accelerometer in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::Accelerometer::Accelerometer(const int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -95,8 +93,6 @@ double Widgets::Accelerometer::g() const
 
 /**
  * @brief Returns the pitch angle in degrees.
- *
- * Computed as atan2(x, sqrt(y^2 + z^2)).
  */
 double Widgets::Accelerometer::pitch() const
 {
@@ -105,8 +101,6 @@ double Widgets::Accelerometer::pitch() const
 
 /**
  * @brief Returns the roll angle in degrees.
- *
- * Computed as atan2(y, sqrt(x^2 + z^2)).
  */
 double Widgets::Accelerometer::roll() const
 {
@@ -151,9 +145,6 @@ double Widgets::Accelerometer::maxG() const
 
 /**
  * @brief Returns whether the input values are already in G-force units.
- *
- * When false (default), input values are assumed to be in m/s^2 and are
- * divided by 9.81 to convert to G.
  */
 bool Widgets::Accelerometer::inputInG() const
 {
@@ -175,10 +166,6 @@ void Widgets::Accelerometer::resetPeakG()
 
 /**
  * @brief Updates the accelerometer data from the Dashboard.
- *
- * Reads X, Y, Z axes from group datasets, applies unit conversion,
- * computes all derived values (magnitude, theta, pitch, roll, total G),
- * and tracks peak G-force.
  */
 void Widgets::Accelerometer::updateData()
 {
@@ -287,8 +274,6 @@ void Widgets::Accelerometer::updateData()
 
 /**
  * @brief Sets the maximum G value for the polar plot range.
- *
- * @param maxG The new maximum G value (must be >= 0.5).
  */
 void Widgets::Accelerometer::setMaxG(const double maxG)
 {
@@ -301,11 +286,6 @@ void Widgets::Accelerometer::setMaxG(const double maxG)
 
 /**
  * @brief Enables or disables the input-in-G mode.
- *
- * When toggled, the peak tracker is reset since the unit change
- * invalidates the previous peak value.
- *
- * @param enabled True if input values are already in G-force units.
  */
 void Widgets::Accelerometer::setInputInG(const bool enabled)
 {

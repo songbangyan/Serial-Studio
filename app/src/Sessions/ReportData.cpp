@@ -34,9 +34,6 @@
 
 /**
  * @brief Computes duration between two ISO8601 timestamps in milliseconds.
- *
- * Returns 0 when either string cannot be parsed -- callers render the value
- * as "--" so a parse failure degrades gracefully.
  */
 static qint64 computeDurationMs(const QString& startedIso, const QString& endedIso)
 {

@@ -347,7 +347,6 @@ void Licensing::LemonSqueezy::openCustomerPortal()
 
 /**
  * @brief Updates the license key stored locally.
- * @param license New license key to store (UUID format expected).
  */
 void Licensing::LemonSqueezy::setLicense(const QString& license)
 {
@@ -425,9 +424,7 @@ void Licensing::LemonSqueezy::writeSettings()
 }
 
 /**
- * @brief Clears all in-memory licensing state and optionally the stored
- *        license key.
- * @param clearLicense If true, also removes the license key from memory.
+ * @brief Clears all in-memory licensing state and optionally the stored license key.
  */
 void Licensing::LemonSqueezy::clearLicenseCache(const bool clearLicense)
 {
@@ -649,7 +646,6 @@ void Licensing::LemonSqueezy::applyValidatedLicense(const QJsonObject& json,
 
 /**
  * @brief Processes the response from the license validation request.
- * @param data Raw JSON payload returned by Lemon Squeezy API.
  */
 void Licensing::LemonSqueezy::readValidationResponse(const QByteArray& data,
                                                      const bool cachedResponse)
@@ -756,7 +752,6 @@ bool Licensing::LemonSqueezy::checkActivationRules(const QJsonObject& json)
 
 /**
  * @brief Processes the response from the license activation request.
- * @param data Raw JSON payload returned by Lemon Squeezy API.
  */
 void Licensing::LemonSqueezy::readActivationResponse(const QByteArray& data)
 {
@@ -789,7 +784,6 @@ void Licensing::LemonSqueezy::readActivationResponse(const QByteArray& data)
 
 /**
  * @brief Processes the response from the license deactivation request.
- * @param data Raw JSON payload returned by Lemon Squeezy API.
  */
 void Licensing::LemonSqueezy::readDeactivationResponse(const QByteArray& data)
 {

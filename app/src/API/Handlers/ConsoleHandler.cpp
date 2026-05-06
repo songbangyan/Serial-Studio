@@ -35,6 +35,14 @@
  */
 void API::Handlers::ConsoleHandler::registerCommands()
 {
+  registerDisplayCommands();
+  registerFontAndChecksumCommands();
+  registerIoAndExportCommands();
+}
+
+/** @brief Register display + data-formatting commands. */
+void API::Handlers::ConsoleHandler::registerDisplayCommands()
+{
   auto& registry = CommandRegistry::instance();
 
   const auto enabledSchema = API::makeSchema({
@@ -42,9 +50,7 @@ void API::Handlers::ConsoleHandler::registerCommands()
      QStringLiteral("boolean"),
      QStringLiteral("Whether to enable the feature")}
   });
-  const auto empty         = API::emptySchema();
 
-  // Display / data formatting
   registry.registerCommand(QStringLiteral("console.setEcho"),
                            QStringLiteral("Enable/disable echo"),
                            enabledSchema,
@@ -77,8 +83,13 @@ void API::Handlers::ConsoleHandler::registerCommands()
                               QStringLiteral("Line ending: 0=None, 1=LF, 2=CR, 3=CRLF")}
   }),
                            &setLineEnding);
+}
 
-  // Font / checksum
+/** @brief Register font, checksum, VT100/ANSI, and text-encoding commands. */
+void API::Handlers::ConsoleHandler::registerFontAndChecksumCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
   registry.registerCommand(QStringLiteral("console.setFontFamily"),
                            QStringLiteral("Set font family"),
                            API::makeSchema({
@@ -103,8 +114,50 @@ void API::Handlers::ConsoleHandler::registerCommands()
                               QStringLiteral("Checksum method index")}
   }),
                            &setChecksumMethod);
+  registry.registerCommand(
+    QStringLiteral("console.setVt100Emulation"),
+    QStringLiteral("Toggle VT100 / xterm escape sequence interpretation"),
+    API::makeSchema({
+      {QStringLiteral("enabled"),
+       QStringLiteral("boolean"),
+       QStringLiteral("True to interpret cursor / clear / scroll codes as a terminal "
+                      "emulator; false to display them as text")}
+  }),
+    &setVt100Emulation);
+  registry.registerCommand(
+    QStringLiteral("console.setAnsiColorsEnabled"),
+    QStringLiteral("Toggle ANSI / xterm color sequences in console output"),
+    API::makeSchema({
+      {QStringLiteral("enabled"),
+       QStringLiteral("boolean"),
+       QStringLiteral("True to honor SGR color escape sequences, false to display them "
+                      "as text")}
+  }),
+    &setAnsiColorsEnabled);
+  registry.registerCommand(
+    QStringLiteral("console.setEncoding"),
+    QStringLiteral("Set the text encoding used to decode incoming bytes "
+                   "(params: encoding -- index into console.getConfig.textEncodings)"),
+    API::makeSchema({
+      {QStringLiteral("encoding"),
+       QStringLiteral("integer"),
+       QStringLiteral("Text encoding index (UTF-8, UTF-16, ASCII, ...)")}
+  }),
+    &setEncoding);
+}
 
-  // Lifecycle / IO
+/** @brief Register lifecycle, send, export, and getConfig commands. */
+void API::Handlers::ConsoleHandler::registerIoAndExportCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  const auto enabledSchema = API::makeSchema({
+    {QStringLiteral("enabled"),
+     QStringLiteral("boolean"),
+     QStringLiteral("Whether to enable the feature")}
+  });
+  const auto empty         = API::emptySchema();
+
   registry.registerCommand(
     QStringLiteral("console.clear"), QStringLiteral("Clear console"), empty, &clear);
   registry.registerCommand(QStringLiteral("console.send"),
@@ -116,20 +169,19 @@ void API::Handlers::ConsoleHandler::registerCommands()
   }),
                            &send);
 
-  // Export + queries
-  registry.registerCommand(QStringLiteral("console.export.setEnabled"),
+  registry.registerCommand(QStringLiteral("consoleExport.setEnabled"),
                            QStringLiteral("Enable/disable console export"),
                            enabledSchema,
                            &exportSetEnabled);
-  registry.registerCommand(QStringLiteral("console.export.close"),
+  registry.registerCommand(QStringLiteral("consoleExport.close"),
                            QStringLiteral("Close console export file"),
                            empty,
                            &exportClose);
-  registry.registerCommand(QStringLiteral("console.export.getStatus"),
+  registry.registerCommand(QStringLiteral("consoleExport.getStatus"),
                            QStringLiteral("Get console export status"),
                            empty,
                            &exportGetStatus);
-  registry.registerCommand(QStringLiteral("console.getConfiguration"),
+  registry.registerCommand(QStringLiteral("console.getConfig"),
                            QStringLiteral("Get all console settings"),
                            empty,
                            &getConfiguration);
@@ -141,7 +193,6 @@ void API::Handlers::ConsoleHandler::registerCommands()
 
 /**
  * @brief Enable/disable echo
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setEcho(const QString& id,
                                                             const QJsonObject& params)
@@ -161,7 +212,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setEcho(const QString& id,
 
 /**
  * @brief Show/hide timestamps
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setShowTimestamp(const QString& id,
                                                                      const QJsonObject& params)
@@ -181,7 +231,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setShowTimestamp(const QStri
 
 /**
  * @brief Set display mode
- * @param params Requires "modeIndex" (int: 0=PlainText, 1=Hex)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setDisplayMode(const QString& id,
                                                                    const QJsonObject& params)
@@ -211,7 +260,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setDisplayMode(const QString
 
 /**
  * @brief Set data mode
- * @param params Requires "modeIndex" (int: 0=UTF8, 1=Hex)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setDataMode(const QString& id,
                                                                 const QJsonObject& params)
@@ -241,7 +289,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setDataMode(const QString& i
 
 /**
  * @brief Set line ending
- * @param params Requires "endingIndex" (int: 0=None, 1=LF, 2=CR, 3=CRLF)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setLineEnding(const QString& id,
                                                                   const QJsonObject& params)
@@ -286,7 +333,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setLineEnding(const QString&
 
 /**
  * @brief Set font family
- * @param params Requires "fontFamily" (string)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setFontFamily(const QString& id,
                                                                   const QJsonObject& params)
@@ -311,7 +357,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setFontFamily(const QString&
 
 /**
  * @brief Set font size
- * @param params Requires "fontSize" (int)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setFontSize(const QString& id,
                                                                 const QJsonObject& params)
@@ -336,7 +381,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::setFontSize(const QString& i
 
 /**
  * @brief Set checksum method
- * @param params Requires "methodIndex" (int)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::setChecksumMethod(const QString& id,
                                                                       const QJsonObject& params)
@@ -367,6 +411,70 @@ API::CommandResponse API::Handlers::ConsoleHandler::setChecksumMethod(const QStr
 }
 
 /**
+ * @brief Toggle VT100 / xterm escape sequence interpretation
+ */
+API::CommandResponse API::Handlers::ConsoleHandler::setVt100Emulation(const QString& id,
+                                                                      const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("enabled")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
+
+  const bool enabled = params.value(QStringLiteral("enabled")).toBool();
+  Console::Handler::instance().setVt100Emulation(enabled);
+
+  QJsonObject result;
+  result[QStringLiteral("enabled")] = enabled;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Toggle ANSI color sequence handling
+ */
+API::CommandResponse API::Handlers::ConsoleHandler::setAnsiColorsEnabled(const QString& id,
+                                                                         const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("enabled")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
+
+  const bool enabled = params.value(QStringLiteral("enabled")).toBool();
+  Console::Handler::instance().setAnsiColorsEnabled(enabled);
+
+  QJsonObject result;
+  result[QStringLiteral("enabled")] = enabled;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Set the text encoding used to decode incoming bytes
+ */
+API::CommandResponse API::Handlers::ConsoleHandler::setEncoding(const QString& id,
+                                                                const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("encoding")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: encoding"));
+
+  const int encoding  = params.value(QStringLiteral("encoding")).toInt();
+  const auto& choices = Console::Handler::instance().textEncodings();
+  if (encoding < 0 || encoding >= choices.count())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QString(QStringLiteral("Invalid encoding: %1. Valid range: 0-%2"))
+        .arg(encoding)
+        .arg(choices.count() - 1));
+
+  Console::Handler::instance().setEncoding(encoding);
+
+  QJsonObject result;
+  result[QStringLiteral("encoding")] = encoding;
+  result[QStringLiteral("name")]     = choices.at(encoding);
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
  * @brief Clear console
  */
 API::CommandResponse API::Handlers::ConsoleHandler::clear(const QString& id,
@@ -383,7 +491,6 @@ API::CommandResponse API::Handlers::ConsoleHandler::clear(const QString& id,
 
 /**
  * @brief Send data to device
- * @param params Requires "data" (string)
  */
 API::CommandResponse API::Handlers::ConsoleHandler::send(const QString& id,
                                                          const QJsonObject& params)

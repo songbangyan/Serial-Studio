@@ -65,7 +65,7 @@ def _create_project_with_datasets(api_client, dataset_count: int):
     time.sleep(0.2)
 
     for i in range(dataset_count):
-        api_client.command("project.dataset.add", {"options": 1})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
         time.sleep(0.1)
 
 
@@ -107,7 +107,7 @@ def _connect_device(api_client, device_simulator):
     api_client.configure_frame_parser(
         start_sequence="/*", end_sequence="*/", operation_mode=0, frame_detection=1
     )
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.2)
     api_client.connect_device()
     assert device_simulator.wait_for_connection(timeout=5.0), (

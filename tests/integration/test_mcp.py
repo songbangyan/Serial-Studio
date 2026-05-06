@@ -306,24 +306,24 @@ class TestToolsList:
     def test_known_commands_present(self, mcp):
         names = {t["name"] for t in mcp.tools_list()}
         expected = {
-            "io.manager.connect",
-            "io.manager.disconnect",
-            "io.manager.getStatus",
-            "io.manager.setBusType",
-            "io.manager.writeData",
-            "io.driver.uart.setBaudRate",
-            "io.driver.uart.setPortIndex",
-            "io.driver.network.setRemoteAddress",
-            "io.driver.network.setTcpPort",
-            "project.file.open",
+            "io.connect",
+            "io.disconnect",
+            "io.getStatus",
+            "io.setBusType",
+            "io.writeData",
+            "io.uart.setBaudRate",
+            "io.uart.setPortIndex",
+            "io.network.setRemoteAddress",
+            "io.network.setTcpPort",
+            "project.open",
             "project.setTitle",
-            "csv.export.setEnabled",
+            "csvExport.setEnabled",
         }
         missing = expected - names
         assert not missing, f"Expected tools not found in tools/list: {missing}"
 
     def test_uart_set_baud_rate_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setBaudRate")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setBaudRate")
         schema = tool["inputSchema"]
         props = schema.get("properties", {})
         assert "baudRate" in props, "setBaudRate schema must have baudRate property"
@@ -334,48 +334,48 @@ class TestToolsList:
         assert schema.get("required") == ["baudRate"]
 
     def test_uart_set_port_index_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setPortIndex")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setPortIndex")
         props = tool["inputSchema"].get("properties", {})
         assert "portIndex" in props
         assert props["portIndex"]["type"] == "integer"
         assert props["portIndex"]["minimum"] == 0
 
     def test_uart_set_data_bits_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setDataBits")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setDataBits")
         props = tool["inputSchema"]["properties"]
         assert props["dataBitsIndex"]["enum"] == [0, 1, 2, 3]
         assert props["dataBitsIndex"]["default"] == 3
 
     def test_uart_set_parity_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setParity")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setParity")
         props = tool["inputSchema"]["properties"]
         assert props["parityIndex"]["enum"] == [0, 1, 2, 3, 4]
 
     def test_uart_set_stop_bits_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setStopBits")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setStopBits")
         props = tool["inputSchema"]["properties"]
         assert props["stopBitsIndex"]["enum"] == [0, 1, 2]
 
     def test_uart_set_flow_control_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setFlowControl")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setFlowControl")
         props = tool["inputSchema"]["properties"]
         assert props["flowControlIndex"]["enum"] == [0, 1, 2]
 
     def test_uart_set_dtr_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setDtrEnabled")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setDtrEnabled")
         props = tool["inputSchema"]["properties"]
         assert props["dtrEnabled"]["type"] == "boolean"
 
     def test_uart_set_auto_reconnect_schema(self, mcp):
         tool = next(
-            t for t in mcp.tools_list() if t["name"] == "io.driver.uart.setAutoReconnect"
+            t for t in mcp.tools_list() if t["name"] == "io.uart.setAutoReconnect"
         )
         props = tool["inputSchema"]["properties"]
         assert props["autoReconnect"]["type"] == "boolean"
 
     def test_network_set_remote_address_schema(self, mcp):
         tool = next(
-            t for t in mcp.tools_list() if t["name"] == "io.driver.network.setRemoteAddress"
+            t for t in mcp.tools_list() if t["name"] == "io.network.setRemoteAddress"
         )
         props = tool["inputSchema"]["properties"]
         assert "address" in props
@@ -384,9 +384,9 @@ class TestToolsList:
 
     def test_network_port_schemas(self, mcp):
         port_commands = [
-            "io.driver.network.setTcpPort",
-            "io.driver.network.setUdpLocalPort",
-            "io.driver.network.setUdpRemotePort",
+            "io.network.setTcpPort",
+            "io.network.setUdpLocalPort",
+            "io.network.setUdpRemotePort",
         ]
         tools_by_name = {t["name"]: t for t in mcp.tools_list()}
         for cmd in port_commands:
@@ -398,13 +398,13 @@ class TestToolsList:
 
     def test_network_socket_type_schema(self, mcp):
         tool = next(
-            t for t in mcp.tools_list() if t["name"] == "io.driver.network.setSocketType"
+            t for t in mcp.tools_list() if t["name"] == "io.network.setSocketType"
         )
         props = tool["inputSchema"]["properties"]
         assert props["socketTypeIndex"]["enum"] == [0, 1]
 
     def test_io_manager_set_bus_type_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.manager.setBusType")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.setBusType")
         props = tool["inputSchema"]["properties"]
         assert "busType" in props
         assert props["busType"]["type"] == "integer"
@@ -412,18 +412,18 @@ class TestToolsList:
         assert 0 in bus_enum and 1 in bus_enum
 
     def test_io_manager_write_data_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.manager.writeData")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.writeData")
         props = tool["inputSchema"]["properties"]
         assert "data" in props
         assert props["data"]["type"] == "string"
 
     def test_io_manager_set_paused_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.manager.setPaused")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "io.setPaused")
         props = tool["inputSchema"]["properties"]
         assert props["paused"]["type"] == "boolean"
 
     def test_project_file_open_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "project.file.open")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "project.open")
         props = tool["inputSchema"]["properties"]
         assert "filePath" in props
         assert props["filePath"]["type"] == "string"
@@ -435,7 +435,7 @@ class TestToolsList:
         assert props["title"]["type"] == "string"
 
     def test_csv_export_set_enabled_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "csv.export.setEnabled")
+        tool = next(t for t in mcp.tools_list() if t["name"] == "csvExport.setEnabled")
         props = tool["inputSchema"]["properties"]
         assert props["enabled"]["type"] == "boolean"
 
@@ -454,36 +454,36 @@ class TestToolsList:
 class TestToolsCallReadOnly:
 
     def test_get_io_status(self, mcp):
-        result = mcp.tools_call("io.manager.getStatus")
+        result = mcp.tools_call("io.getStatus")
         content = result["content"][0]["text"]
         data = json.loads(content)
         assert "isConnected" in data
 
     def test_get_uart_configuration(self, mcp):
-        result = mcp.tools_call("io.driver.uart.getConfiguration")
+        result = mcp.tools_call("io.uart.getConfig")
         data = json.loads(result["content"][0]["text"])
         assert "baudRate" in data
         assert "portIndex" in data
 
     def test_get_network_configuration(self, mcp):
-        result = mcp.tools_call("io.driver.network.getConfiguration")
+        result = mcp.tools_call("io.network.getConfig")
         data = json.loads(result["content"][0]["text"])
         assert "remoteAddress" in data
         assert "tcpPort" in data
 
     def test_get_uart_port_list(self, mcp):
-        result = mcp.tools_call("io.driver.uart.getPortList")
+        result = mcp.tools_call("io.uart.listPorts")
         data = json.loads(result["content"][0]["text"])
         assert "portList" in data
 
     def test_get_uart_baud_rate_list(self, mcp):
-        result = mcp.tools_call("io.driver.uart.getBaudRateList")
+        result = mcp.tools_call("io.uart.listBaudRates")
         data = json.loads(result["content"][0]["text"])
         assert "baudRateList" in data
         assert 115200 in data["baudRateList"]
 
     def test_get_csv_export_status(self, mcp):
-        result = mcp.tools_call("csv.export.getStatus")
+        result = mcp.tools_call("csvExport.getStatus")
         data = json.loads(result["content"][0]["text"])
         assert "enabled" in data
 
@@ -493,7 +493,7 @@ class TestToolsCallReadOnly:
         assert "title" in data
 
     def test_get_available_buses(self, mcp):
-        result = mcp.tools_call("io.manager.getAvailableBuses")
+        result = mcp.tools_call("io.listBuses")
         data = json.loads(result["content"][0]["text"])
         assert "buses" in data
         assert len(data["buses"]) > 0
@@ -506,84 +506,84 @@ class TestToolsCallReadOnly:
 class TestToolsCallWrite:
 
     def test_set_baud_rate_valid(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setBaudRate", {"baudRate": 9600})
+        result = mcp.tools_call("io.uart.setBaudRate", {"baudRate": 9600})
         data = json.loads(result["content"][0]["text"])
         assert data.get("baudRate") == 9600
 
     def test_set_baud_rate_roundtrip(self, mcp):
         """Set baud rate and confirm via getConfiguration."""
-        mcp.tools_call("io.driver.uart.setBaudRate", {"baudRate": 115200})
+        mcp.tools_call("io.uart.setBaudRate", {"baudRate": 115200})
         cfg = json.loads(
-            mcp.tools_call("io.driver.uart.getConfiguration")["content"][0]["text"]
+            mcp.tools_call("io.uart.getConfig")["content"][0]["text"]
         )
         assert cfg["baudRate"] == 115200
 
     def test_set_parity_valid(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setParity", {"parityIndex": 0})
+        result = mcp.tools_call("io.uart.setParity", {"parityIndex": 0})
         data = json.loads(result["content"][0]["text"])
         assert "parityIndex" in data
 
     def test_set_data_bits_valid(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setDataBits", {"dataBitsIndex": 3})
+        result = mcp.tools_call("io.uart.setDataBits", {"dataBitsIndex": 3})
         data = json.loads(result["content"][0]["text"])
         assert "dataBitsIndex" in data
 
     def test_set_stop_bits_valid(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setStopBits", {"stopBitsIndex": 0})
+        result = mcp.tools_call("io.uart.setStopBits", {"stopBitsIndex": 0})
         data = json.loads(result["content"][0]["text"])
         assert "stopBitsIndex" in data
 
     def test_set_flow_control_valid(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setFlowControl", {"flowControlIndex": 0})
+        result = mcp.tools_call("io.uart.setFlowControl", {"flowControlIndex": 0})
         data = json.loads(result["content"][0]["text"])
         assert "flowControlIndex" in data
 
     def test_set_dtr_enabled(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setDtrEnabled", {"dtrEnabled": False})
+        result = mcp.tools_call("io.uart.setDtrEnabled", {"dtrEnabled": False})
         data = json.loads(result["content"][0]["text"])
         assert data.get("dtrEnabled") is False
 
     def test_set_auto_reconnect(self, mcp):
-        result = mcp.tools_call("io.driver.uart.setAutoReconnect", {"autoReconnect": False})
+        result = mcp.tools_call("io.uart.setAutoReconnect", {"autoReconnect": False})
         data = json.loads(result["content"][0]["text"])
         assert data.get("autoReconnect") is False
 
     def test_set_network_address(self, mcp):
         result = mcp.tools_call(
-            "io.driver.network.setRemoteAddress", {"address": "192.168.1.100"}
+            "io.network.setRemoteAddress", {"address": "192.168.1.100"}
         )
         data = json.loads(result["content"][0]["text"])
         assert data.get("address") == "192.168.1.100"
 
     def test_set_tcp_port(self, mcp):
-        result = mcp.tools_call("io.driver.network.setTcpPort", {"port": 9000})
+        result = mcp.tools_call("io.network.setTcpPort", {"port": 9000})
         data = json.loads(result["content"][0]["text"])
         assert data.get("tcpPort") == 9000
 
     def test_set_socket_type(self, mcp):
-        result = mcp.tools_call("io.driver.network.setSocketType", {"socketTypeIndex": 0})
+        result = mcp.tools_call("io.network.setSocketType", {"socketTypeIndex": 0})
         data = json.loads(result["content"][0]["text"])
         assert "socketTypeIndex" in data
 
     def test_set_bus_type_uart(self, mcp):
-        result = mcp.tools_call("io.manager.setBusType", {"busType": 0})
+        result = mcp.tools_call("io.setBusType", {"busType": 0})
         data = json.loads(result["content"][0]["text"])
         assert data.get("busType") == 0
 
     def test_set_paused_false(self, mcp):
-        result = mcp.tools_call("io.manager.setPaused", {"paused": False})
+        result = mcp.tools_call("io.setPaused", {"paused": False})
         data = json.loads(result["content"][0]["text"])
         assert data.get("paused") is False
 
     def test_csv_export_toggle(self, mcp):
-        mcp.tools_call("csv.export.setEnabled", {"enabled": False})
+        mcp.tools_call("csvExport.setEnabled", {"enabled": False})
         status = json.loads(
-            mcp.tools_call("csv.export.getStatus")["content"][0]["text"]
+            mcp.tools_call("csvExport.getStatus")["content"][0]["text"]
         )
         assert status["enabled"] is False
 
     def test_project_set_title(self, mcp):
-        mcp.tools_call("project.file.new")
+        mcp.tools_call("project.new")
         result = mcp.tools_call("project.setTitle", {"title": "MCP Test Project"})
         data = json.loads(result["content"][0]["text"])
         assert "MCP Test Project" in data.get("title", "")
@@ -607,33 +607,33 @@ class TestToolsCallErrors:
     def test_set_baud_rate_missing_param(self, mcp):
         """Calling setBaudRate with no arguments must fail."""
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.uart.setBaudRate", {})
+            mcp.tools_call("io.uart.setBaudRate", {})
 
     def test_set_baud_rate_wrong_type(self, mcp):
         """Passing baudRate as a string must fail (handler validates type)."""
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.uart.setBaudRate", {"baudRate": "fast"})
+            mcp.tools_call("io.uart.setBaudRate", {"baudRate": "fast"})
 
     def test_set_port_index_negative(self, mcp):
         """Negative portIndex is out of range and must fail."""
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.uart.setPortIndex", {"portIndex": -1})
+            mcp.tools_call("io.uart.setPortIndex", {"portIndex": -1})
 
     def test_set_tcp_port_out_of_range(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.network.setTcpPort", {"port": 99999})
+            mcp.tools_call("io.network.setTcpPort", {"port": 99999})
 
     def test_set_tcp_port_zero(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.network.setTcpPort", {"port": 0})
+            mcp.tools_call("io.network.setTcpPort", {"port": 0})
 
     def test_set_bus_type_invalid(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("io.manager.setBusType", {"busType": 999})
+            mcp.tools_call("io.setBusType", {"busType": 999})
 
     def test_project_file_open_missing_param(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("project.file.open", {})
+            mcp.tools_call("project.open", {})
 
     def test_project_set_title_empty(self, mcp):
         with pytest.raises(MCPError):
@@ -641,23 +641,23 @@ class TestToolsCallErrors:
 
     def test_connect_without_valid_config_fails(self, mcp):
         """connect on an unconfigured port must fail gracefully."""
-        mcp.tools_call("io.manager.setBusType", {"busType": 0})
+        mcp.tools_call("io.setBusType", {"busType": 0})
         with pytest.raises(MCPError):
-            mcp.tools_call("io.manager.connect")
+            mcp.tools_call("io.connect")
 
     def test_disconnect_when_not_connected_fails(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("io.manager.disconnect")
+            mcp.tools_call("io.disconnect")
 
     def test_write_data_when_not_connected_fails(self, mcp):
         import base64
         data = base64.b64encode(b"hello").decode()
         with pytest.raises(MCPError):
-            mcp.tools_call("io.manager.writeData", {"data": data})
+            mcp.tools_call("io.writeData", {"data": data})
 
     def test_network_address_empty_fails(self, mcp):
         with pytest.raises(MCPError):
-            mcp.tools_call("io.driver.network.setRemoteAddress", {"address": ""})
+            mcp.tools_call("io.network.setRemoteAddress", {"address": ""})
 
 
 # ---------------------------------------------------------------------------
@@ -778,9 +778,9 @@ class TestMCPBatch:
         fresh_mcp.initialize()
         requests = [
             {"jsonrpc": "2.0", "id": 1001, "method": "tools/call",
-             "params": {"name": "io.manager.getStatus", "arguments": {}}},
+             "params": {"name": "io.getStatus", "arguments": {}}},
             {"jsonrpc": "2.0", "id": 1002, "method": "tools/call",
-             "params": {"name": "csv.export.getStatus", "arguments": {}}},
+             "params": {"name": "csvExport.getStatus", "arguments": {}}},
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()
@@ -793,9 +793,9 @@ class TestMCPBatch:
         fresh_mcp.initialize()
         requests = [
             {"jsonrpc": "2.0", "id": 2001, "method": "tools/call",
-             "params": {"name": "io.manager.getStatus", "arguments": {}}},
+             "params": {"name": "io.getStatus", "arguments": {}}},
             {"jsonrpc": "2.0", "id": 2002, "method": "tools/call",
-             "params": {"name": "io.driver.uart.getConfiguration", "arguments": {}}},
+             "params": {"name": "io.uart.getConfig", "arguments": {}}},
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()
@@ -815,7 +815,7 @@ class TestMCPBatch:
         requests = [
             {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}},
             {"jsonrpc": "2.0", "id": 3001, "method": "tools/call",
-             "params": {"name": "io.manager.getStatus", "arguments": {}}},
+             "params": {"name": "io.getStatus", "arguments": {}}},
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()

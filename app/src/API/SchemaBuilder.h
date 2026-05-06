@@ -31,10 +31,6 @@
 namespace API {
 /**
  * @brief One JSON-Schema property descriptor: name, JSON type, human description.
- *
- * Optional fields (`enumValues`, `minimum`, `maximum`, `defaultValue`) are emitted
- * only when set, so existing 3-field brace-init `{name, type, description}` still
- * compiles and produces the same schema as before.
  */
 struct SchemaProp {
   QString name;
@@ -44,6 +40,7 @@ struct SchemaProp {
   QJsonValue minimum      = {};
   QJsonValue maximum      = {};
   QJsonValue defaultValue = {};
+  QString itemsType       = {};
 };
 
 /**
@@ -111,15 +108,18 @@ struct SchemaProp {
   if (!p.defaultValue.isUndefined() && !p.defaultValue.isNull())
     prop.insert(QStringLiteral("default"), p.defaultValue);
 
+  if (p.type == QStringLiteral("array")) {
+    QJsonObject items;
+    items.insert(QStringLiteral("type"),
+                 p.itemsType.isEmpty() ? QStringLiteral("string") : p.itemsType);
+    prop.insert(QStringLiteral("items"), items);
+  }
+
   return prop;
 }
 
 /**
  * @brief Build a JSON-Schema object from a flat list of properties.
- *
- * Every property in @p props is inserted into "properties" and listed
- * in "required" -- this matches the all-required convention used by the
- * existing handlers.
  */
 [[nodiscard]] inline QJsonObject makeSchema(std::initializer_list<SchemaProp> props)
 {

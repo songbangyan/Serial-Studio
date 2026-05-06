@@ -122,7 +122,7 @@ class SerialStudioClient:
         Send a command and return the result.
 
         Args:
-            command: Command name (e.g., "io.manager.getStatus")
+            command: Command name (e.g., "io.getStatus")
             params: Optional parameters dict
             timeout: Optional timeout override
 
@@ -239,7 +239,7 @@ class SerialStudioClient:
         if bus_type.lower() not in bus_map:
             raise ValueError(f"Invalid bus type: {bus_type}")
 
-        self.command("io.manager.setBusType", {"busType": bus_map[bus_type.lower()]})
+        self.command("io.setBusType", {"busType": bus_map[bus_type.lower()]})
 
     def configure_network(
         self,
@@ -251,53 +251,53 @@ class SerialStudioClient:
         socket_type_map = {"tcp": 0, "udp": 1}
 
         commands = [
-            {"command": "io.manager.setBusType", "params": {"busType": 1}},
-            {"command": "io.driver.network.setRemoteAddress", "params": {"address": host}},
+            {"command": "io.setBusType", "params": {"busType": 1}},
+            {"command": "io.network.setRemoteAddress", "params": {"address": host}},
             {
-                "command": "io.driver.network.setSocketType",
+                "command": "io.network.setSocketType",
                 "params": {"socketTypeIndex": socket_type_map[socket_type.lower()]},
             },
         ]
 
         if socket_type.lower() == "tcp":
-            commands.append({"command": "io.driver.network.setTcpPort", "params": {"port": port}})
+            commands.append({"command": "io.network.setTcpPort", "params": {"port": port}})
         else:
-            commands.append({"command": "io.driver.network.setUdpRemotePort", "params": {"port": port}})
+            commands.append({"command": "io.network.setUdpRemotePort", "params": {"port": port}})
 
         self.batch(commands)
 
     def connect_device(self) -> None:
         """Connect to the configured device."""
-        self.command("io.manager.connect")
+        self.command("io.connect")
 
     def disconnect_device(self) -> None:
         """Disconnect from the device."""
-        self.command("io.manager.disconnect")
+        self.command("io.disconnect")
 
     def is_connected(self) -> bool:
         """Check if device is connected."""
-        status = self.command("io.manager.getStatus")
+        status = self.command("io.getStatus")
         return status.get("isConnected", False)
 
     def enable_csv_export(self) -> None:
         """Enable CSV export."""
-        self.command("csv.export.setEnabled", {"enabled": True})
+        self.command("csvExport.setEnabled", {"enabled": True})
 
     def disable_csv_export(self) -> None:
         """Disable CSV export."""
-        self.command("csv.export.setEnabled", {"enabled": False})
+        self.command("csvExport.setEnabled", {"enabled": False})
 
     def get_csv_export_status(self) -> dict:
         """Get CSV export status."""
-        return self.command("csv.export.getStatus")
+        return self.command("csvExport.getStatus")
 
     def load_project(self, file_path: str) -> None:
         """Load a project file."""
-        self.command("project.file.open", {"filePath": file_path})
+        self.command("project.open", {"filePath": file_path})
 
     def create_new_project(self, title: Optional[str] = None) -> None:
         """Create a new empty project."""
-        self.command("project.file.new")
+        self.command("project.new")
         if title is None:
             title = f"Test Project {time.time_ns()}"
         try:
@@ -318,7 +318,7 @@ class SerialStudioClient:
                  Note: This is NOT the data processing rate.
                  Serial Studio can process data at much higher rates.
         """
-        self.command("dashboard.setFPS", {"fps": fps})
+        self.command("dashboard.setFps", {"fps": fps})
 
     def set_dashboard_points(self, points: int) -> None:
         """
@@ -391,7 +391,7 @@ class SerialStudioClient:
         Returns:
             Result dict with loaded project info
         """
-        return self.command("project.loadFromJSON", {"config": config})
+        return self.command("project.loadJson", {"config": config})
 
     def configure_frame_parser(
         self,
@@ -430,7 +430,7 @@ class SerialStudioClient:
         if not params:
             return {}
 
-        return self.command("project.frameParser.configure", params)
+        return self.command("project.frameParser.update", params)
 
     @staticmethod
     def _normalize_checksum_algorithm(checksum_algorithm: Optional[str]) -> Optional[str]:
@@ -513,7 +513,7 @@ class SerialStudioClient:
             Dict with {"sourceId": int, "codeLength": int}.
         """
         return self.command(
-            "project.parser.setCode",
+            "project.frameParser.setCode",
             {"code": code, "language": language, "sourceId": source_id},
         )
 
@@ -582,7 +582,7 @@ class SerialStudioClient:
 
     def source_get_configuration(self, source_id: int) -> dict:
         """Return full Source struct including connectionSettings."""
-        return self.command("project.source.getConfiguration", {"sourceId": source_id})
+        return self.command("project.source.getConfig", {"sourceId": source_id})
 
     def source_configure(self, source_id: int, settings: dict) -> None:
         """
@@ -598,7 +598,7 @@ class SerialStudioClient:
             settings: Dict of driver property key/value pairs, e.g.
                       {"address": "127.0.0.1", "tcpPort": 9000, "socketTypeIndex": 0}
         """
-        self.command("project.source.configure",
+        self.command("project.source.setProperties",
                      {"sourceId": source_id, "settings": settings})
 
     def source_set_frame_parser_code(self, source_id: int, code: str) -> None:
@@ -610,3 +610,131 @@ class SerialStudioClient:
         """Return per-source JavaScript frame parser code."""
         result = self.command("project.source.getFrameParserCode", {"sourceId": source_id})
         return result.get("code", "")
+
+    # ------------------------------------------------------------------
+    # Project structure helpers (stateless / id-based, v3.3)
+    # ------------------------------------------------------------------
+
+    def list_groups(self) -> list:
+        """Return all groups (each carries groupId, title, datasetCount, datasetSummary)."""
+        return self.command("project.group.list").get("groups", [])
+
+    def list_datasets(self) -> list:
+        """Return all datasets across all groups, each carrying groupId+datasetId."""
+        return self.command("project.dataset.list").get("datasets", [])
+
+    def list_actions(self) -> list:
+        """Return all project actions, each carrying actionId."""
+        return self.command("project.action.list").get("actions", [])
+
+    def add_group(self, title: str = "Group", widget_type: int = 0) -> int:
+        """
+        Add a group and return its groupId.
+
+        project.group.add doesn't echo the new id; ids are sequential indexes
+        so the new group is the last entry in project.group.list.
+        """
+        self.command(
+            "project.group.add", {"title": title, "widgetType": widget_type}
+        )
+        groups = self.list_groups()
+        return groups[-1]["groupId"] if groups else -1
+
+    def update_group(self, group_id: int, **fields) -> dict:
+        """PATCH a group (title, widget, columns, sourceId, painterCode, ...)."""
+        params = {"groupId": group_id, **fields}
+        return self.command("project.group.update", params)
+
+    def delete_group(self, group_id: int) -> None:
+        self.command("project.group.delete", {"groupId": group_id})
+
+    def duplicate_group(self, group_id: int) -> dict:
+        return self.command("project.group.duplicate", {"groupId": group_id})
+
+    def add_dataset(self, group_id: int, options: int = 0) -> dict:
+        """Add a dataset to a group; returns the new dataset record."""
+        return self.command(
+            "project.dataset.add", {"groupId": group_id, "options": options}
+        )
+
+    def update_dataset(self, group_id: int, dataset_id: int, **fields) -> dict:
+        """PATCH a dataset (title, units, widget, ranges, transformCode, ...)."""
+        params = {"groupId": group_id, "datasetId": dataset_id, **fields}
+        return self.command("project.dataset.update", params)
+
+    def delete_dataset(self, group_id: int, dataset_id: int) -> None:
+        self.command(
+            "project.dataset.delete",
+            {"groupId": group_id, "datasetId": dataset_id},
+        )
+
+    def duplicate_dataset(self, group_id: int, dataset_id: int) -> dict:
+        return self.command(
+            "project.dataset.duplicate",
+            {"groupId": group_id, "datasetId": dataset_id},
+        )
+
+    def set_dataset_option(
+        self, group_id: int, dataset_id: int, option: int, enabled: bool
+    ) -> None:
+        self.command(
+            "project.dataset.setOption",
+            {
+                "groupId": group_id,
+                "datasetId": dataset_id,
+                "option": option,
+                "enabled": enabled,
+            },
+        )
+
+    def add_action(self) -> int:
+        """
+        Add an action and return its actionId.
+
+        project.action.add takes no params and doesn't echo the new id; ids
+        are sequential indexes so the new action is the last entry.
+        Use update_action(aid, title=...) to populate fields.
+        """
+        self.command("project.action.add")
+        actions = self.list_actions()
+        return actions[-1]["actionId"] if actions else -1
+
+    def update_action(self, action_id: int, **fields) -> dict:
+        params = {"actionId": action_id, **fields}
+        return self.command("project.action.update", params)
+
+    def delete_action(self, action_id: int) -> None:
+        self.command("project.action.delete", {"actionId": action_id})
+
+    def duplicate_action(self, action_id: int) -> dict:
+        return self.command("project.action.duplicate", {"actionId": action_id})
+
+    def add_output_widget(self, group_id: int, widget_type: int) -> dict:
+        """Add an output widget. type: 0=Button, 1=Slider, 2=Toggle, 3=TextField, 4=Knob."""
+        return self.command(
+            "project.outputWidget.add", {"groupId": group_id, "type": widget_type}
+        )
+
+    def update_output_widget(self, group_id: int, widget_id: int, **fields) -> dict:
+        params = {"groupId": group_id, "widgetId": widget_id, **fields}
+        return self.command("project.outputWidget.update", params)
+
+    def delete_output_widget(self, group_id: int, widget_id: int) -> None:
+        self.command(
+            "project.outputWidget.delete",
+            {"groupId": group_id, "widgetId": widget_id},
+        )
+
+    def duplicate_output_widget(self, group_id: int, widget_id: int) -> dict:
+        return self.command(
+            "project.outputWidget.duplicate",
+            {"groupId": group_id, "widgetId": widget_id},
+        )
+
+    def validate_project(self) -> dict:
+        """Walk the active project and report info/warning/error issues."""
+        return self.command("project.validate")
+
+    def activate_project(self) -> dict:
+        """Push the in-memory project into the FrameBuilder pipeline."""
+        return self.command("project.activate")

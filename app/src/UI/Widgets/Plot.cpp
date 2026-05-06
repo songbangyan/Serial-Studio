@@ -34,8 +34,6 @@
 
 /**
  * @brief Constructs a Plot widget.
- * @param index The index of the plot in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::Plot::Plot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -93,7 +91,6 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns the size of the down-sampled X axis data.
- * @return Size of down-sampled X axis data.
  */
 int Widgets::Plot::dataW() const noexcept
 {
@@ -102,7 +99,6 @@ int Widgets::Plot::dataW() const noexcept
 
 /**
  * @brief Returns the size of the down-sampled Y axis data.
- * @return Size of down-sampled Y axis data.
  */
 int Widgets::Plot::dataH() const noexcept
 {
@@ -115,7 +111,6 @@ int Widgets::Plot::dataH() const noexcept
 
 /**
  * @brief Returns the minimum X-axis value.
- * @return The minimum X-axis value.
  */
 double Widgets::Plot::minX() const noexcept
 {
@@ -124,7 +119,6 @@ double Widgets::Plot::minX() const noexcept
 
 /**
  * @brief Returns the maximum X-axis value.
- * @return The maximum X-axis value.
  */
 double Widgets::Plot::maxX() const noexcept
 {
@@ -133,7 +127,6 @@ double Widgets::Plot::maxX() const noexcept
 
 /**
  * @brief Returns the minimum Y-axis value.
- * @return The minimum Y-axis value.
  */
 double Widgets::Plot::minY() const noexcept
 {
@@ -142,7 +135,6 @@ double Widgets::Plot::minY() const noexcept
 
 /**
  * @brief Returns the maximum Y-axis value.
- * @return The maximum Y-axis value.
  */
 double Widgets::Plot::maxY() const noexcept
 {
@@ -155,7 +147,6 @@ double Widgets::Plot::maxY() const noexcept
 
 /**
  * @brief Checks whether plot data updates are currently active.
- * @return @c true if updating is not paused, otherwise @c false.
  */
 bool Widgets::Plot::running() const noexcept
 {
@@ -168,7 +159,6 @@ bool Widgets::Plot::running() const noexcept
 
 /**
  * @brief Returns the Y-axis label.
- * @return The Y-axis label.
  */
 const QString& Widgets::Plot::yLabel() const noexcept
 {
@@ -177,7 +167,6 @@ const QString& Widgets::Plot::yLabel() const noexcept
 
 /**
  * @brief Returns the X-axis label.
- * @return The X-axis label.
  */
 const QString& Widgets::Plot::xLabel() const noexcept
 {
@@ -190,7 +179,6 @@ const QString& Widgets::Plot::xLabel() const noexcept
 
 /**
  * @brief Draws the data on the given QLineSeries.
- * @param series The QLineSeries to draw the data on.
  */
 void Widgets::Plot::draw(QXYSeries* series)
 {
@@ -208,7 +196,6 @@ void Widgets::Plot::draw(QXYSeries* series)
 
 /**
  * @brief Updates the size of the down-sampled X axis data.
- * @param width The new size of the down-sampled axis data.
  */
 void Widgets::Plot::setDataW(const int width)
 {
@@ -222,7 +209,6 @@ void Widgets::Plot::setDataW(const int width)
 
 /**
  * @brief Updates the size of the down-sampled Y axis data.
- * @param height The new size of the down-sampled axis data.
  */
 void Widgets::Plot::setDataH(const int height)
 {
@@ -236,7 +222,6 @@ void Widgets::Plot::setDataH(const int height)
 
 /**
  * @brief Enables or disables plot data updates.
- * @param enabled Set to @c true to allow updates, or @c false to pause them.
  */
 void Widgets::Plot::setRunning(const bool enabled)
 {
@@ -329,15 +314,6 @@ void Widgets::Plot::updateRange()
 
 /**
  * @brief Calculates the auto-scale range for both X and Y axes of the plot.
- *
- * This function determines the minimum and maximum values for the X and Y axes
- * of the plot based on the associated dataset. If the X-axis data source is set
- * to a specific dataset, its range is computed; otherwise, the range defaults
- * to `[0, points]`. For the Y-axis, the range is always determined from the
- * dataset values.
- *
- * @note The function emits the `rangeChanged()` signal if either the X or Y
- *       range is updated.
  */
 void Widgets::Plot::calculateAutoScaleRange()
 {
@@ -385,26 +361,6 @@ void Widgets::Plot::calculateAutoScaleRange()
 
 /**
  * @brief Computes the minimum and maximum values for a given axis of the plot.
- *
- * This templated function calculates the minimum and maximum values for a plot
- * axis (either X or Y) using the provided dataset and an extractor function. If
- * the dataset has no valid range or is empty, a fallback range `[0, 1]` or an
- * adjusted range is applied.
- *
- * @tparam Extractor A callable object (e.g., lambda) used to extract values
- *                   from data points.
- *
- * @param pltMin Reference to the variable storing the minimum value.
- * @param pltMax Reference to the variable storing the maximum value.
- * @param dataset The dataset to compute the range from.
- * @param extractor A function used to extract axis-specific values (e.g.,
- *                  `p.y()` or `p.x()`).
- *
- * @return `true` if the computed range differs from the previous range, `false`
- * otherwise.
- *
- * @note If the dataset has the same minimum and maximum values, the range is
- * adjusted to provide a better display.
  */
 template<typename Extractor>
 bool Widgets::Plot::computeMinMaxValues(double& min,

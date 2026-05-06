@@ -71,11 +71,11 @@ def test_create_project_with_groups(api_client, device_simulator, clean_state):
     assert status["groupCount"] >= 1, "Should have added a group"
 
     # Add datasets to the group
-    api_client.command("project.dataset.add", {"options": 0})
+    api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
     time.sleep(0.1)
-    api_client.command("project.dataset.add", {"options": 0})
+    api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
     time.sleep(0.1)
-    api_client.command("project.dataset.add", {"options": 0})
+    api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
     time.sleep(0.1)
 
     status = api_client.get_project_status()
@@ -87,7 +87,7 @@ function parse(frame) {
     return frame.split(',');
 }
 """
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     api_client.configure_frame_parser(
@@ -103,7 +103,7 @@ function parse(frame) {
     time.sleep(0.1)
 
     # Load the project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
 
     assert result["loaded"], "Should have loaded into FrameBuilder"
@@ -224,7 +224,7 @@ def test_create_project_via_api(api_client, device_simulator, clean_state):
 
     # Add datasets to the group
     for _ in range(5):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.05)
 
     # Verify project structure
@@ -233,12 +233,12 @@ def test_create_project_via_api(api_client, device_simulator, clean_state):
     assert status["datasetCount"] >= 5, "Project should have at least 5 datasets"
 
     # Get groups list
-    groups = api_client.command("project.groups.list")
+    groups = api_client.command("project.group.list")
     assert "groups" in groups, "Should return groups list"
     assert len(groups["groups"]) > 0, "Should have at least one group"
 
     # Get datasets list
-    datasets = api_client.command("project.datasets.list")
+    datasets = api_client.command("project.dataset.list")
     assert "datasets" in datasets, "Should return datasets list"
 
     # Set JavaScript parser
@@ -247,7 +247,7 @@ function parse(frame) {
     return frame.split(',');
 }
 """
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     api_client.configure_frame_parser(
@@ -263,7 +263,7 @@ function parse(frame) {
     time.sleep(0.1)
 
     # Load into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -316,11 +316,11 @@ function parse(frame) {
 """
 
     # Set the parser code
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     # Get the parser code back
-    result = api_client.command("project.parser.getCode")
+    result = api_client.command("project.frameParser.getCode")
     assert "code" in result, "Should return parser code"
     assert len(result["code"]) > 0, "Parser code should not be empty"
 
@@ -349,7 +349,7 @@ def test_project_with_actions(api_client, clean_state):
     time.sleep(0.2)
 
     # Get actions list
-    actions = api_client.command("project.actions.list")
+    actions = api_client.command("project.action.list")
     assert "actions" in actions, "Should return actions list"
 
 

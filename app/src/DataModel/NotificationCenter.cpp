@@ -476,10 +476,6 @@ void DataModel::NotificationCenter::appendEvent(Event&& e)
 
 /**
  * @brief Resolves positional notify* arguments into (channel, title, subtitle).
- *
- * `baseIdx` is the 1-based index of the first string argument. Arg-count
- * overloads (relative to baseIdx): 1 -> (title); 2 -> (title, subtitle);
- * 3 -> (channel, title, subtitle). The default channel is "Dashboard".
  */
 static void resolveLuaArgs(
   lua_State* L, int baseIdx, QString& channel, QString& title, QString& subtitle)

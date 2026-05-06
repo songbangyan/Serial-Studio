@@ -35,9 +35,6 @@
 namespace DataModel {
 /**
  * @brief Configuration parameters for frame consumers.
- *
- * This struct defines the tuning parameters for the threaded frame consumer
- * architecture. These values balance throughput, latency, and resource usage.
  */
 struct FrameConsumerConfig {
   size_t queueCapacity  = 8192;
@@ -46,9 +43,8 @@ struct FrameConsumerConfig {
 };
 
 /**
- * @class FrameConsumerWorkerBase
- * @brief Non-template Q_OBJECT base for frame consumer workers. Owns the
- *        monotonic-ns clock shared by CSV, MDF4 and Sessions export workers.
+ * @brief Non-template Q_OBJECT base for frame consumer workers. Owns the monotonic-ns clock shared
+ * by CSV, MDF4 and Sessions export workers.
  */
 class FrameConsumerWorkerBase : public QObject {
   Q_OBJECT
@@ -74,22 +70,14 @@ private:
 };
 
 /**
- * @class FrameConsumerWorker
- * @brief Threaded worker that drains a lock-free queue of T into
- *        `processItems()` in batches. Subclasses implement `processItems()`,
- *        `closeResources()`, `isResourceOpen()`.
- *
- * @tparam T The type of items to process.
+ * @brief Threaded worker that drains a lock-free queue of T into `processItems()` in batches.
+ * Subclasses implement `processItems()`, `closeResources()`, `isResourceOpen()`.
  */
 template<typename T>
 class FrameConsumerWorker : public FrameConsumerWorkerBase {
 public:
   /**
    * @brief Constructs a frame consumer worker.
-   *
-   * @param queue Pointer to the lock-free queue shared with main thread
-   * @param enabled Pointer to atomic flag controlling processing
-   * @param queueSize Pointer to atomic counter tracking queue depth
    */
   FrameConsumerWorker(moodycamel::ReaderWriterQueue<T>* queue,
                       std::atomic<bool>* enabled,
@@ -103,9 +91,6 @@ public:
 
   /**
    * @brief Processes all pending frames from the queue.
-   *
-   * This slot drains the queue into a local buffer, updates the queue size
-   * counter, and delegates processing to the derived class via processItems().
    */
   void processData() override
   {
@@ -187,20 +172,14 @@ private:
 };
 
 /**
- * @class FrameConsumer
- * @brief Main-thread facade that owns a `FrameConsumerWorker` on a dedicated
- *        QThread. Provides a lock-free `enqueueData()` hotpath with periodic +
- *        threshold-based flushing.
- *
- * @tparam T The type of items to process.
+ * @brief Main-thread facade that owns a `FrameConsumerWorker` on a dedicated QThread. Provides a
+ * lock-free `enqueueData()` hotpath with periodic + threshold-based flushing.
  */
 template<typename T>
 class FrameConsumer : public QObject {
 public:
   /**
    * @brief Constructs a frame consumer with the given configuration.
-   *
-   * @param config Configuration parameters for queue and timer
    */
   explicit FrameConsumer(const FrameConsumerConfig& config = {})
     : m_config(config)
@@ -249,8 +228,6 @@ public:
 
   /**
    * @brief Checks if the consumer is currently enabled.
-   *
-   * @return true if processing is enabled, false if paused
    */
   [[nodiscard]] bool consumerEnabled() const
   {
@@ -259,8 +236,6 @@ public:
 
   /**
    * @brief Enables or disables frame processing.
-   *
-   * @param enabled true to enable processing, false to pause
    */
   void setConsumerEnabled(const bool enabled)
   {
@@ -270,17 +245,11 @@ public:
 protected:
   /**
    * @brief Factory method to create the worker object.
-   *
-   * @return Pointer to newly created worker
    */
   virtual FrameConsumerWorkerBase* createWorker() = 0;
 
   /**
    * @brief Enqueues a data item for processing on the worker thread.
-   *
-   * This method is lock-free and safe to call from the main-thread hotpath.
-   *
-   * @param item The item to enqueue
    */
   void enqueueData(const T& item)
   {

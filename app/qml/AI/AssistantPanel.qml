@@ -249,8 +249,11 @@ Widgets.SmartDialog {
                     }
                   }
                   onClicked: {
-                    composer.text = modelData
-                    composer.forceActiveFocus()
+                    if (Cpp_AI_Assistant.busy)
+                      return
+
+                    composer.clear()
+                    Cpp_AI_Assistant.sendMessage(modelData)
                   }
                 }
               }
@@ -259,9 +262,11 @@ Widgets.SmartDialog {
         }
 
         //
-        // Active state: framed message list
+        // Active state: framed message transcript
         //
         Rectangle {
+          id: chatFrame
+
           radius: 2
           border.width: 1
           visible: !root.conversationEmpty
@@ -269,12 +274,41 @@ Widgets.SmartDialog {
           color: Cpp_ThemeManager.colors["groupbox_background"]
           border.color: Cpp_ThemeManager.colors["groupbox_border"]
 
-          MessageList {
-            id: messageList
+          //
+          // Edge fade height; matches the visual rhythm in Hardware.qml.
+          //
+          readonly property int kFadeHeight: 24
+          readonly property color kBgColor: Cpp_ThemeManager.colors["groupbox_background"]
+
+          Loader {
+            id: messageLoader
 
             anchors.margins: 8
+            asynchronous: false
             anchors.fill: parent
-            conversation: Cpp_AI_Assistant.conversation
+
+            Component.onCompleted: {
+              messageLoader.setSource(
+                Cpp_HasWebEngine
+                  ? "qrc:/serial-studio.com/gui/qml/AI/MessageWebView.qml"
+                  : "qrc:/serial-studio.com/gui/qml/AI/MessageList.qml",
+                Cpp_HasWebEngine
+                  ? {}
+                  : { "conversation": Cpp_AI_Assistant.conversation })
+            }
+
+            onLoaded: {
+              if (Cpp_HasWebEngine && messageLoader.item
+                  && messageLoader.item.chipClicked) {
+                messageLoader.item.chipClicked.connect(function(text) {
+                  if (Cpp_AI_Assistant.busy)
+                    return
+
+                  composer.clear()
+                  Cpp_AI_Assistant.sendMessage(text)
+                })
+              }
+            }
           }
         }
       }
@@ -357,8 +391,10 @@ Widgets.SmartDialog {
             placeholderText: qsTr("Ask Serial Studio anything…")
             placeholderTextColor: Qt.darker(Cpp_ThemeManager.colors["text"], 1.5)
             onAccepted: {
-              if (!Cpp_AI_Assistant.busy && composer.text.length > 0)
-                sendButton.clicked()
+              if (!Cpp_AI_Assistant.busy && composer.text.length > 0) {
+                Cpp_AI_Assistant.sendMessage(composer.text)
+                composer.clear()
+              }
             }
           }
 
@@ -389,30 +425,40 @@ Widgets.SmartDialog {
           }
 
           //
-          // Send <-> Cancel: round prominent action button on the far right
+          // Send / Cancel button
           //
-          Item {
+          ToolButton {
             id: sendButton
 
+            padding: 0
             Layout.preferredWidth: 32
             Layout.preferredHeight: 32
+            display: AbstractButton.IconOnly
             Layout.alignment: Qt.AlignVCenter
 
             readonly property bool canActivate:
               Cpp_AI_Assistant.busy
               || (!Cpp_AI_Assistant.busy && composer.text.length > 0)
 
-            signal clicked()
-            onClicked: {
-              if (Cpp_AI_Assistant.busy) {
-                Cpp_AI_Assistant.cancel()
-              } else {
-                Cpp_AI_Assistant.sendMessage(composer.text)
-                composer.clear()
-              }
-            }
+            hoverEnabled: true
+            enabled: canActivate
 
-            Rectangle {
+            icon.width: 14
+            icon.height: 14
+            icon.source: Cpp_AI_Assistant.busy
+                         ? "qrc:/icons/buttons/cancel.svg"
+                         : "qrc:/icons/buttons/send.svg"
+            icon.color: canActivate
+                        ? Cpp_ThemeManager.colors["highlighted_text"]
+                        : Cpp_ThemeManager.colors["button_text"]
+
+            ToolTip.text: Cpp_AI_Assistant.busy
+                          ? qsTr("Stop generating")
+                          : qsTr("Send message (Enter)")
+            ToolTip.visible: hovered
+            ToolTip.delay: 400
+
+            background: Rectangle {
               anchors.fill: parent
               radius: width / 2
               color: sendButton.canActivate
@@ -424,32 +470,13 @@ Widgets.SmartDialog {
               Behavior on opacity { NumberAnimation { duration: 150 } }
             }
 
-            Image {
-              anchors.centerIn: parent
-              width: 14
-              height: 14
-              fillMode: Image.PreserveAspectFit
-              source: Cpp_AI_Assistant.busy
-                      ? "qrc:/icons/buttons/cancel.svg"
-                      : "qrc:/icons/buttons/send.svg"
-              sourceSize.width: 14
-              sourceSize.height: 14
-            }
-
-            MouseArea {
-              anchors.fill: parent
-              cursorShape: sendButton.canActivate
-                         ? Qt.PointingHandCursor
-                         : Qt.ArrowCursor
-              enabled: sendButton.canActivate
-              onClicked: sendButton.clicked()
-
-              ToolTip.text: Cpp_AI_Assistant.busy
-                            ? qsTr("Stop generating")
-                            : qsTr("Send message (Enter)")
-              ToolTip.visible: containsMouse
-              ToolTip.delay: 400
-              hoverEnabled: true
+            onClicked: {
+              if (Cpp_AI_Assistant.busy) {
+                Cpp_AI_Assistant.cancel()
+              } else if (composer.text.length > 0) {
+                Cpp_AI_Assistant.sendMessage(composer.text)
+                composer.clear()
+              }
             }
           }
         }
@@ -470,7 +497,6 @@ Widgets.SmartDialog {
           ToolTip.visible: hovered
           Layout.preferredHeight: 26
           ToolTip.text: qsTr("Provider")
-          Layout.preferredWidth: implicitWidth
           model: Cpp_AI_Assistant.providerNames
           currentIndex: Cpp_AI_Assistant.currentProvider
           font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
@@ -503,7 +529,6 @@ Widgets.SmartDialog {
           ToolTip.delay: 400
           ToolTip.visible: hovered
           Layout.preferredHeight: 26
-          Layout.preferredWidth: implicitWidth
           ToolTip.text: qsTr("Model selection")
           font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
           onActivated: {
@@ -540,10 +565,33 @@ Widgets.SmartDialog {
         }
 
         //
+        // Auto-approve edits: skips per-call confirmation for write-class
+        // tools. Blocked tools stay blocked.
+        //
+        CheckBox {
+          id: autoApproveCheck
+
+          Layout.preferredHeight: 26
+          ToolTip.delay: 400
+          ToolTip.visible: hovered
+          font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
+          ToolTip.text: qsTr("Run editing actions without asking each time. "
+                             + "Blocked actions stay blocked.")
+          text: qsTr("Auto-approve edits")
+          checked: Cpp_AI_Assistant.autoApproveEdits
+          onToggled: Cpp_AI_Assistant.autoApproveEdits = checked
+        }
+
+        //
         // Spacer right-aligning the key-manager button + status pill
         //
-        Item { Layout.fillWidth: true }
+        Item {
+          Layout.fillWidth: true
+        }
 
+        //
+        //
+        //
         ToolButton {
           display: AbstractButton.IconOnly
           Layout.preferredWidth: 26

@@ -40,7 +40,7 @@ void API::Handlers::HIDHandler::registerCommands()
     QJsonArray req;
     req.append("deviceIndex");
     schema.insert("required", req);
-    registry.registerCommand(QStringLiteral("io.driver.hid.setDeviceIndex"),
+    registry.registerCommand(QStringLiteral("io.hid.setDeviceIndex"),
                              QStringLiteral("Select HID device by index (params: deviceIndex)"),
                              schema,
                              &setDeviceIndex);
@@ -51,7 +51,7 @@ void API::Handlers::HIDHandler::registerCommands()
     QJsonObject emptySchema;
     emptySchema.insert("type", "object");
     emptySchema.insert("properties", QJsonObject());
-    registry.registerCommand(QStringLiteral("io.driver.hid.getDeviceList"),
+    registry.registerCommand(QStringLiteral("io.hid.listDevices"),
                              QStringLiteral("List available HID devices"),
                              emptySchema,
                              &getDeviceList);
@@ -62,7 +62,7 @@ void API::Handlers::HIDHandler::registerCommands()
     QJsonObject emptySchema;
     emptySchema.insert("type", "object");
     emptySchema.insert("properties", QJsonObject());
-    registry.registerCommand(QStringLiteral("io.driver.hid.getConfiguration"),
+    registry.registerCommand(QStringLiteral("io.hid.getConfig"),
                              QStringLiteral("Get complete HID driver configuration"),
                              emptySchema,
                              &getConfiguration);
@@ -75,7 +75,6 @@ void API::Handlers::HIDHandler::registerCommands()
 
 /**
  * @brief Select HID device by list index.
- * @param params Requires "deviceIndex" (int, 0 = placeholder "Select Device")
  */
 API::CommandResponse API::Handlers::HIDHandler::setDeviceIndex(const QString& id,
                                                                const QJsonObject& params)

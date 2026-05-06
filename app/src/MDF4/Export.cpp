@@ -129,11 +129,6 @@ void MDF4::ExportWorker::writeFrameGroups(const DataModel::Frame& frame,
 
 /**
  * @brief Processes a batch of MDF4 frames
- *
- * Writes frames to MDF4 file using the mdflib writer.
- * If no file is open, a new file is created before writing.
- *
- * @param items Vector of timestamped frames to process.
  */
 void MDF4::ExportWorker::processItems(const std::vector<DataModel::TimestampedFramePtr>& items)
 {
@@ -478,15 +473,13 @@ MDF4::Export::Export()
 }
 
 /**
- * Close file & finish write-operations before destroying the class.
+ * @brief Closes the file and finishes write operations before destroying the class.
  */
 MDF4::Export::~Export() = default;
 
 #ifdef BUILD_COMMERCIAL
 /**
  * @brief Creates the MDF4 export worker instance.
- *
- * @return Pointer to newly created ExportWorker.
  */
 DataModel::FrameConsumerWorkerBase* MDF4::Export::createWorker()
 {
@@ -504,7 +497,7 @@ MDF4::Export& MDF4::Export::instance()
 }
 
 /**
- * Returns true if the MDF4 output file is open.
+ * @brief Returns true if the MDF4 output file is open.
  */
 bool MDF4::Export::isOpen() const
 {
@@ -516,7 +509,7 @@ bool MDF4::Export::isOpen() const
 }
 
 /**
- * Returns true if the MDF4 export module is enabled.
+ * @brief Returns true if the MDF4 export module is enabled.
  */
 bool MDF4::Export::exportEnabled() const
 {
@@ -528,10 +521,7 @@ bool MDF4::Export::exportEnabled() const
 }
 
 /**
- * Write all remaining data & close the output file.
- *
- * Flushes any remaining data in the queue before closing to prevent
- * creating small trailing files.
+ * @brief Write all remaining data & close the output file.
  */
 void MDF4::Export::closeFile()
 {
@@ -542,8 +532,7 @@ void MDF4::Export::closeFile()
 }
 
 /**
- * Configures the signal/slot connections with the modules of the application
- * that this module depends upon.
+ * @brief Configures signal/slot connections with the modules this exporter depends on.
  */
 void MDF4::Export::setupExternalConnections()
 {
@@ -578,9 +567,6 @@ void MDF4::Export::setupExternalConnections()
 
 /**
  * @brief Toggles whether export-enabled changes get written to QSettings.
- *
- * Set false at startup for shortcut/runtime-mode launches so that toggling
- * export from a shortcut never bleeds back into the user's main app settings.
  */
 void MDF4::Export::setSettingsPersistent(const bool persistent)
 {
@@ -588,7 +574,7 @@ void MDF4::Export::setSettingsPersistent(const bool persistent)
 }
 
 /**
- * Enables or disables data export.
+ * @brief Enables or disables data export.
  */
 void MDF4::Export::setExportEnabled(const bool enabled)
 {
@@ -633,7 +619,7 @@ void MDF4::Export::setExportEnabled(const bool enabled)
 }
 
 /**
- * Receives timestamped frame data and enqueues it for export
+ * @brief Receives timestamped frame data and enqueues it for export.
  */
 void MDF4::Export::hotpathTxFrame(const DataModel::TimestampedFramePtr& frame)
 {
@@ -649,7 +635,7 @@ void MDF4::Export::hotpathTxFrame(const DataModel::TimestampedFramePtr& frame)
 
 #ifdef BUILD_COMMERCIAL
 /**
- * Called when the worker's file open state changes
+ * @brief Called when the worker's file open state changes.
  */
 void MDF4::Export::onWorkerOpenChanged()
 {

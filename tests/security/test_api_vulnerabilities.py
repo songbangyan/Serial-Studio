@@ -178,7 +178,7 @@ def test_command_injection(tester):
 
     with SerialStudioClient() as client:
         # Test 1: Path traversal in file operations
-        print("  - Testing path traversal in project.file.open...")
+        print("  - Testing path traversal in project.open...")
         path_traversal_payloads = [
             "../../../etc/passwd",
             "..\\..\\..\\windows\\system32\\config\\sam",
@@ -190,7 +190,7 @@ def test_command_injection(tester):
 
         for payload in path_traversal_payloads:
             try:
-                client.command("project.file.open", {"filePath": payload})
+                client.command("project.open", {"filePath": payload})
                 tester.log_vulnerability(
                     "CRITICAL",
                     "Path Traversal",
@@ -218,7 +218,7 @@ def test_command_injection(tester):
                 # Try injecting into various commands
                 client.command("project.setTitle", {"title": payload})
                 client.command(
-                    "io.driver.network.setRemoteAddress", {"address": payload}
+                    "io.network.setRemoteAddress", {"address": payload}
                 )
             except APIError:
                 pass  # Expected to fail
@@ -344,7 +344,7 @@ def test_batch_abuse(tester):
             # Try to create recursive structure
             recursive_batch = [
                 {
-                    "command": "project.loadFromJSON",
+                    "command": "project.loadJson",
                     "params": {"config": {"title": f"Level-{i}"}},
                 }
                 for i in range(100)
@@ -469,9 +469,9 @@ def test_parameter_validation(tester):
         # Test 1: Type confusion attacks
         print("  - Testing type confusion...")
         type_confusion = [
-            {"command": "dashboard.setFPS", "params": {"fps": "not_a_number"}},
-            {"command": "dashboard.setFPS", "params": {"fps": -1}},
-            {"command": "dashboard.setFPS", "params": {"fps": 999999}},
+            {"command": "dashboard.setFps", "params": {"fps": "not_a_number"}},
+            {"command": "dashboard.setFps", "params": {"fps": -1}},
+            {"command": "dashboard.setFps", "params": {"fps": 999999}},
             {"command": "dashboard.setPoints", "params": {"points": [1, 2, 3]}},
             {"command": "project.setTitle", "params": {"title": 12345}},
             {"command": "project.setTitle", "params": {"title": None}},
@@ -495,7 +495,7 @@ def test_parameter_validation(tester):
         print("  - Testing missing parameter handling...")
         try:
             # Command that requires params
-            result = client.command("dashboard.setFPS", {})
+            result = client.command("dashboard.setFps", {})
             tester.log_vulnerability(
                 "LOW",
                 "Parameter Validation",
@@ -591,8 +591,8 @@ def test_state_manipulation(tester):
         def rapid_state_change():
             try:
                 for i in range(100):
-                    client.command("io.manager.connect")
-                    client.command("io.manager.disconnect")
+                    client.command("io.connect")
+                    client.command("io.disconnect")
             except:
                 pass
 
@@ -608,10 +608,10 @@ def test_state_manipulation(tester):
         print("  - Testing invalid state transitions...")
         try:
             # Try to disconnect before connecting
-            client.command("io.manager.disconnect")
+            client.command("io.disconnect")
 
             # Try to enable export before configuration
-            client.command("csv.export.setEnabled", {"enabled": True})
+            client.command("csvExport.setEnabled", {"enabled": True})
 
             print("    Server allowed invalid state transitions")
         except APIError:

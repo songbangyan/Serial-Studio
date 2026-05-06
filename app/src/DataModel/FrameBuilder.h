@@ -40,16 +40,8 @@
 namespace DataModel {
 
 /**
- * @class FrameBuilder
- * @brief Assembles a DataModel::Frame from raw I/O bytes and distributes it
- * to the dashboard and export workers.
- *
- * Receives raw frame data from the I/O layer, delegates parsing to
- * FrameParser (project mode) or a built-in CSV parser (quick plot / player
- * mode), then broadcasts the populated frame.
- *
- * Operation mode and project state are owned by AppState. FrameBuilder is a
- * pure byte-in / frame-out component with no IO or file side-effects.
+ * @brief Assembles a DataModel::Frame from raw I/O bytes and distributes it to the dashboard and
+ * export workers.
  */
 class FrameBuilder : public QObject {
   // clang-format off

@@ -28,7 +28,9 @@
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
+#include "DSP.h"
 #include "Misc/TimerEvents.h"
+#include "SerialStudio.h"
 #include "UI/Dashboard.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -40,14 +42,20 @@
  */
 void API::Handlers::DashboardHandler::registerCommands()
 {
+  registerModeAndFpsCommands();
+  registerPointsCommands();
+  registerQueryCommands();
+}
+
+/** @brief Register operation-mode and refresh-rate (FPS) commands. */
+void API::Handlers::DashboardHandler::registerModeAndFpsCommands()
+{
   auto& registry = CommandRegistry::instance();
 
-  // Empty schema for parameter-less commands
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
   emptySchema.insert(QStringLiteral("properties"), QJsonObject());
 
-  // Schema for setOperationMode
   QJsonObject modeProps;
   QJsonObject modeProp;
   modeProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
@@ -72,7 +80,6 @@ void API::Handlers::DashboardHandler::registerCommands()
                            emptySchema,
                            &getOperationMode);
 
-  // Schema for setFPS
   QJsonObject fpsProps;
   QJsonObject fpsProp;
   fpsProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
@@ -86,17 +93,26 @@ void API::Handlers::DashboardHandler::registerCommands()
   setFpsSchema.insert(QStringLiteral("required"), QJsonArray{QStringLiteral("fps")});
 
   registry.registerCommand(
-    QStringLiteral("dashboard.setFPS"),
+    QStringLiteral("dashboard.setFps"),
     QStringLiteral("Set the visualization refresh rate (params: fps - 1-240 Hz)"),
     setFpsSchema,
     &setFPS);
 
-  registry.registerCommand(QStringLiteral("dashboard.getFPS"),
+  registry.registerCommand(QStringLiteral("dashboard.getFps"),
                            QStringLiteral("Get the current visualization refresh rate"),
                            emptySchema,
                            &getFPS);
+}
 
-  // Schema for setPoints
+/** @brief Register plot-points get/set commands. */
+void API::Handlers::DashboardHandler::registerPointsCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  QJsonObject emptySchema;
+  emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  emptySchema.insert(QStringLiteral("properties"), QJsonObject());
+
   QJsonObject pointsProps;
   QJsonObject pointsProp;
   pointsProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
@@ -119,6 +135,16 @@ void API::Handlers::DashboardHandler::registerCommands()
                            QStringLiteral("Get the current number of data points per plot"),
                            emptySchema,
                            &getPoints);
+}
+
+/** @brief Register status, getData, and tailFrames query commands. */
+void API::Handlers::DashboardHandler::registerQueryCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  QJsonObject emptySchema;
+  emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  emptySchema.insert(QStringLiteral("properties"), QJsonObject());
 
   registry.registerCommand(QStringLiteral("dashboard.getStatus"),
                            QStringLiteral("Get all dashboard configuration settings"),
@@ -129,6 +155,45 @@ void API::Handlers::DashboardHandler::registerCommands()
                            QStringLiteral("Get dashboard widget counts and latest frame data"),
                            emptySchema,
                            &getData);
+
+  // dashboard.tailFrames -- last N samples of plot-enabled datasets
+  {
+    QJsonObject countProp;
+    countProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
+    countProp.insert(QStringLiteral("description"),
+                     QStringLiteral("Max samples per dataset (1-256, default 32)"));
+    countProp.insert(QStringLiteral("minimum"), 1);
+    countProp.insert(QStringLiteral("maximum"), 256);
+
+    QJsonObject uidsItem;
+    uidsItem.insert(QStringLiteral("type"), QStringLiteral("integer"));
+
+    QJsonObject uidsProp;
+    uidsProp.insert(QStringLiteral("type"), QStringLiteral("array"));
+    uidsProp.insert(QStringLiteral("items"), uidsItem);
+    uidsProp.insert(QStringLiteral("description"),
+                    QStringLiteral("Optional filter: only datasets whose uniqueId is in "
+                                   "this list. Empty/missing = every plot-enabled dataset."));
+
+    QJsonObject props;
+    props.insert(QStringLiteral("count"), countProp);
+    props.insert(QStringLiteral("uniqueIds"), uidsProp);
+
+    QJsonObject schema;
+    schema.insert(QStringLiteral("type"), QStringLiteral("object"));
+    schema.insert(QStringLiteral("properties"), props);
+
+    registry.registerCommand(
+      QStringLiteral("dashboard.tailFrames"),
+      QStringLiteral("Return the last N samples (timestamp + value pairs) for each "
+                     "plot-enabled dataset. Use to debug \"the values look wrong\" "
+                     "complaints without polling dashboard.getData repeatedly. "
+                     "Only returns datasets whose plt flag is on; toggle it via "
+                     "project.dataset.setOption first if you need history for a "
+                     "different dataset."),
+      schema,
+      &tailFrames);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -137,8 +202,6 @@ void API::Handlers::DashboardHandler::registerCommands()
 
 /**
  * @brief Set the operation mode
- * @param params Requires "mode" (int: 0=ProjectFile, 1=ConsoleOnly,
- * 2=QuickPlot)
  */
 API::CommandResponse API::Handlers::DashboardHandler::setOperationMode(const QString& id,
                                                                        const QJsonObject& params)
@@ -201,7 +264,6 @@ API::CommandResponse API::Handlers::DashboardHandler::getOperationMode(const QSt
 
 /**
  * @brief Set the visualization refresh rate (FPS)
- * @param params Requires "fps" (int: 1-240 Hz)
  */
 API::CommandResponse API::Handlers::DashboardHandler::setFPS(const QString& id,
                                                              const QJsonObject& params)
@@ -244,7 +306,6 @@ API::CommandResponse API::Handlers::DashboardHandler::getFPS(const QString& id,
 
 /**
  * @brief Set the number of data points per plot
- * @param params Requires "points" (int)
  */
 API::CommandResponse API::Handlers::DashboardHandler::setPoints(const QString& id,
                                                                 const QJsonObject& params)
@@ -347,5 +408,73 @@ API::CommandResponse API::Handlers::DashboardHandler::getData(const QString& id,
   result[QStringLiteral("datasetCount")] = dashboard.datasets().size();
   result[QStringLiteral("frame")]        = DataModel::serialize(dashboard.processedFrame());
 
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Returns the last N samples of every plot-enabled dataset.
+ */
+API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& id,
+                                                                 const QJsonObject& params)
+{
+  int count = 32;
+  if (params.contains(QStringLiteral("count")))
+    count = qBound(1, params.value(QStringLiteral("count")).toInt(32), 256);
+
+  QSet<int> filterUids;
+  bool filterActive = false;
+  if (params.contains(QStringLiteral("uniqueIds"))) {
+    const auto arr = params.value(QStringLiteral("uniqueIds")).toArray();
+    for (const auto& v : arr)
+      filterUids.insert(v.toInt());
+
+    filterActive = !filterUids.isEmpty();
+  }
+
+  auto& dashboard     = UI::Dashboard::instance();
+  const int plotCount = dashboard.widgetCount(SerialStudio::DashboardPlot);
+  QJsonArray seriesArr;
+
+  for (int i = 0; i < plotCount; ++i) {
+    const auto& ds = dashboard.getDatasetWidget(SerialStudio::DashboardPlot, i);
+    if (filterActive && !filterUids.contains(ds.uniqueId))
+      continue;
+
+    const auto& series = dashboard.plotData(i);
+    if (!series.x || !series.y)
+      continue;
+
+    const auto& xq = *series.x;
+    const auto& yq = *series.y;
+    const auto n   = std::min<std::size_t>(xq.size(), yq.size());
+    if (n == 0)
+      continue;
+
+    const std::size_t take  = std::min<std::size_t>(static_cast<std::size_t>(count), n);
+    const std::size_t start = n - take;
+
+    QJsonArray xs;
+    QJsonArray ys;
+    for (std::size_t k = start; k < n; ++k) {
+      xs.append(xq[k]);
+      ys.append(yq[k]);
+    }
+
+    QJsonObject row;
+    row[Keys::UniqueId]            = ds.uniqueId;
+    row[QStringLiteral("title")]   = ds.title;
+    row[QStringLiteral("units")]   = ds.units;
+    row[QStringLiteral("groupId")] = ds.groupId;
+    row[Keys::DatasetId]           = ds.datasetId;
+    row[QStringLiteral("count")]   = static_cast<int>(take);
+    row[QStringLiteral("x")]       = xs;
+    row[QStringLiteral("y")]       = ys;
+    seriesArr.append(row);
+  }
+
+  QJsonObject result;
+  result[QStringLiteral("series")]           = seriesArr;
+  result[QStringLiteral("seriesCount")]      = seriesArr.size();
+  result[QStringLiteral("samplesPerSeries")] = count;
   return CommandResponse::makeSuccess(id, result);
 }

@@ -42,6 +42,9 @@ QList<IO::Drivers::BluetoothLE*> IO::Drivers::BluetoothLE::s_instances;
 // Constructor & destructor
 //--------------------------------------------------------------------------------------------------
 
+/**
+ * @brief Constructs a BLE driver instance and registers it for shared discovery.
+ */
 IO::Drivers::BluetoothLE::BluetoothLE()
   : m_deviceIndex(-1)
   , m_deviceConnected(false)
@@ -69,6 +72,9 @@ IO::Drivers::BluetoothLE::BluetoothLE()
   });
 }
 
+/**
+ * @brief Destructor; closes any active connection and unregisters this instance.
+ */
 IO::Drivers::BluetoothLE::~BluetoothLE()
 {
   close();
@@ -278,7 +284,7 @@ bool IO::Drivers::BluetoothLE::adapterAvailable() const
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @return The total number of discovered devices (shared across all instances).
+ * @brief Returns the total number of discovered devices (shared across instances).
  */
 int IO::Drivers::BluetoothLE::deviceCount() const
 {
@@ -286,7 +292,7 @@ int IO::Drivers::BluetoothLE::deviceCount() const
 }
 
 /**
- * @return The index of the BLE device selected by this instance.
+ * @brief Returns the index of the BLE device selected by this instance.
  */
 int IO::Drivers::BluetoothLE::deviceIndex() const
 {
@@ -294,7 +300,7 @@ int IO::Drivers::BluetoothLE::deviceIndex() const
 }
 
 /**
- * @return The index of the characteristic selected by this instance.
+ * @brief Returns the index of the characteristic selected by this instance.
  */
 int IO::Drivers::BluetoothLE::characteristicIndex() const
 {
@@ -311,7 +317,7 @@ int IO::Drivers::BluetoothLE::characteristicIndex() const
 }
 
 /**
- * @return A list with the discovered BLE devices (shared, with placeholder).
+ * @brief Returns the discovered BLE devices with a leading placeholder entry.
  */
 QStringList IO::Drivers::BluetoothLE::deviceNames() const
 {
@@ -322,7 +328,7 @@ QStringList IO::Drivers::BluetoothLE::deviceNames() const
 }
 
 /**
- * @return A list with the discovered BLE services for this instance's connection.
+ * @brief Returns the discovered BLE services with a leading placeholder entry.
  */
 QStringList IO::Drivers::BluetoothLE::serviceNames() const
 {
@@ -333,7 +339,7 @@ QStringList IO::Drivers::BluetoothLE::serviceNames() const
 }
 
 /**
- * @return A list with the discovered BLE characteristics for this instance.
+ * @brief Returns the discovered BLE characteristics with a leading placeholder.
  */
 QStringList IO::Drivers::BluetoothLE::characteristicNames() const
 {

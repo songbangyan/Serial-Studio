@@ -48,34 +48,6 @@ constexpr int MAX_LINES = 1000;
 
 /**
  * @brief Constructs a Terminal object with the given parent item.
- *
- * Initializes the terminal widget, setting up various configurations, including
- * font, palette, and buffer. It also establishes multiple signal-slot
- * connections to handle theme changes, data input, device connections, and
- * cursor blinking.
- *
- * @param parent Pointer to the parent QQuickItem.
- *
- * The constructor performs the following key actions:
- * - Initializes internal buffers using `initBuffer()`.
- * - Configures item flags to allow the terminal to accept mouse input, have
- *   content, and manage focus appropriately.
- * - Sets a monospaced font for text rendering using
- *   `Misc::CommonFonts::instance().monoFont()`.
- * - Configures the initial color palette by calling `onThemeChanged()`.
- * - Connects to the theme manager to update the palette whenever the theme
- *   changes.
- * - Connects to the IO Handler handler to receive and append new data for
- *   display.
- * - Clears the screen when a device connection status changes.
- * - Sets up a cursor blink timer and connects it to toggle the cursor
- *   visibility.
- * - Establishes a connection to redraw the terminal at a rate of 24 Hz for
- *   smooth updates.
- *
- * @note The cursor flash time is retrieved from
- * `QGuiApplication::styleHints()`, and the blink interval is adjusted
- * accordingly.
  */
 Widgets::Terminal::Terminal(QQuickItem* parent)
   : QuickPaintedItemCompat(parent)
@@ -186,17 +158,6 @@ Widgets::Terminal::Terminal(QQuickItem* parent)
 
 /**
  * @brief Draws the selection highlight for one word-wrapped segment of a line.
- *
- * Determines which characters within [segStart, segEnd) are covered by the
- * current selection and fills the corresponding pixel rectangle. Does nothing
- * if the segment is outside the selection range.
- *
- * @param painter   Active QPainter.
- * @param line      Full text of the logical line.
- * @param lineIndex Logical line index (row).
- * @param segStart  First character index of this wrapped segment.
- * @param segEnd    One-past-last character index of this wrapped segment.
- * @param y         Top pixel Y coordinate of the segment row.
  */
 void Widgets::Terminal::drawSegmentSelection(
   QPainter* painter, const QString& line, int lineIndex, int segStart, int segEnd, int y)
@@ -246,15 +207,6 @@ void Widgets::Terminal::drawSegmentSelection(
 
 /**
  * @brief Renders a word-wrapped segment with a single uniform text color.
- *
- * Fast path used when ANSI color data is not available for this line.
- * Characters are drawn one at a time with variable advance widths.
- *
- * @param painter   Active QPainter.
- * @param segment   The substring to render.
- * @param textColor Color to use for all characters.
- * @param x         Left pixel X to start drawing at.
- * @param y         Top pixel Y of the row.
  */
 void Widgets::Terminal::renderFastSegment(
   QPainter* painter, const QString& segment, const QColor& textColor, int x, int y)
@@ -266,19 +218,6 @@ void Widgets::Terminal::renderFastSegment(
 
 /**
  * @brief Renders one word-wrapped segment using per-character ANSI colors.
- *
- * Builds a vector of character info (position, width, fg/bg color) from
- * @p colorLine, then draws all background fills in a first pass and all
- * text glyphs in a second pass.
- *
- * @param painter        Active QPainter.
- * @param segment        The substring to render.
- * @param segStart       Start index of @p segment within the logical line
- *                       (used to look up ANSI colors).
- * @param colorLine      Per-character color data for the line, or nullptr.
- * @param defaultFg      Default foreground color when no ANSI override.
- * @param x              Left pixel X to start drawing at.
- * @param y              Top pixel Y of the row.
  */
 void Widgets::Terminal::renderAnsiSegment(QPainter* painter,
                                           const QString& segment,
@@ -340,15 +279,6 @@ void Widgets::Terminal::renderAnsiSegment(QPainter* painter,
 
 /**
  * @brief Draws the blinking cursor at the current cursor position.
- *
- * Iterates visible lines from @p firstLine to @p lastVLine, accounting for
- * word-wrapped segments, to find the visual row that contains the cursor.
- * Renders a block glyph at the correct pixel position.
- *
- * @param painter    Active QPainter.
- * @param firstLine  First logical line index in the visible viewport.
- * @param lastVLine  Last logical line index in the visible viewport.
- * @param lineHeight Pixel height of one visual row.
  */
 void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLine, int lineHeight)
 {
@@ -407,24 +337,6 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
 
 /**
  * @brief Paints the terminal widget content.
- *
- * This method overrides the QQuickPaintedItem::paint() to render the terminal's
- * content, including the text, cursor, and optional scrollbar.
- *
- * @param painter A QPainter object used to draw the terminal's content.
- *
- * The paint method performs the following key tasks:
- * - Skips rendering if the terminal is not visible.
- * - Prepares the painter by setting the current font and fills the terminal
- *   background.
- * - Draws each visible line of terminal data, using the current palette.
- * - Draws the cursor if it is currently visible and within the visible range of
- *   lines.
- * - Draws a vertical scrollbar if autoscroll is disabled and not all lines are
- *   visible.
- *
- * @note This function handles rendering for different terminal states,
- * including cursor visibility and scrolling requirements.
  */
 void Widgets::Terminal::paint(QPainter* painter)
 {
@@ -565,7 +477,6 @@ void Widgets::Terminal::paintScrollbar(QPainter* painter)
 
 /**
  * @brief Returns the width of a single terminal character.
- * @return
  */
 int Widgets::Terminal::charWidth() const
 {
@@ -574,7 +485,6 @@ int Widgets::Terminal::charWidth() const
 
 /**
  * @brief Returns the height of a single terminal character.
- * @return
  */
 int Widgets::Terminal::charHeight() const
 {
@@ -587,8 +497,6 @@ int Widgets::Terminal::charHeight() const
 
 /**
  * @brief Gets the current font used by the terminal.
- *
- * @return The QFont object representing the terminal's current font.
  */
 const QFont& Widgets::Terminal::font() const
 {
@@ -597,8 +505,6 @@ const QFont& Widgets::Terminal::font() const
 
 /**
  * @brief Gets the current color palette used by the terminal.
- *
- * @return The QPalette object representing the terminal's color palette.
  */
 const QPalette& Widgets::Terminal::colorPalette() const
 {
@@ -607,8 +513,6 @@ const QPalette& Widgets::Terminal::colorPalette() const
 
 /**
  * @brief Checks if autoscroll is enabled.
- *
- * @return True if autoscroll is enabled, false otherwise.
  */
 bool Widgets::Terminal::autoscroll() const
 {
@@ -617,17 +521,6 @@ bool Widgets::Terminal::autoscroll() const
 
 /**
  * @brief Checks if there is a valid text selection available for copying.
- *
- * This function determines whether a selection is available in the terminal
- * for copying. A selection is considered invalid if:
- *
- * - The selection start or selection end is null.
- * - The terminal's data buffer is empty.
- *
- * @return True if no valid selection is available, otherwise false.
- *
- * @note This function effectively checks if it is possible to perform a copy
- * operation.
  */
 bool Widgets::Terminal::copyAvailable() const
 {
@@ -636,8 +529,6 @@ bool Widgets::Terminal::copyAvailable() const
 
 /**
  * @brief Checks if VT-100 emulation mode is enabled.
- *
- * @return True if VT-100 emulation is enabled, false otherwise.
  */
 bool Widgets::Terminal::vt100emulation() const
 {
@@ -646,8 +537,6 @@ bool Widgets::Terminal::vt100emulation() const
 
 /**
  * @brief Checks if ANSI color support is enabled.
- *
- * @return True if ANSI colors are enabled, false otherwise.
  */
 bool Widgets::Terminal::ansiColors() const
 {
@@ -660,8 +549,6 @@ bool Widgets::Terminal::ansiColors() const
 
 /**
  * @brief Gets the total number of lines in the terminal's data buffer.
- *
- * @return The number of lines currently stored in the terminal's data buffer.
  */
 int Widgets::Terminal::lineCount() const
 {
@@ -670,8 +557,6 @@ int Widgets::Terminal::lineCount() const
 
 /**
  * @brief Gets the number of lines that can be displayed per page.
- *
- * @return The number of lines that fit within the current terminal height.
  */
 int Widgets::Terminal::linesPerPage() const
 {
@@ -684,8 +569,6 @@ int Widgets::Terminal::linesPerPage() const
 
 /**
  * @brief Gets the current vertical scroll offset.
- *
- * @return The vertical scroll offset in lines.
  */
 int Widgets::Terminal::scrollOffsetY() const
 {
@@ -693,24 +576,7 @@ int Widgets::Terminal::scrollOffsetY() const
 }
 
 /**
- * @brief Calculates the maximum number of characters that can fit on a single
- *        line of the terminal.
- *
- * This function determines the maximum number of characters that can be
- * displayed on a single line of the terminal, based on the current width of the
- * widget and the width of individual characters. It ensures a minimum value to
- * maintain consistency, especially during UI loading or resizing.
- *
- * The calculation takes into account:
- * - The current width of the terminal widget
- * - The border width on both sides
- * - The width of individual characters
- *
- * To prevent inconsistencies during UI initialization or extreme resizing,
- * the function enforces a minimum return value of 84 characters per line.
- *
- * @return The maximum number of characters that can fit on a single line,
- *         with a minimum value of 84.
+ * @brief Calculates the maximum number of characters that can fit on a single line of the terminal.
  */
 int Widgets::Terminal::maxCharsPerLine() const
 {
@@ -724,9 +590,6 @@ int Widgets::Terminal::maxCharsPerLine() const
 
 /**
  * @brief Returns the number of character columns currently visible.
- *
- * Delegates to maxCharsPerLine() and is exposed as a reactive Q_PROPERTY so
- * QML bindings update automatically when the widget is resized.
  */
 int Widgets::Terminal::terminalColumns() const
 {
@@ -735,9 +598,6 @@ int Widgets::Terminal::terminalColumns() const
 
 /**
  * @brief Returns the number of character rows currently visible.
- *
- * Delegates to linesPerPage() and is exposed as a reactive Q_PROPERTY so QML
- * bindings update automatically when the widget is resized.
  */
 int Widgets::Terminal::terminalRows() const
 {
@@ -745,30 +605,7 @@ int Widgets::Terminal::terminalRows() const
 }
 
 /**
- * @brief Handles key press events and forwards them to the active driver as
- *        VT-100 byte sequences.
- *
- * When VT-100 emulation is active and the IO manager is connected in
- * read-write mode, each key press is translated to the canonical VT-100 /
- * xterm sequence and written directly to the driver.  This makes interactive
- * CLI programs (shells, editors, REPLs) work correctly inside the widget
- * without any QML-level workarounds.
- *
- * Keys handled:
- * - Printable characters -> UTF-8 bytes
- * - Return / Enter      -> CR (\r)
- * - Backspace           -> BS (\x7f) per modern xterm default
- * - Delete              -> ESC[3~
- * - Tab                 -> HT (\t)
- * - Escape              -> ESC (\x1b)
- * - Arrow keys          -> ESC[A ... ESC[D
- * - Home / End          -> ESC[H / ESC[F
- * - Page Up / Down      -> ESC[5~ / ESC[6~
- * - Insert              -> ESC[2~
- * - F1-F12              -> standard xterm sequences
- * - Ctrl+letter         -> control codes 0x01-0x1a
- *
- * @param event The key press event.
+ * @brief Handles key press events and forwards them to the active driver as VT-100 byte sequences.
  */
 void Widgets::Terminal::keyPressEvent(QKeyEvent* event)
 {
@@ -957,9 +794,6 @@ void Widgets::Terminal::geometryChange(const QRectF& newGeometry, const QRectF& 
 
 /**
  * @brief Gets the current cursor position within the terminal.
- *
- * @return A QPoint representing the current cursor position, in character
- *         coordinates.
  */
 const QPoint& Widgets::Terminal::cursorPosition() const
 {
@@ -972,16 +806,6 @@ const QPoint& Widgets::Terminal::cursorPosition() const
 
 /**
  * @brief Finds the character index within a line segment closest to a pixel X position.
- *
- * Iterates through the segment accumulating character widths. Returns the index
- * of the first character whose right edge exceeds @p pixelX, or the segment end
- * if @p pixelX is beyond all characters.
- *
- * @param line     The full text line.
- * @param segStart Start index of the segment within @p line.
- * @param segEnd   End index (exclusive) of the segment within @p line.
- * @param pixelX   The pixel X offset from the left border.
- * @return Character index within @p line, in [segStart, segEnd].
  */
 int Widgets::Terminal::findCharAtPixelX(const QString& line,
                                         int segStart,
@@ -1003,16 +827,6 @@ int Widgets::Terminal::findCharAtPixelX(const QString& line,
 
 /**
  * @brief Computes the pixel X position of a cursor column within a segment.
- *
- * Sums character widths from @p segStart up to (but not including) @p cursorCol,
- * capped at @p segEnd. The returned position is relative to the left border.
- *
- * @param painter   Active QPainter (used for font metrics).
- * @param line      Full text of the logical line.
- * @param segStart  Start character index of the current wrapped segment.
- * @param cursorCol Target cursor column (character index within the logical line).
- * @param segEnd    End character index of the current wrapped segment.
- * @return Pixel X position (including border) for the cursor.
  */
 int Widgets::Terminal::calcCursorPixelX(
   QPainter* painter, const QString& line, int segStart, int cursorCol, int segEnd) const
@@ -1028,10 +842,6 @@ int Widgets::Terminal::calcCursorPixelX(
 
 /**
  * @brief Converts a pixel position to a cursor position.
- *
- * @param pos The pixel position within the terminal.
- * @return A QPoint representing the cursor position corresponding to the given
- *         pixel position.
  */
 QPoint Widgets::Terminal::positionToCursor(const QPoint& pos) const
 {
@@ -1120,9 +930,6 @@ void Widgets::Terminal::copy()
 
 /**
  * @brief Clears the terminal's content.
- *
- * Resets the data buffer, moves the cursor to the top-left position,
- * and enables autoscroll. This effectively clears the terminal's display.
  */
 void Widgets::Terminal::clear()
 {
@@ -1134,10 +941,6 @@ void Widgets::Terminal::clear()
 
 /**
  * @brief Selects all the text currently present in the terminal.
- *
- * Updates the selection state to encompass all text in the terminal, if
- * available. Emits the selectionChanged() signal to notify that the selection
- * has been updated.
  */
 void Widgets::Terminal::selectAll()
 {
@@ -1161,12 +964,6 @@ void Widgets::Terminal::selectAll()
 
 /**
  * @brief Sets the font used for rendering the terminal text.
- *
- * @param font The QFont object to be used for terminal text.
- *
- * Updates the internal font, recalculates character dimensions, and adjusts the
- * terminal border accordingly. Emits the fontChanged() signal to notify about
- * the change.
  */
 void Widgets::Terminal::setFont(const QFont& font)
 {
@@ -1186,11 +983,6 @@ void Widgets::Terminal::setFont(const QFont& font)
 
 /**
  * @brief Enables or disables autoscroll.
- *
- * @param enabled If true, autoscroll is enabled; otherwise, it is disabled.
- *
- * Changes the autoscroll behavior of the terminal and emits the
- * autoscrollChanged() signal.
  */
 void Widgets::Terminal::setAutoscroll(const bool enabled)
 {
@@ -1200,11 +992,6 @@ void Widgets::Terminal::setAutoscroll(const bool enabled)
 
 /**
  * @brief Sets the vertical scroll offset for the terminal.
- *
- * @param offset The new vertical scroll offset value.
- *
- * If the scroll offset is changed, it updates the internal offset, emits the
- * scrollOffsetYChanged() signal, and triggers a redraw of the terminal.
  */
 void Widgets::Terminal::setScrollOffsetY(const int offset)
 {
@@ -1218,11 +1005,6 @@ void Widgets::Terminal::setScrollOffsetY(const int offset)
 
 /**
  * @brief Sets the color palette used by the terminal.
- *
- * @param palette The QPalette object representing the new color palette.
- *
- * Updates the terminal's color palette and emits the colorPaletteChanged()
- * signal to indicate that the palette has been updated.
  */
 void Widgets::Terminal::setColorPalette(const QPalette& palette)
 {
@@ -1236,13 +1018,6 @@ void Widgets::Terminal::setColorPalette(const QPalette& palette)
 
 /**
  * @brief Enables or disables VT-100 emulation.
- *
- * @param enabled If true, VT-100 emulation is enabled; otherwise, it is
- * disabled.
- *
- * Controls whether the terminal interprets VT-100 escape sequences for
- * additional terminal functionality. Emits the vt100EmulationChanged() signal
- * on change.
  */
 void Widgets::Terminal::setVt100Emulation(const bool enabled)
 {
@@ -1252,13 +1027,6 @@ void Widgets::Terminal::setVt100Emulation(const bool enabled)
 
 /**
  * @brief Enables or disables ANSI color support.
- *
- * @param enabled If true, ANSI colors are enabled; otherwise, text uses the
- * default palette color.
- *
- * When enabled, the terminal interprets ANSI SGR escape sequences for text
- * coloring (codes 30-37 for foreground colors, 0 for reset, 1 for bold).
- * Emits the ansiColorsChanged() signal on change.
  */
 void Widgets::Terminal::setAnsiColors(const bool enabled)
 {
@@ -1279,9 +1047,6 @@ void Widgets::Terminal::setAnsiColors(const bool enabled)
 
 /**
  * @brief Toggles the visibility of the cursor.
- *
- * Flips the visibility state of the cursor, which is typically used to create
- * a blinking cursor effect.
  */
 void Widgets::Terminal::toggleCursor()
 {
@@ -1295,13 +1060,6 @@ void Widgets::Terminal::toggleCursor()
 
 /**
  * @brief Updates the terminal's color palette when the theme changes.
- *
- * Retrieves the current theme colors from the ThemeManager and updates the
- * terminal's color palette accordingly. The new palette is used for rendering
- * various elements, such as text, background, buttons, and highlights.
- *
- * @note After updating the palette, the terminal is redrawn to reflect the
- *       changes.
  */
 void Widgets::Terminal::onThemeChanged()
 {
@@ -1371,19 +1129,7 @@ void Widgets::Terminal::loadWelcomeGuide()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Appends a string of data to the terminal, processing each character
- *        accordingly.
- *
- * @param data The string of data to be appended to the terminal.
- *
- * This method processes each character in the provided data string,
- * interpreting escape sequences, formatting commands, and resetting font styles
- * based on the terminal's current state (Text, Escape, Format, ResetFont).
- *
- * The processed text is accumulated and then appended to the terminal's buffer.
- *
- * @see processText(), processEscape(), processFormat(), processResetFont(),
- * appendString()
+ * @brief Appends a string of data to the terminal, processing each character accordingly.
  */
 /** @brief Scans a printable-character run starting at @p pos in @p data; returns end offset. */
 int Widgets::Terminal::scanPrintableRun(const QString& data, int pos)
@@ -1406,6 +1152,9 @@ int Widgets::Terminal::scanPrintableRun(const QString& data, int pos)
   return pos;
 }
 
+/**
+ * @brief Appends data to the terminal, processing it through the VT-100 state machine.
+ */
 void Widgets::Terminal::append(const QString& data)
 {
   // Process each character through the VT-100 state machine
@@ -1468,21 +1217,7 @@ void Widgets::Terminal::append(const QString& data)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Appends a string to the terminal's data buffer, updating the cursor
- *        position.
- *
- * @param string The QString to be appended to the terminal.
- *
- * This method processes each character in the given string by:
- * - Registering it in the terminal's internal buffer at the current cursor
- *   position.
- * - Moving the cursor to the right after each character is placed.
- *
- * If autoscroll is enabled, the vertical scroll offset (`scrollOffsetY`) is
- * adjusted to ensure that the cursor remains visible, and
- * `scrollOffsetYChanged()` is emitted to notify of any changes.
- *
- * @see replaceData(), setCursorPosition(), autoscroll()
+ * @brief Appends a string to the terminal's data buffer, updating the cursor position.
  */
 void Widgets::Terminal::appendString(QStringView string)
 {
@@ -1536,27 +1271,7 @@ void Widgets::Terminal::appendString(QStringView string)
 }
 
 /**
- * @brief Removes characters from the terminal buffer starting from the cursor
- *        position.
- *
- * @param direction The direction to remove characters: either LeftDirection or
- *                  RightDirection.
- *
- * @param len The number of characters to remove. Defaults to INT_MAX if a
- *            negative value is provided.
- *
- * This method removes characters from the terminal buffer either to the left or
- * right of the current cursor position:
- *
- * - If `direction` is `RightDirection`, it removes characters starting from the
- *   cursor and moving to the right, up to the specified length or the end of
- *   theline.
- * - If `direction` is `LeftDirection`, it removes characters to the left of the
- *   cursor, up to the specified length.
- *
- * Characters removed are replaced with a clear character (`'\x7F'`).
- *
- * @see replaceData(), setCursorPosition()
+ * @brief Removes characters from the terminal buffer starting from the cursor position.
  */
 void Widgets::Terminal::removeStringFromCursor(const Direction direction, int len)
 {
@@ -1597,11 +1312,6 @@ void Widgets::Terminal::removeStringFromCursor(const Direction direction, int le
 
 /**
  * @brief Initializes the terminal's data buffer.
- *
- * Clears the existing data buffer and reservers memory for the scrollback.
- *
- * This function is typically used to reset the terminal state, ensuring
- * efficient memory management for upcoming operations.
  */
 void Widgets::Terminal::initBuffer()
 {
@@ -1625,24 +1335,6 @@ void Widgets::Terminal::initBuffer()
 
 /**
  * @brief Processes a single character in the context of normal text input.
- *
- * @param byte The character to be processed.
- * @param text A reference to a QString that accumulates printable characters.
- *
- * This method handles normal text input processing, managing different
- * character cases:
- * - ESC (0x1B) with VT-100 on -> flush text and enter Escape state.
- * - CR (`\r`) with VT-100 on -> move cursor to column 0.
- * - LF (`\n`) -> move cursor to next line.
- * - BS (`\b`) with VT-100 on -> move cursor left one column.
- * - DEL (0x7F) with VT-100 on -> delete character under cursor.
- * - TAB (`\t`) with VT-100 on -> advance to next 8-column tab stop.
- * - Printable characters -> append to accumulated @p text.
- *
- * This function helps manage cursor positioning and character input depending
- * on the current state.
- *
- * @see appendString(), setCursorPosition(), vt100emulation()
  */
 void Widgets::Terminal::processText(const QChar& byte, QString& text)
 {
@@ -1710,21 +1402,6 @@ void Widgets::Terminal::processText(const QChar& byte, QString& text)
 
 /**
  * @brief Processes the character immediately following ESC (0x1B).
- *
- * @param byte The character to be processed as part of the escape sequence.
- * @param text Accumulated printable text (flushed before entering this state).
- *
- * Dispatches to the correct follow-on state or performs a single-character
- * ESC action:
- * - `[` -> CSI (Format state for cursor/SGR sequences)
- * - `(` -> Designate character set (ResetFont state, consumed silently)
- * - `]` -> OSC string (title, colour palette, etc.)
- * - `7` -> Save cursor position (DECSC)
- * - `8` -> Restore cursor position (DECRC)
- * - `M` -> Reverse index (scroll up one line)
- * - All others -> silently ignored, return to Text state
- *
- * @see processFormat(), m_state
  */
 void Widgets::Terminal::processEscape(const QChar& byte, QString& text)
 {
@@ -1764,25 +1441,6 @@ void Widgets::Terminal::processEscape(const QChar& byte, QString& text)
 
 /**
  * @brief Processes one byte of a CSI (ESC[...) parameter or final sequence.
- *
- * @param byte The character to process.
- * @param text Accumulated printable text (unused here; passed for API symmetry).
- *
- * Accumulates numeric parameters separated by `;`, then dispatches on the
- * final letter:
- * - `m`     -- SGR: apply ANSI colors/attributes
- * - `A`-`F` -- cursor movement (up/down/right/left/next-line/prev-line)
- * - `H`/`f` -- cursor position (CUP / HVP), 1-based row;col
- * - `G`     -- cursor horizontal absolute (1-based column)
- * - `d`     -- cursor vertical absolute (1-based row)
- * - `J`     -- erase in display (0=to end, 1=to start, 2/3=full clear)
- * - `K`     -- erase in line (0=to end, 1=to start, 2=whole line)
- * - `P`     -- delete characters
- * - `s`/`u` -- save/restore cursor position (ANSI)
- * - `h`/`l` -- DEC private mode set/reset (`?25h` show cursor, `?25l` hide)
- * - All other final letters -> silently consumed, return to Text state
- *
- * @see setCursorPosition(), removeStringFromCursor(), applyAnsiColor()
  */
 void Widgets::Terminal::processFormat(const QChar& byte, QString& text)
 {
@@ -2056,12 +1714,6 @@ void Widgets::Terminal::processIgnoreSeq(const QChar& byte)
 
 /**
  * @brief Updates the ANSI color palette based on the current theme.
- *
- * Determines whether to use light or dark ANSI colors based on the background
- * color luminance. Uses standard UNIX/Linux terminal color palette.
- *
- * Light themes (dark background) use bright colors, dark themes (light
- * background) use darker colors for better contrast.
  */
 void Widgets::Terminal::updateAnsiColorPalette()
 {
@@ -2119,20 +1771,6 @@ void Widgets::Terminal::updateAnsiColorPalette()
 
 /**
  * @brief Applies ANSI SGR (Select Graphic Rendition) color codes.
- *
- * @param codes List of ANSI SGR codes to apply.
- *
- * Supports:
- * - 0: Reset to default colors
- * - 1: Bold/bright (makes current color brighter)
- * - 30-37: Standard foreground colors
- * - 40-47: Standard background colors
- * - 90-97: Bright foreground colors
- * - 100-107: Bright background colors
- * - 38;5;N: 256-color foreground (N = 0-255)
- * - 48;5;N: 256-color background (N = 0-255)
- * - 38;2;R;G;B: RGB foreground
- * - 48;2;R;G;B: RGB background
  */
 void Widgets::Terminal::applyAnsiColor(const QList<int>& codes)
 {
@@ -2210,15 +1848,6 @@ int Widgets::Terminal::applyAnsiSgrCode(const QList<int>& codes, int i)
 
 /**
  * @brief Converts a 256-color palette index to a QColor.
- *
- * @param index Color index (0-255).
- * @return QColor corresponding to the index.
- *
- * Color ranges:
- * - 0-7: Standard colors
- * - 8-15: Bright colors
- * - 16-231: 6x6x6 RGB cube
- * - 232-255: Grayscale ramp
  */
 QColor Widgets::Terminal::getColor256(int index) const
 {
@@ -2277,15 +1906,6 @@ QColor Widgets::Terminal::getColor256Static(int index)
 
 /**
  * @brief Formats a debug message with optional ANSI colors.
- *
- * @param type Message type (QtDebugMsg, QtWarningMsg, etc.).
- * @param message The message content.
- * @param useAnsiColors Whether to include ANSI color codes.
- * @return Formatted message string.
- *
- * This static function provides consistent debug message formatting
- * across the application, with optional ANSI color codes for terminal
- * output.
  */
 QString Widgets::Terminal::formatDebugMessage(QtMsgType type,
                                               const QString& message,
@@ -2346,13 +1966,6 @@ QString Widgets::Terminal::formatDebugMessage(QtMsgType type,
 
 /**
  * @brief Sets the cursor position to a specified point.
- *
- * @param position The new cursor position as a QPoint object.
- *
- * Updates the cursor position to the specified point if it differs from the
- * current position, and emits the cursorMoved() signal to indicate the change.
- *
- * @see cursorMoved()
  */
 void Widgets::Terminal::setCursorPosition(const QPoint& position)
 {
@@ -2365,14 +1978,6 @@ void Widgets::Terminal::setCursorPosition(const QPoint& position)
 
 /**
  * @brief Sets the cursor position to specified coordinates.
- *
- * @param x The new x-coordinate of the cursor.
- * @param y The new y-coordinate of the cursor.
- *
- * Calls the overloaded `setCursorPosition()` function with a QPoint constructed
- * from the provided coordinates.
- *
- * @see setCursorPosition(const QPoint)
  */
 void Widgets::Terminal::setCursorPosition(const int x, const int y)
 {
@@ -2380,29 +1985,7 @@ void Widgets::Terminal::setCursorPosition(const int x, const int y)
 }
 
 /**
- * @brief Replaces or inserts a character in the terminal buffer at a specified
- * position.
- *
- * @param x The x-coordinate (column) where the character should be replaced or
- *          inserted.
- * @param y The y-coordinate (line) where the character should be replaced or
- *          inserted.
- * @param byte The character to be placed at the specified position.
- *
- * This method ensures that:
- * - The buffer is resized to accommodate the line specified by `y` if it does
- *   not already exist.
- * - The line at `y` is long enough to hold the character at position `x`,
- *   padding with spaces if necessary.
- * - The character (`byte`) is printable; otherwise, it is replaced with a dot.
- *
- * If the position `x` is within the length of the current line, the character
- * is replaced. If `x` exceeds the current length, the character is appended to
- * the line.
- *
- * @note Non-printable characters are replaced with a dot (`'.'`).
- *
- * @see lineCount(), m_data
+ * @brief Replaces or inserts a character in the terminal buffer at a specified position.
  */
 void Widgets::Terminal::replaceData(int x, int y, const QChar& byte)
 {
@@ -2445,21 +2028,6 @@ void Widgets::Terminal::replaceData(int x, int y, const QChar& byte)
 
 /**
  * @brief Determines whether a given character should end a text selection.
- *
- * This function is used to decide if a given character (`c`) marks the boundary
- * for ending a text selection operation, such as when selecting a word in a
- * terminal. The selection ends if the character is a space, a non-character, or
- * not a letter or number.
- *
- * @param c The character to evaluate.
- * @return true if the character should end the selection, false otherwise.
- *
- * The selection will end if:
- * 1. `c` is a space character (e.g., space, tab).
- * 2. `c` is a non-character, which includes control characters or other
- *    special non-printable characters.
- * 3. `c` is neither a letter nor a number, meaning punctuation marks, symbols,
- *    and other non-alphanumeric characters will end the selection.
  */
 bool Widgets::Terminal::shouldEndSelection(const QChar& c)
 {
@@ -2476,26 +2044,6 @@ bool Widgets::Terminal::shouldEndSelection(const QChar& c)
 
 /**
  * @brief Handles mouse wheel events for scrolling the terminal content.
- *
- * @param event A pointer to the QWheelEvent object containing details of the
- * event.
- *
- * This method manages vertical scrolling of the terminal content when the mouse
- * wheel is used:
- * - Determines the number of steps to scroll based on the delta values in the
- *   wheel event.
- * - Converts wheel steps to line scrolling steps and adjusts the scroll offset
- *   accordingly.
- * - If scrolling up, autoscroll is disabled to prevent the view from
- *   auto-resetting.
- * - Ensures that the scroll offset remains within valid bounds, and re-enables
- *   autoscroll if the end of the content is reached.
- *
- * @note This method is responsible for maintaining a smooth and user-friendly
- * scrolling experience, including handling scenarios where autoscroll is
- * temporarily disabled.
- *
- * @see setScrollOffsetY(), setAutoscroll(), linesPerPage(), lineCount()
  */
 void Widgets::Terminal::wheelEvent(QWheelEvent* event)
 {
@@ -2544,18 +2092,6 @@ void Widgets::Terminal::wheelEvent(QWheelEvent* event)
 
 /**
  * @brief Handles mouse move events for updating the text selection.
- *
- * @param event A pointer to the QMouseEvent object containing details of the
- * event.
- *
- * If mouse tracking is enabled and there is an active selection
- * (`m_selectionStartCursor` is set), this method:
- * - Updates the end of the selection as the mouse moves.
- * - Dynamically adjusts the selection start and end points based on the current
- *   cursor position, allowing selection in any direction.
- * - Updates the terminal view to visually reflect the selection change.
- *
- * @see positionToCursor(), update()
  */
 void Widgets::Terminal::mouseMoveEvent(QMouseEvent* event)
 {
@@ -2585,17 +2121,6 @@ void Widgets::Terminal::mouseMoveEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse press events for starting text selection.
- *
- * @param event A pointer to the QMouseEvent object containing details of the
- * event.
- *
- * When the left mouse button is pressed:
- * - Enables mouse tracking (`m_mouseTracking`) to allow text selection.
- * - Clears any existing selection and sets the initial selection point
- *   (`m_selectionStartCursor`).
- * - Requests a view update to reflect the start of the selection visually.
- *
- * @see update(), positionToCursor()
  */
 void Widgets::Terminal::mousePressEvent(QMouseEvent* event)
 {
@@ -2613,17 +2138,6 @@ void Widgets::Terminal::mousePressEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse release events for finalizing text selection.
- *
- * @param event A pointer to the QMouseEvent object containing details of the
- * event.
- *
- * When the left mouse button is released:
- * - If the start and end of the selection are the same, clears the selection.
- * - Disables mouse tracking and resets the selection starting point.
- * - Requests a view update to finalize the visual representation of the
- *   selection.
- *
- * @see update(), positionToCursor()
  */
 void Widgets::Terminal::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -2641,22 +2155,7 @@ void Widgets::Terminal::mouseReleaseEvent(QMouseEvent* event)
 }
 
 /**
- * @brief Handles mouse double-click events for selecting the word under the
- * cursor.
- *
- * @param event A pointer to the QMouseEvent object containing details of the
- *              event.
- *
- * When the user double-clicks within the terminal, this method:
- * - Determines the cursor's position based on the double-click location.
- * - Expands the selection to include the entire word under the cursor.
- * - Emits the `selectionChanged()` signal to update the visual representation
- *   of the selection.
- *
- * @note This method ensures that a double-click selects a word, similar to
- *       behavior in standard text editors or terminal emulators.
- *
- * @see positionToCursor(), selectionChanged()
+ * @brief Handles mouse double-click events for selecting the word under the cursor.
  */
 void Widgets::Terminal::mouseDoubleClickEvent(QMouseEvent* event)
 {

@@ -122,7 +122,6 @@ void AppState::restoreLastProject()
 
 /**
  * @brief Sets the operation mode, persists it, and emits derived config changes.
- * @param mode The new operation mode.
  */
 void AppState::setOperationMode(SerialStudio::OperationMode mode)
 {
@@ -144,12 +143,6 @@ void AppState::setOperationMode(SerialStudio::OperationMode mode)
 
 /**
  * @brief Synchronises all state after a project load or clear.
- *
- * Called whenever ProjectModel emits jsonFileChanged or frameDetectionChanged.
- * Execution order is intentionally explicit:
- *  1. Update the stored path and notify QML bindings.
- *  2. Sync FrameBuilder's frame structure from the already-parsed ProjectModel data.
- *  3. Re-derive the IO FrameConfig and notify ConnectionManager.
  */
 void AppState::onProjectLoaded()
 {
@@ -185,10 +178,6 @@ void AppState::onProjectFileCleared()
 
 /**
  * @brief Computes the FrameConfig for device 0 from current state.
- *
- * In ProjectFile mode source[0] delimiters are used when available.
- * In QuickPlot mode, line-based end-delimiter detection is used.
- * In ConsoleOnly mode, FrameReader short-circuits so delimiters are irrelevant.
  */
 IO::FrameConfig AppState::deriveFrameConfig() const
 {

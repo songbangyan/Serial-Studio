@@ -29,10 +29,6 @@
 
 /**
  * @brief Constructs the TimerEvents singleton instance.
- *
- * Initializes the UI timer frequency from application settings.
- * The value is read from the key "uiRefreshRate" with a default of 60 Hz.
- * The frequency is clamped between 1 and 240 Hz.
  */
 Misc::TimerEvents::TimerEvents() : m_uiTimerHz(60)
 {
@@ -42,7 +38,6 @@ Misc::TimerEvents::TimerEvents() : m_uiTimerHz(60)
 
 /**
  * @brief Returns a reference to the singleton instance.
- * @return Reference to the only instance of TimerEvents.
  */
 Misc::TimerEvents& Misc::TimerEvents::instance()
 {
@@ -56,7 +51,6 @@ Misc::TimerEvents& Misc::TimerEvents::instance()
 
 /**
  * @brief Gets the current UI timer frequency.
- * @return The UI timer frequency in Hz.
  */
 int Misc::TimerEvents::fps() const noexcept
 {
@@ -69,12 +63,6 @@ int Misc::TimerEvents::fps() const noexcept
 
 /**
  * @brief Stops all timers managed by this class.
- *
- * This includes:
- * - UI timer
- * - 1 Hz timer
- * - 10 Hz timer
- * - 20 Hz timer
  */
 void Misc::TimerEvents::stopTimers()
 {
@@ -86,11 +74,6 @@ void Misc::TimerEvents::stopTimers()
 
 /**
  * @brief Handles QBasicTimer expiration events.
- *
- * Identifies which timer triggered the event and emits the corresponding
- * timeout signal.
- *
- * @param event Pointer to the timer event.
  */
 void Misc::TimerEvents::timerEvent(QTimerEvent* event)
 {
@@ -117,12 +100,6 @@ void Misc::TimerEvents::timerEvent(QTimerEvent* event)
 
 /**
  * @brief Starts all timers managed by this class.
- *
- * The UI timer is started with the currently configured frequency.
- * Other timers are started at fixed rates:
- * - 1 Hz
- * - 10 Hz
- * - 20 Hz
  */
 void Misc::TimerEvents::startTimers()
 {
@@ -136,12 +113,6 @@ void Misc::TimerEvents::startTimers()
 
 /**
  * @brief Sets the UI timer frequency in Hz.
- *
- * The value is clamped between 1 and 240 Hz and stored in the settings
- * under the key "uiTimerHz". If the timer is active, it will be restarted
- * immediately with the new frequency.
- *
- * @param hz New UI timer frequency in Hz.
  */
 void Misc::TimerEvents::setFPS(int hz)
 {

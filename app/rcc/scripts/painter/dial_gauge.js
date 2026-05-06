@@ -37,9 +37,9 @@ function onFrame() {
 
 function paint(ctx, w, h) {
   // Cream paper background -- looks great in screenshots, prints well.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -77,12 +77,12 @@ function paint(ctx, w, h) {
     ctx.strokeStyle = color;
     ctx.stroke();
   }
-  zone(lo,                lo + span * 0.60, "#16a34a");
-  zone(lo + span * 0.60, lo + span * 0.85, "#facc15");
-  zone(lo + span * 0.85, hi,                "#ef4444");
+  zone(lo,                lo + span * 0.60, theme.widget_highlight);
+  zone(lo + span * 0.60, lo + span * 0.85, theme.accent);
+  zone(lo + span * 0.85, hi,                theme.alarm);
 
   // Tick marks (major every 10%, minor every 5%).
-  ctx.strokeStyle = "#475569";
+  ctx.strokeStyle = theme.widget_text;
   for (let i = 0; i <= 20; ++i) {
     const t      = startA + sweep * (i / 20);
     const major  = (i % 2 === 0);
@@ -96,7 +96,7 @@ function paint(ctx, w, h) {
   }
 
   // Major tick labels.
-  ctx.fillStyle    = "#475569";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "bold 10px sans-serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "middle";
@@ -111,7 +111,7 @@ function paint(ctx, w, h) {
   if (peak > 0) {
     const pn = Math.max(0, Math.min(1, (peak - lo) / span));
     const tp = startA + sweep * pn;
-    ctx.strokeStyle = "#fbbf24";
+    ctx.strokeStyle = theme.accent;
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(cx + Math.cos(tp) * (r - 22), cy + Math.sin(tp) * (r - 22));
@@ -122,7 +122,7 @@ function paint(ctx, w, h) {
   // Needle.
   const norm = Math.max(0, Math.min(1, (v - lo) / span));
   const valA = startA + sweep * norm;
-  ctx.strokeStyle = "#0f172a";
+  ctx.strokeStyle = theme.widget_text;
   ctx.lineWidth = 3;
   ctx.lineCap = "round";
   ctx.beginPath();
@@ -132,7 +132,7 @@ function paint(ctx, w, h) {
   ctx.lineCap = "butt";
 
   // Pivot cap.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.beginPath();
   ctx.moveTo(cx + 6, cy);
   ctx.arc(cx, cy, 6, 0, Math.PI * 2);
@@ -140,13 +140,13 @@ function paint(ctx, w, h) {
 
   // Value & label below the dial.
   const labelY = cy + r + 22;
-  ctx.fillStyle    = "#64748b";
+  ctx.fillStyle    = theme.placeholder_text;
   ctx.font         = "10px sans-serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "alphabetic";
   ctx.fillText(ds.title + (ds.units ? "  (" + ds.units + ")" : ""), cx, labelY);
 
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font      = "bold 18px sans-serif";
   ctx.fillText(v.toFixed(2) + (ds.units ? " " + ds.units : ""), cx, labelY + 20);
 

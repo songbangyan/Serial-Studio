@@ -38,7 +38,11 @@ AI::Assistant& AI::Assistant::instance()
 
 /** @brief Builds the QNAM, dispatcher, providers, and conversation. */
 AI::Assistant::Assistant()
-  : QObject(nullptr), m_currentProvider(0), m_cacheReadTokens(0), m_cacheCreatedTokens(0)
+  : QObject(nullptr)
+  , m_currentProvider(0)
+  , m_cacheReadTokens(0)
+  , m_cacheCreatedTokens(0)
+  , m_autoApproveEdits(false)
 {
   m_nam          = std::make_unique<QNetworkAccessManager>(this);
   m_dispatcher   = std::make_unique<ToolDispatcher>(this);
@@ -51,6 +55,9 @@ AI::Assistant::Assistant()
   const int storedProvider = m_settings.value(QStringLiteral("ai/currentProvider"), 0).toInt();
   if (storedProvider >= 0 && storedProvider < kProviderCount)
     m_currentProvider = storedProvider;
+
+  // Restore the auto-approve toggle (default off).
+  m_autoApproveEdits = m_settings.value(QStringLiteral("ai/autoApproveEdits"), false).toBool();
 
   m_conversation->setDispatcher(m_dispatcher.get());
   rewireConversationProvider();
@@ -113,6 +120,23 @@ int AI::Assistant::cacheReadTokens() const noexcept
 int AI::Assistant::cacheCreatedTokens() const noexcept
 {
   return m_cacheCreatedTokens;
+}
+
+/** @brief Returns whether Confirm-gated edits run without per-call approval. */
+bool AI::Assistant::autoApproveEdits() const noexcept
+{
+  return m_autoApproveEdits;
+}
+
+/** @brief Persists the toggle and notifies QML listeners. */
+void AI::Assistant::setAutoApproveEdits(bool enabled)
+{
+  if (m_autoApproveEdits == enabled)
+    return;
+
+  m_autoApproveEdits = enabled;
+  m_settings.setValue(QStringLiteral("ai/autoApproveEdits"), enabled);
+  Q_EMIT autoApproveEditsChanged();
 }
 
 /** @brief Returns the display names of the registered providers in order. */

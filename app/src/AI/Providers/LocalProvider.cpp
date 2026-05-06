@@ -18,7 +18,9 @@
 #include <QTimer>
 #include <QUrl>
 
+#include "AI/Assistant.h"
 #include "AI/ContextBuilder.h"
+#include "AI/KeyVault.h"
 #include "AI/Logging.h"
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/Providers/OpenAIReply.h"
@@ -215,7 +217,14 @@ void AI::LocalProvider::refreshModels()
     reply->deleteLater();
 
     if (reply->error() != QNetworkReply::NoError) {
-      qCInfo(serialStudioAI) << "Local model list query failed:" << reply->errorString();
+      // Suppress background refresh noise when Local is not the active provider
+      const bool localActive =
+        static_cast<ProviderId>(AI::Assistant::instance().currentProvider()) == ProviderId::Local;
+      if (reply->error() == QNetworkReply::ConnectionRefusedError || !localActive)
+        qCDebug(serialStudioAI) << "Local model list query failed:" << reply->errorString();
+      else
+        qCInfo(serialStudioAI) << "Local model list query failed:" << reply->errorString();
+
       return;
     }
 

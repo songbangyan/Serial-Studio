@@ -33,10 +33,6 @@
 
 /**
  * @brief Constructs a MachineID instance and initializes system information.
- *
- * The constructor calls readInformation() once to gather all relevant
- * hardware and system details. This ensures that machine identification
- * remains consistent throughout the program's execution.
  */
 Licensing::MachineID::MachineID()
 {
@@ -45,11 +41,6 @@ Licensing::MachineID::MachineID()
 
 /**
  * @brief Retrieves the singleton instance of MachineID.
- *
- * This function follows the Singleton pattern to ensure that only one
- * instance of MachineID exists during runtime.
- *
- * @return Reference to the singleton instance of MachineID.
  */
 Licensing::MachineID& Licensing::MachineID::instance()
 {
@@ -63,13 +54,6 @@ Licensing::MachineID& Licensing::MachineID::instance()
 
 /**
  * @brief Returns the hashed, base64-encoded machine identifier.
- *
- * This value is generated based on platform-specific identifiers and the
- * application name, then hashed and encoded to avoid leaking identifiable
- * information. It provides a consistent machine ID across sessions for
- * licensing, caching, or other per-device logic.
- *
- * @return A reference to the machine-specific ID string (Base64-encoded).
  */
 const QString& Licensing::MachineID::machineId() const noexcept
 {
@@ -77,15 +61,7 @@ const QString& Licensing::MachineID::machineId() const noexcept
 }
 
 /**
- * @brief Returns the hashed, base64-encoded application version machine
- *        identifier.
- *
- * This value is generated based on the application name, version, and the
- * machine ID, then hashed and encoded to avoid leaking identifiable
- * information. It provides a consistent application version machine ID across
- * sessions for licensing, caching, or other per-device logic.
- *
- * @return A reference to the app-version machine ID string (Base64-encoded).
+ * @brief Returns the hashed, base64-encoded application version machine identifier.
  */
 const QString& Licensing::MachineID::appVerMachineId() const noexcept
 {
@@ -94,14 +70,6 @@ const QString& Licensing::MachineID::appVerMachineId() const noexcept
 
 /**
  * @brief Returns the machine-specific encryption key.
- *
- * This 64-bit key is derived from the same input used to generate the machine
- * ID. It is intended for local data encryption (e.g., cached license info),
- * ensuring that encrypted content cannot be reused or decrypted on other
- * machines.
- *
- * @return A 64-bit unsigned integer representing the machine-specific
- *         encryption key.
  */
 quint64 Licensing::MachineID::machineSpecificKey() const noexcept
 {
@@ -113,25 +81,7 @@ quint64 Licensing::MachineID::machineSpecificKey() const noexcept
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Collects system-specific data to generate a unique machine identifier
- *        and encryption key.
- *
- * This method gathers platform-specific machine information depending on the
- * operating system.
- *
- * The resulting machine-specific ID is then combined with the application name
- * and operating system name. This string is hashed using the BLAKE2s-128
- * algorithm to create a non-reversible, privacy-preserving identifier that
- * remains consistent on the same machine.
- *
- * Two values are derived:
- * - Machine ID: A base64-encoded hash string used for machine identification.
- * - Machine-specific key: A 64-bit key extracted from the hash, used to encrypt
- *   or decrypt locally cached sensitive data (e.g., license information),
- *   ensuring it cannot be reused across different machines.
- *
- * This method is called internally by the `MachineID` singleton and does not
- * need to be invoked directly.
+ * @brief Collects system-specific data to generate a unique machine identifier and encryption key.
  */
 void Licensing::MachineID::readInformation()
 {

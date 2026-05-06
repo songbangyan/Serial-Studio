@@ -20,15 +20,6 @@ namespace AI {
 
 /**
  * @brief Streaming Server-Sent-Events parser used by AnthropicReply.
- *
- * Anthropic emits "event: <name>\ndata: <json>\n\n" framing on the
- * Messages API stream. This class accumulates raw bytes and emits one
- * @ref frameReceived signal per complete frame. It is provider-neutral
- * and holds no network state, so it can be unit-tested by feeding
- * fixture bytes.
- *
- * Bounded buffer: rejects frames whose accumulated payload exceeds
- * kMaxPayloadBytes (1 MB) to satisfy NASA Power-of-Ten Rule 2.
  */
 class SseEventReader : public QObject {
   Q_OBJECT

@@ -30,10 +30,6 @@ namespace Sessions {
 
 /**
  * @brief Owns the session database file and backs the Database Explorer UI.
- *
- * The actual SQLite connection is owned by a @c DatabaseWorker that runs on a
- * dedicated thread. This object keeps the QML-facing caches and dispatches
- * mutating operations to the worker via queued slots.
  */
 class DatabaseManager : public QObject {
   // clang-format off

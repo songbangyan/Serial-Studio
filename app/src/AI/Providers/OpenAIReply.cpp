@@ -310,6 +310,14 @@ void AI::OpenAIReply::onReplyFinished()
 
   m_sse->feed({});
   emitPendingToolCalls();
+
+  // Diagnostic for tool_calls finish_reason without any deltas
+  if (m_finishReason == QStringLiteral("tool_calls") && m_toolCalls.isEmpty()) {
+    qCWarning(serialStudioAI) << m_providerLabel
+                              << "finish_reason=tool_calls but no tool_calls deltas were received "
+                                 "-- treat as malformed stream from the provider";
+  }
+
   finishOk();
 }
 

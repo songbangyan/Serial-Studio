@@ -55,7 +55,7 @@ void API::Handlers::UARTHandler::registerLineSettings(CommandRegistry& registry)
                                         921600};
 
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setBaudRate"),
+    QStringLiteral("io.uart.setBaudRate"),
     QStringLiteral("Set baud rate (params: baudRate)"),
     API::makeSchema({API::enumProp(QStringLiteral("baudRate"),
                                    QStringLiteral("Baud rate in bits per second"),
@@ -63,7 +63,7 @@ void API::Handlers::UARTHandler::registerLineSettings(CommandRegistry& registry)
                                    9600)}),
     &setBaudRate);
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setParity"),
+    QStringLiteral("io.uart.setParity"),
     QStringLiteral("Set parity (params: parityIndex - 0=None, 1=Even, 2=Odd, 3=Space, 4=Mark)"),
     API::makeSchema(
       {API::enumProp(QStringLiteral("parityIndex"),
@@ -72,7 +72,7 @@ void API::Handlers::UARTHandler::registerLineSettings(CommandRegistry& registry)
                      0)}),
     &setParity);
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setDataBits"),
+    QStringLiteral("io.uart.setDataBits"),
     QStringLiteral("Set data bits (params: dataBitsIndex - 0=5, 1=6, 2=7, 3=8)"),
     API::makeSchema({API::enumProp(QStringLiteral("dataBitsIndex"),
                                    QStringLiteral("Data bits index (0=5, 1=6, 2=7, 3=8)"),
@@ -80,7 +80,7 @@ void API::Handlers::UARTHandler::registerLineSettings(CommandRegistry& registry)
                                    3)}),
     &setDataBits);
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setStopBits"),
+    QStringLiteral("io.uart.setStopBits"),
     QStringLiteral("Set stop bits (params: stopBitsIndex - 0=1, 1=1.5, 2=2)"),
     API::makeSchema({API::enumProp(QStringLiteral("stopBitsIndex"),
                                    QStringLiteral("Stop bits index (0=1, 1=1.5, 2=2)"),
@@ -88,7 +88,7 @@ void API::Handlers::UARTHandler::registerLineSettings(CommandRegistry& registry)
                                    0)}),
     &setStopBits);
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setFlowControl"),
+    QStringLiteral("io.uart.setFlowControl"),
     QStringLiteral("Set flow control (params: flowControlIndex - 0=None, 1=Hardware, 2=Software)"),
     API::makeSchema(
       {API::enumProp(QStringLiteral("flowControlIndex"),
@@ -106,7 +106,7 @@ void API::Handlers::UARTHandler::registerCommands()
   auto& registry = CommandRegistry::instance();
 
   // Port selection
-  registry.registerCommand(QStringLiteral("io.driver.uart.setDevice"),
+  registry.registerCommand(QStringLiteral("io.uart.setDevice"),
                            QStringLiteral("Set serial port by device name (params: device)"),
                            API::makeSchema({
                              {QStringLiteral("device"),
@@ -116,7 +116,7 @@ void API::Handlers::UARTHandler::registerCommands()
                            &setDevice);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.uart.setPortIndex"),
+    QStringLiteral("io.uart.setPortIndex"),
     QStringLiteral("Set serial port by index (params: portIndex)"),
     API::makeSchema({API::rangeProp(QStringLiteral("portIndex"),
                                     QStringLiteral("Serial port index (0-based)"),
@@ -127,7 +127,7 @@ void API::Handlers::UARTHandler::registerCommands()
   registerLineSettings(registry);
 
   // Signals + reconnect
-  registry.registerCommand(QStringLiteral("io.driver.uart.setDtrEnabled"),
+  registry.registerCommand(QStringLiteral("io.uart.setDtrEnabled"),
                            QStringLiteral("Enable/disable DTR signal (params: dtrEnabled)"),
                            API::makeSchema({
                              {QStringLiteral("dtrEnabled"),
@@ -135,7 +135,7 @@ void API::Handlers::UARTHandler::registerCommands()
                               QStringLiteral("Enable DTR signal")}
   }),
                            &setDtrEnabled);
-  registry.registerCommand(QStringLiteral("io.driver.uart.setAutoReconnect"),
+  registry.registerCommand(QStringLiteral("io.uart.setAutoReconnect"),
                            QStringLiteral("Set auto-reconnect behavior (params: autoReconnect)"),
                            API::makeSchema({
                              {QStringLiteral("autoReconnect"),
@@ -145,13 +145,13 @@ void API::Handlers::UARTHandler::registerCommands()
                            &setAutoReconnect);
 
   // Query commands
-  registry.registerCommand(QStringLiteral("io.driver.uart.getPortList"),
+  registry.registerCommand(QStringLiteral("io.uart.listPorts"),
                            QStringLiteral("Get list of available serial ports"),
                            &getPortList);
-  registry.registerCommand(QStringLiteral("io.driver.uart.getBaudRateList"),
+  registry.registerCommand(QStringLiteral("io.uart.listBaudRates"),
                            QStringLiteral("Get list of common baud rates"),
                            &getBaudRateList);
-  registry.registerCommand(QStringLiteral("io.driver.uart.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.uart.getConfig"),
                            QStringLiteral("Get current UART configuration"),
                            &getConfiguration);
 }
@@ -162,7 +162,6 @@ void API::Handlers::UARTHandler::registerCommands()
 
 /**
  * @brief Set serial port by device name
- * @param params Requires "device" (string, e.g., "COM3" or "/dev/ttyUSB0")
  */
 API::CommandResponse API::Handlers::UARTHandler::setDevice(const QString& id,
                                                            const QJsonObject& params)
@@ -189,7 +188,6 @@ API::CommandResponse API::Handlers::UARTHandler::setDevice(const QString& id,
 
 /**
  * @brief Set serial port by index
- * @param params Requires "portIndex" (int)
  */
 API::CommandResponse API::Handlers::UARTHandler::setPortIndex(const QString& id,
                                                               const QJsonObject& params)
@@ -224,7 +222,6 @@ API::CommandResponse API::Handlers::UARTHandler::setPortIndex(const QString& id,
 
 /**
  * @brief Set baud rate
- * @param params Requires "baudRate" (int)
  */
 API::CommandResponse API::Handlers::UARTHandler::setBaudRate(const QString& id,
                                                              const QJsonObject& params)
@@ -251,8 +248,6 @@ API::CommandResponse API::Handlers::UARTHandler::setBaudRate(const QString& id,
 
 /**
  * @brief Set parity
- * @param params Requires "parityIndex" (int: 0=None, 1=Even, 2=Odd, 3=Space,
- * 4=Mark)
  */
 API::CommandResponse API::Handlers::UARTHandler::setParity(const QString& id,
                                                            const QJsonObject& params)
@@ -287,7 +282,6 @@ API::CommandResponse API::Handlers::UARTHandler::setParity(const QString& id,
 
 /**
  * @brief Set data bits
- * @param params Requires "dataBitsIndex" (int: 0=5, 1=6, 2=7, 3=8)
  */
 API::CommandResponse API::Handlers::UARTHandler::setDataBits(const QString& id,
                                                              const QJsonObject& params)
@@ -322,7 +316,6 @@ API::CommandResponse API::Handlers::UARTHandler::setDataBits(const QString& id,
 
 /**
  * @brief Set stop bits
- * @param params Requires "stopBitsIndex" (int: 0=1, 1=1.5, 2=2)
  */
 API::CommandResponse API::Handlers::UARTHandler::setStopBits(const QString& id,
                                                              const QJsonObject& params)
@@ -357,8 +350,6 @@ API::CommandResponse API::Handlers::UARTHandler::setStopBits(const QString& id,
 
 /**
  * @brief Set flow control
- * @param params Requires "flowControlIndex" (int: 0=None, 1=Hardware,
- * 2=Software)
  */
 API::CommandResponse API::Handlers::UARTHandler::setFlowControl(const QString& id,
                                                                 const QJsonObject& params)
@@ -394,7 +385,6 @@ API::CommandResponse API::Handlers::UARTHandler::setFlowControl(const QString& i
 
 /**
  * @brief Enable or disable DTR signal
- * @param params Requires "dtrEnabled" (bool)
  */
 API::CommandResponse API::Handlers::UARTHandler::setDtrEnabled(const QString& id,
                                                                const QJsonObject& params)
@@ -416,7 +406,6 @@ API::CommandResponse API::Handlers::UARTHandler::setDtrEnabled(const QString& id
 
 /**
  * @brief Set auto-reconnect behavior
- * @param params Requires "autoReconnect" (bool)
  */
 API::CommandResponse API::Handlers::UARTHandler::setAutoReconnect(const QString& id,
                                                                   const QJsonObject& params)

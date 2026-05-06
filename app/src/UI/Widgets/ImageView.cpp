@@ -48,7 +48,6 @@ static constexpr quint32 kMaxImageSize = 64 * 1024 * 1024;
 
 /**
  * @brief Constructs an autodetect-mode reader.
- * @param parent Optional QObject parent.
  */
 Widgets::ImageFrameReader::ImageFrameReader(QObject* parent)
   : QObject(parent), m_mode(DetectionMode::Autodetect), m_inFrame(false), m_frameStartPos(-1)
@@ -56,9 +55,6 @@ Widgets::ImageFrameReader::ImageFrameReader(QObject* parent)
 
 /**
  * @brief Constructs a manual-mode reader with explicit start/end byte sequences.
- * @param startSeq  Raw bytes marking the beginning of an image frame.
- * @param endSeq    Raw bytes marking the end of an image frame.
- * @param parent    Optional QObject parent.
  */
 Widgets::ImageFrameReader::ImageFrameReader(QByteArray startSeq, QByteArray endSeq, QObject* parent)
   : QObject(parent)
@@ -70,9 +66,7 @@ Widgets::ImageFrameReader::ImageFrameReader(QByteArray startSeq, QByteArray endS
 {}
 
 /**
- * @brief Appends incoming bytes to the accumulator and dispatches to the
- *        active detection mode.
- * @param data  Shared pointer to the raw byte chunk from the HAL driver.
+ * @brief Appends incoming bytes to the accumulator and dispatches to the active detection mode.
  */
 void Widgets::ImageFrameReader::processData(const IO::CapturedDataPtr& data)
 {
@@ -82,7 +76,10 @@ void Widgets::ImageFrameReader::processData(const IO::CapturedDataPtr& data)
   if (!data || !data->data || data->data->isEmpty())
     return;
 
+  // image accumulator; QByteArray amortizes growth
+  // code-verify off
   m_accumulator.append(*data->data);
+  // code-verify on
 
   if (m_mode == DetectionMode::Autodetect)
     processAutodetect();
@@ -333,8 +330,6 @@ void Widgets::ImageFrameReader::processManual()
 
 /**
  * @brief Constructs the ImageView widget model and wires the driver connection.
- * @param index   Dashboard widget index used to look up group metadata.
- * @param parent  Optional QQuickItem parent.
  */
 Widgets::ImageView::ImageView(int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -379,9 +374,6 @@ Widgets::ImageView::~ImageView()
 
 /**
  * @brief Returns a cache-busting URL for the current frame.
- *
- * The frame counter is appended so each call produces a unique URL, forcing
- * Qt's scene graph to re-request the texture instead of serving a cached copy.
  */
 QString Widgets::ImageView::imageUrl() const
 {
@@ -447,7 +439,6 @@ bool Widgets::ImageView::exportEnabled() const noexcept
 
 /**
  * @brief Enables or disables per-widget image export.
- * @param enabled  @c true to start exporting frames, @c false to stop.
  */
 void Widgets::ImageView::setExportEnabled(bool enabled)
 {
@@ -464,10 +455,6 @@ void Widgets::ImageView::setExportEnabled(bool enabled)
 
 /**
  * @brief Decodes a complete image frame and pushes it to the image provider.
- *
- * Detects the format, decodes via @c QImage::fromData, updates dimensions,
- * publishes to @c UI::ImageProvider, and enqueues for export when enabled.
- * @param data  Raw bytes of a single image frame.
  */
 void Widgets::ImageView::onFrameReady(const QByteArray& data)
 {
@@ -521,11 +508,8 @@ void Widgets::ImageView::onFrameReady(const QByteArray& data)
 }
 
 /**
- * @brief Destroys the current @c ImageFrameReader and creates a new one with
- *        the latest delimiter configuration from the project model.
- *
- * Called whenever the active driver changes. The old reader is scheduled for
- * deletion via @c deleteLater() to avoid destroying it mid-signal.
+ * @brief Destroys the current @c ImageFrameReader and creates a new one with the latest delimiter
+ * configuration from the project model.
  */
 void Widgets::ImageView::reconfigureReader()
 {
@@ -568,8 +552,6 @@ void Widgets::ImageView::reconfigureReader()
 
 /**
  * @brief Identifies the image format from the first few bytes of @p data.
- * @param data  Raw image bytes.
- * @return "JPEG", "PNG", "BMP", "WebP", or "Unknown".
  */
 QString Widgets::ImageView::detectFormat(const QByteArray& data)
 {

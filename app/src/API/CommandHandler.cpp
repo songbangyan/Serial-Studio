@@ -32,6 +32,7 @@
 #include "API/Handlers/IOManagerHandler.h"
 #include "API/Handlers/NetworkHandler.h"
 #include "API/Handlers/ProjectHandler.h"
+#include "API/Handlers/ScriptsHandler.h"
 #include "API/Handlers/SourceHandler.h"
 #include "API/Handlers/UARTHandler.h"
 #include "API/Handlers/WindowHandler.h"
@@ -64,13 +65,11 @@ constexpr int kMaxBatchCommands = 256;
 
 /**
  * @brief Constructs the CommandHandler
- * @param parent Optional parent QObject
  */
 API::CommandHandler::CommandHandler(QObject* parent) : QObject(parent), m_initialized(false) {}
 
 /**
  * @brief Gets the singleton instance of the CommandHandler
- * @return Reference to the singleton instance
  */
 API::CommandHandler& API::CommandHandler::instance()
 {
@@ -87,8 +86,6 @@ API::CommandHandler& API::CommandHandler::instance()
 
 /**
  * @brief Check if data appears to be an API message
- * @param data Raw bytes to check
- * @return true if data looks like a JSON API command
  */
 bool API::CommandHandler::isApiMessage(const QByteArray& data) const
 {
@@ -97,8 +94,6 @@ bool API::CommandHandler::isApiMessage(const QByteArray& data) const
 
 /**
  * @brief Process an incoming message and generate a response
- * @param data Raw JSON message bytes
- * @return JSON response bytes ready to send to client
  */
 QByteArray API::CommandHandler::processMessage(const QByteArray& data)
 {
@@ -154,8 +149,6 @@ QByteArray API::CommandHandler::processMessage(const QByteArray& data)
 
 /**
  * @brief Process a single command request
- * @param request The parsed command request
- * @return CommandResponse with result or error
  */
 API::CommandResponse API::CommandHandler::processCommand(const CommandRequest& request)
 {
@@ -168,11 +161,6 @@ API::CommandResponse API::CommandHandler::processCommand(const CommandRequest& r
 
 /**
  * @brief Process a batch of commands in sequential order
- * @param batch The parsed batch request
- * @return BatchResponse with all individual command results
- *
- * Commands are executed in the order they appear in the batch.
- * Execution continues even if individual commands fail.
  */
 API::BatchResponse API::CommandHandler::processBatch(const BatchRequest& batch)
 {
@@ -198,7 +186,6 @@ API::BatchResponse API::CommandHandler::processBatch(const BatchRequest& batch)
 
 /**
  * @brief Get information about all available commands
- * @return JSON object with command list and descriptions
  */
 QJsonObject API::CommandHandler::getAvailableCommands() const
 {
@@ -219,9 +206,6 @@ QJsonObject API::CommandHandler::getAvailableCommands() const
 
 /**
  * @brief Initialize all command handlers
- *
- * This registers all available commands from the various handler classes.
- * Called automatically on first access to the CommandHandler.
  */
 void API::CommandHandler::initializeHandlers()
 {
@@ -251,6 +235,7 @@ void API::CommandHandler::initializeHandlers()
   Handlers::ExtensionHandler::registerCommands();
   Handlers::DataTablesHandler::registerCommands();
   Handlers::WorkspacesHandler::registerCommands();
+  Handlers::ScriptsHandler::registerCommands();
 
 #ifdef BUILD_COMMERCIAL
   Handlers::ModbusHandler::registerCommands();

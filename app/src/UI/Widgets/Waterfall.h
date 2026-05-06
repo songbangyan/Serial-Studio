@@ -33,9 +33,6 @@ namespace Widgets {
 
 /**
  * @brief Pro waterfall (spectrogram) widget -- scrolling time-frequency plot.
- *
- * Reuses the dataset's FFT settings (samples, sampling rate, min/max) and
- * maintains a history of FFT magnitude rows rendered as a color-mapped image.
  */
 class Waterfall : public QuickPaintedItemCompat {
   // clang-format off

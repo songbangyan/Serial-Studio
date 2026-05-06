@@ -517,10 +517,6 @@ QStringList DataModel::ProjectModel::xDataSources() const
 
 /**
  * @brief Returns "Time" plus every dataset label, sorted by frame index.
- *
- * Mirrors xDataSources() but with "Time" as the implicit zeroth option, so the
- * waterfall plot can swap its Y axis between elapsed time (default scrolling
- * spectrogram) and any other dataset's value (Campbell-diagram mode).
  */
 QStringList DataModel::ProjectModel::yWaterfallSources() const
 {
@@ -885,7 +881,6 @@ void DataModel::ProjectModel::deleteSource(int sourceId)
 
 /**
  * @brief Duplicates the source with the given @p sourceId.
- * @param sourceId The id of the source to duplicate.
  */
 void DataModel::ProjectModel::duplicateSource(int sourceId)
 {
@@ -912,8 +907,6 @@ void DataModel::ProjectModel::duplicateSource(int sourceId)
 
 /**
  * @brief Updates the source with the given @p sourceId.
- * @param sourceId The id of the source to update.
- * @param source   New source data.
  */
 void DataModel::ProjectModel::updateSource(int sourceId, const DataModel::Source& source)
 {
@@ -941,8 +934,6 @@ void DataModel::ProjectModel::updateSource(int sourceId, const DataModel::Source
 
 /**
  * @brief Updates the title of the source with the given @p sourceId.
- * @param sourceId The id of the source to update.
- * @param title    New title string.
  */
 void DataModel::ProjectModel::updateSourceTitle(int sourceId, const QString& title)
 {
@@ -956,8 +947,6 @@ void DataModel::ProjectModel::updateSourceTitle(int sourceId, const QString& tit
 
 /**
  * @brief Updates the bus type of the source with the given @p sourceId.
- * @param sourceId The id of the source to update.
- * @param busType  New bus type as int (cast to SerialStudio::BusType at use).
  */
 void DataModel::ProjectModel::updateSourceBusType(int sourceId, int busType)
 {
@@ -972,8 +961,6 @@ void DataModel::ProjectModel::updateSourceBusType(int sourceId, int busType)
 
 /**
  * @brief Updates the per-source JavaScript frame parser code.
- * @param sourceId The id of the source to update.
- * @param code     The new JavaScript source string.
  */
 void DataModel::ProjectModel::updateSourceFrameParser(int sourceId, const QString& code)
 {
@@ -990,17 +977,7 @@ void DataModel::ProjectModel::updateSourceFrameParser(int sourceId, const QStrin
 
 /**
  * @brief Snapshots the current driver settings for source @p sourceId into
- *        Source::connectionSettings.
- *
- * Calls driverProperties() on the live driver to get the current values and
- * serialises them to JSON.
- *
- * Uses uiDriverForBusType() instead of driverForEditing() because the caller
- * has already put the shared UI driver into the desired state via
- * setDriverProperty(). Calling driverForEditing() would re-apply the old
- * saved connectionSettings and overwrite the edit that was just made.
- *
- * @param sourceId The source whose connectionSettings should be updated.
+ * Source::connectionSettings.
  */
 void DataModel::ProjectModel::captureSourceSettings(int sourceId)
 {
@@ -1487,9 +1464,6 @@ void DataModel::ProjectModel::clearJsonFilePath()
 
 /**
  * @brief Sets the frame start delimiter sequence.
- *
- * Also syncs into sources[0].frameStart in single-source mode so that
- * buildFrameConfig() uses the correct delimiter for the FrameReader.
  */
 void DataModel::ProjectModel::setFrameStartSequence(const QString& sequence)
 {
@@ -2117,9 +2091,6 @@ void DataModel::ProjectModel::updateGroup(const int groupId,
 
 /**
  * @brief Replaces the dataset at @p groupId/@p datasetId.
- *
- * Emits groupsChanged() only when @p rebuildTree is true (e.g. title/icon change).
- * For scalar-only edits, just updates in-place and marks the project modified.
  */
 void DataModel::ProjectModel::updateDataset(const int groupId,
                                             const int datasetId,
@@ -2308,8 +2279,13 @@ void DataModel::ProjectModel::deleteCurrentDataset()
   // Erase the dataset
   m_groups[groupId].datasets.erase(m_groups[groupId].datasets.begin() + datasetId);
 
-  // If the group is now empty, remove it and renumber all groups
-  if (m_groups[groupId].datasets.empty()) {
+  // Painter/image/empty-widget groups may be empty (read via datasetGetFinal)
+  const auto& widgetId        = m_groups[groupId].widget;
+  const bool widgetCanBeEmpty = (widgetId == QLatin1String("painter")
+                                 || widgetId == QLatin1String("image") || widgetId.isEmpty());
+
+  // Drop and renumber when group is empty and widget needs datasets
+  if (m_groups[groupId].datasets.empty() && !widgetCanBeEmpty) {
     m_groups.erase(m_groups.begin() + groupId);
 
     int id = 0;
@@ -3123,11 +3099,6 @@ void DataModel::ProjectModel::duplicateCurrentDataset()
 
 /**
  * @brief Ensures a compatible group is selected before adding a dataset.
- *
- * A compatible group is one whose widget is NoGroupWidget, MultiPlot, or
- * DataGrid. If the current selection is already such a group (or a dataset
- * within one), it is used. Otherwise, the first compatible group is selected.
- * When no compatible group exists, a new one is created.
  */
 void DataModel::ProjectModel::ensureValidGroup()
 {
@@ -3262,11 +3233,8 @@ void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption optio
 }
 
 /**
- * @brief Appends template-defined datasets to a painter group when the group
- *        has fewer than the spec demands. Existing datasets are preserved.
- *
- * `specs` entries may carry { title, units, min, max }; missing fields fall
- * back to safe defaults.
+ * @brief Appends template-defined datasets to a painter group when the group has fewer than the
+ * spec demands. Existing datasets are preserved.
  */
 void DataModel::ProjectModel::ensurePainterDatasets(int groupId, const QVariantList& specs)
 {
@@ -3718,11 +3686,6 @@ void DataModel::ProjectModel::storeFrameParserCode(int sourceId, const QString& 
 
 /**
  * @brief Stages the active dashboard tab group ID.
- *
- * Stored in m_widgetSettings so it survives a save/load cycle and marks
- * the project as modified. No disk write happens here -- the standard
- * save workflow is responsible for flushing. No-op outside ProjectFile
- * mode so QuickPlot/ConsoleOnly can't pollute the loaded project.
  */
 void DataModel::ProjectModel::setActiveGroupId(const int groupId)
 {
@@ -3749,14 +3712,6 @@ void DataModel::ProjectModel::setActiveGroupId(const int groupId)
 
 /**
  * @brief Stages the widget layout for a specific group.
- *
- * Stores the layout under the canonical key produced by Keys::layoutKey()
- * and marks the project as modified. No disk write happens here -- the
- * standard save workflow is responsible for flushing. No-op outside
- * ProjectFile mode so QuickPlot/ConsoleOnly can't pollute the loaded project.
- *
- * @param groupId  The group whose layout is being saved.
- * @param layout   The layout QJsonObject to store.
  */
 void DataModel::ProjectModel::setGroupLayout(const int groupId, const QJsonObject& layout)
 {
@@ -3809,9 +3764,6 @@ void DataModel::ProjectModel::setGroupLayout(const int groupId, const QJsonObjec
 
 /**
  * @brief Creates a new user-defined workspace with the given title.
- *
- * Assigns the next available workspace ID (max existing + 1, starting at 1000
- * to avoid collision with auto-generated group-based workspace IDs).
  */
 int DataModel::ProjectModel::addWorkspace(const QString& title)
 {
@@ -3884,15 +3836,40 @@ void DataModel::ProjectModel::renameWorkspace(int workspaceId, const QString& ti
   }
 }
 
+/**
+ * @brief Patches title and/or icon on the workspace with the given ID.
+ */
+void DataModel::ProjectModel::updateWorkspace(
+  int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon)
+{
+  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  if (!m_customizeWorkspaces)
+    setCustomizeWorkspaces(true);
+
+  for (auto& ws : m_workspaces) {
+    if (ws.workspaceId == workspaceId) {
+      if (setTitle)
+        ws.title = title.simplified();
+
+      if (setIcon)
+        ws.icon = icon;
+
+      setModified(true);
+      Q_EMIT editorWorkspacesChanged();
+      Q_EMIT activeWorkspacesChanged();
+      return;
+    }
+  }
+}
+
 //--------------------------------------------------------------------------------------------------
 // Data-table CRUD
 //--------------------------------------------------------------------------------------------------
 
 /**
  * @brief Adds a new empty data table with a unique name derived from @p name.
- *
- * @return The actual name used after uniquifying (callers use this to select
- *         the newly created table in the editor tree).
  */
 QString DataModel::ProjectModel::addTable(const QString& name)
 {
@@ -4071,8 +4048,6 @@ void DataModel::ProjectModel::updateRegister(const QString& table,
 
 /**
  * @brief Returns the register list of a table as a QVariantList for QML.
- *
- * Each entry: { name, type ("constant"|"computed"), value, valueType ("number"|"string") }
  */
 QVariantList DataModel::ProjectModel::registersForTable(const QString& table) const
 {
@@ -4246,8 +4221,6 @@ void DataModel::ProjectModel::confirmDeleteRegister(const QString& table,
 
 /**
  * @brief Exports a table's registers to a CSV file chosen by the user.
- *
- * Format: name,type,value -- one row per register, no header row.
  */
 void DataModel::ProjectModel::exportTableToCsv(const QString& tableName)
 {
@@ -4293,9 +4266,6 @@ void DataModel::ProjectModel::exportTableToCsv(const QString& tableName)
 
 /**
  * @brief Imports registers from a CSV file into an existing table.
- *
- * Expects format: name,type,value (with a header row). Creates registers
- * that don't exist; updates the type and value of registers that do.
  */
 void DataModel::ProjectModel::importTableFromCsv(const QString& tableName)
 {
@@ -4571,13 +4541,6 @@ void DataModel::ProjectModel::setCustomizeWorkspaces(const bool enabled)
 
 /**
  * @brief Synthesises the default workspace layout for a project.
- *
- * Walks every non-image / non-output group once, computing per-widget-type
- * running relativeIndex values that match Dashboard::buildWidgetGroups()'s
- * runtime assignment. Produces: Overview (one group widget per group), All
- * Data (every widget flattened), then one workspace per group. Mirrors the
- * legacy Taskbar auto-workspace behaviour so existing projects "just work"
- * without manual workspace configuration.
  */
 std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces() const
 {
@@ -4659,12 +4622,6 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
 
 /**
  * @brief Refreshes m_workspaces from the project structure WITHOUT emitting signals.
- *
- * The "Unnotified" suffix is the contract: callers must Q_EMIT
- * editorWorkspacesChanged() and activeWorkspacesChanged() themselves so they
- * can batch the emits with their own state changes. setModified() is also a
- * caller responsibility -- auto-regeneration is not a user-visible edit on its
- * own, only the surrounding action is.
  */
 void DataModel::ProjectModel::regenerateAutoWorkspacesUnnotified()
 {
@@ -4677,11 +4634,6 @@ void DataModel::ProjectModel::regenerateAutoWorkspacesUnnotified()
 
 /**
  * @brief Merges newly-eligible auto refs into the user-customised workspace list.
- *
- * In customize mode m_workspaces is user-owned and cannot be regenerated wholesale.
- * The diff against the last snapshot adds first-appearance refs and per-group
- * workspaces (preserving user-removed entries) and refreshes existing per-group
- * workspace titles. Returns true when m_workspaces was modified.
  */
 bool DataModel::ProjectModel::mergeAutoWorkspaceUpdates()
 {
@@ -4753,11 +4705,8 @@ bool DataModel::ProjectModel::mergeAutoWorkspaceUpdates()
 }
 
 /**
- * @brief Materialises the synthetic workspace list into m_workspaces and flips
- *        the project into customize mode so the user can edit it from there.
- *
- * @return id of the first workspace created, or -1 if the project has no
- *         eligible widgets.
+ * @brief Materialises the synthetic workspace list into m_workspaces and flips the project into
+ * customize mode so the user can edit it from there.
  */
 int DataModel::ProjectModel::autoGenerateWorkspaces()
 {
@@ -4893,10 +4842,6 @@ QMap<int, int> DataModel::ProjectModel::widgetTypeCountsForGroup(const Group& g)
 
 /**
  * @brief Shifts or drops user-customised widget refs after a group delete.
- *
- * Refs with groupId == deletedGid are dropped. Refs with groupId > deletedGid
- * have their groupId decremented and their relativeIndex reduced by the number
- * of same-type widgets the deleted group contributed.
  */
 void DataModel::ProjectModel::shiftWorkspaceRefsAfterGroupDelete(
   int deletedGid, const QMap<int, int>& deletedTypeCounts)
@@ -4938,12 +4883,8 @@ void DataModel::ProjectModel::shiftWorkspaceRefsAfterGroupDelete(
 }
 
 /**
- * @brief Updates m_hiddenGroupIds after a group is removed and surviving
- *        groups are renumbered down by 1.
- *
- * Drops the deleted ID; decrements every ID strictly greater than it. Without
- * this, hiding group 1 then deleting group 0 would silently hide what was
- * group 2 (now renumbered to 1).
+ * @brief Updates m_hiddenGroupIds after a group is removed and surviving groups are renumbered down
+ * by 1.
  */
 void DataModel::ProjectModel::shiftHiddenGroupIdsAfterGroupDelete(int deletedGid)
 {
@@ -4963,10 +4904,6 @@ void DataModel::ProjectModel::shiftHiddenGroupIdsAfterGroupDelete(int deletedGid
 
 /**
  * @brief Updates layout:N widgetSettings entries after a group renumber.
- *
- * Drops the deleted group's layout entry and shifts later layout:N keys down
- * by 1 so each group's saved dashboard layout follows the new groupId. Without
- * this, the surviving "Group N+1" inherits the deleted group's window layout.
  */
 void DataModel::ProjectModel::shiftLayoutKeysAfterGroupDelete(int deletedGid)
 {
@@ -5011,15 +4948,8 @@ void DataModel::ProjectModel::shiftLayoutKeysAfterGroupDelete(int deletedGid)
 }
 
 /**
- * @brief Shifts user-customised widget refs after a single dataset is deleted
- *        from a surviving group.
- *
- * The running per-widget-type counter used by Dashboard walks groups in order,
- * then datasets inside each group. A dataset removed from groupId "steals" N
- * positions from the counter for each widget type the dataset contributed --
- * refs whose relativeIndex is at or above that position need to shift down.
- * Refs pointing at the removed dataset itself (same groupId, relativeIndex in
- * the stolen range) are dropped.
+ * @brief Shifts user-customised widget refs after a single dataset is deleted from a surviving
+ * group.
  */
 void DataModel::ProjectModel::shiftWorkspaceRefsAfterDatasetDelete(
   int groupId, const QMap<int, int>& datasetTypeCounts)
@@ -5105,9 +5035,6 @@ void DataModel::ProjectModel::confirmDeleteWorkspace(int workspaceId)
 
 /**
  * @brief Hides an auto-generated group workspace from the workspace list.
- *
- * Does not affect the Overview workspace (id < 0). The hidden state is
- * persisted in the project file.
  */
 void DataModel::ProjectModel::hideGroup(int groupId)
 {
@@ -5195,12 +5122,8 @@ void DataModel::ProjectModel::showAllHiddenGroups()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Clears workspaces and widget settings for QuickPlot/ConsoleOnly
- *        sessions that have no backing project file.
- *
- * Skips when a file is loaded so a project's state survives across mode
- * switches and connection cycles -- even when the user runs QuickPlot on
- * top of an open project.
+ * @brief Clears workspaces and widget settings for QuickPlot/ConsoleOnly sessions that have no
+ * backing project file.
  */
 void DataModel::ProjectModel::clearTransientState()
 {
@@ -5228,8 +5151,6 @@ void DataModel::ProjectModel::clearTransientState()
 
 /**
  * @brief Returns the next available dataset frame index.
- *
- * Scans all datasets for the maximum index and returns max + 1.
  */
 int DataModel::ProjectModel::nextDatasetIndex()
 {
@@ -5245,7 +5166,6 @@ int DataModel::ProjectModel::nextDatasetIndex()
 
 /**
  * @brief Returns a snapshot of all sources suitable for QML diagram consumption.
- * @return QVariantList of QVariantMaps with keys: sourceId, busType, title.
  */
 QVariantList DataModel::ProjectModel::sourcesForDiagram() const
 {
@@ -5265,7 +5185,6 @@ QVariantList DataModel::ProjectModel::sourcesForDiagram() const
 
 /**
  * @brief Returns a snapshot of all groups (with their datasets) for QML diagram consumption.
- * @return QVariantList of QVariantMaps with keys: groupId, sourceId, title, widget, datasets.
  */
 QVariantList DataModel::ProjectModel::groupsForDiagram() const
 {
@@ -5313,7 +5232,6 @@ QVariantList DataModel::ProjectModel::groupsForDiagram() const
 
 /**
  * @brief Returns a snapshot of all actions suitable for QML diagram consumption.
- * @return QVariantList of QVariantMaps with keys: actionId, title, icon.
  */
 QVariantList DataModel::ProjectModel::actionsForDiagram() const
 {
@@ -5334,10 +5252,6 @@ QVariantList DataModel::ProjectModel::actionsForDiagram() const
 
 /**
  * @brief Silently writes the current project to disk; called from the debounce timer.
- *
- * Bypasses validateProject and the @c jsonFileChanged / @c sourceStructureChanged
- * cascade because nothing structural changed -- autosave only flushes layout
- * and widget-setting edits that already live in @c m_widgetSettings.
  */
 void DataModel::ProjectModel::autoSave()
 {
@@ -5376,10 +5290,6 @@ void DataModel::ProjectModel::flushAutoSave()
 
 /**
  * @brief Writes the current project to m_filePath and reloads it.
- *
- * Switches to ProjectFile mode via AppState and emits jsonFileChanged.
- *
- * @return true if the file was written successfully.
  */
 bool DataModel::ProjectModel::finalizeProjectSave()
 {
@@ -5406,4 +5316,175 @@ bool DataModel::ProjectModel::finalizeProjectSave()
   Q_EMIT jsonFileChanged();
   Q_EMIT sourceStructureChanged();
   return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Stateless id-based mutators
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Deletes the group at @p groupId via the existing selection-based path. */
+void DataModel::ProjectModel::deleteGroup(int groupId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  const auto previousSelection = m_selectedGroup;
+  setSelectedGroup(m_groups[groupId]);
+
+  const bool previousSuppress = m_suppressMessageBoxes;
+  m_suppressMessageBoxes      = true;
+  deleteCurrentGroup();
+  m_suppressMessageBoxes = previousSuppress;
+
+  // Restore selection if the previously-selected group still exists
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size()
+      && previousSelection.groupId != groupId)
+    setSelectedGroup(m_groups[previousSelection.groupId]);
+}
+
+/** @brief Duplicates the group at @p groupId via the existing selection-based path. */
+void DataModel::ProjectModel::duplicateGroup(int groupId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  const auto previousSelection = m_selectedGroup;
+  setSelectedGroup(m_groups[groupId]);
+  duplicateCurrentGroup();
+
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size())
+    setSelectedGroup(m_groups[previousSelection.groupId]);
+}
+
+/** @brief Deletes the dataset at @p groupId/@p datasetId. */
+void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= m_groups[groupId].datasets.size())
+    return;
+
+  const auto previousSelection = m_selectedDataset;
+  setSelectedDataset(m_groups[groupId].datasets[datasetId]);
+
+  const bool previousSuppress = m_suppressMessageBoxes;
+  m_suppressMessageBoxes      = true;
+  deleteCurrentDataset();
+  m_suppressMessageBoxes = previousSuppress;
+
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size()
+      && previousSelection.datasetId >= 0
+      && static_cast<size_t>(previousSelection.datasetId)
+           < m_groups[previousSelection.groupId].datasets.size()
+      && !(previousSelection.groupId == groupId && previousSelection.datasetId == datasetId))
+    setSelectedDataset(m_groups[previousSelection.groupId].datasets[previousSelection.datasetId]);
+}
+
+/** @brief Duplicates the dataset at @p groupId/@p datasetId. */
+void DataModel::ProjectModel::duplicateDataset(int groupId, int datasetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= m_groups[groupId].datasets.size())
+    return;
+
+  const auto previousSelection = m_selectedDataset;
+  setSelectedDataset(m_groups[groupId].datasets[datasetId]);
+  duplicateCurrentDataset();
+
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size()
+      && previousSelection.datasetId >= 0
+      && static_cast<size_t>(previousSelection.datasetId)
+           < m_groups[previousSelection.groupId].datasets.size())
+    setSelectedDataset(m_groups[previousSelection.groupId].datasets[previousSelection.datasetId]);
+}
+
+/** @brief Deletes the action at @p actionId via the existing selection-based path. */
+void DataModel::ProjectModel::deleteAction(int actionId)
+{
+  if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
+    return;
+
+  const auto previousSelection = m_selectedAction;
+  setSelectedAction(m_actions[actionId]);
+
+  const bool previousSuppress = m_suppressMessageBoxes;
+  m_suppressMessageBoxes      = true;
+  deleteCurrentAction();
+  m_suppressMessageBoxes = previousSuppress;
+
+  if (previousSelection.actionId >= 0
+      && static_cast<size_t>(previousSelection.actionId) < m_actions.size()
+      && previousSelection.actionId != actionId)
+    setSelectedAction(m_actions[previousSelection.actionId]);
+}
+
+/** @brief Duplicates the action at @p actionId. */
+void DataModel::ProjectModel::duplicateAction(int actionId)
+{
+  if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
+    return;
+
+  const auto previousSelection = m_selectedAction;
+  setSelectedAction(m_actions[actionId]);
+  duplicateCurrentAction();
+
+  if (previousSelection.actionId >= 0
+      && static_cast<size_t>(previousSelection.actionId) < m_actions.size())
+    setSelectedAction(m_actions[previousSelection.actionId]);
+}
+
+/** @brief Deletes the output widget at @p groupId/@p widgetId. */
+void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= m_groups[groupId].outputWidgets.size())
+    return;
+
+  const auto previousSelection = m_selectedOutputWidget;
+  setSelectedOutputWidget(m_groups[groupId].outputWidgets[widgetId]);
+
+  const bool previousSuppress = m_suppressMessageBoxes;
+  m_suppressMessageBoxes      = true;
+  deleteCurrentOutputWidget();
+  m_suppressMessageBoxes = previousSuppress;
+
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size()
+      && previousSelection.widgetId >= 0
+      && static_cast<size_t>(previousSelection.widgetId)
+           < m_groups[previousSelection.groupId].outputWidgets.size()
+      && !(previousSelection.groupId == groupId && previousSelection.widgetId == widgetId))
+    setSelectedOutputWidget(
+      m_groups[previousSelection.groupId].outputWidgets[previousSelection.widgetId]);
+}
+
+/** @brief Duplicates the output widget at @p groupId/@p widgetId. */
+void DataModel::ProjectModel::duplicateOutputWidget(int groupId, int widgetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= m_groups[groupId].outputWidgets.size())
+    return;
+
+  const auto previousSelection = m_selectedOutputWidget;
+  setSelectedOutputWidget(m_groups[groupId].outputWidgets[widgetId]);
+  duplicateCurrentOutputWidget();
+
+  if (previousSelection.groupId >= 0
+      && static_cast<size_t>(previousSelection.groupId) < m_groups.size()
+      && previousSelection.widgetId >= 0
+      && static_cast<size_t>(previousSelection.widgetId)
+           < m_groups[previousSelection.groupId].outputWidgets.size())
+    setSelectedOutputWidget(
+      m_groups[previousSelection.groupId].outputWidgets[previousSelection.widgetId]);
 }

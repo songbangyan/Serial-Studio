@@ -28,18 +28,6 @@
 namespace Misc {
 /**
  * @brief Secure JSON parsing and validation with configurable bounds checking.
- *
- * Provides defense against malformed or malicious JSON files that could cause
- * excessive memory use, deep recursion, or poor performance.
- *
- * **Default Security Constraints:**
- * - Maximum file size: 10 MB
- * - Maximum recursion depth: 128 levels
- * - Maximum array size: 10,000 elements
- *
- * **Thread Safety:** All methods are thread-safe (stateless static functions).
- *
- * **Performance:** O(n) where n = JSON size, with early termination on errors.
  */
 class JsonValidator {
 public:

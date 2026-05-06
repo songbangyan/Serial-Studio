@@ -58,12 +58,6 @@ bool Widgets::GPS::s_cacheInitialized = false;
 
 /**
  * @brief Constructs a GPS map widget using ArcGIS Maps tile data.
- *
- * Initializes internal state, sets up cache, and binds to dashboard
- * updates.
- *
- * @param index Index in the dashboard model (used for data binding).
- * @param parent Optional QML parent item.
  */
 Widgets::GPS::GPS(const int index, QQuickItem* parent)
   : QuickPaintedItemCompat(parent)
@@ -159,20 +153,6 @@ Widgets::GPS::GPS(const int index, QQuickItem* parent)
 
 /**
  * @brief Renders the GPS widget onto the screen.
- *
- * This function is called by the Qt framework whenever the widget needs to be
- * repainted. It verifies that the widget is both enabled and properly
- * configured before proceeding. The rendering process is broken into three main
- * steps:
- *
- * - Drawing the map tiles (`paintMap`)
- * - Drawing optional path data (e.g., trajectory lines) (`paintPathData`)
- * - Drawing attribution and copyright labels (`paintAttributionText`)
- *
- * The function ensures anti-aliasing is enabled for smooth visuals and uses
- * the current viewport size for all rendering operations.
- *
- * @param painter Pointer to the QPainter used for rendering the widget.
  */
 void Widgets::GPS::paint(QPainter* painter)
 {
@@ -225,12 +205,6 @@ double Widgets::GPS::longitude() const
 
 /**
  * @brief Returns the currently selected map type index.
- *
- * The index corresponds to an entry in the internal map type list.
- * This value is used to determine which tile set is used when rendering the
- * map.
- *
- * @return Integer index representing the selected map type.
  */
 int Widgets::GPS::mapType() const
 {
@@ -264,11 +238,6 @@ bool Widgets::GPS::autoCenter() const
 
 /**
  * @brief Returns the current state of the weather overlay visibility flag.
- *
- * This flag determines whether a global weather tile is used for the cloud
- * overlay using the Live Cloud Maps API.
- *
- * @return True if the weather overlay is enabled, false otherwise.
  */
 bool Widgets::GPS::showWeather() const
 {
@@ -277,11 +246,6 @@ bool Widgets::GPS::showWeather() const
 
 /**
  * @brief Indicates whether the map should display the GPS trajectory.
- *
- * When enabled, the widget will render a visual trail representing
- * the past GPS positions received over time.
- *
- * @return @c true if the trajectory line should be drawn; otherwise @c false.
  */
 bool Widgets::GPS::plotTrajectory() const
 {
@@ -290,11 +254,6 @@ bool Widgets::GPS::plotTrajectory() const
 
 /**
  * @brief Returns the current state of the weather overlay visibility flag.
- *
- * This flag determines whether weather tiles from NASA GIBS are being
- * requested and rendered over the base map.
- *
- * @return True if the weather overlay is enabled, false otherwise.
  */
 bool Widgets::GPS::showNasaWeather() const
 {
@@ -303,10 +262,6 @@ bool Widgets::GPS::showNasaWeather() const
 
 /**
  * @brief Provides the list of available user-friendly map type names.
- *
- * These names are suitable for display in a UI element (e.g., dropdown menu).
- *
- * @return Reference to the list of localized map type display names.
  */
 const QStringList& Widgets::GPS::mapTypes()
 {
@@ -319,9 +274,6 @@ const QStringList& Widgets::GPS::mapTypes()
 
 /**
  * @brief Re-centers the map to the latest GPS coordinates.
- *
- * Converts the current GPS lat/lon to tile coordinates and updates the center
- * of the map accordingly. Triggers a redraw.
  */
 void Widgets::GPS::center()
 {
@@ -335,17 +287,7 @@ void Widgets::GPS::center()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Sets the map zoom level, preserving viewport center if auto-centering
- *        is disabled.
- *
- * If auto-centering is off, the map is re-centered so that the geographic
- * location currently at the center of the viewport remains centered after
- * the zoom level change.
- *
- * If auto-centering is on, the map recenters on the current GPS position.
- *
- * @param zoom Desired zoom level. It will be clamped to the valid range
- *             for the current map type.
+ * @brief Sets the map zoom level, preserving viewport center if auto-centering is disabled.
  */
 void Widgets::GPS::setZoomLevel(int zoom)
 {
@@ -394,12 +336,6 @@ void Widgets::GPS::setZoomLevel(int zoom)
 
 /**
  * @brief Sets the zoom level with fractional precision for smooth zooming.
- *
- * This function accepts a floating-point zoom level and supports smooth
- * continuous zooming similar to Google Maps. Tiles are rendered at the
- * floor zoom level and scaled appropriately.
- *
- * @param zoom Desired zoom level (can be fractional).
  */
 void Widgets::GPS::setZoomLevelPrecise(double zoom)
 {
@@ -449,13 +385,6 @@ void Widgets::GPS::setZoomLevelPrecise(double zoom)
 
 /**
  * @brief Sets the active map type to be rendered.
- *
- * Updates the current map type, clears cached tiles, and triggers
- * reloading of appropriate tiles for the new map type.
- * If the current zoom exceeds the maximum allowed for this map type,
- * it will be adjusted automatically.
- *
- * @param type Index of the new map type from the mapTypes() list.
  */
 void Widgets::GPS::setMapType(const int type)
 {
@@ -499,7 +428,6 @@ void Widgets::GPS::setMapType(const int type)
 
 /**
  * @brief Enables/disables centering the map on the latest coordinate.
- * @param enabled boolean indicating if auto center is enabled.
  */
 void Widgets::GPS::setAutoCenter(const bool enabled)
 {
@@ -515,13 +443,7 @@ void Widgets::GPS::setAutoCenter(const bool enabled)
 }
 
 /**
- * @brief Enables or disables the display of weather overlay image from the
- *        Live Cloud Maps API.
- *
- * When enabled, this flag downloads an image from the Live Cloud Maps API with
- * the latest available global cloud imagery.
- *
- * @param enabled True to show the weather overlay, false to hide it.
+ * @brief Enables or disables the display of weather overlay image from the Live Cloud Maps API.
  */
 void Widgets::GPS::setShowWeather(const bool enabled)
 {
@@ -559,12 +481,6 @@ void Widgets::GPS::setShowWeather(const bool enabled)
 
 /**
  * @brief Enables or disables the trajectory visualization on the map.
- *
- * When set to @c true, the GPS widget draws a trail that represents the
- * historical path of the tracked GPS location. This value is persisted
- * in the application settings and takes effect immediately.
- *
- * @param enabled @c true to display the trajectory; @c false to hide it.
  */
 void Widgets::GPS::setPlotTrajectory(const bool enabled)
 {
@@ -578,18 +494,7 @@ void Widgets::GPS::setPlotTrajectory(const bool enabled)
 }
 
 /**
- * @brief Enables or disables the display of weather overlay tiles from NASA
- *        GIBS.
- *
- * When enabled, this flag triggers additional tile requests and rendering
- * of real-time weather imagery sourced from NASA's Global Imagery Browse
- * Services (GIBS). This setting is persisted to user configuration under the
- * "gpsNasaWeather" key.
- *
- * Changing this value forces a tile refresh, re-fetching visible tiles and
- * updating all related map data and cache state.
- *
- * @param enabled True to show the weather overlay, false to hide it.
+ * @brief Enables or disables the display of weather overlay tiles from NASA GIBS.
  */
 void Widgets::GPS::setShowNasaWeather(const bool enabled)
 {
@@ -613,9 +518,6 @@ void Widgets::GPS::setShowNasaWeather(const bool enabled)
 
 /**
  * @brief Updates GPS data from the dashboard model.
- *
- * Reads lat/lon/alt from the current dashboard group and updates internal
- * values. Emits `updated()` if any value changed.
  */
 void Widgets::GPS::updateData()
 {
@@ -676,7 +578,6 @@ void Widgets::GPS::updateData()
 
 /**
  * @brief Downloads a tile if it is not already cached or pending.
- * @param url The tile URL to fetch.
  */
 void Widgets::GPS::requestTileIfNeeded(const QString& url)
 {
@@ -690,13 +591,6 @@ void Widgets::GPS::requestTileIfNeeded(const QString& url)
 
 /**
  * @brief Preloads the four sub-tiles for the next zoom level.
- *
- * Called when the fractional zoom exceeds 0.7 to ensure a seamless visual
- * transition when the user zooms in from baseZoom to baseZoom + 1.
- *
- * @param tx       Tile X coordinate at the current zoom level.
- * @param ty       Tile Y coordinate at the current zoom level.
- * @param baseZoom Current (integer) zoom level.
  */
 void Widgets::GPS::preloadNextZoomTiles(int tx, int ty, int baseZoom)
 {
@@ -713,16 +607,6 @@ void Widgets::GPS::preloadNextZoomTiles(int tx, int ty, int baseZoom)
 
 /**
  * @brief Requests all visible map tiles for the current view and zoom level.
- *
- * This method calculates which tiles are currently visible on screen based on
- * the center tile coordinate and the widget's size. It then checks which of
- * those tiles are missing from the cache and issues network requests to fetch
- * them from the tile server.
- *
- * Only tiles within valid bounds (non-negative and less than 2^zoom) are
- * requested. Horizontal wrapping is handled during painting, not here.
- *
- * Downloaded tiles are tracked via s_pending to avoid duplicate requests.
  */
 void Widgets::GPS::updateTiles()
 {
@@ -780,10 +664,6 @@ void Widgets::GPS::updateTiles()
 
 /**
  * @brief Preloads all world tiles at the minimum zoom level.
- *
- * Used to populate the tile cache for a coarse overview of the world,
- * ensuring a quick rendering experience when initially loading the map.
- * Only requests tiles not already cached or pending.
  */
 void Widgets::GPS::precacheWorld()
 {
@@ -806,9 +686,6 @@ void Widgets::GPS::precacheWorld()
 
 /**
  * @brief Updates colors based on the current theme.
- *
- * Sets line head/tail colors as a brightness gradient around the base color.
- * Also updates grid and axis colors from the theme manager.
  */
 void Widgets::GPS::onThemeChanged()
 {
@@ -825,9 +702,6 @@ void Widgets::GPS::onThemeChanged()
 
 /**
  * @brief Called when a tile download finishes.
- * @param reply Pointer to the completed QNetworkReply.
- *
- * Parses image data, stores in cache, and triggers repaint.
  */
 void Widgets::GPS::onTileFetched(QNetworkReply* reply)
 {
@@ -854,19 +728,6 @@ void Widgets::GPS::onTileFetched(QNetworkReply* reply)
 
 /**
  * @brief Renders a scaled ancestor tile when the target tile is not yet cached.
- *
- * Walks up the zoom level hierarchy looking for a cached parent tile.
- * The matching sub-region is cropped and scaled to the target rectangle.
- * If the ancestor is too coarse (zoom difference > 5), fills with the tile's
- * dominant color to avoid visual noise from excessive upscaling.
- *
- * @param painter        Active QPainter for the map layer.
- * @param tx             Logical tile X (unwrapped).
- * @param ty             Tile Y coordinate.
- * @param baseZoom       Current (integer) zoom level.
- * @param targetRect     Screen rectangle for the tile.
- * @param scaledTileSize Fractionally-scaled tile pixel size.
- * @return true if a fallback was successfully rendered; false otherwise.
  */
 bool Widgets::GPS::renderFallbackTile(
   QPainter* painter, int tx, int ty, int baseZoom, const QRect& targetRect, double scaledTileSize)
@@ -911,11 +772,6 @@ bool Widgets::GPS::renderFallbackTile(
 
 /**
  * @brief Draws the NASA GIBS weather overlay tile if available in the cache.
- * @param painter    Active QPainter for the map layer.
- * @param wrappedTx  Wrapped tile X coordinate.
- * @param ty         Tile Y coordinate.
- * @param baseZoom   Current (integer) zoom level.
- * @param targetRect Screen rectangle for the tile.
  */
 void Widgets::GPS::renderWeatherOverlay(
   QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect)
@@ -935,11 +791,6 @@ void Widgets::GPS::renderWeatherOverlay(
 
 /**
  * @brief Draws the reference layer tile on top of the base tile.
- * @param painter    Active QPainter for the map layer.
- * @param wrappedTx  Wrapped tile X coordinate.
- * @param ty         Tile Y coordinate.
- * @param baseZoom   Current (integer) zoom level.
- * @param targetRect Screen rectangle for the tile.
  */
 void Widgets::GPS::renderReferenceOverlay(
   QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect)
@@ -958,19 +809,6 @@ void Widgets::GPS::renderReferenceOverlay(
 
 /**
  * @brief Renders the visible portion of the map using cached tiles.
- *
- * This function draws the background map tiles based on the current center
- * tile coordinates and zoom level. It first fills the viewport with a solid
- * color, then attempts to draw each visible tile. If a tile is missing at
- * the current zoom level, it falls back to a parent tile from a lower zoom,
- * scaling it appropriately. If the parent tile is too coarse (difference > 5),
- * it fills the tile with the tile's dominant color to avoid visual noise.
- *
- * Horizontal wrapping is handled to allow seamless east-west panning. Vertical
- * wrapping is not allowed.
- *
- * @param painter Pointer to the QPainter used for rendering.
- * @param view The current size of the widget viewport in pixels.
  */
 void Widgets::GPS::paintMap(QPainter* painter, const QSize& view)
 {
@@ -1083,15 +921,6 @@ void Widgets::GPS::renderCloudOverlay(QPainter* painter,
 
 /**
  * @brief Paints the GPS trajectory and position marker overlay.
- *
- * This function draws the cached image containing the GPS path data,
- * including the historical trajectory and current location indicator.
- * It assumes that the path image (`m_gpsDataImage`) has already been
- * updated via `updateData()` or a similar method and is aligned with
- * the current view transformation.
- *
- * @param painter Pointer to the QPainter used for rendering.
- * @param view The current size of the widget viewport (unused).
  */
 void Widgets::GPS::paintPathData(QPainter* painter, const QSize& view)
 {
@@ -1227,16 +1056,6 @@ void Widgets::GPS::renderPositionIndicator(
 
 /**
  * @brief Renders the map attribution text in the bottom-right corner.
- *
- * Draws a semi-transparent black background rectangle with white text
- * on top, indicating the copyright and attribution for map tile sources.
- * The text is anchored to the bottom-right of the current viewport.
- *
- * This function ensures compliance with usage requirements from tile
- * providers like Esri, Maxar, and Earthstar Geographics.
- *
- * @param painter Pointer to the QPainter used for rendering.
- * @param view Size of the current viewport, used to position the text.
  */
 void Widgets::GPS::paintAttributionText(QPainter* painter, const QSize& view)
 {
@@ -1287,19 +1106,6 @@ void Widgets::GPS::paintAttributionText(QPainter* painter, const QSize& view)
 
 /**
  * @brief Clamps the center tile coordinate to valid map bounds.
- *
- * Ensures the map center stays within the allowable tile range for the current
- * zoom level. This prevents the map from showing blank (black) areas near the
- * poles by accounting for the visible viewport height in tile units.
- *
- * - X is wrapped around the global map width to allow infinite horizontal
- *   panning.
- * - Y is clamped so the view remains entirely within the valid tile grid,
- *   preventing overshooting into non-existent map areas (north/south).
- *
- * @param tile Unbounded tile coordinate representing the desired map center.
- * @return A QPointF representing the adjusted (wrapped/clamped) center tile
- * coordinate.
  */
 QPointF Widgets::GPS::clampCenterTile(QPointF tile) const
 {
@@ -1325,9 +1131,6 @@ QPointF Widgets::GPS::clampCenterTile(QPointF tile) const
 
 /**
  * @brief Converts tile XY to geographic lat/lon.
- * @param tile Tile coordinate.
- * @param zoom Zoom level.
- * @return Coordinate in degrees (lat, lon).
  */
 QPointF Widgets::GPS::tileToLatLon(const QPointF& tile, double zoom)
 {
@@ -1340,10 +1143,6 @@ QPointF Widgets::GPS::tileToLatLon(const QPointF& tile, double zoom)
 
 /**
  * @brief Converts geographic lat/lon to tile XY.
- * @param lat Latitude in degrees.
- * @param lon Longitude in degrees.
- * @param zoom Zoom level (can be fractional).
- * @return Tile coordinate.
  */
 QPointF Widgets::GPS::latLonToTile(double lat, double lon, double zoom)
 {
@@ -1360,14 +1159,6 @@ QPointF Widgets::GPS::latLonToTile(double lat, double lon, double zoom)
 
 /**
  * @brief Constructs the URL to request a specific map tile.
- *
- * Supports both commercial and open versions of ArcGIS. In commercial
- * builds, an API key is appended to authenticate requests.
- *
- * @param tx Tile X coordinate (column).
- * @param ty Tile Y coordinate (row).
- * @param zoom Zoom level.
- * @return Fully constructed tile URL.
  */
 QString Widgets::GPS::tileUrl(const int tx, const int ty, const int zoom) const
 {
@@ -1390,16 +1181,6 @@ QString Widgets::GPS::tileUrl(const int tx, const int ty, const int zoom) const
 
 /**
  * @brief Constructs the URL to request a label (reference) tile overlay.
- *
- * This overlay adds geographic labels (boundaries, place names) on top of the
- * base map, typically used with the World_Imagery map to create a satellite map
- * with labels. In commercial builds, an API key is appended for authenticated
- * access.
- *
- * @param tx Tile X coordinate (column).
- * @param ty Tile Y coordinate (row).
- * @param zoom Zoom level.
- * @return Fully constructed URL for the reference tile.
  */
 QString Widgets::GPS::referenceUrl(const int tx, const int ty, const int zoom) const
 {
@@ -1421,22 +1202,6 @@ QString Widgets::GPS::referenceUrl(const int tx, const int ty, const int zoom) c
 
 /**
  * @brief Constructs the tile URL for NASA GIBS weather imagery.
- *
- * This function returns the URL to fetch a Composite VIIRS Corrected
- * Reflectance tile from NASA's Global Imagery Browse Services (GIBS),
- * using the current UTC date.
- *
- * The tiles follow the Google Maps compatible scheme (EPSG:3857).
- *
- * Note: This layer supports zoom levels up to 9. Higher requested zoom levels
- * are clamped to 9 to avoid invalid tile requests.
- *
- * @param tx Tile X coordinate (column).
- * @param ty Tile Y coordinate (row).
- * @param zoom Requested zoom level.
- *
- * @return Fully constructed weather tile URL for the given coordinates and
- * date.
  */
 QString Widgets::GPS::nasaWeatherUrl(const int tx, const int ty, const int zoom) const
 {
@@ -1455,14 +1220,6 @@ QString Widgets::GPS::nasaWeatherUrl(const int tx, const int ty, const int zoom)
 
 /**
  * @brief Handles mouse wheel zooming.
- * @param event Pointer to the wheel event.
- *
- * Zooms in/out based on scroll direction and recenters the map to keep the
- * current cursor location fixed in geo space.
- *
- * Applies smooth continuous zoom using the same approach as PlotWidget.
- * Normalizes scroll delta to fractional ticks for touchpad compatibility.
- * Renders tiles at floor(zoom) level with scaling for smooth transitions.
  */
 void Widgets::GPS::wheelEvent(QWheelEvent* event)
 {
@@ -1516,9 +1273,6 @@ void Widgets::GPS::wheelEvent(QWheelEvent* event)
 
 /**
  * @brief Handles map dragging via mouse move.
- * @param event Pointer to the mouse event.
- *
- * Shifts the center tile based on mouse movement to simulate map panning.
  */
 void Widgets::GPS::mouseMoveEvent(QMouseEvent* event)
 {
@@ -1537,7 +1291,6 @@ void Widgets::GPS::mouseMoveEvent(QMouseEvent* event)
 
 /**
  * @brief Records mouse position for dragging logic.
- * @param event Pointer to the mouse event.
  */
 void Widgets::GPS::mousePressEvent(QMouseEvent* event)
 {
@@ -1552,7 +1305,6 @@ void Widgets::GPS::mousePressEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse release events to stop dragging and reset cursor.
- * @param event The mouse release event.
  */
 void Widgets::GPS::mouseReleaseEvent(QMouseEvent* event)
 {

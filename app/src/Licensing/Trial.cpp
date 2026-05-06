@@ -54,10 +54,6 @@ static void installTrialToken(int daysRemaining)
 
 /**
  * @brief Constructs the Trial licensing system.
- *
- * Initializes encryption with a machine-specific key and loads any
- * cached trial data from persistent settings. If a trial was previously
- * enabled, it automatically revalidates it with the backend server.
  */
 Licensing::Trial::Trial()
   : m_busy(false)
@@ -89,7 +85,6 @@ Licensing::Trial::Trial()
 
 /**
  * @brief Gets the singleton instance of the Trial licensing class.
- * @return Reference to the static Trial instance.
  */
 Licensing::Trial& Licensing::Trial::instance()
 {
@@ -103,9 +98,6 @@ Licensing::Trial& Licensing::Trial::instance()
 
 /**
  * @brief Returns whether a trial query operation is currently running.
- *
- * Useful to disable UI elements while the API is validating,
- * activating, or deactivating a license key.
  */
 bool Licensing::Trial::busy() const noexcept
 {
@@ -114,7 +106,6 @@ bool Licensing::Trial::busy() const noexcept
 
 /**
  * @brief Checks whether the user has ever started a trial.
- * @return true if the user never started a trial, false otherwise.
  */
 bool Licensing::Trial::firstRun() const
 {
@@ -123,7 +114,6 @@ bool Licensing::Trial::firstRun() const
 
 /**
  * @brief Checks whether a trial period is currently active.
- * @return true if trial is active and valid, false otherwise.
  */
 bool Licensing::Trial::trialEnabled() const
 {
@@ -132,7 +122,6 @@ bool Licensing::Trial::trialEnabled() const
 
 /**
  * @brief Checks whether a trial period expired.
- * @return true if trial has been enabled and expired, false otherwise.
  */
 bool Licensing::Trial::trialExpired() const
 {
@@ -141,10 +130,6 @@ bool Licensing::Trial::trialExpired() const
 
 /**
  * @brief Checks if a trial can be started.
- *
- * Trial is only available if the app is not activated via Lemon Squeezy.
- *
- * @return true if a trial can be started, false otherwise.
  */
 bool Licensing::Trial::trialAvailable() const
 {
@@ -154,7 +139,6 @@ bool Licensing::Trial::trialAvailable() const
 
 /**
  * @brief Gets the number of days remaining in the active trial.
- * @return Days remaining, or 0 if expired or not started.
  */
 int Licensing::Trial::daysRemaining() const
 {
@@ -167,9 +151,6 @@ int Licensing::Trial::daysRemaining() const
 
 /**
  * @brief Starts the trial if available.
- *
- * Initiates a backend request to activate the trial. Does nothing
- * if a license is already active or the trial is not available.
  */
 void Licensing::Trial::enableTrial()
 {
@@ -179,9 +160,6 @@ void Licensing::Trial::enableTrial()
 
 /**
  * @brief Reads trial data from persistent storage.
- *
- * Decrypts saved data and restores trial activation state and expiry date.
- * If a trial was previously enabled, revalidates the trial status with backend.
  */
 void Licensing::Trial::readSettings()
 {
@@ -221,9 +199,6 @@ void Licensing::Trial::readSettings()
 
 /**
  * @brief Saves current trial state to persistent storage.
- *
- * Encrypts and stores the trial activation flag and expiry timestamp
- * using the machine-specific encryption key.
  */
 void Licensing::Trial::writeSettings()
 {
@@ -244,9 +219,6 @@ void Licensing::Trial::writeSettings()
 
 /**
  * @brief Sends a trial activation or validation request to the backend.
- *
- * Builds a signed payload including machine ID and a nonce, then
- * submits it via HTTPS to the activation endpoint.
  */
 void Licensing::Trial::fetchTrialState()
 {
@@ -279,21 +251,6 @@ void Licensing::Trial::fetchTrialState()
 
 /**
  * @brief Handles the server response for trial activation.
- *
- * This method is called when the server responds to a trial activation
- * request. It performs the following tasks:
- * - Clears the busy flag and emits `busyChanged()`
- * - Validates the network reply for errors
- * - Parses and verifies the JSON response from the server
- * - Sets the trial activation status, registration state, and expiration date
- * - Enforces a maximum trial period of 14 days from the current UTC time
- * - Saves the updated settings and emits `enabledChanged()`
- *
- * In case of any error (network failure, malformed data, or missing fields),
- * the function will notify the user with an appropriate message box and exit
- * early.
- *
- * @param reply The network reply object containing the server's response.
  */
 void Licensing::Trial::onServerReply(QNetworkReply* reply)
 {

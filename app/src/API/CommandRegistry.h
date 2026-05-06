@@ -74,6 +74,10 @@ public:
   [[nodiscard]] const QMap<QString, CommandDefinition>& commands() const;
 
 private:
+  CommandResponse buildUnknownCommandResponse(const QString& name, const QString& id) const;
+  void attachErrorMetadata(const QString& name, CommandResponse& response) const;
+  static QString classifyErrorCategory(const CommandResponse& response);
+
   QMap<QString, CommandDefinition> m_commands;
 };
 

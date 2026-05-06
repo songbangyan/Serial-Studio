@@ -34,21 +34,21 @@ class TestProcessHandlerPathValidation:
             "/tmp/malicious_binary",
         ]
 
-        api_client.command("io.manager.setBusType", {"busType": 8})
+        api_client.command("io.setBusType", {"busType": 8})
 
         for path in dangerous_paths:
             with pytest.raises(APIError):
                 api_client.command(
-                    "io.driver.process.setExecutable",
+                    "io.process.setExecutable",
                     {"executable": path},
                 )
 
     def test_set_executable_rejects_missing_param(self, api_client, clean_state):
         """ProcessHandler.setExecutable should reject missing param."""
-        api_client.command("io.manager.setBusType", {"busType": 8})
+        api_client.command("io.setBusType", {"busType": 8})
 
         with pytest.raises(APIError):
-            api_client.command("io.driver.process.setExecutable", {})
+            api_client.command("io.process.setExecutable", {})
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ class TestMQTTConfiguration:
     def test_mqtt_get_configuration(self, api_client, clean_state):
         """MQTT configuration should be retrievable."""
         try:
-            config = api_client.command("mqtt.getConfiguration")
+            config = api_client.command("mqtt.getConfig")
             assert isinstance(config, dict), "MQTT config should be a dict"
         except APIError as e:
             if "UNKNOWN_COMMAND" in str(e):
@@ -261,8 +261,8 @@ class TestAudioDriverConfiguration:
     def test_audio_bus_type_switch(self, api_client, clean_state):
         """Switching to audio bus type should not crash."""
         try:
-            api_client.command("io.manager.setBusType", {"busType": 3})
-            config = api_client.command("io.driver.audio.getConfiguration")
+            api_client.command("io.setBusType", {"busType": 3})
+            config = api_client.command("io.audio.getConfig")
             assert isinstance(config, dict)
         except APIError as e:
             if "COMMERCIAL" in str(e).upper() or "NOT_AVAILABLE" in str(e).upper():
@@ -272,8 +272,8 @@ class TestAudioDriverConfiguration:
     def test_audio_channel_counts_not_empty(self, api_client, clean_state):
         """Audio device capabilities should include valid channel counts."""
         try:
-            api_client.command("io.manager.setBusType", {"busType": 3})
-            config = api_client.command("io.driver.audio.getConfiguration")
+            api_client.command("io.setBusType", {"busType": 3})
+            config = api_client.command("io.audio.getConfig")
 
             # After Bug #2 fix, channel counts should always have fallback values
             input_channels = config.get("inputChannels", [])
@@ -302,17 +302,17 @@ class TestBusTypeSwitchingStress:
 
     def test_rapid_bus_switching_no_crash(self, api_client, clean_state):
         """Rapidly switching bus types should not crash or deadlock."""
-        available = api_client.command("io.manager.getAvailableBuses")
+        available = api_client.command("io.listBuses")
         buses = available.get("buses", [])
 
         for _ in range(3):
             for bus in buses:
                 try:
-                    api_client.command("io.manager.setBusType", {"busType": bus["index"]})
+                    api_client.command("io.setBusType", {"busType": bus["index"]})
                     time.sleep(0.02)
                 except APIError:
                     pass
 
         # Server should still respond
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert isinstance(status, dict)

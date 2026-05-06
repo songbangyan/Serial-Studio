@@ -257,7 +257,7 @@ def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
     time.sleep(0.3)
 
     api_client.set_operation_mode("project")
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.3)
 
     dashboard = api_client.get_dashboard_status()
@@ -297,18 +297,17 @@ def test_output_widget_js_function_format(api_client, clean_state):
 @pytest.mark.integration
 def test_output_widget_add_accepts_type_param(api_client, clean_state):
     """
-    The schema-advertised parameter for project.outputWidget.add is the
-    OutputWidgetType enum value under the key "type" (0=Button .. 5=RampGenerator).
-    An earlier revision advertised "groupId" but the handler read "type",
-    so every schema-conformant call was silently creating a Button.
+    project.outputWidget.add requires groupId + type (OutputWidgetType:
+    0=Button .. 5=RampGenerator). Earlier revisions advertised groupId
+    but the handler read "type", so every schema-conformant call
+    silently created a Button. v3.3 fixes the schema.
     """
-    api_client.command("project.group.add", {"title": "Outputs", "widgetType": 0})
-    time.sleep(0.15)
+    gid = api_client.add_group("Outputs", widget_type=0)
 
     for widget_name, widget_type in OUTPUT_WIDGET_TYPES.items():
         try:
             result = api_client.command(
-                "project.outputWidget.add", {"type": widget_type}
+                "project.outputWidget.add", {"groupId": gid, "type": widget_type}
             )
         except APIError as e:
             # Commercial license gating is acceptable; schema mismatch is not.

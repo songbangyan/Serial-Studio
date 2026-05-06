@@ -494,7 +494,6 @@ void Console::Handler::setupExternalConnections()
 
 /**
  * @brief Sends @a data to the connected device using the current send options.
- * @param data User-entered text or hex string.
  */
 void Console::Handler::send(const QString& data)
 {
@@ -625,7 +624,6 @@ void Console::Handler::setFontSize(const int size)
 
 /**
  * @brief Sets the currently selected checksum method by index.
- * @param method New checksum method index (from checksumMethods()).
  */
 void Console::Handler::setChecksumMethod(const int method)
 {
@@ -799,8 +797,6 @@ void Console::Handler::hotpathRxData(const IO::ByteArrayPtr& data)
 
 /**
  * @brief Routes incoming raw data to the per-device console buffer.
- * @param deviceId Source device identifier.
- * @param data     Raw incoming bytes.
  */
 void Console::Handler::hotpathRxDeviceData(int deviceId, const IO::ByteArrayPtr& data)
 {
@@ -826,8 +822,6 @@ void Console::Handler::displaySentData(QByteArrayView data)
 
 /**
  * @brief Echoes sent data to a specific device's console buffer.
- * @param deviceId Target device.
- * @param data     Bytes that were sent.
  */
 void Console::Handler::displaySentData(int deviceId, QByteArrayView data)
 {
@@ -893,7 +887,6 @@ void Console::Handler::setCurrentDeviceId(int deviceId)
 
 /**
  * @brief Maps a QML combobox index to a device source ID.
- * @param index Combobox index.
  */
 void Console::Handler::setCurrentDeviceIndex(int index)
 {
@@ -953,9 +946,6 @@ void Console::Handler::onDevicesChanged()
 
 /**
  * @brief Appends a string to the per-device buffer and optionally displays it.
- * @param deviceId     Target device ID.
- * @param str          The string to append.
- * @param addTimestamp Whether to prepend timestamps.
  */
 void Console::Handler::appendToDevice(int deviceId, const QString& str, bool addTimestamp)
 {
@@ -1120,8 +1110,6 @@ QString Console::Handler::dataToString(QByteArrayView data)
 
 /**
  * @brief Converts raw received bytes to a display string.
- * @param data Raw bytes to convert.
- * @return QString ready for the terminal widget.
  */
 QString Console::Handler::plainTextStr(QByteArrayView data)
 {

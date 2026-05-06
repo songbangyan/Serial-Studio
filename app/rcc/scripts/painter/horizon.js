@@ -11,22 +11,22 @@ function paint(ctx, w, h) {
   const roll   = datasets.length > 1 ? (datasets[1].value || 0) : 0;
 
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header strip.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("ATTITUDE  INDICATOR", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText("pitch / roll", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // Card containing the dark instrument.
@@ -38,9 +38,9 @@ function paint(ctx, w, h) {
   const cardW = w - padX * 2;
   const cardH = h - padTop - padBot;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(cardX + 1, cardY + 2, cardW, cardH);
-  ctx.fillStyle = "#0a0a0c";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(cardX, cardY, cardW, cardH);
 
   const cx = cardX + cardW * 0.5;
@@ -61,13 +61,13 @@ function paint(ctx, w, h) {
   ctx.translate(0, pitch * pxPerD);
 
   // Sky / ground.
-  ctx.fillStyle = "#3b82f6";
+  ctx.fillStyle = theme.widget_colors[0];
   ctx.fillRect(-r * 2, -r * 2, r * 4, r * 2);
-  ctx.fillStyle = "#7c3f00";
+  ctx.fillStyle = theme.widget_colors[3];
   ctx.fillRect(-r * 2, 0, r * 4, r * 2);
 
   // Horizon line.
-  ctx.strokeStyle = "#ffffff";
+  ctx.strokeStyle = theme.widget_text;
   ctx.lineWidth   = 2;
   ctx.beginPath();
   ctx.moveTo(-r, 0);
@@ -86,7 +86,7 @@ function paint(ctx, w, h) {
     ctx.stroke();
 
     if (p % 30 === 0) {
-      ctx.fillStyle    = "#ffffff";
+      ctx.fillStyle    = theme.widget_text;
       ctx.font         = "10px monospace";
       ctx.textAlign    = "right";
       ctx.textBaseline = "middle";
@@ -99,7 +99,7 @@ function paint(ctx, w, h) {
   ctx.restore();
 
   // Aircraft symbol.
-  ctx.strokeStyle = "#fde047";
+  ctx.strokeStyle = theme.accent;
   ctx.lineWidth   = 3;
   ctx.beginPath();
   ctx.moveTo(cx - r * 0.3, cy);
@@ -111,7 +111,7 @@ function paint(ctx, w, h) {
   ctx.stroke();
 
   // Instrument bezel.
-  ctx.strokeStyle = "#475569";
+  ctx.strokeStyle = theme.widget_text;
   ctx.lineWidth   = 2;
   ctx.beginPath();
   ctx.moveTo(cx + r, cy);
@@ -119,12 +119,12 @@ function paint(ctx, w, h) {
   ctx.stroke();
 
   // Card border.
-  ctx.strokeStyle = "#1f2937";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(cardX + 0.5, cardY + 0.5, cardW - 1, cardH - 1);
 
   // Pitch + roll readouts at the bottom on the cream area.
-  ctx.fillStyle    = "#0f172a";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "bold 12px sans-serif";
   ctx.textAlign    = "start";
   ctx.textBaseline = "alphabetic";

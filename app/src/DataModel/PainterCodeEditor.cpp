@@ -99,6 +99,21 @@ DataModel::PainterCodeEditor::PainterCodeEditor(QQuickItem* parent)
           this,
           &DataModel::PainterCodeEditor::loadTemplates);
 
+  // Refresh from ProjectModel on external group changes (AI/MCP edits)
+  connect(
+    &DataModel::ProjectModel::instance(), &DataModel::ProjectModel::groupDataChanged, this, [this] {
+      if (m_readingCode)
+        return;
+
+      auto& editor = DataModel::ProjectEditor::instance();
+      if (!editor.currentGroupIsPainter())
+        return;
+
+      const QString live = editor.currentGroupPainterCode();
+      if (live != m_widget.toPlainText())
+        readCode();
+    });
+
   loadTemplates();
   readCode();
 }
@@ -194,11 +209,6 @@ void DataModel::PainterCodeEditor::paste()
 
 /**
  * @brief Force-flushes the current editor text to the selected painter group.
- *
- * Belt-and-braces save called from PainterCodeDialog.onClosing so that closing
- * via the macOS red button / Cmd+W / Alt+F4 -- any caption-bar route -- always
- * commits the latest edit. Also finalises a pending IME composition (preedit
- * string) so the in-flight character isn't dropped at teardown.
  */
 void DataModel::PainterCodeEditor::commit()
 {

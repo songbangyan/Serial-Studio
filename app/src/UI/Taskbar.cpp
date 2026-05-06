@@ -39,34 +39,11 @@
 
 /**
  * @brief Constructs the taskbar model for representing dashboard widgets.
- *
- * Initializes a QStandardItemModel with custom roles defined by the
- * TaskbarModel for integration with QML. This model is used to represent
- * either:
- * - A full hierarchy of groups and their widgets (fullModel)
- * - A filtered subset based on the current UI state (taskbarButtons)
- *
- * @param parent Optional QObject parent.
  */
 UI::TaskbarModel::TaskbarModel(QObject* parent) : QStandardItemModel(parent) {}
 
 /**
  * @brief Returns the role names used for QML data binding.
- *
- * This function maps custom integer role identifiers to human-readable
- * property names that QML uses when accessing the model.
- *
- * Roles include:
- * - groupId: ID of the group the widget belongs to
- * - isGroup: Whether the item is a group or a widget
- * - windowId: The unique identifier of the window/widget
- * - groupName: Display name of the group
- * - widgetType: Enum type of the widget (e.g., FFT, Plot)
- * - widgetName: Display name of the widget
- * - widgetIcon: Path or ID of the widget's icon
- * - windowState: Current state of the window (normal, minimized, closed)
- *
- * @return A hash of role IDs to QML-visible role names.
  */
 QHash<int, QByteArray> UI::TaskbarModel::roleNames() const
 {
@@ -92,11 +69,6 @@ QHash<int, QByteArray> UI::TaskbarModel::roleNames() const
 
 /**
  * @brief Private constructor for the Taskbar singleton.
- *
- * Initializes the internal models (`fullModel` and `taskbarButtons`) and
- * connects to `Dashboard::widgetCountChanged` to trigger a model rebuild when
- * the widget layout changes. Also registers `TaskbarModel` to QML for enum
- * access and role usage.
  */
 UI::Taskbar::Taskbar(QQuickItem* parent)
   : QQuickItem(parent)
@@ -165,9 +137,6 @@ UI::Taskbar::~Taskbar()
 
 /**
  * @brief Connects the Taskbar to the WidgetRegistry's lifecycle signals.
- *
- * This allows incremental updates to the taskbar model when widgets are
- * created or destroyed, rather than always requiring a full rebuild.
  */
 void UI::Taskbar::connectToRegistry()
 {
@@ -185,11 +154,6 @@ void UI::Taskbar::connectToRegistry()
 
 /**
  * @brief Returns the currently active group ID.
- *
- * This is used by QML to determine which group's widgets should be displayed
- * in the taskbar button view.
- *
- * @return ID of the active group, or -1 for "All Data" mode.
  */
 int UI::Taskbar::activeGroupId() const
 {
@@ -198,14 +162,6 @@ int UI::Taskbar::activeGroupId() const
 
 /**
  * @brief Returns the index of the currently active group.
- *
- * Iterates through the list returned by workspaceModel() and finds the index
- * of the entry whose "id" matches the current active group ID. Returns -1 if
- * no entry matches, so QML bindings can handle the "not found" case explicitly
- * instead of receiving an out-of-bounds index.
- *
- * @return Index of the active group within the workspace model, or -1 if not
- *         found.
  */
 int UI::Taskbar::activeGroupIndex() const
 {
@@ -229,15 +185,6 @@ int UI::Taskbar::activeGroupIndex() const
 
 /**
  * @brief Returns a flat list of group titles for use in QML tab bars or menus.
- *
- * The returned QVariantList contains entries for all known groups,
- * including an initial "All Data" entry with groupId -1.
- * Each item is a QVariantMap with:
- * - groupId: Group identifier (or -1 for All Data)
- * - groupName: Display name of the group
- * - widgetIcon: Icon path or identifier associated with the group type
- *
- * @return A list of groups as QVariantMap entries, including "All Data"
  */
 QVariantList UI::Taskbar::groupModel() const
 {
@@ -247,10 +194,6 @@ QVariantList UI::Taskbar::groupModel() const
 
 /**
  * @brief Returns the currently active QML window widget, if any.
- *
- * Used for visual focus, highlighting, or restoring window state.
- *
- * @return Pointer to the active QQuickItem window, or nullptr if none.
  */
 QQuickItem* UI::Taskbar::activeWindow() const
 {
@@ -258,13 +201,7 @@ QQuickItem* UI::Taskbar::activeWindow() const
 }
 
 /**
- * @brief Returns the complete dashboard model containing all groups and
- *        widgets.
- *
- * This model is built during `rebuildModel()` and reflects the entire
- * dashboard layout as defined by the latest data frame structure.
- *
- * @return Pointer to the full TaskbarModel.
+ * @brief Returns the complete dashboard model containing all groups and widgets.
  */
 UI::TaskbarModel* UI::Taskbar::fullModel() const
 {
@@ -273,12 +210,6 @@ UI::TaskbarModel* UI::Taskbar::fullModel() const
 
 /**
  * @brief Returns the filtered model currently shown in the taskbar.
- *
- * This model may represent:
- * - Widgets grouped by type (All Data view)
- * - Widgets belonging to a specific group (Group view)
- *
- * @return Pointer to the filtered TaskbarModel.
  */
 UI::TaskbarModel* UI::Taskbar::taskbarButtons() const
 {
@@ -295,11 +226,6 @@ UI::WindowManager* UI::Taskbar::windowManager() const
 
 /**
  * @brief Checks if any tracked window is maximized.
- *
- * Iterates through all window IDs and returns true if at least one
- * window is in the "maximized" state.
- *
- * @return true if a maximized window exists, false otherwise.
  */
 bool UI::Taskbar::hasMaximizedWindow() const
 {
@@ -312,12 +238,6 @@ bool UI::Taskbar::hasMaximizedWindow() const
 
 /**
  * @brief Returns the QML window (QQuickItem) for a given window ID.
- *
- * Looks up the internal window ID -> QQuickItem map to retrieve the actual
- * instance.
- *
- * @param id The windowId of the widget.
- * @return The corresponding QQuickItem pointer, or nullptr if not found.
  */
 QQuickItem* UI::Taskbar::windowData(const int id) const
 {
@@ -330,11 +250,6 @@ QQuickItem* UI::Taskbar::windowData(const int id) const
 
 /**
  * @brief Returns the QQuickItem for the visually-first tile.
- *
- * Prefers the window at slot 0 of the WindowManager's current order so the
- * focus highlight tracks what the user sees on the leftmost tile, even when
- * the saved order differs from taskbar row order. Falls back to taskbar row
- * 0 when the window manager has no registered windows yet (early callers).
  */
 QQuickItem* UI::Taskbar::firstWindow() const
 {
@@ -381,17 +296,6 @@ QVector<int> UI::Taskbar::taskbarWindowIds() const
 
 /**
  * @brief Returns the current state of a window widget.
- *
- * Given a QQuickItem window, this function:
- * - Looks up its associated window ID using `m_windowIDs`
- * - Searches for the corresponding item in the taskbar model
- * - Returns the stored window state (Normal, Minimized, Closed)
- *
- * If the window is not registered or found, `WindowClosed` is returned as a
- * fallback.
- *
- * @param window Pointer to the QML window (QQuickItem).
- * @return The window's state from the taskbar model.
  */
 UI::TaskbarModel::WindowState UI::Taskbar::windowState(QQuickItem* window) const
 {
@@ -486,16 +390,6 @@ void UI::Taskbar::saveLayout()
 
 /**
  * @brief Sets the active group and updates taskbar buttons accordingly.
- *
- * This method clears the current `taskbarButtons` model and populates it
- * with widgets belonging to the specified group. It also:
- * - Clears the current active window reference
- * - Resets window states in the full model (minimizing inactive groups)
- * - Clones the selected group and its widgets into the visible taskbar
- *
- * If `groupId` is -1, all widgets are restored to visible state.
- *
- * @param groupId ID of the group to activate, or -1 for all groups.
  */
 void UI::Taskbar::setActiveGroupId(int groupId)
 {
@@ -697,12 +591,6 @@ int UI::Taskbar::relativeIndexForWindow(int windowId) const
 
 /**
  * @brief Sets the active group based on its index in the group model.
- *
- * Retrieves the group at the specified index from the group model and updates
- * the active group ID accordingly. If the index is out of bounds or invalid,
- * the method does nothing.
- *
- * @param index The position of the group within the groupModel() list.
  */
 void UI::Taskbar::setActiveGroupIndex(int index)
 {
@@ -721,10 +609,6 @@ void UI::Taskbar::setActiveGroupIndex(int index)
 
 /**
  * @brief Restores a window to its normal (visible) state.
- *
- * Looks up the window's ID and updates its state to WindowNormal.
- *
- * @param window Pointer to the QML widget.
  */
 void UI::Taskbar::showWindow(QQuickItem* window)
 {
@@ -739,10 +623,6 @@ void UI::Taskbar::showWindow(QQuickItem* window)
 
 /**
  * @brief Closes a window and marks its state as WindowClosed.
- *
- * The window will no longer appear in the visible taskbar.
- *
- * @param window Pointer to the QML widget.
  */
 void UI::Taskbar::closeWindow(QQuickItem* window)
 {
@@ -757,11 +637,6 @@ void UI::Taskbar::closeWindow(QQuickItem* window)
 
 /**
  * @brief Minimizes a window, hiding it from the main taskbar area.
- *
- * The window remains registered and retrievable via hidden widgets or
- * reactivation.
- *
- * @param window Pointer to the QML widget.
  */
 void UI::Taskbar::minimizeWindow(QQuickItem* window)
 {
@@ -776,11 +651,6 @@ void UI::Taskbar::minimizeWindow(QQuickItem* window)
 
 /**
  * @brief Sets the currently active window in the UI.
- *
- * Updates the `activeWindow` property and emits a change signal if it differs
- * from the previous active window.
- *
- * @param window Pointer to the QML window that should become active.
  */
 void UI::Taskbar::setActiveWindow(QQuickItem* window)
 {
@@ -796,16 +666,6 @@ void UI::Taskbar::setActiveWindow(QQuickItem* window)
 
 /**
  * @brief Unregisters a previously registered QML window.
- *
- * Removes the association between the given QQuickItem and its internal window
- * ID, effectively detaching it from the taskbar state tracking.
- *
- * This is typically called when a window is destroyed or removed from the
- * scene, ensuring no stale references are kept.
- *
- * Emits `registeredWindowsChanged()` if the window was found and removed.
- *
- * @param window Pointer to the QML window to unregister.
  */
 void UI::Taskbar::unregisterWindow(QQuickItem* window)
 {
@@ -851,12 +711,6 @@ void UI::Taskbar::setWindowManager(UI::WindowManager* manager)
 
 /**
  * @brief Registers a QML window with a corresponding internal window ID.
- *
- * This establishes a link between the UI object and the internal model,
- * allowing state management functions (minimize, close, etc.) to operate.
- *
- * @param id Internal window identifier.
- * @param window Pointer to the QML window.
  */
 void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
 {
@@ -905,12 +759,6 @@ void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
 
 /**
  * @brief Updates the window state for a given internal ID.
- *
- * Finds the corresponding item in the full model and updates its state
- * to one of: WindowNormal, WindowMinimized, or WindowClosed.
- *
- * @param id Internal window ID.
- * @param state Desired window state.
  */
 void UI::Taskbar::setWindowState(const int id, const UI::TaskbarModel::WindowState state)
 {
@@ -1222,15 +1070,6 @@ void UI::Taskbar::selectGroupAfterRebuild()
 
 /**
  * @brief Recursively searches the full model for an item by its window ID.
- *
- * This function performs a depth-first traversal of the full taskbar model,
- * comparing each item's `WindowIdRole` to the given ID. This includes both
- * group widgets and dataset widgets, since either can be associated with a
- * window.
- *
- * @param windowId The internal window identifier to find.
- * @param parentItem Optional parent item to limit search scope.
- * @return Pointer to the matching QStandardItem, or nullptr if not found.
  */
 QStandardItem* UI::Taskbar::findItemByWindowId(int windowId,
                                                QStandardItem* parentItem,
@@ -1264,13 +1103,6 @@ QStandardItem* UI::Taskbar::findItemByWindowId(int windowId,
 
 /**
  * @brief Searches the full model for an item by its widget ID.
- *
- * Similar to findItemByWindowId but uses the stable widget ID from the
- * WidgetRegistry. This is useful when processing registry events.
- *
- * @param widgetId The stable widget ID from the registry.
- * @param parentItem Optional parent item to limit search scope.
- * @return Pointer to the matching QStandardItem, or nullptr if not found.
  */
 QStandardItem* UI::Taskbar::findItemByWidgetId(UI::WidgetID widgetId,
                                                QStandardItem* parentItem) const
@@ -1284,9 +1116,6 @@ QStandardItem* UI::Taskbar::findItemByWidgetId(UI::WidgetID widgetId,
 
 /**
  * @brief Finds a group item by its group ID.
- *
- * @param groupId The group ID to search for.
- * @return Pointer to the group item, or nullptr if not found.
  */
 QStandardItem* UI::Taskbar::findGroupItemByGroupId(int groupId) const
 {
@@ -1301,9 +1130,6 @@ QStandardItem* UI::Taskbar::findGroupItemByGroupId(int groupId) const
 
 /**
  * @brief Creates a QStandardItem from widget info.
- *
- * @param info The widget info from the registry.
- * @return A new QStandardItem populated with the widget's data.
  */
 QStandardItem* UI::Taskbar::createItemFromWidgetInfo(const UI::WidgetInfo& info)
 {
@@ -1326,15 +1152,6 @@ QStandardItem* UI::Taskbar::createItemFromWidgetInfo(const UI::WidgetInfo& info)
 
 /**
  * @brief Handles widget creation events from the registry.
- *
- * When a batch update is in progress (during reconfigureDashboard), this
- * method defers action since a full rebuild will happen anyway.
- *
- * For single widget additions (like toggling terminal), this method
- * adds the widget incrementally without rebuilding the entire model.
- *
- * @param id The stable widget ID.
- * @param info Complete information about the new widget.
  */
 void UI::Taskbar::onWidgetCreated(UI::WidgetID id, const UI::WidgetInfo& info)
 {
@@ -1344,13 +1161,6 @@ void UI::Taskbar::onWidgetCreated(UI::WidgetID id, const UI::WidgetInfo& info)
 
 /**
  * @brief Handles widget destruction events from the registry.
- *
- * When a batch update is in progress, this method defers action.
- *
- * For single widget removals (like disabling terminal), this method
- * removes the widget incrementally.
- *
- * @param id The stable widget ID being destroyed.
  */
 void UI::Taskbar::onWidgetDestroyed(UI::WidgetID id)
 {
@@ -1359,10 +1169,6 @@ void UI::Taskbar::onWidgetDestroyed(UI::WidgetID id)
 
 /**
  * @brief Handles registry clear events.
- *
- * This is called when the entire registry is cleared, typically during
- * resetData(). The taskbar should clear its ID mappings but wait for
- * the subsequent dataReset signal to trigger a full rebuild.
  */
 void UI::Taskbar::onRegistryCleared()
 {
@@ -1377,9 +1183,6 @@ void UI::Taskbar::onBatchUpdateCompleted() {}
 
 /**
  * @brief Incrementally adds or removes the terminal widget from the models.
- *
- * This avoids a full rebuildModel() which would destroy all windows and
- * lose layout state.
  */
 void UI::Taskbar::onTerminalToggled()
 {
@@ -1606,10 +1409,6 @@ void UI::Taskbar::setSearchFilter(const QString& filter)
 
 /**
  * @brief Returns a flat list of widgets matching the current search filter.
- *
- * Each entry is a QVariantMap with: windowId, widgetName, widgetIcon,
- * widgetType, groupName, groupId. Limited to 30 results. Workspace entries
- * are not included -- search is for navigating to individual widgets only.
  */
 QVariantList UI::Taskbar::searchResults() const
 {
@@ -1730,9 +1529,6 @@ QVariantList UI::Taskbar::allWidgets() const
 
 /**
  * @brief Returns the workspace model for the workspace selector.
- *
- * Includes auto-generated entries (same as groupModel) plus user-defined
- * workspaces from ProjectModel. User workspaces have IDs >= 1000.
  */
 QVariantList UI::Taskbar::workspaceModel() const
 {
@@ -1765,14 +1561,6 @@ QVariantList UI::Taskbar::workspaceModel() const
 
 /**
  * @brief Navigates to the workspace containing the given widget and shows it.
- *
- * Logic:
- * 1. If the widget is already visible in the current workspace, just focus it.
- * 2. Otherwise, switch to the widget's owning group workspace.
- * 3. After switching, find and focus the window.
- *
- * For user-defined workspaces (id >= 1000), the widget is added to the
- * workspace if not already present.
  */
 void UI::Taskbar::navigateToWidget(int windowId, int groupId)
 {
@@ -1839,16 +1627,6 @@ void UI::Taskbar::createWorkspace(const QString& name)
 
 /**
  * @brief Deletes or hides a workspace.
- *
- * Routing depends on whether the project is in customize mode:
- *  - Customised: user-defined workspaces (id >= 1000) are deleted permanently
- *    via ProjectModel::deleteWorkspace.
- *  - Auto: per-group auto-workspaces (id >= 1002) are hidden via hideGroup(id
- *    - 1002), which removes the workspace tab without flipping customize.
- *    The Overview (1000) and All Data (1001) auto-workspaces are not
- *    individually deletable in auto mode -- they reflect the whole project.
- *
- * If the affected workspace is active, switches to the first available.
  */
 void UI::Taskbar::deleteWorkspace(int workspaceId)
 {
@@ -1892,9 +1670,6 @@ void UI::Taskbar::renameWorkspace(int workspaceId, const QString& name)
 
 /**
  * @brief Adds the widget identified by windowId to the active workspace.
- *
- * Only applies to user-defined workspaces (id >= 1000). For auto-generated
- * workspaces this is a no-op since their content is derived from groups.
  */
 void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
 {
@@ -1935,8 +1710,6 @@ void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
 
 /**
  * @brief Removes the widget identified by windowId from the active workspace.
- *
- * Only applies to user-defined workspaces (id >= 1000).
  */
 void UI::Taskbar::removeWidgetFromActiveWorkspace(int windowId)
 {
@@ -2028,9 +1801,6 @@ QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
 
 /**
  * @brief Replaces the widget list of a user workspace with the given IDs.
- *
- * Clears existing widget refs and rebuilds from the provided window IDs.
- * If the edited workspace is currently active, refreshes the taskbar.
  */
 void UI::Taskbar::setWorkspaceWidgets(int workspaceId, const QVariantList& windowIds)
 {

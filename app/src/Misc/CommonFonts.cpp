@@ -135,8 +135,6 @@ const QFont& Misc::CommonFonts::boldUiFont() const
 
 /**
  * @brief Creates a custom UI font with specified size and boldness.
- * @param fraction Fractional size multiplier (1 = 100% default size).
- * @param bold     True if the font should be bold.
  */
 QFont Misc::CommonFonts::customUiFont(const double fraction, const bool bold)
 {
@@ -147,8 +145,6 @@ QFont Misc::CommonFonts::customUiFont(const double fraction, const bool bold)
 
 /**
  * @brief Creates a custom monospace font with specified size and boldness.
- * @param fraction Fractional size multiplier (1 = 100% default size).
- * @param bold     True if the font should be bold.
  */
 QFont Misc::CommonFonts::customMonoFont(const double fraction, const bool bold)
 {
@@ -227,8 +223,6 @@ QStringList Misc::CommonFonts::availableFonts() const
 
 /**
  * @brief Builds a widget font scaled by fraction and the global widget scale.
- * @param fraction Additional fraction multiplier relative to the UI font size.
- * @param bold     If true, applies medium weight.
  */
 QFont Misc::CommonFonts::widgetFont(const double fraction, const bool bold) const
 {
@@ -246,7 +240,6 @@ QFont Misc::CommonFonts::widgetFont(const double fraction, const bool bold) cons
 
 /**
  * @brief Sets the global widget font scale and persists it.
- * @param scale Scale factor, clamped to [0.5, 3.0].
  */
 void Misc::CommonFonts::setWidgetFontScale(const double scale)
 {
@@ -262,7 +255,6 @@ void Misc::CommonFonts::setWidgetFontScale(const double scale)
 
 /**
  * @brief Sets the global widget font family and persists it.
- * @param family Font family name.
  */
 void Misc::CommonFonts::setWidgetFontFamily(const QString& family)
 {

@@ -105,19 +105,7 @@
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Custom message handler for Qt debug, warning, critical, and fatal
- *        messages.
- *
- * This static function handles messages of various types (debug, warning,
- * critical, fatal) emitted by the Qt framework.
- *
- * Formats each message twice: once without ANSI codes for stdout (so piped
- * output or terminals that do not support color never see escape sequences),
- * and once with the user's ANSI setting for the in-app console widget.
- *
- * @param type The type of the message.
- * @param context The message log context (file, line, function).
- * @param msg The actual message that was emitted by the Qt system.
+ * @brief Custom message handler for Qt debug, warning, critical, and fatal messages.
  */
 static void MessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
@@ -191,9 +179,6 @@ static void MessageHandler(QtMsgType type, const QMessageLogContext& context, co
 
 /**
  * @brief Constructs the ModuleManager singleton.
- *
- * Configures the application font and configures application signals/slots to
- * destroy singleton classes before the application quits.
  */
 Misc::ModuleManager::ModuleManager()
   : m_headless(false), m_automaticUpdates(m_settings.value("App/CheckForUpdates", true).toBool())
@@ -219,7 +204,6 @@ bool Misc::ModuleManager::automaticUpdates() const noexcept
 
 /**
  * @brief Enables headless mode, suppressing QML and GUI loading on init.
- * @param headless Pass @c true to skip the QML engine load.
  */
 void Misc::ModuleManager::setHeadless(const bool headless)
 {
@@ -252,11 +236,6 @@ const QQmlApplicationEngine& Misc::ModuleManager::engine() const noexcept
 
 /**
  * @brief Returns whether the QSimpleUpdater auto-updater is enabled at build time.
- *
- * To disable QSimpleUpdater, you need to add DEFINES += DISABLE_QSU in the
- * qmake project file. This option is provided for package managers, users are
- * expected to update the application using the same package manager they used
- * for installing it.
  */
 bool Misc::ModuleManager::autoUpdaterEnabled() const noexcept
 {
@@ -382,9 +361,6 @@ void Misc::ModuleManager::registerQmlTypes()
 
 /**
  * @brief Initializes all application modules and loads the root QML file.
- *
- * Initializes all the application modules, registers them with the QML engine
- * and loads the "main.qml" file as the root QML file.
  */
 void Misc::ModuleManager::initializeQmlInterface()
 {

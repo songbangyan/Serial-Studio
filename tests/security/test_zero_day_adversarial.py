@@ -224,7 +224,7 @@ class TestJavaScriptSandboxEscape:
         self, security_client, check_server_alive
     ):
         """
-        Attempt JS injection via project.loadFromJSON with frameParserCode.
+        Attempt JS injection via project.loadJson with frameParserCode.
         This is the most likely attack path since project files contain JS.
         """
         malicious_project = {
@@ -248,7 +248,7 @@ class TestJavaScriptSandboxEscape:
 
         try:
             security_client.command(
-                "project.loadFromJSON", {"config": malicious_project}
+                "project.loadJson", {"config": malicious_project}
             )
         except Exception:
             pass
@@ -330,7 +330,7 @@ class TestPrototypePollution:
         internal object prototypes.
         """
         try:
-            security_client.command("project.loadFromJSON", {"config": payload})
+            security_client.command("project.loadJson", {"config": payload})
         except Exception:
             pass
 
@@ -377,13 +377,13 @@ class TestEncodingAttacks:
         """
         overlong_payloads = [
             # Overlong dot: 0xC0 0xAE instead of 0x2E
-            b'{"type":"command","id":"x","command":"project.file.open",'
+            b'{"type":"command","id":"x","command":"project.open",'
             b'"params":{"filePath":"\xc0\xae\xc0\xae/\xc0\xae\xc0\xae/etc/passwd"}}\n',
             # Overlong slash: 0xC0 0xAF instead of 0x2F
-            b'{"type":"command","id":"x","command":"project.file.open",'
+            b'{"type":"command","id":"x","command":"project.open",'
             b'"params":{"filePath":"..\xc0\xaf..\xc0\xafetc\xc0\xafpasswd"}}\n',
             # Mixed overlong
-            b'{"type":"command","id":"x","command":"project.file.open",'
+            b'{"type":"command","id":"x","command":"project.open",'
             b'"params":{"filePath":"\xc0\xae\xc0\xae\xc0\xaf\xc0\xae\xc0\xae\xc0\xafetc\xc0\xafpasswd"}}\n',
         ]
 
@@ -414,7 +414,7 @@ class TestEncodingAttacks:
         for path in double_encoded_paths:
             try:
                 security_client.command(
-                    "project.file.open", {"filePath": path}
+                    "project.open", {"filePath": path}
                 )
                 pytest.fail(
                     f"Double-encoded path traversal accepted: {path}"
@@ -475,7 +475,7 @@ class TestNullByteInjection:
         for path in null_byte_paths:
             try:
                 security_client.command(
-                    "project.file.open", {"filePath": path}
+                    "project.open", {"filePath": path}
                 )
             except Exception:
                 pass
@@ -483,13 +483,13 @@ class TestNullByteInjection:
     def test_null_byte_in_command_name(self, check_server_alive):
         """
         Null bytes in command names could truncate to valid commands.
-        e.g., 'io.manager.connect\\x00.evil' -> 'io.manager.connect'
+        e.g., 'io.connect\\x00.evil' -> 'io.connect'
         """
         null_commands = [
-            b'{"type":"command","id":"x","command":"io.manager.connect\x00.safe"}\n',
+            b'{"type":"command","id":"x","command":"io.connect\x00.safe"}\n',
             b'{"type":"command","id":"x","command":"api.getCommands\x00DROP"}\n',
-            b'{"type":"command","id":"x","command":"\x00io.manager.connect"}\n',
-            b'{"type":"command","id":"x","command":"project.file.open\x00","params":{"filePath":"/etc/passwd"}}\n',
+            b'{"type":"command","id":"x","command":"\x00io.connect"}\n',
+            b'{"type":"command","id":"x","command":"project.open\x00","params":{"filePath":"/etc/passwd"}}\n',
         ]
 
         for payload in null_commands:
@@ -758,7 +758,7 @@ class TestCrossClientAttacks:
                 for i in range(50):
                     start, end = delimiters[i % len(delimiters)]
                     cmd = make_cmd(
-                        "project.frameParser.configure",
+                        "project.frameParser.update",
                         {
                             "startSequence": start,
                             "endSequence": end,
@@ -830,7 +830,7 @@ class TestFrameInjection:
         malicious_frames = [
             # JSON command disguised as frame data
             base64.b64encode(
-                b'{"type":"command","command":"io.manager.connect"}'
+                b'{"type":"command","command":"io.connect"}'
             ).decode(),
             # Start/end delimiters embedded in data
             base64.b64encode(b"/*evil frame content*/").decode(),
@@ -974,7 +974,7 @@ class TestUseAfterFree:
 
                 for i in range(200):
                     cmd = make_cmd(
-                        "project.frameParser.configure",
+                        "project.frameParser.update",
                         {
                             "startSequence": f"S{thread_id}_{i}",
                             "endSequence": f"E{thread_id}_{i}",
@@ -1059,7 +1059,7 @@ class TestUseAfterFree:
                         ],
                     }
                     cmd = make_cmd(
-                        "project.loadFromJSON", {"config": project}
+                        "project.loadJson", {"config": project}
                     )
                     try:
                         sock.sendall(cmd)
@@ -1211,7 +1211,7 @@ class TestIntegerTruncation:
         rejected = False
         try:
             result = security_client.command(
-                "dashboard.setFPS", {"fps": value}
+                "dashboard.setFps", {"fps": value}
             )
             # Command succeeded - check if value was actually applied
             accepted_fps = result.get("fps", None)
@@ -1228,7 +1228,7 @@ class TestIntegerTruncation:
 
         # Always restore FPS to a sane value to avoid affecting other tests
         try:
-            security_client.command("dashboard.setFPS", {"fps": 24})
+            security_client.command("dashboard.setFps", {"fps": 24})
         except Exception:
             pass
 
@@ -1296,7 +1296,7 @@ class TestIntegerTruncation:
         for port in evil_ports:
             try:
                 security_client.command(
-                    "io.driver.network.setTcpPort", {"port": port}
+                    "io.network.setTcpPort", {"port": port}
                 )
             except Exception:
                 pass
@@ -1352,7 +1352,7 @@ class TestHeapSpray:
                         for _ in range(3)
                     ],
                 }
-                cmd = make_cmd("project.loadFromJSON", {"config": project})
+                cmd = make_cmd("project.loadJson", {"config": project})
                 try:
                     sock.sendall(cmd)
                     # Drain response to avoid send buffer pressure
@@ -1433,7 +1433,7 @@ class TestDeserializationGadgets:
             bomb = f"[{bomb},{bomb}]"
 
         payload = (
-            b'{"type":"command","id":"bomb","command":"project.loadFromJSON",'
+            b'{"type":"command","id":"bomb","command":"project.loadJson",'
             b'"params":{"config":' + bomb.encode() + b"}}\n"
         )
 
@@ -1456,7 +1456,7 @@ class TestDeserializationGadgets:
         inner = '{"a":[{"b":[' * depth + '1' + ']}]}' * depth
 
         payload = (
-            b'{"type":"command","id":"nest","command":"project.loadFromJSON",'
+            b'{"type":"command","id":"nest","command":"project.loadJson",'
             b'"params":{"config":' + inner.encode() + b"}}\n"
         )
 
@@ -1474,7 +1474,7 @@ class TestDeserializationGadgets:
         chaos_json = {
             "type": "command",
             "id": "chaos",
-            "command": "project.loadFromJSON",
+            "command": "project.loadJson",
             "params": {
                 "config": {
                     "title": True,
@@ -1546,11 +1546,11 @@ class TestMemoryDisclosure:
 
         error_triggers = [
             ("nonexistent.deep.command.path.that.is.very.long", None),
-            ("project.file.open", {"filePath": "\x00\x01\x02\x03"}),
-            ("project.file.open", {"filePath": "A" * 10000}),
-            ("dashboard.setFPS", {"fps": "not_a_number"}),
-            ("dashboard.setFPS", {"fps": float("inf")}),
-            ("project.loadFromJSON", {"config": "not_an_object"}),
+            ("project.open", {"filePath": "\x00\x01\x02\x03"}),
+            ("project.open", {"filePath": "A" * 10000}),
+            ("dashboard.setFps", {"fps": "not_a_number"}),
+            ("dashboard.setFps", {"fps": float("inf")}),
+            ("project.loadJson", {"config": "not_an_object"}),
         ]
 
         for cmd, params in error_triggers:
@@ -1689,7 +1689,7 @@ class TestProjectComplexityBomb:
         # 100 groups x 100 datasets = 10,000 total datasets
 
         start = time.time()
-        cmd = make_cmd("project.loadFromJSON", {"config": project})
+        cmd = make_cmd("project.loadJson", {"config": project})
         response, error = raw_send(cmd, timeout=30.0)
         elapsed = time.time() - start
 
@@ -1723,7 +1723,7 @@ class TestProjectComplexityBomb:
             "groups": [make_nested_group(i) for i in range(200)],
         }
 
-        cmd = make_cmd("project.loadFromJSON", {"config": project})
+        cmd = make_cmd("project.loadJson", {"config": project})
         raw_send(cmd, timeout=10.0)
 
         assert check_server_alive(
@@ -1754,7 +1754,7 @@ class TestProjectComplexityBomb:
             ],
         }
 
-        cmd = make_cmd("project.loadFromJSON", {"config": project})
+        cmd = make_cmd("project.loadJson", {"config": project})
         raw_send(cmd, timeout=10.0)
 
         assert check_server_alive(
@@ -1818,7 +1818,7 @@ class TestSymlinkAttacks:
 
         Expected: All should be rejected. Server must not crash.
         """
-        cmd = make_cmd("project.file.open", {"filePath": path})
+        cmd = make_cmd("project.open", {"filePath": path})
         response, error = raw_send(cmd, timeout=3.0)
 
         # Check response doesn't contain sensitive data
@@ -1868,7 +1868,7 @@ class TestConcurrentChaos:
                 sock.connect((API_HOST, API_PORT))
                 while not stop_event.is_set():
                     cmd = make_cmd(
-                        "dashboard.setFPS",
+                        "dashboard.setFps",
                         {"fps": random.randint(1, 120)},
                     )
                     try:
@@ -1911,7 +1911,7 @@ class TestConcurrentChaos:
                 while not stop_event.is_set():
                     cmds = [
                         make_cmd("dashboard.getStatus"),
-                        make_cmd("io.manager.getStatus"),
+                        make_cmd("io.getStatus"),
                         make_cmd("api.getCommands"),
                     ]
                     cmd = random.choice(cmds)
@@ -1952,7 +1952,7 @@ class TestConcurrentChaos:
                         ],
                     }
                     cmd = make_cmd(
-                        "project.loadFromJSON", {"config": project}
+                        "project.loadJson", {"config": project}
                     )
                     try:
                         sock.sendall(cmd)
@@ -1971,7 +1971,7 @@ class TestConcurrentChaos:
                 while not stop_event.is_set():
                     enabled = random.choice([True, False])
                     cmd = make_cmd(
-                        "csv.export.setEnabled",
+                        "csvExport.setEnabled",
                         {"enabled": enabled},
                     )
                     try:
@@ -2032,7 +2032,7 @@ class TestTimingOracle:
         valid_commands = [
             "api.getCommands",
             "dashboard.getStatus",
-            "io.manager.getStatus",
+            "io.getStatus",
         ]
 
         invalid_commands = [

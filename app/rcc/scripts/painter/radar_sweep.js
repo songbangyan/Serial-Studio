@@ -29,23 +29,23 @@ function onFrame() {
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header.
   const pairs = Math.floor(datasets.length / 2);
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("RADAR  PPI", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(contacts.length + " contacts", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // Card containing the dark scope.
@@ -57,9 +57,9 @@ function paint(ctx, w, h) {
   const cardW = w - padX * 2;
   const cardH = h - padTop - padBot;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(cardX + 1, cardY + 2, cardW, cardH);
-  ctx.fillStyle = "#03110a";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(cardX, cardY, cardW, cardH);
 
   const cx = cardX + cardW * 0.5;
@@ -67,7 +67,7 @@ function paint(ctx, w, h) {
   const r  = Math.min(cardW, cardH) * 0.42;
 
   // Range rings.
-  ctx.strokeStyle = "#0f6b3a";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth   = 1;
   for (let i = 1; i <= 4; ++i) {
     const rr = (r / 4) * i;
@@ -87,7 +87,7 @@ function paint(ctx, w, h) {
   }
 
   // Cardinal labels.
-  ctx.fillStyle    = "#86efac";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "bold 9px monospace";
   ctx.textAlign    = "center";
   ctx.textBaseline = "middle";
@@ -103,7 +103,7 @@ function paint(ctx, w, h) {
     const a0 = sweepRad - (i + 1) * 0.04;
     const a1 = sweepRad - i * 0.04;
     ctx.globalAlpha = (1 - i / 12) * 0.6;
-    ctx.fillStyle   = "#22c55e";
+    ctx.fillStyle   = theme.widget_highlight;
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, r, a0, a1);
@@ -113,7 +113,7 @@ function paint(ctx, w, h) {
   ctx.globalAlpha = 1;
 
   // Outer scope ring.
-  ctx.strokeStyle = "#155e30";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(cx + r, cy);
@@ -128,7 +128,7 @@ function paint(ctx, w, h) {
     const x     = cx + Math.cos(rad) * r * norm;
     const y     = cy + Math.sin(rad) * r * norm;
     ctx.globalAlpha = 1 - age;
-    ctx.fillStyle   = "#bbf7d0";
+    ctx.fillStyle   = theme.widget_highlight;
     ctx.beginPath();
     ctx.moveTo(x + 4, y);
     ctx.arc(x, y, 4, 0, Math.PI * 2);
@@ -137,7 +137,7 @@ function paint(ctx, w, h) {
   ctx.globalAlpha = 1;
 
   // Card border on top of the dark area.
-  ctx.strokeStyle = "#1f2937";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(cardX + 0.5, cardY + 0.5, cardW - 1, cardH - 1);
 }

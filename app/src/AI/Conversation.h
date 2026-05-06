@@ -31,13 +31,7 @@ class Reply;
 class ToolDispatcher;
 
 /**
- * @brief Owns the chat history, the active streaming Reply, and the
- *        tool-call loop state.
- *
- * One Conversation lives inside the Assistant singleton. It exposes a
- * QVariantList of messages to QML (matching the project's existing
- * "list-of-objects" property pattern) and provides slots for sending,
- * cancelling, and approving / denying confirmation-gated tool calls.
+ * @brief Owns the chat history, the active streaming Reply, and the tool-call loop state.
  */
 class Conversation : public QObject {
   // clang-format off
@@ -133,13 +127,31 @@ private:
                             const QString& name,
                             const QJsonObject& arguments);
   void runMetaHowTo(const QString& callId, const QString& name, const QJsonObject& arguments);
+  void runMetaListCategories(const QString& callId,
+                             const QString& name,
+                             const QJsonObject& arguments);
+  void runMetaSnapshot(const QString& callId, const QString& name, const QJsonObject& arguments);
+  void runMetaListCommands(const QString& callId,
+                           const QString& name,
+                           const QJsonObject& arguments);
+  void runMetaExecuteCommand(const QString& callId,
+                             const QString& name,
+                             const QJsonObject& arguments);
+  void runMetaLoadSkill(const QString& callId, const QString& name, const QJsonObject& arguments);
+  void runMetaSearchDocs(const QString& callId, const QString& name, const QJsonObject& arguments);
   void resumeAfterToolBatch();
   void teardownReply();
+
+  [[nodiscard]] static QString rewriteHelpLinks(const QString& text);
   void setBusy(bool busy);
   void setAwaitingConfirmation(bool flag);
   void setLastError(const QString& message);
   void flushPendingStreamUpdate();
   [[nodiscard]] QJsonArray dispatcherTools() const;
+
+  [[nodiscard]] static QString persistencePath();
+  void saveToDisk() const;
+  void restoreFromDisk();
 
   /** @brief Captured Confirm-state info pending user approval. */
   struct PendingCall {
@@ -175,6 +187,8 @@ private:
 
   QTimer* m_streamFlushTimer;
   bool m_streamDirty;
+
+  QTimer* m_autoSaveTimer;
 };
 
 }  // namespace AI

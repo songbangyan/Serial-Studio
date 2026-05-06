@@ -104,7 +104,7 @@ void API::Handlers::LicensingHandler::registerCommands()
     QJsonObject emptySchema;
     emptySchema.insert("type", "object");
     emptySchema.insert("properties", QJsonObject());
-    registry.registerCommand(QStringLiteral("licensing.guardStatus"),
+    registry.registerCommand(QStringLiteral("licensing.getGuardStatus"),
                              QStringLiteral("Run all build-time license guards and report results"),
                              emptySchema,
                              &guardStatus);
@@ -115,7 +115,7 @@ void API::Handlers::LicensingHandler::registerCommands()
     QJsonObject emptySchema;
     emptySchema.insert("type", "object");
     emptySchema.insert("properties", QJsonObject());
-    registry.registerCommand(QStringLiteral("licensing.trial.getStatus"),
+    registry.registerCommand(QStringLiteral("licensing.getTrialStatus"),
                              QStringLiteral("Get current trial status"),
                              emptySchema,
                              &trialGetStatus);
@@ -126,7 +126,7 @@ void API::Handlers::LicensingHandler::registerCommands()
     QJsonObject emptySchema;
     emptySchema.insert("type", "object");
     emptySchema.insert("properties", QJsonObject());
-    registry.registerCommand(QStringLiteral("licensing.trial.enable"),
+    registry.registerCommand(QStringLiteral("licensing.enableTrial"),
                              QStringLiteral("Start the trial period for this machine"),
                              emptySchema,
                              &trialEnable);
@@ -265,10 +265,6 @@ API::CommandResponse API::Handlers::LicensingHandler::getStatus(const QString& i
 
 /**
  * @brief Runs every generated license guard and reports individual pass/fail.
- *
- * This is a diagnostic command for CI: it proves the built binary has a
- * consistent salt embedded in all guard functions. If any guard fails, the
- * build is broken and must not ship.
  */
 API::CommandResponse API::Handlers::LicensingHandler::guardStatus(const QString& id,
                                                                   const QJsonObject&)

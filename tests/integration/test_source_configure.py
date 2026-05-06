@@ -1,17 +1,17 @@
 """
 Source Configuration API Tests
 
-Tests for project.source.configure and project.source.setProperty commands
+Tests for project.source.update and project.source.setProperty commands
 that allow API callers to configure device connection settings into project
 sources — mirroring what the GUI Setup panel does.
 
 Covers:
-- project.source.configure (multi-property batch update)
+- project.source.update (multi-property batch update)
 - project.source.setProperty (single-property update)
 - Both route through the UI-config driver for source 0 in single-source
   ProjectFile mode, so changes propagate to the Setup panel and persist
   in source[0].connectionSettings.
-- project.source.getConfiguration returns the persisted settings.
+- project.source.getConfig returns the persisted settings.
 
 Copyright (C) 2020-2025 Alex Spataru
 SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
@@ -31,21 +31,21 @@ from utils import DeviceSimulator
 
 def _new_project(api_client, dataset_count: int = 3):
     """Create a new project in ProjectFile mode with one group and dataset_count datasets."""
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.1)
     api_client.command("dashboard.setOperationMode", {"mode": 0})
     time.sleep(0.1)
     api_client.command("project.group.add", {"title": "G", "widgetType": 0})
     time.sleep(0.1)
     for _ in range(dataset_count):
-        api_client.command("project.dataset.add", {"options": 1})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
         time.sleep(0.1)
 
 
 def _connect_network(api_client, device_simulator):
-    """Configure network driver via project.source.configure, then connect."""
+    """Configure network driver via project.source.update, then connect."""
     # Set network bus type first so activeUiDriver() returns m_networkUi
-    api_client.command("io.manager.setBusType", {"busType": 1})
+    api_client.command("io.setBusType", {"busType": 1})
     time.sleep(0.1)
 
     api_client.source_configure(0, {
@@ -58,7 +58,7 @@ def _connect_network(api_client, device_simulator):
     api_client.configure_frame_parser(
         start_sequence="/*", end_sequence="*/", operation_mode=0, frame_detection=1
     )
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.2)
 
     api_client.connect_device()
@@ -104,24 +104,24 @@ def _wait_for_values(api_client, expected: list, timeout: float = 3.0) -> list:
 
 
 # ---------------------------------------------------------------------------
-# Tests: project.source.configure
+# Tests: project.source.update
 # ---------------------------------------------------------------------------
 
 class TestSourceConfigure:
-    """Tests for the project.source.configure command."""
+    """Tests for the project.source.update command."""
 
     def test_configure_command_exists(self, api_client, clean_state):
-        """project.source.configure must be registered in the API."""
-        assert api_client.command_exists("project.source.configure"), (
-            "project.source.configure command is not registered"
+        """project.source.update must be registered in the API."""
+        assert api_client.command_exists("project.source.update"), (
+            "project.source.update command is not registered"
         )
 
     def test_configure_accepted_without_error(self, api_client, clean_state):
-        """project.source.configure must succeed without raising an error."""
+        """project.source.update must succeed without raising an error."""
         _new_project(api_client, dataset_count=1)
 
         # Set bus type to network first so the UI driver is the right type
-        api_client.command("io.manager.setBusType", {"busType": 1})
+        api_client.command("io.setBusType", {"busType": 1})
         time.sleep(0.1)
 
         # This must not raise; result is not checked here (persistence only applies
@@ -137,7 +137,7 @@ class TestSourceConfigure:
         from utils.api_client import APIError
 
         with pytest.raises(APIError) as exc_info:
-            api_client.command("project.source.configure", {"sourceId": 0})
+            api_client.command("project.source.update", {"sourceId": 0})
 
         assert exc_info.value.code == "MISSING_PARAM"
 
@@ -147,7 +147,7 @@ class TestSourceConfigure:
 
         with pytest.raises(APIError) as exc_info:
             api_client.command(
-                "project.source.configure",
+                "project.source.update",
                 {"sourceId": 99, "settings": {"address": "127.0.0.1"}},
             )
 
@@ -225,7 +225,7 @@ function parse(frame) {
         api_client.set_frame_parser_code(js_code, language=0)
         time.sleep(0.1)
 
-        api_client.command("io.manager.setBusType", {"busType": 1})
+        api_client.command("io.setBusType", {"busType": 1})
         time.sleep(0.1)
 
         # Set properties individually via setProperty (routes through UI driver)
@@ -239,7 +239,7 @@ function parse(frame) {
         api_client.configure_frame_parser(
             start_sequence="/*", end_sequence="*/", operation_mode=0, frame_detection=1
         )
-        api_client.command("project.loadIntoFrameBuilder")
+        api_client.command("project.activate")
         time.sleep(0.2)
 
         api_client.connect_device()
@@ -277,7 +277,7 @@ end
 
 
 class TestSourceConfigureLua:
-    """Lua-equivalent end-to-end coverage for project.source.configure."""
+    """Lua-equivalent end-to-end coverage for project.source.update."""
 
     def test_configure_end_to_end_with_device_lua(
         self, api_client, device_simulator, clean_state
@@ -309,7 +309,7 @@ class TestSourceSetPropertyLua:
         api_client.set_frame_parser_code(_LUA_CSV_PARSER, language=1)
         time.sleep(0.1)
 
-        api_client.command("io.manager.setBusType", {"busType": 1})
+        api_client.command("io.setBusType", {"busType": 1})
         time.sleep(0.1)
 
         api_client.source_set_property(0, "address", "127.0.0.1")
@@ -322,7 +322,7 @@ class TestSourceSetPropertyLua:
         api_client.configure_frame_parser(
             start_sequence="/*", end_sequence="*/", operation_mode=0, frame_detection=1
         )
-        api_client.command("project.loadIntoFrameBuilder")
+        api_client.command("project.activate")
         time.sleep(0.2)
 
         api_client.connect_device()
@@ -342,7 +342,7 @@ class TestSourceSetPropertyLua:
 # ---------------------------------------------------------------------------
 
 class TestSourceGetConfiguration:
-    """Verify project.source.getConfiguration returns the full source struct."""
+    """Verify project.source.getConfig returns the full source struct."""
 
     def test_get_configuration_returns_source_fields(self, api_client, clean_state):
         """getConfiguration must return all standard source fields."""

@@ -6,8 +6,6 @@
 // dataset's min/max.
 
 const HISTORY = 240;
-const COLORS  = ["#2563eb", "#10b981", "#f59e0b", "#dc2626",
-                 "#7c3aed", "#0ea5e9", "#ec4899", "#65a30d"];
 
 const traces = [];
 
@@ -25,22 +23,22 @@ function onFrame() {
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header strip.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("STRIP  CHART", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(datasets.length + " channels", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // Plot card.
@@ -53,11 +51,11 @@ function paint(ctx, w, h) {
   const plotW = w - padL - padR;
   const plotH = h - padT - padB;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(plotX + 1, plotY + 2, plotW, plotH);
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(plotX, plotY, plotW, plotH);
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(plotX + 0.5, plotY + 0.5, plotW - 1, plotH - 1);
 
@@ -77,8 +75,8 @@ function paint(ctx, w, h) {
   const span = hi - lo;
 
   // Horizontal grid lines + Y labels.
-  ctx.strokeStyle = "#eef2f7";
-  ctx.fillStyle    = "#64748b";
+  ctx.strokeStyle = theme.widget_border;
+  ctx.fillStyle    = theme.placeholder_text;
   ctx.font         = "9px sans-serif";
   ctx.textBaseline = "middle";
   ctx.textAlign    = "right";
@@ -97,7 +95,7 @@ function paint(ctx, w, h) {
   ctx.textAlign    = "start";
 
   // Vertical guides at quarter intervals.
-  ctx.strokeStyle = "#eef2f7";
+  ctx.strokeStyle = theme.widget_border;
   for (let i = 1; i < 4; ++i) {
     const x = plotX + (plotW / 4) * i;
     ctx.beginPath();
@@ -111,7 +109,7 @@ function paint(ctx, w, h) {
     const t = traces[i];
     if (t.length < 2) continue;
 
-    const color = COLORS[i % COLORS.length];
+    const color = theme.widget_colors[i % theme.widget_colors.length];
 
     ctx.strokeStyle = color;
     ctx.lineWidth   = 1.8;
@@ -141,7 +139,7 @@ function paint(ctx, w, h) {
   ctx.font = "10px sans-serif";
   for (let i = 0; i < datasets.length; ++i) {
     const text   = datasets[i].title || ("CH " + (i + 1));
-    const color  = COLORS[i % COLORS.length];
+    const color  = theme.widget_colors[i % theme.widget_colors.length];
     const tw     = ctx.measureTextWidth(text);
     const pillW  = 14 + tw + 14;
     if (lx + pillW > plotX + plotW) break;
@@ -150,7 +148,7 @@ function paint(ctx, w, h) {
     ctx.fillStyle = color;
     ctx.fillRect(lx, h - padB + 12, 8, 8);
     // Label.
-    ctx.fillStyle = "#475569";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.fillText(text, lx + 12, h - padB + 19);
 
     lx += pillW;

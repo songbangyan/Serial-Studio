@@ -51,8 +51,6 @@ static QString sharedDatasetUnit(const DataModel::Group& group)
 
 /**
  * @brief Constructs a MultiPlot widget.
- * @param index The index of the multiplot in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -113,7 +111,6 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns the number of datasets in the multiplot.
- * @return The number of datasets.
  */
 int Widgets::MultiPlot::count() const noexcept
 {
@@ -122,7 +119,6 @@ int Widgets::MultiPlot::count() const noexcept
 
 /**
  * @brief Returns the size of the down-sampled X axis data.
- * @return Size of down-sampled X axis data.
  */
 int Widgets::MultiPlot::dataW() const noexcept
 {
@@ -131,7 +127,6 @@ int Widgets::MultiPlot::dataW() const noexcept
 
 /**
  * @brief Returns the size of the down-sampled Y axis data.
- * @return Size of down-sampled Y axis data.
  */
 int Widgets::MultiPlot::dataH() const noexcept
 {
@@ -144,7 +139,6 @@ int Widgets::MultiPlot::dataH() const noexcept
 
 /**
  * @brief Returns the minimum X-axis value.
- * @return The minimum X-axis value.
  */
 double Widgets::MultiPlot::minX() const noexcept
 {
@@ -153,7 +147,6 @@ double Widgets::MultiPlot::minX() const noexcept
 
 /**
  * @brief Returns the maximum X-axis value.
- * @return The maximum X-axis value.
  */
 double Widgets::MultiPlot::maxX() const noexcept
 {
@@ -162,7 +155,6 @@ double Widgets::MultiPlot::maxX() const noexcept
 
 /**
  * @brief Returns the minimum Y-axis value.
- * @return The minimum Y-axis value.
  */
 double Widgets::MultiPlot::minY() const noexcept
 {
@@ -171,7 +163,6 @@ double Widgets::MultiPlot::minY() const noexcept
 
 /**
  * @brief Returns the maximum Y-axis value.
- * @return The maximum Y-axis value.
  */
 double Widgets::MultiPlot::maxY() const noexcept
 {
@@ -184,7 +175,6 @@ double Widgets::MultiPlot::maxY() const noexcept
 
 /**
  * @brief Checks whether plot data updates are currently active.
- * @return @c true if updating is not paused, otherwise @c false.
  */
 bool Widgets::MultiPlot::running() const noexcept
 {
@@ -197,7 +187,6 @@ bool Widgets::MultiPlot::running() const noexcept
 
 /**
  * @brief Returns the Y-axis label.
- * @return The Y-axis label.
  */
 const QString& Widgets::MultiPlot::yLabel() const noexcept
 {
@@ -206,7 +195,6 @@ const QString& Widgets::MultiPlot::yLabel() const noexcept
 
 /**
  * @brief Returns the colors of the datasets.
- * @return The colors of the datasets.
  */
 const QStringList& Widgets::MultiPlot::colors() const noexcept
 {
@@ -215,7 +203,6 @@ const QStringList& Widgets::MultiPlot::colors() const noexcept
 
 /**
  * @brief Returns the labels of the datasets.
- * @return The labels of the datasets.
  */
 const QStringList& Widgets::MultiPlot::labels() const noexcept
 {
@@ -224,11 +211,6 @@ const QStringList& Widgets::MultiPlot::labels() const noexcept
 
 /**
  * @brief Returns the visibility state of all curves.
- *
- * Provides a reference to the internal list indicating which curves are
- * currently visible.
- *
- * @return Reference to a QList of booleans representing curve visibility.
  */
 const QList<bool>& Widgets::MultiPlot::visibleCurves() const noexcept
 {
@@ -241,8 +223,6 @@ const QList<bool>& Widgets::MultiPlot::visibleCurves() const noexcept
 
 /**
  * @brief Draws the data on the given QLineSeries.
- * @param series The QXYSeries to draw the data on.
- * @param index The index of the dataset to draw.
  */
 void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
 {
@@ -258,7 +238,6 @@ void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
 
 /**
  * @brief Updates the size of the down-sampled X axis data.
- * @param width The new size of the down-sampled axis data.
  */
 void Widgets::MultiPlot::setDataW(const int width)
 {
@@ -272,7 +251,6 @@ void Widgets::MultiPlot::setDataW(const int width)
 
 /**
  * @brief Updates the size of the down-sampled Y axis data.
- * @param height The new size of the down-sampled axis data.
  */
 void Widgets::MultiPlot::setDataH(const int height)
 {
@@ -286,7 +264,6 @@ void Widgets::MultiPlot::setDataH(const int height)
 
 /**
  * @brief Enables or disables plot data updates.
- * @param enabled Set to @c true to allow updates, or @c false to pause them.
  */
 void Widgets::MultiPlot::setRunning(const bool enabled)
 {
@@ -508,13 +485,6 @@ void Widgets::MultiPlot::applyDerivedYBounds()
 
 /**
  * @brief Modifies the visibility state of a specific curve in the multi-plot.
- *
- * Updates the visibility flag for the curve at the given index. If the index is
- * valid, the internal visibility list is updated, the autoscale range is
- * recalculated, and the curvesChanged() signal is emitted.
- *
- * @param index   Index of the curve to modify.
- * @param visible True to show the curve, false to hide it.
  */
 void Widgets::MultiPlot::modifyCurveVisibility(const int index, const bool visible)
 {

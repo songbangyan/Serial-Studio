@@ -169,10 +169,6 @@ QString Widgets::PainterDataBridge::dsRawValueStr(int i) const
 
 /**
  * @brief Returns the dataset's "best" lower bound.
- *
- * Tries widget min, then plot min, then FFT min, finally 0. Picks the first
- * one that's both finite and non-zero. The painter usually wants a sensible
- * range without caring which subsystem authored it.
  */
 double Widgets::PainterDataBridge::dsMin(int i) const
 {

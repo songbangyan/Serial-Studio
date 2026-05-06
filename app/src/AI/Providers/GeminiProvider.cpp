@@ -131,15 +131,20 @@ QJsonObject AI::GeminiProvider::translateBlock(const QJsonObject& block)
   }
 
   if (type == QStringLiteral("tool_result")) {
-    // Gemini wraps tool results in functionResponse with name + response object
-    const auto contentStr = block.value(QStringLiteral("content")).toString();
+    // Gemini wraps tool results in functionResponse with structured payload
     QJsonObject responseObj;
-    QJsonParseError parseError;
-    const auto doc = QJsonDocument::fromJson(contentStr.toUtf8(), &parseError);
-    if (parseError.error == QJsonParseError::NoError && doc.isObject())
-      responseObj = doc.object();
-    else
-      responseObj[QStringLiteral("output")] = contentStr;
+    const auto preParsed = block.value(QStringLiteral("_gemini_response")).toObject();
+    if (!preParsed.isEmpty()) {
+      responseObj = preParsed;
+    } else {
+      const auto contentStr = block.value(QStringLiteral("content")).toString();
+      QJsonParseError parseError;
+      const auto doc = QJsonDocument::fromJson(contentStr.toUtf8(), &parseError);
+      if (parseError.error == QJsonParseError::NoError && doc.isObject())
+        responseObj = doc.object();
+      else
+        responseObj[QStringLiteral("output")] = contentStr;
+    }
 
     QJsonObject fr;
     // _tool_name is stamped by Conversation::recordToolResult for this transport

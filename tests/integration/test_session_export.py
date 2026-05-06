@@ -64,7 +64,7 @@ def _close_session(api_client) -> None:
 
 def _db_path_for(api_client, title: str) -> Path:
     result = api_client.command(
-        "sessions.getCanonicalDbPath", {"projectTitle": title}
+        "sessions.getDbPath", {"projectTitle": title}
     )
     return Path(result["path"])
 
@@ -138,7 +138,7 @@ def test_session_records_project_file_frames(
 
     api_client.command("project.group.add", {"title": "G", "widgetType": 0})
     time.sleep(0.1)
-    api_client.command("project.dataset.add", {"options": 1})
+    api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
     time.sleep(0.1)
 
     api_client.set_operation_mode("project")
@@ -161,7 +161,7 @@ def test_session_records_project_file_frames(
         "end\n"
     )
     api_client.command(
-        "project.parser.setCode",
+        "project.frameParser.setCode",
         {"code": lua_code, "language": 1, "sourceId": 0},
     )
     time.sleep(0.15)
@@ -173,7 +173,7 @@ def test_session_records_project_file_frames(
 
     # Enable session recording, then sync project + connect
     _enable_export(api_client, True)
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.2)
 
     api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")

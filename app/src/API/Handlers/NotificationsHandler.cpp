@@ -85,7 +85,7 @@ void API::Handlers::NotificationsHandler::registerCommands()
   eventProps[QStringLiteral("title")]    = stringProp(QStringLiteral("Event title"));
   eventProps[QStringLiteral("subtitle")] = stringProp(QStringLiteral("Event detail (optional)"));
 
-  // notifications.post -- full form with level
+  // notifications.post -- one entrypoint with required severity level
   {
     QJsonObject props              = eventProps;
     props[QStringLiteral("level")] = QJsonObject{
@@ -98,20 +98,6 @@ void API::Handlers::NotificationsHandler::registerCommands()
                              makeSchema(props, QJsonArray{QStringLiteral("level")}),
                              &post);
   }
-
-  // notifications.postInfo / postWarning / postCritical
-  registry.registerCommand(QStringLiteral("notifications.postInfo"),
-                           QStringLiteral("Post an Info-level notification"),
-                           makeSchema(eventProps, QJsonArray()),
-                           &postInfo);
-  registry.registerCommand(QStringLiteral("notifications.postWarning"),
-                           QStringLiteral("Post a Warning-level notification"),
-                           makeSchema(eventProps, QJsonArray()),
-                           &postWarning);
-  registry.registerCommand(QStringLiteral("notifications.postCritical"),
-                           QStringLiteral("Post a Critical-level notification"),
-                           makeSchema(eventProps, QJsonArray()),
-                           &postCritical);
 
   // notifications.resolve -- emit a companion Info "Resolved: <title>"
   registry.registerCommand(QStringLiteral("notifications.resolve"),
@@ -136,13 +122,13 @@ void API::Handlers::NotificationsHandler::registerCommands()
   }
 
   // notifications.channels
-  registry.registerCommand(QStringLiteral("notifications.channels"),
+  registry.registerCommand(QStringLiteral("notifications.listChannels"),
                            QStringLiteral("List channel IDs currently present in history"),
                            emptySchema,
                            &channels);
 
   // notifications.unreadCount
-  registry.registerCommand(QStringLiteral("notifications.unreadCount"),
+  registry.registerCommand(QStringLiteral("notifications.getUnreadCount"),
                            QStringLiteral("Return the number of unread Warning/Critical events"),
                            emptySchema,
                            &unreadCount);
@@ -189,57 +175,6 @@ API::CommandResponse API::Handlers::NotificationsHandler::post(const QString& id
   readEventStrings(params, channel, title, subtitle);
 
   DataModel::NotificationCenter::instance().post(level, channel, title, subtitle);
-
-  return CommandResponse::makeSuccess(id,
-                                      QJsonObject{
-                                        {QStringLiteral("posted"), true}
-  });
-}
-
-/**
- * @brief Post an Info-level notification.
- */
-API::CommandResponse API::Handlers::NotificationsHandler::postInfo(const QString& id,
-                                                                   const QJsonObject& params)
-{
-  QString channel, title, subtitle;
-  readEventStrings(params, channel, title, subtitle);
-
-  DataModel::NotificationCenter::instance().postInfo(channel, title, subtitle);
-
-  return CommandResponse::makeSuccess(id,
-                                      QJsonObject{
-                                        {QStringLiteral("posted"), true}
-  });
-}
-
-/**
- * @brief Post a Warning-level notification.
- */
-API::CommandResponse API::Handlers::NotificationsHandler::postWarning(const QString& id,
-                                                                      const QJsonObject& params)
-{
-  QString channel, title, subtitle;
-  readEventStrings(params, channel, title, subtitle);
-
-  DataModel::NotificationCenter::instance().postWarning(channel, title, subtitle);
-
-  return CommandResponse::makeSuccess(id,
-                                      QJsonObject{
-                                        {QStringLiteral("posted"), true}
-  });
-}
-
-/**
- * @brief Post a Critical-level notification.
- */
-API::CommandResponse API::Handlers::NotificationsHandler::postCritical(const QString& id,
-                                                                       const QJsonObject& params)
-{
-  QString channel, title, subtitle;
-  readEventStrings(params, channel, title, subtitle);
-
-  DataModel::NotificationCenter::instance().postCritical(channel, title, subtitle);
 
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{

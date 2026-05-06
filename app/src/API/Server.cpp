@@ -146,8 +146,6 @@ void API::ServerWorker::closeResources()
 
 /**
  * @brief Adds a socket to the worker thread
- *
- * The socket is moved to this thread and managed here for all I/O operations.
  */
 void API::ServerWorker::addSocket(QTcpSocket* socket)
 {
@@ -185,9 +183,6 @@ void API::ServerWorker::removeSocket(QTcpSocket* socket)
 
 /**
  * @brief Writes raw data to all connected sockets (worker thread)
- *
- * Handles transmission of raw I/O data to API clients.
- * The data is base64-encoded and wrapped in JSON format.
  */
 void API::ServerWorker::writeRawData(const IO::ByteArrayPtr& data)
 {
@@ -210,9 +205,6 @@ void API::ServerWorker::writeRawData(const IO::ByteArrayPtr& data)
 
 /**
  * @brief Broadcasts a lifecycle event JSON object to all connected API clients.
- *
- * Events are sent as {"event": "eventName", ...} messages, allowing plugins
- * to react to connection state changes and save/restore their state.
  */
 void API::ServerWorker::broadcastEvent(const QJsonObject& event)
 {
@@ -243,11 +235,6 @@ void API::ServerWorker::onSocketReadyRead()
 
 /**
  * @brief Writes data to a specific socket (worker thread)
- *
- * Used to send API command responses back to the requesting client.
- *
- * @param socket The socket to write to
- * @param data The data to write
  */
 void API::ServerWorker::writeToSocket(QTcpSocket* socket, const QByteArray& data)
 {
@@ -260,10 +247,6 @@ void API::ServerWorker::writeToSocket(QTcpSocket* socket, const QByteArray& data
 
 /**
  * @brief Disconnects a socket (worker thread)
- *
- * Ensures the disconnect happens after any queued writes are sent.
- *
- * @param socket The socket to disconnect
  */
 void API::ServerWorker::disconnectSocket(QTcpSocket* socket)
 {
@@ -286,9 +269,6 @@ void API::ServerWorker::onSocketDisconnected()
 
 /**
  * @brief Processes frames by serializing them to JSON and writing to sockets
- *
- * Both JSON serialization and socket writes happen on the worker thread,
- * eliminating cross-thread communication overhead for high-frequency writes.
  */
 void API::ServerWorker::processItems(const std::vector<DataModel::TimestampedFramePtr>& items)
 {
@@ -322,9 +302,6 @@ void API::ServerWorker::processItems(const std::vector<DataModel::TimestampedFra
 
 /**
  * @brief Constructs the API server.
- *
- * Initializes the worker thread for JSON serialization and socket I/O,
- * and prepares the TCP server for later activation via setEnabled().
  */
 API::Server::Server()
   : DataModel::FrameConsumer<DataModel::TimestampedFramePtr>(
@@ -359,8 +336,6 @@ API::Server::Server()
 
 /**
  * @brief Destroys the API server.
- *
- * Shuts down the TCP server and closes all existing connections.
  */
 API::Server::~Server()
 {
@@ -377,8 +352,6 @@ DataModel::FrameConsumerWorkerBase* API::Server::createWorker()
 
 /**
  * @brief Gets the singleton instance of the API server.
- *
- * @return Reference to the only instance of API::Server.
  */
 API::Server& API::Server::instance()
 {
@@ -388,9 +361,6 @@ API::Server& API::Server::instance()
 
 /**
  * @brief Checks whether the API server is currently enabled.
- *
- * @return true if the API subsystem is active and serving connections;
- *         false otherwise.
  */
 bool API::Server::enabled() const noexcept
 {
@@ -399,7 +369,6 @@ bool API::Server::enabled() const noexcept
 
 /**
  * @brief Returns whether the server accepts connections from external hosts.
- * @return true if listening on all interfaces; false if localhost only.
  */
 bool API::Server::externalConnections() const noexcept
 {
@@ -408,8 +377,6 @@ bool API::Server::externalConnections() const noexcept
 
 /**
  * @brief Gets the number of currently connected API clients.
- *
- * @return The count of active client connections.
  */
 int API::Server::clientCount() const noexcept
 {
@@ -418,9 +385,6 @@ int API::Server::clientCount() const noexcept
 
 /**
  * @brief Disconnects a client socket from the server.
- *
- * Forwards the removal request to the worker thread.
- * Triggered automatically when a client disconnects or encounters an error.
  */
 void API::Server::removeConnection()
 {
@@ -434,12 +398,6 @@ void API::Server::removeConnection()
 
 /**
  * @brief Enables or disables the TCP API server.
- *
- * When enabling, starts listening for incoming TCP connections.
- * When disabling, stops the server, closes all sockets, and clears
- * frame buffers.
- *
- * @param enabled If true, activates the server. If false, deactivates it.
  */
 void API::Server::setEnabled(const bool enabled)
 {
@@ -491,12 +449,6 @@ void API::Server::setEnabled(const bool enabled)
 
 /**
  * @brief Sets whether the server accepts connections from external hosts.
- *
- * When enabled, the server listens on all network interfaces (QHostAddress::Any).
- * When disabled, it binds to localhost only. If the server is currently running,
- * it is restarted to apply the change immediately.
- *
- * @param enabled If true, accept external connections; if false, localhost only.
  */
 void API::Server::setExternalConnections(const bool enabled)
 {
@@ -548,11 +500,6 @@ void API::Server::setExternalConnections(const bool enabled)
 
 /**
  * @brief Sends raw binary data to all connected clients.
- *
- * Forwards raw I/O data to the worker thread for transmission to API
- * clients. The data will be base64-encoded and wrapped in JSON format.
- *
- * @param data Raw data bytes received from the I/O layer.
  */
 void API::Server::hotpathTxData(const IO::ByteArrayPtr& data)
 {
@@ -570,11 +517,6 @@ void API::Server::hotpathTxData(const IO::ByteArrayPtr& data)
 
 /**
  * @brief Registers a new structured data frame.
- *
- * Enqueues the timestamped frame for background JSON serialization.
- * The serialized data will be transmitted to all connected API clients.
- *
- * @param frame Timestamped frame object to register.
  */
 void API::Server::hotpathTxFrame(const DataModel::TimestampedFramePtr& frame)
 {
@@ -584,11 +526,6 @@ void API::Server::hotpathTxFrame(const DataModel::TimestampedFramePtr& frame)
 
 /**
  * @brief Broadcasts a lifecycle event to all connected API clients.
- *
- * Sends {"event": "eventName"} to all clients so plugins can react
- * to connection/disconnection/project changes and save/restore state.
- *
- * @param eventName Event name (e.g. "connected", "disconnected").
  */
 void API::Server::broadcastLifecycleEvent(const QString& eventName)
 {
@@ -613,9 +550,6 @@ void API::Server::broadcastLifecycleEvent(const QString& eventName)
 
 /**
  * @brief Sends a response to a specific client socket via the worker thread.
- *
- * @param socket The target socket
- * @param response The response bytes to send
  */
 void API::Server::sendResponseToSocket(QTcpSocket* socket, const QByteArray& response)
 {
@@ -632,14 +566,6 @@ void API::Server::sendResponseToSocket(QTcpSocket* socket, const QByteArray& res
 
 /**
  * @brief Sends an error response and disconnects the client.
- *
- * Writes the error message to the socket, then schedules a disconnect
- * on the worker thread and clears the connection buffer.
- *
- * @param socket The target socket
- * @param state Connection state for the socket
- * @param errorCode The API error code string
- * @param errorMessage Human-readable error description
  */
 void API::Server::disconnectClient(QTcpSocket* socket,
                                    ConnectionState& state,
@@ -661,15 +587,6 @@ void API::Server::disconnectClient(QTcpSocket* socket,
 
 /**
  * @brief Validates rate limits and buffer capacity for incoming data.
- *
- * Checks byte-rate and buffer-size limits. If either is exceeded, an error
- * response is sent and the client is disconnected.
- *
- * @param socket The source socket
- * @param state Connection state for the socket
- * @param data The incoming data chunk
- * @return true if validation passed and processing may continue;
- *         false if the client was disconnected.
  */
 bool API::Server::validateRateLimits(QTcpSocket* socket,
                                      ConnectionState& state,
@@ -716,14 +633,6 @@ bool API::Server::validateRateLimits(QTcpSocket* socket,
 
 /**
  * @brief Validates JSON message size, depth, and rate limits.
- *
- * Sends an error response if any limit is exceeded. When the rate limit
- * is exceeded, the client is also disconnected.
- *
- * @param socket The source socket (for sending responses)
- * @param state Connection state for the socket
- * @param jsonBytes The JSON message bytes to validate
- * @return true if the message passes all checks; false if rejected.
  */
 bool API::Server::validateJsonMessage(QTcpSocket* socket,
                                       ConnectionState& state,
@@ -775,12 +684,6 @@ bool API::Server::validateJsonMessage(QTcpSocket* socket,
 
 /**
  * @brief Dispatches a validated JSON message to the appropriate handler.
- *
- * Validates the message, then routes to MCP, raw data, or command handler.
- *
- * @param socket The source socket (for sending responses)
- * @param state Connection state for the socket
- * @param jsonBytes The trimmed JSON message bytes
  */
 void API::Server::handleJsonMessage(QTcpSocket* socket,
                                     ConnectionState& state,
@@ -841,13 +744,6 @@ void API::Server::handleJsonMessage(QTcpSocket* socket,
 
 /**
  * @brief Processes a JSON "raw" command that forwards base64 data to the device.
- *
- * Validates required fields, decodes base64 payload, checks size limits,
- * and writes to the I/O connection manager.
- *
- * @param socket The source socket (for sending responses)
- * @param state Connection state for the socket
- * @param json The parsed JSON object containing the raw command
  */
 void API::Server::processRawJsonCommand(QTcpSocket* socket,
                                         ConnectionState& state,
@@ -912,12 +808,6 @@ void API::Server::processRawJsonCommand(QTcpSocket* socket,
 
 /**
  * @brief Handles a buffered message when no newline delimiter is present.
- *
- * Attempts to parse the buffer as JSON if it starts with '{' or '['.
- * Otherwise treats it as raw data and forwards to the I/O device.
- *
- * @param socket The source socket
- * @param state Connection state (buffer is consumed and cleared)
  */
 void API::Server::processNoNewlineBuffer(QTcpSocket* socket, ConnectionState& state)
 {
@@ -954,15 +844,6 @@ void API::Server::processNoNewlineBuffer(QTcpSocket* socket, ConnectionState& st
 
 /**
  * @brief Attempts to parse buffered data as a complete JSON message.
- *
- * Called when the buffer has no newline delimiter and starts with '{' or '['.
- * Pre-checks size/depth limits to avoid feeding huge data to the parser,
- * then dispatches via handleJsonMessage() if parseable.
- * The buffer is cleared whenever a message is consumed or rejected.
- *
- * @param socket The source socket
- * @param state Connection state (buffer is cleared on success or error)
- * @param trimmed The trimmed buffer contents
  */
 void API::Server::processBufferedJson(QTcpSocket* socket,
                                       ConnectionState& state,
@@ -1035,12 +916,6 @@ void API::Server::processBufferedJson(QTcpSocket* socket,
 
 /**
  * @brief Processes a newline-delimited JSON line from the buffer.
- *
- * Validates size and depth limits before dispatching to handleJsonMessage().
- *
- * @param socket The source socket
- * @param state Connection state for the socket
- * @param trimmedLine The trimmed line (already confirmed to start with '{' or '[')
  */
 void API::Server::processJsonLine(QTcpSocket* socket,
                                   ConnectionState& state,
@@ -1054,15 +929,6 @@ void API::Server::processJsonLine(QTcpSocket* socket,
 
 /**
  * @brief Processes a non-JSON raw line from the buffer.
- *
- * Validates size limits and forwards data to the I/O connection manager.
- * When the line exceeds the raw size limit, an error response is sent and
- * a disconnect is scheduled, but the buffer is not cleared so the caller
- * can finish processing remaining lines.
- *
- * @param socket The source socket
- * @param state Connection state for the socket
- * @param line The raw line including the newline delimiter
  */
 void API::Server::processRawLine(QTcpSocket* socket, ConnectionState& state, const QByteArray& line)
 {
@@ -1100,13 +966,6 @@ void API::Server::processRawLine(QTcpSocket* socket, ConnectionState& state, con
 
 /**
  * @brief Handles incoming data from worker thread.
- *
- * Receives data from the worker thread (which read it from a socket).
- * Validates rate limits, splits buffered data on newline boundaries,
- * and dispatches each message to the appropriate handler.
- *
- * @param socket The socket that sent the data (for sending responses)
- * @param data The received data
  */
 void API::Server::onDataReceived(QTcpSocket* socket, const QByteArray& data)
 {
@@ -1165,9 +1024,6 @@ void API::Server::onDataReceived(QTcpSocket* socket, const QByteArray& data)
 
 /**
  * @brief Accepts new incoming TCP connections.
- *
- * Creates the socket on the main thread, then moves it to the worker thread
- * for all I/O operations.
  */
 void API::Server::acceptConnection()
 {
@@ -1221,11 +1077,6 @@ void API::Server::acceptConnection()
 
 /**
  * @brief Handles socket-level errors from connected clients.
- *
- * Logs the error to debug output and attempts to cleanly disconnect
- * the faulty socket.
- *
- * @param socketError Error code provided by the QAbstractSocket.
  */
 void API::Server::onErrorOccurred(const QAbstractSocket::SocketError socketError)
 {
@@ -1256,11 +1107,6 @@ void API::Server::onSocketDisconnected()
 
 /**
  * @brief Clears socket buffers when worker reports socket removal.
- *
- * This version is called from the worker thread when a socket is removed.
- * The socket pointer may already be invalid at this point.
- *
- * @param socket The socket pointer being removed
  */
 void API::Server::onSocketDisconnected(QTcpSocket* socket)
 {
@@ -1279,11 +1125,6 @@ void API::Server::onSocketDisconnected(QTcpSocket* socket)
 
 /**
  * @brief Updates the client count from the worker thread.
- *
- * Called when the worker thread reports a change in the number of connected
- * clients. Updates the local count and emits the clientCountChanged signal.
- *
- * @param count New number of connected clients
  */
 void API::Server::onClientCountChanged(int count)
 {

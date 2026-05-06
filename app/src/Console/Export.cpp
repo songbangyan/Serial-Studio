@@ -110,7 +110,6 @@ void Console::ExportWorker::closeResources()
 
 /**
  * @brief Creates a new console log file for the given device.
- * @param deviceId Device to create a file for (-1 for single-device mode).
  */
 void Console::ExportWorker::createFile(int deviceId)
 {
@@ -339,8 +338,6 @@ void Console::Export::setExportEnabled(const bool enabled)
 
 /**
  * @brief Appends console data from a specific device to the output buffer.
- * @param deviceId Source device identifier.
- * @param data     Console text to export.
  */
 void Console::Export::registerData(int deviceId, QStringView data)
 {
@@ -353,10 +350,10 @@ void Console::Export::registerData(int deviceId, QStringView data)
 #endif
 }
 
+#ifdef BUILD_COMMERCIAL
 /**
  * @brief Called when the worker thread changes the file open state.
  */
-#ifdef BUILD_COMMERCIAL
 void Console::Export::onWorkerOpenChanged()
 {
   auto* worker = static_cast<ExportWorker*>(m_worker);

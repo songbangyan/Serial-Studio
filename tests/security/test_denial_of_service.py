@@ -201,7 +201,7 @@ def test_cpu_exhaustion(tester):
                 "commands": [
                     {
                         "id": f"cmd-{i}",
-                        "command": "project.loadFromJSON",
+                        "command": "project.loadJson",
                         "params": {
                             "config": {
                                 "title": "Test",
@@ -495,7 +495,7 @@ def test_recursive_operations(tester):
             for i in range(100):
                 try:
                     result = client.command(
-                        "project.loadFromJSON", {"config": recursive_config}
+                        "project.loadJson", {"config": recursive_config}
                     )
                 except APIError:
                     break

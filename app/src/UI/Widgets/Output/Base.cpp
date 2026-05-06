@@ -21,9 +21,6 @@
 
 /**
  * @brief Constructs an output widget base from a config struct.
- *
- * Compiles the user's transmit(value) JavaScript function once at construction
- * time and caches it for repeated evaluation.
  */
 Widgets::Output::Base::Base(const DataModel::OutputWidget& config, QQuickItem* parent)
   : QQuickItem(parent)
@@ -144,12 +141,6 @@ bool Widgets::Output::Base::hasTransmitFunction() const noexcept
 
 /**
  * @brief Evaluates the transmit function and sends the result to the device.
- *
- * Rate-limited to prevent flooding the connection. Requires an active Pro
- * license and a connected device.
- *
- * @param value The widget value to transmit (double for sliders, bool for
- *              toggles, string for text fields, 1 for buttons).
  */
 void Widgets::Output::Base::sendValue(const QVariant& value)
 {
@@ -170,11 +161,7 @@ void Widgets::Output::Base::sendValue(const QVariant& value)
 }
 
 /**
- * @brief Runs the JavaScript transmit(value) function and returns the result
- *        as a QByteArray.
- *
- * @param value The value to pass to the JS function.
- * @return The bytes to transmit, or empty on error.
+ * @brief Runs the JavaScript transmit(value) function and returns the result as a QByteArray.
  */
 QByteArray Widgets::Output::Base::evaluateTransmitFunction(const QVariant& value)
 {
@@ -228,12 +215,6 @@ QByteArray Widgets::Output::Base::evaluateTransmitFunction(const QVariant& value
 
 /**
  * @brief Installs protocol-aware helper functions into the JS engine.
- *
- * These pure byte-packing utilities let users write simple transmit functions
- * like `return modbusWriteRegister(0x0001, value)` instead of manually
- * constructing binary payloads.
- *
- * @param engine The QJSEngine to install helpers into.
  */
 void Widgets::Output::Base::installProtocolHelpers(QJSEngine& engine)
 {

@@ -40,8 +40,6 @@ double Widgets::Output::Slider::currentValue() const noexcept
 
 /**
  * @brief Sets the slider value and transmits it.
- *
- * The value is clamped to [minValue, maxValue] before transmission.
  */
 void Widgets::Output::Slider::setCurrentValue(double value)
 {

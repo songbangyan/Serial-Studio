@@ -59,7 +59,6 @@ static bool isWindows11()
 
 /**
  * @brief Constructs NativeWindow.
- * @param parent Parent QObject.
  */
 NativeWindow::NativeWindow(QObject* parent) : QObject(parent)
 {
@@ -80,7 +79,6 @@ void NativeWindow::installMacOSQuitInterceptor() {}
 
 /**
  * @brief Returns the height of the title bar in pixels.
- * @param window Window to query.
  */
 int NativeWindow::titlebarHeight(QObject* window)
 {
@@ -90,7 +88,6 @@ int NativeWindow::titlebarHeight(QObject* window)
 
 /**
  * @brief Removes a window from the management list.
- * @param window Window to remove.
  */
 void NativeWindow::removeWindow(QObject* window)
 {
@@ -116,8 +113,6 @@ void NativeWindow::removeWindow(QObject* window)
 
 /**
  * @brief Configures native window customization.
- * @param window Window to customize.
- * @param color  Optional title bar color (hex string).
  */
 void NativeWindow::addWindow(QObject* window, const QString& color)
 {

@@ -66,6 +66,7 @@ static QJsonObject sanitizeBlock(QJsonObject block)
   } else if (type == QStringLiteral("tool_result")) {
     // Anthropic strict-rejects extra keys on tool_result blocks
     block.remove(QStringLiteral("_tool_name"));
+    block.remove(QStringLiteral("_gemini_response"));
   }
   return block;
 }

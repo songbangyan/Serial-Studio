@@ -24,12 +24,6 @@ class SseEventReader;
 
 /**
  * @brief Real OpenAI Chat Completions streaming Reply.
- *
- * Posts a JSON body to https://api.openai.com/v1/chat/completions with
- * stream:true, parses Server-Sent-Events (each line a JSON delta with
- * a final `data: [DONE]` sentinel), and translates OpenAI's
- * choices[0].delta.{content, tool_calls} stream into the provider-neutral
- * Reply signals.
  */
 class OpenAIReply : public Reply {
   Q_OBJECT

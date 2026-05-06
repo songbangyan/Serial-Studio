@@ -278,7 +278,7 @@ class ProtocolFuzzer:
             "commands": [
                 {
                     "id": f"cmd-{i}",
-                    "command": "project.loadFromJSON",
+                    "command": "project.loadJson",
                     "params": {
                         "config": {"nested": {"level": i}},
                     },
@@ -351,7 +351,7 @@ class ProtocolFuzzer:
         print("\n[*] Fuzzing command names...")
 
         # Generate variations of command names
-        base_commands = ["api.getCommands", "io.manager.connect", "project.setTitle"]
+        base_commands = ["api.getCommands", "io.connect", "project.setTitle"]
 
         mutations = []
 

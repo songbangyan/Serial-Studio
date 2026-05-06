@@ -161,7 +161,7 @@ class TestInjectionAttacks:
         Expected: Server should reject paths outside allowed directories.
         """
         try:
-            result = security_client.command("project.file.open", {"filePath": payload})
+            result = security_client.command("project.open", {"filePath": payload})
 
             # Should NOT succeed
             vuln_tracker.log_vulnerability(
@@ -537,7 +537,7 @@ class TestParameterValidation:
     def test_fps_type_validation(self, security_client, fps_value):
         """Test FPS parameter type validation"""
         try:
-            security_client.command("dashboard.setFPS", {"fps": fps_value})
+            security_client.command("dashboard.setFps", {"fps": fps_value})
 
             # Should have rejected invalid type/value
             if isinstance(fps_value, (list, dict, type(None))) or not isinstance(fps_value, (int, float)):

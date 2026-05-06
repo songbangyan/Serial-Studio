@@ -29,12 +29,6 @@ namespace UI {
 
 /**
  * @brief Persistent user preferences for the dashboard taskbar.
- *
- * Owns the canonical list of pinned-button IDs, their display order, plus
- * autohide / search-field / always-show-buttons toggles. Lives independently
- * of any Taskbar QQuickItem instance so the Settings dialog can edit prefs
- * even when no dashboard is loaded, and so all live taskbars stay in sync
- * via the singleton's notify signals.
  */
 class TaskbarSettings : public QObject {
   // clang-format off

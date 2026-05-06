@@ -8,19 +8,13 @@
 // doesn't draw a stray chord from the implicit origin to the arc start.
 
 function paint(ctx, w, h) {
-  // Cream paper background.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.groupbox_background;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.groupbox_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
-
-  const colors = [
-    "#10b981", "#6366f1", "#f59e0b", "#dc2626",
-    "#0ea5e9", "#a855f7", "#22c55e", "#f97316"
-  ];
 
   // Lay rings out on a grid that prefers near-square cells.
   const n    = datasets.length;
@@ -40,10 +34,9 @@ function paint(ctx, w, h) {
     const v    = Number.isFinite(ds.value) ? ds.value : 0;
     const span = (ds.max - ds.min) || 1;
     const norm = Math.max(0, Math.min(1, (v - ds.min) / span));
-    const color = colors[i % colors.length];
 
     // Track ring (full circle, stroke).
-    ctx.strokeStyle = "#e2e8f0";
+    ctx.strokeStyle = theme.mid;
     ctx.lineWidth   = 12;
     ctx.lineCap     = "butt";
     ctx.beginPath();
@@ -55,7 +48,7 @@ function paint(ctx, w, h) {
     if (norm > 0) {
       const startA = -Math.PI * 0.5;
       const endA   = startA + Math.PI * 2 * norm;
-      ctx.strokeStyle = color;
+      ctx.strokeStyle = theme.highlight;
       ctx.lineCap     = "round";
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(startA) * rr, cy + Math.sin(startA) * rr);
@@ -65,13 +58,13 @@ function paint(ctx, w, h) {
     }
 
     // Centre value (% of range) and small title underneath.
-    ctx.fillStyle    = "#0f172a";
+    ctx.fillStyle    = theme.text;
     ctx.font         = "bold 18px sans-serif";
     ctx.textAlign    = "center";
     ctx.textBaseline = "middle";
     ctx.fillText((norm * 100).toFixed(0) + "%", cx, cy);
 
-    ctx.fillStyle    = "#64748b";
+    ctx.fillStyle    = theme.pane_section_label || theme.text;
     ctx.font         = "10px sans-serif";
     ctx.textBaseline = "alphabetic";
     const title = (ds.title || "").substring(0, 16);

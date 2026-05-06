@@ -27,7 +27,6 @@
 
 /**
  * @brief Returns the singleton instance of UISessionRegistry.
- * @return Reference to the global UISessionRegistry instance.
  */
 UI::UISessionRegistry& UI::UISessionRegistry::instance()
 {
@@ -37,7 +36,6 @@ UI::UISessionRegistry& UI::UISessionRegistry::instance()
 
 /**
  * @brief Constructs a UISessionRegistry and initializes all pointers to null.
- * @param parent Optional QObject parent.
  */
 UI::UISessionRegistry::UISessionRegistry(QObject* parent)
   : QObject(parent), m_primaryTaskbar(nullptr), m_primaryWindowManager(nullptr)
@@ -49,7 +47,6 @@ UI::UISessionRegistry::UISessionRegistry(QObject* parent)
 
 /**
  * @brief Registers the first Taskbar instance as the primary taskbar.
- * @param t Pointer to the Taskbar to register.
  */
 void UI::UISessionRegistry::registerTaskbar(Taskbar* t)
 {
@@ -62,7 +59,6 @@ void UI::UISessionRegistry::registerTaskbar(Taskbar* t)
 
 /**
  * @brief Unregisters the primary Taskbar if it matches the given pointer.
- * @param t Pointer to the Taskbar to unregister.
  */
 void UI::UISessionRegistry::unregisterTaskbar(Taskbar* t)
 {
@@ -79,7 +75,6 @@ void UI::UISessionRegistry::unregisterTaskbar(Taskbar* t)
 
 /**
  * @brief Registers the first WindowManager instance as the primary window manager.
- * @param wm Pointer to the WindowManager to register.
  */
 void UI::UISessionRegistry::registerWindowManager(WindowManager* wm)
 {
@@ -92,7 +87,6 @@ void UI::UISessionRegistry::registerWindowManager(WindowManager* wm)
 
 /**
  * @brief Unregisters the primary WindowManager if it matches the given pointer.
- * @param wm Pointer to the WindowManager to unregister.
  */
 void UI::UISessionRegistry::unregisterWindowManager(WindowManager* wm)
 {
@@ -109,7 +103,6 @@ void UI::UISessionRegistry::unregisterWindowManager(WindowManager* wm)
 
 /**
  * @brief Returns the registered primary Taskbar, or nullptr if none is registered.
- * @return Pointer to the primary Taskbar.
  */
 UI::Taskbar* UI::UISessionRegistry::primaryTaskbar() const
 {
@@ -118,7 +111,6 @@ UI::Taskbar* UI::UISessionRegistry::primaryTaskbar() const
 
 /**
  * @brief Returns the registered primary WindowManager, or nullptr if none is registered.
- * @return Pointer to the primary WindowManager.
  */
 UI::WindowManager* UI::UISessionRegistry::primaryWindowManager() const
 {

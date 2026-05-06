@@ -36,18 +36,6 @@ PanelLayout::SizeClass PanelLayout::classify(OWT type)
 
 /**
  * @brief Returns the minimum size (width, height) for a widget type.
- *
- * Computes sizes from actual font metrics so they scale correctly with
- * system DPI and font settings. Each height accounts for the actual
- * content the widget renders:
- *
- *   Section label:  fontH * 0.75 (small caps) + 1px separator + spacing
- *   Button:         centered button height + vertical margins
- *   Slider:         label row + slider track + range labels + value
- *   Toggle:         label + switch control
- *   TextField:      label + input row (textfield + send button)
- *   Knob:           label + square dial area + value label
- *   Ramp:           label + progress bar + value row + button row
  */
 QSizeF PanelLayout::minSize(OWT type)
 {
@@ -95,10 +83,6 @@ QSizeF PanelLayout::minSize(OWT type)
 
 /**
  * @brief Builds columns by grouping widgets in order.
- *
- * Tall widgets get their own column (full height). Small widgets stack
- * vertically in shared columns, with the stack size computed from the
- * available height.
  */
 QVector<PanelLayout::Column> PanelLayout::buildColumns(const QVector<Item>& items,
                                                        int n,
@@ -168,9 +152,6 @@ QVector<PanelLayout::Column> PanelLayout::buildColumns(const QVector<Item>& item
 
 /**
  * @brief Places one row of columns into the result vector.
- *
- * Distributes width proportionally to column min-widths and distributes
- * height proportionally to item min-heights within each column.
  */
 void PanelLayout::layoutRow(QVector<Rect>& result,
                             const QVector<Column>& columns,
@@ -227,10 +208,6 @@ void PanelLayout::layoutRow(QVector<Rect>& result,
 
 /**
  * @brief Computes optimal 2D placement for output widgets.
- *
- * Builds columns from the widget list, determines how many columns fit
- * per row, then lays out each row distributing width and height
- * proportionally.
  */
 QVector<PanelLayout::Rect> PanelLayout::compute(const std::vector<DataModel::OutputWidget>& widgets,
                                                 qreal width,

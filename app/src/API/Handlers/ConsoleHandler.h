@@ -33,6 +33,10 @@ public:
   static void registerCommands();
 
 private:
+  static void registerDisplayCommands();
+  static void registerFontAndChecksumCommands();
+  static void registerIoAndExportCommands();
+
   static CommandResponse setEcho(const QString& id, const QJsonObject& params);
   static CommandResponse setShowTimestamp(const QString& id, const QJsonObject& params);
   static CommandResponse setDisplayMode(const QString& id, const QJsonObject& params);
@@ -41,6 +45,9 @@ private:
   static CommandResponse setFontFamily(const QString& id, const QJsonObject& params);
   static CommandResponse setFontSize(const QString& id, const QJsonObject& params);
   static CommandResponse setChecksumMethod(const QString& id, const QJsonObject& params);
+  static CommandResponse setVt100Emulation(const QString& id, const QJsonObject& params);
+  static CommandResponse setAnsiColorsEnabled(const QString& id, const QJsonObject& params);
+  static CommandResponse setEncoding(const QString& id, const QJsonObject& params);
 
   static CommandResponse clear(const QString& id, const QJsonObject& params);
   static CommandResponse send(const QString& id, const QJsonObject& params);

@@ -61,7 +61,7 @@ def test_quickplot_comma_csv_parsing(api_client, device_simulator, clean_state):
     # 1. The connection remains stable
     # 2. Frames are being received without errors
     # We CANNOT check project status because QuickPlot has no project model
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected after receiving QuickPlot data"
 
 
@@ -82,12 +82,12 @@ def test_csv_parsing_with_javascript_semicolon(api_client, device_simulator, cle
 
     # Add 3 datasets
     for i in range(3):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for semicolon delimiter
     parser_code = "function parse(frame) { return frame.split(';'); }"
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     # Configure frame delimiters for ProjectFile mode
@@ -104,7 +104,7 @@ def test_csv_parsing_with_javascript_semicolon(api_client, device_simulator, cle
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -131,7 +131,7 @@ def test_csv_parsing_with_javascript_semicolon(api_client, device_simulator, cle
     time.sleep(2.0)
 
     # Verify frames were parsed
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     project_status = api_client.get_project_status()
@@ -155,12 +155,12 @@ def test_csv_parsing_with_javascript_tab(api_client, device_simulator, clean_sta
 
     # Add 4 datasets
     for i in range(4):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for tab delimiter
     parser_code = "function parse(frame) { return frame.split('\\t'); }"
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     # Configure frame delimiters for ProjectFile mode
@@ -177,7 +177,7 @@ def test_csv_parsing_with_javascript_tab(api_client, device_simulator, clean_sta
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -204,7 +204,7 @@ def test_csv_parsing_with_javascript_tab(api_client, device_simulator, clean_sta
     time.sleep(2.0)
 
     # Verify frames were parsed
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     project_status = api_client.get_project_status()
@@ -228,12 +228,12 @@ def test_csv_parsing_with_javascript_pipe(api_client, device_simulator, clean_st
 
     # Add 5 datasets
     for i in range(5):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for pipe delimiter
     parser_code = "function parse(frame) { return frame.split('|'); }"
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     # Configure frame delimiters for ProjectFile mode
@@ -250,7 +250,7 @@ def test_csv_parsing_with_javascript_pipe(api_client, device_simulator, clean_st
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -277,7 +277,7 @@ def test_csv_parsing_with_javascript_pipe(api_client, device_simulator, clean_st
     time.sleep(2.0)
 
     # Verify frames were parsed
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     project_status = api_client.get_project_status()

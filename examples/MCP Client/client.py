@@ -209,9 +209,9 @@ def main():
 
         # Example: Get IO manager status
         print("\n" + "=" * 60)
-        print("Example: Calling io.manager.getStatus tool")
+        print("Example: Calling io.getStatus tool")
         print("=" * 60)
-        result = client.call_tool("io.manager.getStatus")
+        result = client.call_tool("io.getStatus")
         if result:
             print(json.dumps(result, indent=2))
 

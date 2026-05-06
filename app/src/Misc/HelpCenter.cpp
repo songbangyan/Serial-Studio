@@ -229,9 +229,8 @@ bool Misc::HelpCenter::navigateToPage(const QString& link)
 }
 
 /**
- * @brief Opens the Help Center and navigates to the given @a pageId.
- *        If the manifest has not been loaded yet, the page ID is stored
- *        and navigation occurs after the manifest arrives.
+ * @brief Opens the Help Center and navigates to the given @a pageId. If the manifest has not been
+ * loaded yet, the page ID is stored and navigation occurs after the manifest arrives.
  */
 void Misc::HelpCenter::showPage(const QString& pageId)
 {

@@ -21,10 +21,6 @@ using KeyGetter = std::function<QString()>;
 
 /**
  * @brief Anthropic Messages API adapter (first-slice stub).
- *
- * Holds a non-owning QNetworkAccessManager reference and a key-getter
- * functor. sendMessage returns a Reply that errors on the next event
- * loop tick with "Provider backend not yet implemented".
  */
 class AnthropicProvider : public Provider {
 public:

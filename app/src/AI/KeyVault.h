@@ -38,11 +38,6 @@ inline constexpr int kProviderCount = 5;
 
 /**
  * @brief RAII helper that best-effort scrubs a QString on destruction.
- *
- * Qt's QString is copy-on-write, so this is obfuscation-grade only:
- * it clears the unique buffer this instance holds, not aliased copies
- * elsewhere in the program. Use only for short-lived plaintext copies
- * on the API key path.
  */
 class ZeroOnDestroy {
 public:
@@ -59,18 +54,6 @@ private:
 
 /**
  * @brief Per-machine encrypted storage for BYOK API keys.
- *
- * Keys live under QSettings group "ai/keys" with sub-keys "anthropic",
- * "openai", "gemini". Ciphertext is produced by Licensing::SimpleCrypt
- * keyed off Licensing::MachineID::machineSpecificKey() with
- * ProtectionHash integrity. Storage is per-machine: copying the
- * settings file to another machine yields unrecoverable values.
- *
- * Threat model: this is obfuscation-grade, not enterprise crypto. It
- * stops casual snooping and accidental leakage through cloud-synced
- * config backups. A determined local attacker with binary access can
- * reverse the key derivation. A future migration to qtkeychain keeps
- * this same setKey/key/clearKey/hasKey surface unchanged.
  */
 class KeyVault {
 public:

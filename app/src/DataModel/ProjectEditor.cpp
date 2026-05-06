@@ -788,6 +788,11 @@ void DataModel::ProjectEditor::setSelectedSourceFrameParserCode(const QString& c
  */
 QString DataModel::ProjectEditor::currentGroupPainterCode() const
 {
+  const int gid      = m_selectedGroup.groupId;
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+  if (gid >= 0 && static_cast<size_t>(gid) < groups.size())
+    return groups[gid].painterCode;
+
   return m_selectedGroup.painterCode;
 }
 
@@ -808,9 +813,8 @@ int DataModel::ProjectEditor::currentGroupId() const
 }
 
 /**
- * @brief Builds a QVariantList describing the current group's datasets so
- *        QML preview tooling can seed simulated values that mirror the real
- *        configuration (titles, units, min/max bounds).
+ * @brief Builds a QVariantList describing the current group's datasets so QML preview tooling can
+ * seed simulated values that mirror the real configuration (titles, units, min/max bounds).
  */
 QVariantList DataModel::ProjectEditor::currentGroupDatasetsForPreview() const
 {
@@ -3225,11 +3229,6 @@ bool DataModel::ProjectEditor::applyGroupImgModeEdit(int modeIdx, int groupId)
 
 /**
  * @brief Handles edits to the action form model.
- *
- * Maps the changed item's ParameterType to the corresponding m_selectedAction
- * field and calls ProjectModel::updateAction() to persist the change.
- *
- * @param item  The QStandardItem that was edited.
  */
 void DataModel::ProjectEditor::onActionItemChanged(QStandardItem* item)
 {
@@ -3639,6 +3638,191 @@ void DataModel::ProjectEditor::syncDatasetItemCache(int groupId, int datasetId)
 // Private slot: tree selection changed
 //--------------------------------------------------------------------------------------------------
 
+/** @brief Refreshes the selected-source snapshot and switches to the parser view. */
+bool DataModel::ProjectEditor::selectSourceParserItem(QStandardItem* item)
+{
+  if (!m_sourceParserItems.contains(item))
+    return false;
+
+  const auto cached      = m_sourceParserItems.value(item);
+  const auto& srcs       = DataModel::ProjectModel::instance().sources();
+  DataModel::Source live = cached;
+  for (const auto& s : srcs) {
+    if (s.sourceId == cached.sourceId) {
+      live = s;
+      break;
+    }
+  }
+  m_selectedSource = live;
+  setCurrentView(SourceFrameParserView);
+  Q_EMIT selectedSourceFrameParserCodeChanged();
+  Q_EMIT sourceModelChanged();
+  return true;
+}
+
+/** @brief Switches the form to the SourceView for the clicked source item. */
+bool DataModel::ProjectEditor::selectSourceItem(QStandardItem* item)
+{
+  if (!m_sourceItems.contains(item))
+    return false;
+
+  const auto cached      = m_sourceItems.value(item);
+  const auto& srcs       = DataModel::ProjectModel::instance().sources();
+  DataModel::Source live = cached;
+  for (const auto& s : srcs) {
+    if (s.sourceId == cached.sourceId) {
+      live = s;
+      break;
+    }
+  }
+
+  if (m_currentView == SourceView && live.sourceId == m_selectedSource.sourceId)
+    return true;
+
+  setCurrentView(SourceView);
+  buildSourceModel(live);
+  return true;
+}
+
+/** @brief Switches the form to the GroupView for the clicked group item. */
+bool DataModel::ProjectEditor::selectGroupItem(QStandardItem* item)
+{
+  if (!m_groupItems.contains(item))
+    return false;
+
+  auto& pm              = DataModel::ProjectModel::instance();
+  const auto cached     = m_groupItems.value(item);
+  const auto& groups    = pm.groups();
+  DataModel::Group live = cached;
+  if (cached.groupId >= 0 && static_cast<size_t>(cached.groupId) < groups.size())
+    live = groups[cached.groupId];
+
+  pm.setSelectedGroup(live);
+  setCurrentView(GroupView);
+  buildGroupModel(live);
+  return true;
+}
+
+/** @brief Switches the form to the DatasetView for the clicked dataset item. */
+bool DataModel::ProjectEditor::selectDatasetItem(QStandardItem* item)
+{
+  if (!m_datasetItems.contains(item))
+    return false;
+
+  auto& pm                = DataModel::ProjectModel::instance();
+  const auto cached       = m_datasetItems.value(item);
+  const auto& groups      = pm.groups();
+  DataModel::Dataset live = cached;
+  if (cached.groupId >= 0 && static_cast<size_t>(cached.groupId) < groups.size()) {
+    for (const auto& d : groups[cached.groupId].datasets) {
+      if (d.datasetId == cached.datasetId) {
+        live = d;
+        break;
+      }
+    }
+  }
+
+  pm.setSelectedDataset(live);
+  setCurrentView(DatasetView);
+  buildDatasetModel(live);
+  return true;
+}
+
+/** @brief Switches the form to the ActionView for the clicked action item. */
+bool DataModel::ProjectEditor::selectActionItem(QStandardItem* item)
+{
+  if (!m_actionItems.contains(item))
+    return false;
+
+  auto& pm               = DataModel::ProjectModel::instance();
+  const auto cached      = m_actionItems.value(item);
+  const auto& actions    = pm.actions();
+  DataModel::Action live = cached;
+  for (const auto& a : actions) {
+    if (a.actionId == cached.actionId) {
+      live = a;
+      break;
+    }
+  }
+
+  pm.setSelectedAction(live);
+  setCurrentView(ActionView);
+  buildActionModel(live);
+  return true;
+}
+
+/** @brief Switches the form to the OutputWidgetView for the clicked widget item. */
+bool DataModel::ProjectEditor::selectOutputWidgetItem(QStandardItem* item)
+{
+  if (!m_outputWidgetItems.contains(item))
+    return false;
+
+  auto& pm                     = DataModel::ProjectModel::instance();
+  const auto cached            = m_outputWidgetItems.value(item);
+  const auto& groups           = pm.groups();
+  DataModel::OutputWidget live = cached;
+  if (cached.groupId >= 0 && static_cast<size_t>(cached.groupId) < groups.size()) {
+    for (const auto& w : groups[cached.groupId].outputWidgets) {
+      if (w.widgetId == cached.widgetId) {
+        live = w;
+        break;
+      }
+    }
+  }
+
+  pm.setSelectedOutputWidget(live);
+  setCurrentView(OutputWidgetView);
+  buildOutputWidgetModel(live);
+  return true;
+}
+
+/** @brief Routes selections under the data-tables tree branch. */
+bool DataModel::ProjectEditor::selectDataTableItem(QStandardItem* item)
+{
+  if (item == m_tablesRootItem) {
+    setCurrentView(DataTablesView);
+    return true;
+  }
+
+  if (item == m_systemDatasetsItem) {
+    setCurrentView(SystemDatasetsView);
+    return true;
+  }
+
+  if (m_userTableItems.contains(item)) {
+    const auto name = m_userTableItems.value(item);
+    if (m_selectedUserTable != name) {
+      m_selectedUserTable = name;
+      Q_EMIT selectedUserTableChanged();
+    }
+    setCurrentView(UserTableView);
+    return true;
+  }
+
+  return false;
+}
+
+/** @brief Routes selections under the workspaces tree branch. */
+bool DataModel::ProjectEditor::selectWorkspaceTreeItem(QStandardItem* item)
+{
+  if (item == m_workspacesRootItem) {
+    setCurrentView(WorkspacesView);
+    return true;
+  }
+
+  if (m_workspaceItems.contains(item)) {
+    const int wid = m_workspaceItems.value(item);
+    if (m_selectedWorkspaceId != wid) {
+      m_selectedWorkspaceId = wid;
+      Q_EMIT selectedWorkspaceIdChanged();
+    }
+    setCurrentView(WorkspaceView);
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * @brief Switches the active editor view based on the newly selected tree item.
  */
@@ -3654,80 +3838,31 @@ void DataModel::ProjectEditor::onCurrentSelectionChanged(const QModelIndex& curr
   if (!item)
     return;
 
-  if (m_sourceParserItems.contains(item)) {
-    m_selectedSource = m_sourceParserItems.value(item);
-    setCurrentView(SourceFrameParserView);
-    Q_EMIT selectedSourceFrameParserCodeChanged();
-    Q_EMIT sourceModelChanged();
+  // Always refetch live record from ProjectModel; cache snapshots are stale
+  if (selectSourceParserItem(item))
     return;
-  }
-  if (m_sourceItems.contains(item)) {
-    const auto source = m_sourceItems.value(item);
-    if (m_currentView == SourceView && source.sourceId == m_selectedSource.sourceId)
-      return;
 
-    setCurrentView(SourceView);
-    buildSourceModel(source);
+  if (selectSourceItem(item))
     return;
-  }
-  if (m_groupItems.contains(item)) {
-    const auto group = m_groupItems.value(item);
-    DataModel::ProjectModel::instance().setSelectedGroup(group);
-    setCurrentView(GroupView);
-    buildGroupModel(group);
+
+  if (selectGroupItem(item))
     return;
-  }
-  if (m_datasetItems.contains(item)) {
-    const auto dataset = m_datasetItems.value(item);
-    DataModel::ProjectModel::instance().setSelectedDataset(dataset);
-    setCurrentView(DatasetView);
-    buildDatasetModel(dataset);
+
+  if (selectDatasetItem(item))
     return;
-  }
-  if (m_actionItems.contains(item)) {
-    const auto action = m_actionItems.value(item);
-    DataModel::ProjectModel::instance().setSelectedAction(action);
-    setCurrentView(ActionView);
-    buildActionModel(action);
+
+  if (selectActionItem(item))
     return;
-  }
-  if (m_outputWidgetItems.contains(item)) {
-    const auto ow = m_outputWidgetItems.value(item);
-    DataModel::ProjectModel::instance().setSelectedOutputWidget(ow);
-    setCurrentView(OutputWidgetView);
-    buildOutputWidgetModel(ow);
+
+  if (selectOutputWidgetItem(item))
     return;
-  }
-  if (item == m_tablesRootItem) {
-    setCurrentView(DataTablesView);
+
+  if (selectDataTableItem(item))
     return;
-  }
-  if (item == m_systemDatasetsItem) {
-    setCurrentView(SystemDatasetsView);
+
+  if (selectWorkspaceTreeItem(item))
     return;
-  }
-  if (m_userTableItems.contains(item)) {
-    const auto name = m_userTableItems.value(item);
-    if (m_selectedUserTable != name) {
-      m_selectedUserTable = name;
-      Q_EMIT selectedUserTableChanged();
-    }
-    setCurrentView(UserTableView);
-    return;
-  }
-  if (item == m_workspacesRootItem) {
-    setCurrentView(WorkspacesView);
-    return;
-  }
-  if (m_workspaceItems.contains(item)) {
-    const int wid = m_workspaceItems.value(item);
-    if (m_selectedWorkspaceId != wid) {
-      m_selectedWorkspaceId = wid;
-      Q_EMIT selectedWorkspaceIdChanged();
-    }
-    setCurrentView(WorkspaceView);
-    return;
-  }
+
   if (m_rootItems.contains(item)) {
     setCurrentView(ProjectView);
     buildProjectModel();

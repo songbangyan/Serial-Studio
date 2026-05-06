@@ -41,12 +41,6 @@
 
 /**
  * @brief Checks if Serial Studio is activated with a commercial license.
- *
- * This function determines whether the application is running with a valid
- * commercial license. If the application is built with the commercial flag,
- * it queries the licensing system; otherwise, it always returns false.
- *
- * @return true if the app is activated with a valid license, false otherwise.
  */
 bool SerialStudio::activated()
 {
@@ -58,13 +52,8 @@ bool SerialStudio::activated()
 }
 
 /**
- * @brief Checks whether Pro-only dashboard widgets (Plot3D, ImageView,
- *        OutputPanel) should be materialised for this build.
- *
- * Single source of truth for the Pro-widget gate used by
- * Dashboard::reconfigureDashboard and ProjectModel::buildAutoWorkspaces.
- * Matches the stricter Trial+ tier check those callers share -- a bare
- * Hobbyist token does not unlock Pro widgets.
+ * @brief Checks whether Pro-only dashboard widgets (Plot3D, ImageView, OutputPanel) should be
+ * materialised for this build.
  */
 bool SerialStudio::proWidgetsEnabled()
 {
@@ -124,12 +113,6 @@ bool SerialStudio::commercialCfg(const QVector<DataModel::Group>& g)
 
 /**
  * @brief Checks if a project configuration requires commercial features.
- *
- * This function inspects the provided list of JSON groups and determines
- * if any of them use features that are exclusive to the commercial license.
- *
- * @param groups A vector of JSON::Group objects to analyze.
- * @return true if any commercial-only features are detected; false otherwise.
  */
 bool SerialStudio::commercialCfg(const std::vector<DataModel::Group>& g)
 {
@@ -167,8 +150,6 @@ bool SerialStudio::commercialCfg(const std::vector<DataModel::Group>& g)
 
 /**
  * @brief Checks if a dashboard widget is a group widget type.
- * @param widget The `DashboardWidget` type to check.
- * @return True if the widget is a group widget; false otherwise.
  */
 bool SerialStudio::isGroupWidget(const DashboardWidget widget)
 {
@@ -196,8 +177,6 @@ bool SerialStudio::isGroupWidget(const DashboardWidget widget)
 
 /**
  * @brief Checks if a dashboard widget is a dataset widget type.
- * @param widget The `DashboardWidget` type to check.
- * @return True if the widget is a dataset widget; false otherwise.
  */
 bool SerialStudio::isDatasetWidget(const DashboardWidget widget)
 {
@@ -219,8 +198,6 @@ bool SerialStudio::isDatasetWidget(const DashboardWidget widget)
 
 /**
  * @brief Retrieves the icon path for a specified dashboard widget.
- * @param w The `DashboardWidget` for which to retrieve the icon.
- * @return A QString representing the path to the widget's icon.
  */
 QString SerialStudio::dashboardWidgetIcon(const DashboardWidget w, const bool large)
 {
@@ -294,10 +271,6 @@ QString SerialStudio::dashboardWidgetIcon(const DashboardWidget w, const bool la
 
 /**
  * @brief Returns whether a group contributes any widgets to Dashboard's walker.
- *
- * Matches the filtering done by Dashboard::buildWidgetGroups and is the single
- * source of truth used by ProjectModel::buildAutoWorkspaces,
- * widgetTypeCountsForGroup, and ProjectEditor::allWidgetsSummary.
  */
 bool SerialStudio::groupEligibleForWorkspace(const DataModel::Group& g)
 {
@@ -324,9 +297,6 @@ bool SerialStudio::groupWidgetEligibleForWorkspace(SerialStudio::DashboardWidget
 
 /**
  * @brief Returns whether a dataset-level widget key should appear on workspaces.
- *
- * LED is intentionally excluded -- LEDs are aggregated into a single panel by
- * Dashboard and don't get per-dataset entries in a workspace.
  */
 bool SerialStudio::datasetWidgetEligibleForWorkspace(SerialStudio::DashboardWidget w)
 {
@@ -343,8 +313,6 @@ bool SerialStudio::datasetWidgetEligibleForWorkspace(SerialStudio::DashboardWidg
 
 /**
  * @brief Retrieves the display title for a specified dashboard widget.
- * @param w The `DashboardWidget` for which to retrieve the title.
- * @return A QString containing the widget's display title.
  */
 QString SerialStudio::dashboardWidgetTitle(const DashboardWidget w)
 {
@@ -416,10 +384,6 @@ QString SerialStudio::dashboardWidgetTitle(const DashboardWidget w)
 
 /**
  * @brief Determines the dashboard widget type from a given JSON group.
- * @param group The JSON group to interpret.
- *
- * @return The corresponding `DashboardWidget` type, or `DashboardNoWidget` if
- *         not recognized.
  */
 SerialStudio::DashboardWidget SerialStudio::getDashboardWidget(const DataModel::Group& group)
 {
@@ -474,9 +438,6 @@ SerialStudio::DashboardWidget SerialStudio::getDashboardWidget(const DataModel::
 
 /**
  * @brief Retrieves a list of dashboard widgets for a specified JSON dataset.
- * @param dataset The JSON dataset to interpret.
- * @return A QList of `DashboardWidget` types matching the widgets generated
- *         by the input @c dataset parameter.
  */
 QList<SerialStudio::DashboardWidget> SerialStudio::getDashboardWidgets(
   const DataModel::Dataset& dataset)
@@ -516,8 +477,6 @@ QList<SerialStudio::DashboardWidget> SerialStudio::getDashboardWidgets(
 
 /**
  * @brief Retrieves the ID string associated with a specified group widget.
- * @param widget The `GroupWidget` type to get the ID for.
- * @return A QString representing the widget ID.
  */
 QString SerialStudio::groupWidgetId(const GroupWidget widget)
 {
@@ -559,9 +518,6 @@ QString SerialStudio::groupWidgetId(const GroupWidget widget)
 
 /**
  * @brief Determines the group widget type from a given ID string.
- * @param id The ID string to interpret.
- * @return The corresponding `GroupWidget` type, or `NoGroupWidget` if not
- *         recognized.
  */
 SerialStudio::GroupWidget SerialStudio::groupWidgetFromId(const QString& id)
 {
@@ -596,8 +552,6 @@ SerialStudio::GroupWidget SerialStudio::groupWidgetFromId(const QString& id)
 
 /**
  * @brief Retrieves the ID string associated with a specified dataset widget.
- * @param widget The `DatasetWidget` type to get the ID for.
- * @return A QString representing the widget ID.
  */
 QString SerialStudio::datasetWidgetId(const DatasetWidget widget)
 {
@@ -622,9 +576,6 @@ QString SerialStudio::datasetWidgetId(const DatasetWidget widget)
 
 /**
  * @brief Determines the dataset widget type from a given ID string.
- * @param id The ID string to interpret.
- * @return The corresponding `DatasetWidget` type, or `NoDatasetWidget` if not
- *         recognized.
  */
 SerialStudio::DatasetWidget SerialStudio::datasetWidgetFromId(const QString& id)
 {
@@ -646,11 +597,6 @@ SerialStudio::DatasetWidget SerialStudio::datasetWidgetFromId(const QString& id)
 
 /**
  * @brief Checks if any playback players (CSV or MDF4) are currently open.
- *
- * This function provides a centralized check to determine if any file players
- * are active, which is used to prevent data export during playback mode.
- *
- * @return true if any player (CSV or MDF4) has an open file; false otherwise.
  */
 bool SerialStudio::isAnyPlayerOpen()
 {
@@ -667,10 +613,6 @@ bool SerialStudio::isAnyPlayerOpen()
 
 /**
  * @brief Returns true when a player that stores post-transform values is open.
- *
- * CSV and MDF4 exports store already-transformed values so replaying them must
- * skip the transform pipeline to avoid double-applying. Session Player stores
- * raw values and re-runs transforms during replay, so it is excluded here.
  */
 bool SerialStudio::isFinalValuePlayerOpen()
 {
@@ -681,12 +623,6 @@ bool SerialStudio::isFinalValuePlayerOpen()
 
 /**
  * @brief Retrieves the appropriate color for a dataset based on its index.
- *
- * This function accesses the theme's color array to obtain a color that
- * corresponds to the given dataset index.
- *
- * @param index The frame index of the dataset.
- * @return A QString representing the color associated with the dataset index.
  */
 QColor SerialStudio::getDatasetColor(const int index)
 {
@@ -715,12 +651,6 @@ QColor SerialStudio::getDatasetColor(const int index)
 
 /**
  * @brief Returns the top gradient color for the given device source index.
- *
- * Used for window caption gradient tops and text/badge coloring. Wraps around
- * when sourceId exceeds the number of defined device colors.
- *
- * @param sourceId 1-based device index (1 = first device).
- * @return Top gradient QColor, or transparent if no colors are defined.
  */
 QColor SerialStudio::getDeviceTopColor(const int sourceId)
 {
@@ -738,12 +668,6 @@ QColor SerialStudio::getDeviceTopColor(const int sourceId)
 
 /**
  * @brief Returns the bottom gradient color for the given device source index.
- *
- * Used for window caption gradient bottoms. Wraps around when sourceId exceeds
- * the number of defined device colors.
- *
- * @param sourceId 1-based device index (1 = first device).
- * @return Bottom gradient QColor, or transparent if no colors are defined.
  */
 QColor SerialStudio::getDeviceBottomColor(const int sourceId)
 {
@@ -761,13 +685,6 @@ QColor SerialStudio::getDeviceBottomColor(const int sourceId)
 
 /**
  * @brief Returns a saturated accent color for a given device index.
- *
- * Used for tree view source/frame-index badge text coloring. Derives the hue
- * from the device_colors palette and produces a readable, saturated text color
- * appropriate for the current theme (darker on light themes, lighter on dark).
- *
- * @param sourceId 1-based device index (1 = first device).
- * @return QColor suitable for use as text or badge fill.
  */
 QColor SerialStudio::getDeviceColor(const int sourceId)
 {
@@ -799,11 +716,7 @@ QColor SerialStudio::getDeviceColor(const int sourceId)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Converts a hex-encoded string into a UTF-8 decoded string with visible
- *        escape sequences.
- *
- * @param hex Hexadecimal string (e.g. "48 65 6C 6C 6F 0A").
- * @return Decoded QString with control characters escaped (e.g. "Hello\\n").
+ * @brief Converts a hex-encoded string into a UTF-8 decoded string with visible escape sequences.
  */
 QString SerialStudio::hexToString(const QString& hex)
 {
@@ -812,12 +725,7 @@ QString SerialStudio::hexToString(const QString& hex)
 }
 
 /**
- * @brief Converts a string containing escape sequences into a space-separated
- *        hexadecimal string.
- *
- * @param str Input QString with escape sequences (e.g. "Hello\\n").
- * @return Hex representation of the UTF-8 encoded string (e.g. "48 65 6C 6C 6F
- * 0A").
+ * @brief Converts a string containing escape sequences into a space-separated hexadecimal string.
  */
 QString SerialStudio::stringToHex(const QString& str)
 {
@@ -857,12 +765,7 @@ QByteArray SerialStudio::hexToBytes(const QString& data)
 }
 
 /**
- * @brief Resolves C-style escape sequences in a string into their corresponding
- *        control characters.
- *
- * @param str Input QString (e.g. "Hello\\n").
- * @return QString with escape sequences converted to real control characters
- * (e.g. "Hello\n").
+ * @brief Resolves C-style escape sequences in a string into their corresponding control characters.
  */
 QString SerialStudio::resolveEscapeSequences(const QString& str)
 {
@@ -880,9 +783,6 @@ QString SerialStudio::resolveEscapeSequences(const QString& str)
 
 /**
  * @brief Escapes control characters in a string using C-style escape sequences.
- *
- * @param str Input QString with raw control characters (e.g. "Hello\n").
- * @return QString with escape sequences (e.g. "Hello\\n").
  */
 QString SerialStudio::escapeControlCharacters(const QString& str)
 {
@@ -904,9 +804,6 @@ QString SerialStudio::escapeControlCharacters(const QString& str)
 
 /**
  * @brief Returns the QStringConverter encoding for natively-supported entries.
- *
- * Returns `std::nullopt` for encodings that must go through QTextCodec
- * (GBK, GB18030, Big5, Shift_JIS, EUC-JP, EUC-KR).
  */
 static std::optional<QStringConverter::Encoding> nativeEncoding(SerialStudio::TextEncoding enc)
 {
@@ -928,9 +825,6 @@ static std::optional<QStringConverter::Encoding> nativeEncoding(SerialStudio::Te
 
 /**
  * @brief Returns the `QTextCodec` for multi-byte East-Asian encodings.
- *
- * The codec is owned by Qt and must not be deleted.  Returns the UTF-8 codec
- * as a safe fallback if the requested codec is unavailable in this build.
  */
 static QTextCodec* legacyCodec(SerialStudio::TextEncoding enc)
 {
@@ -970,9 +864,6 @@ static QTextCodec* legacyCodec(SerialStudio::TextEncoding enc)
 
 /**
  * @brief Returns the display labels for all supported text encodings.
- *
- * The list order matches the TextEncoding enum, so the index returned by a
- * QML combobox can be cast directly to TextEncoding.
  */
 QStringList SerialStudio::textEncodings()
 {
@@ -994,9 +885,6 @@ QStringList SerialStudio::textEncodings()
 
 /**
  * @brief Returns the canonical string name for a text encoding.
- *
- * This name is what gets persisted in project files and QSettings; it is
- * stable across releases even if the enum order shifts.
  */
 QString SerialStudio::textEncodingName(SerialStudio::TextEncoding enc)
 {
@@ -1030,9 +918,6 @@ QString SerialStudio::textEncodingName(SerialStudio::TextEncoding enc)
 
 /**
  * @brief Resolves a persisted encoding name back to the enum.
- *
- * Accepts common aliases and is case-insensitive.  Unknown or empty names
- * fall back to UTF-8 so loading an older project file remains safe.
  */
 SerialStudio::TextEncoding SerialStudio::textEncodingFromName(const QString& name)
 {
@@ -1081,10 +966,6 @@ SerialStudio::TextEncoding SerialStudio::textEncodingFromName(const QString& nam
 
 /**
  * @brief Encodes a QString to raw bytes using the given text encoding.
- *
- * Returns an empty QByteArray for an empty input.  Characters that cannot
- * be represented in the target encoding are replaced by the codec's default
- * substitute (typically `'?'` or `0x1A`).
  */
 QByteArray SerialStudio::encodeText(const QString& text, SerialStudio::TextEncoding enc)
 {
@@ -1106,10 +987,6 @@ QByteArray SerialStudio::encodeText(const QString& text, SerialStudio::TextEncod
 
 /**
  * @brief Decodes raw bytes to a QString using the given text encoding.
- *
- * This is a stateless one-shot decode -- callers that stream data across
- * multiple chunks should keep their own `QStringDecoder`/`QTextDecoder`
- * so partial multi-byte sequences are carried across boundaries.
  */
 QString SerialStudio::decodeText(QByteArrayView bytes, SerialStudio::TextEncoding enc)
 {

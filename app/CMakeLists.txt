@@ -262,6 +262,7 @@ set(SOURCES
   src/API/Handlers/WindowHandler.cpp
   src/API/Handlers/SourceHandler.cpp
   src/API/Handlers/WorkspacesHandler.cpp
+  src/API/Handlers/ScriptsHandler.cpp
   src/IO/Drivers/Network.cpp
   src/IO/Drivers/UART.cpp
   src/IO/Drivers/BluetoothLE.cpp
@@ -361,6 +362,7 @@ set(HEADERS
   src/API/Handlers/WindowHandler.h
   src/API/Handlers/SourceHandler.h
   src/API/Handlers/WorkspacesHandler.h
+  src/API/Handlers/ScriptsHandler.h
   src/UI/UISessionRegistry.h
   src/Misc/CLI.h
   src/Platform/AppPlatform.h
@@ -581,6 +583,8 @@ if(BUILD_COMMERCIAL)
     src/AI/CommandRegistry.h
     src/AI/ToolDispatcher.h
     src/AI/Assistant.h
+    src/AI/DocSearch.h
+    src/AI/Redactor.h
     src/AI/SseEventReader.h
     src/AI/ContextBuilder.h
     src/AI/Conversation.h
@@ -652,6 +656,8 @@ if(BUILD_COMMERCIAL)
     src/AI/CommandRegistry.cpp
     src/AI/ToolDispatcher.cpp
     src/AI/Assistant.cpp
+    src/AI/DocSearch.cpp
+    src/AI/Redactor.cpp
     src/AI/SseEventReader.cpp
     src/AI/ContextBuilder.cpp
     src/AI/Conversation.cpp
@@ -706,6 +712,13 @@ if(BUILD_COMMERCIAL)
     qml/AI/MessageList.qml
     qml/AI/ToolCallCard.qml
   )
+
+  # WebEngine-backed chat transcript -- only registered when WebEngine is
+  # available so the QtWebEngine import never has to resolve on Linux builds
+  # that opted out of WITH_WEBENGINE.
+  if(WITH_WEBENGINE)
+    list(APPEND QML_SOURCES qml/AI/MessageWebView.qml)
+  endif()
 endif()
 
 #---------------------------------------------------------------------------------------------------

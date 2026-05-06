@@ -20,13 +20,13 @@ def test_console_echo_toggle(api_client, clean_state):
     api_client.command("console.setEcho", {"enabled": True})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("echo") is True
 
     api_client.command("console.setEcho", {"enabled": False})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("echo") is False
 
 
@@ -36,13 +36,13 @@ def test_console_timestamp_toggle(api_client, clean_state):
     api_client.command("console.setShowTimestamp", {"enabled": True})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("showTimestamp") is True
 
     api_client.command("console.setShowTimestamp", {"enabled": False})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("showTimestamp") is False
 
 
@@ -52,13 +52,13 @@ def test_console_display_mode(api_client, clean_state):
     api_client.command("console.setDisplayMode", {"modeIndex": 0})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("displayMode") == 0
 
     api_client.command("console.setDisplayMode", {"modeIndex": 1})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("displayMode") == 1
 
     # Restore default
@@ -80,13 +80,13 @@ def test_console_data_mode(api_client, clean_state):
     api_client.command("console.setDataMode", {"modeIndex": 0})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("dataMode") == 0
 
     api_client.command("console.setDataMode", {"modeIndex": 1})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("dataMode") == 1
 
     # Restore default
@@ -100,7 +100,7 @@ def test_console_line_ending(api_client, clean_state):
         api_client.command("console.setLineEnding", {"endingIndex": ending_index})
         time.sleep(0.1)
 
-        config = api_client.command("console.getConfiguration")
+        config = api_client.command("console.getConfig")
         assert config.get("lineEnding") == ending_index
 
 
@@ -120,7 +120,7 @@ def test_console_font_size(api_client, clean_state):
         api_client.command("console.setFontSize", {"fontSize": size})
         time.sleep(0.1)
 
-        config = api_client.command("console.getConfiguration")
+        config = api_client.command("console.getConfig")
         assert config.get("fontSize") == size
 
 
@@ -139,7 +139,7 @@ def test_console_font_family(api_client, clean_state):
     api_client.command("console.setFontFamily", {"fontFamily": "Monospace"})
     time.sleep(0.2)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert "fontFamily" in config
     assert len(config["fontFamily"]) > 0
 
@@ -150,7 +150,7 @@ def test_console_checksum_method(api_client, clean_state):
     api_client.command("console.setChecksumMethod", {"methodIndex": 0})
     time.sleep(0.1)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert "checksumMethod" in config
 
 
@@ -165,8 +165,8 @@ def test_console_checksum_method_invalid(api_client, clean_state):
 
 @pytest.mark.integration
 def test_console_configuration_fields(api_client, clean_state):
-    """Verify console.getConfiguration returns all required fields."""
-    config = api_client.command("console.getConfiguration")
+    """Verify console.getConfig returns all required fields."""
+    config = api_client.command("console.getConfig")
 
     expected_fields = [
         "echo",
@@ -181,7 +181,7 @@ def test_console_configuration_fields(api_client, clean_state):
     ]
 
     for field in expected_fields:
-        assert field in config, f"Missing field in console.getConfiguration: {field}"
+        assert field in config, f"Missing field in console.getConfig: {field}"
 
 
 @pytest.mark.integration
@@ -195,7 +195,7 @@ def test_console_configuration_roundtrip(api_client, clean_state):
     api_client.command("console.setFontSize", {"fontSize": 13})
     time.sleep(0.3)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config["echo"] is True
     assert config["showTimestamp"] is True
     assert config["displayMode"] == 0
@@ -244,7 +244,7 @@ def test_console_clear_empties_buffer(api_client, device_simulator, clean_state)
     # Wait for buffer to fill
     end_time = time.time() + 2.0
     while time.time() < end_time:
-        config = api_client.command("console.getConfiguration")
+        config = api_client.command("console.getConfig")
         if config.get("bufferLength", 0) > 0:
             break
         time.sleep(0.05)
@@ -254,12 +254,12 @@ def test_console_clear_empties_buffer(api_client, device_simulator, clean_state)
     # Wait for buffer to drain
     end_time = time.time() + 2.0
     while time.time() < end_time:
-        config = api_client.command("console.getConfiguration")
+        config = api_client.command("console.getConfig")
         if config.get("bufferLength", 0) == 0:
             break
         time.sleep(0.05)
 
-    config = api_client.command("console.getConfiguration")
+    config = api_client.command("console.getConfig")
     assert config.get("bufferLength", -1) == 0
 
     api_client.disconnect_device()

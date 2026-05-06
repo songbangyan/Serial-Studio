@@ -260,6 +260,83 @@ def _previous_doxygen_brief(node, src: bytes) -> bool:
     return "@brief" in block
 
 
+def _previous_doxygen_block_range(node, src: bytes):
+    """Return `(open_idx, close_idx)` 0-based line indices for the doxygen
+    block immediately above `node`, or `None` when no block is present. The
+    walk mirrors `_previous_doxygen_brief` but exposes the block range so a
+    caller can inspect its body (verbose-brief detection)."""
+    start_line = node.start_point[0]
+    if start_line == 0:
+        return None
+    src_text = src.decode("utf-8", errors="replace")
+    lines = src_text.split("\n")
+    cur = start_line - 1
+    skip = 0
+    while cur >= 0 and skip < 8:
+        s = lines[cur].strip()
+        if (not s or s.startswith("//") or s.startswith("template")
+                or s.startswith("requires") or s.startswith("[[")
+                or s.startswith("public:") or s.startswith("private:")
+                or s.startswith("protected:")):
+            cur -= 1
+            skip += 1
+            continue
+        break
+    if cur < 0:
+        return None
+    if not lines[cur].rstrip().endswith("*/"):
+        return None
+    open_idx = -1
+    for j in range(cur, max(0, cur - 60) - 1, -1):
+        if "/**" in lines[j]:
+            open_idx = j
+            break
+    if open_idx < 0:
+        return None
+    return (open_idx, cur)
+
+
+_VERBOSE_DOXY_TAGS = (
+    "@param", "@return", "@returns", "@retval", "@throws", "@throw",
+    "@exception", "@see", "@sa", "@note", "@warning", "@todo", "@since",
+    "@deprecated", "@pre", "@post", "@invariant", "@tparam", "@details",
+)
+
+
+def _verbose_doxygen_reason(block_lines: list[str]) -> str:
+    """Inspect a `/** ... */` doxygen block and return a short reason string
+    when it is "verbose" per CLAUDE.md (one-line `@brief` is the contract).
+    Returns `""` when the block is acceptable (one-line `/** @brief ... */`
+    or a clean multi-line that's just a wrapped `@brief` sentence).
+
+    Verbose forms (any one trips the rule):
+    - Carries a doxygen tag other than `@brief` (`@param`, `@return`,
+      `@note`, `@see`, `@throws`, `@tparam`, `@retval`, ...).
+    - Contains a blank doxygen continuation line (` *` with no body), which
+      separates an extended description paragraph from the brief.
+    - Spans more than 4 source lines (the natural ceiling for a wrapped
+      one-sentence brief is 3-4 lines: `/**`, ` * @brief ...`, ` * ...wrap`,
+      ` */`).
+    """
+    if not block_lines:
+        return ""
+    body = "\n".join(block_lines)
+    if "@brief" not in body:
+        return ""
+    for tag in _VERBOSE_DOXY_TAGS:
+        if tag in body:
+            return f"contains `{tag}` -- one-line `@brief` is the contract"
+    for raw in block_lines:
+        if raw.strip() == "*":
+            return ("contains a blank `*` continuation -- extended "
+                    "description belongs in the commit message, not the "
+                    "header doxygen")
+    if len(block_lines) > 4:
+        return (f"spans {len(block_lines)} lines -- collapse to a one-line "
+                "`/** @brief ... */`")
+    return ""
+
+
 # ---------------------------------------------------------------------------
 # C++ rules (tree-sitter)
 # ---------------------------------------------------------------------------
@@ -283,6 +360,9 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
         cxx-goto-or-jmp          goto / setjmp / longjmp
         doc-missing-brief-cpp    .cpp function definition without /** @brief */
         doc-missing-brief-h      header type-level definition without /** @brief */
+        doc-verbose-brief        doxygen block carries @param/@return/blank-`*`
+                                 paragraphs or wraps to 5+ lines (one-line
+                                 `/** @brief ... */` is the contract)
         hotpath-allocation       allocation/append on a known hotpath method
         keys-hardcoded-literal   raw "busType" etc. literal where Keys:: belongs
         cxx-anonymous-namespace  helpers/types defined inside `namespace { ... }`
@@ -404,6 +484,23 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                 out.append(Finding(
                     line, "doc-missing-brief-cpp",
                     f"`{fname}` lacks a preceding `/** @brief ... */`"))
+
+            # Verbose doxygen above a function definition. Applies to both
+            # `.cpp` definitions and inline-defined methods in headers; the
+            # contract per CLAUDE.md is a one-line `/** @brief ... */`.
+            if not _has_function_ancestor(n):
+                fname = _function_name(n, src)
+                if fname:
+                    rng = _previous_doxygen_block_range(n, src)
+                    if rng is not None:
+                        open_idx, close_idx = rng
+                        block_lines = src.decode("utf-8", errors="replace") \
+                            .split("\n")[open_idx:close_idx + 1]
+                        reason = _verbose_doxygen_reason(block_lines)
+                        if reason and not fenced(open_idx + 1):
+                            out.append(Finding(
+                                open_idx + 1, "doc-verbose-brief",
+                                f"verbose doxygen above `{fname}`: {reason}"))
 
             # Hotpath allocations.
             fname = _function_name(n, src)
@@ -599,6 +696,22 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     out.append(Finding(
                         line, "doc-missing-brief-h",
                         f"`{name}` lacks a preceding `/** @brief ... */`"))
+            else:
+                # Verbose @brief on a type-level definition. Same rule:
+                # one-line `/** @brief ... */`, no `@param`/`@note`/blank-`*`
+                # paragraph splits / 5+ line prose.
+                name = _type_name(n, src)
+                if name:
+                    rng = _previous_doxygen_block_range(n, src)
+                    if rng is not None:
+                        open_idx, close_idx = rng
+                        block_lines = src.decode("utf-8", errors="replace") \
+                            .split("\n")[open_idx:close_idx + 1]
+                        reason = _verbose_doxygen_reason(block_lines)
+                        if reason and not fenced(open_idx + 1):
+                            out.append(Finding(
+                                open_idx + 1, "doc-verbose-brief",
+                                f"verbose doxygen above `{name}`: {reason}"))
 
     # ---- nodiscard on const getters in headers. CLAUDE.md says
     # "[[nodiscard]] on every non-void return". We narrow to the case
@@ -672,25 +785,35 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
 
 def _function_name(func_node, src: bytes) -> str:
     """Return the function's name from a function_definition node, or "".
-    Walks declarator -> identifier / qualified_identifier / field_identifier."""
+    Walks declarator -> identifier / qualified_identifier / field_identifier.
+    For nested `qualified_identifier` (e.g. `A::B::C::foo`), the rightmost
+    segment is the actual function name."""
     decl = func_node.child_by_field_name("declarator")
     while decl is not None and decl.type == "function_declarator":
         decl = decl.child_by_field_name("declarator")
     if decl is None:
         return ""
-    if decl.type in ("identifier", "field_identifier", "destructor_name"):
-        return _node_text(decl, src)
-    if decl.type == "qualified_identifier":
-        # last segment is the actual function name.
-        last = None
+
+    # Walk to the rightmost segment of any qualified-identifier chain.
+    while decl is not None and decl.type == "qualified_identifier":
+        nested = None
         for child in decl.children:
             if child.type in ("identifier", "field_identifier",
-                              "destructor_name"):
-                last = child
-        if last is not None:
-            return _node_text(last, src)
+                              "destructor_name", "qualified_identifier",
+                              "operator_name", "template_function"):
+                nested = child
+        if nested is None:
+            return ""
+        decl = nested
+
+    if decl.type in ("identifier", "field_identifier", "destructor_name"):
+        return _node_text(decl, src)
     if decl.type == "operator_name":
         return _node_text(decl, src)
+    if decl.type == "template_function":
+        name = decl.child_by_field_name("name")
+        if name is not None:
+            return _node_text(name, src)
     return ""
 
 

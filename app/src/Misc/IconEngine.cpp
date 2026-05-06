@@ -70,8 +70,6 @@ const QStringList& Misc::IconEngine::iconNames() const noexcept
 
 /**
  * @brief Returns preview URLs for the last search results.
- *
- * Each entry is a full Iconify API URL that returns an SVG image.
  */
 const QStringList& Misc::IconEngine::iconPreviews() const noexcept
 {
@@ -84,13 +82,6 @@ const QStringList& Misc::IconEngine::iconPreviews() const noexcept
 
 /**
  * @brief Resolves an action icon string to a URL suitable for QML Image.source.
- *
- * If @p icon starts with @c "data:image/svg+xml;base64," it is treated as
- * inline SVG data and resolved to an @c image://actionicon/ provider URL.
- * Otherwise it is treated as a bundled icon name from @c qrc:/actions/.
- *
- * @param icon The icon field from the Action struct.
- * @return A URL string usable in QML @c Image.source.
  */
 QString Misc::IconEngine::resolveActionIconSource(const QString& icon)
 {
@@ -118,9 +109,6 @@ bool Misc::IconEngine::isInlineSvg(const QString& icon)
 
 /**
  * @brief Searches the Iconify API for icons matching @p query.
- *
- * Results are stored in iconNames() and iconPreviews(), then
- * searchResultsChanged() is emitted.
  */
 void Misc::IconEngine::searchIcons(const QString& query)
 {
@@ -143,11 +131,7 @@ void Misc::IconEngine::searchIcons(const QString& query)
 }
 
 /**
- * @brief Downloads the SVG data for the icon at @p index in the current
- *        search results.
- *
- * On success, emits iconDownloaded() with a @c data:image/svg+xml;base64,...
- * string ready to be stored in the Action icon field.
+ * @brief Downloads the SVG data for the icon at @p index in the current search results.
  */
 void Misc::IconEngine::downloadIcon(int index)
 {
@@ -181,9 +165,6 @@ void Misc::IconEngine::downloadIcon(int index)
 
 /**
  * @brief Handles the Iconify search API response.
- *
- * Parses the JSON response, extracts icon identifiers, builds preview
- * URLs, and emits searchResultsChanged().
  */
 void Misc::IconEngine::onSearchFinished(QNetworkReply* reply)
 {
@@ -223,8 +204,6 @@ void Misc::IconEngine::onSearchFinished(QNetworkReply* reply)
 
 /**
  * @brief Handles the SVG download response.
- *
- * Encodes the SVG data as a base64 data URI and emits iconDownloaded().
  */
 void Misc::IconEngine::onDownloadFinished(QNetworkReply* reply)
 {
@@ -264,9 +243,6 @@ Misc::ActionIconProvider::ActionIconProvider() : QQuickImageProvider(QQuickImage
 
 /**
  * @brief Decodes a base64-encoded SVG and renders it to a QImage.
- *
- * The @p id parameter contains the raw base64 SVG data (without the data URI
- * prefix).
  */
 QImage Misc::ActionIconProvider::requestImage(const QString& id,
                                               QSize* size,

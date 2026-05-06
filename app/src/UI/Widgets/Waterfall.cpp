@@ -532,10 +532,6 @@ void Widgets::Waterfall::releaseFftPlan()
 
 /**
  * @brief Allocates the spectrogram image based on FFT size and history depth.
- *
- * Newest spectrum rows are inserted at row 0 (top); older rows are scrolled
- * down each tick. m_writeRow tracks how many rows currently hold valid data
- * (capped at image height once fully populated).
  */
 void Widgets::Waterfall::rebuildHistoryImage()
 {
@@ -733,12 +729,6 @@ void Widgets::Waterfall::updateData()
 
 /**
  * @brief Renders the spectrogram and composites it with the cached axis layer.
- *
- * The axis layer (frame, ticks, grid lines, labels, rotated title) only needs
- * to be re-rendered when the widget size, zoom/pan, theme, or axis-visibility
- * changes -- markAxisDirty() invalidates the cache. Every UI tick (24 Hz) the
- * spectrogram changes via writeRow(), so only the per-frame work below runs:
- * a fillRect + drawImage + drawImage of the cached overlay.
  */
 void Widgets::Waterfall::paint(QPainter* painter)
 {
@@ -788,11 +778,6 @@ void Widgets::Waterfall::paint(QPainter* painter)
 
 /**
  * @brief Re-renders the axis overlay into m_axisLayer and clears the dirty flag.
- *
- * Drawing axes (ticks, labels, rotated title) involves QFontMetrics queries,
- * QPainter text layout, and grid-line passes -- all cheap individually but
- * wasteful at 24 Hz when nothing about the axes has changed. Caching the
- * result into a single QImage means paint() reduces to two drawImage calls.
  */
 void Widgets::Waterfall::renderAxisLayer()
 {
@@ -956,11 +941,6 @@ void Widgets::Waterfall::drawXAxis(QPainter* painter, const QRectF& plotRect) co
 
 /**
  * @brief Draws the Y axis (time or Campbell-mode dataset value).
- *
- * - Time mode: top = newest (t=0), bottom = oldest (t=maxSeconds). The Y range
- *   derives from `historySize / fps`.
- * - Campbell mode: top = highest dataset value, bottom = lowest. The Y range
- *   comes from the bound dataset's pltMin/pltMax. Title shows "Title (units)".
  */
 void Widgets::Waterfall::drawYAxis(QPainter* painter, const QRectF& plotRect) const
 {
@@ -1044,9 +1024,8 @@ void Widgets::Waterfall::drawYAxis(QPainter* painter, const QRectF& plotRect) co
 }
 
 /**
- * @brief Draws the live hover cursor -- vertical & horizontal crosshair lines
- *        clipped to the plot rect, plus a small tooltip with the freq + time
- *        readings under the pointer (zoom/pan-aware).
+ * @brief Draws the live hover cursor -- vertical & horizontal crosshair lines clipped to the plot
+ * rect, plus a small tooltip with the freq + time readings under the pointer (zoom/pan-aware).
  */
 void Widgets::Waterfall::drawCursor(QPainter* painter, const QRectF& plotRect) const
 {
@@ -1362,9 +1341,9 @@ void Widgets::Waterfall::setColorbarVisible(const bool enabled)
 }
 
 /**
- * @brief Multiplies both axis zooms by @a factor, anchored at (anchorX,anchorY)
- *        in normalized [0,1] item coordinates. Mirrors the wheel-zoom UX of the
- *        plot widgets -- zooming centers on the cursor, not the plot midpoint.
+ * @brief Multiplies both axis zooms by @a factor, anchored at (anchorX,anchorY) in normalized [0,1]
+ * item coordinates. Mirrors the wheel-zoom UX of the plot widgets -- zooming centers on the cursor,
+ * not the plot midpoint.
  */
 void Widgets::Waterfall::zoomBy(double factor, double anchorX, double anchorY)
 {
@@ -1564,9 +1543,6 @@ void Widgets::Waterfall::hoverLeaveEvent(QHoverEvent* event)
 
 /**
  * @brief Refreshes cached theme colors and forces an axis re-render.
- *
- * Lookups via ThemeManager::getColor are not free at 24 Hz -- caching the values
- * here means paint() and the axis-overlay builder hit member fields only.
  */
 void Widgets::Waterfall::onThemeChanged()
 {

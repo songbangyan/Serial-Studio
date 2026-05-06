@@ -30,18 +30,6 @@ class PainterDataBridge;
 
 /**
  * @brief Pro-tier user-scripted widget. Renders a JS paint(ctx, w, h) callback.
- *
- * One instance per painter group on the dashboard. Owns its own QJSEngine, a
- * watchdog-protected paint pipeline, a Canvas2D facade (PainterContext), and
- * a per-widget data bridge (PainterDataBridge) that exposes the bound
- * group's metadata and dataset values to the script.
- *
- * Pipeline (per dashboard tick):
- *   1) updateData() pulls the latest Group from Dashboard (by index + type)
- *   2) bridge->setGroup(group); bridge->setFrame(seq, ts)
- *   3) if onFrame() is defined, call it (state advance)
- *   4) render to QImage cache via PainterContext::beginFrame() / endFrame()
- *   5) update() schedules paint(QPainter*) which blits the cache
  */
 class Painter : public QuickPaintedItemCompat {
   Q_OBJECT
@@ -76,6 +64,7 @@ private:
   [[nodiscard]] bool compile(const QString& code);
   [[nodiscard]] static QString fallbackTemplate();
   void installBootstrap();
+  void installTheme();
   void invalidateCompilation();
   void renderFrame();
 

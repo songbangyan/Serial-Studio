@@ -79,11 +79,6 @@ static QString joinForCmdLine(const QStringList& args, std::function<QString(con
 
 /**
  * @brief Computes the per-shortcut AppUserModelID that pairs with main.cpp.
- *
- * Uses SHA-1(absolute shortcut path) truncated to 16 hex chars so each .lnk
- * pins under its own taskbar group, even when several shortcuts target the
- * same project file. Must stay byte-identical to shortcutIdentityHash() in
- * main.cpp -- both sides need to derive the same string from the same path.
  */
 static QString shortcutAumidFor(const QString& shortcutPath)
 {

@@ -49,10 +49,6 @@
 
 /**
  * @brief Escapes user-supplied text for safe placement in HTML body content.
- *
- * Covers the five characters that can break HTML parsing. Placeholder values
- * come from project titles / notes / tag labels so treating them all as
- * untrusted input is the safe default.
  */
 static QString escapeHtml(const QString& in)
 {
@@ -176,9 +172,6 @@ Sessions::HtmlReport::~HtmlReport()
 
 /**
  * @brief Reads a UTF-8 text resource from the Qt resource system.
- *
- * Returns an empty string when the resource is missing or unreadable. Callers
- * surface the failure via the final @c finished() signal.
  */
 QString Sessions::HtmlReport::readResource(const QString& path)
 {
@@ -195,10 +188,6 @@ QString Sessions::HtmlReport::readResource(const QString& path)
 
 /**
  * @brief Orchestrates the render.
- *
- * Always writes the HTML artifact when the format asks for it, then starts
- * the PDF printing pipeline when requested. Exactly one @c finished() is
- * emitted per call -- regardless of which path runs.
  */
 void Sessions::HtmlReport::render(const ReportData& data,
                                   std::vector<DatasetSeries> series,
@@ -272,11 +261,8 @@ void Sessions::HtmlReport::render(const ReportData& data,
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Loads the template + stylesheet + runtime + Chart.js and expands
- *        every ``{{PLACEHOLDER}}`` with the concrete value.
- *
- * Placeholder substitution is a simple multi-pass @c QString::replace --
- * safe because template keys are unambiguous and never user-controlled.
+ * @brief Loads the template + stylesheet + runtime + Chart.js and expands every ``{{PLACEHOLDER}}``
+ * with the concrete value.
  */
 QString Sessions::HtmlReport::buildHtml() const
 {
@@ -640,9 +626,6 @@ QString Sessions::HtmlReport::buildChartsSection() const
 
 /**
  * @brief Serialises all chart series into a compact JSON blob.
- *
- * The JS side reads this from ``<script id="report-data">`` on boot and
- * builds one Chart.js instance per entry.
  */
 QString Sessions::HtmlReport::buildReportDataJson() const
 {
@@ -757,14 +740,8 @@ QString Sessions::HtmlReport::buildPrintFooterLeft() const
 }
 
 /**
- * @brief Builds the translated CSS @c content expression for the right-side
- *        page footer ("Page X of Y").
- *
- * Returns the full @c content: value (interleaved string literals and
- * @c counter() calls) so translators can reorder words around the page /
- * total numbers without losing the live counters. The translation is
- * @c "Page %1 of %2"; the @c %1 / @c %2 markers anchor the two counter
- * calls when the string is split.
+ * @brief Builds the translated CSS @c content expression for the right-side page footer ("Page X of
+ * Y").
  */
 QString Sessions::HtmlReport::buildPrintFooterRight() const
 {
@@ -926,10 +903,6 @@ void Sessions::HtmlReport::startPrinting()
 
 /**
  * @brief WebEngine signal -> final @c finished() emission.
- *
- * For @c Both mode the emitted path is the PDF (primary artifact); the
- * caller can separately check the HTML was also written by inspecting the
- * filesystem.
  */
 void Sessions::HtmlReport::onPdfPrintingFinished(const QString& filePath, bool success)
 {

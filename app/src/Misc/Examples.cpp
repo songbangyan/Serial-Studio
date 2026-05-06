@@ -201,9 +201,8 @@ void Misc::Examples::setSearchFilter(const QString& filter)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Initiates downloading all files of the selected example to a
- *        user-chosen directory. Uses the GitHub Contents API to list files,
- *        then downloads each one.
+ * @brief Initiates downloading all files of the selected example to a user-chosen directory. Uses
+ * the GitHub Contents API to list files, then downloads each one.
  */
 void Misc::Examples::downloadExample()
 {

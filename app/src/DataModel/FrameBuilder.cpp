@@ -399,8 +399,11 @@ void DataModel::FrameBuilder::parseProjectFrame(const IO::CapturedDataPtr& data)
       continue;
 
     applyDatasetValues(m_frame, channels, 0);
+    // documented fan-out: one TimestampedFramePtr per parsed frame
+    // code-verify off
     hotpathTxFrame(
       std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i));
+    // code-verify on
   }
 }
 
@@ -425,8 +428,11 @@ void DataModel::FrameBuilder::parseProjectFrame(int sourceId, const IO::Captured
 
     DataModel::Frame& srcFrame = ensureSourceFrame(sourceId);
     applyDatasetValues(srcFrame, channels, sourceId);
+    // documented fan-out: one TimestampedFramePtr per parsed frame
+    // code-verify off
     hotpathTxFrame(
       std::make_shared<DataModel::TimestampedFrame>(srcFrame, data->timestamp + step * i));
+    // code-verify on
   }
 }
 

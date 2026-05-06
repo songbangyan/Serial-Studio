@@ -25,10 +25,6 @@ namespace AI {
 
 /**
  * @brief Streamed reply handle returned by Provider::sendMessage.
- *
- * Heap-allocated, owned by the caller. Concrete providers inherit and
- * emit signals from their network slots; the caller deletes via
- * deleteLater() once finished/errorOccurred fires.
  */
 class Reply : public QObject {
   Q_OBJECT
@@ -53,10 +49,6 @@ signals:
 
 /**
  * @brief Abstract chat-completion backend (Anthropic, OpenAI, Gemini).
- *
- * Implementations own no state beyond a non-owning QNetworkAccessManager
- * reference and a key-getter functor. They produce Reply* instances per
- * sendMessage call; ownership transfers to the caller.
  */
 class Provider {
 public:
@@ -75,10 +67,6 @@ public:
 
   /**
    * @brief Returns a user-friendly label for a model id (e.g. "Claude Haiku 4.5").
-   *
-   * Default implementation returns the id verbatim; providers override
-   * to give human-friendly names while the canonical id continues to be
-   * what gets sent to the API.
    */
   [[nodiscard]] virtual QString modelDisplayName(const QString& modelId) const { return modelId; }
 

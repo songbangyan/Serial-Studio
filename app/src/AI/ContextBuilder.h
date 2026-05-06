@@ -19,12 +19,6 @@ namespace AI {
 
 /**
  * @brief Builds the system-prompt blocks fed to the LLM each turn.
- *
- * The output is split into three text blocks. The first two never change
- * within a session and carry @c cache_control: ephemeral so Anthropic's
- * prompt cache can fingerprint them; the third (live project state) is
- * outside the cache so it can update between turns without invalidating
- * the cached prefix.
  */
 class ContextBuilder {
 public:
@@ -35,6 +29,9 @@ public:
 
   [[nodiscard]] static QStringList howToTasks();
   [[nodiscard]] static QString howToRecipe(const QString& task);
+
+  [[nodiscard]] static QStringList skillIds();
+  [[nodiscard]] static QString skillBody(const QString& id);
 
   [[nodiscard]] static QJsonArray buildSystemArray(bool includeScriptingDocs = true);
 };

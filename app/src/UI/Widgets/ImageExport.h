@@ -58,11 +58,6 @@ struct ImageExportItem {
 
 /**
  * @brief Per-group video-recording session state owned by @c VideoExportWorker.
- *
- * Each pinned image widget streams into its own .mp4 via Qt Multimedia. The
- * QMediaRecorder + QMediaCaptureSession + QVideoSink trio produce a hardware-
- * accelerated H.264 file on macOS / Windows; on Linux the platform's
- * GStreamer plugins decide the backend.
  */
 struct VideoSession {
   QString outputPath;

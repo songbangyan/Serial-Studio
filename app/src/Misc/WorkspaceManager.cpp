@@ -32,9 +32,6 @@
 
 /**
  * @brief Constructs the WorkspaceManager and initializes the workspace path.
- *
- * Loads the saved workspace path from settings, or defaults to
- * <Documents>/Serial Studio if none is set.
  */
 Misc::WorkspaceManager::WorkspaceManager()
 {
@@ -54,8 +51,6 @@ Misc::WorkspaceManager::WorkspaceManager()
 
 /**
  * @brief Returns the singleton instance of WorkspaceManager.
- *
- * @return Reference to the WorkspaceManager instance.
  */
 Misc::WorkspaceManager& Misc::WorkspaceManager::instance()
 {
@@ -69,8 +64,6 @@ Misc::WorkspaceManager& Misc::WorkspaceManager::instance()
 
 /**
  * @brief Returns the base workspace path.
- *
- * @return Current workspace path.
  */
 QString Misc::WorkspaceManager::path() const noexcept
 {
@@ -79,8 +72,6 @@ QString Misc::WorkspaceManager::path() const noexcept
 
 /**
  * @brief Returns the user friendly workspace path.
- *
- * @return Current workspace path.
  */
 QString Misc::WorkspaceManager::shortPath() const
 {
@@ -89,11 +80,6 @@ QString Misc::WorkspaceManager::shortPath() const
 
 /**
  * @brief Returns the full path to a subdirectory within the workspace.
- *
- * Ensures the subdirectory exists by creating it if necessary.
- *
- * @param subdirectory Name of the subdirectory under the workspace.
- * @return Full path to the subdirectory.
  */
 QString Misc::WorkspaceManager::path(const QString& subdirectory) const
 {
@@ -114,9 +100,6 @@ QString Misc::WorkspaceManager::path(const QString& subdirectory) const
 
 /**
  * @brief Resets the workspace path to the default location.
- *
- * Sets the path to <Documents>/Serial Studio, updates settings,
- * and emits pathChanged().
  */
 void Misc::WorkspaceManager::reset()
 {
@@ -130,8 +113,6 @@ void Misc::WorkspaceManager::reset()
 
 /**
  * @brief Opens a dialog for the user to select a new workspace path.
- *
- * If a new path is selected, updates internal state and emits pathChanged().
  */
 void Misc::WorkspaceManager::selectPath()
 {

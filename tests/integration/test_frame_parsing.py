@@ -82,7 +82,7 @@ def test_checksum_validation(
 
     # Add 6 datasets with plot widgets enabled
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 1})  # 1 = plot widget
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})  # 1 = plot widget
         time.sleep(0.1)
 
     # Set CSV parser
@@ -127,7 +127,7 @@ def test_checksum_validation(
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -153,7 +153,7 @@ def test_checksum_validation(
     device_simulator.send_frames(frames, interval_seconds=0.1)
     time.sleep(1.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should be connected"
 
     config = api_client.get_frame_parser_config()
@@ -185,7 +185,7 @@ def test_invalid_checksum_rejection(
 
     # Add datasets with plot widgets
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 1})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
         time.sleep(0.1)
 
     # Set CSV parser
@@ -223,7 +223,7 @@ def test_invalid_checksum_rejection(
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -271,7 +271,7 @@ def test_invalid_checksum_rejection(
     device_simulator.send_frame(corrupted_frame)
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     data = api_client.get_dashboard_data()
@@ -307,7 +307,7 @@ def test_checksum_validation_lua(
     time.sleep(0.2)
 
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 1})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
         time.sleep(0.1)
 
     # Lua CSV template — set the language explicitly so the project model
@@ -347,7 +347,7 @@ def test_checksum_validation_lua(
     )
     time.sleep(0.1)
 
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -371,7 +371,7 @@ def test_checksum_validation_lua(
     device_simulator.send_frames(frames, interval_seconds=0.1)
     time.sleep(1.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should be connected"
 
     # Sanity-check the language survived the round trip
@@ -396,7 +396,7 @@ def test_json_frame_parsing(api_client, device_simulator, clean_state):
     time.sleep(0.2)
 
     for i in range(2):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for JSON frames
@@ -430,7 +430,7 @@ def test_json_frame_parsing(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -474,7 +474,7 @@ def test_json_frame_parsing(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     api_client.set_operation_mode("project")
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
 
 
 def test_csv_frame_parsing(api_client, device_simulator, clean_state):
@@ -489,7 +489,7 @@ def test_csv_frame_parsing(api_client, device_simulator, clean_state):
 
     # Add 6 datasets (matching the 6 CSV values)
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for comma delimiter
@@ -511,7 +511,7 @@ def test_csv_frame_parsing(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -540,7 +540,7 @@ def test_csv_frame_parsing(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     api_client.set_operation_mode("project")
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
 
 
 @pytest.mark.parametrize("delimiter", [",", ";", "\t", "|"])
@@ -561,7 +561,7 @@ def test_csv_delimiter_resilience(api_client, device_simulator, clean_state, del
 
     # Add 6 datasets (default generate_csv_frame creates 6 values)
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for the specified delimiter
@@ -584,7 +584,7 @@ def test_csv_delimiter_resilience(api_client, device_simulator, clean_state, del
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -630,7 +630,7 @@ def test_frame_delimiter_line_terminators(api_client, device_simulator, clean_st
 
     # Add datasets
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for CSV frames
@@ -651,7 +651,7 @@ def test_frame_delimiter_line_terminators(api_client, device_simulator, clean_st
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -722,7 +722,7 @@ def test_frame_end_delimiters(api_client, device_simulator, clean_state, end_del
     api_client.set_operation_mode("project")
     time.sleep(0.1)
 
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -747,13 +747,13 @@ def test_frame_end_delimiters(api_client, device_simulator, clean_state, end_del
     time.sleep(1.5)
 
     # Verify frames were received
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     widget_count = _wait_for_dashboard_widgets(api_client, minimum=6)
     assert widget_count >= 6, f"Expected widgets, got {widget_count}"
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
     data = api_client.get_dashboard_data()
@@ -805,7 +805,7 @@ def test_frame_start_end_delimiters(api_client, device_simulator, clean_state, s
     api_client.set_operation_mode("project")
     time.sleep(0.1)
 
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -830,10 +830,10 @@ def test_frame_start_end_delimiters(api_client, device_simulator, clean_state, s
     time.sleep(1.5)
 
     # Verify frames were received
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"], "Device should remain connected"
 
 
@@ -849,7 +849,7 @@ def test_high_frequency_frames(api_client, device_simulator, clean_state):
 
     # Add datasets
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for JSON frames
@@ -883,7 +883,7 @@ def test_high_frequency_frames(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -908,7 +908,7 @@ def test_high_frequency_frames(api_client, device_simulator, clean_state):
     assert duration < 2.0, f"Sending 100 frames took too long: {duration:.2f}s"
 
     time.sleep(0.5)
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"]
 
 
@@ -924,7 +924,7 @@ def test_empty_frame_handling(api_client, device_simulator, clean_state):
 
     # Add datasets
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for JSON frames
@@ -958,7 +958,7 @@ def test_empty_frame_handling(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -987,7 +987,7 @@ def test_empty_frame_handling(api_client, device_simulator, clean_state):
     device_simulator.send_frame(empty_frame)
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"]
 
 
@@ -1003,7 +1003,7 @@ def test_malformed_json_handling(api_client, device_simulator, clean_state):
 
     # Add datasets
     for i in range(6):
-        api_client.command("project.dataset.add", {"options": 0})
+        api_client.command("project.dataset.add", {"groupId": 0, "options": 0})
         time.sleep(0.1)
 
     # Set JavaScript parser for JSON frames
@@ -1037,7 +1037,7 @@ def test_malformed_json_handling(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 
@@ -1072,7 +1072,7 @@ def test_malformed_json_handling(api_client, device_simulator, clean_state):
         device_simulator.send_frame(frame)
         time.sleep(0.2)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["isConnected"]
 
 
@@ -1088,7 +1088,7 @@ def test_large_frame_handling(api_client, device_simulator, clean_state):
             {"command": "project.group.add", "params": {"title": f"Group{group_idx}", "widgetType": 0}}
         ]
         commands.extend(
-            {"command": "project.dataset.add", "params": {"options": 0}} for _ in range(20)
+            {"command": "project.dataset.add", "params": {"groupId": group_idx, "options": 0}} for _ in range(20)
         )
         api_client.batch(commands)
 
@@ -1123,7 +1123,7 @@ def test_large_frame_handling(api_client, device_simulator, clean_state):
     time.sleep(0.1)
 
     # Load project into FrameBuilder
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.5)
     assert result["loaded"], "Should have loaded into FrameBuilder"
 

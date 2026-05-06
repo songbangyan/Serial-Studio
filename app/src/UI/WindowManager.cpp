@@ -386,7 +386,6 @@ UI::WindowManager::~WindowManager()
 
 /**
  * @brief Gets the current z-order counter.
- * @return Internal z-order counter value.
  */
 int UI::WindowManager::zCounter() const
 {
@@ -395,11 +394,6 @@ int UI::WindowManager::zCounter() const
 
 /**
  * @brief Returns whether automatic layout is enabled.
- *
- * If true, the window manager will automatically arrange windows
- * using the auto-layout system when changes occur.
- *
- * @return True if auto-layout is enabled, false otherwise.
  */
 bool UI::WindowManager::autoLayoutEnabled() const
 {
@@ -408,7 +402,6 @@ bool UI::WindowManager::autoLayoutEnabled() const
 
 /**
  * @brief Returns the currently set background image path.
- * @return Background image URL as a QString.
  */
 const QString& UI::WindowManager::backgroundImage() const
 {
@@ -417,12 +410,6 @@ const QString& UI::WindowManager::backgroundImage() const
 
 /**
  * @brief Indicates whether the snap indicator is currently visible.
- *
- * The snap indicator is shown while a window is being dragged and overlaps
- * another window in auto-layout mode, giving visual feedback about the
- * potential reorder target.
- *
- * @return True if the snap indicator is visible, false otherwise.
  */
 bool UI::WindowManager::snapIndicatorVisible() const
 {
@@ -431,12 +418,6 @@ bool UI::WindowManager::snapIndicatorVisible() const
 
 /**
  * @brief Returns the geometry of the current snap indicator.
- *
- * This represents the visual bounds of the target window under the dragged
- * window, used to show where the window will snap if released.
- *
- * @return A const reference to the QRect representing the snap indicator's
- * geometry.
  */
 const QRect& UI::WindowManager::snapIndicator() const
 {
@@ -445,8 +426,6 @@ const QRect& UI::WindowManager::snapIndicator() const
 
 /**
  * @brief Retrieves the z-order for a given window item.
- * @param item Pointer to the QQuickItem representing the window.
- * @return Z-order value, or -1 if not registered.
  */
 int UI::WindowManager::zOrder(QQuickItem* item) const
 {
@@ -458,10 +437,6 @@ int UI::WindowManager::zOrder(QQuickItem* item) const
 
 /**
  * @brief Returns the windowId of the visually-first tile, or -1 if none.
- *
- * The visually-first tile is the window placed at slot 0 of the current
- * window order -- after reconcile, this matches what the user sees on the
- * leftmost (or topmost) tile, regardless of taskbar row order.
  */
 int UI::WindowManager::firstTileWindowId() const
 {
@@ -477,15 +452,6 @@ int UI::WindowManager::firstTileWindowId() const
 
 /**
  * @brief Serializes the current window layout to a JSON object.
- *
- * The serialized layout includes:
- * - Layout mode (auto or manual)
- * - Window order (list of window IDs in display order)
- * - Window geometries (position and size for each window in manual mode)
- *
- * This can be saved to a project file and later restored with restoreLayout().
- *
- * @return QJsonObject containing the complete layout state.
  */
 QJsonObject UI::WindowManager::serializeLayout() const
 {
@@ -523,18 +489,6 @@ QJsonObject UI::WindowManager::serializeLayout() const
 
 /**
  * @brief Restores a previously serialized window layout.
- *
- * This function applies the layout configuration from a JSON object:
- * - Sets the layout mode (auto or manual)
- * - Reorders windows according to the saved order
- * - Restores window geometries in manual mode
- *
- * Windows that exist in the saved layout but not in the current session
- * are skipped. Windows that exist in the current session but not in the
- * saved layout retain their current position.
- *
- * @param layout The JSON object containing the layout state.
- * @return True if the layout was successfully restored, false otherwise.
  */
 bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
 {
@@ -611,12 +565,8 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
 }
 
 /**
- * @brief Pre-stashes saved geometries so registerWindow can apply them
- *        per-window before first paint, avoiding the minimumSize flash.
- *
- * Call this at workspace activation, before any delegates start registering,
- * so each window snaps to its saved geometry on creation rather than after
- * the last sibling delegate finishes loading.
+ * @brief Pre-stashes saved geometries so registerWindow can apply them per-window before first
+ * paint, avoiding the minimumSize flash.
  */
 void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
 {
@@ -645,11 +595,6 @@ void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
 
 /**
  * @brief Reconciles m_windowOrder against the authoritative taskbar order.
- *
- * Keeps user drag-reorders for windows the taskbar still presents, drops
- * entries the taskbar no longer presents, and appends new taskbar entries
- * (e.g. freshly registered windows) at the tail in taskbar order. Only
- * triggers a relayout if the resulting order actually changed.
  */
 void UI::WindowManager::reconcileWindowOrder(const QVector<int>& taskbarOrder)
 {
@@ -724,13 +669,6 @@ void UI::WindowManager::clear()
 
 /**
  * @brief Loads the appropriate layout based on current settings.
- *
- * If auto-layout is enabled, calls autoLayout() to arrange windows using a
- * split-based tiling strategy. Otherwise, falls back to cascadeLayout(),
- * which stacks windows diagonally like classic desktop environments.
- *
- * This should be called after windows are added, removed, or their visibility
- * changes, to re-apply the user's preferred layout mode.
  */
 void UI::WindowManager::loadLayout()
 {
@@ -745,22 +683,6 @@ void UI::WindowManager::loadLayout()
 
 /**
  * @brief Automatically tiles visible windows using a smart grid-based layout.
- *
- * This layout algorithm creates visually balanced arrangements:
- *
- * - 1 window:  Fills the entire canvas (maximized feel)
- * - 2 windows: Side-by-side (landscape) or stacked (portrait)
- * - 3 windows: Master-stack layout (one large + two stacked)
- * - 4 windows: 2x2 grid
- * - 5 windows: 2 on top row, 3 on bottom (or vice versa based on aspect)
- * - 6 windows: 2x3 or 3x2 grid based on canvas aspect ratio
- * - 7+ windows: Optimal grid with balanced distribution
- *
- * The algorithm prioritizes:
- * - Balanced window sizes (avoids tiny windows)
- * - Aspect ratio awareness (uses canvas shape to decide layout)
- * - Consistent spacing and margins
- * - Master-stack pattern for 3 windows (common productivity layout)
  */
 void UI::WindowManager::autoLayout()
 {
@@ -804,24 +726,6 @@ void UI::WindowManager::autoLayout()
 
 /**
  * @brief Arranges windows using a macOS-inspired smart cascade layout.
- *
- * This layout algorithm positions windows in a visually appealing way:
- *
- * 1. Windows are sized to approximately 60% of canvas dimensions, respecting
- *    minimum sizes from implicitWidth/implicitHeight.
- *
- * 2. The first window is centered in the canvas.
- *
- * 3. Subsequent windows are offset diagonally (down-right) with a fixed step.
- *
- * 4. When a window would exceed the bottom-right bounds, the cascade wraps
- *    back to the top with a horizontal offset, similar to macOS behavior.
- *
- * 5. If horizontal space is exhausted, cascading restarts from the origin
- *    with a smaller offset to layer windows visibly.
- *
- * This approach ensures windows remain accessible and visually organized,
- * even with many windows open.
  */
 void UI::WindowManager::cascadeLayout()
 {
@@ -954,7 +858,6 @@ void UI::WindowManager::selectBackgroundImage()
 
 /**
  * @brief Brings a window to the front by increasing its z-order.
- * @param item Pointer to the QQuickItem to promote in z-order.
  */
 void UI::WindowManager::bringToFront(QQuickItem* item)
 {
@@ -972,12 +875,6 @@ void UI::WindowManager::bringToFront(QQuickItem* item)
 
 /**
  * @brief Sets the associated Taskbar instance for window management.
- *
- * This allows the WindowManager to interact with the Taskbar, such as
- * updating the active window, propagating window focus changes,
- * or accessing taskbar-specific features.
- *
- * @param taskbar Pointer to the UI::Taskbar instance to associate.
  */
 void UI::WindowManager::setTaskbar(QQuickItem* taskbar)
 {
@@ -985,10 +882,7 @@ void UI::WindowManager::setTaskbar(QQuickItem* taskbar)
 }
 
 /**
- * @brief Registers a new window item with the manager, assigning initial
- *        z-order and geometry.
- *
- * @param item Pointer to the QQuickItem to register.
+ * @brief Registers a new window item with the manager, assigning initial z-order and geometry.
  */
 void UI::WindowManager::registerWindow(const int id, QQuickItem* item)
 {
@@ -1018,11 +912,6 @@ void UI::WindowManager::registerWindow(const int id, QQuickItem* item)
 
 /**
  * @brief Unregisters a window, removing its z-order and geometry tracking.
- *
- * After unregistering, triggers a layout update if auto-layout is enabled
- * to redistribute the remaining windows.
- *
- * @param item Pointer to the QQuickItem to remove.
  */
 void UI::WindowManager::unregisterWindow(QQuickItem* item)
 {
@@ -1042,7 +931,6 @@ void UI::WindowManager::unregisterWindow(QQuickItem* item)
 
 /**
  * @brief Sets the background image to be used for the container.
- * @param path URL string to the image file.
  */
 void UI::WindowManager::setBackgroundImage(const QString& path)
 {
@@ -1055,14 +943,6 @@ void UI::WindowManager::setBackgroundImage(const QString& path)
 
 /**
  * @brief Enables or disables automatic window layout.
- *
- * Sets whether the window manager should automatically arrange windows
- * using the tiling layout algorithm. If enabled, it immediately triggers
- * a layout update.
- *
- * Emits autoLayoutEnabledChanged() if the state changes.
- *
- * @param enabled True to enable auto-layout, false to disable it.
  */
 void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 {
@@ -1082,16 +962,6 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 
 /**
  * @brief Constrains all windows to fit within the current canvas bounds.
- *
- * This function ensures that no window is positioned outside the visible
- * canvas area and resizes windows if they exceed the available space.
- * It maintains a minimum visible portion of each window to prevent
- * windows from becoming completely inaccessible.
- *
- * The function handles:
- * - Windows positioned beyond the right/bottom edges
- * - Windows larger than the canvas (resized to fit)
- * - Windows with negative positions (clamped to 0)
  */
 void UI::WindowManager::constrainWindows()
 {
@@ -1188,11 +1058,6 @@ void UI::WindowManager::constrainWindows()
 
 /**
  * @brief Reacts to changes in the desktop or available layout area.
- *
- * If auto-layout is enabled, this triggers a re-arrangement of all
- * visible windows to adapt to the new geometry. If auto-layout is
- * disabled (manual layout), it constrains windows to ensure they
- * remain visible and properly sized within the canvas.
  */
 void UI::WindowManager::triggerLayoutUpdate()
 {
@@ -1219,12 +1084,6 @@ void UI::WindowManager::triggerLayoutUpdate()
 
 /**
  * @brief Retrieves the ID associated with a registered window item.
- *
- * Performs a reverse lookup in the window map to find the integer ID
- * assigned to the given QQuickItem.
- *
- * @param item Pointer to the window item.
- * @return The window ID if found, or -1 if not registered.
  */
 int UI::WindowManager::getIdForWindow(QQuickItem* item) const
 {
@@ -1269,12 +1128,7 @@ QQuickItem* UI::WindowManager::findOverlapTarget(const QRect& dragRect) const
 }
 
 /**
- * @brief Utility function to extract a window's actual geometry from its
- *        QQuickItem.
- *
- * @param item Pointer to the QQuickItem.
- * @return QRectF with x, y, width, and height, using implicit sizes as
- *         fallback.
+ * @brief Utility function to extract a window's actual geometry from its QQuickItem.
  */
 QRect UI::WindowManager::extractGeometry(QQuickItem* item) const
 {
@@ -1285,17 +1139,7 @@ QRect UI::WindowManager::extractGeometry(QQuickItem* item) const
 }
 
 /**
- * @brief Determines which edge or corner of a window is being hovered for
- *        resizing.
- *
- * This function calculates the relative position of the mouse within the given
- * window and returns the appropriate ResizeEdge based on proximity to the edges
- * or corners.
- *
- * @param target Pointer to the window under the cursor.
- *
- * @return The ResizeEdge enum value indicating which edge is active, or
- *         ResizeEdge::None.
+ * @brief Determines which edge or corner of a window is being hovered for resizing.
  */
 UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* target) const
 {
@@ -1347,16 +1191,6 @@ UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* ta
 
 /**
  * @brief Returns the topmost window under a given point.
- *
- * This method performs hit-testing against all visible and registered windows,
- * sorted by descending z-order, and returns the first one that contains the
- * point.
- *
- * @param x X-coordinate relative to the WindowManager.
- * @param y Y-coordinate relative to the WindowManager.
- *
- * @return A pointer to the topmost QQuickItem window at the given position, or
- *         nullptr if none found.
  */
 QQuickItem* UI::WindowManager::getWindow(const int x, const int y) const
 {
@@ -1385,13 +1219,6 @@ QQuickItem* UI::WindowManager::getWindow(const int x, const int y) const
 
 /**
  * @brief Handles mouse movement during drag or resize operations.
- *
- * Applies positional delta calculations to either move or resize the currently
- * interacted window. If no window is actively being dragged or resized, the
- * event is passed to the base class.
- *
- * @param event Pointer to the QMouseEvent containing the current mouse
- *              position.
  */
 void UI::WindowManager::mouseMoveEvent(QMouseEvent* event)
 {
@@ -1594,15 +1421,6 @@ void UI::WindowManager::handleResizeMove(QMouseEvent* event, const QPoint& delta
 
 /**
  * @brief Handles mouse press interactions for initiating window drag or resize.
- *
- * This function performs a hit-test to determine the window under the cursor.
- * Based on the position relative to the window edges or title bar, it either
- * starts a drag operation or a resize, and captures the mouse input.
- *
- * If the window is not in a normal state or auto-layout is enabled, the event
- * is passed through.
- *
- * @param event Pointer to the QMouseEvent containing the press information.
  */
 void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 {
@@ -1697,11 +1515,6 @@ void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse release to finalize window drag or resize operations.
- *
- * Resets internal tracking state, releases mouse grab, and restores the cursor.
- * If no window interaction is ongoing, the event is passed to the base class.
- *
- * @param event Pointer to the QMouseEvent representing the release action.
  */
 void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -1776,20 +1589,7 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
 }
 
 /**
- * @brief Handles double-click events on window title bars to toggle
- *        maximize/restore.
- *
- * This method detects a double-click in the caption (title bar) area of a
- * window, excluding the region reserved for window control buttons. If a valid
- * window is detected under the cursor, and the double-click occurs within the
- * allowed area, it toggles the window state between "maximized" and "normal" by
- * invoking the appropriate QML signal (`maximizeClicked` or `restoreClicked`)
- * on the target window.
- *
- * If the double-click occurs outside any interactive window area, the event is
- * passed to the base class for default processing.
- *
- * @param event Pointer to the QMouseEvent containing double-click information.
+ * @brief Handles double-click events on window title bars to toggle maximize/restore.
  */
 void UI::WindowManager::mouseDoubleClickEvent(QMouseEvent* event)
 {

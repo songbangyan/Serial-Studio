@@ -25,16 +25,6 @@ namespace Widgets {
 
 /**
  * @brief Per-painter-widget data bridge exposing this group's metadata to JS.
- *
- * The bridge holds a non-owning pointer to a Group struct that lives in the
- * Dashboard's parsed-frame snapshot. Per-tick, the owning Painter calls
- * setGroup() / setFrame() to point the bridge at the up-to-date data. The
- * Q_INVOKABLE accessors (dsCount, dsValue, dsTitle, etc.) read directly off
- * that pointer -- no QVariantMap/QVariantList rebuild per frame, so the
- * hotpath stays allocation-free.
- *
- * JS-side, the painter widget compiles a small wrapper at engine setup that
- * exposes the bridge as `group` / `datasets` / `frame` globals.
  */
 class PainterDataBridge : public QObject {
   Q_OBJECT

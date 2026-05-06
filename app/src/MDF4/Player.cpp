@@ -49,21 +49,7 @@
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @class SampleCacheObserver
  * @brief Observer class that caches channel values during MDF4 data reading
- *
- * This observer is attached to data groups during ReadData() operations.
- * It extracts channel values from incoming sample records and stores them
- * in a cache for efficient random-access playback.
- *
- * When a per-group master time channel is present, the observer reads the
- * timestamp from each record and uses it (quantised to nanoseconds) as the
- * cache key. This allows records from independent channel groups that share
- * the same wall-clock time to be merged correctly -- which is essential for
- * multi-source MDF4 files where each source writes its own channel groups.
- *
- * When no per-group time channel is available, the raw sample index is
- * used as the key (backward-compatible with old single-time-channel files).
  */
 class SampleCacheObserver : public mdf::ISampleObserver {
 public:
@@ -168,13 +154,7 @@ private:
 };
 
 /**
- * @class LegacyTimestampObserver
  * @brief Reads timestamp values from a single master time channel
- *
- * Used for legacy Serial Studio MDF4 files that have only one master
- * time channel in the first channel group. Populates the timestamp
- * cache keyed by raw sample index so the frame index builder can
- * resolve wall-clock times.
  */
 class LegacyTimestampObserver : public mdf::ISampleObserver {
 public:
@@ -228,9 +208,6 @@ private:
 
 /**
  * @brief Constructor - Initializes the MDF4 player
- *
- * Sets up event filtering for keyboard shortcuts and connects internal
- * signals for playback state management.
  */
 MDF4::Player::Player()
   : m_framePos(0)
@@ -253,7 +230,6 @@ MDF4::Player::~Player() {}
 
 /**
  * @brief Returns the singleton instance of the MDF4 player
- * @return Reference to the player instance
  */
 MDF4::Player& MDF4::Player::instance()
 {
@@ -267,7 +243,6 @@ MDF4::Player& MDF4::Player::instance()
 
 /**
  * @brief Checks if an MDF4 file is currently open
- * @return True if a file is open and valid
  */
 bool MDF4::Player::isOpen() const
 {
@@ -276,7 +251,6 @@ bool MDF4::Player::isOpen() const
 
 /**
  * @brief Checks if playback is currently active
- * @return True if playing, false if paused
  */
 bool MDF4::Player::isPlaying() const
 {
@@ -285,7 +259,6 @@ bool MDF4::Player::isPlaying() const
 
 /**
  * @brief Returns the total number of frames in the file
- * @return Frame count (size of frame index)
  */
 int MDF4::Player::frameCount() const
 {
@@ -294,7 +267,6 @@ int MDF4::Player::frameCount() const
 
 /**
  * @brief Returns the current playback progress
- * @return Progress as a value between 0.0 and 1.0
  */
 double MDF4::Player::progress() const
 {
@@ -306,7 +278,6 @@ double MDF4::Player::progress() const
 
 /**
  * @brief Returns the filename of the currently open file
- * @return Filename without path, or empty string if no file is open
  */
 QString MDF4::Player::filename() const
 {
@@ -320,7 +291,6 @@ QString MDF4::Player::filename() const
 
 /**
  * @brief Returns the current frame position
- * @return Current frame index (0-based)
  */
 int MDF4::Player::framePosition() const
 {
@@ -329,7 +299,6 @@ int MDF4::Player::framePosition() const
 
 /**
  * @brief Returns the current playback timestamp
- * @return Formatted timestamp string (HH:MM:SS.mmm)
  */
 const QString& MDF4::Player::timestamp() const
 {
@@ -342,9 +311,6 @@ const QString& MDF4::Player::timestamp() const
 
 /**
  * @brief Starts real-time playback from current position
- *
- * Begins playback using timestamps for synchronization. If at the end of
- * the file, playback restarts from the beginning.
  */
 void MDF4::Player::play()
 {
@@ -389,10 +355,6 @@ void MDF4::Player::toggle()
 
 /**
  * @brief Opens a file selection dialog for MDF4 files
- *
- * Displays a file dialog allowing the user to select an MF4 or DAT file.
- * Uses a non-native dialog for better cross-platform stability.
- * Calls openFile(QString) with the selected path.
  */
 void MDF4::Player::openFile()
 {
@@ -414,14 +376,6 @@ void MDF4::Player::openFile()
 
 /**
  * @brief Opens an MDF4 file from the specified path
- * @param filePath Absolute path to the MDF4 file
- *
- * Performs the following operations:
- * 1. Disconnects from device if currently connected
- * 2. Opens the file using mdflib's MdfReader
- * 3. Validates file structure
- * 4. Builds frame index and reads measurement data
- * 5. Extracts file metadata (author, project, subject)
  */
 void MDF4::Player::openFile(const QString& filePath)
 {
@@ -490,9 +444,6 @@ void MDF4::Player::openFile(const QString& filePath)
 
 /**
  * @brief Closes the currently open file and releases resources
- *
- * Stops playback if active, closes the file, and clears all cached data
- * including the frame index, channel list, and sample cache.
  */
 void MDF4::Player::closeFile()
 {
@@ -523,9 +474,6 @@ void MDF4::Player::closeFile()
 
 /**
  * @brief Advances to the next frame
- *
- * Pauses playback if active, advances one frame forward, and updates the
- * dashboard with a batch of frames for plot history.
  */
 void MDF4::Player::nextFrame()
 {
@@ -552,9 +500,6 @@ void MDF4::Player::nextFrame()
 
 /**
  * @brief Steps back to the previous frame
- *
- * Pauses playback if active, moves one frame backward, clears plot data,
- * and reloads a batch of frames for plot history.
  */
 void MDF4::Player::previousFrame()
 {
@@ -585,10 +530,6 @@ void MDF4::Player::previousFrame()
 
 /**
  * @brief Seeks to a specific position in the file
- * @param progress Playback position (0.0 to 1.0)
- *
- * Pauses playback, jumps to the specified position, clears plot data,
- * and loads a batch of frames around the new position.
  */
 void MDF4::Player::setProgress(const double progress)
 {
@@ -929,12 +870,7 @@ void MDF4::Player::buildFrameIndex()
 }
 
 /**
- * @brief Builds the frame index from the sample cache populated during
- * observer-based data reading.
- *
- * Each entry in m_sampleCache becomes one frame. Timestamps are resolved
- * from m_timestampCache when available, otherwise a synthetic 1 ms
- * increment is used. The resulting index is sorted by record ID.
+ * @brief Builds the frame index from the sample cache populated during observer-based data reading.
  */
 void MDF4::Player::buildFrameIndexFromCache()
 {
@@ -977,11 +913,6 @@ void MDF4::Player::buildFrameIndexFromCache()
 
 /**
  * @brief Processes a batch of frames for plot history
- * @param startFrame First frame index to process
- * @param endFrame Last frame index to process (inclusive)
- *
- * Sends multiple frames to the dashboard to populate plot history.
- * Used when seeking or stepping through frames to maintain context.
  */
 void MDF4::Player::processFrameBatch(int startFrame, int endFrame)
 {
@@ -992,11 +923,6 @@ void MDF4::Player::processFrameBatch(int startFrame, int endFrame)
 
 /**
  * @brief Sends a single frame to the IO manager for processing
- * @param frameIndex Index of the frame to send
- *
- * Extracts frame data using getFrame() and sends it through the normal
- * IO::ConnectionManager pipeline for console display, FrameBuilder processing,
- * and dashboard visualization.
  */
 void MDF4::Player::sendFrame(int frameIndex)
 {
@@ -1008,10 +934,6 @@ void MDF4::Player::sendFrame(int frameIndex)
 
 /**
  * @brief Registers MDF4 channel names with Quick Plot
- *
- * Extracts channel names from MDF4 file metadata and explicitly registers
- * them with the FrameBuilder. This ensures accurate channel naming in
- * Quick Plot mode.
  */
 void MDF4::Player::sendHeaderFrame()
 {
@@ -1051,8 +973,6 @@ void MDF4::Player::sendHeaderFrame()
 
 /**
  * @brief Formats a timestamp value as HH:MM:SS.mmm
- * @param timestamp Time in seconds
- * @return Formatted time string
  */
 QString MDF4::Player::formatTimestamp(double timestamp) const
 {
@@ -1068,18 +988,6 @@ QString MDF4::Player::formatTimestamp(double timestamp) const
 
 /**
  * @brief Extracts a frame of data at the specified index
- * @param index The frame index in the frame index vector
- * @return QByteArray containing comma-separated channel values
- *
- * Creates a CSV-format line with values for all channels at the specified
- * frame index. Values are retrieved from the sample cache that was populated
- * during ReadData() using the SampleCacheObserver.
- *
- * The output is sent through IO::ConnectionManager::processPayload() for display in
- * the console and processing by the FrameBuilder.
- *
- * @note Values are engineering values (post-conversion) extracted using
- *       mdflib's GetEngValue() method which applies channel conversions.
  */
 QByteArray MDF4::Player::getFrame(const int index)
 {
@@ -1119,9 +1027,6 @@ QByteArray MDF4::Player::getFrame(const int index)
 
 /**
  * @brief Builds a channel-to-source mapping for multi-source MDF4 playback.
- *
- * Uses the project's group/dataset metadata sorted by uniqueId to map each
- * channel index to its sourceId, matching the export column order.
  */
 void MDF4::Player::buildMultiSourceMapping()
 {
@@ -1182,14 +1087,6 @@ void MDF4::Player::buildMultiSourceMapping()
 
 /**
  * @brief Injects an MDF4 frame through the appropriate pipeline path.
- *
- * For single-source or non-project mode, delegates to processPayload().
- * For multi-source project mode, splits the CSV row by source and calls
- * processMultiSourcePayload(), only including sources that actually have
- * channel data in this particular sample.
- *
- * @param frame CSV-formatted byte array with channel values.
- * @param frameIndex Index into m_frameIndex (used to check active channels).
  */
 void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
 {
@@ -1252,13 +1149,6 @@ void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
 
 /**
  * @brief Handles keyboard shortcuts for playback control
- * @param keyEvent The key press event
- * @return True if key was handled, false otherwise
- *
- * Supported shortcuts:
- * - Space: Toggle play/pause
- * - Left Arrow: Previous frame
- * - Right Arrow: Next frame
  */
 bool MDF4::Player::handleKeyPress(QKeyEvent* keyEvent)
 {
@@ -1285,11 +1175,6 @@ bool MDF4::Player::handleKeyPress(QKeyEvent* keyEvent)
 
 /**
  * @brief Event filter for capturing keyboard events
- * @param obj Object that received the event
- * @param event The event to filter
- * @return True if event was handled, false to propagate
- *
- * Filters keyboard events to provide playback shortcuts when a file is open.
  */
 bool MDF4::Player::eventFilter(QObject* obj, QEvent* event)
 {

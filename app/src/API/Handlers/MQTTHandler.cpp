@@ -91,10 +91,6 @@ void API::Handlers::MQTTHandler::registerConnectionCommands()
     QStringLiteral("mqtt.connect"), QStringLiteral("Open MQTT connection"), empty, &connect);
   registry.registerCommand(
     QStringLiteral("mqtt.disconnect"), QStringLiteral("Close MQTT connection"), empty, &disconnect);
-  registry.registerCommand(QStringLiteral("mqtt.toggleConnection"),
-                           QStringLiteral("Toggle MQTT connection state"),
-                           empty,
-                           &toggleConnection);
 }
 
 /**
@@ -167,7 +163,7 @@ void API::Handlers::MQTTHandler::registerAuthCommands()
   }),
                            &setAutoKeepAlive);
 
-  registry.registerCommand(QStringLiteral("mqtt.regenerateClientId"),
+  registry.registerCommand(QStringLiteral("mqtt.refreshClientId"),
                            QStringLiteral("Generate new random client ID"),
                            emptySchema(),
                            &regenerateClientId);
@@ -180,7 +176,7 @@ void API::Handlers::MQTTHandler::registerWillCommands()
 {
   auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("mqtt.setWillQoS"),
+  registry.registerCommand(QStringLiteral("mqtt.setWillQos"),
                            QStringLiteral("Set will message QoS (params: qos - 0, 1, or 2)"),
                            makeSchema({
                              {QStringLiteral("qos"),
@@ -269,7 +265,7 @@ void API::Handlers::MQTTHandler::registerQueryCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
-  registry.registerCommand(QStringLiteral("mqtt.getConfiguration"),
+  registry.registerCommand(QStringLiteral("mqtt.getConfig"),
                            QStringLiteral("Get current MQTT configuration"),
                            empty,
                            &getConfiguration);
@@ -278,16 +274,16 @@ void API::Handlers::MQTTHandler::registerQueryCommands()
                            empty,
                            &getConnectionStatus);
   registry.registerCommand(
-    QStringLiteral("mqtt.getModes"), QStringLiteral("Get available MQTT modes"), empty, &getModes);
-  registry.registerCommand(QStringLiteral("mqtt.getMqttVersions"),
+    QStringLiteral("mqtt.listModes"), QStringLiteral("Get available MQTT modes"), empty, &getModes);
+  registry.registerCommand(QStringLiteral("mqtt.listMqttVersions"),
                            QStringLiteral("Get available MQTT versions"),
                            empty,
                            &getMqttVersions);
-  registry.registerCommand(QStringLiteral("mqtt.getSslProtocols"),
+  registry.registerCommand(QStringLiteral("mqtt.listSslProtocols"),
                            QStringLiteral("Get available SSL protocols"),
                            empty,
                            &getSslProtocols);
-  registry.registerCommand(QStringLiteral("mqtt.getPeerVerifyModes"),
+  registry.registerCommand(QStringLiteral("mqtt.listPeerVerifyModes"),
                            QStringLiteral("Get available peer verify modes"),
                            empty,
                            &getPeerVerifyModes);
@@ -299,7 +295,6 @@ void API::Handlers::MQTTHandler::registerQueryCommands()
 
 /**
  * @brief Set MQTT mode (Publisher or Subscriber)
- * @param params Requires "modeIndex" (int: 0=Publisher, 1=Subscriber)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setMode(const QString& id,
                                                          const QJsonObject& params)
@@ -331,7 +326,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setMode(const QString& id,
 
 /**
  * @brief Set MQTT broker hostname
- * @param params Requires "hostname" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setHostname(const QString& id,
                                                              const QJsonObject& params)
@@ -357,7 +351,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setHostname(const QString& id,
 
 /**
  * @brief Set MQTT broker port
- * @param params Requires "port" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setPort(const QString& id,
                                                          const QJsonObject& params)
@@ -385,7 +378,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setPort(const QString& id,
 
 /**
  * @brief Set MQTT client ID
- * @param params Requires "clientId" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setClientId(const QString& id,
                                                              const QJsonObject& params)
@@ -406,7 +398,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setClientId(const QString& id,
 
 /**
  * @brief Set MQTT username
- * @param params Requires "username" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setUsername(const QString& id,
                                                              const QJsonObject& params)
@@ -427,7 +418,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setUsername(const QString& id,
 
 /**
  * @brief Set MQTT password
- * @param params Requires "password" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setPassword(const QString& id,
                                                              const QJsonObject& params)
@@ -448,7 +438,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setPassword(const QString& id,
 
 /**
  * @brief Set MQTT topic filter
- * @param params Requires "topic" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setTopic(const QString& id,
                                                           const QJsonObject& params)
@@ -469,7 +458,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setTopic(const QString& id,
 
 /**
  * @brief Set clean session flag
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setCleanSession(const QString& id,
                                                                  const QJsonObject& params)
@@ -490,7 +478,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setCleanSession(const QString& 
 
 /**
  * @brief Set MQTT protocol version
- * @param params Requires "versionIndex" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setMqttVersion(const QString& id,
                                                                 const QJsonObject& params)
@@ -522,7 +509,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setMqttVersion(const QString& i
 
 /**
  * @brief Set keep-alive interval
- * @param params Requires "seconds" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setKeepAlive(const QString& id,
                                                               const QJsonObject& params)
@@ -548,7 +534,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setKeepAlive(const QString& id,
 
 /**
  * @brief Set auto keep-alive
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setAutoKeepAlive(const QString& id,
                                                                   const QJsonObject& params)
@@ -569,7 +554,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setAutoKeepAlive(const QString&
 
 /**
  * @brief Set will message QoS
- * @param params Requires "qos" (int: 0, 1, or 2)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setWillQoS(const QString& id,
                                                             const QJsonObject& params)
@@ -597,7 +581,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setWillQoS(const QString& id,
 
 /**
  * @brief Set will message retain flag
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setWillRetain(const QString& id,
                                                                const QJsonObject& params)
@@ -618,7 +601,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setWillRetain(const QString& id
 
 /**
  * @brief Set will message topic
- * @param params Requires "topic" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setWillTopic(const QString& id,
                                                               const QJsonObject& params)
@@ -639,7 +621,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setWillTopic(const QString& id,
 
 /**
  * @brief Set will message payload
- * @param params Requires "message" (string)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setWillMessage(const QString& id,
                                                                 const QJsonObject& params)
@@ -660,7 +641,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setWillMessage(const QString& i
 
 /**
  * @brief Enable or disable SSL
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setSslEnabled(const QString& id,
                                                                const QJsonObject& params)
@@ -681,7 +661,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setSslEnabled(const QString& id
 
 /**
  * @brief Set SSL protocol
- * @param params Requires "protocolIndex" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setSslProtocol(const QString& id,
                                                                 const QJsonObject& params)
@@ -713,7 +692,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setSslProtocol(const QString& i
 
 /**
  * @brief Set peer verification mode
- * @param params Requires "modeIndex" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setPeerVerifyMode(const QString& id,
                                                                    const QJsonObject& params)
@@ -745,7 +723,6 @@ API::CommandResponse API::Handlers::MQTTHandler::setPeerVerifyMode(const QString
 
 /**
  * @brief Set peer verification depth
- * @param params Requires "depth" (int)
  */
 API::CommandResponse API::Handlers::MQTTHandler::setPeerVerifyDepth(const QString& id,
                                                                     const QJsonObject& params)
@@ -796,25 +773,6 @@ API::CommandResponse API::Handlers::MQTTHandler::disconnect(const QString& id,
 
   QJsonObject result;
   result[QStringLiteral("disconnecting")] = true;
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Toggle MQTT connection state
- */
-API::CommandResponse API::Handlers::MQTTHandler::toggleConnection(const QString& id,
-                                                                  const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  auto& mqtt              = MQTT::Client::instance();
-  const bool wasConnected = mqtt.isConnected();
-
-  mqtt.toggleConnection();
-
-  QJsonObject result;
-  result[QStringLiteral("wasConnected")] = wasConnected;
-  result[QStringLiteral("nowConnected")] = !wasConnected;
   return CommandResponse::makeSuccess(id, result);
 }
 

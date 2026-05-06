@@ -45,7 +45,7 @@ void API::Handlers::NetworkHandler::registerCommands()
   address_prop.type         = QStringLiteral("string");
   address_prop.description  = QStringLiteral("Remote host address (IP or hostname)");
   address_prop.defaultValue = QStringLiteral("localhost");
-  registry.registerCommand(QStringLiteral("io.driver.network.setRemoteAddress"),
+  registry.registerCommand(QStringLiteral("io.network.setRemoteAddress"),
                            QStringLiteral("Set remote host address (params: address)"),
                            makeSchema({address_prop}),
                            &setRemoteAddress);
@@ -53,23 +53,23 @@ void API::Handlers::NetworkHandler::registerCommands()
   const SchemaProp port_prop =
     rangeProp(QStringLiteral("port"), QStringLiteral("Port number (1-65535)"), 1, 65535);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.setTcpPort"),
+  registry.registerCommand(QStringLiteral("io.network.setTcpPort"),
                            QStringLiteral("Set TCP port (params: port)"),
                            makeSchema({port_prop}),
                            &setTcpPort);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.setUdpLocalPort"),
+  registry.registerCommand(QStringLiteral("io.network.setUdpLocalPort"),
                            QStringLiteral("Set UDP local port (params: port)"),
                            makeSchema({port_prop}),
                            &setUdpLocalPort);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.setUdpRemotePort"),
+  registry.registerCommand(QStringLiteral("io.network.setUdpRemotePort"),
                            QStringLiteral("Set UDP remote port (params: port)"),
                            makeSchema({port_prop}),
                            &setUdpRemotePort);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.network.setSocketType"),
+    QStringLiteral("io.network.setSocketType"),
     QStringLiteral("Set socket type (params: socketTypeIndex - 0=TCP, 1=UDP)"),
     makeSchema({enumProp(QStringLiteral("socketTypeIndex"),
                          QStringLiteral("Socket type index (0=TCP, 1=UDP)"),
@@ -77,7 +77,7 @@ void API::Handlers::NetworkHandler::registerCommands()
                          0)}),
     &setSocketType);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.setUdpMulticast"),
+  registry.registerCommand(QStringLiteral("io.network.setUdpMulticast"),
                            QStringLiteral("Enable/disable UDP multicast (params: enabled)"),
                            makeSchema({
                              {QStringLiteral("enabled"),
@@ -86,7 +86,7 @@ void API::Handlers::NetworkHandler::registerCommands()
   }),
                            &setUdpMulticast);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.lookup"),
+  registry.registerCommand(QStringLiteral("io.network.lookup"),
                            QStringLiteral("Perform DNS lookup (params: host)"),
                            makeSchema({
                              {QStringLiteral("host"),
@@ -96,12 +96,12 @@ void API::Handlers::NetworkHandler::registerCommands()
                            &lookup);
 
   // Query commands
-  registry.registerCommand(QStringLiteral("io.driver.network.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.network.getConfig"),
                            QStringLiteral("Get current network configuration"),
                            empty,
                            &getConfiguration);
 
-  registry.registerCommand(QStringLiteral("io.driver.network.getSocketTypes"),
+  registry.registerCommand(QStringLiteral("io.network.listSocketTypes"),
                            QStringLiteral("Get available socket types"),
                            empty,
                            &getSocketTypes);
@@ -113,8 +113,6 @@ void API::Handlers::NetworkHandler::registerCommands()
 
 /**
  * @brief Set remote host address
- * @param params Requires "address" (string, e.g., "192.168.1.100" or
- * "localhost")
  */
 API::CommandResponse API::Handlers::NetworkHandler::setRemoteAddress(const QString& id,
                                                                      const QJsonObject& params)
@@ -139,7 +137,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setRemoteAddress(const QStri
 
 /**
  * @brief Set TCP port
- * @param params Requires "port" (int, 1-65535)
  */
 API::CommandResponse API::Handlers::NetworkHandler::setTcpPort(const QString& id,
                                                                const QJsonObject& params)
@@ -164,7 +161,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setTcpPort(const QString& id
 
 /**
  * @brief Set UDP local port
- * @param params Requires "port" (int, 0-65535, 0 = any available port)
  */
 API::CommandResponse API::Handlers::NetworkHandler::setUdpLocalPort(const QString& id,
                                                                     const QJsonObject& params)
@@ -189,7 +185,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setUdpLocalPort(const QStrin
 
 /**
  * @brief Set UDP remote port
- * @param params Requires "port" (int, 1-65535)
  */
 API::CommandResponse API::Handlers::NetworkHandler::setUdpRemotePort(const QString& id,
                                                                      const QJsonObject& params)
@@ -214,7 +209,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setUdpRemotePort(const QStri
 
 /**
  * @brief Set socket type
- * @param params Requires "socketTypeIndex" (int: 0=TCP, 1=UDP)
  */
 API::CommandResponse API::Handlers::NetworkHandler::setSocketType(const QString& id,
                                                                   const QJsonObject& params)
@@ -246,7 +240,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setSocketType(const QString&
 
 /**
  * @brief Enable or disable UDP multicast
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::NetworkHandler::setUdpMulticast(const QString& id,
                                                                     const QJsonObject& params)
@@ -266,10 +259,6 @@ API::CommandResponse API::Handlers::NetworkHandler::setUdpMulticast(const QStrin
 
 /**
  * @brief Perform DNS lookup for a hostname
- * @param params Requires "host" (string)
- *
- * Note: This is an asynchronous operation. The result indicates that the
- * lookup was initiated, not that it completed successfully.
  */
 API::CommandResponse API::Handlers::NetworkHandler::lookup(const QString& id,
                                                            const QJsonObject& params)

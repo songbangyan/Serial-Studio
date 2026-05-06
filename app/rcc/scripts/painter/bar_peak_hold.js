@@ -16,15 +16,13 @@ let lastTs   = 0;
 function clamp01(x) { return Math.max(0, Math.min(1, x)); }
 
 function lit_color(t) {
-  if (t < 0.66) return "#10b981";
-  if (t < 0.85) return "#f59e0b";
-  return "#dc2626";
+  if (t < 0.66) return theme.widget_highlight;
+  if (t < 0.85) return theme.accent;
+  return theme.alarm;
 }
 
 function unlit_color(t) {
-  if (t < 0.66) return "#dcfce7";
-  if (t < 0.85) return "#fef3c7";
-  return "#fee2e2";
+  return theme.widget_border;
 }
 
 function onFrame() {
@@ -52,7 +50,7 @@ function onFrame() {
 }
 
 function draw_vbar(ctx, x, y, w, h, level, peak) {
-  ctx.fillStyle = "#f1f5f9";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(x, y, w, h);
 
   const segH = (h - SEG_GAP * (SEGMENTS - 1)) / SEGMENTS;
@@ -66,22 +64,22 @@ function draw_vbar(ctx, x, y, w, h, level, peak) {
 
   if (peak > 0) {
     const py = y + h - peak * h;
-    ctx.fillStyle = "#cbd5e1";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(x - 2, py - 2, w + 4, 1);
     ctx.fillRect(x - 2, py + 2, w + 4, 1);
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.accent;
     ctx.fillRect(x - 3, py - 1, w + 6, 2);
   }
 
-  ctx.strokeStyle = "#94a3b8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
 }
 
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -95,11 +93,11 @@ function paint(ctx, w, h) {
   const top    = padTop;
   const bot    = h - padBot;
 
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("BARS", padX, 16);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(padX, 20, w - padX * 2, 1);
 
   for (let i = 0; i < datasets.length; ++i) {
@@ -111,13 +109,13 @@ function paint(ctx, w, h) {
 
     draw_vbar(ctx, x, top, barW, bot - top, norm, peaks[i] || 0);
 
-    ctx.fillStyle = "#475569";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font      = "10px sans-serif";
     ctx.textAlign = "center";
     const title   = (ds.title || "").substring(0, 14);
     ctx.fillText(title, x + barW * 0.5, h - padBot + 14);
 
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font      = "bold 11px sans-serif";
     const txt     = Number.isFinite(ds.value) ? ds.value.toFixed(1) : "--";
     ctx.fillText(txt, x + barW * 0.5, h - padBot + 28);

@@ -44,13 +44,7 @@ enum class ValidationStatus {
 };
 
 /**
- * @class IO::FrameReader
  * @brief Frame extractor for detecting and processing streamed data.
- *
- * Runs on the main thread. Configuration is immutable for the FrameReader's
- * lifetime -- callers must recreate the instance via
- * ConnectionManager::resetFrameReader() or DeviceManager::reconfigure() to
- * apply new settings. Do NOT add mutexes.
  */
 class FrameReader : public QObject {
   Q_OBJECT

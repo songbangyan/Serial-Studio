@@ -30,11 +30,6 @@ namespace Protocols {
 
 /**
  * @brief Abstract base class for file transfer protocols.
- *
- * Each protocol implementation manages its own state machine, block
- * framing, error detection, and retransmission logic. The FileTransmission
- * controller feeds incoming device bytes via processInput() and the protocol
- * emits writeRequested() when it needs to send data to the device.
  */
 class Protocol : public QObject {
   Q_OBJECT

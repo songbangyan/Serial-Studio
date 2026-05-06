@@ -29,7 +29,7 @@ void API::Handlers::USBHandler::registerCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
-  registry.registerCommand(QStringLiteral("io.driver.usb.setDeviceIndex"),
+  registry.registerCommand(QStringLiteral("io.usb.setDeviceIndex"),
                            QStringLiteral("Select USB device by index (params: deviceIndex)"),
                            makeSchema({
                              {QStringLiteral("deviceIndex"),
@@ -39,7 +39,7 @@ void API::Handlers::USBHandler::registerCommands()
                            &setDeviceIndex);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.usb.setTransferMode"),
+    QStringLiteral("io.usb.setTransferMode"),
     QStringLiteral("Set transfer mode (params: mode - 0=Bulk, 1=Advanced, 2=Isochronous)"),
     makeSchema({
       {QStringLiteral("mode"),
@@ -49,7 +49,7 @@ void API::Handlers::USBHandler::registerCommands()
     &setTransferMode);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.usb.setInEndpointIndex"),
+    QStringLiteral("io.usb.setInEndpointIndex"),
     QStringLiteral("Select IN endpoint after connection (params: endpointIndex)"),
     makeSchema({
       {QStringLiteral("endpointIndex"),
@@ -59,7 +59,7 @@ void API::Handlers::USBHandler::registerCommands()
     &setInEndpointIndex);
 
   registry.registerCommand(
-    QStringLiteral("io.driver.usb.setOutEndpointIndex"),
+    QStringLiteral("io.usb.setOutEndpointIndex"),
     QStringLiteral("Select OUT endpoint after connection (params: endpointIndex)"),
     makeSchema({
       {QStringLiteral("endpointIndex"),
@@ -68,7 +68,7 @@ void API::Handlers::USBHandler::registerCommands()
   }),
     &setOutEndpointIndex);
 
-  registry.registerCommand(QStringLiteral("io.driver.usb.setIsoPacketSize"),
+  registry.registerCommand(QStringLiteral("io.usb.setIsoPacketSize"),
                            QStringLiteral("Set ISO transfer packet size in bytes (params: size)"),
                            makeSchema({
                              {QStringLiteral("size"),
@@ -77,12 +77,12 @@ void API::Handlers::USBHandler::registerCommands()
   }),
                            &setIsoPacketSize);
 
-  registry.registerCommand(QStringLiteral("io.driver.usb.getDeviceList"),
+  registry.registerCommand(QStringLiteral("io.usb.listDevices"),
                            QStringLiteral("List available USB devices"),
                            empty,
                            &getDeviceList);
 
-  registry.registerCommand(QStringLiteral("io.driver.usb.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.usb.getConfig"),
                            QStringLiteral("Get complete USB driver configuration"),
                            empty,
                            &getConfiguration);
@@ -94,7 +94,6 @@ void API::Handlers::USBHandler::registerCommands()
 
 /**
  * @brief Select USB device by list index.
- * @param params Requires "deviceIndex" (int, 0 = placeholder "Select Device")
  */
 API::CommandResponse API::Handlers::USBHandler::setDeviceIndex(const QString& id,
                                                                const QJsonObject& params)
@@ -126,7 +125,6 @@ API::CommandResponse API::Handlers::USBHandler::setDeviceIndex(const QString& id
 
 /**
  * @brief Set USB transfer mode.
- * @param params Requires "mode" (int: 0=BulkStream, 1=AdvancedControl, 2=Isochronous)
  */
 API::CommandResponse API::Handlers::USBHandler::setTransferMode(const QString& id,
                                                                 const QJsonObject& params)
@@ -154,7 +152,6 @@ API::CommandResponse API::Handlers::USBHandler::setTransferMode(const QString& i
 
 /**
  * @brief Select the active IN endpoint.
- * @param params Requires "endpointIndex" (int)
  */
 API::CommandResponse API::Handlers::USBHandler::setInEndpointIndex(const QString& id,
                                                                    const QJsonObject& params)
@@ -186,7 +183,6 @@ API::CommandResponse API::Handlers::USBHandler::setInEndpointIndex(const QString
 
 /**
  * @brief Select the active OUT endpoint.
- * @param params Requires "endpointIndex" (int)
  */
 API::CommandResponse API::Handlers::USBHandler::setOutEndpointIndex(const QString& id,
                                                                     const QJsonObject& params)
@@ -218,7 +214,6 @@ API::CommandResponse API::Handlers::USBHandler::setOutEndpointIndex(const QStrin
 
 /**
  * @brief Set the ISO transfer packet size.
- * @param params Requires "size" (int, 1-49152)
  */
 API::CommandResponse API::Handlers::USBHandler::setIsoPacketSize(const QString& id,
                                                                  const QJsonObject& params)

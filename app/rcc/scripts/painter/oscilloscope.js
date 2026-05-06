@@ -9,13 +9,6 @@
 const HISTORY = 256;
 const traces  = [];
 
-const SCREEN_BG   = "#06140a";
-const GRID        = "#0c3a1c";
-const GRID_MAJOR  = "#155e30";
-const TRACE       = "#22c55e";
-const TRACE_GLOW  = "#86efac";
-const LABEL       = "#bbf7d0";
-
 function onFrame() {
   while (traces.length < datasets.length) traces.push([]);
 
@@ -30,23 +23,23 @@ function onFrame() {
 
 function paint(ctx, w, h) {
   // Cream paper background framing the dark instrument screen.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header strip.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("OSCILLOSCOPE", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(datasets.length + (datasets.length === 1 ? " channel" : " channels"),
                w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // CRT screen (a dark recessed panel inside the card area).
@@ -58,15 +51,15 @@ function paint(ctx, w, h) {
   const sw = w - padX * 2;
   const sh = h - padTop - padBot;
 
-  ctx.fillStyle = "#020617";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(sx + 1, sy + 2, sw, sh);
-  ctx.fillStyle = SCREEN_BG;
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(sx, sy, sw, sh);
 
   // Major + minor grid (10 vertical x 8 horizontal divisions).
   for (let i = 1; i < 10; ++i) {
     const x = sx + (sw / 10) * i;
-    ctx.strokeStyle = (i === 5) ? GRID_MAJOR : GRID;
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth   = (i === 5) ? 1.5 : 1;
     ctx.beginPath();
     ctx.moveTo(x, sy);
@@ -75,7 +68,7 @@ function paint(ctx, w, h) {
   }
   for (let i = 1; i < 8; ++i) {
     const y = sy + (sh / 8) * i;
-    ctx.strokeStyle = (i === 4) ? GRID_MAJOR : GRID;
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth   = (i === 4) ? 1.5 : 1;
     ctx.beginPath();
     ctx.moveTo(sx, y);
@@ -84,7 +77,7 @@ function paint(ctx, w, h) {
   }
 
   // Outer phosphor bezel.
-  ctx.strokeStyle = "#0a3a1c";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth   = 1;
   ctx.strokeRect(sx + 0.5, sy + 0.5, sw - 1, sh - 1);
 
@@ -101,6 +94,7 @@ function paint(ctx, w, h) {
     const hi = ds.max;
     const span = (hi - lo) || 1;
     const cy = sy + laneH * (i + 0.5);
+    const traceColor = theme.widget_colors[i % theme.widget_colors.length];
 
     function trace_path() {
       ctx.beginPath();
@@ -115,19 +109,19 @@ function paint(ctx, w, h) {
     }
 
     // Glow underlay (wider, lighter shade).
-    ctx.strokeStyle = TRACE_GLOW;
+    ctx.strokeStyle = traceColor;
     ctx.lineWidth   = 4;
     ctx.globalAlpha = 0.18;
     trace_path();
     ctx.globalAlpha = 1;
 
     // Crisp trace on top.
-    ctx.strokeStyle = TRACE;
+    ctx.strokeStyle = traceColor;
     ctx.lineWidth   = 2;
     trace_path();
 
     // Channel tag.
-    ctx.fillStyle    = LABEL;
+    ctx.fillStyle    = traceColor;
     ctx.font         = "bold 10px monospace";
     ctx.textAlign    = "start";
     ctx.textBaseline = "top";

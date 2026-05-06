@@ -23,12 +23,6 @@
 
 /**
  * @brief Generates a complete .proto file from CommandRegistry.
- *
- * Produces a protobuf service definition with:
- * - Per-command typed request messages derived from JSON Schema
- * - A unified response type using google.protobuf.Value
- * - Generic streaming RPCs for frames and raw data
- * - ListCommands discovery RPC
  */
 QString API::GRPC::ProtoGenerator::generateProto()
 {
@@ -219,8 +213,6 @@ QString API::GRPC::ProtoGenerator::jsonTypeToProtoType(const QString& jsonType)
 
 /**
  * @brief Sanitizes a dot-notation command name to a valid protobuf identifier.
- *
- * Converts "io.driver.uart.setBaudRate" to "IoDriverUartSetBaudRate".
  */
 QString API::GRPC::ProtoGenerator::sanitizeName(const QString& name)
 {

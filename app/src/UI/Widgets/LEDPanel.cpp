@@ -30,8 +30,6 @@
 
 /**
  * @brief Constructs an LEDPanel widget.
- * @param index The index of the LED panel in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::LEDPanel::LEDPanel(const int index, QQuickItem* parent)
   : QQuickItem(parent), m_index(index)
@@ -63,7 +61,6 @@ Widgets::LEDPanel::LEDPanel(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns the number of LEDs in the panel.
- * @return An integer number with the number/count of LEDs in the panel.
  */
 int Widgets::LEDPanel::count() const noexcept
 {
@@ -76,7 +73,6 @@ int Widgets::LEDPanel::count() const noexcept
 
 /**
  * @brief Returns the states of the LEDs in the panel.
- * @return A vector of boolean values representing the states of the LEDs.
  */
 const QList<bool>& Widgets::LEDPanel::states() const noexcept
 {
@@ -85,7 +81,6 @@ const QList<bool>& Widgets::LEDPanel::states() const noexcept
 
 /**
  * @brief Returns the colors of the LEDs in the panel.
- * @return A vector of strings representing the activated colors of the LEDs.
  */
 const QStringList& Widgets::LEDPanel::colors() const noexcept
 {
@@ -94,7 +89,6 @@ const QStringList& Widgets::LEDPanel::colors() const noexcept
 
 /**
  * @brief Returns the titles of the LEDs in the panel.
- * @return A vector of strings representing the titles of the LEDs.
  */
 const QStringList& Widgets::LEDPanel::titles() const noexcept
 {
@@ -107,9 +101,6 @@ const QStringList& Widgets::LEDPanel::titles() const noexcept
 
 /**
  * @brief Updates the LED panel data from the Dashboard.
- *
- * This method retrieves the latest data for this LED panel from the Dashboard
- * and updates the LEDs' states and titles accordingly.
  */
 void Widgets::LEDPanel::updateData()
 {

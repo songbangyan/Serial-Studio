@@ -29,25 +29,6 @@
 
 /**
  * @brief Computes a single coefficient of the 4-term Blackman-Harris window.
- *
- * This function implements the 4-term Blackman-Harris window formula:
- * \f[
- * w[n] = a_0 - a_1 \cos\left(\frac{2\pi n}{N-1}\right)
- *        + a_2 \cos\left(\frac{4\pi n}{N-1}\right)
- *        - a_3 \cos\left(\frac{6\pi n}{N-1}\right)
- * \f]
- *
- * where the coefficients are:
- * - a_0 = 0.35875
- * - a_1 = 0.48829
- * - a_2 = 0.14128
- * - a_3 = 0.01168
- *
- * @param i Index of the coefficient (0 <= i < N).
- * @param N Total number of points in the window.
- * @return The computed window coefficient for index @p i.
- *
- * @note If N <= 1, the function returns 1.0f.
  */
 inline float blackman_harris_coeff(unsigned int i, unsigned int N)
 {
@@ -72,8 +53,6 @@ inline float blackman_harris_coeff(unsigned int i, unsigned int N)
 
 /**
  * @brief Constructs a new FFTPlot widget.
- * @param index The index of the FFT plot in the Dashboard.
- * @param parent The parent QQuickItem.
  */
 Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -140,7 +119,6 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns the size of the down-sampled X axis data.
- * @return Size of down-sampled X axis data.
  */
 int Widgets::FFTPlot::dataW() const noexcept
 {
@@ -149,7 +127,6 @@ int Widgets::FFTPlot::dataW() const noexcept
 
 /**
  * @brief Returns the size of the down-sampled Y axis data.
- * @return Size of down-sampled Y axis data.
  */
 int Widgets::FFTPlot::dataH() const noexcept
 {
@@ -162,7 +139,6 @@ int Widgets::FFTPlot::dataH() const noexcept
 
 /**
  * @brief Returns the minimum X-axis value.
- * @return The minimum X-axis value.
  */
 double Widgets::FFTPlot::minX() const noexcept
 {
@@ -171,7 +147,6 @@ double Widgets::FFTPlot::minX() const noexcept
 
 /**
  * @brief Returns the maximum X-axis value.
- * @return The maximum X-axis value.
  */
 double Widgets::FFTPlot::maxX() const noexcept
 {
@@ -180,7 +155,6 @@ double Widgets::FFTPlot::maxX() const noexcept
 
 /**
  * @brief Returns the minimum Y-axis value.
- * @return The minimum Y-axis value.
  */
 double Widgets::FFTPlot::minY() const noexcept
 {
@@ -189,7 +163,6 @@ double Widgets::FFTPlot::minY() const noexcept
 
 /**
  * @brief Returns the maximum Y-axis value.
- * @return The maximum Y-axis value.
  */
 double Widgets::FFTPlot::maxY() const noexcept
 {
@@ -202,7 +175,6 @@ double Widgets::FFTPlot::maxY() const noexcept
 
 /**
  * @brief Checks whether plot data updates are currently active.
- * @return @c true if updating is not paused, otherwise @c false.
  */
 bool Widgets::FFTPlot::running() const noexcept
 {
@@ -215,7 +187,6 @@ bool Widgets::FFTPlot::running() const noexcept
 
 /**
  * @brief Draws the FFT data on the given QLineSeries.
- * @param series The QLineSeries to draw the data on.
  */
 void Widgets::FFTPlot::draw(QLineSeries* series)
 {
@@ -232,7 +203,6 @@ void Widgets::FFTPlot::draw(QLineSeries* series)
 
 /**
  * @brief Updates the size of the down-sampled X axis data.
- * @param width The new size of the down-sampled axis data.
  */
 void Widgets::FFTPlot::setDataW(const int width)
 {
@@ -246,7 +216,6 @@ void Widgets::FFTPlot::setDataW(const int width)
 
 /**
  * @brief Updates the size of the down-sampled Y axis data.
- * @param height The new size of the down-sampled axis data.
  */
 void Widgets::FFTPlot::setDataH(const int height)
 {
@@ -260,7 +229,6 @@ void Widgets::FFTPlot::setDataH(const int height)
 
 /**
  * @brief Enables or disables plot data updates.
- * @param enabled Set to @c true to allow updates, or @c false to pause them.
  */
 void Widgets::FFTPlot::setRunning(const bool enabled)
 {

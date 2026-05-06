@@ -44,7 +44,7 @@
 //--------------------------------------------------------------------------------------------------
 
 /**
- * Constructs a SimpleCrypt instance without a valid key set on it.
+ * @brief Constructs a SimpleCrypt instance without a valid key set on it.
  */
 Licensing::SimpleCrypt::SimpleCrypt()
   : m_key(0)
@@ -54,7 +54,7 @@ Licensing::SimpleCrypt::SimpleCrypt()
 {}
 
 /**
- * Constructs a SimpleCrypt instance and initializes it with the given key.
+ * @brief Constructs a SimpleCrypt instance and initializes it with the given key.
  */
 Licensing::SimpleCrypt::SimpleCrypt(quint64 key)
   : m_key(key)
@@ -70,7 +70,7 @@ Licensing::SimpleCrypt::SimpleCrypt(quint64 key)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * Returns true if SimpleCrypt has been initialized with a key.
+ * @brief Returns true if SimpleCrypt has been initialized with a key.
  */
 bool Licensing::SimpleCrypt::hasKey() const
 {
@@ -78,7 +78,7 @@ bool Licensing::SimpleCrypt::hasKey() const
 }
 
 /**
- * Returns the last error that occurred.
+ * @brief Returns the last error that occurred.
  */
 Licensing::SimpleCrypt::Error Licensing::SimpleCrypt::lastError() const
 {
@@ -86,7 +86,7 @@ Licensing::SimpleCrypt::Error Licensing::SimpleCrypt::lastError() const
 }
 
 /**
- * Returns the CompressionMode that is currently in use.
+ * @brief Returns the CompressionMode that is currently in use.
  */
 Licensing::SimpleCrypt::CompressionMode Licensing::SimpleCrypt::compressionMode() const
 {
@@ -94,7 +94,7 @@ Licensing::SimpleCrypt::CompressionMode Licensing::SimpleCrypt::compressionMode(
 }
 
 /**
- * Returns the IntegrityProtectionMode that is currently in use.
+ * @brief Returns the IntegrityProtectionMode that is currently in use.
  */
 Licensing::SimpleCrypt::IntegrityProtectionMode Licensing::SimpleCrypt::integrityProtectionMode()
   const
@@ -107,7 +107,7 @@ Licensing::SimpleCrypt::IntegrityProtectionMode Licensing::SimpleCrypt::integrit
 //--------------------------------------------------------------------------------------------------
 
 /**
- * (Re-) initializes the key with the given @arg key.
+ * @brief Re-initializes the key with the given key value.
  */
 void Licensing::SimpleCrypt::setKey(quint64 key)
 {
@@ -116,11 +116,7 @@ void Licensing::SimpleCrypt::setKey(quint64 key)
 }
 
 /**
- * Sets the compression mode to use when encrypting data. The default mode is
- * Auto.
- *
- * Note that decryption is not influenced by this mode, as the decryption
- * recognizes what mode was used when encrypting.
+ * @brief Sets the compression mode to use when encrypting data. The default mode is
  */
 void Licensing::SimpleCrypt::setCompressionMode(CompressionMode mode)
 {
@@ -128,10 +124,7 @@ void Licensing::SimpleCrypt::setCompressionMode(CompressionMode mode)
 }
 
 /**
- * Sets the integrity mode to use when encrypting data. The default mode is
- * Checksum.
- *  * Note that decryption is not influenced by this mode, as the decryption
- * recognizes what mode was used when encrypting.
+ * @brief Sets the integrity mode to use when encrypting data. The default mode is
  */
 void Licensing::SimpleCrypt::setIntegrityProtectionMode(IntegrityProtectionMode mode)
 {
@@ -143,10 +136,7 @@ void Licensing::SimpleCrypt::setIntegrityProtectionMode(IntegrityProtectionMode 
 //--------------------------------------------------------------------------------------------------
 
 /**
- * Encrypts the @arg plaintext string with the key the class was initialized
- * with, and returns a cyphertext the result. The result is a base64 encoded
- * version of the binary array that is the actual result of the string, so it
- * can be stored easily in a text format.
+ * @brief Encrypts the @arg plaintext string with the key the class was initialized
  */
 QString Licensing::SimpleCrypt::encryptToString(const QString& plaintext)
 {
@@ -157,10 +147,7 @@ QString Licensing::SimpleCrypt::encryptToString(const QString& plaintext)
 }
 
 /**
- * Encrypts the @arg plaintext QByteArray with the key the class was
- * initialized with, and returns a cyphertext the result. The result is a
- * base64 encoded version of the binary array that is the actual result of the
- * encryption, so it can be stored easily in a text format.
+ * @brief Encrypts the @arg plaintext QByteArray with the key the class was
  */
 QString Licensing::SimpleCrypt::encryptToString(const QByteArray& plaintext)
 {
@@ -170,12 +157,7 @@ QString Licensing::SimpleCrypt::encryptToString(const QByteArray& plaintext)
 }
 
 /**
- * Encrypts the @arg plaintext string with the key the class was initialized
- * with, and returns a binary cyphertext in a QByteArray the result.
- *
- * This method returns a byte array, that is useable for storing a binary
- * format. If you need a string you can store in a text file, use
- * encryptToString() instead.
+ * @brief Encrypts the @arg plaintext string with the key the class was initialized
  */
 QByteArray Licensing::SimpleCrypt::encryptToByteArray(const QString& plaintext)
 {
@@ -184,13 +166,7 @@ QByteArray Licensing::SimpleCrypt::encryptToByteArray(const QString& plaintext)
 }
 
 /**
- * Encrypts the @arg plaintext QByteArray with the key the class was
- * initialized with, and returns a binary cyphertext in a QByteArray the
- * result.
- *
- * This method returns a byte array, that is useable for storing a binary
- * format. If you need a string you can store in a text file, use
- * encryptToString() instead.
+ * @brief Encrypts the @arg plaintext QByteArray with the key the class was
  */
 QByteArray Licensing::SimpleCrypt::encryptToByteArray(const QByteArray& plaintext)
 {
@@ -261,12 +237,7 @@ QByteArray Licensing::SimpleCrypt::encryptToByteArray(const QByteArray& plaintex
 //--------------------------------------------------------------------------------------------------
 
 /**
- * Decrypts a cyphertext binary encrypted with this class with the set key
- * back to the plain text version.
- *
- * If an error occured, such as non-matching keys between encryption and
- * decryption, an empty string or a string containing nonsense may be
- * returned.
+ * @brief Decrypts a cyphertext binary encrypted with this class with the set key
  */
 QString Licensing::SimpleCrypt::decryptToString(const QByteArray& cypher)
 {
@@ -277,12 +248,7 @@ QString Licensing::SimpleCrypt::decryptToString(const QByteArray& cypher)
 }
 
 /**
- * Decrypts a cyphertext string encrypted with this class with the set key
- * back to the plain text version.
- *
- * If an error occured, such as non-matching keys between encryption and
- * decryption, an empty string or a string containing nonsense may be
- * returned.
+ * @brief Decrypts a cyphertext string encrypted with this class with the set key
  */
 QString Licensing::SimpleCrypt::decryptToString(const QString& cyphertext)
 {
@@ -294,12 +260,7 @@ QString Licensing::SimpleCrypt::decryptToString(const QString& cyphertext)
 }
 
 /**
- * Decrypts a cyphertext binary encrypted with this class with the set key
- * back to the plain text version.
- *
- * If an error occured, such as non-matching keys between encryption and
- * decryption, an empty string or a string containing nonsense may be
- * returned.
+ * @brief Decrypts a cyphertext binary encrypted with this class with the set key
  */
 QByteArray Licensing::SimpleCrypt::decryptToByteArray(const QByteArray& cypher)
 {
@@ -381,12 +342,7 @@ QByteArray Licensing::SimpleCrypt::decryptToByteArray(const QByteArray& cypher)
 }
 
 /**
- * Decrypts a cyphertext string encrypted with this class with the set key
- * back to the plain text version.
- *
- * If an error occured, such as non-matching keys between encryption and
- * decryption, an empty string or a string containing nonsense may be
- * returned.
+ * @brief Decrypts a cyphertext string encrypted with this class with the set key
  */
 QByteArray Licensing::SimpleCrypt::decryptToByteArray(const QString& cyphertext)
 {
@@ -401,12 +357,7 @@ QByteArray Licensing::SimpleCrypt::decryptToByteArray(const QString& cyphertext)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Splits the key into 8 bytes, extracting each subsequent lower-order
- *        byte.
- *
- * This function processes the internal `m_key` variable, breaking it down into
- * an array of 8 characters. Each character corresponds to a byte from `m_key`,
- * extracted in reverse order (from highest-order byte to lowest).
+ * @brief Splits the key into 8 bytes, extracting each subsequent lower-order byte.
  */
 void Licensing::SimpleCrypt::splitKey()
 {

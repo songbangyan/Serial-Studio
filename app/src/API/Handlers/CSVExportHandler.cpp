@@ -49,7 +49,7 @@ void API::Handlers::CSVExportHandler::registerCommands()
     schema[QStringLiteral("type")]       = QStringLiteral("object");
     schema[QStringLiteral("properties")] = props;
     schema[QStringLiteral("required")]   = QJsonArray{QStringLiteral("enabled")};
-    registry.registerCommand(QStringLiteral("csv.export.setEnabled"),
+    registry.registerCommand(QStringLiteral("csvExport.setEnabled"),
                              QStringLiteral("Enable or disable CSV export (params: enabled)"),
                              schema,
                              &setEnabled);
@@ -60,13 +60,13 @@ void API::Handlers::CSVExportHandler::registerCommands()
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
   emptySchema.insert(QStringLiteral("properties"), QJsonObject());
 
-  registry.registerCommand(QStringLiteral("csv.export.close"),
+  registry.registerCommand(QStringLiteral("csvExport.close"),
                            QStringLiteral("Close the current CSV file"),
                            emptySchema,
                            &close);
 
   // Query commands
-  registry.registerCommand(QStringLiteral("csv.export.getStatus"),
+  registry.registerCommand(QStringLiteral("csvExport.getStatus"),
                            QStringLiteral("Get CSV export status"),
                            emptySchema,
                            &getStatus);
@@ -78,7 +78,6 @@ void API::Handlers::CSVExportHandler::registerCommands()
 
 /**
  * @brief Enable or disable CSV export
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::CSVExportHandler::setEnabled(const QString& id,
                                                                  const QJsonObject& params)

@@ -315,6 +315,14 @@ private:
 
   void buildTreeItems(QStandardItem* root, QHash<QString, bool>& expandedStates);
   void restoreTreeSelection();
+  bool selectSourceParserItem(QStandardItem* item);
+  bool selectSourceItem(QStandardItem* item);
+  bool selectGroupItem(QStandardItem* item);
+  bool selectDatasetItem(QStandardItem* item);
+  bool selectActionItem(QStandardItem* item);
+  bool selectOutputWidgetItem(QStandardItem* item);
+  bool selectDataTableItem(QStandardItem* item);
+  bool selectWorkspaceTreeItem(QStandardItem* item);
   void syncDatasetItemCache(int groupId, int datasetId);
   void appendDriverPropertyRows(const DataModel::Source& source);
   void applyGroupSourceEdit(int srcIdx, int groupId);

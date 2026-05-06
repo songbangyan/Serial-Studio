@@ -26,44 +26,44 @@ from utils import APIError
 # ---------------------------------------------------------------------------
 
 def _list_workspaces(api_client):
-    return api_client.command("project.workspaces.list")
+    return api_client.command("project.workspace.list")
 
 
 def _get_workspace(api_client, wid):
-    return api_client.command("project.workspaces.get", {"id": wid})
+    return api_client.command("project.workspace.get", {"id": wid})
 
 
 def _add_workspace(api_client, title="Workspace"):
-    return api_client.command("project.workspaces.add", {"title": title})
+    return api_client.command("project.workspace.add", {"title": title})
 
 
 def _delete_workspace(api_client, wid):
-    return api_client.command("project.workspaces.delete", {"id": wid})
+    return api_client.command("project.workspace.delete", {"id": wid})
 
 
 def _rename_workspace(api_client, wid, title):
     return api_client.command(
-        "project.workspaces.rename", {"id": wid, "title": title}
+        "project.workspace.rename", {"id": wid, "title": title}
     )
 
 
 def _auto_generate(api_client):
-    return api_client.command("project.workspaces.autoGenerate")
+    return api_client.command("project.workspace.autoGenerate")
 
 
 def _customize_get(api_client):
-    return api_client.command("project.workspaces.customize.get")
+    return api_client.command("project.workspace.getCustomizeMode")
 
 
 def _customize_set(api_client, enabled):
     return api_client.command(
-        "project.workspaces.customize.set", {"enabled": enabled}
+        "project.workspace.setCustomizeMode", {"enabled": enabled}
     )
 
 
 def _widget_add(api_client, workspace_id, widget_type, group_id, relative_index):
     return api_client.command(
-        "project.workspaces.widgets.add",
+        "project.workspace.addWidget",
         {
             "workspaceId": workspace_id,
             "widgetType": widget_type,
@@ -75,7 +75,7 @@ def _widget_add(api_client, workspace_id, widget_type, group_id, relative_index)
 
 def _widget_remove(api_client, workspace_id, widget_type, group_id, relative_index):
     return api_client.command(
-        "project.workspaces.widgets.remove",
+        "project.workspace.removeWidget",
         {
             "workspaceId": workspace_id,
             "widgetType": widget_type,
@@ -86,18 +86,15 @@ def _widget_remove(api_client, workspace_id, widget_type, group_id, relative_ind
 
 
 def _add_group_with_datasets(api_client, title, widget_type=0, dataset_count=2):
-    """Create a group and add N datasets with plot enabled."""
-    api_client.command("project.group.add", {"title": title, "widgetType": widget_type})
-    time.sleep(0.15)
-
+    """Create a group and add N datasets. Returns the new groupId."""
+    gid = api_client.add_group(title, widget_type=widget_type)
     for _ in range(dataset_count):
-        # plotOption = 0x04 in SerialStudio::DatasetOption (graph)
-        api_client.command("project.dataset.add", {"options": 0})
-        time.sleep(0.08)
+        api_client.add_dataset(gid)
+    return gid
 
 
 def _project_groups(api_client):
-    return api_client.command("project.groups.list").get("groups", [])
+    return api_client.command("project.group.list").get("groups", [])
 
 
 # ---------------------------------------------------------------------------
@@ -327,9 +324,8 @@ def test_group_delete_shifts_ref_group_id(api_client, clean_state):
     _widget_add(api_client, wid, widget_type=3, group_id=2, relative_index=2)
     time.sleep(0.15)
 
-    # Select + delete G1 — surviving G2 becomes G1
-    _select_group(api_client, group_id=1)
-    api_client.command("project.group.delete")
+    # Delete G1 by id — surviving G2 becomes G1 (ids are sequential)
+    api_client.delete_group(1)
     time.sleep(0.25)
 
     # G2 is now G1; ref groupId must have shifted 2→1
@@ -362,9 +358,7 @@ def test_group_delete_shifts_ref_relative_index(api_client, clean_state):
     _widget_add(api_client, wid, widget_type=1, group_id=2, relative_index=2)
     time.sleep(0.15)
 
-    _select_group(api_client, group_id=1)
-    time.sleep(0.15)
-    api_client.command("project.group.delete")
+    api_client.delete_group(1)
     time.sleep(0.25)
 
     # G2 became G1; it contributed 1 DataGrid, and the deleted G1 also
@@ -390,9 +384,7 @@ def test_group_delete_drops_refs_pointing_at_deleted(api_client, clean_state):
     time.sleep(0.15)
 
     # Delete G1 — ref pointing at it must disappear
-    _select_group(api_client, group_id=1)
-    time.sleep(0.15)
-    api_client.command("project.group.delete")
+    api_client.delete_group(1)
     time.sleep(0.25)
 
     widgets = _get_workspace(api_client, wid)["widgets"]
@@ -486,7 +478,7 @@ def test_round_trip_auto_state_preserves_flag(api_client, clean_state):
 
     api_client.create_new_project(title="Reload Target")
     time.sleep(0.3)
-    api_client.command("project.loadFromJSON", {"config": config})
+    api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     assert _customize_get(api_client)["enabled"] is False, (
@@ -509,7 +501,7 @@ def test_round_trip_customized_state_preserves_list(api_client, clean_state):
 
     api_client.create_new_project(title="Reload Target")
     time.sleep(0.3)
-    api_client.command("project.loadFromJSON", {"config": config})
+    api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     assert _customize_get(api_client)["enabled"] is True
@@ -540,7 +532,7 @@ def test_unflagged_workspaces_array_is_ignored(api_client, clean_state):
 
     api_client.create_new_project(title="Loader")
     time.sleep(0.3)
-    api_client.command("project.loadFromJSON", {"config": config})
+    api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     assert _customize_get(api_client)["enabled"] is False, (
@@ -690,8 +682,7 @@ def test_per_group_workspace_renumbers_on_group_delete(api_client, clean_state):
         f"Expected per-group IDs [1002,1003,1004], got {per_group_before}"
     )
 
-    _select_group(api_client, group_id=1)
-    api_client.command("project.group.delete")
+    api_client.delete_group(1)
     time.sleep(0.3)
 
     after = _list_workspaces(api_client)["workspaces"]
@@ -763,11 +754,3 @@ def test_adding_group_after_user_workspace_does_not_overwrite(api_client, clean_
     )
 
 
-# ---------------------------------------------------------------------------
-# Helpers that use available API commands
-# ---------------------------------------------------------------------------
-
-def _select_group(api_client, group_id):
-    """Select a group by id so delete/duplicate operations target it."""
-    api_client.command("project.group.select", {"groupId": group_id})
-    time.sleep(0.1)

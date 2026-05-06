@@ -18,26 +18,26 @@
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header strip.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText((group.title || "PAINTER").toUpperCase(), 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText("XY  /  Z", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   if (datasets.length < 2) {
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Add at least 2 datasets (X, Y) to see the indicator.",
@@ -59,16 +59,16 @@ function paint(ctx, w, h) {
   const cx    = padL + plotW * 0.5;
   const cy    = padT + plotH * 0.5;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(padL + 1, padT + 2, plotW, plotH);
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(padL, padT, plotW, plotH);
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(padL + 0.5, padT + 0.5, plotW - 1, plotH - 1);
 
   // Cross-hair grid.
-  ctx.strokeStyle = "#e2e8f0";
+  ctx.strokeStyle = theme.widget_border;
   ctx.beginPath();
   ctx.moveTo(padL, cy);
   ctx.lineTo(padL + plotW, cy);
@@ -77,7 +77,7 @@ function paint(ctx, w, h) {
   ctx.stroke();
 
   // Quarter divisions (subtle dotted feel via dashed slate ticks).
-  ctx.strokeStyle = "#eef2f7";
+  ctx.strokeStyle = theme.widget_border;
   for (let i = 1; i < 4; ++i) {
     const x = padL + (plotW / 4) * i;
     const y = padT + (plotH / 4) * i;
@@ -110,14 +110,14 @@ function paint(ctx, w, h) {
     nz = norm(dsZ.value, dsZ.min, dsZ.max);
     zText = dsZ.value.toFixed(2) + (dsZ.units ? " " + dsZ.units : "");
   }
-  let dotColor = "#10b981";
-  if (nz > 0.85) dotColor = "#dc2626";
-  else if (nz > 0.66) dotColor = "#f59e0b";
-  else if (nz < 0.20) dotColor = "#0ea5e9";
+  let dotColor = theme.widget_highlight;
+  if (nz > 0.85) dotColor = theme.alarm;
+  else if (nz > 0.66) dotColor = theme.accent;
+  else if (nz < 0.20) dotColor = theme.widget_colors[5];
   const dotR = 6 + nz * 12;
 
   // Crosshairs from the dot to the axes.
-  ctx.strokeStyle = "#cbd5e1";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(padL, py);
@@ -128,10 +128,7 @@ function paint(ctx, w, h) {
 
   // Soft halo (lighter shade of the dot colour). Halos use the same
   // moveTo-before-arc discipline as the rest of the templates.
-  ctx.fillStyle = "#fee2e2";
-  if (dotColor === "#10b981") ctx.fillStyle = "#dcfce7";
-  if (dotColor === "#f59e0b") ctx.fillStyle = "#fef3c7";
-  if (dotColor === "#0ea5e9") ctx.fillStyle = "#e0f2fe";
+  ctx.fillStyle = theme.widget_border;
   ctx.beginPath();
   ctx.moveTo(px + dotR * 2.2, py);
   ctx.arc(px, py, dotR * 2.2, 0, Math.PI * 2);
@@ -145,21 +142,21 @@ function paint(ctx, w, h) {
   ctx.fill();
 
   // White outline + dark centre pip.
-  ctx.strokeStyle = "#ffffff";
+  ctx.strokeStyle = theme.widget_base;
   ctx.lineWidth   = 2;
   ctx.beginPath();
   ctx.moveTo(px + dotR, py);
   ctx.arc(px, py, dotR, 0, Math.PI * 2);
   ctx.stroke();
 
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.beginPath();
   ctx.moveTo(px + 2, py);
   ctx.arc(px, py, 2, 0, Math.PI * 2);
   ctx.fill();
 
   // Axis labels.
-  ctx.fillStyle    = "#475569";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "10px sans-serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "top";
@@ -186,23 +183,23 @@ function paint(ctx, w, h) {
   function stat_card(i, tag, value, color) {
     const y = panelY + i * (cardH + gap);
     // Card.
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(panelX + 1, y + 2, cardW, cardH);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(panelX, y, cardW, cardH);
-    ctx.strokeStyle = "#d4d4d8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(panelX + 0.5, y + 0.5, cardW - 1, cardH - 1);
     // Accent strip.
     ctx.fillStyle = color;
     ctx.fillRect(panelX, y, 3, cardH);
     // Tag.
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "bold 9px sans-serif";
     ctx.textAlign = "start";
     ctx.fillText(tag, panelX + 8, y + 12);
     // Value.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 13px sans-serif";
     ctx.fillText(value, panelX + 8, y + 25);
   }
@@ -212,7 +209,7 @@ function paint(ctx, w, h) {
   const yText = (Number.isFinite(dsY.value) ? dsY.value.toFixed(2) : "--") +
                 (dsY.units ? " " + dsY.units : "");
 
-  stat_card(0, "X", xText, "#0ea5e9");
-  stat_card(1, "Y", yText, "#10b981");
+  stat_card(0, "X", xText, theme.widget_colors[0]);
+  stat_card(1, "Y", yText, theme.widget_colors[1]);
   if (dsZ) stat_card(2, "Z", zText, dotColor);
 }

@@ -34,13 +34,11 @@
 
 /**
  * @brief Constructs the MCP handler
- * @param parent Optional parent QObject
  */
 API::MCPHandler::MCPHandler(QObject* parent) : QObject(parent) {}
 
 /**
  * @brief Gets the singleton instance of the MCPHandler
- * @return Reference to the singleton instance
  */
 API::MCPHandler& API::MCPHandler::instance()
 {
@@ -54,8 +52,6 @@ API::MCPHandler& API::MCPHandler::instance()
 
 /**
  * @brief Check if data appears to be an MCP message
- * @param data Raw bytes to check
- * @return true if data looks like an MCP JSON-RPC message
  */
 bool API::MCPHandler::isMCPMessage(const QByteArray& data) const
 {
@@ -64,9 +60,6 @@ bool API::MCPHandler::isMCPMessage(const QByteArray& data) const
 
 /**
  * @brief Process an incoming MCP message
- * @param data Raw JSON-RPC message bytes
- * @param sessionId Session identifier for tracking client state
- * @return Response as JSON bytes
  */
 QByteArray API::MCPHandler::processMessage(const QByteArray& data, const QString& sessionId)
 {
@@ -163,7 +156,6 @@ QByteArray API::MCPHandler::processMessage(const QByteArray& data, const QString
 
 /**
  * @brief Clear session state for disconnected client
- * @param sessionId Session identifier to remove
  */
 void API::MCPHandler::clearSession(const QString& sessionId)
 {
@@ -172,7 +164,6 @@ void API::MCPHandler::clearSession(const QString& sessionId)
 
 /**
  * @brief Update current frame for resource reads
- * @param frame Latest frame from Serial Studio
  */
 void API::MCPHandler::updateCurrentFrame(const DataModel::Frame& frame)
 {
@@ -186,7 +177,6 @@ void API::MCPHandler::updateCurrentFrame(const DataModel::Frame& frame)
 
 /**
  * @brief Slot to receive frames from dashboard
- * @param frame Latest frame
  */
 void API::MCPHandler::onFrameReceived(const DataModel::Frame& frame)
 {
@@ -199,9 +189,6 @@ void API::MCPHandler::onFrameReceived(const DataModel::Frame& frame)
 
 /**
  * @brief Process an MCP request and generate response
- * @param request Parsed MCP request
- * @param sessionId Client session identifier
- * @return MCP response
  */
 API::MCP::MCPResponse API::MCPHandler::processRequest(const MCP::MCPRequest& request,
                                                       const QString& sessionId)
@@ -531,9 +518,6 @@ API::MCP::MCPResponse API::MCPHandler::handlePromptsGet(const MCP::MCPRequest& r
 
 /**
  * @brief Apply IO-specific category and tags to an io.* tool.
- * @param tool      Tool to update in place.
- * @param submodule Second path component (e.g. "manager", "driver").
- * @param parts     Full command path split on '.'.
  */
 void API::MCPHandler::tagIoSubmodule(MCP::Tool& tool,
                                      const QString& submodule,
@@ -646,9 +630,6 @@ void API::MCPHandler::tagToolCommand(MCP::Tool& tool, const QString& command) co
 
 /**
  * @brief Generate MCP tools from CommandRegistry
- *
- * Automatically categorizes and tags tools based on their command names
- * to help AI models organize and discover related functionality.
  */
 QVector<API::MCP::Tool> API::MCPHandler::generateToolsFromRegistry() const
 {

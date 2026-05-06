@@ -33,6 +33,10 @@ public:
   static void registerCommands();
 
 private:
+  static void registerConnectionCommands();
+  static void registerBusConfigCommands();
+  static void registerQueryCommands();
+
   static CommandResponse connect(const QString& id, const QJsonObject& params);
   static CommandResponse disconnect(const QString& id, const QJsonObject& params);
   static CommandResponse setPaused(const QString& id, const QJsonObject& params);

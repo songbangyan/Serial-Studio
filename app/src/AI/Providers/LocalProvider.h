@@ -28,20 +28,6 @@ namespace AI {
 
 /**
  * @brief Local OpenAI-compatible provider (Ollama, llama.cpp, LM Studio, vLLM).
- *
- * Most local model runners expose an OpenAI-compatible Chat Completions
- * endpoint at /v1/chat/completions and a model list at /v1/models. This
- * provider reuses the OpenAI translation helpers and the OpenAIReply
- * streaming pipe, with a user-configurable base URL persisted in
- * QSettings under "ai/local/baseUrl".
- *
- * Default base URL is http://localhost:11434/v1 (Ollama). Users can
- * point at other compatible servers (e.g. http://localhost:1234/v1 for
- * LM Studio, http://localhost:8080/v1 for llama.cpp's llama-server).
- *
- * The model list is queried live from <baseUrl>/models on construction
- * and on baseUrl changes, with a static fallback so the UI is never
- * empty when the local server is offline.
  */
 class LocalProvider
   : public QObject

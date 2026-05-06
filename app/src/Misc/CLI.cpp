@@ -499,10 +499,9 @@ void CLI::applyOperatorTaskbarSettings()
 }
 
 /**
- * @brief Activates the theme named by --theme, if any. Falls through silently
- *        when the option is missing or the name does not match an installed
- *        theme. Designed to run before the QML scene is built so the dashboard
- *        opens directly in the requested palette.
+ * @brief Activates the theme named by --theme, if any. Falls through silently when the option is
+ * missing or the name does not match an installed theme. Designed to run before the QML scene is
+ * built so the dashboard opens directly in the requested palette.
  */
 void CLI::applyThemeOverride()
 {

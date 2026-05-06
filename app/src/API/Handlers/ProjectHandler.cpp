@@ -22,6 +22,8 @@
 #include "API/Handlers/ProjectHandler.h"
 
 #include <algorithm>
+#include <QFile>
+#include <QJSEngine>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -34,6 +36,8 @@
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
 #include "DataModel/FrameParser.h"
+#include "DataModel/JsScriptEngine.h"
+#include "DataModel/LuaScriptEngine.h"
 #include "DataModel/ProjectModel.h"
 #include "IO/ConnectionManager.h"
 #include "SerialStudio.h"
@@ -63,7 +67,9 @@ void API::Handlers::ProjectHandler::registerCommands()
   registerActionCommands();
   registerOutputWidgetCommands();
   registerParserCommands();
+  registerPainterCommands();
   registerListCommands();
+  registerTemplateCommands();
 }
 
 /**
@@ -71,60 +77,118 @@ void API::Handlers::ProjectHandler::registerCommands()
  */
 void API::Handlers::ProjectHandler::registerFileCommands()
 {
+  registerFileLifecycleCommands();
+  registerFileMetadataCommands();
+}
+
+/** @brief Register project new/open/save/loadJson/setTitle commands. */
+void API::Handlers::ProjectHandler::registerFileLifecycleCommands()
+{
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
   registry.registerCommand(
-    QStringLiteral("project.file.new"), QStringLiteral("Create new project"), empty, &fileNew);
+    QStringLiteral("project.new"),
+    QStringLiteral("Reset to a blank project (one default UART source, no groups, no "
+                   "datasets, no actions, no workspaces). DESTRUCTIVE: discards the "
+                   "loaded project. Use only when the user explicitly says \"start "
+                   "over\" or \"new project\". For starting a TYPED project, prefer "
+                   "project.template.apply -- it gives the user a useful skeleton "
+                   "instead of an empty canvas."),
+    empty,
+    &fileNew);
 
   registry.registerCommand(
     QStringLiteral("project.setTitle"),
-    QStringLiteral("Set project title (params: title)"),
+    QStringLiteral("Rename the project (only the in-app title). Does not move or rename "
+                   "the .ssproj file on disk; auto-save still writes to the existing "
+                   "file path. To save to a different file, use project.save{filePath}."),
     makeSchema({
       {QStringLiteral("title"), QStringLiteral("string"), QStringLiteral("Project title")}
   }),
     &setTitle);
 
-  registry.registerCommand(QStringLiteral("project.file.open"),
-                           QStringLiteral("Open project file (params: filePath)"),
-                           makeSchema({
-                             {QStringLiteral("filePath"),
-                              QStringLiteral("string"),
-                              QStringLiteral("Absolute path to project file (.json or .ssproj)")}
+  registry.registerCommand(
+    QStringLiteral("project.open"),
+    QStringLiteral("Open a .ssproj or .json project file. Replaces the current project. "
+                   "Auto-switches operationMode to ProjectFile if it was QuickPlot or "
+                   "ConsoleOnly. Path must be absolute."),
+    makeSchema({
+      {QStringLiteral("filePath"),
+       QStringLiteral("string"),
+       QStringLiteral("Absolute path to project file (.json or .ssproj)")}
   }),
-                           &fileOpen);
-
-  registry.registerCommand(QStringLiteral("project.file.save"),
-                           QStringLiteral("Save project (params: askPath=false)"),
-                           makeSchema(
-                             {
-  },
-                             {{QStringLiteral("filePath"),
-                               QStringLiteral("string"),
-                               QStringLiteral("Absolute path to save to (headless save-as)")},
-                              {QStringLiteral("askPath"),
-                               QStringLiteral("boolean"),
-                               QStringLiteral("Show native save dialog (default false)")}}),
-                           &fileSave);
-
-  registry.registerCommand(QStringLiteral("project.loadFromJSON"),
-                           QStringLiteral("Load project from JSON object (params: config)"),
-                           makeSchema({
-                             {QStringLiteral("config"),
-                              QStringLiteral("object"),
-                              QStringLiteral("Project configuration JSON object")}
-  }),
-                           &loadFromJSON);
+    &fileOpen);
 
   registry.registerCommand(
-    QStringLiteral("project.getStatus"), QStringLiteral("Get project status"), empty, &getStatus);
+    QStringLiteral("project.save"),
+    QStringLiteral("Write the current project to disk. Note: the AI runtime auto-saves "
+                   "after every successful mutating tool call within ~1 second, so you "
+                   "do NOT need to call this explicitly when editing. Call it ONLY "
+                   "when the user explicitly says \"save\" or wants a different file "
+                   "path -- in which case pass {filePath: \"/abs/path\"} for headless "
+                   "save-as."),
+    makeSchema(
+      {
+  },
+      {{QStringLiteral("filePath"),
+        QStringLiteral("string"),
+        QStringLiteral("Absolute path to save to (headless save-as). Omit to save to "
+                       "the project's existing file path.")},
+       {QStringLiteral("askPath"),
+        QStringLiteral("boolean"),
+        QStringLiteral("Show native save dialog. Default false. AI runtime should "
+                       "almost always leave false -- the user already approved.")}}),
+    &fileSave);
+
+  registry.registerCommand(
+    QStringLiteral("project.loadJson"),
+    QStringLiteral("Replace the current project with a JSON object IN MEMORY (no file "
+                   "association). Use when you have a project shape ready to install -- "
+                   "e.g. building a project from scratch in one shot, or implementing a "
+                   "custom template. The JSON shape must match the .ssproj schema "
+                   "(top-level: title, frameStart, frameEnd, frameDetection, decoder, "
+                   "frameParser, groups, actions, ...). Prefer project.template.apply "
+                   "for canned starters."),
+    makeSchema({
+      {QStringLiteral("config"),
+       QStringLiteral("object"),
+       QStringLiteral("Full project JSON document")}
+  }),
+    &loadFromJSON);
+}
+
+/** @brief Register project getStatus/validate/exportJson/activate commands. */
+void API::Handlers::ProjectHandler::registerFileMetadataCommands()
+{
+  auto& registry   = CommandRegistry::instance();
+  const auto empty = emptySchema();
+
+  registry.registerCommand(
+    QStringLiteral("project.getStatus"),
+    QStringLiteral("Returns top-level project state: title, file path, modified flag, "
+                   "operation mode (ProjectFile/ConsoleOnly/QuickPlot), counts of "
+                   "groups/datasets/sources/actions/workspaces. Useful as a sanity "
+                   "check before destructive operations."),
+    empty,
+    &getStatus);
+
+  registry.registerCommand(
+    QStringLiteral("project.validate"),
+    QStringLiteral("Walk the loaded project and report inconsistencies (missing source "
+                   "references, parser compile errors, empty groups, duplicate dataset "
+                   "indexes, etc.). Returns {ok, issues:[{level, location, message}], "
+                   "issueCount, groupCount, sourceCount, actionCount}. Call before "
+                   "project.save when building a project programmatically."),
+    empty,
+    &validate);
 
   registry.registerCommand(QStringLiteral("project.exportJson"),
                            QStringLiteral("Export project as JSON"),
                            empty,
                            &exportJson);
 
-  registry.registerCommand(QStringLiteral("project.loadIntoFrameBuilder"),
+  registry.registerCommand(QStringLiteral("project.activate"),
                            QStringLiteral("Load current project into FrameBuilder"),
                            empty,
                            &loadIntoFrameBuilder);
@@ -140,34 +204,54 @@ void API::Handlers::ProjectHandler::registerGroupCommands()
 
   registry.registerCommand(
     QStringLiteral("project.group.add"),
-    QStringLiteral("Add group (params: title, widgetType)"),
+    QStringLiteral("Create a new visualization group. Pick widgetType by data shape:\n"
+                   "  - 5 (NoGroupWidget): just hold related datasets together; per-"
+                   "dataset widgets render individually. Default for arbitrary "
+                   "scalar data.\n"
+                   "  - 4 (MultiPlot): N values plotted on a shared time axis. The "
+                   "right choice for correlated signals (sensor-array, multi-channel "
+                   "ADC).\n"
+                   "  - 0 (DataGrid): tabular numeric readout. Good for long lists "
+                   "of scalars where graphing isn't useful.\n"
+                   "  - 1/2/3 (Accelerometer / Gyroscope / GPS): typed 3-axis IMU or "
+                   "GPS group. Datasets must follow conventional widget tags "
+                   "(\"x\", \"y\", \"z\" for IMUs; \"lat\", \"lon\", \"alt\" for GPS).\n"
+                   "  - 6 (Plot3D, Pro): 3D point trail from three datasets.\n"
+                   "  - 7 (ImageView, Pro): displays an embedded JPEG/PNG stream.\n"
+                   "  - 8 (Painter, Pro): user-scripted JS canvas. Group can be "
+                   "EMPTY (no datasets) and read peer datasets via "
+                   "datasetGetFinal(uniqueId). See meta.howTo('add_painter').\n"
+                   "Don't pick 0 / DataGrid as a default -- it makes a forgettable "
+                   "table. Match the user's data."),
     makeSchema({
-      {     QStringLiteral("title"),QStringLiteral("string"),QStringLiteral("Group title")                  },
+      {     QStringLiteral("title"),
+       QStringLiteral("string"),
+       QStringLiteral("Group title shown in dashboard headers and the Project Editor tree")},
       {QStringLiteral("widgetType"),
        QStringLiteral("integer"),
-       QStringLiteral("Widget type index (0-6)")}
+       QStringLiteral("GroupWidget enum -- see command description for decision "
+       "guidance. 0=DataGrid, 1=Accelerometer, 2=Gyroscope, 3=GPS, "
+       "4=MultiPlot, 5=NoGroupWidget, 6=Plot3D, 7=ImageView, 8=Painter")                   }
   }),
     &groupAdd);
 
   registry.registerCommand(QStringLiteral("project.group.delete"),
-                           QStringLiteral("Delete current group"),
-                           empty,
+                           QStringLiteral("Delete a group by id (params: groupId)"),
+                           makeSchema({
+                             {QStringLiteral("groupId"),
+                              QStringLiteral("integer"),
+                              QStringLiteral("Group id to delete")}
+  }),
                            &groupDelete);
 
   registry.registerCommand(QStringLiteral("project.group.duplicate"),
-                           QStringLiteral("Duplicate current group"),
-                           empty,
-                           &groupDuplicate);
-
-  registry.registerCommand(
-    QStringLiteral("project.group.select"),
-    QStringLiteral("Select a group by id so next delete/duplicate targets it"),
-    makeSchema({
-      {QStringLiteral("groupId"),
-       QStringLiteral("integer"),
-       QStringLiteral("Group id to select")}
+                           QStringLiteral("Duplicate a group by id (params: groupId)"),
+                           makeSchema({
+                             {QStringLiteral("groupId"),
+                              QStringLiteral("integer"),
+                              QStringLiteral("Group id to duplicate")}
   }),
-    &groupSelect);
+                           &groupDuplicate);
 }
 
 /**
@@ -178,36 +262,66 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
-  registry.registerCommand(QStringLiteral("project.dataset.add"),
-                           QStringLiteral("Add dataset (params: options)"),
-                           makeSchema({
-                             {QStringLiteral("options"),
-                              QStringLiteral("integer"),
-                              QStringLiteral("Dataset option bit flags (0-63)")}
+  registry.registerCommand(
+    QStringLiteral("project.dataset.add"),
+    QStringLiteral("Add a dataset to a group. A dataset is one channel of incoming "
+                   "data: it gets one column in CSV/MDF4 export, one entry in the "
+                   "frame parser's output array (its `index` field), and zero or "
+                   "more dashboard widgets driven by the `options` bitflags.\n"
+                   "Pass `options` as the bitwise OR of the visualizations you want:\n"
+                   "  1 = Plot (time-series line)\n"
+                   "  2 = FFT (frequency-domain plot)\n"
+                   "  4 = Bar\n"
+                   "  8 = Gauge (radial dial; needs widgetMin/widgetMax)\n"
+                   "  16 = Compass (heading 0-360)\n"
+                   "  32 = LED (binary indicator with ledHigh threshold)\n"
+                   "  64 = Waterfall (Pro; spectrogram, FFT-driven)\n"
+                   "  0 = no widget (raw column for export only)\n"
+                   "Combine: 1|8 = 9 = plot AND gauge. After creation, set title, "
+                   "units, ranges, and transformCode via project.dataset.update."),
+    makeSchema({
+      {QStringLiteral("groupId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Group to attach the dataset to")                                 },
+      {QStringLiteral("options"),
+       QStringLiteral("integer"),
+       QStringLiteral("Visualization bit flags. See description for decision guidance.")}
   }),
-                           &datasetAdd);
+    &datasetAdd);
 
-  registry.registerCommand(QStringLiteral("project.dataset.delete"),
-                           QStringLiteral("Delete current dataset"),
-                           empty,
-                           &datasetDelete);
-
-  registry.registerCommand(QStringLiteral("project.dataset.duplicate"),
-                           QStringLiteral("Duplicate current dataset"),
-                           empty,
-                           &datasetDuplicate);
-
-  registry.registerCommand(QStringLiteral("project.dataset.setOption"),
-                           QStringLiteral("Toggle dataset option (params: option, enabled)"),
-                           makeSchema({
-                             { QStringLiteral("option"),
-                              QStringLiteral("integer"),
-                              QStringLiteral("Dataset option flag to toggle")          },
-                             {QStringLiteral("enabled"),
-                              QStringLiteral("boolean"),
-                              QStringLiteral("Whether to enable or disable the option")}
+  registry.registerCommand(
+    QStringLiteral("project.dataset.delete"),
+    QStringLiteral("Delete a dataset by id (params: groupId, datasetId)"),
+    makeSchema({
+      {QStringLiteral("groupId"), QStringLiteral("integer"),             QStringLiteral("Owning group id")},
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")}
   }),
-                           &datasetSetOption);
+    &datasetDelete);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.duplicate"),
+    QStringLiteral("Duplicate a dataset by id (params: groupId, datasetId)"),
+    makeSchema({
+      {QStringLiteral("groupId"), QStringLiteral("integer"),             QStringLiteral("Owning group id")},
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")}
+  }),
+    &datasetDuplicate);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.setOption"),
+    QStringLiteral("Toggle a dataset option by id "
+                   "(params: groupId, datasetId, option, enabled)"),
+    makeSchema({
+      {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
+      { QStringLiteral("option"),
+       QStringLiteral("integer"),
+       QStringLiteral("Dataset option flag to toggle")                                                    },
+      {QStringLiteral("enabled"),
+       QStringLiteral("boolean"),
+       QStringLiteral("Whether to enable or disable the option")                                          }
+  }),
+    &datasetSetOption);
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setVirtual"),
@@ -247,14 +361,31 @@ void API::Handlers::ProjectHandler::registerActionCommands()
   const auto empty = emptySchema();
 
   registry.registerCommand(
-    QStringLiteral("project.action.add"), QStringLiteral("Add action"), empty, &actionAdd);
+    QStringLiteral("project.action.add"),
+    QStringLiteral("Create a new outgoing-action button shown on the toolbar. Actions "
+                   "transmit a configurable payload (text or binary, with optional "
+                   "EOL sequence) to the device on click, or repeat on a timer. After "
+                   "creation, populate it with project.action.update {actionId, "
+                   "title, txData, eolSequence, timerMode (0=Off, 1=AutoStart, "
+                   "2=ToggleOnTrigger), timerIntervalMs, repeatCount, icon}. Common "
+                   "uses: 'send AT command', 'request telemetry', 'reset device'."),
+    empty,
+    &actionAdd);
   registry.registerCommand(QStringLiteral("project.action.delete"),
-                           QStringLiteral("Delete current action"),
-                           empty,
+                           QStringLiteral("Delete an action by id (params: actionId)"),
+                           makeSchema({
+                             {QStringLiteral("actionId"),
+                              QStringLiteral("integer"),
+                              QStringLiteral("Action id to delete")}
+  }),
                            &actionDelete);
   registry.registerCommand(QStringLiteral("project.action.duplicate"),
-                           QStringLiteral("Duplicate current action"),
-                           empty,
+                           QStringLiteral("Duplicate an action by id (params: actionId)"),
+                           makeSchema({
+                             {QStringLiteral("actionId"),
+                              QStringLiteral("integer"),
+                              QStringLiteral("Action id to duplicate")}
+  }),
                            &actionDuplicate);
 }
 
@@ -268,24 +399,55 @@ void API::Handlers::ProjectHandler::registerOutputWidgetCommands()
 
   registry.registerCommand(
     QStringLiteral("project.outputWidget.add"),
-    QStringLiteral("Add output widget of the given type to the currently selected group"),
+    QStringLiteral("Add an output widget to a group (params: groupId, type)"),
     makeSchema({
-      {QStringLiteral("type"),
+      {QStringLiteral("groupId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Group id to add the widget to. Output widgets attach to a group's "
+       "output panel.")                                                           },
+      {   QStringLiteral("type"),
        QStringLiteral("integer"),
        QStringLiteral(
-         "OutputWidgetType enum: 0=Button, 1=Slider, 2=Toggle, 3=TextField, 4=Knob")}
+       "OutputWidgetType enum: 0=Button, 1=Slider, 2=Toggle, 3=TextField, 4=Knob")}
   }),
     &outputWidgetAdd);
 
-  registry.registerCommand(QStringLiteral("project.outputWidget.delete"),
-                           QStringLiteral("Delete current output widget"),
-                           empty,
-                           &outputWidgetDelete);
+  registry.registerCommand(
+    QStringLiteral("project.outputWidget.delete"),
+    QStringLiteral("Delete an output widget by id (params: groupId, widgetId)"),
+    makeSchema({
+      { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                 },
+      {QStringLiteral("widgetId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Widget id within the group")}
+  }),
+    &outputWidgetDelete);
 
-  registry.registerCommand(QStringLiteral("project.outputWidget.duplicate"),
-                           QStringLiteral("Duplicate current output widget"),
-                           empty,
-                           &outputWidgetDuplicate);
+  registry.registerCommand(
+    QStringLiteral("project.outputWidget.duplicate"),
+    QStringLiteral("Duplicate an output widget by id (params: groupId, widgetId)"),
+    makeSchema({
+      { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                 },
+      {QStringLiteral("widgetId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Widget id within the group")}
+  }),
+    &outputWidgetDuplicate);
+
+  registry.registerCommand(
+    QStringLiteral("project.outputWidget.get"),
+    QStringLiteral("Read the current configuration of an output widget "
+                   "(params: groupId, widgetId). Returns title, icon, type, "
+                   "min/max/step/initialValue, transmitFunction. Use BEFORE "
+                   "rewriting the transmitFunction so you preserve the user's "
+                   "current ranges and labels."),
+    makeSchema({
+      { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                 },
+      {QStringLiteral("widgetId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Widget id within the group")}
+  }),
+    &outputWidgetGet);
 }
 
 /**
@@ -310,19 +472,17 @@ void API::Handlers::ProjectHandler::registerParserCommands()
                      "is flipped before the code is validated and script errors are returned "
                      "as API errors.")}});
 
-  registry.registerCommand(QStringLiteral("project.parser.setCode"),
-                           QStringLiteral("Set frame parser code (params: code, "
-                                          "optional sourceId, optional language)"),
-                           setCodeSchema,
-                           &parserSetCode);
   registry.registerCommand(QStringLiteral("project.frameParser.setCode"),
                            QStringLiteral("Set frame parser code (params: code, "
                                           "optional sourceId, optional language)"),
                            setCodeSchema,
                            &parserSetCode);
 
-  registry.registerCommand(QStringLiteral("project.parser.getCode"),
-                           QStringLiteral("Get frame parser code"),
+  registry.registerCommand(QStringLiteral("project.frameParser.getCode"),
+                           QStringLiteral("Read the current frame parser source for a "
+                                          "given data source. Returns {code, language}. "
+                                          "Always read BEFORE rewriting -- preserve the "
+                                          "user's existing structure where reasonable."),
                            makeSchema(
                              {
   },
@@ -332,8 +492,13 @@ void API::Handlers::ProjectHandler::registerParserCommands()
                            &parserGetCode);
 
   registry.registerCommand(QStringLiteral("project.frameParser.setLanguage"),
-                           QStringLiteral("Set the script language used by the frame parser "
-                                          "for a given source (params: language, sourceId)"),
+                           QStringLiteral("Switch a source between JavaScript and Lua frame "
+                                          "parsers. WARNING: this WIPES any existing "
+                                          "frameParser code for that source -- the loaded "
+                                          "default template for the new language replaces "
+                                          "it. If you want to preserve+translate, "
+                                          "frameParser.getCode first, switch, then "
+                                          "frameParser.setCode with the translated source."),
                            makeSchema(
                              {
                                {QStringLiteral("language"),
@@ -357,7 +522,7 @@ void API::Handlers::ProjectHandler::registerParserCommands()
     &parserGetLanguage);
 
   registry.registerCommand(
-    QStringLiteral("project.frameParser.configure"),
+    QStringLiteral("project.frameParser.update"),
     QStringLiteral("Configure frame parser settings (params: startSequence, endSequence, "
                    "checksumAlgorithm, frameDetection, operationMode)"),
     makeSchema(
@@ -397,18 +562,16 @@ void API::Handlers::ProjectHandler::registerListCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = emptySchema();
 
-  registry.registerCommand(QStringLiteral("project.groups.list"),
+  registry.registerCommand(QStringLiteral("project.group.list"),
                            QStringLiteral("List all groups with dataset counts"),
                            empty,
                            &groupsList);
-  registry.registerCommand(QStringLiteral("project.datasets.list"),
+  registry.registerCommand(QStringLiteral("project.dataset.list"),
                            QStringLiteral("List all datasets across all groups"),
                            empty,
                            &datasetsList);
-  registry.registerCommand(QStringLiteral("project.actions.list"),
-                           QStringLiteral("List all actions"),
-                           empty,
-                           &actionsList);
+  registry.registerCommand(
+    QStringLiteral("project.action.list"), QStringLiteral("List all actions"), empty, &actionsList);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -461,7 +624,6 @@ API::CommandResponse API::Handlers::ProjectHandler::setTitle(const QString& id,
 
 /**
  * @brief Open project file
- * @param params Requires "filePath" (string)
  */
 API::CommandResponse API::Handlers::ProjectHandler::fileOpen(const QString& id,
                                                              const QJsonObject& params)
@@ -503,7 +665,6 @@ API::CommandResponse API::Handlers::ProjectHandler::fileOpen(const QString& id,
 
 /**
  * @brief Save project
- * @param params Optional "askPath" (bool, default false)
  */
 API::CommandResponse API::Handlers::ProjectHandler::fileSave(const QString& id,
                                                              const QJsonObject& params)
@@ -567,7 +728,6 @@ API::CommandResponse API::Handlers::ProjectHandler::getStatus(const QString& id,
 
 /**
  * @brief Add group
- * @param params Requires "title" (string) and "widgetType" (int)
  */
 API::CommandResponse API::Handlers::ProjectHandler::groupAdd(const QString& id,
                                                              const QJsonObject& params)
@@ -589,9 +749,15 @@ API::CommandResponse API::Handlers::ProjectHandler::groupAdd(const QString& id,
   }
 
   const int widget_type = params.value(QStringLiteral("widgetType")).toInt();
-  if (widget_type < 0 || widget_type > 6) {
+  if (widget_type < 0 || widget_type > static_cast<int>(SerialStudio::Painter)) {
     return CommandResponse::makeError(
-      id, ErrorCode::InvalidParam, QStringLiteral("Invalid widgetType: must be 0-6"));
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Invalid widgetType: must be 0..%1 "
+                     "(see GroupWidget enum: 0=DataGrid, 1=Accelerometer, "
+                     "2=Gyroscope, 3=GPS, 4=MultiPlot, 5=NoGroupWidget, "
+                     "6=Plot3D, 7=ImageView, 8=Painter)")
+        .arg(static_cast<int>(SerialStudio::Painter)));
   }
 
   const auto widget = static_cast<SerialStudio::GroupWidget>(widget_type);
@@ -604,42 +770,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupAdd(const QString& id,
 }
 
 /**
- * @brief Delete current group
+ * @brief Delete a group by id
  */
 API::CommandResponse API::Handlers::ProjectHandler::groupDelete(const QString& id,
-                                                                const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  auto& project = DataModel::ProjectModel::instance();
-  project.setSuppressMessageBoxes(true);
-  project.deleteCurrentGroup();
-  project.setSuppressMessageBoxes(false);
-
-  QJsonObject result;
-  result[QStringLiteral("deleted")] = true;
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Duplicate current group
- */
-API::CommandResponse API::Handlers::ProjectHandler::groupDuplicate(const QString& id,
-                                                                   const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  DataModel::ProjectModel::instance().duplicateCurrentGroup();
-
-  QJsonObject result;
-  result[QStringLiteral("duplicated")] = true;
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Select a group by id so subsequent group.delete / group.duplicate target it.
- */
-API::CommandResponse API::Handlers::ProjectHandler::groupSelect(const QString& id,
                                                                 const QJsonObject& params)
 {
   if (!params.contains(QStringLiteral("groupId")))
@@ -647,107 +780,201 @@ API::CommandResponse API::Handlers::ProjectHandler::groupSelect(const QString& i
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
   const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const auto& groups = DataModel::ProjectModel::instance().groups();
-
-  // Look up by logical groupId rather than vector index.
-  const auto it = std::find_if(
-    groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
-
-  if (it == groups.end())
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
-  DataModel::ProjectModel::instance().setSelectedGroup(*it);
+  project.deleteGroup(groupId);
 
   QJsonObject result;
-  result[QStringLiteral("groupId")]  = groupId;
-  result[QStringLiteral("selected")] = true;
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Add dataset
- * @param params Requires "options" (int, bit flags)
- */
-API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id,
-                                                               const QJsonObject& params)
-{
-  if (!params.contains(QStringLiteral("options"))) {
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: options"));
-  }
-
-  const int options = params.value(QStringLiteral("options")).toInt();
-  if (options < 0 || options > 0b00111111) {
-    return CommandResponse::makeError(
-      id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-63 (bit flags)"));
-  }
-
-  const auto dataset_options = static_cast<SerialStudio::DatasetOption>(options);
-  DataModel::ProjectModel::instance().addDataset(dataset_options);
-
-  QJsonObject result;
-  result[QStringLiteral("options")] = options;
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Delete current dataset
- */
-API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString& id,
-                                                                  const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  auto& project = DataModel::ProjectModel::instance();
-  project.setSuppressMessageBoxes(true);
-  project.deleteCurrentDataset();
-  project.setSuppressMessageBoxes(false);
-
-  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
   result[QStringLiteral("deleted")] = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Duplicate current dataset
+ * @brief Duplicate a group by id
  */
-API::CommandResponse API::Handlers::ProjectHandler::datasetDuplicate(const QString& id,
-                                                                     const QJsonObject& params)
+API::CommandResponse API::Handlers::ProjectHandler::groupDuplicate(const QString& id,
+                                                                   const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  DataModel::ProjectModel::instance().duplicateCurrentDataset();
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  project.duplicateGroup(groupId);
 
   QJsonObject result;
+  result[QStringLiteral("groupId")]    = groupId;
   result[QStringLiteral("duplicated")] = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Toggle dataset option
- * @param params Requires "option" (int) and "enabled" (bool)
+ * @brief Add a dataset to a specific group by id
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id,
+                                                               const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("options")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: options"));
+
+  const int groupId = params.value(QStringLiteral("groupId")).toInt();
+  const int options = params.value(QStringLiteral("options")).toInt();
+  if (options < 0 || options > 0b00111111)
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-63 (bit flags)"));
+
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  // addDataset() reads m_selectedGroup; select first, then add.
+  project.setSelectedGroup(groups[groupId]);
+  project.addDataset(static_cast<SerialStudio::DatasetOption>(options));
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[QStringLiteral("options")] = options;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Delete a dataset by id
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& groups  = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  project.deleteDataset(groupId, datasetId);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[Keys::DatasetId]           = datasetId;
+  result[QStringLiteral("deleted")] = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Duplicate a dataset by id
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetDuplicate(const QString& id,
+                                                                     const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& groups  = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  project.duplicateDataset(groupId, datasetId);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")]    = groupId;
+  result[Keys::DatasetId]              = datasetId;
+  result[QStringLiteral("duplicated")] = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Toggle a dataset option by id.
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QString& id,
                                                                      const QJsonObject& params)
 {
-  if (!params.contains(QStringLiteral("option"))) {
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  if (!params.contains(QStringLiteral("option")))
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: option"));
-  }
 
-  if (!params.contains(QStringLiteral("enabled"))) {
+  if (!params.contains(QStringLiteral("enabled")))
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
-  }
 
-  const int option   = params.value(QStringLiteral("option")).toInt();
-  const bool enabled = params.value(QStringLiteral("enabled")).toBool();
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  const int option    = params.value(QStringLiteral("option")).toInt();
+  const bool enabled  = params.value(QStringLiteral("enabled")).toBool();
 
-  const auto dataset_option = static_cast<SerialStudio::DatasetOption>(option);
-  DataModel::ProjectModel::instance().changeDatasetOption(dataset_option, enabled);
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  // changeDatasetOption() reads m_selectedDataset; select first.
+  project.setSelectedDataset(groups[groupId].datasets[datasetId]);
+  project.changeDatasetOption(static_cast<SerialStudio::DatasetOption>(option), enabled);
 
   QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[Keys::DatasetId]           = datasetId;
   result[QStringLiteral("option")]  = option;
   result[QStringLiteral("enabled")] = enabled;
   return CommandResponse::makeSuccess(id, result);
@@ -758,12 +985,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Toggle the @c virtual_ flag on the dataset identified by
- *        (groupId, datasetId).
- *
- * Looks up the dataset in ProjectModel, applies the flag, and calls
- * updateDataset so signal listeners and the tree rebuild. The rebuildTree
- * flag is true so the ProjectEditor tree reflects the change immediately.
+ * @brief Toggle the @c virtual_ flag on the dataset identified by (groupId, datasetId).
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetSetVirtual(const QString& id,
                                                                       const QJsonObject& params)
@@ -819,11 +1041,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetVirtual(const QStr
 }
 
 /**
- * @brief Set the per-dataset transform code (Lua or JS; language matches the
- *        dataset's owning source).
- *
- * An empty code string clears the transform. FrameBuilder recompiles transforms
- * on the next connect / syncFromProjectModel call.
+ * @brief Set the per-dataset transform code (Lua or JS; language matches the dataset's owning
+ * source).
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   const QString& id, const QJsonObject& params)
@@ -892,34 +1111,51 @@ API::CommandResponse API::Handlers::ProjectHandler::actionAdd(const QString& id,
 }
 
 /**
- * @brief Delete current action
+ * @brief Delete an action by id
  */
 API::CommandResponse API::Handlers::ProjectHandler::actionDelete(const QString& id,
                                                                  const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("actionId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
 
-  auto& project = DataModel::ProjectModel::instance();
-  project.setSuppressMessageBoxes(true);
-  project.deleteCurrentAction();
-  project.setSuppressMessageBoxes(false);
+  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& actions = project.actions();
+  if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
+
+  project.deleteAction(actionId);
 
   QJsonObject result;
-  result[QStringLiteral("deleted")] = true;
+  result[QStringLiteral("actionId")] = actionId;
+  result[QStringLiteral("deleted")]  = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Duplicate current action
+ * @brief Duplicate an action by id
  */
 API::CommandResponse API::Handlers::ProjectHandler::actionDuplicate(const QString& id,
                                                                     const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("actionId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
 
-  DataModel::ProjectModel::instance().duplicateCurrentAction();
+  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& actions = project.actions();
+  if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
+
+  project.duplicateAction(actionId);
 
   QJsonObject result;
+  result[QStringLiteral("actionId")]   = actionId;
   result[QStringLiteral("duplicated")] = true;
   return CommandResponse::makeSuccess(id, result);
 }
@@ -929,66 +1165,157 @@ API::CommandResponse API::Handlers::ProjectHandler::actionDuplicate(const QStrin
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Add an output control to the project.
+ * @brief Add an output widget to the specified group.
  */
 API::CommandResponse API::Handlers::ProjectHandler::outputWidgetAdd(const QString& id,
                                                                     const QJsonObject& params)
 {
-  const int type = params.value(QStringLiteral("type")).toInt(0);
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  DataModel::ProjectModel::instance().addOutputControl(static_cast<SerialStudio::OutputWidgetType>(
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const int type     = params.value(QStringLiteral("type")).toInt(0);
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  // addOutputControl() reads m_selectedGroup; select the target first.
+  project.setSelectedGroup(groups[groupId]);
+  project.addOutputControl(static_cast<SerialStudio::OutputWidgetType>(
     qBound(0, type, static_cast<int>(SerialStudio::OutputKnob))));
 
   QJsonObject result;
-  result[QStringLiteral("added")] = true;
+  result[QStringLiteral("groupId")] = groupId;
+  result[QStringLiteral("type")]    = type;
+  result[QStringLiteral("added")]   = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Delete the currently selected output widget.
+ * @brief Delete an output widget by id.
  */
 API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDelete(const QString& id,
                                                                        const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  auto& project = DataModel::ProjectModel::instance();
-  project.setSuppressMessageBoxes(true);
-  project.deleteCurrentOutputWidget();
-  project.setSuppressMessageBoxes(false);
+  if (!params.contains(QStringLiteral("widgetId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= groups[groupId].outputWidgets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+
+  project.deleteOutputWidget(groupId, widgetId);
 
   QJsonObject result;
-  result[QStringLiteral("deleted")] = true;
+  result[QStringLiteral("groupId")]  = groupId;
+  result[QStringLiteral("widgetId")] = widgetId;
+  result[QStringLiteral("deleted")]  = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Duplicate the currently selected output widget.
+ * @brief Duplicate an output widget by id.
  */
 API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDuplicate(const QString& id,
                                                                           const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  DataModel::ProjectModel::instance().duplicateCurrentOutputWidget();
+  if (!params.contains(QStringLiteral("widgetId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= groups[groupId].outputWidgets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+
+  project.duplicateOutputWidget(groupId, widgetId);
 
   QJsonObject result;
+  result[QStringLiteral("groupId")]    = groupId;
+  result[QStringLiteral("widgetId")]   = widgetId;
   result[QStringLiteral("duplicated")] = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
+ * @brief Read the project configuration of one output widget.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::outputWidgetGet(const QString& id,
+                                                                    const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("widgetId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const auto& widgets = groups[groupId].outputWidgets;
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= widgets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+
+  const auto& w = widgets[widgetId];
+  QJsonObject result;
+  result[QStringLiteral("groupId")]          = groupId;
+  result[QStringLiteral("widgetId")]         = w.widgetId;
+  result[QStringLiteral("type")]             = static_cast<int>(w.type);
+  result[QStringLiteral("title")]            = w.title;
+  result[QStringLiteral("icon")]             = w.icon;
+  result[QStringLiteral("monoIcon")]         = w.monoIcon;
+  result[QStringLiteral("minValue")]         = w.minValue;
+  result[QStringLiteral("maxValue")]         = w.maxValue;
+  result[QStringLiteral("stepSize")]         = w.stepSize;
+  result[QStringLiteral("initialValue")]     = w.initialValue;
+  result[Keys::SourceId]                     = w.sourceId;
+  result[QStringLiteral("txEncoding")]       = w.txEncoding;
+  result[QStringLiteral("transmitFunction")] = w.transmitFunction;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
  * @brief Set frame parser code for a source.
- *
- * When the optional "language" parameter is supplied, the project model
- * language for the target source is switched atomically before the code is
- * validated, and validation errors (syntax, missing parse(), probe runtime
- * errors) surface as API errors rather than silently succeeding. When
- * "language" is absent the legacy fire-and-forget behaviour is preserved
- * for backwards compatibility with existing clients.
- *
- * @param params Requires "code" (string). Optional Keys::SourceId (int, default 0),
- *               "language" (int: 0 = JavaScript, 1 = Lua).
  */
 API::CommandResponse API::Handlers::ProjectHandler::parserSetCode(const QString& id,
                                                                   const QJsonObject& params)
@@ -1062,7 +1389,6 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetCode(const QString&
 
 /**
  * @brief Get frame parser code for a source.
- * @param params Optional Keys::SourceId (int, default 0).
  */
 API::CommandResponse API::Handlers::ProjectHandler::parserGetCode(const QString& id,
                                                                   const QJsonObject& params)
@@ -1087,9 +1413,6 @@ API::CommandResponse API::Handlers::ProjectHandler::parserGetCode(const QString&
 
 /**
  * @brief Set the scripting language for a frame parser source.
- *
- * @param params Requires "language" (int: 0 = JavaScript, 1 = Lua).
- *               Optional Keys::SourceId (int, default 0).
  */
 API::CommandResponse API::Handlers::ProjectHandler::parserSetLanguage(const QString& id,
                                                                       const QJsonObject& params)
@@ -1136,8 +1459,6 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetLanguage(const QStr
 
 /**
  * @brief Get the scripting language for a frame parser source.
- *
- * @param params Optional Keys::SourceId (int, default 0).
  */
 API::CommandResponse API::Handlers::ProjectHandler::parserGetLanguage(const QString& id,
                                                                       const QJsonObject& params)
@@ -1166,8 +1487,6 @@ API::CommandResponse API::Handlers::ProjectHandler::parserGetLanguage(const QStr
 
 /**
  * @brief List all groups with basic info
- *
- * Uses existing serialize() function from Frame.h
  */
 API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id,
                                                                const QJsonObject& params)
@@ -1186,6 +1505,8 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
     QJsonArray ds_summary;
     for (const auto& ds : group.datasets) {
       QJsonObject d;
+      d[Keys::DatasetId] = ds.datasetId;
+      d[Keys::UniqueId]  = DataModel::dataset_unique_id(ds.sourceId, group.groupId, ds.datasetId);
       d[QStringLiteral("index")] = ds.index;
       d[QStringLiteral("title")] = ds.title;
       if (!ds.units.isEmpty())
@@ -1236,8 +1557,6 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
 
 /**
  * @brief List all datasets across all groups
- *
- * Uses existing serialize() function from Frame.h and adds groupId/groupTitle
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& id,
                                                                  const QJsonObject& params)
@@ -1255,6 +1574,11 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 
       dataset_obj[QStringLiteral("groupId")]    = group.groupId;
       dataset_obj[QStringLiteral("groupTitle")] = group.title;
+      dataset_obj[Keys::SourceId]               = dataset.sourceId;
+
+      // Runtime key for transform & painter script lookups
+      dataset_obj[Keys::UniqueId] =
+        DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
 
       // Visualization flags rolled into one comma-separated summary string
       QStringList enabled;
@@ -1336,9 +1660,6 @@ API::CommandResponse API::Handlers::ProjectHandler::actionsList(const QString& i
 
 /**
  * @brief Load project configuration from JSON object
- * @param params Requires "config" (JSON object with project configuration)
- *
- * Uses existing ProjectModel::openJsonFile() by writing to a temporary file.
  */
 API::CommandResponse API::Handlers::ProjectHandler::loadFromJSON(const QString& id,
                                                                  const QJsonObject& params)
@@ -1378,14 +1699,6 @@ API::CommandResponse API::Handlers::ProjectHandler::loadFromJSON(const QString& 
 
 /**
  * @brief Configure frame parser settings for a specific source.
- *
- * Optional Keys::SourceId (int, default 0) selects which source to configure.
- * When sourceId == 0 the top-level ProjectModel setters are used so that
- * the ConnectionManager's FrameReader is updated immediately. For sourceId > 0
- * the Source struct is updated directly via updateSource().
- *
- * @param params Optional: sourceId, startSequence, endSequence,
- *               checksumAlgorithm, frameDetection, operationMode.
  */
 API::CommandResponse API::Handlers::ProjectHandler::frameParserConfigure(const QString& id,
                                                                          const QJsonObject& params)
@@ -1534,10 +1847,6 @@ API::CommandResponse API::Handlers::ProjectHandler::exportJson(const QString& id
 
 /**
  * @brief Load current project JSON into FrameBuilder
- *
- * This method exports the current ProjectModel configuration as JSON and loads
- * it into FrameBuilder, enabling API-modified projects to be used without
- * requiring a file on disk.
  */
 API::CommandResponse API::Handlers::ProjectHandler::loadIntoFrameBuilder(const QString& id,
                                                                          const QJsonObject& params)
@@ -1566,5 +1875,946 @@ API::CommandResponse API::Handlers::ProjectHandler::loadIntoFrameBuilder(const Q
   result[QStringLiteral("groupCount")]   = project.groupCount();
   result[QStringLiteral("datasetCount")] = project.datasetCount();
 
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Painter (group widget JS) command surface
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Register painter setCode/getCode commands. */
+void API::Handlers::ProjectHandler::registerPainterCommands()
+{
+  registerPainterCodeCommands();
+  registerUpdateCommands();
+  registerDryRunCommands();
+}
+
+/** @brief Register painter widget JS setCode/getCode commands. */
+void API::Handlers::ProjectHandler::registerPainterCodeCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.painter.setCode"),
+    QStringLiteral("Set the painter widget JS for a group (params: groupId, code)"),
+    makeSchema({
+      {QStringLiteral("groupId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Target group id (from project.group.list)") },
+      {   QStringLiteral("code"),
+       QStringLiteral("string"),
+       QStringLiteral("Painter widget JS source. Must define paint(ctx) and may define "
+       "onFrame(value). Replaces any existing code for the group.")}
+  }),
+    &painterSetCode);
+
+  registry.registerCommand(
+    QStringLiteral("project.painter.getCode"),
+    QStringLiteral("Get the painter widget JS for a group "
+                   "(params: groupId)"),
+    makeSchema({
+      {QStringLiteral("groupId"), QStringLiteral("integer"), QStringLiteral("Target group id")}
+  }),
+    &painterGetCode);
+}
+
+/** @brief Register patching update commands for groups/datasets/actions/outputs. */
+void API::Handlers::ProjectHandler::registerUpdateCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.group.update"),
+    QStringLiteral("Patch group fields by id (params: groupId, plus any of title, "
+                   "widget, columns, sourceId, painterCode)"),
+    makeSchema({
+      {QStringLiteral("groupId"), QStringLiteral("integer"), QStringLiteral("Target group id")}
+  }),
+    &groupUpdate);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.update"),
+    QStringLiteral("Patch dataset fields by id (params: groupId, datasetId, plus any of "
+                   "title, units, widget, xAxisId, waterfallYAxis, fftMin, fftMax, "
+                   "pltMin, pltMax, wgtMin, wgtMax, alarmLow, alarmHigh, ledHigh, "
+                   "transformCode)"),
+    makeSchema({
+      {QStringLiteral("groupId"), QStringLiteral("integer"),   QStringLiteral("Target group id")},
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Target dataset id")}
+  }),
+    &datasetUpdate);
+
+  registry.registerCommand(
+    QStringLiteral("project.action.update"),
+    QStringLiteral("Patch action fields by id (params: actionId, plus any of title, icon, "
+                   "txData, eolSequence, timerMode, timerIntervalMs, repeatCount)"),
+    makeSchema({
+      {QStringLiteral("actionId"), QStringLiteral("integer"), QStringLiteral("Target action id")}
+  }),
+    &actionUpdate);
+
+  registry.registerCommand(
+    QStringLiteral("project.outputWidget.update"),
+    QStringLiteral("Patch output-widget fields by id (params: groupId, widgetId, plus any "
+                   "of title, icon, transmitFunction)"),
+    makeSchema({
+      { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Target group id")                           },
+      {QStringLiteral("widgetId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Target widget index within the group")}
+  }),
+    &outputWidgetUpdate);
+}
+
+/** @brief Register dryRun endpoints (compile + execute in throwaway engines). */
+void API::Handlers::ProjectHandler::registerDryRunCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.frameParser.dryRun"),
+    QStringLiteral("Compile and execute frame parser code against a sample frame "
+                   "WITHOUT touching the live project. Returns either parsed values "
+                   "or compile/runtime errors. Use this to iterate before "
+                   "project.frameParser.setCode -- much cheaper than push-then-revert. "
+                   "Params: code (string), language (0=JS, 1=Lua), sampleFrame "
+                   "(string -- the raw frame body the parser would receive)."),
+    makeSchema({
+      {       QStringLiteral("code"),QStringLiteral("string"),QStringLiteral("Frame parser source")                          },
+      {   QStringLiteral("language"),
+       QStringLiteral("integer"),
+       QStringLiteral("0 = JavaScript, 1 = Lua")                                    },
+      {QStringLiteral("sampleFrame"),
+       QStringLiteral("string"),
+       QStringLiteral("Sample frame body to feed into parse(). Without delimiters.")}
+  }),
+    &frameParserDryRun);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.transform.dryRun"),
+    QStringLiteral("Compile and execute a value-transform script against one or "
+                   "more sample inputs WITHOUT touching the live project. Returns "
+                   "the per-input transform output or compile errors. Params: "
+                   "code (string), language (0=JS, 1=Lua), values (array of "
+                   "numbers or strings)."),
+    makeSchema({
+      {    QStringLiteral("code"),
+       QStringLiteral("string"),
+       QStringLiteral("Transform source. Must define transform(value).")},
+      {QStringLiteral("language"),
+       QStringLiteral("integer"),
+       QStringLiteral("0 = JavaScript, 1 = Lua")                        },
+      {  QStringLiteral("values"),
+       QStringLiteral("array"),
+       QStringLiteral("Sample values to pass through transform()")      }
+  }),
+    &transformDryRun);
+
+  registry.registerCommand(
+    QStringLiteral("project.painter.dryRun"),
+    QStringLiteral("Compile a painter program WITHOUT touching the live project. "
+                   "Verifies that paint(ctx, w, h) exists and that the script "
+                   "compiles cleanly; does NOT actually render to a canvas. "
+                   "Returns ok / lastError. Params: code (string)."),
+    makeSchema({
+      {QStringLiteral("code"),
+       QStringLiteral("string"),
+       QStringLiteral("Painter source. Must define paint(ctx, w, h)")}
+  }),
+    &painterDryRun);
+}
+
+/** @brief Set painter code for a specific group by id. */
+API::CommandResponse API::Handlers::ProjectHandler::painterSetCode(const QString& id,
+                                                                   const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("code")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const QString code = params.value(QStringLiteral("code")).toString();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  DataModel::Group g = groups[groupId];
+  g.painterCode      = code;
+  project.updateGroup(groupId, g, /*rebuildTree=*/false);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")]    = groupId;
+  result[QStringLiteral("codeLength")] = code.size();
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Read the painter code for a group. */
+API::CommandResponse API::Handlers::ProjectHandler::painterGetCode(const QString& id,
+                                                                   const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[QStringLiteral("code")]    = groups[groupId].painterCode;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Bulk update mutators -- stateless, id required, PATCH semantics
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Patch any subset of group fields by id. */
+API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& id,
+                                                                const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  DataModel::Group g = groups[groupId];
+  bool rebuildTree   = false;
+
+  if (params.contains(QStringLiteral("title"))) {
+    g.title     = params.value(QStringLiteral("title")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("widget"))) {
+    g.widget    = params.value(QStringLiteral("widget")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("columns")))
+    g.columns = params.value(QStringLiteral("columns")).toInt();
+
+  if (params.contains(Keys::SourceId))
+    g.sourceId = params.value(Keys::SourceId).toInt();
+
+  if (params.contains(QStringLiteral("painterCode")))
+    g.painterCode = params.value(QStringLiteral("painterCode")).toString();
+
+  project.updateGroup(groupId, g, rebuildTree);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[QStringLiteral("updated")] = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Patch any subset of dataset fields by groupId + datasetId. */
+API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& groups  = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const auto& datasets = groups[groupId].datasets;
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  DataModel::Dataset d = datasets[datasetId];
+  bool rebuildTree     = false;
+
+  if (params.contains(QStringLiteral("title"))) {
+    d.title     = params.value(QStringLiteral("title")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("units")))
+    d.units = params.value(QStringLiteral("units")).toString();
+
+  if (params.contains(QStringLiteral("widget"))) {
+    d.widget    = params.value(QStringLiteral("widget")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("xAxisId")))
+    d.xAxisId = params.value(QStringLiteral("xAxisId")).toInt();
+
+  if (params.contains(QStringLiteral("waterfallYAxis")))
+    d.waterfallYAxis = params.value(QStringLiteral("waterfallYAxis")).toInt();
+
+  if (params.contains(QStringLiteral("fftMin")))
+    d.fftMin = params.value(QStringLiteral("fftMin")).toDouble();
+
+  if (params.contains(QStringLiteral("fftMax")))
+    d.fftMax = params.value(QStringLiteral("fftMax")).toDouble();
+
+  if (params.contains(QStringLiteral("pltMin")))
+    d.pltMin = params.value(QStringLiteral("pltMin")).toDouble();
+
+  if (params.contains(QStringLiteral("pltMax")))
+    d.pltMax = params.value(QStringLiteral("pltMax")).toDouble();
+
+  if (params.contains(QStringLiteral("wgtMin")))
+    d.wgtMin = params.value(QStringLiteral("wgtMin")).toDouble();
+
+  if (params.contains(QStringLiteral("wgtMax")))
+    d.wgtMax = params.value(QStringLiteral("wgtMax")).toDouble();
+
+  if (params.contains(QStringLiteral("alarmLow")))
+    d.alarmLow = params.value(QStringLiteral("alarmLow")).toDouble();
+
+  if (params.contains(QStringLiteral("alarmHigh")))
+    d.alarmHigh = params.value(QStringLiteral("alarmHigh")).toDouble();
+
+  if (params.contains(QStringLiteral("ledHigh")))
+    d.ledHigh = params.value(QStringLiteral("ledHigh")).toDouble();
+
+  if (params.contains(QStringLiteral("transformCode")))
+    d.transformCode = params.value(QStringLiteral("transformCode")).toString();
+
+  project.updateDataset(groupId, datasetId, d, rebuildTree);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[Keys::DatasetId]           = datasetId;
+  result[QStringLiteral("updated")] = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Patch any subset of action fields by id. */
+API::CommandResponse API::Handlers::ProjectHandler::actionUpdate(const QString& id,
+                                                                 const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("actionId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
+
+  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& actions = project.actions();
+  if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
+
+  DataModel::Action a = actions[actionId];
+  bool rebuildTree    = false;
+
+  if (params.contains(QStringLiteral("title"))) {
+    a.title     = params.value(QStringLiteral("title")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("icon"))) {
+    a.icon      = params.value(QStringLiteral("icon")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("txData")))
+    a.txData = params.value(QStringLiteral("txData")).toString();
+
+  if (params.contains(QStringLiteral("eolSequence")))
+    a.eolSequence = params.value(QStringLiteral("eolSequence")).toString();
+
+  if (params.contains(QStringLiteral("timerMode")))
+    a.timerMode =
+      static_cast<DataModel::TimerMode>(params.value(QStringLiteral("timerMode")).toInt());
+
+  if (params.contains(QStringLiteral("timerIntervalMs")))
+    a.timerIntervalMs = params.value(QStringLiteral("timerIntervalMs")).toInt();
+
+  if (params.contains(QStringLiteral("repeatCount")))
+    a.repeatCount = params.value(QStringLiteral("repeatCount")).toInt();
+
+  project.updateAction(actionId, a, rebuildTree);
+
+  QJsonObject result;
+  result[QStringLiteral("actionId")] = actionId;
+  result[QStringLiteral("updated")]  = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Patch any subset of output-widget fields by groupId + widgetId. */
+API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QString& id,
+                                                                       const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("widgetId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
+
+  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  DataModel::Group g = groups[groupId];
+  if (widgetId < 0 || static_cast<size_t>(widgetId) >= g.outputWidgets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+
+  DataModel::OutputWidget& w = g.outputWidgets[widgetId];
+  bool rebuildTree           = false;
+
+  if (params.contains(QStringLiteral("title"))) {
+    w.title     = params.value(QStringLiteral("title")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("icon"))) {
+    w.icon      = params.value(QStringLiteral("icon")).toString();
+    rebuildTree = true;
+  }
+  if (params.contains(QStringLiteral("transmitFunction")))
+    w.transmitFunction = params.value(QStringLiteral("transmitFunction")).toString();
+
+  project.updateGroup(groupId, g, rebuildTree);
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")]  = groupId;
+  result[QStringLiteral("widgetId")] = widgetId;
+  result[QStringLiteral("updated")]  = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Project templates -- starter projects loaded from rcc:/ai/templates/*
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Returns the templates manifest as a QJsonDocument, or empty on error. */
+static QJsonDocument loadTemplateManifest()
+{
+  QFile f(QStringLiteral(":/ai/templates/manifest.json"));
+  if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    return {};
+
+  return QJsonDocument::fromJson(f.readAll());
+}
+
+/** @brief Loads a template body file by id. Returns empty doc when not found. */
+static QJsonDocument loadTemplateBodyById(const QString& templateId)
+{
+  const auto manifest = loadTemplateManifest().object();
+  const auto entries  = manifest.value(QStringLiteral("templates")).toArray();
+  for (const auto& v : entries) {
+    const auto entry = v.toObject();
+    if (entry.value(QStringLiteral("id")).toString() != templateId)
+      continue;
+
+    const auto file = entry.value(QStringLiteral("file")).toString();
+    QFile body(QStringLiteral(":/ai/templates/") + file);
+    if (!body.open(QIODevice::ReadOnly | QIODevice::Text))
+      return {};
+
+    return QJsonDocument::fromJson(body.readAll());
+  }
+  return {};
+}
+
+/** @brief Register project.template.* commands. */
+void API::Handlers::ProjectHandler::registerTemplateCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.template.list"),
+    QStringLiteral("List built-in starter project templates (id, title, description). "
+                   "Use this BEFORE project.template.apply when the user asks for a "
+                   "starter (\"set me up an IMU project\", \"give me a GPS template\")."),
+    emptySchema(),
+    &templateList);
+
+  registry.registerCommand(
+    QStringLiteral("project.template.apply"),
+    QStringLiteral("Replace the current project with a starter template -- the right "
+                   "first move when the user says \"set me up an X project\" rather "
+                   "than \"add an X to my existing project\". DESTRUCTIVE: discards "
+                   "any unsaved current state; auto-save will write the new template "
+                   "to disk shortly after. After applying, narrate what landed (groups, "
+                   "datasets) so the user knows what they got, then proceed with any "
+                   "follow-up edits the user requested. Available templates and their "
+                   "best fit:\n"
+                   "  blank: empty project, one default UART source. Use when the user "
+                   "wants to build everything themselves.\n"
+                   "  imu_uart: 9-DOF IMU (accelerometer X/Y/Z + gyro X/Y/Z + mag "
+                   "X/Y/Z) over UART, comma-separated, $ start / ; end. Replace the "
+                   "frame parser if your device frames differ.\n"
+                   "  gps_uart_nmea: GPS over UART using NMEA 0183 ($GPGGA). "
+                   "Lat/lon/altitude/satellites/HDOP/fixQuality. Map widget configured.\n"
+                   "  scope_multichannel_uart: 8 generic channels over UART, "
+                   "comma-separated, all plot-enabled. Adapt for ADC streams or sensor "
+                   "arrays.\n"
+                   "  telemetry_udp: UDP listener on port 1234, CSV body parser, 5 "
+                   "generic value channels. Adapt port + parser to your protocol.\n"
+                   "  mqtt_subscriber (Pro): MQTT subscriber-mode skeleton. After "
+                   "applying, configure broker via mqtt.set* commands."),
+    makeSchema({
+      {QStringLiteral("templateId"),
+       QStringLiteral("string"),
+       QStringLiteral("Template id from project.template.list (blank, imu_uart, "
+                      "gps_uart_nmea, scope_multichannel_uart, telemetry_udp, "
+                      "mqtt_subscriber)")}
+  }),
+    &templateApply);
+}
+
+/** @brief Returns the templates manifest. */
+API::CommandResponse API::Handlers::ProjectHandler::templateList(const QString& id,
+                                                                 const QJsonObject& params)
+{
+  Q_UNUSED(params)
+
+  const auto manifest = loadTemplateManifest();
+  if (manifest.isNull())
+    return CommandResponse::makeError(
+      id, ErrorCode::ExecutionError, QStringLiteral("Failed to load templates manifest"));
+
+  QJsonObject result;
+  result[QStringLiteral("templates")] = manifest.object().value(QStringLiteral("templates"));
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Loads a template into the project model. */
+API::CommandResponse API::Handlers::ProjectHandler::templateApply(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("templateId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: templateId"));
+
+  const auto templateId = params.value(QStringLiteral("templateId")).toString();
+  const auto body       = loadTemplateBodyById(templateId);
+  if (body.isNull())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Template not found: %1. Call project.template.list for the "
+                     "available ids.")
+        .arg(templateId));
+
+  auto& project = DataModel::ProjectModel::instance();
+  project.setSuppressMessageBoxes(true);
+  const bool ok = project.loadFromJsonDocument(body);
+  project.setSuppressMessageBoxes(false);
+
+  if (!ok)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::ExecutionError,
+      QStringLiteral("Template applied but project failed to validate"));
+
+  QJsonObject result;
+  result[QStringLiteral("templateId")]   = templateId;
+  result[QStringLiteral("title")]        = project.title();
+  result[QStringLiteral("groupCount")]   = project.groupCount();
+  result[QStringLiteral("datasetCount")] = project.datasetCount();
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Project consistency validation
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Adds a structured issue row to the validate() result array. */
+static void addIssue(QJsonArray& issues,
+                     const QString& level,
+                     const QString& location,
+                     const QString& message)
+{
+  QJsonObject row;
+  row[QStringLiteral("level")]    = level;
+  row[QStringLiteral("location")] = location;
+  row[QStringLiteral("message")]  = message;
+  issues.append(row);
+}
+
+/** @brief Validates per-source frame parsers (compiles each, flags failures). */
+static void validateSources(const std::vector<DataModel::Source>& sources,
+                            QJsonArray& issues,
+                            bool& ok)
+{
+  auto& parser = DataModel::FrameParser::instance();
+  for (const auto& src : sources) {
+    if (src.frameParserCode.isEmpty()) {
+      addIssue(issues,
+               QStringLiteral("info"),
+               QStringLiteral("source[%1]").arg(src.sourceId),
+               QStringLiteral("Source has no frame parser; raw frames will be dropped"));
+      continue;
+    }
+
+    const bool compiled = parser.loadScript(src.sourceId, src.frameParserCode, false);
+    if (!compiled) {
+      ok = false;
+      addIssue(issues,
+               QStringLiteral("error"),
+               QStringLiteral("source[%1].frameParser").arg(src.sourceId),
+               QStringLiteral("Frame parser failed to compile or define parse()"));
+    }
+  }
+}
+
+/** @brief Validates a single dataset's references and per-field invariants. */
+static void validateDataset(const DataModel::Dataset& d,
+                            const DataModel::Group& g,
+                            const QSet<int>& sourceIds,
+                            QSet<int>& datasetIndexes,
+                            QJsonArray& issues,
+                            bool& ok)
+{
+  const QString dloc = QStringLiteral("group[%1].dataset[%2]").arg(g.groupId).arg(d.datasetId);
+
+  if (!sourceIds.contains(d.sourceId)) {
+    ok = false;
+    addIssue(issues,
+             QStringLiteral("error"),
+             dloc,
+             QStringLiteral("Dataset references missing source id %1").arg(d.sourceId));
+  }
+
+  if (d.title.trimmed().isEmpty())
+    addIssue(issues, QStringLiteral("warning"), dloc, QStringLiteral("Dataset has no title"));
+
+  if (!d.virtual_ && d.index <= 0)
+    addIssue(issues,
+             QStringLiteral("warning"),
+             dloc,
+             QStringLiteral("Non-virtual dataset has index 0; nothing maps to it"));
+
+  if (!d.virtual_ && datasetIndexes.contains(d.index)) {
+    ok = false;
+    addIssue(issues,
+             QStringLiteral("error"),
+             dloc,
+             QStringLiteral("Dataset index %1 is already used in this group").arg(d.index));
+  }
+  datasetIndexes.insert(d.index);
+
+  if (d.fft && d.fftSamples <= 0) {
+    ok = false;
+    addIssue(
+      issues, QStringLiteral("error"), dloc, QStringLiteral("FFT enabled but fftSamples is 0"));
+  }
+}
+
+/** @brief Validates each group and its datasets against the source-id set. */
+static void validateGroups(const std::vector<DataModel::Group>& groups,
+                           const QSet<int>& sourceIds,
+                           QJsonArray& issues,
+                           bool& ok)
+{
+  for (const auto& g : groups) {
+    const QString gloc = QStringLiteral("group[%1]").arg(g.groupId);
+
+    if (g.title.trimmed().isEmpty())
+      addIssue(issues, QStringLiteral("warning"), gloc, QStringLiteral("Group has no title"));
+
+    if (g.datasets.empty())
+      addIssue(issues,
+               QStringLiteral("warning"),
+               gloc,
+               QStringLiteral("Group has no datasets; nothing to display"));
+
+    if (!sourceIds.contains(g.sourceId)) {
+      ok = false;
+      addIssue(issues,
+               QStringLiteral("error"),
+               gloc,
+               QStringLiteral("Group references missing source id %1").arg(g.sourceId));
+    }
+
+    QSet<int> datasetIndexes;
+    for (const auto& d : g.datasets)
+      validateDataset(d, g, sourceIds, datasetIndexes, issues, ok);
+  }
+}
+
+/** @brief Validates actions (non-blocking sanity checks: titles, payloads). */
+static void validateActions(const std::vector<DataModel::Action>& actions, QJsonArray& issues)
+{
+  for (const auto& a : actions) {
+    const QString aloc = QStringLiteral("action[%1]").arg(a.actionId);
+    if (a.title.trimmed().isEmpty())
+      addIssue(issues, QStringLiteral("warning"), aloc, QStringLiteral("Action has no title"));
+
+    if (a.txData.isEmpty())
+      addIssue(
+        issues, QStringLiteral("warning"), aloc, QStringLiteral("Action has no payload (txData)"));
+  }
+}
+
+/** @brief Walks the project model, reports inconsistencies. */
+API::CommandResponse API::Handlers::ProjectHandler::validate(const QString& id,
+                                                             const QJsonObject& params)
+{
+  Q_UNUSED(params)
+
+  const auto& project = DataModel::ProjectModel::instance();
+  const auto& groups  = project.groups();
+  const auto& sources = project.sources();
+  const auto& actions = project.actions();
+
+  QJsonArray issues;
+  bool ok = true;
+
+  // Build set of valid source ids for fast lookup.
+  QSet<int> sourceIds;
+  for (const auto& src : sources)
+    sourceIds.insert(src.sourceId);
+
+  // Empty-project guard rail.
+  if (groups.empty()) {
+    addIssue(issues,
+             QStringLiteral("warning"),
+             QStringLiteral("project"),
+             QStringLiteral("Project has no groups; no data will be visualized"));
+  }
+
+  validateSources(sources, issues, ok);
+  validateGroups(groups, sourceIds, issues, ok);
+  validateActions(actions, issues);
+
+  QJsonObject result;
+  result[QStringLiteral("ok")]          = ok;
+  result[QStringLiteral("issues")]      = issues;
+  result[QStringLiteral("groupCount")]  = static_cast<int>(groups.size());
+  result[QStringLiteral("sourceCount")] = static_cast<int>(sources.size());
+  result[QStringLiteral("actionCount")] = static_cast<int>(actions.size());
+  result[QStringLiteral("issueCount")]  = issues.size();
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Script dry-run helpers (compile + run in throwaway engines, never touch project)
+//--------------------------------------------------------------------------------------------------
+
+/** @brief Builds the right script engine for a language tag (0=JS, 1=Lua). */
+static std::unique_ptr<DataModel::IScriptEngine> makeScriptEngine(int language)
+{
+  if (language == 1)
+    return std::make_unique<DataModel::LuaScriptEngine>();
+
+  return std::make_unique<DataModel::JsScriptEngine>();
+}
+
+/** @brief Frame parser dry-run: compile + parse a sample frame. */
+API::CommandResponse API::Handlers::ProjectHandler::frameParserDryRun(const QString& id,
+                                                                      const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("code")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
+
+  if (!params.contains(QStringLiteral("language")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: language"));
+
+  if (!params.contains(QStringLiteral("sampleFrame")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sampleFrame"));
+
+  const auto code        = params.value(QStringLiteral("code")).toString();
+  const auto language    = params.value(QStringLiteral("language")).toInt();
+  const auto sampleFrame = params.value(QStringLiteral("sampleFrame")).toString();
+
+  auto engine = makeScriptEngine(language);
+  if (!engine->loadScript(code, /*sourceId=*/0, /*showMessageBoxes=*/false))
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::ExecutionError,
+      QStringLiteral("Frame parser failed to compile or define parse(frame)"));
+
+  const auto parsed = engine->parseString(sampleFrame);
+
+  QJsonArray rows;
+  for (const auto& row : parsed) {
+    QJsonArray cells;
+    for (const auto& cell : row)
+      cells.append(cell);
+
+    rows.append(cells);
+  }
+
+  QJsonObject result;
+  result[QStringLiteral("ok")]       = true;
+  result[QStringLiteral("rows")]     = rows;
+  result[QStringLiteral("rowCount")] = rows.size();
+  result[QStringLiteral("hint")] =
+    QStringLiteral("Each row is the array your parser returned for one logical frame. The "
+                   "live builder maps row[i] to dataset.index = i+1.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Transform dry-run: compile + apply transform() to a list of values. */
+API::CommandResponse API::Handlers::ProjectHandler::transformDryRun(const QString& id,
+                                                                    const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("code")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
+
+  if (!params.contains(QStringLiteral("language")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: language"));
+
+  if (!params.contains(QStringLiteral("values")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: values"));
+
+  const auto code     = params.value(QStringLiteral("code")).toString();
+  const auto language = params.value(QStringLiteral("language")).toInt();
+  const auto values   = params.value(QStringLiteral("values")).toArray();
+
+  // Wrap user transform() in a parser-shaped parse(frame) for either language
+  QString wrapped;
+  if (language == 1) {
+    wrapped = code
+            + QStringLiteral("\n\nfunction parse(frame)\n"
+                             "  local v = tonumber(frame)\n"
+                             "  if v == nil then v = frame end\n"
+                             "  local out = transform(v)\n"
+                             "  return { tostring(out) }\n"
+                             "end\n");
+  } else {
+    wrapped = code
+            + QStringLiteral("\n\nfunction parse(frame) {\n"
+                             "  var v = parseFloat(frame);\n"
+                             "  if (isNaN(v)) v = frame;\n"
+                             "  return [String(transform(v))];\n"
+                             "}\n");
+  }
+
+  auto engine = makeScriptEngine(language);
+  if (!engine->loadScript(wrapped, /*sourceId=*/0, /*showMessageBoxes=*/false))
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::ExecutionError,
+      QStringLiteral("Transform failed to compile or define transform(value)"));
+
+  QJsonArray outputs;
+  for (const auto& v : values) {
+    QString sample;
+    if (v.isDouble())
+      sample = QString::number(v.toDouble(), 'g', 17);
+    else
+      sample = v.toString();
+
+    const auto rows = engine->parseString(sample);
+    if (rows.isEmpty() || rows.first().isEmpty()) {
+      outputs.append(QJsonValue::Null);
+      continue;
+    }
+
+    const auto cell = rows.first().first();
+    bool isNum      = false;
+    const auto num  = cell.toDouble(&isNum);
+    if (isNum)
+      outputs.append(num);
+    else
+      outputs.append(cell);
+  }
+
+  QJsonObject result;
+  result[QStringLiteral("ok")]      = true;
+  result[QStringLiteral("outputs")] = outputs;
+  result[QStringLiteral("hint")] =
+    QStringLiteral("outputs[i] is the result of transform(values[i]). null means transform "
+                   "returned a non-finite value -- the live runtime falls back to the raw "
+                   "value in that case.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/** @brief Painter dry-run: verify the script compiles and exposes paint(). */
+API::CommandResponse API::Handlers::ProjectHandler::painterDryRun(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("code")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
+
+  const auto code = params.value(QStringLiteral("code")).toString();
+
+  // Throwaway engine for syntax + paint() definition check
+  QJSEngine engine;
+  engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
+
+  // Stub the bridge globals so top-level reads don't ReferenceError.
+  auto stub = engine.evaluate(
+    QStringLiteral("var datasets = []; datasets.length = 0;"
+                   "var group = { id: 0, title: '', columns: 0, sourceId: 0 };"
+                   "var frame = { number: 0, timestampMs: 0 };"
+                   "var theme = new Proxy({}, { get: function() { return '#000000'; } });"
+                   "function tableGet() { return 0; }"
+                   "function tableSet() {}"
+                   "function datasetGetRaw() { return 0; }"
+                   "function datasetGetFinal() { return 0; }"));
+  if (stub.isError())
+    return CommandResponse::makeError(id,
+                                      ErrorCode::ExecutionError,
+                                      QStringLiteral("Painter dry-run bootstrap failed: %1")
+                                        .arg(stub.property(QStringLiteral("message")).toString()));
+
+  const auto compiled = engine.evaluate(code, QStringLiteral("painter_dryrun.js"));
+  if (compiled.isError()) {
+    QJsonObject result;
+    result[QStringLiteral("ok")] = false;
+    result[QStringLiteral("compileError")] =
+      compiled.property(QStringLiteral("message")).toString();
+    result[QStringLiteral("line")] = compiled.property(QStringLiteral("lineNumber")).toInt();
+    return CommandResponse::makeSuccess(id, result);
+  }
+
+  const auto paintFn = engine.globalObject().property(QStringLiteral("paint"));
+  if (!paintFn.isCallable()) {
+    QJsonObject result;
+    result[QStringLiteral("ok")] = false;
+    result[QStringLiteral("compileError")] =
+      QStringLiteral("Script compiled but did not define paint(ctx, w, h). Painter scripts "
+                     "MUST define `function paint(ctx, w, h)`. The function is named "
+                     "`paint`, not `draw` or `render`.");
+    return CommandResponse::makeSuccess(id, result);
+  }
+
+  const auto onFrameFn = engine.globalObject().property(QStringLiteral("onFrame"));
+  QJsonObject result;
+  result[QStringLiteral("ok")]         = true;
+  result[QStringLiteral("hasPaint")]   = true;
+  result[QStringLiteral("hasOnFrame")] = onFrameFn.isCallable();
+  result[QStringLiteral("hint")] =
+    QStringLiteral("Compile + paint() lookup succeeded. Note: dry-run does NOT actually "
+                   "render -- runtime errors inside paint() (out-of-bounds reads, missing "
+                   "moveTo before arc, etc.) only surface when the live widget mounts.");
   return CommandResponse::makeSuccess(id, result);
 }

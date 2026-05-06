@@ -322,7 +322,6 @@ void AI::AnthropicReply::onReplyError()
     return;
 
   qCWarning(serialStudioAI) << "QNetworkReply error:" << m_reply->errorString();
-  // onReplyFinished owns the error branching; finished() always follows errorOccurred()
 }
 
 //--------------------------------------------------------------------------------------------------

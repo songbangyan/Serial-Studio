@@ -76,7 +76,7 @@ def test_csv_export_timestamps(api_client, device_simulator, clean_state, temp_d
     time.sleep(1.5)
 
     api_client.disconnect_device()
-    api_client.command("csv.export.close")
+    api_client.command("csvExport.close")
     time.sleep(0.5)
 
 
@@ -134,7 +134,7 @@ def test_csv_export_high_frequency(api_client, device_simulator, clean_state):
     time.sleep(1.0)
 
     api_client.disconnect_device()
-    api_client.command("csv.export.close")
+    api_client.command("csvExport.close")
     time.sleep(0.5)
 
 

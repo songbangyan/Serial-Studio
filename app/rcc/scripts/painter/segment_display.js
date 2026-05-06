@@ -21,16 +21,12 @@ const SEG = {
   " ": [0, 0, 0, 0, 0, 0, 0]
 };
 
-const ON_COLOR  = "#0f172a";
-const OFF_COLOR = "#cbd5e1";
-const SCREEN_BG = "#dcfce7";
-
 function drawDigit(ctx, x, y, w, h, ch) {
   const segs = SEG[ch] || SEG[" "];
   const t    = Math.max(2, h * 0.10);
 
   function bar(px, py, pw, ph, on) {
-    ctx.fillStyle = on ? ON_COLOR : OFF_COLOR;
+    ctx.fillStyle = on ? theme.widget_text : theme.widget_border;
     ctx.fillRect(px, py, pw, ph);
   }
 
@@ -45,25 +41,25 @@ function drawDigit(ctx, x, y, w, h, ch) {
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 
   // Header.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("7-SEGMENT  READOUT", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(datasets.length + (datasets.length === 1 ? " channel" : " channels"),
                w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // Per-row stacked layout.
@@ -80,23 +76,23 @@ function paint(ctx, w, h) {
     const txt = v.toFixed(1).padStart(6, " ");
 
     // "Screen" panel (mint background simulating a backlit LCD).
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(padX + 1, y0 + 2, w - padX * 2, rowH);
-    ctx.fillStyle = SCREEN_BG;
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(padX, y0, w - padX * 2, rowH);
-    ctx.strokeStyle = "#10b981";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(padX + 0.5, y0 + 0.5, w - padX * 2 - 1, rowH - 1);
 
     // Title strip.
-    ctx.fillStyle = "#065f46";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 9px sans-serif";
     ctx.textAlign = "start";
     ctx.textBaseline = "alphabetic";
     ctx.fillText((ds.title || ("CH " + (i + 1))).toUpperCase(),
                  padX + 8, y0 + 12);
     if (ds.units) {
-      ctx.fillStyle = "#047857";
+      ctx.fillStyle = theme.placeholder_text;
       ctx.font = "9px sans-serif";
       ctx.textAlign = "end";
       ctx.fillText(ds.units, w - padX - 8, y0 + 12);
@@ -115,7 +111,7 @@ function paint(ctx, w, h) {
       const ch = txt[k];
       if (ch === ".") {
         // Decimal point as a small square at baseline.
-        ctx.fillStyle = ON_COLOR;
+        ctx.fillStyle = theme.widget_text;
         ctx.fillRect(cx - dw * 0.10, yT + dh - dw * 0.18,
                      dw * 0.18, dw * 0.18);
         continue;

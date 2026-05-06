@@ -88,10 +88,10 @@ def test_mcp_schema_matches_registered_command_names():
     csv = _read("app/src/API/Handlers/CSVExportHandler.cpp")
     uart = _read("app/src/API/Handlers/UARTHandler.cpp")
 
-    assert 'QStringLiteral("io.driver.network.setRemoteAddress")' in network
-    assert 'QStringLiteral("io.driver.network.setUdpMulticast")' in network
-    assert 'QStringLiteral("project.file.open")' in project
-    assert 'QStringLiteral("csv.export.setEnabled")' in csv
+    assert 'QStringLiteral("io.network.setRemoteAddress")' in network
+    assert 'QStringLiteral("io.network.setUdpMulticast")' in network
+    assert 'QStringLiteral("project.open")' in project
+    assert 'QStringLiteral("csvExport.setEnabled")' in csv
     assert 'QStringLiteral("dataBitsIndex")' in uart
     assert 'QStringLiteral("parityIndex")' in uart
     assert 'QStringLiteral("stopBitsIndex")' in uart

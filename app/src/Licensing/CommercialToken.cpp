@@ -62,9 +62,6 @@ Licensing::CommercialToken::CommercialToken() : m_tier(FeatureTier::None), m_gra
 
 /**
  * @brief Returns the currently active commercial token.
- *
- * This is the single point of access for all Pro feature code.
- * The token is set by LemonSqueezy or Trial after successful validation.
  */
 const Licensing::CommercialToken& Licensing::CommercialToken::current()
 {
@@ -73,7 +70,6 @@ const Licensing::CommercialToken& Licensing::CommercialToken::current()
 
 /**
  * @brief Replaces the current token with a newly validated one.
- * @param token A sealed token produced by LemonSqueezy or Trial.
  */
 void Licensing::CommercialToken::setCurrent(const CommercialToken& token)
 {
@@ -94,14 +90,6 @@ void Licensing::CommercialToken::clearCurrent()
 
 /**
  * @brief Checks whether this token was produced by a legitimate validation.
- *
- * Recomputes the HMAC from the token's data fields and the compile-time
- * build salt, then compares it against the stored HMAC.  Patching this
- * function to return true doesn't help -- downstream code reads the actual
- * fields (featureTier, variantName, etc.) which remain empty/zero without
- * a real token.
- *
- * @return true if the HMAC matches and the token carries valid data.
  */
 bool Licensing::CommercialToken::isValid() const
 {
@@ -135,9 +123,6 @@ Licensing::FeatureTier Licensing::CommercialToken::featureTier() const noexcept
 
 /**
  * @brief Returns the number of days the token remains valid offline.
- *
- * For trial tokens this is the trial days remaining.  For full licenses
- * this is the 30-day grace period countdown (30 = just validated online).
  */
 int Licensing::CommercialToken::graceDaysRemaining() const noexcept
 {
@@ -146,8 +131,6 @@ int Licensing::CommercialToken::graceDaysRemaining() const noexcept
 
 /**
  * @brief Returns the variant name from the license (e.g. "Pro - Monthly").
- *
- * Pro features may use this for display or feature-tiering decisions.
  */
 const QString& Licensing::CommercialToken::variantName() const noexcept
 {
@@ -200,9 +183,6 @@ void Licensing::CommercialToken::setInstanceName(const QString& name)
 
 /**
  * @brief Computes and stores the HMAC, finalizing the token.
- *
- * Must be called after all fields are set.  After sealing, isValid()
- * will return true.
  */
 void Licensing::CommercialToken::seal()
 {
@@ -215,14 +195,6 @@ void Licensing::CommercialToken::seal()
 
 /**
  * @brief Reassembles the build salt from XOR-masked volatile fragments.
- *
- * The salt is never stored or loaded as a single 64-bit immediate. Instead
- * it is split into four 16-bit pieces, each XOR-masked with a build-specific
- * constant, and stored in volatile globals. This function reads and unmasks
- * them at runtime, preventing the compiler from constant-folding the value
- * into a recognizable mov/movk sequence.
- *
- * @return The original COMMERCIAL_BUILD_SALT value.
  */
 quint64 Licensing::CommercialToken::deobfuscateSalt()
 {
@@ -239,12 +211,6 @@ quint64 Licensing::CommercialToken::deobfuscateSalt()
 
 /**
  * @brief Computes a keyed hash from the token fields and build salt.
- *
- * The salt is reassembled at runtime from obfuscated volatile fragments,
- * so it never appears as a single immediate in the binary. Without a
- * valid salt the static_assert in the header prevents compilation.
- *
- * @return 64-bit truncated HMAC.
  */
 quint64 Licensing::CommercialToken::computeHmac() const
 {

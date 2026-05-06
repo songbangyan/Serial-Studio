@@ -38,7 +38,6 @@
 
 /**
  * @brief Locates a workspace by id in ProjectModel's list.
- * @return Iterator; end() if not found.
  */
 [[nodiscard]] static auto findWorkspace(const std::vector<DataModel::Workspace>& ws, int wid)
 {
@@ -114,19 +113,19 @@ void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = API::emptySchema();
 
-  registry.registerCommand(QStringLiteral("project.workspaces.list"),
+  registry.registerCommand(QStringLiteral("project.workspace.list"),
                            QStringLiteral("List all workspaces with widget counts"),
                            empty,
                            &list);
   registry.registerCommand(
-    QStringLiteral("project.workspaces.get"),
+    QStringLiteral("project.workspace.get"),
     QStringLiteral("Return widget refs for a workspace (params: id)"),
     API::makeSchema({
       {QStringLiteral("id"), QStringLiteral("integer"), QStringLiteral("Workspace id")}
   }),
     &get);
   registry.registerCommand(
-    QStringLiteral("project.workspaces.add"),
+    QStringLiteral("project.workspace.add"),
     QStringLiteral("Create a new workspace (params: title=\"Workspace\"). Returns new id."),
     API::makeSchema(
       {
@@ -134,14 +133,14 @@ void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
       {{QStringLiteral("title"), QStringLiteral("string"), QStringLiteral("Workspace title")}}),
     &add);
   registry.registerCommand(
-    QStringLiteral("project.workspaces.delete"),
+    QStringLiteral("project.workspace.delete"),
     QStringLiteral("Delete a workspace (params: id)"),
     API::makeSchema({
       {QStringLiteral("id"), QStringLiteral("integer"), QStringLiteral("Workspace id")}
   }),
     &remove);
   registry.registerCommand(
-    QStringLiteral("project.workspaces.rename"),
+    QStringLiteral("project.workspace.rename"),
     QStringLiteral("Rename a workspace (params: id, title)"),
     API::makeSchema({
       {   QStringLiteral("id"), QStringLiteral("integer"),        QStringLiteral("Workspace id")},
@@ -149,7 +148,21 @@ void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
   }),
     &rename);
   registry.registerCommand(
-    QStringLiteral("project.workspaces.autoGenerate"),
+    QStringLiteral("project.workspace.update"),
+    QStringLiteral("Patch workspace fields (params: id; optional title, icon)"),
+    API::makeSchema(
+      {
+        {QStringLiteral("id"), QStringLiteral("integer"), QStringLiteral("Workspace id")}
+  },
+      {{QStringLiteral("title"),
+        QStringLiteral("string"),
+        QStringLiteral("New workspace title (optional)")},
+       {QStringLiteral("icon"),
+        QStringLiteral("string"),
+        QStringLiteral("New workspace icon, e.g. 'qrc:/icons/panes/overview.svg' (optional)")}}),
+    &update);
+  registry.registerCommand(
+    QStringLiteral("project.workspace.autoGenerate"),
     QStringLiteral(
       "Materialise synthetic workspaces into the customised set. No-op if already customised."),
     empty,
@@ -163,11 +176,11 @@ void API::Handlers::WorkspacesHandler::registerCustomizeCommands()
 {
   auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("project.workspaces.customize.get"),
+  registry.registerCommand(QStringLiteral("project.workspace.getCustomizeMode"),
                            QStringLiteral("Return the customizeWorkspaces flag"),
                            API::emptySchema(),
                            &customizeGet);
-  registry.registerCommand(QStringLiteral("project.workspaces.customize.set"),
+  registry.registerCommand(QStringLiteral("project.workspace.setCustomizeMode"),
                            QStringLiteral("Flip the customizeWorkspaces flag (params: enabled)"),
                            API::makeSchema({
                              {QStringLiteral("enabled"),
@@ -234,7 +247,7 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
      "unless you are intentionally adding a second tile with the "
      "same widgetType and groupId to the same workspace.")                                  }
   });
-  registry.registerCommand(QStringLiteral("project.workspaces.widgets.add"),
+  registry.registerCommand(QStringLiteral("project.workspace.addWidget"),
                            QStringLiteral("Pin a visualization tile onto a workspace. The tile "
                                           "renders the dashboard widget of the given widgetType "
                                           "fed by the given groupId. Read project.groups.list "
@@ -254,7 +267,7 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
      QStringLiteral("Relative widget index")                                                      }
   });
   registry.registerCommand(
-    QStringLiteral("project.workspaces.widgets.remove"),
+    QStringLiteral("project.workspace.removeWidget"),
     QStringLiteral("Remove a widget ref (params: workspaceId, widgetType, groupId, relativeIndex)"),
     removeSchema,
     &widgetRemove);
@@ -345,10 +358,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::add(const QString& id,
 
 /**
  * @brief Deletes a workspace. No-op if id not found.
- *
- * Requires customize mode -- in auto mode the workspace list is derived from
- * groups and an explicit delete would silently flip the project into customize
- * mode. Auto-mode taskbar deletion goes through hideGroup instead.
  */
 API::CommandResponse API::Handlers::WorkspacesHandler::remove(const QString& id,
                                                               const QJsonObject& params)
@@ -379,8 +388,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::remove(const QString& id,
 
 /**
  * @brief Renames a workspace. No-op if id not found.
- *
- * Requires customize mode for the same reason as remove().
  */
 API::CommandResponse API::Handlers::WorkspacesHandler::rename(const QString& id,
                                                               const QJsonObject& params)
@@ -420,10 +427,60 @@ API::CommandResponse API::Handlers::WorkspacesHandler::rename(const QString& id,
 }
 
 /**
+ * @brief Patches workspace title and/or icon by id.
+ */
+API::CommandResponse API::Handlers::WorkspacesHandler::update(const QString& id,
+                                                              const QJsonObject& params)
+{
+  if (!inProjectFileMode())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
+
+  if (!params.contains(QStringLiteral("id")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: id"));
+
+  auto& pm = DataModel::ProjectModel::instance();
+  if (!pm.customizeWorkspaces())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("customizeWorkspaces is off; call project.workspace.setCustomizeMode first"));
+
+  const int wid       = params.value(QStringLiteral("id")).toInt();
+  const bool setTitle = params.contains(QStringLiteral("title"));
+  const bool setIcon  = params.contains(QStringLiteral("icon"));
+  if (!setTitle && !setIcon)
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Provide at least one of: title, icon"));
+
+  QString title;
+  QString icon;
+  if (setTitle) {
+    title = params.value(QStringLiteral("title")).toString();
+    if (title.trimmed().isEmpty())
+      return CommandResponse::makeError(
+        id, ErrorCode::InvalidParam, QStringLiteral("Workspace title cannot be empty"));
+  }
+  if (setIcon)
+    icon = params.value(QStringLiteral("icon")).toString();
+
+  pm.updateWorkspace(wid, title, icon, setTitle, setIcon);
+
+  QJsonObject result;
+  result[QStringLiteral("id")] = wid;
+  if (setTitle)
+    result[QStringLiteral("title")] = title;
+
+  if (setIcon)
+    result[QStringLiteral("icon")] = icon;
+
+  result[QStringLiteral("updated")] = true;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
  * @brief Materialises the synthetic auto-workspaces into customized state.
- *
- * Guard-returns the id of an existing customised list so callers don't
- * accidentally overwrite hand-edited workspaces.
  */
 API::CommandResponse API::Handlers::WorkspacesHandler::autoGenerate(const QString& id,
                                                                     const QJsonObject& params)
@@ -461,9 +518,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeGet(const QStrin
 
 /**
  * @brief Flips the customizeWorkspaces flag.
- *
- * On off->on, seeds m_workspaces from the synthetic auto list; on on->off,
- * drops the customised list and returns to automatic mode.
  */
 API::CommandResponse API::Handlers::WorkspacesHandler::customizeSet(const QString& id,
                                                                     const QJsonObject& params)
@@ -491,10 +545,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeSet(const QStrin
 
 /**
  * @brief Attaches a widget ref to a workspace.
- *
- * Requires customize mode. Auto-mode callers must call project.workspaces.
- * customize.set first; otherwise the auto-IDs are unstable across structural
- * edits and a soft-promote could land the ref on the wrong workspace.
  */
 API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& id,
                                                                  const QJsonObject& params)
@@ -560,7 +610,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
     return CommandResponse::makeError(id,
                                       ErrorCode::InvalidParam,
                                       QStringLiteral("Group not found: %1. Use group.id from "
-                                                     "project.groups.list, not the array index.")
+                                                     "project.group.list, not the array index.")
                                         .arg(gid));
 
   const auto compatible = compatibleWidgetTypes(*group_it);

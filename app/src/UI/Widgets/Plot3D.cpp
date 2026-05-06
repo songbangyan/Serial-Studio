@@ -36,8 +36,6 @@
 
 /**
  * @brief Constructs a Plot3D widget.
- * @param index The index of the Plot3D in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   : QuickPaintedItemCompat(parent)
@@ -218,7 +216,6 @@ void Widgets::Plot3D::paint(QPainter* painter)
 
 /**
  * @brief Returns the current worldScale level of the 3D plot.
- * @return The worldScale factor, where 1.0 is the default scale.
  */
 double Widgets::Plot3D::worldScale() const
 {
@@ -227,7 +224,6 @@ double Widgets::Plot3D::worldScale() const
 
 /**
  * @brief Returns the X-axis rotation.
- * @return The X-axis rotation angle in degrees.
  */
 double Widgets::Plot3D::cameraAngleX() const
 {
@@ -236,7 +232,6 @@ double Widgets::Plot3D::cameraAngleX() const
 
 /**
  * @brief Returns the Y-axis rotation.
- * @return The Y-axis rotation angle in degrees.
  */
 double Widgets::Plot3D::cameraAngleY() const
 {
@@ -245,7 +240,6 @@ double Widgets::Plot3D::cameraAngleY() const
 
 /**
  * @brief Returns the Z-axis rotation.
- * @return The Z-axis rotation angle in degrees.
  */
 double Widgets::Plot3D::cameraAngleZ() const
 {
@@ -254,7 +248,6 @@ double Widgets::Plot3D::cameraAngleZ() const
 
 /**
  * @brief Returns the X-axis camera offset.
- * @return The X-axis offset value.
  */
 double Widgets::Plot3D::cameraOffsetX() const
 {
@@ -263,7 +256,6 @@ double Widgets::Plot3D::cameraOffsetX() const
 
 /**
  * @brief Returns the Y-axis camera offset.
- * @return The Y-axis offset value.
  */
 double Widgets::Plot3D::cameraOffsetY() const
 {
@@ -272,7 +264,6 @@ double Widgets::Plot3D::cameraOffsetY() const
 
 /**
  * @brief Returns the Z-axis camera offset.
- * @return The Z-axis offset value.
  */
 double Widgets::Plot3D::cameraOffsetZ() const
 {
@@ -281,10 +272,6 @@ double Widgets::Plot3D::cameraOffsetZ() const
 
 /**
  * @brief Returns the ideal zoom level for the plot.
- *
- * Uses the largest single-axis extent so every axis fits within the visible
- * grid (10 steps on each side). The grid step is snapped to a 1-2-5 sequence
- * so axis labels stay clean.
  */
 double Widgets::Plot3D::idealWorldScale() const
 {
@@ -318,9 +305,6 @@ double Widgets::Plot3D::idealWorldScale() const
 
 /**
  * @brief Checks if any part of the plot needs to be redrawn.
- *
- * @return true if the background, foreground, or camera indicator
- *         is marked as dirty and requires a repaint; false otherwise.
  */
 bool Widgets::Plot3D::dirty() const
 {
@@ -329,12 +313,6 @@ bool Widgets::Plot3D::dirty() const
 
 /**
  * @brief Returns the current eye separation value.
- *
- * This value controls the virtual distance between the left and right
- * camera views when rendering in anaglyph (stereo 3D) mode. It affects
- * the strength of the depth/parallax effect.
- *
- * @return The eye separation distance as a float.
  */
 float Widgets::Plot3D::eyeSeparation() const
 {
@@ -343,8 +321,6 @@ float Widgets::Plot3D::eyeSeparation() const
 
 /**
  * @brief Checks if anaglyph (red/cyan 3D) rendering mode is enabled.
- *
- * @return True if anaglyph mode is currently active; false otherwise.
  */
 bool Widgets::Plot3D::anaglyphEnabled() const
 {
@@ -353,12 +329,6 @@ bool Widgets::Plot3D::anaglyphEnabled() const
 
 /**
  * @brief Checks whether eye positions are inverted for stereo rendering.
- *
- * In stereo/anaglyph mode, this flag determines if the left and right
- * eye positions should be swapped. It's useful for cases where the
- * stereo effect appears reversed (e.g., objects look "inside out").
- *
- * @return True if eye positions are inverted; otherwise false.
  */
 bool Widgets::Plot3D::invertEyePositions() const
 {
@@ -383,11 +353,6 @@ bool Widgets::Plot3D::orbitNavigation() const
 
 /**
  * @brief Checks if interpolation is enabled for the plot.
- *
- * If interpolation is enabled, points in the plot are connected via lines.
- * If disabled, only discrete points are displayed without connecting lines.
- *
- * @return true if interpolation is enabled; false if only points are shown.
  */
 bool Widgets::Plot3D::interpolationEnabled() const
 {
@@ -396,11 +361,6 @@ bool Widgets::Plot3D::interpolationEnabled() const
 
 /**
  * @brief Returns the widget size in device pixels.
- *
- * Computes the widget's size multiplied by the current device pixel ratio,
- * accounting for high-DPI displays.
- *
- * @return QSize representing the width and height in device pixels.
  */
 const QSize& Widgets::Plot3D::widgetSize() const
 {
@@ -413,10 +373,6 @@ const QSize& Widgets::Plot3D::widgetSize() const
 
 /**
  * @brief Sets the zoom level of the 3D plot.
- * @param z The zoom factor; values greater than 1.0 zoom in,
- *          less than 1.0 zoom out.
- *
- * Emits the cameraChanged() signal if the value is updated.
  */
 void Widgets::Plot3D::setWorldScale(const double z)
 {
@@ -431,9 +387,6 @@ void Widgets::Plot3D::setWorldScale(const double z)
 
 /**
  * @brief Sets the X-axis rotation.
- * @param angle The X-axis rotation angle in degrees.
- *
- * Emits the cameraChanged() signal if the value is updated.
  */
 void Widgets::Plot3D::setCameraAngleX(const double angle)
 {
@@ -447,9 +400,6 @@ void Widgets::Plot3D::setCameraAngleX(const double angle)
 
 /**
  * @brief Sets the Y-axis rotation.
- * @param angle The Y-axis rotation angle in degrees.
- *
- * Emits the cameraChanged() signal if the value is updated.
  */
 void Widgets::Plot3D::setCameraAngleY(const double angle)
 {
@@ -463,9 +413,6 @@ void Widgets::Plot3D::setCameraAngleY(const double angle)
 
 /**
  * @brief Sets the Z-axis rotation.
- * @param angle The Z-axis rotation angle in degrees.
- *
- * Emits the cameraChanged() signal if the value is updated.
  */
 void Widgets::Plot3D::setCameraAngleZ(const double angle)
 {
@@ -479,7 +426,6 @@ void Widgets::Plot3D::setCameraAngleZ(const double angle)
 
 /**
  * @brief Sets the X-axis camera offset.
- * @param offset The new X-axis offset value.
  */
 void Widgets::Plot3D::setCameraOffsetX(const double offset)
 {
@@ -492,7 +438,6 @@ void Widgets::Plot3D::setCameraOffsetX(const double offset)
 
 /**
  * @brief Sets the Y-axis camera offset.
- * @param offset The new Y-axis offset value.
  */
 void Widgets::Plot3D::setCameraOffsetY(const double offset)
 {
@@ -505,7 +450,6 @@ void Widgets::Plot3D::setCameraOffsetY(const double offset)
 
 /**
  * @brief Sets the Z-axis camera offset.
- * @param offset The new Z-axis offset value.
  */
 void Widgets::Plot3D::setCameraOffsetZ(const double offset)
 {
@@ -557,14 +501,6 @@ void Widgets::Plot3D::setAnaglyphEnabled(const bool enabled)
 
 /**
  * @brief Enables or disables orbit navigation mode.
- *
- * When enabled, the view allows rotating (orbiting) around the 3D model.
- * When disabled, the navigation switches to panning mode.
- *
- * Emits the orbitNavigationChanged() signal if the state changes.
- *
- * @param enabled Set to true to enable orbit navigation; false to enable
- *        panning.
  */
 void Widgets::Plot3D::setOrbitNavigation(const bool enabled)
 {
@@ -576,14 +512,6 @@ void Widgets::Plot3D::setOrbitNavigation(const bool enabled)
 
 /**
  * @brief Sets the eye separation value for stereo rendering.
- *
- * This defines the virtual distance between the left and right eye views
- * when rendering in anaglyph mode. A larger separation increases the 3D
- * depth effect, while a smaller separation reduces it.
- *
- * Marks the plot as dirty and emits eyeSeparationChanged().
- *
- * @param separation The new eye separation distance.
  */
 void Widgets::Plot3D::setEyeSeparation(const float separation)
 {
@@ -596,12 +524,6 @@ void Widgets::Plot3D::setEyeSeparation(const float separation)
 
 /**
  * @brief Sets whether to invert the eye positions for stereo rendering.
- *
- * This controls if the left and right eye positions are swapped when rendering
- * in stereo/anaglyph mode. Use this if the depth effect appears incorrect or
- * reversed. Triggers a re-render if the value changes.
- *
- * @param enabled True to invert eye positions; false to use standard positions.
  */
 void Widgets::Plot3D::setInvertEyePositions(const bool enabled)
 {
@@ -616,15 +538,6 @@ void Widgets::Plot3D::setInvertEyePositions(const bool enabled)
 
 /**
  * @brief Enables or disables interpolation for the plot.
- *
- * When enabled, points in the plot are connected with lines.
- * When disabled, only discrete points are shown.
- *
- * Triggers a re-render by calling markDirty() and emits the
- * interpolationEnabledChanged() signal if the state changes.
- *
- * @param enabled Set to true to connect points with lines; false to show only
- *        points.
  */
 void Widgets::Plot3D::setInterpolationEnabled(const bool enabled)
 {
@@ -644,13 +557,6 @@ void Widgets::Plot3D::setInterpolationEnabled(const bool enabled)
 
 /**
  * @brief Updates the 3D plot data and prepares it for rendering.
- *
- * This function retrieves 3D data points from the dashboard, applies a
- * perspective projection and view transformation, and projects the points to
- * 2D screen space.
- *
- * The result is stored in m_points, and the foreground is marked dirty to
- * trigger a redraw.
  */
 void Widgets::Plot3D::updateData()
 {
@@ -664,9 +570,6 @@ void Widgets::Plot3D::updateData()
 
 /**
  * @brief Updates plot colors based on the current theme.
- *
- * Sets line head/tail colors as a brightness gradient around the base color.
- * Also updates grid and axis colors from the theme manager.
  */
 void Widgets::Plot3D::onThemeChanged()
 {
@@ -700,10 +603,6 @@ void Widgets::Plot3D::onThemeChanged()
 
 /**
  * @brief Marks all plot layers as dirty and requests a repaint.
- *
- * This sets the background, foreground, and camera indicator flags to true,
- * ensuring they will be redrawn on the next update.
- * It then calls update() to schedule a repaint event.
  */
 void Widgets::Plot3D::markDirty()
 {
@@ -716,9 +615,6 @@ void Widgets::Plot3D::markDirty()
 
 /**
  * @brief Marks projection-dependent layers dirty without touching the background.
- *
- * Use this for camera or zoom changes where the background fill does not need
- * to be regenerated.
  */
 void Widgets::Plot3D::markCameraDirty()
 {
@@ -729,11 +625,7 @@ void Widgets::Plot3D::markCameraDirty()
 }
 
 /**
- * @brief Updates the internal size to match the current widget size in device
- * pixels.
- *
- * Recalculates and stores the size using the device pixel ratio to support
- * high-DPI scaling.
+ * @brief Updates the internal size to match the current widget size in device pixels.
  */
 void Widgets::Plot3D::updateSize()
 {
@@ -745,10 +637,6 @@ void Widgets::Plot3D::updateSize()
 
 /**
  * @brief Renders the 3D plot foreground.
- *
- * This function draws the main 3D data points or objects in the plot.
- *
- * Marks m_dirtyData as false to avoid unnecessary re-rendering.
  */
 void Widgets::Plot3D::drawData()
 {
@@ -835,9 +723,6 @@ void Widgets::Plot3D::drawData()
 
 /**
  * @brief Renders the 3D plot background.
- *
- * This function draws the infinite grid and background axes behind the 3D plot.
- * Marks m_dirtyGrid as false to prevent unnecessary re-rendering.
  */
 void Widgets::Plot3D::drawGrid()
 {
@@ -889,14 +774,6 @@ void Widgets::Plot3D::drawGrid()
 
 /**
  * @brief Renders the 3D plot background with optional anaglyph effect.
- *
- * This function draws the radial gradient background behind the 3D plot.
- *
- * The result is stored in m_bgImg[0] (left eye) and
- * m_bgImg[1] (right eye) for anaglyph mode, or only in
- * m_bgImg[0] for normal rendering.
- *
- * Marks m_dirtyBackground as false to prevent unnecessary re-rendering.
  */
 void Widgets::Plot3D::drawBackground()
 {
@@ -926,11 +803,6 @@ void Widgets::Plot3D::drawBackground()
 
 /**
  * @brief Renders the 3D camera indicator.
- *
- * This function draws a small 3D axis indicator that shows the camera's
- * orientation.
- *
- * Marks m_dirtyCameraIndicator as false to avoid unnecessary re-rendering.
  */
 void Widgets::Plot3D::drawCameraIndicator()
 {
@@ -975,17 +847,6 @@ void Widgets::Plot3D::drawCameraIndicator()
 
 /**
  * @brief Computes a clean grid step based on current world scale.
- *
- * This function returns a visually consistent grid step in world units by
- * snapping the scale-adjusted unit size to a clean, human-readable value--
- * specifically 1, 2, or 5 multiplied by a power of 10.
- *
- * The result is based on the inverse of the world scale (i.e., how many world
- * units are visible on screen), and is not tied to screen pixels. This ensures
- * that grid lines stay readable and logically spaced across all zoom levels,
- * without relying on fixed screen-space distances.
- *
- * @return Grid step size in world units (e.g., 1, 2, 5, 10, 20, 50, etc.).
  */
 double Widgets::Plot3D::gridStep(const double scale) const
 {
@@ -1007,17 +868,6 @@ double Widgets::Plot3D::gridStep(const double scale) const
 
 /**
  * @brief Projects 3D world-space points into 2D screen-space coordinates.
- *
- * Applies the given model-view-projection (MVP) matrix to each 3D point,
- * performs perspective divide, and maps normalized device coordinates (NDC)
- * from [-1, 1] range to actual screen pixels.
- *
- * This function assumes a standard right-handed coordinate system with
- * Y-up and a perspective or orthographic projection already applied.
- *
- * @param points List of 3D points in world space.
- * @param matrix The combined MVP matrix.
- * @return Vector of 2D QPointF in screen coordinates.
  */
 std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& points,
                                                        const QMatrix4x4& matrix)
@@ -1050,20 +900,6 @@ std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& 
 
 /**
  * @brief Projects and renders a 3D line as a faded 2D segment on screen.
- *
- * This function subdivides a 3D line into smaller segments, projects them
- * onto screen space using the provided view-projection matrix, and renders
- * them with distance-based fading. Segments that fall outside the central
- * view region or screen bounds are discarded to avoid clutter and improve
- * performance.
- *
- * @param painter The QPainter used to render the 2D line segments.
- * @param matrix The 4x4 view-projection matrix for 3D to 2D projection.
- * @param p1 The starting point of the 3D line.
- * @param p2 The ending point of the 3D line.
- * @param color The base color of the line before fading is applied.
- * @param lineWidth The width of the rendered line in pixels.
- * @param style The pen style used for the rendered segments.
  */
 void Widgets::Plot3D::drawLine3D(QPainter& painter,
                                  const QMatrix4x4& matrix,
@@ -1134,15 +970,6 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
 
 /**
  * @brief Renders the infinite grid overlay as a 2D pixmap.
- *
- * This method generates a QPixmap representing a perspective-projected
- * grid based on the current camera transformation. Grid lines and axes
- * are rendered with distance-based fading and clipping to preserve clarity
- * at varying zoom levels. A label indicating the current grid step is
- * drawn in the lower-left corner.
- *
- * @param matrix The camera view-projection matrix used for 3D to 2D projection.
- * @return A QPixmap containing the rendered grid overlay.
  */
 QImage Widgets::Plot3D::renderGrid(const QMatrix4x4& matrix)
 {
@@ -1206,12 +1033,6 @@ QImage Widgets::Plot3D::renderGrid(const QMatrix4x4& matrix)
 
 /**
  * @brief Renders the camera orientation indicator as a 2D pixmap.
- *
- * Draws X, Y, Z axes with labels, projecting them from 3D space
- * using the provided matrix. Axes are depth-sorted for proper overlap.
- *
- * @param matrix Transform matrix for projection.
- * @return Rendered camera indicator pixmap.
  */
 QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
 {
@@ -1299,13 +1120,6 @@ QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
 
 /**
  * @brief Renders the 3D plot foreground as a 2D pixmap.
- *
- * Projects 3D plot points to 2D using the given matrix and draws a
- * gradient line from head to tail.
- *
- * @param matrix Transform matrix for projection.
- * @param data 3D plot points.
- * @return Rendered foreground pixmap.
  */
 QImage Widgets::Plot3D::renderData(const QMatrix4x4& matrix, const DSP::LineSeries3D& data)
 {
@@ -1353,20 +1167,7 @@ QImage Widgets::Plot3D::renderData(const QMatrix4x4& matrix, const DSP::LineSeri
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Calculates the left and right eye transformation matrices for 3D
- *        anaglyph rendering.
- *
- * Simulates realistic human stereoscopic vision by combining:
- * - Horizontal eye separation (scaled by zoom) to generate parallax.
- * - Z-axis rotation (toe-in) to simulate convergence on a focal point.
- * - Micro-jittered rotation axes to reflect natural human eye asymmetry.
- *
- * This improves stereo depth perception and avoids the unnatural feel of
- * mathematically perfect symmetry.
- *
- * @param matrix The original view matrix to transform for stereo rendering.
- * @param staticView If true, disables zoom scaling for eye separation.
- * @return A QPair with the left and right eye matrices.
+ * @brief Calculates the left and right eye transformation matrices for 3D anaglyph rendering.
  */
 QPair<QMatrix4x4, QMatrix4x4> Widgets::Plot3D::eyeTransformations(const QMatrix4x4& matrix)
 {
@@ -1397,10 +1198,6 @@ QPair<QMatrix4x4, QMatrix4x4> Widgets::Plot3D::eyeTransformations(const QMatrix4
 
 /**
  * @brief Handles mouse wheel events to worldScale in or out of the 3D plot.
- * @param event The wheel event containing scroll delta.
- *
- * Applies smooth continuous zoom using the same approach as PlotWidget.
- * Normalizes scroll delta to fractional ticks for touchpad compatibility.
  */
 void Widgets::Plot3D::wheelEvent(QWheelEvent* event)
 {
@@ -1419,14 +1216,6 @@ void Widgets::Plot3D::wheelEvent(QWheelEvent* event)
 
 /**
  * @brief Handles mouse movement events to rotate or pan the 3D camera.
- *
- * If orbit navigation is enabled, this rotates the camera around the plot.
- * If orbit navigation is disabled, this pans the camera view horizontally and
- * vertically.
- *
- * Emits cameraChanged and redraws after movement.
- *
- * @param event The mouse move event containing the current cursor position.
  */
 void Widgets::Plot3D::mouseMoveEvent(QMouseEvent* event)
 {
@@ -1465,7 +1254,6 @@ void Widgets::Plot3D::mouseMoveEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse press events to start dragging and change cursor.
- * @param event The mouse press event containing the cursor position.
  */
 void Widgets::Plot3D::mousePressEvent(QMouseEvent* event)
 {
@@ -1492,7 +1280,6 @@ void Widgets::Plot3D::mousePressEvent(QMouseEvent* event)
 
 /**
  * @brief Handles mouse release events to stop dragging and reset cursor.
- * @param event The mouse release event.
  */
 void Widgets::Plot3D::mouseReleaseEvent(QMouseEvent* event)
 {

@@ -124,7 +124,7 @@ def test_painter_group_widget_id_persists(api_client, clean_state):
 
     api_client.set_operation_mode("project")
     time.sleep(0.1)
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.2)
 
     config = api_client.command("project.exportJson")["config"]
@@ -145,10 +145,10 @@ def test_painter_with_syntax_error_does_not_crash(api_client, clean_state):
 
     api_client.set_operation_mode("project")
     time.sleep(0.1)
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(0.5)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert "error" not in status or not status["error"]
 
 
@@ -169,7 +169,7 @@ def test_painter_with_runaway_loop_persists(api_client, clean_state):
 
     api_client.set_operation_mode("project")
     time.sleep(0.1)
-    api_client.command("project.loadIntoFrameBuilder")
+    api_client.command("project.activate")
     time.sleep(1.0)
 
     config = api_client.command("project.exportJson")["config"]

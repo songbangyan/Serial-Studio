@@ -34,7 +34,7 @@ def _is_commercial(api_client) -> bool:
 
 def _new_project(api_client, title: str = "Multi-Source Test") -> None:
     """Create a fresh project in ProjectFile mode."""
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.2)
     try:
         api_client.command("project.setTitle", {"title": title})
@@ -320,7 +320,7 @@ def test_export_reimport_multi_source(api_client, clean_state):
     exported = api_client.command("project.exportJson")
     config = exported["config"]
 
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.2)
     api_client.load_project_from_json(config)
     time.sleep(0.3)

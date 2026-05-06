@@ -9,6 +9,7 @@
 #include "AI/ToolDispatcher.h"
 
 #include <QFile>
+#include <QHash>
 #include <QUuid>
 
 #include "AI/CommandRegistry.h"
@@ -82,6 +83,90 @@ QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix) const
   return reply;
 }
 
+/** @brief Returns the top-level scope namespaces with descriptions. */
+QJsonObject AI::ToolDispatcher::listCategories() const
+{
+  // Curated scope descriptions (only emitted when scope has non-Blocked commands)
+  static const QHash<QString, QString> kDescriptions = {
+    {      QStringLiteral("project"),
+     QStringLiteral("Project document operations: open/save, groups, datasets, "
+     "actions, sources, parsers, painter scripts, output widgets, "
+     "data tables, workspaces.")                                                                             },
+    {           QStringLiteral("io"),
+     QStringLiteral("Hardware I/O: connect/disconnect, bus selection, plus "
+     "per-driver configuration (uart, network, ble, audio, canbus, "
+     "modbus, hid, usb, process).")                                                                          },
+    {      QStringLiteral("console"),
+     QStringLiteral("Terminal display, send raw frames, console export.")                                    },
+    {QStringLiteral("consoleExport"),                       QStringLiteral("Console capture export to file.")},
+    {          QStringLiteral("csv"),                        QStringLiteral("CSV export status and control.")},
+    {    QStringLiteral("csvExport"),                                   QStringLiteral("CSV export to file.")},
+    {    QStringLiteral("csvPlayer"),
+     QStringLiteral("CSV file replay: open/close, paused state, step, seek.")                                },
+    {   QStringLiteral("mdf4Export"),                            QStringLiteral("MDF4 export to file (Pro).")},
+    {   QStringLiteral("mdf4Player"),                               QStringLiteral("MDF4 file replay (Pro).")},
+    {         QStringLiteral("mqtt"),
+     QStringLiteral("MQTT broker connectivity, authentication, SSL, topics (Pro).")                          },
+    {    QStringLiteral("dashboard"),
+     QStringLiteral("Live dashboard data, FPS, point limits, operation mode.")                               },
+    {           QStringLiteral("ui"), QStringLiteral("Window state, layouts, widget settings, active group.")},
+    {     QStringLiteral("sessions"),                        QStringLiteral("Session database export (Pro).")},
+    {    QStringLiteral("licensing"),           QStringLiteral("License activation, validation, trial mode.")},
+    {QStringLiteral("notifications"),
+     QStringLiteral("In-app notification center: post, list, channels, mark read.")                          },
+    {   QStringLiteral("extensions"),                           QStringLiteral("Plugin/extension lifecycle.")},
+    {         QStringLiteral("meta"),
+     QStringLiteral("Discovery: list categories, list commands by prefix, describe one "
+     "command, fetch help/scripting docs/recipes, execute by name.")                                         },
+  };
+
+  const auto& commands = API::CommandRegistry::instance().commands();
+  const auto& aiReg    = AI::CommandRegistry::instance();
+
+  QHash<QString, int> counts;
+  for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
+    if (aiReg.safetyOf(it.value().name) == Safety::Blocked)
+      continue;
+
+    const QString scope = it.value().name.section(QLatin1Char('.'), 0, 0);
+    counts[scope] += 1;
+  }
+
+  // Always advertise the meta scope even if it isn't in the registry.
+  if (!counts.contains(QStringLiteral("meta")))
+    counts[QStringLiteral("meta")] = 6;
+
+  // Sort scopes (build vector first since QJsonValueRef is non-swappable)
+  std::vector<QJsonObject> rows;
+  rows.reserve(counts.size());
+  for (auto it = counts.constBegin(); it != counts.constEnd(); ++it) {
+    QJsonObject row;
+    row[QStringLiteral("scope")]        = it.key();
+    row[QStringLiteral("commandCount")] = it.value();
+    row[QStringLiteral("description")]  = kDescriptions.value(it.key(), QStringLiteral(""));
+    row[QStringLiteral("listPrefix")]   = it.key() + QLatin1Char('.');
+    rows.push_back(row);
+  }
+
+  std::sort(rows.begin(), rows.end(), [](const QJsonObject& a, const QJsonObject& b) {
+    return a.value(QStringLiteral("scope")).toString()
+         < b.value(QStringLiteral("scope")).toString();
+  });
+
+  QJsonArray entries;
+  for (const auto& row : rows)
+    entries.append(row);
+
+  QJsonObject reply;
+  reply[QStringLiteral("ok")]         = true;
+  reply[QStringLiteral("count")]      = entries.size();
+  reply[QStringLiteral("categories")] = entries;
+  reply[QStringLiteral("hint")] =
+    QStringLiteral("Call meta.listCommands{prefix: \"<scope>.\"} to see the commands in a scope, "
+                   "then meta.describeCommand{name} for the input schema before invoking.");
+  return reply;
+}
+
 /** @brief Returns the metadata block for a single command, or an empty object. */
 QJsonObject AI::ToolDispatcher::describeCommand(const QString& name) const
 {
@@ -133,7 +218,7 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& name,
     return reply;
   }
 
-  if (safety == Safety::Confirm && !autoConfirmSafe) {
+  if ((safety == Safety::Confirm || safety == Safety::AlwaysConfirm) && !autoConfirmSafe) {
     Q_EMIT confirmationRequested(name, args);
     QJsonObject reply;
     reply[QStringLiteral("ok")]    = false;
@@ -153,7 +238,10 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& name,
     QJsonObject error;
     error[QStringLiteral("code")]    = response.errorCode;
     error[QStringLiteral("message")] = response.errorMessage;
-    reply[QStringLiteral("error")]   = error;
+    if (!response.errorData.isEmpty())
+      error[QStringLiteral("data")] = response.errorData;
+
+    reply[QStringLiteral("error")] = error;
   }
   return reply;
 }
@@ -173,17 +261,54 @@ static QJsonObject runSafeCommand(const QString& name)
   return response.result;
 }
 
+/** @brief Returns a one-shot composite of every readable status endpoint. */
+QJsonObject AI::ToolDispatcher::getSnapshot() const
+{
+  // Curated read-only commands; missing ones (e.g. commercial-only) are skipped.
+  static const QStringList kStatusCommands = {
+    QStringLiteral("project.getStatus"),
+    QStringLiteral("io.getStatus"),
+    QStringLiteral("dashboard.getStatus"),
+    QStringLiteral("console.getConfig"),
+    QStringLiteral("consoleExport.getStatus"),
+    QStringLiteral("csvExport.getStatus"),
+    QStringLiteral("csvPlayer.getStatus"),
+    QStringLiteral("mqtt.getConnectionStatus"),
+    QStringLiteral("sessions.getStatus"),
+    QStringLiteral("mdf4Export.getStatus"),
+    QStringLiteral("mdf4Player.getStatus"),
+    QStringLiteral("licensing.getStatus"),
+    QStringLiteral("notifications.getUnreadCount"),
+  };
+
+  QJsonObject snapshot;
+  QJsonArray skipped;
+  for (const auto& name : kStatusCommands) {
+    if (!API::CommandRegistry::instance().hasCommand(name)) {
+      skipped.append(name);
+      continue;
+    }
+
+    snapshot.insert(name, runSafeCommand(name));
+  }
+
+  if (!skipped.isEmpty())
+    snapshot.insert(QStringLiteral("skipped"), skipped);
+
+  return snapshot;
+}
+
 /** @brief Returns project structure assembled from a curated set of safe list commands. */
 QJsonObject AI::ToolDispatcher::getProjectState() const
 {
   static const QStringList kSafeListCommands = {
-    QStringLiteral("project.groups.list"),
-    QStringLiteral("project.datasets.list"),
-    QStringLiteral("project.actions.list"),
+    QStringLiteral("project.group.list"),
+    QStringLiteral("project.dataset.list"),
+    QStringLiteral("project.action.list"),
     QStringLiteral("project.source.list"),
-    QStringLiteral("project.tables.list"),
-    QStringLiteral("project.workspaces.list"),
-    QStringLiteral("project.parser.getCode"),
+    QStringLiteral("project.dataTable.list"),
+    QStringLiteral("project.workspace.list"),
+    QStringLiteral("project.frameParser.getCode"),
     QStringLiteral("project.frameParser.getConfig"),
   };
 

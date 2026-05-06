@@ -24,16 +24,6 @@ class SseEventReader;
 
 /**
  * @brief Real Gemini streamGenerateContent streaming Reply.
- *
- * Posts a JSON body to the v1beta streamGenerateContent endpoint with
- * ?alt=sse, parses each chunk (a full GenerateContentResponse), and
- * translates `candidates[0].content.parts[]` text and functionCall
- * entries into the provider-neutral Reply signals.
- *
- * Gemini does not stream functionCall arguments -- they arrive complete
- * in a single chunk. Gemini also does not return tool-call ids; this
- * class synthesizes UUIDs so the orchestrator can match results back
- * via the same id space as Anthropic / OpenAI.
  */
 class GeminiReply : public Reply {
   Q_OBJECT

@@ -96,6 +96,7 @@ struct CommandResponse {
   QJsonObject result;
   QString errorCode;
   QString errorMessage;
+  QJsonObject errorData;
 
   QJsonObject toJson() const
   {
@@ -111,7 +112,10 @@ struct CommandResponse {
       QJsonObject error;
       error[QStringLiteral("code")]    = errorCode;
       error[QStringLiteral("message")] = errorMessage;
-      json[QStringLiteral("error")]    = error;
+      if (!errorData.isEmpty())
+        error[QStringLiteral("data")] = errorData;
+
+      json[QStringLiteral("error")] = error;
     }
 
     return json;
@@ -131,13 +135,17 @@ struct CommandResponse {
     return resp;
   }
 
-  static CommandResponse makeError(const QString& id, const QString& code, const QString& message)
+  static CommandResponse makeError(const QString& id,
+                                   const QString& code,
+                                   const QString& message,
+                                   const QJsonObject& data = QJsonObject())
   {
     CommandResponse resp;
     resp.id           = id;
     resp.success      = false;
     resp.errorCode    = code;
     resp.errorMessage = message;
+    resp.errorData    = data;
     return resp;
   }
 };

@@ -57,9 +57,6 @@ Misc::Translator& Misc::Translator::instance()
 
 /**
  * @brief Returns the current language enum value.
- *
- * Returns the current language ID, which corresponds to the indexes of the
- * languages returned by the \c availableLanguages() function.
  */
 Misc::Translator::Language Misc::Translator::language() const
 {
@@ -284,12 +281,6 @@ QStringList& Misc::Translator::availableLanguages()
 
 /**
  * @brief Sets the application language by enum value and reloads translations.
- *
- * Changes the language of the application and emits the signals appropiate to
- * reload every string that uses the Qt translator system.
- *
- * @param language language ID based on the indexes of the \a
- * availableLanguages() function
  */
 void Misc::Translator::setLanguage(const Language language)
 {
@@ -383,13 +374,6 @@ void Misc::Translator::setLanguage(const Language language)
 
 /**
  * @brief Loads a specific .qm translation file for the given locale.
- *
- * Changes the language of the application and emits the signals neccesary to
- * reload every string that uses the Qt translator system.
- *
- * @param locale    user-set locale
- * @param language  name of the *.qm file to load from the "translations"
- *                  directory inside the application's resources
  */
 void Misc::Translator::setLanguage(const QLocale& locale, const QString& language)
 {

@@ -45,11 +45,6 @@ using PlayerSessionPayloadPtr = std::shared_ptr<PlayerSessionPayload>;
 
 /**
  * @brief Worker that performs the heavy session-loading SQL off the main thread.
- *
- * Owns a worker-thread @c QSqlDatabase connection only for the duration of a
- * single @c openAndLoad call. The connection is opened, queried, and closed in
- * one slot invocation. Per-frame fetches stay on the main thread under the
- * Player's own connection.
  */
 class PlayerLoaderWorker : public QObject {
   Q_OBJECT

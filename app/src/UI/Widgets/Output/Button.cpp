@@ -28,8 +28,6 @@ Widgets::Output::Button::Button(const DataModel::OutputWidget& config, QQuickIte
 
 /**
  * @brief Called from QML when the button is clicked.
- *
- * Sends value 1 through the transmit function.
  */
 void Widgets::Output::Button::click()
 {

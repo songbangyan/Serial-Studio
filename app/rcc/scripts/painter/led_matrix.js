@@ -8,37 +8,35 @@
 const LEDS_PER_ROW = 16;
 
 function lit_color(t) {
-  if (t < 0.66) return "#10b981";
-  if (t < 0.85) return "#f59e0b";
-  return "#dc2626";
+  if (t < 0.66) return theme.widget_highlight;
+  if (t < 0.85) return theme.accent;
+  return theme.alarm;
 }
 
 function unlit_color(t) {
-  if (t < 0.66) return "#dcfce7";
-  if (t < 0.85) return "#fef3c7";
-  return "#fee2e2";
+  return theme.widget_border;
 }
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 
   // Header.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("LED  MATRIX", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(LEDS_PER_ROW + " LEDs / row", w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   // Card body.
@@ -50,11 +48,11 @@ function paint(ctx, w, h) {
   const cardW = w - padX * 2;
   const cardH = h - padTop - padBot;
 
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(cardX + 1, cardY + 2, cardW, cardH);
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(cardX, cardY, cardW, cardH);
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(cardX + 0.5, cardY + 0.5, cardW - 1, cardH - 1);
 
@@ -77,7 +75,7 @@ function paint(ctx, w, h) {
     const yMid = cardY + i * rowH + rowH * 0.5;
 
     // Channel label on the left.
-    ctx.fillStyle    = "#0f172a";
+    ctx.fillStyle    = theme.widget_text;
     ctx.font         = "bold 11px sans-serif";
     ctx.textAlign    = "start";
     ctx.textBaseline = "middle";
@@ -95,7 +93,7 @@ function paint(ctx, w, h) {
     }
 
     // Numeric readout on the right.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font      = "bold 11px sans-serif";
     ctx.textAlign = "end";
     const txt = (Number.isFinite(ds.value) ? ds.value.toFixed(1) : "--") +
@@ -104,7 +102,7 @@ function paint(ctx, w, h) {
 
     // Faint row separator.
     if (i < datasets.length - 1) {
-      ctx.fillStyle = "#f1f5f9";
+      ctx.fillStyle = theme.widget_border;
       ctx.fillRect(cardX + innerPad, cardY + (i + 1) * rowH - 0.5,
                    cardW - innerPad * 2, 1);
     }

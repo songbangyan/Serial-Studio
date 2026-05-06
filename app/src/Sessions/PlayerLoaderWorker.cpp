@@ -154,8 +154,6 @@ bool Sessions::PlayerLoaderWorker::loadTimestampIndex(QSqlDatabase& db,
 
 /**
  * @brief Opens the file, fetches column order + project JSON + timestamp index, ships it back.
- * @param filePath  Absolute path to the .db file.
- * @param sessionId Session to load, or -1 to pick the most recent.
  */
 void Sessions::PlayerLoaderWorker::openAndLoad(const QString& filePath, int sessionId)
 {

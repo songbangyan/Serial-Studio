@@ -32,12 +32,6 @@
 
 /**
  * @brief Constructs a Gyroscope widget.
- *
- * Initializes the gyroscope with the given index and optional parent.
- * If the widget is valid, connects the update signal.
- *
- * @param index Index of the gyroscope in the Dashboard.
- * @param parent Optional parent QQuickItem.
  */
 Widgets::Gyroscope::Gyroscope(const int index, QQuickItem* parent)
   : QQuickItem(parent)
@@ -57,8 +51,6 @@ Widgets::Gyroscope::Gyroscope(const int index, QQuickItem* parent)
 
 /**
  * @brief Gets the current yaw angle.
- *
- * @return Yaw angle in degrees, normalized to [-180, 180].
  */
 double Widgets::Gyroscope::yaw() const
 {
@@ -67,8 +59,6 @@ double Widgets::Gyroscope::yaw() const
 
 /**
  * @brief Gets the current roll angle.
- *
- * @return Roll angle in degrees, normalized to [-180, 180].
  */
 double Widgets::Gyroscope::roll() const
 {
@@ -77,8 +67,6 @@ double Widgets::Gyroscope::roll() const
 
 /**
  * @brief Gets the current pitch angle.
- *
- * @return Pitch angle in degrees, normalized to [-180, 180].
  */
 double Widgets::Gyroscope::pitch() const
 {

@@ -137,8 +137,8 @@ def test_console_only_increments_rx_byte_counter(
 ):
     """
     Even though FrameReader short-circuits, the raw-bytes-received counter
-    exposed via io.manager.getStats must increment when the device sends
-    data. This confirms the raw path is still plumbed through
+    exposed via io.getStatus must increment when the device sends data.
+    This confirms the raw path is still plumbed through
     DeviceManager::rawDataReceived.
     """
     api_client.command("dashboard.setOperationMode", {"mode": CONSOLE_ONLY_MODE})
@@ -149,14 +149,14 @@ def test_console_only_increments_rx_byte_counter(
     assert device_simulator.wait_for_connection(timeout=5.0)
 
     # Read baseline (some tests may share the process across runs)
-    stats_before = api_client.command("io.manager.getStatus")
+    stats_before = api_client.command("io.getStatus")
     rx_before = stats_before.get("bytesReceived", 0)
 
     payload = b"0123456789" * 50  # 500 bytes
     device_simulator.send_frame(payload)
     time.sleep(1.0)
 
-    stats_after = api_client.command("io.manager.getStatus")
+    stats_after = api_client.command("io.getStatus")
     rx_after = stats_after.get("bytesReceived", 0)
 
     # Best-effort check: the counter should have advanced. Some builds may

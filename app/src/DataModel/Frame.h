@@ -183,11 +183,6 @@ inline QString layoutKey(int groupId)
 namespace WorkspaceIds {
 /**
  * @brief Reserved workspace ID slots and the auto/user range boundary.
- *
- * Auto IDs occupy [AutoStart, UserStart): Overview = 1000, AllData = 1001,
- * per-group = PerGroupStart + groupId. User-defined workspaces start at
- * UserStart so a future group can never claim an ID a user picked, and
- * mergeAutoWorkspaceUpdates can never confuse the two.
  */
 inline constexpr int AutoStart     = 1000;
 inline constexpr int Overview      = 1000;
@@ -203,19 +198,8 @@ namespace DataModel {
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Reads a value from a QJsonObject based on a key, returning a default
- *        value if the key does not exist.
- *
- * This function checks if the given key exists in the provided QJsonObject.
- * If the key is found, it returns the associated value. Otherwise, it returns
- * the specified default value.
- *
- * @param object The QJsonObject to read the data from.
- * @param key The key to look for in the QJsonObject.
- * @param defaultValue The value to return if the key is not found in JSON.
- *
- * @return The value associated with the key, or the defaultValue if the key is
- *         not present.
+ * @brief Reads a value from a QJsonObject based on a key, returning a default value if the key does
+ * not exist.
  */
 [[nodiscard]] inline QVariant ss_jsr(const QJsonObject& object,
                                      QLatin1StringView key,
@@ -264,15 +248,6 @@ static_assert(sizeof(Action) % alignof(Action) == 0, "Unaligned Action struct");
 
 /**
  * @brief Generates the raw byte sequence to transmit for a given Action.
- *
- * This function resolves the action's `txData`, `eolSequence`, and encoding
- * settings into a final `QByteArray` suitable for transmission.
- *
- * This function exists outside the Frame definition to avoid circular
- * dependencies between `Frame.h` and `SerialStudio.h`.
- *
- * @param action The Action to generate the transmission bytes from.
- * @return QByteArray containing the resolved byte stream to transmit.
  */
 QByteArray get_tx_bytes(const Action& action);
 
@@ -293,10 +268,6 @@ enum class OutputWidgetType : quint8 {
 
 /**
  * @brief Represents an interactive output widget that sends data to the device.
- *
- * Each output widget contains a JavaScript `transmit(value)` function that
- * converts the widget's current value into bytes to send over the connection.
- * This allows users to format output data for any protocol or requirement.
  */
 struct alignas(8) OutputWidget {
   int widgetId          = -1;                        ///< Unique widget ID within the group
@@ -318,8 +289,6 @@ static_assert(sizeof(OutputWidget) % alignof(OutputWidget) == 0, "Unaligned Outp
 
 /**
  * @brief Serializes an OutputWidget to a QJsonObject.
- * @param w The OutputWidget to serialize.
- * @return QJsonObject representing the OutputWidget.
  */
 [[nodiscard]] inline QJsonObject serialize(const OutputWidget& w)
 {
@@ -342,9 +311,6 @@ static_assert(sizeof(OutputWidget) % alignof(OutputWidget) == 0, "Unaligned Outp
 
 /**
  * @brief Deserializes an OutputWidget from a QJsonObject.
- * @param w Output OutputWidget object to populate.
- * @param obj JSON object to read from.
- * @return true if valid and successfully parsed, false otherwise.
  */
 [[nodiscard]] inline bool read(OutputWidget& w, const QJsonObject& obj)
 {
@@ -415,9 +381,6 @@ static_assert(sizeof(Dataset) % alignof(Dataset) == 0, "Unaligned Dataset struct
 
 /**
  * @brief Distinguishes input (visualization) groups from output (control) groups.
- *
- * Legacy projects that lack this field default to Input, preserving backward
- * compatibility.
  */
 enum class GroupType : quint8 {
   Input  = 0,  ///< Visualization group (datasets, plots, etc.)
@@ -446,12 +409,8 @@ struct alignas(8) Group {
 static_assert(sizeof(Group) % alignof(Group) == 0, "Unaligned Group struct");
 
 /**
- * @brief Describes a single data source (device + connection settings) within a
- * project. Each source owns its own frame detection configuration and opaque
- * connection settings.
- *
- * busType is stored as int to avoid a circular dependency with SerialStudio.h
- * (which already includes Frame.h). Cast to SerialStudio::BusType at call sites.
+ * @brief Describes a single data source (device + connection settings) within a project. Each
+ * source owns its own frame detection configuration and opaque connection settings.
  */
 struct alignas(8) Source {
   int sourceId = 0;                    ///< Unique source identifier (0 = default/backward-compat)
@@ -498,8 +457,6 @@ struct TableDef {
 
 /**
  * @brief Serializes a Source to a QJsonObject.
- * @param s The Source to serialize.
- * @return QJsonObject representing the Source.
  */
 [[nodiscard]] inline QJsonObject serialize(const Source& s)
 {
@@ -532,8 +489,6 @@ struct TableDef {
 
 /**
  * @brief Serializes a RegisterDef to a QJsonObject.
- * @param r The RegisterDef to serialize.
- * @return QJsonObject representing the register definition.
  */
 [[nodiscard]] inline QJsonObject serialize(const RegisterDef& r)
 {
@@ -554,9 +509,6 @@ struct TableDef {
 
 /**
  * @brief Deserializes a RegisterDef from a QJsonObject.
- * @param r Output RegisterDef to populate.
- * @param obj JSON object to read from.
- * @return true if valid and successfully parsed, false otherwise.
  */
 [[nodiscard]] inline bool read(RegisterDef& r, const QJsonObject& obj)
 {
@@ -583,8 +535,6 @@ struct TableDef {
 
 /**
  * @brief Serializes a TableDef to a QJsonObject.
- * @param t The TableDef to serialize.
- * @return QJsonObject representing the table definition.
  */
 [[nodiscard]] inline QJsonObject serialize(const TableDef& t)
 {
@@ -600,9 +550,6 @@ struct TableDef {
 
 /**
  * @brief Deserializes a TableDef from a QJsonObject.
- * @param t Output TableDef to populate.
- * @param obj JSON object to read from.
- * @return true if valid and successfully parsed, false otherwise.
  */
 [[nodiscard]] inline bool read(TableDef& t, const QJsonObject& obj)
 {
@@ -627,9 +574,6 @@ struct TableDef {
 
 /**
  * @brief Represents a reference to a specific widget in the dashboard.
- *
- * Each WidgetRef identifies a widget by its type, the group it belongs to,
- * and its relative index within that widget type.
  */
 struct WidgetRef {
   int widgetType    = 0;
@@ -639,10 +583,6 @@ struct WidgetRef {
 
 /**
  * @brief Represents a user-defined dashboard workspace.
- *
- * A workspace is a named collection of widget references that the user can
- * create, modify, and switch between in the dashboard. Each workspace
- * maintains its own layout persistence via the layout key system.
  */
 struct Workspace {
   int workspaceId = -1;
@@ -653,8 +593,6 @@ struct Workspace {
 
 /**
  * @brief Serializes a Workspace to a QJsonObject.
- * @param w The Workspace to serialize.
- * @return QJsonObject representing the Workspace.
  */
 [[nodiscard]] inline QJsonObject serialize(const Workspace& w)
 {
@@ -679,9 +617,6 @@ struct Workspace {
 
 /**
  * @brief Deserializes a Workspace from a QJsonObject.
- * @param w Output Workspace object to populate.
- * @param obj JSON object to read from.
- * @return true if valid and successfully parsed, false otherwise.
  */
 [[nodiscard]] inline bool read(Workspace& w, const QJsonObject& obj)
 {
@@ -708,11 +643,6 @@ struct Workspace {
 
 /**
  * @brief Current Serial Studio project schema version.
- *
- * Bump when the JSON layout changes incompatibly. Older Serial Studio versions
- * loading a newer file will see this number and can warn the user instead of
- * silently dropping fields. Files written before this field existed default to
- * schemaVersion = 0 on read.
  */
 inline constexpr int kSchemaVersion = 1;
 
@@ -736,35 +666,11 @@ static_assert(sizeof(Frame) % alignof(Frame) == 0, "Unaligned Frame struct");
 
 /**
  * @brief Returns the current application version string for project stamps.
- *
- * Defined in Frame.cpp so Frame.h does not need to include AppInfo.h.
  */
 [[nodiscard]] QString current_writer_version();
 
 /**
  * @brief Clears and resets a Frame object to its default state.
- *
- * This utility function performs a full reset of a Frame by:
- * - Clearing the frame title string
- * - Clearing all groups and actions vectors
- * - Releasing memory held by groups and actions via `shrink_to_fit()`
- * - Resetting `containsCommercialFeatures` to `false`
- *
- * **Performance:**
- * - Time: O(n) where n = total datasets across all groups
- * - Space: Releases all heap-allocated memory for groups/actions
- *
- * **Use Cases:**
- * - Recycling Frame objects in object pools
- * - Resetting state when switching data sources
- * - Preparing for new frame deserialization
- *
- * **Thread Safety:** Not thread-safe - caller must synchronize access
- *
- * @param frame The Frame object to be cleared and reset
- *
- * @note Prefer this over destroying and recreating Frame objects to reduce
- *       allocator pressure in high-frequency scenarios
  */
 inline void clear_frame(Frame& frame) noexcept
 {
@@ -783,30 +689,6 @@ inline void clear_frame(Frame& frame) noexcept
 
 /**
  * @brief Copies only dataset values from source to destination frame.
- *
- * This function performs a fast value-only copy between two structurally
- * equivalent frames. It assumes both frames have identical structure (same
- * groups and datasets) and only copies the mutable value fields.
- *
- * **Copied Fields per Dataset:**
- * - value/rawValue (QString)
- * - numericValue/rawNumericValue (double)
- * - isNumeric (bool)
- *
- * **Performance:**
- * - Time: O(d) where d = total datasets across all groups
- * - Space: O(1) - no allocations, reuses existing vectors
- * - Compared to full copy: substantially faster for typical frames
- *
- * **Precondition:** Both frames must have identical structure (same number
- * of groups and datasets per group). Use compare_frames() to verify.
- *
- * **Thread Safety:** Not thread-safe - caller must synchronize access
- *
- * @param dst Destination frame (must have same structure as src)
- * @param src Source frame to copy values from
- *
- * @warning Undefined behavior if frames have different structures
  */
 inline void copy_frame_values(Frame& dst, const Frame& src) noexcept
 {
@@ -829,31 +711,6 @@ inline void copy_frame_values(Frame& dst, const Frame& src) noexcept
 
 /**
  * @brief Compares two frames for structural equivalence.
- *
- * This function checks whether two Frame instances have the same group count,
- * matching group IDs, and identical dataset `index` values within each group.
- *
- * **Comparison Scope:**
- * - Checked: Group count, group IDs, dataset count, dataset indices
- * - Ignored: Titles, actions, values, units, widget types
- *
- * **Use Cases:**
- * - Detecting frame structure changes during live updates
- * - Validating compatibility between recorded and live data
- * - Determining if dashboard layout needs regeneration
- *
- * **Performance:**
- * - Best case: O(1) when group counts differ
- * - Average case: O(g) where g = number of groups (when early mismatch)
- * - Worst case: O(g x d) where d = average datasets per group
- *
- * **Thread Safety:** Safe if both frames are immutable during comparison
- *
- * @param a First frame to compare
- * @param b Second frame to compare
- * @return true if both frames are structurally equivalent; false otherwise
- *
- * @note This is used in hot path for frame change detection - keep optimized
  */
 [[nodiscard]] inline bool compare_frames(const Frame& a, const Frame& b) noexcept
 {
@@ -897,10 +754,6 @@ inline constexpr int kGroupIdStride = 10000;
 
 /**
  * @brief Single source of truth for the (source, group, dataset) -> uniqueId mapping.
- *
- * Every consumer that needs to derive a uniqueId from project metadata should
- * route through this helper instead of inlining the formula. Keeping the
- * arithmetic in one place means a future schema change only touches Frame.h.
  */
 [[nodiscard]] inline constexpr int dataset_unique_id(int sourceId,
                                                      int groupId,
@@ -919,31 +772,11 @@ inline constexpr int kGroupIdStride = 10000;
 
 /**
  * @brief Finalizes a Frame after deserialization.
- *
- * This function performs post-processing on a Frame object after it has been
- * read from JSON.
- *
- * This function exists outside the Frame definition to avoid circular
- * dependencies between `Frame.h` and `SerialStudio.h`.
- *
- * @param frame The Frame object to finalize.
  */
 void finalize_frame(Frame& frame);
 
 /**
  * @brief Reads and parses I/O frame settings from a JSON object.
- *
- * This function extracts serial frame delimiters and checksum settings
- * from the given JSON configuration. It supports both hexadecimal and
- * escaped string formats.
- *
- * This function exists outside the Frame definition to avoid circular
- * dependencies between `Frame.h` and `SerialStudio.h`.
- *
- * @param frameStart Output byte array for the start-of-frame marker.
- * @param frameEnd Output byte array for the end-of-frame marker.
- * @param checksum Output string indicating the checksum method to use.
- * @param obj Input JSON object containing the I/O settings.
  */
 void read_io_settings(QByteArray& frameStart,
                       QByteArray& frameEnd,
@@ -956,22 +789,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Serializes an Action to a QJsonObject.
- *
- * Converts an Action object into a JSON representation containing:
- * - `icon`: The icon associated with the action.
- * - `title`: The display title of the action.
- * - `txData`: The data to transmit.
- * - `eol`: The end-of-line sequence (e.g., "\\r\\n").
- * - `binary`: Whether the data should be interpreted as binary.
- * - `sourceId`: Target source/device ID for transmission.
- * - `txEncoding`: Encoding mode for payload generation.
- * - `timerIntervalMs`: Timer interval in milliseconds.
- * - `timerMode`: Integer value representing the timer mode enum.
- * - `autoExecuteOnConnect`: Whether to auto-execute this action on device
- *                           connection.
- *
- * @param a The Action object to serialize.
- * @return QJsonObject representing the Action.
  */
 [[nodiscard]] inline QJsonObject serialize(const Action& a)
 {
@@ -992,20 +809,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Serializes a Dataset to a QJsonObject.
- *
- * Converts a Dataset object into a JSON structure including:
- * - Flags: `fft`, `led`, `log`, `graph`, `overviewDisplay`, `virtual`
- * - Indices: `index`, `xAxis`, `groupId`, `datasetId`
- * - Thresholds: `ledHigh`, `alarmLow`, `alarmHigh`
- * - Limits: `fftMin/fftMax`, `plotMin/plotMax`, `widgetMin/widgetMax`
- * - Metadata: `title`, `value`, `units`, `widget`, `numericValue`
- * - FFT settings: `fftSamples`, `fftSamplingRate`
- * - Optional transform code
- *
- * All QString fields are simplified where appropriate.
- *
- * @param d The Dataset object to serialize.
- * @return QJsonObject representing the Dataset.
  */
 [[nodiscard]] inline QJsonObject serialize(const Dataset& d)
 {
@@ -1059,12 +862,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Serializes a Group to a QJsonObject.
- *
- * Converts a Group and all of its datasets/output widgets into a JSON
- * structure.
- *
- * @param g The Group object to serialize.
- * @return QJsonObject representing the Group.
  */
 [[nodiscard]] inline QJsonObject serialize(const Group& g)
 {
@@ -1108,16 +905,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Serializes a Frame to a QJsonObject.
- *
- * Converts a Frame and its contents into a full JSON object including:
- * - `title`: Frame title
- * - `groups`: Array of serialized Group objects
- * - `actions`: Array of serialized Action objects
- *
- * This function is used to export the entire runtime model to JSON.
- *
- * @param f The Frame object to serialize.
- * @return QJsonObject representing the complete Frame.
  */
 [[nodiscard]] inline QJsonObject serialize(const Frame& f)
 {
@@ -1154,9 +941,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Deserializes a Source from a QJsonObject.
- * @param s Output Source to populate.
- * @param obj JSON object to read from.
- * @return true if successfully parsed.
  */
 [[nodiscard]] inline bool read(Source& s, const QJsonObject& obj)
 {
@@ -1190,22 +974,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Deserializes an Action from a QJsonObject.
- *
- * Parses fields from JSON into an Action structure, including:
- * - `txData`: Transmit data
- * - `eol`: End-of-line sequence
- * - `binary`: Binary mode flag
- * - `sourceId`: Target source/device ID for transmission
- * - `icon`: Icon path or name
- * - `title`: Display name
- * - `txEncoding`: Payload encoding mode
- * - `timerIntervalMs`: Timer interval in milliseconds
- * - `autoExecuteOnConnect`: Whether to trigger action on connection
- * - `timerMode`: TimerMode enum (validated and cast safely)
- *
- * @param a Output Action object to populate.
- * @param obj JSON object to read from.
- * @return true if valid and successfully parsed, false otherwise.
  */
 [[nodiscard]] inline bool read(Action& a, const QJsonObject& obj)
 {
@@ -1234,24 +1002,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Deserializes a Dataset from a QJsonObject.
- *
- * Parses all dataset configuration fields, including:
- * - Structural fields: `index`, `groupId`, `datasetId`, `xAxis`
- * - Visualization flags: `fft`, `led`, `log`, `plt`, `overviewDisplay`
- * - Thresholds and limits: `min`, `max`, `ledHigh`, `alarmLow`, `alarmHigh`
- * - FFT settings: `fftSamples`, `fftSamplingRate`
- * - Display info: `title`, `value`, `units`, `widget`
- * - Optional transform code and `virtual` flag
- *
- * If a numeric value is detected in `value`, it's parsed and stored in
- * `numericValue` with the `isNumeric` flag set.
- *
- * Handles legacy single `alarm` field if both high/low are unset.
- * Applies auto-normalization for min/max order.
- *
- * @param d Output Dataset object to populate.
- * @param obj JSON object to parse.
- * @return true if successfully parsed, false if input is malformed.
  */
 [[nodiscard]] inline bool read(Dataset& d, const QJsonObject& obj)
 {
@@ -1336,18 +1086,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Deserializes a Group from a QJsonObject.
- *
- * Reads a group's metadata and its dataset array. Each dataset is deserialized
- * and automatically assigned:
- * - `datasetId` based on array index
- * - `groupId` inherited from parent group
- *
- * Image and output groups may be valid even when they do not contain telemetry
- * datasets.
- *
- * @param g Output Group object to populate.
- * @param obj JSON object representing a group.
- * @return true if group and datasets were valid and parsed correctly.
  */
 [[nodiscard]] inline bool read(Group& g, const QJsonObject& obj)
 {
@@ -1429,19 +1167,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Deserializes a Frame from a QJsonObject.
- *
- * Parses the entire frame hierarchy, including:
- * - `title`: Frame title
- * - `groups`: Array of Group objects
- * - `actions`: Array of Action objects
- *
- * Each group and dataset is assigned unique IDs based on position.
- * Automatically calls `finalize_frame()` after successful parse to compute
- * `containsCommercialFeatures` and assign dataset unique IDs.
- *
- * @param f Output Frame object to populate.
- * @param obj JSON object representing the frame.
- * @return true if the frame is valid and successfully parsed.
  */
 [[nodiscard]] inline bool read(Frame& f, const QJsonObject& obj)
 {
@@ -1508,10 +1233,6 @@ void read_io_settings(QByteArray& frameStart,
 
 /**
  * @brief Represents a single timestamped frame for data export.
- *
- * Stores a Frame and the associated reception timestamp using steady_clock.
- * This is optimized for high-frequency data acquisition where timestamp
- * precision and low overhead are both important.
  */
 struct TimestampedFrame {
   using SteadyClock     = std::chrono::steady_clock;
@@ -1527,36 +1248,24 @@ struct TimestampedFrame {
 
   /**
    * @brief Constructs a timestamped frame by copying frame data.
-   *
-   * @param f Frame data to copy into this timestamped frame
    */
   explicit TimestampedFrame(const DataModel::Frame& f) : data(f), timestamp(SteadyClock::now()) {}
 
   /**
-   * @brief Constructs a timestamped frame by copying frame data and using an
-   * explicit timestamp.
-   *
-   * @param f Frame data to copy into this timestamped frame
-   * @param ts Timestamp to store with the frame
+   * @brief Constructs a timestamped frame by copying frame data and using an explicit timestamp.
    */
   explicit TimestampedFrame(const DataModel::Frame& f, SteadyTimePoint ts) : data(f), timestamp(ts)
   {}
 
   /**
    * @brief Constructs a timestamped frame by moving frame data.
-   *
-   * @param f Frame data to move into this timestamped frame
    */
   explicit TimestampedFrame(DataModel::Frame&& f) noexcept
     : data(std::move(f)), timestamp(SteadyClock::now())
   {}
 
   /**
-   * @brief Constructs a timestamped frame by moving frame data and using an
-   * explicit timestamp.
-   *
-   * @param f Frame data to move into this timestamped frame
-   * @param ts Timestamp to store with the frame
+   * @brief Constructs a timestamped frame by moving frame data and using an explicit timestamp.
    */
   explicit TimestampedFrame(DataModel::Frame&& f, SteadyTimePoint ts) noexcept
     : data(std::move(f)), timestamp(ts)
@@ -1569,9 +1278,7 @@ struct TimestampedFrame {
 };
 
 /**
- * @typedef TimestampedFramePtr
- * @brief Shared pointer to a TimestampedFrame for efficient multi-consumer
- *        distribution.
+ * @brief Shared pointer to a TimestampedFrame for efficient multi-consumer distribution.
  */
 typedef std::shared_ptr<DataModel::TimestampedFrame> TimestampedFramePtr;
 
@@ -1581,12 +1288,6 @@ typedef std::shared_ptr<DataModel::TimestampedFrame> TimestampedFramePtr;
 
 /**
  * @brief Generic JSON serialization for any Serializable type.
- *
- * Provides compile-time guarantee that T has a serialize() function.
- *
- * @tparam T Type satisfying the Serializable concept
- * @param obj Object to serialize
- * @return JSON representation of the object
  */
 template<Concepts::Serializable T>
 [[nodiscard]] inline QJsonObject toJson(const T& obj) noexcept
@@ -1596,13 +1297,6 @@ template<Concepts::Serializable T>
 
 /**
  * @brief Generic JSON deserialization with validation for Serializable types.
- *
- * Provides compile-time guarantee that T has a read() function.
- * Returns std::optional for safer error handling.
- *
- * @tparam T Type satisfying the Serializable concept
- * @param json JSON object to deserialize
- * @return Optional containing the deserialized object if successful
  */
 template<Concepts::Serializable T>
 [[nodiscard]] inline std::optional<T> fromJson(const QJsonObject& json) noexcept
@@ -1616,12 +1310,6 @@ template<Concepts::Serializable T>
 
 /**
  * @brief Validates a Frameable object's structure.
- *
- * Checks that a Frame-like object has valid groups and actions.
- *
- * @tparam T Type satisfying the Frameable concept
- * @param frame Frame-like object to validate
- * @return true if frame has at least one group
  */
 template<Concepts::Frameable T>
 [[nodiscard]] constexpr bool isValidFrame(const T& frame) noexcept

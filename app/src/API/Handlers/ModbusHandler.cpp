@@ -50,7 +50,7 @@ void API::Handlers::ModbusHandler::registerCommonCommands()
   auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
-    QStringLiteral("io.driver.modbus.setProtocolIndex"),
+    QStringLiteral("io.modbus.setProtocolIndex"),
     QStringLiteral("Set Modbus protocol (params: protocolIndex - 0=RTU, 1=TCP)"),
     API::makeSchema({
       {QStringLiteral("protocolIndex"),
@@ -58,7 +58,7 @@ void API::Handlers::ModbusHandler::registerCommonCommands()
        QStringLiteral("Protocol index (0=RTU, 1=TCP)")}
   }),
     &setProtocolIndex);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setSlaveAddress"),
+  registry.registerCommand(QStringLiteral("io.modbus.setSlaveAddress"),
                            QStringLiteral("Set Modbus slave address (params: address)"),
                            API::makeSchema({
                              {QStringLiteral("address"),
@@ -67,7 +67,7 @@ void API::Handlers::ModbusHandler::registerCommonCommands()
   }),
                            &setSlaveAddress);
   registry.registerCommand(
-    QStringLiteral("io.driver.modbus.setPollInterval"),
+    QStringLiteral("io.modbus.setPollInterval"),
     QStringLiteral("Set polling interval in milliseconds (params: intervalMs)"),
     API::makeSchema({
       {QStringLiteral("intervalMs"),
@@ -85,13 +85,13 @@ void API::Handlers::ModbusHandler::registerTcpCommands()
   auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
-    QStringLiteral("io.driver.modbus.setHost"),
+    QStringLiteral("io.modbus.setHost"),
     QStringLiteral("Set TCP host (params: host)"),
     API::makeSchema({
       {QStringLiteral("host"), QStringLiteral("string"), QStringLiteral("TCP host address")}
   }),
     &setHost);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setPort"),
+  registry.registerCommand(QStringLiteral("io.modbus.setPort"),
                            QStringLiteral("Set TCP port (params: port)"),
                            API::makeSchema({
                              {QStringLiteral("port"),
@@ -108,7 +108,7 @@ void API::Handlers::ModbusHandler::registerRtuCommands()
 {
   auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setSerialPortIndex"),
+  registry.registerCommand(QStringLiteral("io.modbus.setSerialPortIndex"),
                            QStringLiteral("Set RTU serial port by index (params: portIndex)"),
                            API::makeSchema({
                              {QStringLiteral("portIndex"),
@@ -116,7 +116,7 @@ void API::Handlers::ModbusHandler::registerRtuCommands()
                               QStringLiteral("Index of the serial port to select")}
   }),
                            &setSerialPortIndex);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setBaudRate"),
+  registry.registerCommand(QStringLiteral("io.modbus.setBaudRate"),
                            QStringLiteral("Set RTU baud rate (params: baudRate)"),
                            API::makeSchema({
                              {QStringLiteral("baudRate"),
@@ -124,7 +124,7 @@ void API::Handlers::ModbusHandler::registerRtuCommands()
                               QStringLiteral("Baud rate value (must be positive)")}
   }),
                            &setBaudRate);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setParityIndex"),
+  registry.registerCommand(QStringLiteral("io.modbus.setParityIndex"),
                            QStringLiteral("Set RTU parity (params: parityIndex)"),
                            API::makeSchema({
                              {QStringLiteral("parityIndex"),
@@ -132,7 +132,7 @@ void API::Handlers::ModbusHandler::registerRtuCommands()
                               QStringLiteral("Index of the parity option to select")}
   }),
                            &setParityIndex);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setDataBitsIndex"),
+  registry.registerCommand(QStringLiteral("io.modbus.setDataBitsIndex"),
                            QStringLiteral("Set RTU data bits (params: dataBitsIndex)"),
                            API::makeSchema({
                              {QStringLiteral("dataBitsIndex"),
@@ -140,7 +140,7 @@ void API::Handlers::ModbusHandler::registerRtuCommands()
                               QStringLiteral("Index of the data bits option to select")}
   }),
                            &setDataBitsIndex);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.setStopBitsIndex"),
+  registry.registerCommand(QStringLiteral("io.modbus.setStopBitsIndex"),
                            QStringLiteral("Set RTU stop bits (params: stopBitsIndex)"),
                            API::makeSchema({
                              {QStringLiteral("stopBitsIndex"),
@@ -158,7 +158,7 @@ void API::Handlers::ModbusHandler::registerRegisterGroupCommands()
   auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
-    QStringLiteral("io.driver.modbus.addRegisterGroup"),
+    QStringLiteral("io.modbus.addRegisterGroup"),
     QStringLiteral("Add register group (params: type, startAddress, count)"),
     API::makeSchema({
       {        QStringLiteral("type"),QStringLiteral("integer"),QStringLiteral("Register type index")                      },
@@ -170,7 +170,7 @@ void API::Handlers::ModbusHandler::registerRegisterGroupCommands()
        QStringLiteral("Number of registers to read (1-125)")}
   }),
     &addRegisterGroup);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.removeRegisterGroup"),
+  registry.registerCommand(QStringLiteral("io.modbus.removeRegisterGroup"),
                            QStringLiteral("Remove register group by index (params: groupIndex)"),
                            API::makeSchema({
                              {QStringLiteral("groupIndex"),
@@ -178,7 +178,7 @@ void API::Handlers::ModbusHandler::registerRegisterGroupCommands()
                               QStringLiteral("Index of the register group to remove")}
   }),
                            &removeRegisterGroup);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.clearRegisterGroups"),
+  registry.registerCommand(QStringLiteral("io.modbus.clearRegisterGroups"),
                            QStringLiteral("Clear all register groups"),
                            API::emptySchema(),
                            &clearRegisterGroups);
@@ -192,39 +192,39 @@ void API::Handlers::ModbusHandler::registerQueryCommands()
   auto& registry   = CommandRegistry::instance();
   const auto empty = API::emptySchema();
 
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.modbus.getConfig"),
                            QStringLiteral("Get current Modbus configuration"),
                            empty,
                            &getConfiguration);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getProtocolList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listProtocols"),
                            QStringLiteral("Get list of supported protocols"),
                            empty,
                            &getProtocolList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getSerialPortList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listSerialPorts"),
                            QStringLiteral("Get list of available serial ports"),
                            empty,
                            &getSerialPortList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getParityList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listParities"),
                            QStringLiteral("Get list of parity options"),
                            empty,
                            &getParityList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getDataBitsList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listDataBits"),
                            QStringLiteral("Get list of data bits options"),
                            empty,
                            &getDataBitsList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getStopBitsList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listStopBits"),
                            QStringLiteral("Get list of stop bits options"),
                            empty,
                            &getStopBitsList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getBaudRateList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listBaudRates"),
                            QStringLiteral("Get list of baud rate options"),
                            empty,
                            &getBaudRateList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getRegisterTypeList"),
+  registry.registerCommand(QStringLiteral("io.modbus.listRegisterTypes"),
                            QStringLiteral("Get list of register type names"),
                            empty,
                            &getRegisterTypeList);
-  registry.registerCommand(QStringLiteral("io.driver.modbus.getRegisterGroups"),
+  registry.registerCommand(QStringLiteral("io.modbus.listRegisterGroups"),
                            QStringLiteral("Get all configured register groups"),
                            empty,
                            &getRegisterGroups);
@@ -236,7 +236,6 @@ void API::Handlers::ModbusHandler::registerQueryCommands()
 
 /**
  * @brief Set Modbus protocol (RTU or TCP)
- * @param params Requires "protocolIndex" (int: 0=RTU, 1=TCP)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setProtocolIndex(const QString& id,
                                                                     const QJsonObject& params)
@@ -268,7 +267,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setProtocolIndex(const QStrin
 
 /**
  * @brief Set Modbus slave address
- * @param params Requires "address" (int: 1-247)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setSlaveAddress(const QString& id,
                                                                    const QJsonObject& params)
@@ -296,7 +294,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setSlaveAddress(const QString
 
 /**
  * @brief Set polling interval in milliseconds
- * @param params Requires "intervalMs" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setPollInterval(const QString& id,
                                                                    const QJsonObject& params)
@@ -322,7 +319,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setPollInterval(const QString
 
 /**
  * @brief Set TCP host address
- * @param params Requires "host" (string)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setHost(const QString& id,
                                                            const QJsonObject& params)
@@ -348,7 +344,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setHost(const QString& id,
 
 /**
  * @brief Set TCP port
- * @param params Requires "port" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setPort(const QString& id,
                                                            const QJsonObject& params)
@@ -376,7 +371,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setPort(const QString& id,
 
 /**
  * @brief Set RTU serial port by index
- * @param params Requires "portIndex" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setSerialPortIndex(const QString& id,
                                                                       const QJsonObject& params)
@@ -408,7 +402,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setSerialPortIndex(const QStr
 
 /**
  * @brief Set RTU baud rate
- * @param params Requires "baudRate" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setBaudRate(const QString& id,
                                                                const QJsonObject& params)
@@ -434,7 +427,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setBaudRate(const QString& id
 
 /**
  * @brief Set RTU parity
- * @param params Requires "parityIndex" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setParityIndex(const QString& id,
                                                                   const QJsonObject& params)
@@ -466,7 +458,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setParityIndex(const QString&
 
 /**
  * @brief Set RTU data bits
- * @param params Requires "dataBitsIndex" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setDataBitsIndex(const QString& id,
                                                                     const QJsonObject& params)
@@ -498,7 +489,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setDataBitsIndex(const QStrin
 
 /**
  * @brief Set RTU stop bits
- * @param params Requires "stopBitsIndex" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::setStopBitsIndex(const QString& id,
                                                                     const QJsonObject& params)
@@ -530,7 +520,6 @@ API::CommandResponse API::Handlers::ModbusHandler::setStopBitsIndex(const QStrin
 
 /**
  * @brief Add a register group
- * @param params Requires "type" (int), "startAddress" (int), "count" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::addRegisterGroup(const QString& id,
                                                                     const QJsonObject& params)
@@ -584,7 +573,6 @@ API::CommandResponse API::Handlers::ModbusHandler::addRegisterGroup(const QStrin
 
 /**
  * @brief Remove a register group by index
- * @param params Requires "groupIndex" (int)
  */
 API::CommandResponse API::Handlers::ModbusHandler::removeRegisterGroup(const QString& id,
                                                                        const QJsonObject& params)

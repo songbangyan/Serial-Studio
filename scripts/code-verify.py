@@ -1672,6 +1672,11 @@ _ADVISORY_KINDS = frozenset({
     # signal because the fix is "delete the trailing block" rather than
     # "delete the leading block".
     "doc-trailing-member",
+    # Verbose doxygen blocks (carry `@param`/`@return`/`@note`/`@see`,
+    # blank-`*` paragraph splits, or wrap to 5+ lines). CLAUDE.md says the
+    # contract is a one-line `/** @brief ... */`; the existing codebase has
+    # plenty of multi-tag blocks so this ships as advisory.
+    "doc-verbose-brief",
     # Raw stdio in Qt code -- `std::cout`, `<iostream>`, `printf` should
     # route through `qDebug()` / `qWarning()` so the message handler and
     # the Console widget see the output. Two known exceptions
@@ -1807,6 +1812,14 @@ the kinds below are short labels.
 - `doc-trailing-member` — trailing-style `/**< description */` doxygen on
   a header member variable. Same rule, separate signal because the fix is
   to drop the trailing block rather than the leading one.
+- `doc-verbose-brief` — doxygen block above a function or type-level
+  definition that carries `@param` / `@return` / `@returns` / `@retval` /
+  `@throws` / `@throw` / `@exception` / `@see` / `@sa` / `@note` /
+  `@warning` / `@todo` / `@since` / `@deprecated` / `@pre` / `@post` /
+  `@invariant` / `@tparam` / `@details`, OR a blank ` *` continuation line
+  (extended-description paragraph break), OR wraps to 5+ lines. CLAUDE.md
+  "Comments & Doxygen" says the contract is a one-line
+  `/** @brief ... */`; collapse the block to that.
 - `qt-prefer-qdebug` — `std::cout`, `std::cerr`, `<iostream>`, or `printf`
   in Qt code. Routes through the Qt message handler / Console widget when
   using `qDebug` / `qWarning` instead. Two known exceptions (the message

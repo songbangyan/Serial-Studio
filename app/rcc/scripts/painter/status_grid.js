@@ -6,24 +6,24 @@
 
 function status_color(ds) {
   const v = ds.value;
-  if (!Number.isFinite(v)) return { tag: "no-data", color: "#94a3b8" };
+  if (!Number.isFinite(v)) return { tag: "no-data", color: theme.placeholder_text };
 
   const lo = ds.alarmLow;
   const hi = ds.alarmHigh;
   if (Number.isFinite(lo) && Number.isFinite(hi) && hi > lo) {
-    if (v < lo || v > hi) return { tag: "alarm",   color: "#dc2626" };
+    if (v < lo || v > hi) return { tag: "alarm",   color: theme.alarm };
     const pad = (hi - lo) * 0.10;
-    if (v < lo + pad || v > hi - pad) return { tag: "warn", color: "#f59e0b" };
-    return { tag: "ok", color: "#10b981" };
+    if (v < lo + pad || v > hi - pad) return { tag: "warn", color: theme.accent };
+    return { tag: "ok", color: theme.widget_highlight };
   }
-  return { tag: "info", color: "#0ea5e9" };
+  return { tag: "info", color: theme.widget_highlight };
 }
 
 function paint(ctx, w, h) {
   // Cream paper background.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -32,15 +32,15 @@ function paint(ctx, w, h) {
 
   // Header.
   const headerH = 22;
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("STATUS  GRID", 14, 16);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(n + " channels", w - 14, 16);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 20, w - 28, 1);
 
   const cols = Math.max(1, group.columns || Math.min(n, Math.max(1, Math.round(Math.sqrt(n * w / (h - headerH))))));
@@ -60,11 +60,11 @@ function paint(ctx, w, h) {
     const status = status_color(ds);
 
     // Card with shadow.
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(x + 1, y + 2, cellW, cellH);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(x, y, cellW, cellH);
-    ctx.strokeStyle = "#d4d4d8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(x + 0.5, y + 0.5, cellW - 1, cellH - 1);
 
@@ -77,14 +77,14 @@ function paint(ctx, w, h) {
     const pillH = 14;
     ctx.fillStyle = status.color;
     ctx.fillRect(x + cellW - pillW - 6, y + 6, pillW, pillH);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.highlighted_text;
     ctx.font = "bold 9px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(status.tag.toUpperCase(), x + cellW - pillW * 0.5 - 6, y + 6 + pillH * 0.5);
 
     // Title (truncated).
-    ctx.fillStyle = "#475569";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "10px sans-serif";
     ctx.textAlign = "start";
     ctx.textBaseline = "alphabetic";
@@ -93,7 +93,7 @@ function paint(ctx, w, h) {
 
     // Value (large, bold). Measure width with the value's own font so the
     // units label lands flush to the right of the number.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 18px sans-serif";
     const value = Number.isFinite(ds.value)
       ? ds.value.toFixed(2)
@@ -102,7 +102,7 @@ function paint(ctx, w, h) {
     ctx.fillText(value, x + 12, y + 50);
 
     if (ds.units) {
-      ctx.fillStyle = "#64748b";
+      ctx.fillStyle = theme.placeholder_text;
       ctx.font = "10px sans-serif";
       ctx.fillText(ds.units, x + 12 + valueW + 6, y + 50);
     }

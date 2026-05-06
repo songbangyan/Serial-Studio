@@ -170,10 +170,10 @@ def test_command_authorization(tester):
     print("  - Testing privileged operations...")
 
     privileged_operations = [
-        ("io.manager.connect", {}, "Connect to device"),
-        ("io.manager.disconnect", {}, "Disconnect device"),
-        ("csv.export.setEnabled", {"enabled": True}, "Enable CSV export"),
-        ("project.file.open", {"filePath": "/tmp/test.json"}, "Open file"),
+        ("io.connect", {}, "Connect to device"),
+        ("io.disconnect", {}, "Disconnect device"),
+        ("csvExport.setEnabled", {"enabled": True}, "Enable CSV export"),
+        ("project.open", {"filePath": "/tmp/test.json"}, "Open file"),
     ]
 
     accessible_privileged = []
@@ -357,7 +357,7 @@ def test_information_disclosure(tester):
     try:
         with SerialStudioClient() as client:
             # Get IO manager status
-            status = client.command("io.manager.getStatus")
+            status = client.command("io.getStatus")
 
             # Check for sensitive info
             sensitive_keys = ["path", "file", "directory", "user", "home", "system"]

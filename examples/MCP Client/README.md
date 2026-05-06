@@ -30,10 +30,10 @@ python3 client.py
 
 ✓ Available tools (50+):
   • api.getCommands: Get list of all available commands
-  • io.manager.connect: Connect to configured device
-  • io.manager.disconnect: Disconnect from device
-  • io.manager.getStatus: Query connection status
-  • io.driver.uart.setBaudRate: Set UART baud rate
+  • io.connect: Connect to configured device
+  • io.disconnect: Disconnect from device
+  • io.getStatus: Query connection status
+  • io.uart.setBaudRate: Set UART baud rate
   ...
 
 ✓ Available resources (2):
@@ -79,7 +79,7 @@ Serial Studio uses a **hybrid protocol** approach:
 {
   "type": "command",
   "id": "1",
-  "command": "io.manager.getStatus",
+  "command": "io.getStatus",
   "params": {}
 }
 ```
@@ -91,19 +91,19 @@ Serial Studio uses a **hybrid protocol** approach:
 Every Serial Studio API command is exposed as an MCP tool:
 
 **I/O Management:**
-- `io.manager.connect` - Connect to device
-- `io.manager.disconnect` - Disconnect
-- `io.manager.getStatus` - Get connection status
-- `io.manager.setBusType` - Set bus type (UART, Network, BLE, etc.)
+- `io.connect` - Connect to device
+- `io.disconnect` - Disconnect
+- `io.getStatus` - Get connection status
+- `io.setBusType` - Set bus type (UART, Network, BLE, etc.)
 
 **UART Configuration:**
-- `io.driver.uart.setBaudRate` - Set baud rate
-- `io.driver.uart.setDataBits` - Set data bits
-- `io.driver.uart.setParity` - Set parity
+- `io.uart.setBaudRate` - Set baud rate
+- `io.uart.setDataBits` - Set data bits
+- `io.uart.setParity` - Set parity
 
 **Network Configuration:**
 - `io.driver.network.setTcpHost` - Set TCP host
-- `io.driver.network.setTcpPort` - Set TCP port
+- `io.network.setTcpPort` - Set TCP port
 - `io.driver.network.setUdpPort` - Set UDP port
 
 **Project Management:**
@@ -153,7 +153,7 @@ client.initialize()
 tools = client.list_tools()
 
 # Call a tool
-result = client.call_tool("io.manager.getStatus")
+result = client.call_tool("io.getStatus")
 
 # Read current frame
 frame = client.read_resource("serialstudio://frame/current")
@@ -175,7 +175,7 @@ nc localhost 7777
 {"jsonrpc":"2.0","id":2,"method":"tools/list"}
 
 # Call a tool
-{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"io.manager.getStatus","arguments":{}}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"io.getStatus","arguments":{}}}
 
 # Read current frame
 {"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"uri":"serialstudio://frame/current"}}
@@ -301,8 +301,8 @@ In Claude Desktop, try asking:
 ```
 
 Claude should respond with a list of 182+ tools like:
-- `io.manager.connect`
-- `io.driver.uart.setBaudRate`
+- `io.connect`
+- `io.uart.setBaudRate`
 - `project.openFromFile`
 - etc.
 
@@ -466,7 +466,7 @@ Serial Studio implements **MCP 2024-11-05**:
 
 ```python
 # Connect device via API
-client.call_tool("io.manager.connect")
+client.call_tool("io.connect")
 
 # Read telemetry
 frame = client.read_resource("serialstudio://frame/current")
@@ -489,11 +489,11 @@ history = client.read_resource("serialstudio://frame/history")
 
 ```python
 # Change baud rate
-client.call_tool("io.driver.uart.setBaudRate", {"value": "115200"})
+client.call_tool("io.uart.setBaudRate", {"value": "115200"})
 
 # Reconnect
-client.call_tool("io.manager.disconnect")
-client.call_tool("io.manager.connect")
+client.call_tool("io.disconnect")
+client.call_tool("io.connect")
 ```
 
 ## Learn More

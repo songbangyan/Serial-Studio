@@ -6,28 +6,28 @@
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   const pairs = Math.floor(datasets.length / 2);
 
   // Header.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("VECTOR  FIELD", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(pairs + (pairs === 1 ? " vector" : " vectors"), w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   if (pairs === 0) {
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Add datasets in (Vx, Vy) pairs", w / 2, h / 2);
@@ -54,25 +54,25 @@ function paint(ctx, w, h) {
     const arrowMax = Math.max(8, Math.min(cw, ch - 24) * 0.40);
 
     // Card.
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(x0 + 1, y0 + 2, cw, ch);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(x0, y0, cw, ch);
-    ctx.strokeStyle = "#d4d4d8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(x0 + 0.5, y0 + 0.5, cw - 1, ch - 1);
 
     // Mini header.
     const dsX = datasets[i * 2];
     const dsY = datasets[i * 2 + 1];
-    ctx.fillStyle = "#475569";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "bold 10px sans-serif";
     ctx.textAlign = "start";
     ctx.fillText((dsX.title || "Vx") + ", " + (dsY.title || "Vy"),
                  x0 + 8, y0 + 14);
 
     // Concentric reference rings (3 levels).
-    ctx.strokeStyle = "#eef2f7";
+    ctx.strokeStyle = theme.widget_border;
     for (let k = 1; k <= 3; ++k) {
       const rr = arrowMax * (k / 3);
       ctx.beginPath();
@@ -82,7 +82,7 @@ function paint(ctx, w, h) {
     }
 
     // Cross-hair.
-    ctx.strokeStyle = "#cbd5e1";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx - arrowMax, cy);
@@ -92,7 +92,7 @@ function paint(ctx, w, h) {
     ctx.stroke();
 
     // Outer ring.
-    ctx.strokeStyle = "#94a3b8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx + arrowMax, cy);
@@ -112,10 +112,10 @@ function paint(ctx, w, h) {
     const ey = cy - ny * arrowMax;
 
     // Arrow colour by magnitude (slate -> emerald -> amber -> crimson).
-    let color = "#94a3b8";
-    if (mag > 0.85) color = "#dc2626";
-    else if (mag > 0.55) color = "#f59e0b";
-    else if (mag > 0.10) color = "#10b981";
+    let color = theme.placeholder_text;
+    if (mag > 0.85) color = theme.alarm;
+    else if (mag > 0.55) color = theme.accent;
+    else if (mag > 0.10) color = theme.widget_highlight;
 
     ctx.strokeStyle = color;
     ctx.lineWidth   = 2.5;
@@ -138,14 +138,14 @@ function paint(ctx, w, h) {
     ctx.lineCap = "butt";
 
     // Pivot dot.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.beginPath();
     ctx.moveTo(cx + 3, cy);
     ctx.arc(cx, cy, 3, 0, Math.PI * 2);
     ctx.fill();
 
     // Magnitude readout.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "alphabetic";

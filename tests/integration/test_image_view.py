@@ -170,7 +170,7 @@ def _setup_image_project(api_client, detection_mode="autodetect",
     time.sleep(0.2)
     api_client.set_operation_mode("project")
     time.sleep(0.1)
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result["loaded"], "Project must load into FrameBuilder"
     api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
@@ -196,7 +196,7 @@ class TestAutodetect:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device should stay connected after JPEG frames"
 
         project_status = api_client.get_project_status()
@@ -215,7 +215,7 @@ class TestAutodetect:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device should stay connected after PNG frames"
 
         project_status = api_client.get_project_status()
@@ -234,7 +234,7 @@ class TestAutodetect:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device should stay connected after BMP frames"
 
         project_status = api_client.get_project_status()
@@ -253,7 +253,7 @@ class TestAutodetect:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device should stay connected after WebP frames"
 
         project_status = api_client.get_project_status()
@@ -277,7 +277,7 @@ class TestAutodetect:
         device_simulator.send_frames(frames, interval_seconds=0.05)
         time.sleep(0.8)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], f"Device must stay connected after 10 {fmt} frames"
 
     def test_mixed_formats_autodetect(self, api_client, device_simulator, clean_state):
@@ -293,7 +293,7 @@ class TestAutodetect:
         device_simulator.send_frames(mixed, interval_seconds=0.1)
         time.sleep(0.8)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected after mixed format frames"
 
 
@@ -327,7 +327,7 @@ class TestManualMode:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected in manual mode"
 
     def test_manual_png_with_custom_framing(self, api_client, device_simulator,
@@ -353,7 +353,7 @@ class TestManualMode:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected in manual PNG mode"
 
     def test_manual_mode_single_byte_delimiters(self, api_client, device_simulator,
@@ -376,7 +376,7 @@ class TestManualMode:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected with single-byte delimiters"
 
     def test_manual_mode_falls_back_to_autodetect_when_sequences_empty(
@@ -394,7 +394,7 @@ class TestManualMode:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Should stay connected even with empty manual sequences"
 
 
@@ -419,7 +419,7 @@ class TestCorruptedData:
         device_simulator.send_frame(truncated)
         time.sleep(0.3)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Truncated JPEG must not disconnect the device"
 
     def test_truncated_png_does_not_crash(self, api_client, device_simulator,
@@ -436,7 +436,7 @@ class TestCorruptedData:
         device_simulator.send_frame(truncated)
         time.sleep(0.3)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Truncated PNG must not disconnect the device"
 
     def test_corrupted_bmp_size_field(self, api_client, device_simulator, clean_state):
@@ -456,7 +456,7 @@ class TestCorruptedData:
         device_simulator.send_frame(bytes(bmp))
         time.sleep(0.3)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Invalid BMP size must not disconnect the device"
 
     def test_corrupted_bmp_oversized_size_field(self, api_client, device_simulator,
@@ -477,7 +477,7 @@ class TestCorruptedData:
         device_simulator.send_frame(bytes(bmp))
         time.sleep(0.3)
 
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Oversized BMP claim must not disconnect the device"
 
     def test_random_garbage_does_not_crash(self, api_client, device_simulator,
@@ -495,7 +495,7 @@ class TestCorruptedData:
             time.sleep(0.05)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Garbage bytes must not disconnect the device"
 
     def test_garbage_then_valid_jpeg(self, api_client, device_simulator, clean_state):
@@ -516,7 +516,7 @@ class TestCorruptedData:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected after garbage + valid JPEG"
 
     def test_jpeg_with_corrupted_body(self, api_client, device_simulator, clean_state):
@@ -534,7 +534,7 @@ class TestCorruptedData:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Corrupted JPEG body must not disconnect the device"
 
     def test_accumulator_overflow_recovery(self, api_client, device_simulator,
@@ -555,7 +555,7 @@ class TestCorruptedData:
             time.sleep(0.01)
 
         time.sleep(1.0)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Device must stay connected after accumulator overflow"
 
     def test_manual_mode_corrupted_payload(self, api_client, device_simulator,
@@ -581,5 +581,5 @@ class TestCorruptedData:
             time.sleep(0.1)
 
         time.sleep(0.5)
-        status = api_client.command("io.manager.getStatus")
+        status = api_client.command("io.getStatus")
         assert status["isConnected"], "Invalid image payload in manual mode must not crash"

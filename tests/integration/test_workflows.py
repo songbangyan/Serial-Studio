@@ -74,7 +74,7 @@ def test_export_workflow(api_client, device_simulator, clean_state):
     assert export_status["enabled"], "CSV export should be enabled"
 
     api_client.disconnect_device()
-    api_client.command("csv.export.close")
+    api_client.command("csvExport.close")
     time.sleep(0.5)
 
     api_client.disable_csv_export()
@@ -155,19 +155,19 @@ def test_pause_resume_workflow(api_client, device_simulator, clean_state):
     device_simulator.send_frames(frames, interval_seconds=0.1)
     time.sleep(1.2)
 
-    api_client.command("io.manager.setPaused", {"paused": True})
+    api_client.command("io.setPaused", {"paused": True})
     time.sleep(0.2)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert status["paused"], "Should be paused"
 
     device_simulator.send_frames(frames, interval_seconds=0.1)
     time.sleep(1.2)
 
-    api_client.command("io.manager.setPaused", {"paused": False})
+    api_client.command("io.setPaused", {"paused": False})
     time.sleep(0.2)
 
-    status = api_client.command("io.manager.getStatus")
+    status = api_client.command("io.getStatus")
     assert not status["paused"], "Should be resumed"
 
     device_simulator.send_frames(frames, interval_seconds=0.1)

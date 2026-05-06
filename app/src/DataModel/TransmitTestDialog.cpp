@@ -31,8 +31,6 @@
 
 /**
  * @brief Constructs the transmit function test dialog.
- *
- * @param parent Parent widget.
  */
 DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent) : QDialog(parent)
 {
@@ -125,7 +123,6 @@ DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent) : QDialog(par
 
 /**
  * @brief Stores the transmit function code to evaluate.
- * @param code JavaScript source containing a transmit(value) function.
  */
 void DataModel::TransmitTestDialog::setTransmitCode(const QString& code)
 {
@@ -149,10 +146,6 @@ void DataModel::TransmitTestDialog::clear()
 
 /**
  * @brief Compiles and runs the transmit function with the user's input value.
- *
- * Creates a temporary JS engine, installs protocol helpers, wraps and compiles
- * the transmit code, then calls it with the input value. Auto-detects whether
- * the input is a number or a string.
  */
 void DataModel::TransmitTestDialog::evaluate()
 {
@@ -272,8 +265,6 @@ void DataModel::TransmitTestDialog::onLanguageChanged()
 
 /**
  * @brief Handles hex mode checkbox state changes.
- *
- * @param state The new checkbox state.
  */
 void DataModel::TransmitTestDialog::onInputModeChanged(Qt::CheckState state)
 {
@@ -291,8 +282,6 @@ void DataModel::TransmitTestDialog::onInputModeChanged(Qt::CheckState state)
 
 /**
  * @brief Handles input data changes, formats and validates hex input.
- *
- * @param t The new input text.
  */
 void DataModel::TransmitTestDialog::onInputDataChanged(const QString& t)
 {
@@ -331,9 +320,6 @@ void DataModel::TransmitTestDialog::onInputDataChanged(const QString& t)
 
 /**
  * @brief Formats input text into space-separated hexadecimal byte pairs.
- *
- * @param text Raw input text.
- * @return Formatted hex string (e.g., "01 A2 FF").
  */
 QString DataModel::TransmitTestDialog::formatHexInput(const QString& text)
 {
@@ -355,9 +341,6 @@ QString DataModel::TransmitTestDialog::formatHexInput(const QString& text)
 
 /**
  * @brief Validates that input contains valid hexadecimal byte pairs.
- *
- * @param text Input text to validate.
- * @return @c true if the text is valid hex with complete byte pairs.
  */
 bool DataModel::TransmitTestDialog::validateHexInput(const QString& text)
 {
@@ -380,9 +363,6 @@ bool DataModel::TransmitTestDialog::validateHexInput(const QString& text)
 
 /**
  * @brief Displays the transmit function output or an error message.
- *
- * @param result The byte array produced by the transmit function.
- * @param errorMsg Error message to display (empty on success).
  */
 void DataModel::TransmitTestDialog::displayOutput(const QByteArray& result, const QString& errorMsg)
 {

@@ -2,11 +2,11 @@
 Project Import/Export Integration Tests
 
 Tests for JSON-based project serialization: exporting the current project as
-a JSON object and re-loading it via project.loadFromJSON. Exercises:
+a JSON object and re-loading it via project.loadJson. Exercises:
   - project.exportJson
-  - project.loadFromJSON
+  - project.loadJson
   - project.getStatus (for structure verification)
-  - project.groups.list / project.datasets.list
+  - project.group.list / project.dataset.list
 
 Copyright (C) 2020-2025 Alex Spataru
 SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
@@ -24,12 +24,9 @@ def _build_simple_project(api_client, group_title="Sensors", dataset_count=3):
     api_client.create_new_project(title="Export Test")
     time.sleep(0.3)
 
-    api_client.command("project.group.add", {"title": group_title, "widgetType": 0})
-    time.sleep(0.2)
-
+    gid = api_client.add_group(group_title)
     for _ in range(dataset_count):
-        api_client.command("project.dataset.add", {"options": 0})
-        time.sleep(0.05)
+        api_client.add_dataset(gid)
 
 
 @pytest.mark.project
@@ -65,8 +62,7 @@ def test_project_export_preserves_group_count(api_client, clean_state):
     time.sleep(0.3)
 
     for i in range(3):
-        api_client.command("project.group.add", {"title": f"Group {i}", "widgetType": 0})
-        time.sleep(0.1)
+        api_client.add_group(f"Group {i}")
 
     result = api_client.command("project.exportJson")
     config = result["config"]
@@ -76,7 +72,7 @@ def test_project_export_preserves_group_count(api_client, clean_state):
 
 @pytest.mark.project
 def test_project_load_from_json(api_client, clean_state):
-    """Verify project.loadFromJSON loads a project from a JSON config object."""
+    """Verify project.loadJson loads a project from a JSON config object."""
     _build_simple_project(api_client, dataset_count=4)
 
     # Export current project
@@ -91,7 +87,7 @@ def test_project_load_from_json(api_client, clean_state):
     initial_groups = initial_status.get("groupCount", 0)
 
     # Re-load from exported JSON
-    load_result = api_client.command("project.loadFromJSON", {"config": config})
+    load_result = api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     assert load_result is not None, "loadFromJSON should return a result"
@@ -107,11 +103,9 @@ def test_project_roundtrip_preserves_structure(api_client, clean_state):
     time.sleep(0.3)
 
     for i in range(2):
-        api_client.command("project.group.add", {"title": f"Channel {i}", "widgetType": 0})
-        time.sleep(0.1)
+        gid = api_client.add_group(f"Channel {i}")
         for _ in range(2):
-            api_client.command("project.dataset.add", {"options": 0})
-            time.sleep(0.05)
+            api_client.add_dataset(gid)
 
     # Capture original structure
     original_status = api_client.get_project_status()
@@ -126,7 +120,7 @@ def test_project_roundtrip_preserves_structure(api_client, clean_state):
     api_client.create_new_project(title="After Roundtrip")
     time.sleep(0.3)
 
-    api_client.command("project.loadFromJSON", {"config": config})
+    api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     restored_status = api_client.get_project_status()
@@ -146,7 +140,7 @@ def test_project_load_from_json_and_stream_data(
     _build_simple_project(api_client, dataset_count=3)
 
     parser_code = "function parse(frame) { return frame.split(','); }"
-    api_client.command("project.parser.setCode", {"code": parser_code})
+    api_client.command("project.frameParser.setCode", {"code": parser_code})
     time.sleep(0.2)
 
     api_client.configure_frame_parser(
@@ -163,13 +157,13 @@ def test_project_load_from_json_and_stream_data(
     config = export_result["config"]
     time.sleep(0.1)
 
-    api_client.command("project.loadFromJSON", {"config": config})
+    api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
     api_client.set_operation_mode("project")
     time.sleep(0.1)
 
-    result = api_client.command("project.loadIntoFrameBuilder")
+    result = api_client.command("project.activate")
     time.sleep(0.2)
     assert result.get("loaded"), "Should load into FrameBuilder after JSON import"
 
@@ -195,16 +189,15 @@ def test_project_load_from_json_and_stream_data(
 
 @pytest.mark.project
 def test_project_groups_list(api_client, clean_state):
-    """Verify project.groups.list returns all created groups with titles."""
+    """Verify project.group.list returns all created groups with titles."""
     api_client.create_new_project(title="List Test")
     time.sleep(0.3)
 
     group_titles = ["Alpha", "Beta", "Gamma"]
     for title in group_titles:
-        api_client.command("project.group.add", {"title": title, "widgetType": 0})
-        time.sleep(0.1)
+        api_client.add_group(title)
 
-    groups_result = api_client.command("project.groups.list")
+    groups_result = api_client.command("project.group.list")
     assert "groups" in groups_result, "groups.list should return 'groups' key"
 
     returned_titles = [g.get("title", "") for g in groups_result["groups"]]
@@ -214,18 +207,15 @@ def test_project_groups_list(api_client, clean_state):
 
 @pytest.mark.project
 def test_project_datasets_list(api_client, clean_state):
-    """Verify project.datasets.list returns all datasets across all groups."""
+    """Verify project.dataset.list returns all datasets across all groups."""
     api_client.create_new_project(title="Datasets List Test")
     time.sleep(0.3)
 
-    api_client.command("project.group.add", {"title": "Group A", "widgetType": 0})
-    time.sleep(0.1)
-
+    gid = api_client.add_group("Group A")
     for _ in range(5):
-        api_client.command("project.dataset.add", {"options": 0})
-        time.sleep(0.05)
+        api_client.add_dataset(gid)
 
-    datasets_result = api_client.command("project.datasets.list")
+    datasets_result = api_client.command("project.dataset.list")
     assert "datasets" in datasets_result, "datasets.list should return 'datasets' key"
     assert len(datasets_result["datasets"]) >= 5, "Should have at least 5 datasets"
 
@@ -236,13 +226,12 @@ def test_project_group_duplication(api_client, clean_state):
     api_client.create_new_project(title="Duplicate Group Test")
     time.sleep(0.3)
 
-    api_client.command("project.group.add", {"title": "Original Group", "widgetType": 0})
-    time.sleep(0.2)
+    gid = api_client.add_group("Original Group")
 
     status_before = api_client.get_project_status()
     count_before = status_before.get("groupCount", 0)
 
-    api_client.command("project.group.duplicate")
+    api_client.duplicate_group(gid)
     time.sleep(0.3)
 
     status_after = api_client.get_project_status()
@@ -260,15 +249,15 @@ def test_project_dataset_duplication(api_client, clean_state):
     api_client.create_new_project(title="Duplicate Dataset Test")
     time.sleep(0.3)
 
-    api_client.command("project.group.add", {"title": "Test Group", "widgetType": 0})
-    time.sleep(0.2)
-    api_client.command("project.dataset.add", {"options": 0})
-    time.sleep(0.1)
+    gid = api_client.add_group("Test Group")
+    api_client.add_dataset(gid)
+    datasets = api_client.list_datasets()
+    last = datasets[-1]
 
     status_before = api_client.get_project_status()
     count_before = status_before.get("datasetCount", 0)
 
-    api_client.command("project.dataset.duplicate")
+    api_client.duplicate_dataset(last["groupId"], last["datasetId"])
     time.sleep(0.3)
 
     status_after = api_client.get_project_status()

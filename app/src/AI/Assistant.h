@@ -32,11 +32,6 @@ class ToolDispatcher;
 
 /**
  * @brief Application-wide singleton wiring the AI Assistant feature.
- *
- * Owns the per-provider Provider* instances, the shared QNAM, the
- * KeyVault, and the ToolDispatcher. Exposed to QML as Cpp_AI_Assistant.
- * sendMessage is Pro-gated at the entry: a non-Pro caller never reaches
- * the network layer.
  */
 class Assistant : public QObject {
   // clang-format off
@@ -66,6 +61,10 @@ class Assistant : public QObject {
   Q_PROPERTY(int cacheCreatedTokens
              READ cacheCreatedTokens
              NOTIFY cacheStatsChanged)
+  Q_PROPERTY(bool autoApproveEdits
+             READ autoApproveEdits
+             WRITE setAutoApproveEdits
+             NOTIFY autoApproveEditsChanged)
   // clang-format on
 
 signals:
@@ -77,6 +76,7 @@ signals:
   void errorOccurred(const QString& message);
   void busyChanged();
   void cacheStatsChanged();
+  void autoApproveEditsChanged();
 
 private:
   explicit Assistant();
@@ -98,6 +98,7 @@ public:
   [[nodiscard]] QObject* conversationObject() const noexcept;
   [[nodiscard]] int cacheReadTokens() const noexcept;
   [[nodiscard]] int cacheCreatedTokens() const noexcept;
+  [[nodiscard]] bool autoApproveEdits() const noexcept;
 
   Q_INVOKABLE [[nodiscard]] bool hasKey(int providerIdx) const;
   Q_INVOKABLE [[nodiscard]] QString redactedKey(int providerIdx) const;
@@ -111,6 +112,7 @@ public:
   void reportCacheStats(int readTokens, int createdTokens);
 
   void setCurrentProvider(int providerIdx);
+  void setAutoApproveEdits(bool enabled);
 
 public slots:
   void openKeyManager();
@@ -154,6 +156,7 @@ private:
   int m_currentProvider;
   int m_cacheReadTokens;
   int m_cacheCreatedTokens;
+  bool m_autoApproveEdits;
 };
 
 }  // namespace AI

@@ -724,6 +724,7 @@
         <file>themes/fluent-dark.json</file>
         <file>themes/fluent-light.json</file>
         <file>markdown-viewer.html</file>
+        <file>chat-viewer.html</file>
         <file>icons/dashboard-buttons/camcoder.svg</file>
         <file>icons/project-editor/actions/edit-code.svg</file>
         <file>icons/project-editor/treeview/painter.svg</file>
@@ -736,5 +737,24 @@
         <file>ai/docs/transform_lua.md</file>
         <file>ai/docs/output_widget_js.md</file>
         <file>ai/docs/painter_js.md</file>
+        <file>ai/templates/manifest.json</file>
+        <file>ai/templates/blank.json</file>
+        <file>ai/templates/imu_uart.json</file>
+        <file>ai/templates/gps_uart_nmea.json</file>
+        <file>ai/templates/scope_multichannel_uart.json</file>
+        <file>ai/templates/telemetry_udp.json</file>
+        <file>ai/templates/mqtt_subscriber.json</file>
+        <file>ai/skills/tool_discovery.md</file>
+        <file>ai/skills/behavioral.md</file>
+        <file>ai/skills/project_basics.md</file>
+        <file>ai/skills/frame_parsers.md</file>
+        <file>ai/skills/transforms.md</file>
+        <file>ai/skills/painter.md</file>
+        <file>ai/skills/output_widgets.md</file>
+        <file>ai/skills/mqtt.md</file>
+        <file>ai/skills/can_modbus.md</file>
+        <file>ai/skills/dashboard_layout.md</file>
+        <file>ai/skills/debugging.md</file>
+        <file>ai/search_index.json</file>
     </qresource>
 </RCC>

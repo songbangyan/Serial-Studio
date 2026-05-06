@@ -255,7 +255,7 @@ def dual_serial_env(api_client, dual_ports, clean_state):
         pytest.skip("Multi-source requires Commercial build")
 
     # Reset after the _is_commercial probe (which calls source_add)
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.2)
 
     _load_project_with_ports(api_client, dual_ports)

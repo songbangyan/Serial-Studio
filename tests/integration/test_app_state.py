@@ -28,7 +28,7 @@ from utils.api_client import APIError
 
 def _new_project(api_client, title: str = "AppState Test") -> None:
     """Create a fresh project and set ProjectFile mode."""
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.2)
     try:
         api_client.command("project.setTitle", {"title": title})
@@ -242,7 +242,7 @@ def test_frame_parser_getconfig_operation_mode_matches_dashboard(api_client, cle
 
 @pytest.mark.project
 def test_frame_parser_configure_sets_start_sequence(api_client, clean_state):
-    """project.frameParser.configure startSequence is reflected in getConfig."""
+    """project.frameParser.update startSequence is reflected in getConfig."""
     _new_project(api_client)
     api_client.configure_frame_parser(start_sequence="$")
     time.sleep(0.1)
@@ -255,7 +255,7 @@ def test_frame_parser_configure_sets_start_sequence(api_client, clean_state):
 
 @pytest.mark.project
 def test_frame_parser_configure_sets_end_sequence(api_client, clean_state):
-    """project.frameParser.configure endSequence is reflected in getConfig."""
+    """project.frameParser.update endSequence is reflected in getConfig."""
     _new_project(api_client)
     api_client.configure_frame_parser(end_sequence="\n")
     time.sleep(0.1)
@@ -268,7 +268,7 @@ def test_frame_parser_configure_sets_end_sequence(api_client, clean_state):
 
 @pytest.mark.project
 def test_frame_parser_configure_sets_checksum(api_client, clean_state):
-    """project.frameParser.configure checksumAlgorithm is reflected in getConfig."""
+    """project.frameParser.update checksumAlgorithm is reflected in getConfig."""
     _new_project(api_client)
     api_client.configure_frame_parser(checksum_algorithm="CRC-16")
     time.sleep(0.1)
@@ -281,7 +281,7 @@ def test_frame_parser_configure_sets_checksum(api_client, clean_state):
 
 @pytest.mark.project
 def test_frame_parser_configure_sets_frame_detection(api_client, clean_state):
-    """project.frameParser.configure frameDetection is reflected in getConfig."""
+    """project.frameParser.update frameDetection is reflected in getConfig."""
     _new_project(api_client)
     api_client.configure_frame_parser(frame_detection=1)
     time.sleep(0.1)
@@ -294,7 +294,7 @@ def test_frame_parser_configure_sets_frame_detection(api_client, clean_state):
 
 @pytest.mark.project
 def test_frame_parser_configure_sets_operation_mode(api_client, clean_state):
-    """project.frameParser.configure operationMode updates AppState mode."""
+    """project.frameParser.update operationMode updates AppState mode."""
     api_client.configure_frame_parser(operation_mode=2)
     time.sleep(0.1)
 
@@ -307,13 +307,13 @@ def test_frame_parser_configure_sets_operation_mode(api_client, clean_state):
 
 @pytest.mark.project
 def test_frame_parser_configure_no_params_returns_not_updated(api_client, clean_state):
-    """project.frameParser.configure with no params returns updated=false."""
+    """project.frameParser.update with no params returns updated=false."""
     result = api_client.configure_frame_parser()
     # configure_frame_parser returns {} when no params; if called with empty dict it
     # sends nothing and the helper returns {} early — just verify no exception
     # The actual no-params call path: api_client.configure_frame_parser() skips the command
     # So test the command directly with an empty dict
-    result = api_client.command("project.frameParser.configure", {})
+    result = api_client.command("project.frameParser.update", {})
     assert result.get("updated") is False, (
         "configure with no params should return updated=false"
     )
@@ -347,8 +347,8 @@ def test_project_status_has_required_fields(api_client, clean_state):
 
 @pytest.mark.project
 def test_project_new_creates_empty_project(api_client, clean_state):
-    """project.file.new creates a project with zero groups."""
-    api_client.command("project.file.new")
+    """project.new creates a project with zero groups."""
+    api_client.command("project.new")
     time.sleep(0.2)
 
     status = api_client.get_project_status()
@@ -363,7 +363,7 @@ def test_project_new_creates_empty_project(api_client, clean_state):
 @pytest.mark.project
 def test_project_set_title_reflected_in_status(api_client, clean_state):
     """project.setTitle is reflected in project.getStatus."""
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.1)
     api_client.command("project.setTitle", {"title": "Verified Title"})
     time.sleep(0.1)
@@ -438,13 +438,13 @@ def test_new_project_does_not_reset_operation_mode(api_client, clean_state):
     api_client.command("dashboard.setOperationMode", {"mode": 2})
     time.sleep(0.1)
 
-    api_client.command("project.file.new")
+    api_client.command("project.new")
     time.sleep(0.2)
 
     # Operation mode is owned by AppState, not ProjectModel — must survive new project
     mode = _get_operation_mode(api_client)
     assert mode == 2, (
-        f"Operation mode must not be reset by project.file.new; expected 2, got {mode}"
+        f"Operation mode must not be reset by project.new; expected 2, got {mode}"
     )
 
 
@@ -492,8 +492,8 @@ def test_api_registry_includes_dashboard_getstatus(api_client, clean_state):
 
 @pytest.mark.project
 def test_api_registry_includes_frameparser_configure(api_client, clean_state):
-    """project.frameParser.configure is listed in the API command registry."""
-    assert api_client.command_exists("project.frameParser.configure")
+    """project.frameParser.update is listed in the API command registry."""
+    assert api_client.command_exists("project.frameParser.update")
 
 
 @pytest.mark.project

@@ -53,28 +53,20 @@ def _setup_project(
     api_client.create_new_project()
     time.sleep(0.2)
 
-    api_client.command("project.group.add", {"title": "G", "widgetType": 0})
-    time.sleep(0.1)
-
+    gid = api_client.add_group("G", widget_type=0)
     for _ in range(dataset_count):
-        api_client.command("project.dataset.add", {"options": 1})
-        time.sleep(0.05)
+        api_client.add_dataset(gid, options=1)
 
     api_client.set_operation_mode("project")
-    time.sleep(0.1)
     api_client.configure_frame_parser(
         start_sequence="/*",
         end_sequence="*/",
         checksum_algorithm="",
+        frame_detection=1,
         operation_mode=0,
     )
-    api_client.configure_frame_parser(frame_detection=1, operation_mode=0)
-    time.sleep(0.1)
 
-    api_client.command(
-        "project.parser.setCode",
-        {"code": parser_code, "language": parser_language, "sourceId": 0},
-    )
+    api_client.set_frame_parser_code(parser_code, language=parser_language, source_id=0)
     time.sleep(0.15)
 
 
@@ -93,7 +85,7 @@ def _send_csv_and_read(
     settle_seconds: float = 1.2,
 ) -> dict:
     """Connect the loopback, stream payloads, return dashboard.getData result."""
-    assert api_client.command("project.loadIntoFrameBuilder").get("loaded")
+    assert api_client.command("project.activate").get("loaded")
 
     api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
     api_client.connect_device()
@@ -139,10 +131,10 @@ def test_transform_code_persists_round_trip(api_client, clean_state):
     api_client.create_new_project()
     time.sleep(0.2)
 
-    api_client.command("project.loadFromJSON", {"config": project_json})
+    api_client.command("project.loadJson", {"config": project_json})
     time.sleep(0.3)
 
-    datasets = api_client.command("project.datasets.list").get("datasets", [])
+    datasets = api_client.command("project.dataset.list").get("datasets", [])
     assert len(datasets) >= 1
     restored_code = datasets[0].get("transformCode", "")
     assert "transform" in restored_code
@@ -156,12 +148,12 @@ def test_transform_code_clear_on_empty_string(api_client, clean_state):
 
     _set_transform(api_client, 0, 0, "function transform(v) return v + 1 end")
 
-    datasets = api_client.command("project.datasets.list").get("datasets", [])
+    datasets = api_client.command("project.dataset.list").get("datasets", [])
     assert datasets[0].get("transformCode", "") != ""
 
     _set_transform(api_client, 0, 0, "")
 
-    datasets = api_client.command("project.datasets.list").get("datasets", [])
+    datasets = api_client.command("project.dataset.list").get("datasets", [])
     assert datasets[0].get("transformCode", "") == ""
 
 

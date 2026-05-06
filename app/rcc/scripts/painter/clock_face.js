@@ -14,10 +14,9 @@ function readTimeOfDay() {
 }
 
 function paint(ctx, w, h) {
-  // Cream paper background.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.groupbox_background;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.groupbox_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -25,15 +24,15 @@ function paint(ctx, w, h) {
   const cy = h * 0.5;
   const r  = Math.min(w, h) * 0.42;
 
-  // Dial face -- white card.
-  ctx.fillStyle = "#ffffff";
+  // Dial face.
+  ctx.fillStyle = theme.window;
   ctx.beginPath();
   ctx.moveTo(cx + r, cy);
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
 
   // Outer rim.
-  ctx.strokeStyle = "#475569";
+  ctx.strokeStyle = theme.groupbox_border;
   ctx.lineWidth   = 3;
   ctx.beginPath();
   ctx.moveTo(cx + r, cy);
@@ -41,7 +40,7 @@ function paint(ctx, w, h) {
   ctx.stroke();
 
   // Hour numerals.
-  ctx.fillStyle    = "#0f172a";
+  ctx.fillStyle    = theme.text;
   ctx.font         = "bold 14px serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "middle";
@@ -53,7 +52,7 @@ function paint(ctx, w, h) {
   }
 
   // Minute ticks.
-  ctx.strokeStyle = "#94a3b8";
+  ctx.strokeStyle = theme.mid;
   for (let i = 0; i < 60; ++i) {
     const ang   = (i / 60) * Math.PI * 2 - Math.PI / 2;
     const major = (i % 5 === 0);
@@ -81,17 +80,17 @@ function paint(ctx, w, h) {
     ctx.stroke();
   }
 
-  hand((hour / 12) * Math.PI * 2 - Math.PI / 2, r * 0.50, 6, "#0f172a");
-  hand((min  / 60) * Math.PI * 2 - Math.PI / 2, r * 0.72, 4, "#0f172a");
-  hand((sec  / 60) * Math.PI * 2 - Math.PI / 2, r * 0.85, 1, "#dc2626");
+  hand((hour / 12) * Math.PI * 2 - Math.PI / 2, r * 0.50, 6, theme.text);
+  hand((min  / 60) * Math.PI * 2 - Math.PI / 2, r * 0.72, 4, theme.text);
+  hand((sec  / 60) * Math.PI * 2 - Math.PI / 2, r * 0.85, 1, theme.alarm);
 
   // Centre cap.
-  ctx.fillStyle = "#dc2626";
+  ctx.fillStyle = theme.alarm;
   ctx.beginPath();
   ctx.moveTo(cx + 4, cy);
   ctx.arc(cx, cy, 4, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.text;
   ctx.beginPath();
   ctx.moveTo(cx + 2, cy);
   ctx.arc(cx, cy, 2, 0, Math.PI * 2);

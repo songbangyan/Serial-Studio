@@ -87,6 +87,31 @@ DataModel::OutputCodeEditor::OutputCodeEditor(QQuickItem* parent)
           this,
           &DataModel::OutputCodeEditor::readCode);
 
+  // Refresh from ProjectModel on external group changes (AI/MCP edits)
+  connect(
+    &DataModel::ProjectModel::instance(), &DataModel::ProjectModel::groupDataChanged, this, [this] {
+      if (m_readingCode)
+        return;
+
+      auto& editor    = DataModel::ProjectEditor::instance();
+      const auto& sel = editor.selectedOutputWidget();
+      if (sel.groupId < 0 || sel.widgetId < 0)
+        return;
+
+      const auto& groups = DataModel::ProjectModel::instance().groups();
+      if (sel.groupId < 0 || static_cast<size_t>(sel.groupId) >= groups.size())
+        return;
+
+      for (const auto& w : groups[sel.groupId].outputWidgets) {
+        if (w.widgetId == sel.widgetId) {
+          if (w.transmitFunction != m_widget.toPlainText())
+            readCode();
+
+          return;
+        }
+      }
+    });
+
   // Resize and render
   connect(this, &QQuickPaintedItem::widthChanged, this, &DataModel::OutputCodeEditor::resizeWidget);
   connect(

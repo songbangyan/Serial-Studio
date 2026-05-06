@@ -19,9 +19,6 @@ namespace DataModel {
 
 /**
  * @brief QML-embeddable code editor for painter-widget paint() / onFrame() scripts.
- *
- * Mirrors OutputCodeEditor but binds to the selected group's painterCode
- * field and uses the :/scripts/painter/ template manifest.
  */
 class PainterCodeEditor : public QQuickPaintedItem {
   Q_OBJECT

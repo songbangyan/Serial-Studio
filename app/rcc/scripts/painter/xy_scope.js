@@ -7,9 +7,6 @@
 const HISTORY = 200;
 const trails  = [];
 
-const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#dc2626",
-                "#7c3aed", "#0ea5e9", "#ec4899", "#65a30d"];
-
 function onFrame() {
   const pairs = Math.floor(datasets.length / 2);
   while (trails.length < pairs) trails.push([]);
@@ -26,27 +23,27 @@ function onFrame() {
 
 function paint(ctx, w, h) {
   // Cream paper background + vignette.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
   // Header.
   const pairs = Math.max(trails.length, Math.floor(datasets.length / 2));
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("XY  SCOPE", 14, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "10px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(pairs + (pairs === 1 ? " pair" : " pairs"), w - 14, 18);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(14, 22, w - 28, 1);
 
   if (pairs === 0) {
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("Add datasets in (X, Y) pairs", w / 2, h / 2);
@@ -73,18 +70,18 @@ function paint(ctx, w, h) {
     const sz = Math.min(cw, ch - 16) * 0.42;
 
     // Card.
-    ctx.fillStyle = "#e2e8f0";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(x0 + 1, y0 + 2, cw, ch);
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.alternate_base;
     ctx.fillRect(x0, y0, cw, ch);
-    ctx.strokeStyle = "#d4d4d8";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.strokeRect(x0 + 0.5, y0 + 0.5, cw - 1, ch - 1);
 
     // Mini header.
     const dsX = datasets[p * 2];
     const dsY = datasets[p * 2 + 1];
-    ctx.fillStyle = "#475569";
+    ctx.fillStyle = theme.placeholder_text;
     ctx.font = "bold 10px sans-serif";
     ctx.textAlign = "start";
     ctx.textBaseline = "alphabetic";
@@ -92,7 +89,7 @@ function paint(ctx, w, h) {
     ctx.fillText(titleStr.substring(0, 24), x0 + 8, y0 + 14);
 
     // Crosshair grid inside the card.
-    ctx.strokeStyle = "#eef2f7";
+    ctx.strokeStyle = theme.widget_border;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx - sz, cy);    ctx.lineTo(cx + sz, cy);
@@ -100,7 +97,7 @@ function paint(ctx, w, h) {
     ctx.stroke();
 
     // Outer plot frame.
-    ctx.strokeStyle = "#cbd5e1";
+    ctx.strokeStyle = theme.widget_border;
     ctx.strokeRect(cx - sz + 0.5, cy - sz + 0.5, sz * 2 - 1, sz * 2 - 1);
 
     const t   = trails[p];
@@ -109,7 +106,7 @@ function paint(ctx, w, h) {
     const yLo = dsY.min, yHi = dsY.max;
     const xSpan = (xHi - xLo) || 1;
     const ySpan = (yHi - yLo) || 1;
-    const color = COLORS[p % COLORS.length];
+    const color = theme.widget_colors[p % theme.widget_colors.length];
 
     // Trail with fading alpha so motion direction is implicit.
     ctx.strokeStyle = color;
@@ -133,7 +130,7 @@ function paint(ctx, w, h) {
     const lx = cx + ((last[0] - (xLo + xHi) * 0.5) / xSpan) * sz * 2;
     const ly = cy - ((last[1] - (yLo + yHi) * 0.5) / ySpan) * sz * 2;
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = theme.widget_base;
     ctx.beginPath();
     ctx.moveTo(lx + 5, ly);
     ctx.arc(lx, ly, 5, 0, Math.PI * 2);

@@ -20,10 +20,10 @@ import pytest
 def test_batch_read_only_queries(api_client, clean_state):
     """Verify a batch of read-only commands returns one result per command."""
     commands = [
-        {"command": "io.manager.getStatus"},
+        {"command": "io.getStatus"},
         {"command": "dashboard.getStatus"},
-        {"command": "csv.export.getStatus"},
-        {"command": "console.getConfiguration"},
+        {"command": "csvExport.getStatus"},
+        {"command": "console.getConfig"},
     ]
 
     results = api_client.batch(commands)
@@ -38,7 +38,7 @@ def test_batch_read_only_queries(api_client, clean_state):
 def test_batch_mixed_read_write(api_client, clean_state):
     """Verify a batch that sets and then reads values returns consistent state."""
     commands = [
-        {"command": "dashboard.setFPS", "params": {"fps": 20}},
+        {"command": "dashboard.setFps", "params": {"fps": 20}},
         {"command": "dashboard.setPoints", "params": {"points": 600}},
         {"command": "dashboard.getStatus"},
     ]
@@ -61,17 +61,17 @@ def test_batch_mixed_read_write(api_client, clean_state):
 def test_batch_result_order_preserved(api_client, clean_state):
     """Verify batch results appear in the same order commands were sent."""
     commands = [
-        {"command": "dashboard.setFPS", "params": {"fps": 15}},
-        {"command": "dashboard.setFPS", "params": {"fps": 30}},
-        {"command": "dashboard.setFPS", "params": {"fps": 60}},
-        {"command": "dashboard.getFPS"},
+        {"command": "dashboard.setFps", "params": {"fps": 15}},
+        {"command": "dashboard.setFps", "params": {"fps": 30}},
+        {"command": "dashboard.setFps", "params": {"fps": 60}},
+        {"command": "dashboard.getFps"},
     ]
 
     results = api_client.batch(commands)
     assert isinstance(results, list)
     assert len(results) == 4
 
-    # The final getFPS should return the last set value (60)
+    # The final getFps should return the last set value (60)
     final = results[3].get("result", {})
     assert final.get("fps") == 60
 
@@ -79,7 +79,7 @@ def test_batch_result_order_preserved(api_client, clean_state):
 @pytest.mark.integration
 def test_batch_single_command(api_client, clean_state):
     """Verify a batch with a single command is accepted and returns one result."""
-    results = api_client.batch([{"command": "io.manager.getStatus"}])
+    results = api_client.batch([{"command": "io.getStatus"}])
     assert isinstance(results, list)
     assert len(results) == 1
     assert results[0].get("success") is True
@@ -94,7 +94,7 @@ def test_batch_console_settings(api_client, clean_state):
         {"command": "console.setDisplayMode", "params": {"modeIndex": 0}},
         {"command": "console.setDataMode", "params": {"modeIndex": 0}},
         {"command": "console.setLineEnding", "params": {"endingIndex": 0}},
-        {"command": "console.getConfiguration"},
+        {"command": "console.getConfig"},
     ]
 
     results = api_client.batch(commands)
@@ -115,7 +115,7 @@ def test_batch_console_settings(api_client, clean_state):
 @pytest.mark.integration
 def test_batch_too_large_rejected(api_client, clean_state):
     """Verify batches exceeding 256 commands are rejected by the server."""
-    commands = [{"command": "io.manager.getStatus"}] * 257
+    commands = [{"command": "io.getStatus"}] * 257
 
     result = api_client.batch(commands, timeout=10.0)
 
@@ -132,7 +132,7 @@ def test_batch_too_large_rejected(api_client, clean_state):
 @pytest.mark.integration
 def test_batch_at_limit(api_client, clean_state):
     """Verify a batch of exactly 256 commands is accepted."""
-    commands = [{"command": "io.manager.getStatus"}] * 256
+    commands = [{"command": "io.getStatus"}] * 256
 
     results = api_client.batch(commands, timeout=30.0)
     assert isinstance(results, list)
@@ -146,11 +146,11 @@ def test_batch_at_limit(api_client, clean_state):
 def test_batch_network_configuration(api_client, clean_state):
     """Verify network driver can be fully configured via a single batch."""
     commands = [
-        {"command": "io.manager.setBusType", "params": {"busType": 1}},
-        {"command": "io.driver.network.setRemoteAddress", "params": {"address": "127.0.0.1"}},
-        {"command": "io.driver.network.setSocketType", "params": {"socketTypeIndex": 0}},
-        {"command": "io.driver.network.setTcpPort", "params": {"port": 9000}},
-        {"command": "io.driver.network.getConfiguration"},
+        {"command": "io.setBusType", "params": {"busType": 1}},
+        {"command": "io.network.setRemoteAddress", "params": {"address": "127.0.0.1"}},
+        {"command": "io.network.setSocketType", "params": {"socketTypeIndex": 0}},
+        {"command": "io.network.setTcpPort", "params": {"port": 9000}},
+        {"command": "io.network.getConfig"},
     ]
 
     results = api_client.batch(commands)
@@ -170,10 +170,10 @@ def test_batch_network_configuration(api_client, clean_state):
 def test_batch_partial_failure_does_not_abort(api_client, clean_state):
     """Verify that one failing command in a batch does not abort remaining commands."""
     commands = [
-        {"command": "dashboard.setFPS", "params": {"fps": 30}},
+        {"command": "dashboard.setFps", "params": {"fps": 30}},
         # This will fail: invalid FPS
-        {"command": "dashboard.setFPS", "params": {"fps": 9999}},
-        {"command": "dashboard.getFPS"},
+        {"command": "dashboard.setFps", "params": {"fps": 9999}},
+        {"command": "dashboard.getFps"},
     ]
 
     results = api_client.batch(commands)

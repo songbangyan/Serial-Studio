@@ -96,7 +96,6 @@ MQTT::Client::Client() : m_mode(0), m_publisher(false), m_sslEnabled(false)
 
 /**
  * @brief Returns the singleton instance of the MQTT Client.
- * @return Reference to the shared MQTT::Client instance.
  */
 MQTT::Client& MQTT::Client::instance()
 {
@@ -498,7 +497,6 @@ void MQTT::Client::regenerateClientId()
 
 /**
  * @brief Sets the client mode (0=subscriber, 1=publisher).
- * @param mode Index of the desired mode.
  */
 void MQTT::Client::setMode(const quint8 mode)
 {
@@ -516,7 +514,6 @@ void MQTT::Client::setMode(const quint8 mode)
 
 /**
  * @brief Sets the topic for subscription or publishing.
- * @param topic Topic name string.
  */
 void MQTT::Client::setTopic(const QString& topic)
 {
@@ -768,7 +765,6 @@ void MQTT::Client::hotpathTxFrame(const QByteArray& data)
 
 /**
  * @brief Handles changes in the client's connection state.
- * @param state The new connection state of the QMqttClient.
  */
 void MQTT::Client::onStateChanged(QMqttClient::ClientState state)
 {
@@ -921,8 +917,6 @@ void MQTT::Client::onAuthenticationRequested(const QMqttAuthenticationProperties
 
 /**
  * @brief Handles incoming MQTT messages.
- * @param message The received MQTT message payload.
- * @param topic The topic associated with the received message.
  */
 void MQTT::Client::onMessageReceived(const QByteArray& message, const QMqttTopicName& topic)
 {

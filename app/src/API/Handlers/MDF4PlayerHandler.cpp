@@ -41,7 +41,7 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
     openSchema.insert("required", req);
   }
   registry.registerCommand(
-    QStringLiteral("mdf4.player.open"), QStringLiteral("Open MDF4 file"), openSchema, &open);
+    QStringLiteral("mdf4Player.open"), QStringLiteral("Open MDF4 file"), openSchema, &open);
 
   // No-param commands
   QJsonObject emptySchema;
@@ -49,28 +49,43 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
   emptySchema.insert("properties", QJsonObject());
 
   registry.registerCommand(
-    QStringLiteral("mdf4.player.close"), QStringLiteral("Close MDF4 file"), emptySchema, &close);
+    QStringLiteral("mdf4Player.close"), QStringLiteral("Close MDF4 file"), emptySchema, &close);
 
+  // setPaused command
+  QJsonObject pausedSchema;
+  {
+    QJsonObject props;
+    QJsonObject prop;
+    prop.insert("type", "boolean");
+    prop.insert("description", "True to pause, false to resume");
+    props.insert("paused", prop);
+    pausedSchema.insert("type", "object");
+    pausedSchema.insert("properties", props);
+    QJsonArray req;
+    req.append("paused");
+    pausedSchema.insert("required", req);
+  }
+  registry.registerCommand(QStringLiteral("mdf4Player.setPaused"),
+                           QStringLiteral("Pause or resume playback (params: paused: bool)"),
+                           pausedSchema,
+                           &setPaused);
+
+  // step command
+  QJsonObject stepSchema;
+  {
+    QJsonObject props;
+    QJsonObject prop;
+    prop.insert("type", "integer");
+    prop.insert("description", "Frames to advance; negative goes back. Default 1");
+    props.insert("delta", prop);
+    stepSchema.insert("type", "object");
+    stepSchema.insert("properties", props);
+  }
   registry.registerCommand(
-    QStringLiteral("mdf4.player.play"), QStringLiteral("Start playback"), emptySchema, &play);
-
-  registry.registerCommand(
-    QStringLiteral("mdf4.player.pause"), QStringLiteral("Pause playback"), emptySchema, &pause);
-
-  registry.registerCommand(QStringLiteral("mdf4.player.toggle"),
-                           QStringLiteral("Toggle play/pause"),
-                           emptySchema,
-                           &toggle);
-
-  registry.registerCommand(QStringLiteral("mdf4.player.nextFrame"),
-                           QStringLiteral("Advance to next frame"),
-                           emptySchema,
-                           &nextFrame);
-
-  registry.registerCommand(QStringLiteral("mdf4.player.previousFrame"),
-                           QStringLiteral("Go to previous frame"),
-                           emptySchema,
-                           &previousFrame);
+    QStringLiteral("mdf4Player.step"),
+    QStringLiteral("Step delta frames forward (or backward if negative; default 1)"),
+    stepSchema,
+    &step);
 
   // SetProgress command
   QJsonObject setProgressSchema;
@@ -88,7 +103,7 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
     req.append("progress");
     setProgressSchema.insert("required", req);
   }
-  registry.registerCommand(QStringLiteral("mdf4.player.setProgress"),
+  registry.registerCommand(QStringLiteral("mdf4Player.setProgress"),
                            QStringLiteral("Seek to position"),
                            setProgressSchema,
                            &setProgress);
@@ -97,7 +112,7 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
   QJsonObject getStatusSchema;
   getStatusSchema.insert("type", "object");
   getStatusSchema.insert("properties", QJsonObject());
-  registry.registerCommand(QStringLiteral("mdf4.player.getStatus"),
+  registry.registerCommand(QStringLiteral("mdf4Player.getStatus"),
                            QStringLiteral("Get player status"),
                            getStatusSchema,
                            &getStatus);
@@ -109,7 +124,6 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
 
 /**
  * @brief Open MDF4 file
- * @param params Requires "filePath" (string)
  */
 API::CommandResponse API::Handlers::MDF4PlayerHandler::open(const QString& id,
                                                             const QJsonObject& params)
@@ -154,83 +168,58 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::close(const QString& id,
 }
 
 /**
- * @brief Start playback
+ * @brief Pause or resume playback (params: paused: bool)
  */
-API::CommandResponse API::Handlers::MDF4PlayerHandler::play(const QString& id,
-                                                            const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  MDF4::Player::instance().play();
-
-  QJsonObject result;
-  result[QStringLiteral("isPlaying")] = MDF4::Player::instance().isPlaying();
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Pause playback
- */
-API::CommandResponse API::Handlers::MDF4PlayerHandler::pause(const QString& id,
-                                                             const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  MDF4::Player::instance().pause();
-
-  QJsonObject result;
-  result[QStringLiteral("isPlaying")] = MDF4::Player::instance().isPlaying();
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Toggle play/pause
- */
-API::CommandResponse API::Handlers::MDF4PlayerHandler::toggle(const QString& id,
-                                                              const QJsonObject& params)
-{
-  Q_UNUSED(params)
-
-  MDF4::Player::instance().toggle();
-
-  QJsonObject result;
-  result[QStringLiteral("isPlaying")] = MDF4::Player::instance().isPlaying();
-  return CommandResponse::makeSuccess(id, result);
-}
-
-/**
- * @brief Advance to next frame
- */
-API::CommandResponse API::Handlers::MDF4PlayerHandler::nextFrame(const QString& id,
+API::CommandResponse API::Handlers::MDF4PlayerHandler::setPaused(const QString& id,
                                                                  const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  if (!params.contains(QStringLiteral("paused"))) {
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: paused"));
+  }
 
-  MDF4::Player::instance().nextFrame();
+  const bool paused = params.value(QStringLiteral("paused")).toBool();
+  if (paused)
+    MDF4::Player::instance().pause();
+  else
+    MDF4::Player::instance().play();
 
   QJsonObject result;
-  result[QStringLiteral("framePosition")] = MDF4::Player::instance().framePosition();
+  result[QStringLiteral("isPlaying")] = MDF4::Player::instance().isPlaying();
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
- * @brief Go to previous frame
+ * @brief Step delta frames forward (or backward if negative; default 1)
  */
-API::CommandResponse API::Handlers::MDF4PlayerHandler::previousFrame(const QString& id,
-                                                                     const QJsonObject& params)
+API::CommandResponse API::Handlers::MDF4PlayerHandler::step(const QString& id,
+                                                            const QJsonObject& params)
 {
-  Q_UNUSED(params)
+  const int delta =
+    params.contains(QStringLiteral("delta")) ? params.value(QStringLiteral("delta")).toInt() : 1;
 
-  MDF4::Player::instance().previousFrame();
+  auto& player = MDF4::Player::instance();
+  if (delta == 0) {
+    QJsonObject result;
+    result[QStringLiteral("framePosition")] = player.framePosition();
+    return CommandResponse::makeSuccess(id, result);
+  }
+
+  const int absDelta = std::abs(delta);
+  const bool forward = delta > 0;
+  for (int i = 0; i < absDelta; ++i)
+    if (forward)
+      player.nextFrame();
+    else
+      player.previousFrame();
 
   QJsonObject result;
-  result[QStringLiteral("framePosition")] = MDF4::Player::instance().framePosition();
+  result[QStringLiteral("framePosition")] = player.framePosition();
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
  * @brief Seek to position
- * @param params Requires "progress" (double: 0.0-1.0)
  */
 API::CommandResponse API::Handlers::MDF4PlayerHandler::setProgress(const QString& id,
                                                                    const QJsonObject& params)

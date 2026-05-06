@@ -25,10 +25,6 @@ namespace AI {
 
 /**
  * @brief DeepSeek adapter on top of the OpenAI-compatible Chat Completions transport.
- *
- * DeepSeek exposes the same request/response shape as OpenAI under
- * https://api.deepseek.com/v1/chat/completions, so this provider reuses
- * the OpenAI translation helpers and the OpenAIReply streaming pipe.
  */
 class DeepSeekProvider : public Provider {
 public:

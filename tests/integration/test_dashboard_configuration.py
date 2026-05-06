@@ -3,7 +3,7 @@ Dashboard Configuration Integration Tests
 
 Tests for dashboard FPS, data-point count, operation mode switching, and
 data/status queries. Covers commands:
-  - dashboard.setFPS / dashboard.getFPS
+  - dashboard.setFps / dashboard.getFps
   - dashboard.setPoints / dashboard.getPoints
   - dashboard.setOperationMode / dashboard.getOperationMode
   - dashboard.getStatus
@@ -22,26 +22,26 @@ from utils import ChecksumType, DataGenerator
 
 @pytest.mark.integration
 def test_dashboard_fps_set_and_get(api_client, clean_state):
-    """Verify dashboard FPS can be set and read back via getFPS."""
+    """Verify dashboard FPS can be set and read back via getFps."""
     for fps in [15, 30, 60]:
-        api_client.command("dashboard.setFPS", {"fps": fps})
+        api_client.command("dashboard.setFps", {"fps": fps})
         time.sleep(0.1)
 
-        result = api_client.command("dashboard.getFPS")
+        result = api_client.command("dashboard.getFps")
         assert result.get("fps") == fps
 
 
 @pytest.mark.integration
 def test_dashboard_fps_boundary_values(api_client, clean_state):
     """Verify dashboard FPS accepts boundary values 1 and 240."""
-    api_client.command("dashboard.setFPS", {"fps": 1})
+    api_client.command("dashboard.setFps", {"fps": 1})
     time.sleep(0.1)
-    result = api_client.command("dashboard.getFPS")
+    result = api_client.command("dashboard.getFps")
     assert result.get("fps") == 1
 
-    api_client.command("dashboard.setFPS", {"fps": 240})
+    api_client.command("dashboard.setFps", {"fps": 240})
     time.sleep(0.1)
-    result = api_client.command("dashboard.getFPS")
+    result = api_client.command("dashboard.getFps")
     assert result.get("fps") == 240
 
 
@@ -51,10 +51,10 @@ def test_dashboard_fps_invalid(api_client, clean_state):
     from utils.api_client import APIError
 
     with pytest.raises(APIError):
-        api_client.command("dashboard.setFPS", {"fps": 0})
+        api_client.command("dashboard.setFps", {"fps": 0})
 
     with pytest.raises(APIError):
-        api_client.command("dashboard.setFPS", {"fps": 241})
+        api_client.command("dashboard.setFps", {"fps": 241})
 
 
 @pytest.mark.integration
@@ -141,7 +141,7 @@ def test_dashboard_get_status_fields(api_client, clean_state):
 @pytest.mark.integration
 def test_dashboard_get_status_reflects_changes(api_client, clean_state):
     """Verify dashboard.getStatus reflects FPS and points updates."""
-    api_client.command("dashboard.setFPS", {"fps": 25})
+    api_client.command("dashboard.setFps", {"fps": 25})
     api_client.command("dashboard.setPoints", {"points": 750})
     time.sleep(0.2)
 
@@ -195,13 +195,13 @@ def test_dashboard_data_updates_after_frame_received(
 @pytest.mark.integration
 def test_dashboard_fps_independent_of_operation_mode(api_client, clean_state):
     """Verify FPS setting persists when switching operation modes."""
-    api_client.command("dashboard.setFPS", {"fps": 20})
+    api_client.command("dashboard.setFps", {"fps": 20})
     time.sleep(0.1)
 
     api_client.command("dashboard.setOperationMode", {"mode": 0})
     time.sleep(0.1)
-    assert api_client.command("dashboard.getFPS")["fps"] == 20
+    assert api_client.command("dashboard.getFps")["fps"] == 20
 
     api_client.command("dashboard.setOperationMode", {"mode": 2})
     time.sleep(0.1)
-    assert api_client.command("dashboard.getFPS")["fps"] == 20
+    assert api_client.command("dashboard.getFps")["fps"] == 20

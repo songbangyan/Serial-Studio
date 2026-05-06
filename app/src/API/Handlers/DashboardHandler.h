@@ -32,6 +32,10 @@ public:
   static void registerCommands();
 
 private:
+  static void registerModeAndFpsCommands();
+  static void registerPointsCommands();
+  static void registerQueryCommands();
+
   static CommandResponse setOperationMode(const QString& id, const QJsonObject& params);
   static CommandResponse getOperationMode(const QString& id, const QJsonObject& params);
   static CommandResponse setFPS(const QString& id, const QJsonObject& params);
@@ -40,6 +44,7 @@ private:
   static CommandResponse getPoints(const QString& id, const QJsonObject& params);
   static CommandResponse getStatus(const QString& id, const QJsonObject& params);
   static CommandResponse getData(const QString& id, const QJsonObject& params);
+  static CommandResponse tailFrames(const QString& id, const QJsonObject& params);
 };
 
 }  // namespace API::Handlers

@@ -26,11 +26,8 @@ private:
   static CommandResponse open(const QString& id, const QJsonObject& params);
   static CommandResponse close(const QString& id, const QJsonObject& params);
 
-  static CommandResponse play(const QString& id, const QJsonObject& params);
-  static CommandResponse pause(const QString& id, const QJsonObject& params);
-  static CommandResponse toggle(const QString& id, const QJsonObject& params);
-  static CommandResponse nextFrame(const QString& id, const QJsonObject& params);
-  static CommandResponse previousFrame(const QString& id, const QJsonObject& params);
+  static CommandResponse setPaused(const QString& id, const QJsonObject& params);
+  static CommandResponse step(const QString& id, const QJsonObject& params);
   static CommandResponse setProgress(const QString& id, const QJsonObject& params);
 
   static CommandResponse getStatus(const QString& id, const QJsonObject& params);

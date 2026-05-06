@@ -92,14 +92,7 @@ void Misc::Utilities::rebootApplication()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Returns a @c QPixmap object with the appropiate resolution for the
- * screen.
- *
- * Returns a @c QPixmap object that loads the image at the given @a path. In the
- * case that the application is being executed on a HiDPI screen, the scaled
- * version of the image will be automatically loaded.
- *
- * @param path location of the image to load
+ * @brief Returns a @c QPixmap object with the appropiate resolution for the screen.
  */
 QPixmap Misc::Utilities::getHiDpiPixmap(const QString& path)
 {
@@ -111,13 +104,7 @@ QPixmap Misc::Utilities::getHiDpiPixmap(const QString& path)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Returns a @c file path for the image with the appropiate resolution
- *       for the screen.
- *
- * In the case that the application is being executed on a HiDPI screen, the
- * scaled version of the image will be automatically returned.
- *
- * @param path location of the image to load
+ * @brief Returns a @c file path for the image with the appropiate resolution for the screen.
  */
 QString Misc::Utilities::hdpiImagePath(const QString& path)
 {
@@ -141,7 +128,6 @@ QString Misc::Utilities::hdpiImagePath(const QString& path)
 
 /**
  * @brief Shows a macOS-like message box with the given properties.
- * @return The StandardButton value of the button pressed, or QMessageBox::Ok in headless mode.
  */
 int Misc::Utilities::showMessageBox(const QString& text,
                                     const QString& informativeText,
@@ -270,13 +256,6 @@ void Misc::Utilities::copyText(const QString& text)
 
 /**
  * @brief Reveals the given file in the host file manager (Explorer/Finder/desktop).
- *
- * Reveals the file contained in @a pathToReveal in Explorer/Finder.
- * On GNU/Linux, this function shall open the file directly with the desktop
- * services.
- *
- * Hacking details:
- * http://stackoverflow.com/questions/3490336/how-to-reveal-in-finder-or-show-in-explorer-with-qt
  */
 void Misc::Utilities::revealFile(const QString& pathToReveal)
 {

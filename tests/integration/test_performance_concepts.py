@@ -144,7 +144,7 @@ def test_sustained_processing_vs_rendering(api_client, device_simulator, clean_s
     elapsed = time.time() - start_time
 
     # Verify still connected (use extended timeout to drain queued data broadcasts)
-    conn_status = api_client.command("io.manager.getStatus", timeout=30)
+    conn_status = api_client.command("io.getStatus", timeout=30)
     assert conn_status.get("isConnected", False)
 
     api_client.disconnect_device()

@@ -30,8 +30,6 @@
 
 /**
  * @brief Constructs a Compass widget.
- * @param index The index of the compass in the Dashboard.
- * @param parent The parent QQuickItem (optional).
  */
 Widgets::Compass::Compass(const int index, QQuickItem* parent)
   : QQuickItem(parent), m_index(index), m_value(0)
@@ -46,7 +44,6 @@ Widgets::Compass::Compass(const int index, QQuickItem* parent)
 
 /**
  * @brief Returns the current value of the compass.
- * @return The current value of the compass.
  */
 double Widgets::Compass::value() const noexcept
 {
@@ -55,7 +52,6 @@ double Widgets::Compass::value() const noexcept
 
 /**
  * @brief Returns the text representation of the compass value.
- * @return The text representation of the compass value.
  */
 QString Widgets::Compass::text() const noexcept
 {
@@ -68,9 +64,6 @@ QString Widgets::Compass::text() const noexcept
 
 /**
  * @brief Updates the compass data from the Dashboard.
- *
- * This method retrieves the latest data for this compass from the Dashboard
- * and updates the compass's value and text display accordingly.
  */
 void Widgets::Compass::updateData()
 {

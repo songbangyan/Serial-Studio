@@ -18,15 +18,13 @@ const peakAt = [];
 let lastTs = 0;
 
 function lit_color(t) {
-  if (t < T_NOMINAL) return "#10b981";
-  if (t < T_HOT)     return "#f59e0b";
-  return "#dc2626";
+  if (t < T_NOMINAL) return theme.widget_highlight;
+  if (t < T_HOT)     return theme.accent;
+  return theme.alarm;
 }
 
 function unlit_color(t) {
-  if (t < T_NOMINAL) return "#dcfce7";
-  if (t < T_HOT)     return "#fef3c7";
-  return "#fee2e2";
+  return theme.widget_border;
 }
 
 function clamp01(x) { return Math.max(0, Math.min(1, x)); }
@@ -58,11 +56,11 @@ function onFrame() {
 
 function draw_bar(ctx, x, y, w, h, level, peak) {
   // Recessed track.
-  ctx.fillStyle = "#f1f5f9";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(x, y, w, h);
-  ctx.fillStyle = "#e2e8f0";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(x, y, w, 1);
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(x, y + h - 1, w, 1);
 
   // Segmented LED-style bar.
@@ -77,24 +75,24 @@ function draw_bar(ctx, x, y, w, h, level, peak) {
   // Peak hold marker with a faint halo.
   if (peak > 0) {
     const px = x + w * peak;
-    ctx.fillStyle = "#cbd5e1";
+    ctx.fillStyle = theme.widget_border;
     ctx.fillRect(px - 2, y - 2, 1, h + 4);
     ctx.fillRect(px + 2, y - 2, 1, h + 4);
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.accent;
     ctx.fillRect(px - 1, y - 3, 2, h + 6);
   }
 
   // Outer frame.
-  ctx.strokeStyle = "#94a3b8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
 }
 
 function paint(ctx, w, h) {
   // Cream paper background.
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 2;
   ctx.strokeRect(1, 1, w - 2, h - 2);
 
@@ -102,24 +100,24 @@ function paint(ctx, w, h) {
 
   // Card background.
   const pad = 14;
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(pad, pad, w - pad * 2, h - pad * 2);
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(pad + 0.5, pad + 0.5, w - pad * 2 - 1, h - pad * 2 - 1);
 
   // Header strip.
   const headerY = pad + 10;
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("LEVEL  METER", pad + 16, headerY + 4);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "9px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(datasets.length === 1 ? datasets[0].title : "MULTI",
                w - pad - 16, headerY + 4);
-  ctx.fillStyle = "#e5e7eb";
+  ctx.fillStyle = theme.widget_border;
   ctx.fillRect(pad + 12, headerY + 12, w - (pad + 12) * 2, 1);
 
   // Bars geometry.
@@ -144,7 +142,7 @@ function paint(ctx, w, h) {
       : 0;
 
     // Channel label on the left.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 12px sans-serif";
     ctx.textAlign = "center";
     const tag = ds.title ? ds.title.substring(0, 2).toUpperCase() : "" + (i + 1);
@@ -153,7 +151,7 @@ function paint(ctx, w, h) {
     draw_bar(ctx, barX, y, barW, barH, norm, peaks[i] || 0);
 
     // Numeric readout on the right.
-    ctx.fillStyle = "#0f172a";
+    ctx.fillStyle = theme.widget_text;
     ctx.font = "bold 11px sans-serif";
     ctx.textAlign = "end";
     const txt = Number.isFinite(ds.value) ? ds.value.toFixed(1) : "--";

@@ -34,12 +34,7 @@
 namespace IO {
 
 /**
- * @struct DriverProperty
  * @brief Describes a configurable property exposed by an I/O driver.
- *
- * Driver properties are typically used by the UI or configuration layer to
- * present editable settings such as text fields, numeric inputs, checkboxes,
- * or combo boxes.
  */
 struct DriverProperty {
   /**
@@ -66,21 +61,12 @@ struct DriverProperty {
 };
 
 /**
- * @typedef ByteArrayPtr
  * @brief Shared immutable byte buffer.
- *
- * This alias wraps a @c QByteArray in a shared pointer to enable efficient
- * ownership sharing without copying the payload.
  */
 typedef std::shared_ptr<const QByteArray> ByteArrayPtr;
 
 /**
- * @struct CapturedData
  * @brief Represents a block of acquired raw data and its timing metadata.
- *
- * Instances of this structure are emitted by drivers when new data is received.
- * In addition to the raw payload, it carries the acquisition timestamp and
- * optional frame timing hints for downstream processing.
  */
 struct CapturedData {
   using SteadyClock     = std::chrono::steady_clock;
@@ -137,21 +123,7 @@ typedef std::shared_ptr<const CapturedData> CapturedDataPtr;
 }
 
 /**
- * @class HAL_Driver
  * @brief Abstract interface for all I/O drivers.
- *
- * This class defines the common contract implemented by transport backends such
- * as UART, Network, BLE, Audio, Modbus, CANBus, HID, USB, and Process drivers.
- *
- * Drivers are responsible for:
- * - opening and closing the transport,
- * - reporting capability and configuration state,
- * - exposing configurable properties,
- * - sending raw data,
- * - publishing acquired data with acquisition timestamps.
- *
- * Incoming data is emitted through @ref dataReceived as shared
- * @ref CapturedDataPtr objects.
  */
 class HAL_Driver : public QObject {
   Q_OBJECT

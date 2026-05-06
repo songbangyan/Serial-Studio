@@ -38,7 +38,7 @@ This Python client provides:
 
 ```bash
 cd "examples/API Test"
-python test_api.py send io.manager.getStatus
+python test_api.py send io.getStatus
 ```
 
 Expected output:
@@ -113,7 +113,7 @@ Serial Studio API Interactive Client
 Connected to 127.0.0.1:7777
 Type 'help' for available commands, 'list' to see all API commands, or 'quit' to exit.
 
-ss> io.manager.getStatus
+ss> io.getStatus
 {
   "isConnected": false,
   "paused": false,
@@ -124,12 +124,12 @@ ss> io.manager.getStatus
   "busTypeName": "Serial Port"
 }
 
-ss> io.driver.uart.setBaudRate {"baudRate": 115200}
+ss> io.uart.setBaudRate {"baudRate": 115200}
 {
   "baudRate": 115200
 }
 
-ss> io.driver.uart.getConfiguration
+ss> io.uart.getConfig
 {
   "port": "",
   "baudRate": 115200,
@@ -142,11 +142,11 @@ ss> io.driver.uart.getConfiguration
 ss> list
 Available commands (158 total):
   api.getCommands - Get list of all available commands
-  io.manager.connect - Connect to the currently configured device
-  io.manager.disconnect - Disconnect from the current device
-  csv.player.open - Open CSV file for playback
+  io.connect - Connect to the currently configured device
+  io.disconnect - Disconnect from the current device
+  csvPlayer.open - Open CSV file for playback
   console.send - Send data to device
-  project.file.open - Open project file
+  project.open - Open project file
   ...
 
 ss> quit
@@ -159,22 +159,22 @@ Goodbye!
 
 ```bash
 # Query connection status
-python test_api.py send io.manager.getStatus
+python test_api.py send io.getStatus
 
 # Set UART baud rate (key=value format - works on all shells)
-python test_api.py send io.driver.uart.setBaudRate -p baudRate=115200
+python test_api.py send io.uart.setBaudRate -p baudRate=115200
 
 # Set network address
-python test_api.py send io.driver.network.setRemoteAddress -p address=192.168.1.100
+python test_api.py send io.network.setRemoteAddress -p address=192.168.1.100
 
 # Multiple parameters
-python test_api.py send io.driver.modbus.addRegisterGroup -p type=0 startAddress=0 count=10
+python test_api.py send io.modbus.addRegisterGroup -p type=0 startAddress=0 count=10
 
 # Boolean parameters
-python test_api.py send io.manager.setPaused -p paused=true
+python test_api.py send io.setPaused -p paused=true
 
 # JSON format (alternative)
-python test_api.py send io.driver.uart.setBaudRate --params '{"baudRate": 115200}'
+python test_api.py send io.uart.setBaudRate --params '{"baudRate": 115200}'
 ```
 
 ### List Available Commands
@@ -199,17 +199,17 @@ Example `commands.json`:
 ```json
 [
   {
-    "command": "io.manager.setBusType",
+    "command": "io.setBusType",
     "id": "set-bus",
     "params": {"busType": 0}
   },
   {
-    "command": "io.driver.uart.setBaudRate",
+    "command": "io.uart.setBaudRate",
     "id": "set-baud",
     "params": {"baudRate": 115200}
   },
   {
-    "command": "io.driver.uart.getConfiguration",
+    "command": "io.uart.getConfig",
     "id": "get-config"
   }
 ]
@@ -278,25 +278,25 @@ For full command reference, see [API_REFERENCE.md](API_REFERENCE.md).
 # Interactive mode
 python test_api.py interactive
 
-ss> io.manager.setBusType {"busType": 0}
-ss> io.driver.uart.setBaudRate {"baudRate": 115200}
-ss> io.driver.uart.setParity {"parityIndex": 0}
-ss> io.driver.uart.setDataBits {"dataBitsIndex": 3}
-ss> io.driver.uart.setStopBits {"stopBitsIndex": 0}
-ss> io.driver.uart.getPortList
-ss> io.driver.uart.setPortIndex {"portIndex": 0}
-ss> io.manager.connect
+ss> io.setBusType {"busType": 0}
+ss> io.uart.setBaudRate {"baudRate": 115200}
+ss> io.uart.setParity {"parityIndex": 0}
+ss> io.uart.setDataBits {"dataBitsIndex": 3}
+ss> io.uart.setStopBits {"stopBitsIndex": 0}
+ss> io.uart.listPorts
+ss> io.uart.setPortIndex {"portIndex": 0}
+ss> io.connect
 ```
 
 ### Example 2: Configure Network (TCP) Connection
 
 ```bash
 # Command-line mode
-python test_api.py send io.manager.setBusType -p busType=1
-python test_api.py send io.driver.network.setSocketType -p socketTypeIndex=0
-python test_api.py send io.driver.network.setRemoteAddress -p address=192.168.1.100
-python test_api.py send io.driver.network.setTcpPort -p port=8080
-python test_api.py send io.manager.connect
+python test_api.py send io.setBusType -p busType=1
+python test_api.py send io.network.setSocketType -p socketTypeIndex=0
+python test_api.py send io.network.setRemoteAddress -p address=192.168.1.100
+python test_api.py send io.network.setTcpPort -p port=8080
+python test_api.py send io.connect
 ```
 
 ### Example 3: Configure Bluetooth LE
@@ -305,30 +305,30 @@ python test_api.py send io.manager.connect
 # Interactive mode for easier device discovery
 python test_api.py interactive
 
-ss> io.manager.setBusType {"busType": 2}
-ss> io.driver.ble.getStatus
-ss> io.driver.ble.startDiscovery
+ss> io.setBusType {"busType": 2}
+ss> io.ble.getStatus
+ss> io.ble.startDiscovery
 # Wait a few seconds...
-ss> io.driver.ble.getDeviceList
-ss> io.driver.ble.selectDevice {"deviceIndex": 0}
-ss> io.driver.ble.getServiceList
-ss> io.driver.ble.selectService {"serviceIndex": 0}
-ss> io.driver.ble.getCharacteristicList
-ss> io.driver.ble.setCharacteristicIndex {"characteristicIndex": 0}
-ss> io.manager.connect
+ss> io.ble.listDevices
+ss> io.ble.selectDevice {"deviceIndex": 0}
+ss> io.ble.listServices
+ss> io.ble.selectService {"serviceIndex": 0}
+ss> io.ble.listCharacteristics
+ss> io.ble.setCharacteristicIndex {"characteristicIndex": 0}
+ss> io.connect
 ```
 
 ### Example 4: Configure Modbus TCP (Pro)
 
 ```bash
-python test_api.py send io.manager.setBusType -p busType=4
-python test_api.py send io.driver.modbus.setProtocolIndex -p protocolIndex=1
-python test_api.py send io.driver.modbus.setHost -p host=192.168.1.50
-python test_api.py send io.driver.modbus.setPort -p port=502
-python test_api.py send io.driver.modbus.setSlaveAddress -p address=1
-python test_api.py send io.driver.modbus.setPollInterval -p intervalMs=1000
-python test_api.py send io.driver.modbus.addRegisterGroup -p type=2 startAddress=0 count=10
-python test_api.py send io.manager.connect
+python test_api.py send io.setBusType -p busType=4
+python test_api.py send io.modbus.setProtocolIndex -p protocolIndex=1
+python test_api.py send io.modbus.setHost -p host=192.168.1.50
+python test_api.py send io.modbus.setPort -p port=502
+python test_api.py send io.modbus.setSlaveAddress -p address=1
+python test_api.py send io.modbus.setPollInterval -p intervalMs=1000
+python test_api.py send io.modbus.addRegisterGroup -p type=2 startAddress=0 count=10
+python test_api.py send io.connect
 ```
 
 ### Example 5: Send Data to Connected Device
@@ -337,16 +337,16 @@ python test_api.py send io.manager.connect
 # Data must be Base64 encoded
 echo -n "Hello World" | base64  # SGVsbG8gV29ybGQ=
 
-python test_api.py send io.manager.writeData -p data=SGVsbG8gV29ybGQ=
+python test_api.py send io.writeData -p data=SGVsbG8gV29ybGQ=
 ```
 
 ### Example 6: Control CSV Export
 
 ```bash
-python test_api.py send csv.export.setEnabled -p enabled=true
-python test_api.py send csv.export.getStatus
-python test_api.py send csv.export.close
-python test_api.py send csv.export.setEnabled -p enabled=false
+python test_api.py send csvExport.setEnabled -p enabled=true
+python test_api.py send csvExport.getStatus
+python test_api.py send csvExport.close
+python test_api.py send csvExport.setEnabled -p enabled=false
 ```
 
 ### Example 7: Configure Dashboard Settings
@@ -359,14 +359,14 @@ python test_api.py send dashboard.getStatus
 python test_api.py send dashboard.setOperationMode -p mode=2
 
 # Set visualization refresh rate (FPS)
-python test_api.py send dashboard.setFPS -p fps=60
+python test_api.py send dashboard.setFps -p fps=60
 
 # Set data points per plot
 python test_api.py send dashboard.setPoints -p points=500
 
 # Query individual settings
 python test_api.py send dashboard.getOperationMode
-python test_api.py send dashboard.getFPS
+python test_api.py send dashboard.getFps
 python test_api.py send dashboard.getPoints
 ```
 
@@ -381,7 +381,7 @@ All messages are JSON objects terminated by a newline (`\n`).
 {
   "type": "command",
   "id": "unique-request-id",
-  "command": "io.manager.getStatus",
+  "command": "io.getStatus",
   "params": {"paused": true}
 }
 ```
@@ -422,7 +422,7 @@ All messages are JSON objects terminated by a newline (`\n`).
 - `EXECUTION_ERROR`: Command failed during execution
 - `OPERATION_FAILED`: Operation could not be completed
 
-### Bus Types (for `io.manager.setBusType`)
+### Bus Types (for `io.setBusType`)
 
 | Index | Name | License |
 |-------|------|---------|
@@ -454,7 +454,7 @@ All messages are JSON objects terminated by a newline (`\n`).
 3. Confirm port number (default: 7777)
 4. Try specifying host/port explicitly:
    ```bash
-   python test_api.py --host 127.0.0.1 --port 7777 send io.manager.getStatus
+   python test_api.py --host 127.0.0.1 --port 7777 send io.getStatus
    ```
 
 ### Parameter Format Issues
@@ -464,12 +464,12 @@ All messages are JSON objects terminated by a newline (`\n`).
 **Solutions:**
 1. Use key=value format (easier on all shells):
    ```bash
-   python test_api.py send io.driver.uart.setBaudRate -p baudRate=115200
+   python test_api.py send io.uart.setBaudRate -p baudRate=115200
    ```
 
 2. On Windows PowerShell, escape JSON quotes carefully:
    ```powershell
-   python test_api.py send io.driver.uart.setBaudRate --params '{\"baudRate\": 115200}'
+   python test_api.py send io.uart.setBaudRate --params '{\"baudRate\": 115200}'
    ```
 
 3. Use interactive mode for complex commands
@@ -494,13 +494,13 @@ All messages are JSON objects terminated by a newline (`\n`).
 
 ```bash
 # Get status and extract specific field
-STATUS=$(python test_api.py send io.manager.getStatus --json)
+STATUS=$(python test_api.py send io.getStatus --json)
 IS_CONNECTED=$(echo $STATUS | jq -r '.result.isConnected')
 
 if [ "$IS_CONNECTED" = "true" ]; then
     echo "Already connected"
 else
-    python test_api.py send io.manager.connect --json
+    python test_api.py send io.connect --json
 fi
 ```
 
@@ -510,11 +510,11 @@ fi
 #!/bin/bash
 # Example: Create a script to configure and connect to your device
 
-python test_api.py send io.manager.setBusType -p busType=0
-python test_api.py send io.driver.uart.setBaudRate -p baudRate=115200
-python test_api.py send io.driver.uart.setPortIndex -p portIndex=0
-python test_api.py send csv.export.setEnabled -p enabled=true
-python test_api.py send io.manager.connect
+python test_api.py send io.setBusType -p busType=0
+python test_api.py send io.uart.setBaudRate -p baudRate=115200
+python test_api.py send io.uart.setPortIndex -p portIndex=0
+python test_api.py send csvExport.setEnabled -p enabled=true
+python test_api.py send io.connect
 
 echo "Setup complete! Device connected and logging to CSV."
 ```
@@ -547,10 +547,10 @@ def send_command(command, params=None):
     return response
 
 # Example usage
-status = send_command("io.manager.getStatus")
+status = send_command("io.getStatus")
 print(f"Connected: {status['result']['isConnected']}")
 
-send_command("io.driver.uart.setBaudRate", {"baudRate": 115200})
+send_command("io.uart.setBaudRate", {"baudRate": 115200})
 
 # Add your application logic here
 ```

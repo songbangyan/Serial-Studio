@@ -28,7 +28,7 @@ void API::Handlers::AudioHandler::registerCommands()
 {
   auto& registry = CommandRegistry::instance();
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setInputDevice"),
+  registry.registerCommand(QStringLiteral("io.audio.setInputDevice"),
                            QStringLiteral("Set input device (params: deviceIndex)"),
                            makeSchema({
                              {QStringLiteral("deviceIndex"),
@@ -37,7 +37,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setInputDevice);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setOutputDevice"),
+  registry.registerCommand(QStringLiteral("io.audio.setOutputDevice"),
                            QStringLiteral("Set output device (params: deviceIndex)"),
                            makeSchema({
                              {QStringLiteral("deviceIndex"),
@@ -46,7 +46,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setOutputDevice);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setSampleRate"),
+  registry.registerCommand(QStringLiteral("io.audio.setSampleRate"),
                            QStringLiteral("Set sample rate (params: rateIndex)"),
                            makeSchema({
                              {QStringLiteral("rateIndex"),
@@ -55,7 +55,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setSampleRate);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setInputSampleFormat"),
+  registry.registerCommand(QStringLiteral("io.audio.setInputSampleFormat"),
                            QStringLiteral("Set input sample format (params: formatIndex)"),
                            makeSchema({
                              {QStringLiteral("formatIndex"),
@@ -64,7 +64,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setInputSampleFormat);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setInputChannelConfig"),
+  registry.registerCommand(QStringLiteral("io.audio.setInputChannelConfig"),
                            QStringLiteral("Set input channel config (params: channelIndex)"),
                            makeSchema({
                              {QStringLiteral("channelIndex"),
@@ -73,7 +73,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setInputChannelConfig);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setOutputSampleFormat"),
+  registry.registerCommand(QStringLiteral("io.audio.setOutputSampleFormat"),
                            QStringLiteral("Set output sample format (params: formatIndex)"),
                            makeSchema({
                              {QStringLiteral("formatIndex"),
@@ -82,7 +82,7 @@ void API::Handlers::AudioHandler::registerCommands()
   }),
                            &setOutputSampleFormat);
 
-  registry.registerCommand(QStringLiteral("io.driver.audio.setOutputChannelConfig"),
+  registry.registerCommand(QStringLiteral("io.audio.setOutputChannelConfig"),
                            QStringLiteral("Set output channel config (params: channelIndex)"),
                            makeSchema({
                              {QStringLiteral("channelIndex"),
@@ -92,27 +92,27 @@ void API::Handlers::AudioHandler::registerCommands()
                            &setOutputChannelConfig);
 
   const auto empty = emptySchema();
-  registry.registerCommand(QStringLiteral("io.driver.audio.getInputDevices"),
+  registry.registerCommand(QStringLiteral("io.audio.listInputDevices"),
                            QStringLiteral("List input devices"),
                            empty,
                            &getInputDevices);
-  registry.registerCommand(QStringLiteral("io.driver.audio.getOutputDevices"),
+  registry.registerCommand(QStringLiteral("io.audio.listOutputDevices"),
                            QStringLiteral("List output devices"),
                            empty,
                            &getOutputDevices);
-  registry.registerCommand(QStringLiteral("io.driver.audio.getSampleRates"),
+  registry.registerCommand(QStringLiteral("io.audio.listSampleRates"),
                            QStringLiteral("List sample rates"),
                            empty,
                            &getSampleRates);
-  registry.registerCommand(QStringLiteral("io.driver.audio.getInputFormats"),
+  registry.registerCommand(QStringLiteral("io.audio.listInputFormats"),
                            QStringLiteral("List input sample formats"),
                            empty,
                            &getInputFormats);
-  registry.registerCommand(QStringLiteral("io.driver.audio.getOutputFormats"),
+  registry.registerCommand(QStringLiteral("io.audio.listOutputFormats"),
                            QStringLiteral("List output sample formats"),
                            empty,
                            &getOutputFormats);
-  registry.registerCommand(QStringLiteral("io.driver.audio.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.audio.getConfig"),
                            QStringLiteral("Get complete audio configuration"),
                            empty,
                            &getConfiguration);
@@ -124,7 +124,6 @@ void API::Handlers::AudioHandler::registerCommands()
 
 /**
  * @brief Set input device
- * @param params Requires "deviceIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setInputDevice(const QString& id,
                                                                  const QJsonObject& params)
@@ -156,7 +155,6 @@ API::CommandResponse API::Handlers::AudioHandler::setInputDevice(const QString& 
 
 /**
  * @brief Set output device
- * @param params Requires "deviceIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setOutputDevice(const QString& id,
                                                                   const QJsonObject& params)
@@ -188,7 +186,6 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputDevice(const QString&
 
 /**
  * @brief Set sample rate
- * @param params Requires "rateIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setSampleRate(const QString& id,
                                                                 const QJsonObject& params)
@@ -220,7 +217,6 @@ API::CommandResponse API::Handlers::AudioHandler::setSampleRate(const QString& i
 
 /**
  * @brief Set input sample format
- * @param params Requires "formatIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setInputSampleFormat(const QString& id,
                                                                        const QJsonObject& params)
@@ -252,7 +248,6 @@ API::CommandResponse API::Handlers::AudioHandler::setInputSampleFormat(const QSt
 
 /**
  * @brief Set input channel configuration
- * @param params Requires "channelIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setInputChannelConfig(const QString& id,
                                                                         const QJsonObject& params)
@@ -284,7 +279,6 @@ API::CommandResponse API::Handlers::AudioHandler::setInputChannelConfig(const QS
 
 /**
  * @brief Set output sample format
- * @param params Requires "formatIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setOutputSampleFormat(const QString& id,
                                                                         const QJsonObject& params)
@@ -316,7 +310,6 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputSampleFormat(const QS
 
 /**
  * @brief Set output channel configuration
- * @param params Requires "channelIndex" (int)
  */
 API::CommandResponse API::Handlers::AudioHandler::setOutputChannelConfig(const QString& id,
                                                                          const QJsonObject& params)

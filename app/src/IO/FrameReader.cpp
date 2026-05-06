@@ -121,14 +121,20 @@ void IO::FrameReader::appendChunk(const CapturedDataPtr& data)
   Q_ASSERT(data);
   Q_ASSERT(data->data);
 
+  // CircularBuffer is pre-sized SPSC; append is memcpy
+  // code-verify off
   m_circularBuffer.append(*data->data);
+  // code-verify on
 
   PendingChunk chunk;
   chunk.chunk              = data;
   chunk.bytesRemaining     = data->data->size();
   chunk.nextFrameTimestamp = data->timestamp;
   chunk.frameStep          = std::max(std::chrono::nanoseconds(1), data->frameStep);
+  // per-chunk timing record; deque only grows by 1 per chunk
+  // code-verify off
   m_pendingChunks.push_back(std::move(chunk));
+  // code-verify on
 }
 
 /**

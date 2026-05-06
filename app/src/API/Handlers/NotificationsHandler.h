@@ -29,9 +29,6 @@ public:
 
 private:
   static CommandResponse post(const QString& id, const QJsonObject& params);
-  static CommandResponse postInfo(const QString& id, const QJsonObject& params);
-  static CommandResponse postWarning(const QString& id, const QJsonObject& params);
-  static CommandResponse postCritical(const QString& id, const QJsonObject& params);
   static CommandResponse resolve(const QString& id, const QJsonObject& params);
 
   static CommandResponse list(const QString& id, const QJsonObject& params);

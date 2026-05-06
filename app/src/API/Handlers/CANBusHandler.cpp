@@ -39,7 +39,7 @@ void API::Handlers::CANBusHandler::registerCommands()
   const auto empty = emptySchema();
 
   // Mutation commands
-  registry.registerCommand(QStringLiteral("io.driver.canbus.setPluginIndex"),
+  registry.registerCommand(QStringLiteral("io.canbus.setPluginIndex"),
                            QStringLiteral("Select CAN plugin by index (params: pluginIndex)"),
                            makeSchema({
                              {QStringLiteral("pluginIndex"),
@@ -48,7 +48,7 @@ void API::Handlers::CANBusHandler::registerCommands()
   }),
                            &setPluginIndex);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.setInterfaceIndex"),
+  registry.registerCommand(QStringLiteral("io.canbus.setInterfaceIndex"),
                            QStringLiteral("Select CAN interface by index (params: interfaceIndex)"),
                            makeSchema({
                              {QStringLiteral("interfaceIndex"),
@@ -57,7 +57,7 @@ void API::Handlers::CANBusHandler::registerCommands()
   }),
                            &setInterfaceIndex);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.setBitrate"),
+  registry.registerCommand(QStringLiteral("io.canbus.setBitrate"),
                            QStringLiteral("Set CAN bitrate (params: bitrate)"),
                            makeSchema({
                              {QStringLiteral("bitrate"),
@@ -66,7 +66,7 @@ void API::Handlers::CANBusHandler::registerCommands()
   }),
                            &setBitrate);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.setCanFD"),
+  registry.registerCommand(QStringLiteral("io.canbus.setCanFd"),
                            QStringLiteral("Enable/disable CAN FD (params: enabled)"),
                            makeSchema({
                              {QStringLiteral("enabled"),
@@ -76,27 +76,27 @@ void API::Handlers::CANBusHandler::registerCommands()
                            &setCanFD);
 
   // Query commands
-  registry.registerCommand(QStringLiteral("io.driver.canbus.getConfiguration"),
+  registry.registerCommand(QStringLiteral("io.canbus.getConfig"),
                            QStringLiteral("Get current CAN bus configuration"),
                            empty,
                            &getConfiguration);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.getPluginList"),
+  registry.registerCommand(QStringLiteral("io.canbus.listPlugins"),
                            QStringLiteral("Get list of available CAN plugins"),
                            empty,
                            &getPluginList);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.getInterfaceList"),
+  registry.registerCommand(QStringLiteral("io.canbus.listInterfaces"),
                            QStringLiteral("Get list of available CAN interfaces"),
                            empty,
                            &getInterfaceList);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.getBitrateList"),
+  registry.registerCommand(QStringLiteral("io.canbus.listBitrates"),
                            QStringLiteral("Get list of supported bitrates"),
                            empty,
                            &getBitrateList);
 
-  registry.registerCommand(QStringLiteral("io.driver.canbus.getInterfaceError"),
+  registry.registerCommand(QStringLiteral("io.canbus.getInterfaceError"),
                            QStringLiteral("Get interface error message if any"),
                            empty,
                            &getInterfaceError);
@@ -108,7 +108,6 @@ void API::Handlers::CANBusHandler::registerCommands()
 
 /**
  * @brief Select CAN plugin by index
- * @param params Requires "pluginIndex" (int)
  */
 API::CommandResponse API::Handlers::CANBusHandler::setPluginIndex(const QString& id,
                                                                   const QJsonObject& params)
@@ -140,7 +139,6 @@ API::CommandResponse API::Handlers::CANBusHandler::setPluginIndex(const QString&
 
 /**
  * @brief Select CAN interface by index
- * @param params Requires "interfaceIndex" (int)
  */
 API::CommandResponse API::Handlers::CANBusHandler::setInterfaceIndex(const QString& id,
                                                                      const QJsonObject& params)
@@ -173,7 +171,6 @@ API::CommandResponse API::Handlers::CANBusHandler::setInterfaceIndex(const QStri
 
 /**
  * @brief Set CAN bitrate
- * @param params Requires "bitrate" (int)
  */
 API::CommandResponse API::Handlers::CANBusHandler::setBitrate(const QString& id,
                                                               const QJsonObject& params)
@@ -199,7 +196,6 @@ API::CommandResponse API::Handlers::CANBusHandler::setBitrate(const QString& id,
 
 /**
  * @brief Enable or disable CAN FD
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::CANBusHandler::setCanFD(const QString& id,
                                                             const QJsonObject& params)

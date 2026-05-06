@@ -28,8 +28,6 @@ Widgets::Output::TextField::TextField(const DataModel::OutputWidget& config, QQu
 
 /**
  * @brief Called from QML when the user presses Enter or clicks Send.
- *
- * Passes the text string to the transmit function.
  */
 void Widgets::Output::TextField::sendText(const QString& text)
 {

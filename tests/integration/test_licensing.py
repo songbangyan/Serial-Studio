@@ -35,7 +35,7 @@ def _licensing_available(api_client) -> bool:
 
 
 def _trial_available(api_client) -> bool:
-    return api_client.command_exists("licensing.trial.getStatus")
+    return api_client.command_exists("licensing.getTrialStatus")
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +65,7 @@ def test_all_license_guards_pass(api_client):
     produced incorrect expected values. If any guard fails, the binary
     is broken and must not ship.
     """
-    result = api_client.command("licensing.guardStatus")
+    result = api_client.command("licensing.getGuardStatus")
 
     assert isinstance(result.get("total"), int)
     assert isinstance(result.get("passed"), int)
@@ -82,8 +82,8 @@ def test_all_license_guards_pass(api_client):
 
 @pytest.mark.integration
 def test_license_guard_status_shape(api_client):
-    """licensing.guardStatus returns the expected diagnostic fields."""
-    result = api_client.command("licensing.guardStatus")
+    """licensing.getGuardStatus returns the expected diagnostic fields."""
+    result = api_client.command("licensing.getGuardStatus")
 
     for field in ("total", "passed", "failed", "allOk"):
         assert field in result, f"Missing field: {field}"
@@ -117,11 +117,11 @@ def test_licensing_get_status_shape(api_client):
 
 @pytest.mark.integration
 def test_trial_get_status_shape(api_client):
-    """licensing.trial.getStatus returns the expected fields without crashing."""
+    """licensing.getTrialStatus returns the expected fields without crashing."""
     if not _trial_available(api_client):
         pytest.skip("trial API not available")
 
-    status = api_client.command("licensing.trial.getStatus")
+    status = api_client.command("licensing.getTrialStatus")
 
     assert isinstance(status.get("busy"), bool)
     assert isinstance(status.get("firstRun"), bool)
@@ -233,12 +233,12 @@ def test_trial_enable_when_not_available(api_client):
     if not _trial_available(api_client):
         pytest.skip("trial API not available")
 
-    trial_status = api_client.command("licensing.trial.getStatus")
+    trial_status = api_client.command("licensing.getTrialStatus")
     if trial_status.get("trialAvailable"):
         pytest.skip("Trial IS available on this machine; skipping unavailability test")
 
     with pytest.raises(APIError) as exc_info:
-        api_client.command("licensing.trial.enable")
+        api_client.command("licensing.enableTrial")
 
     assert exc_info.value.code in (
         "INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM"

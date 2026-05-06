@@ -21,25 +21,11 @@ from utils import APIError
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _add_group(api_client, title="G", widget_type=0):
-    api_client.command("project.group.add", {"title": title, "widgetType": widget_type})
-    time.sleep(0.15)
-
-
-def _add_dataset(api_client, options=0):
-    api_client.command("project.dataset.add", {"options": options})
-    time.sleep(0.1)
-
-
 def _set_virtual(api_client, group_id, dataset_id, is_virtual):
     return api_client.command(
         "project.dataset.setVirtual",
         {"groupId": group_id, "datasetId": dataset_id, "virtual": is_virtual},
     )
-
-
-def _list_datasets(api_client):
-    return api_client.command("project.datasets.list").get("datasets", [])
 
 
 def _find_dataset(datasets, group_id, dataset_id):
@@ -56,10 +42,10 @@ def _find_dataset(datasets, group_id, dataset_id):
 @pytest.mark.project
 def test_dataset_virtual_defaults_false(api_client, clean_state):
     """Freshly created datasets are non-virtual."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     assert len(datasets) == 1
     # serialize() writes "virtual": true only when the flag is set; absence = false
     value = datasets[0].get("virtual", False)
@@ -69,11 +55,11 @@ def test_dataset_virtual_defaults_false(api_client, clean_state):
 @pytest.mark.project
 def test_set_virtual_true(api_client, clean_state):
     """Setting virtual=true is reflected in subsequent dataset queries."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
-    # project.datasets.list uses finalized groupId/datasetId — inspect first
-    datasets = _list_datasets(api_client)
+    # project.dataset.list uses finalized groupId/datasetId — inspect first
+    datasets = api_client.list_datasets()
     gid = datasets[0]["groupId"]
     did = datasets[0]["datasetId"]
 
@@ -81,7 +67,7 @@ def test_set_virtual_true(api_client, clean_state):
     assert result["virtual"] is True
     assert result["updated"] is True
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     d = _find_dataset(datasets, gid, did)
     # Accept either serialization key for the virtual flag
     value = d.get("virtual", False)
@@ -91,17 +77,17 @@ def test_set_virtual_true(api_client, clean_state):
 @pytest.mark.project
 def test_set_virtual_false_clears_flag(api_client, clean_state):
     """Toggling back to false clears the flag."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     gid = datasets[0]["groupId"]
     did = datasets[0]["datasetId"]
 
     _set_virtual(api_client, gid, did, True)
     _set_virtual(api_client, gid, did, False)
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     d = _find_dataset(datasets, gid, did)
     value = d.get("virtual", False)
     assert value is False
@@ -114,8 +100,8 @@ def test_set_virtual_false_clears_flag(api_client, clean_state):
 @pytest.mark.project
 def test_set_virtual_missing_group_errors(api_client, clean_state):
     """Setting virtual on a non-existent group returns INVALID_PARAM."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
     with pytest.raises(APIError) as ei:
         _set_virtual(api_client, group_id=99, dataset_id=0, is_virtual=True)
@@ -125,8 +111,8 @@ def test_set_virtual_missing_group_errors(api_client, clean_state):
 @pytest.mark.project
 def test_set_virtual_missing_dataset_errors(api_client, clean_state):
     """Setting virtual on a valid group but invalid dataset id errors."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
     with pytest.raises(APIError) as ei:
         _set_virtual(api_client, group_id=0, dataset_id=99, is_virtual=True)
@@ -153,10 +139,10 @@ def test_set_virtual_missing_params_errors(api_client, clean_state):
 @pytest.mark.project
 def test_virtual_flag_round_trips_through_json(api_client, clean_state):
     """Virtual flag survives project export → new project → import."""
-    _add_group(api_client, "G")
-    _add_dataset(api_client)
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     gid = datasets[0]["groupId"]
     did = datasets[0]["datasetId"]
 
@@ -170,7 +156,7 @@ def test_virtual_flag_round_trips_through_json(api_client, clean_state):
     api_client.create_new_project()
     time.sleep(0.2)
     # Virtual flag must be gone after new-project
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     if datasets:
         d = _find_dataset(datasets, 0, 0)
         if d is not None:
@@ -178,10 +164,10 @@ def test_virtual_flag_round_trips_through_json(api_client, clean_state):
             assert value is False
 
     # Reload
-    api_client.command("project.loadFromJSON", {"config": project_json})
+    api_client.command("project.loadJson", {"config": project_json})
     time.sleep(0.3)
 
-    datasets = _list_datasets(api_client)
+    datasets = api_client.list_datasets()
     assert len(datasets) >= 1
     d = datasets[0]
     value = d.get("virtual", False)

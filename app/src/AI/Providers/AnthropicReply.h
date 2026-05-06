@@ -24,11 +24,6 @@ class SseEventReader;
 
 /**
  * @brief Real Anthropic Messages API streaming Reply.
- *
- * Posts a JSON body to https://api.anthropic.com/v1/messages with
- * stream:true, parses Server-Sent-Events through SseEventReader, and
- * translates Anthropic's content_block_delta / tool_use / message_stop
- * events into provider-neutral signals on @ref Reply.
  */
 class AnthropicReply : public Reply {
   Q_OBJECT

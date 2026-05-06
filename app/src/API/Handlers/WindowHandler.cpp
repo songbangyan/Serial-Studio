@@ -69,7 +69,7 @@ void API::Handlers::WindowHandler::registerStatusCommands()
     QStringLiteral("Get dashboard window status: activeGroupId, groupCount, autoLayoutEnabled"),
     empty,
     &getStatus);
-  registry.registerCommand(QStringLiteral("ui.window.getGroups"),
+  registry.registerCommand(QStringLiteral("ui.window.listGroups"),
                            QStringLiteral("Get list of groups as [{id, text, icon}]"),
                            empty,
                            &getGroups);
@@ -99,7 +99,7 @@ void API::Handlers::WindowHandler::registerStateCommands()
   auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
-    QStringLiteral("ui.window.getWindowStates"),
+    QStringLiteral("ui.window.listWindowStates"),
     QStringLiteral("Get window states array [{id, state}] for current group"),
     API::emptySchema(),
     &getWindowStates);
@@ -268,7 +268,6 @@ API::CommandResponse API::Handlers::WindowHandler::getGroups(const QString& id,
 
 /**
  * @brief Switch active group by group ID.
- * @param params Requires "groupId" (int)
  */
 API::CommandResponse API::Handlers::WindowHandler::setActiveGroup(const QString& id,
                                                                   const QJsonObject& params)
@@ -293,7 +292,6 @@ API::CommandResponse API::Handlers::WindowHandler::setActiveGroup(const QString&
 
 /**
  * @brief Switch active group by index.
- * @param params Requires "index" (int)
  */
 API::CommandResponse API::Handlers::WindowHandler::setActiveGroupIndex(const QString& id,
                                                                        const QJsonObject& params)
@@ -366,7 +364,6 @@ API::CommandResponse API::Handlers::WindowHandler::getWindowStates(const QString
 
 /**
  * @brief Set the window state for a window by ID.
- * @param params Requires "id" (int) and "state" (int: 0=normal,1=minimized,2=closed)
  */
 API::CommandResponse API::Handlers::WindowHandler::setWindowState(const QString& id,
                                                                   const QJsonObject& params)
@@ -406,7 +403,6 @@ API::CommandResponse API::Handlers::WindowHandler::setWindowState(const QString&
 
 /**
  * @brief Enable or disable auto layout.
- * @param params Requires "enabled" (bool)
  */
 API::CommandResponse API::Handlers::WindowHandler::setAutoLayout(const QString& id,
                                                                  const QJsonObject& params)
@@ -483,7 +479,6 @@ API::CommandResponse API::Handlers::WindowHandler::getLayout(const QString& id,
 
 /**
  * @brief Apply a layout to the WindowManager.
- * @param params Requires "layout" (object)
  */
 API::CommandResponse API::Handlers::WindowHandler::setLayout(const QString& id,
                                                              const QJsonObject& params)
@@ -509,7 +504,6 @@ API::CommandResponse API::Handlers::WindowHandler::setLayout(const QString& id,
 
 /**
  * @brief Return saved widget settings for the given widgetId.
- * @param params Requires "widgetId" (string)
  */
 API::CommandResponse API::Handlers::WindowHandler::getWidgetSettings(const QString& id,
                                                                      const QJsonObject& params)
@@ -530,7 +524,6 @@ API::CommandResponse API::Handlers::WindowHandler::getWidgetSettings(const QStri
 
 /**
  * @brief Set a single widget setting key/value.
- * @param params Requires "widgetId" (string), "key" (string), "value" (any)
  */
 API::CommandResponse API::Handlers::WindowHandler::setWidgetSetting(const QString& id,
                                                                     const QJsonObject& params)

@@ -38,10 +38,6 @@
 
 /**
  * @brief Implements the SerialStudioAPI gRPC service.
- *
- * All RPC handlers execute on the gRPC thread pool. Commands that interact
- * with Qt singletons are marshaled to the main thread via
- * QMetaObject::invokeMethod with BlockingQueuedConnection.
  */
 class SerialStudioServiceImpl final : public serialstudio::SerialStudioAPI::Service {
 public:
@@ -108,9 +104,6 @@ public:
 
   /**
    * @brief Streams parsed frames to the client.
-   *
-   * Registers a stream context that the main thread populates with frames.
-   * The gRPC thread writes frames to the client as they arrive.
    */
   grpc::Status StreamFrames(grpc::ServerContext* context,
                             const serialstudio::StreamRequest* /*request*/,
@@ -353,9 +346,6 @@ void API::GRPC::GRPCServer::hotpathTxData(const IO::ByteArrayPtr& data)
 
 /**
  * @brief Exports a typed .proto file to the given path.
- *
- * Generates a .proto file with per-command typed messages using the
- * ProtoGenerator utility.
  */
 void API::GRPC::GRPCServer::exportProto(const QString& filePath)
 {
@@ -487,11 +477,8 @@ void API::GRPC::GRPCServer::broadcastFrameBatch(const serialstudio::FrameBatch& 
 }
 
 /**
- * @brief Background thread that drains the frame and raw data queues
- *        and writes to all active gRPC stream clients.
- *
- * Serialization (Frame -> JSON -> protobuf Struct) and the blocking
- * gRPC Write() calls happen here, keeping the main thread free.
+ * @brief Background thread that drains the frame and raw data queues and writes to all active gRPC
+ * stream clients.
  */
 void API::GRPC::GRPCServer::writerLoop()
 {

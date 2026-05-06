@@ -216,7 +216,6 @@ UI::Dashboard::Dashboard()
 
 /**
  * @brief Retrieves the singleton instance of the Dashboard.
- * @return Reference to the singleton Dashboard instance.
  */
 UI::Dashboard& UI::Dashboard::instance()
 {
@@ -374,8 +373,6 @@ bool UI::Dashboard::frameValid() const
 
 /**
  * @brief Retrieves the relative index of a widget within its type group.
- * @param widgetIndex The global index of the widget.
- * @return The relative index if found; -1 otherwise.
  */
 int UI::Dashboard::relativeIndex(const int widgetIndex) const
 {
@@ -385,10 +382,6 @@ int UI::Dashboard::relativeIndex(const int widgetIndex) const
 
 /**
  * @brief Formats a numerical value according to its context range.
- * @param val The value to format.
- * @param min The minimum value of the expected range.
- * @param max The maximum value of the expected range.
- * @return A QString representing the formatted value.
  */
 QString UI::Dashboard::formatValue(double val, double min, double max) const
 {
@@ -397,8 +390,6 @@ QString UI::Dashboard::formatValue(double val, double min, double max) const
 
 /**
  * @brief Retrieves the type of widget associated with a given widget index.
- * @param widgetIndex The global index of the widget.
- * @return The widget type, or SerialStudio::DashboardNoWidget if not found.
  */
 SerialStudio::DashboardWidget UI::Dashboard::widgetType(const int widgetIndex) const
 {
@@ -408,8 +399,6 @@ SerialStudio::DashboardWidget UI::Dashboard::widgetType(const int widgetIndex) c
 
 /**
  * @brief Counts the number of instances of a specified widget type.
- * @param widget The type of widget to count.
- * @return The count of instances for the specified widget type.
  */
 int UI::Dashboard::widgetCount(const SerialStudio::DashboardWidget widget) const
 {
@@ -488,9 +477,6 @@ const QMap<int, DataModel::Dataset>& UI::Dashboard::datasets() const
 
 /**
  * @brief Retrieves a group widget by type and index.
- * @param widget The type of dashboard widget.
- * @param index  The index of the widget within its group type.
- * @return Reference to the requested DataModel::Group, or an empty group if not found.
  */
 const DataModel::Group& UI::Dashboard::getGroupWidget(const SerialStudio::DashboardWidget widget,
                                                       const int index) const
@@ -514,9 +500,6 @@ const DataModel::Group& UI::Dashboard::getGroupWidget(const SerialStudio::Dashbo
 
 /**
  * @brief Retrieves a dataset widget by type and index.
- * @param widget The type of dashboard widget.
- * @param index  The index of the dataset within its widget type.
- * @return Reference to the requested DataModel::Dataset, or an empty dataset if not found.
  */
 const DataModel::Dataset& UI::Dashboard::getDatasetWidget(
   const SerialStudio::DashboardWidget widget, const int index) const
@@ -564,8 +547,6 @@ const DataModel::Frame& UI::Dashboard::processedFrame()
 
 /**
  * @brief Returns the FFT plot data currently displayed on the dashboard.
- * @param index The widget index for the FFT plot.
- * @return Reference to the corresponding AxisData buffer.
  */
 const DSP::AxisData& UI::Dashboard::fftData(const int index) const
 {
@@ -579,8 +560,6 @@ const DSP::AxisData& UI::Dashboard::fftData(const int index) const
 
 /**
  * @brief Returns the GPS trajectory data currently tracked by the dashboard.
- * @param index The widget index for the GPS display.
- * @return Reference to the corresponding GpsSeries structure.
  */
 const DSP::GpsSeries& UI::Dashboard::gpsSeries(const int index) const
 {
@@ -594,8 +573,6 @@ const DSP::GpsSeries& UI::Dashboard::gpsSeries(const int index) const
 
 /**
  * @brief Returns the Y-axis values for a linear plot widget.
- * @param index The widget index for the linear plot.
- * @return Reference to the corresponding LineSeries buffer.
  */
 const DSP::LineSeries& UI::Dashboard::plotData(const int index) const
 {
@@ -609,8 +586,6 @@ const DSP::LineSeries& UI::Dashboard::plotData(const int index) const
 
 /**
  * @brief Returns the series data used by a multiplot widget.
- * @param index The widget index for the multiplot.
- * @return Reference to the corresponding MultiLineSeries container.
  */
 const DSP::MultiLineSeries& UI::Dashboard::multiplotData(const int index) const
 {
@@ -625,8 +600,6 @@ const DSP::MultiLineSeries& UI::Dashboard::multiplotData(const int index) const
 #ifdef BUILD_COMMERCIAL
 /**
  * @brief Returns the 3D trajectory data for a 3D plot widget.
- * @param index The widget index for the 3D plot.
- * @return Reference to the corresponding LineSeries3D buffer.
  */
 const DSP::LineSeries3D& UI::Dashboard::plotData3D(const int index) const
 {
@@ -640,8 +613,6 @@ const DSP::LineSeries3D& UI::Dashboard::plotData3D(const int index) const
 
 /**
  * @brief Returns the time-domain ring buffer feeding a waterfall widget.
- * @param index The widget index for the waterfall plot.
- * @return Reference to the corresponding AxisData buffer.
  */
 const DSP::AxisData& UI::Dashboard::waterfallData(const int index) const
 {
@@ -660,8 +631,6 @@ const DSP::AxisData& UI::Dashboard::waterfallData(const int index) const
 
 /**
  * @brief Checks whether a plot is currently active.
- * @param index Plot index to query.
- * @return true if the plot is running.
  */
 bool UI::Dashboard::plotRunning(const int index)
 {
@@ -673,8 +642,6 @@ bool UI::Dashboard::plotRunning(const int index)
 
 /**
  * @brief Checks whether an FFT plot is currently active.
- * @param index FFT plot index to query.
- * @return true if the FFT plot is running.
  */
 bool UI::Dashboard::fftPlotRunning(const int index)
 {
@@ -686,8 +653,6 @@ bool UI::Dashboard::fftPlotRunning(const int index)
 
 /**
  * @brief Checks whether a multiplot is currently active.
- * @param index Multiplot index to query.
- * @return true if the multiplot is running.
  */
 bool UI::Dashboard::multiplotRunning(const int index)
 {
@@ -700,8 +665,6 @@ bool UI::Dashboard::multiplotRunning(const int index)
 #ifdef BUILD_COMMERCIAL
 /**
  * @brief Checks whether a waterfall plot is currently active.
- * @param index Waterfall index to query.
- * @return true if the waterfall is running.
  */
 bool UI::Dashboard::waterfallRunning(const int index)
 {
@@ -718,7 +681,6 @@ bool UI::Dashboard::waterfallRunning(const int index)
 
 /**
  * @brief Sets the number of data points for the dashboard plots.
- * @param points The new number of data points (samples).
  */
 void UI::Dashboard::setPoints(const int points)
 {
@@ -1067,8 +1029,6 @@ void UI::Dashboard::setNotificationLogEnabled(const bool enabled)
 
 /**
  * @brief Activates a dashboard action by transmitting its associated data and handling timer logic.
- * @param index The index of the action to activate.
- * @param guiTrigger True if triggered by user interaction; affects ToggleOnTrigger behavior.
  */
 void UI::Dashboard::activateAction(const int index, const bool guiTrigger)
 {
@@ -1132,8 +1092,6 @@ void UI::Dashboard::activateAction(const int index, const bool guiTrigger)
 
 /**
  * @brief Sets the active state of a plot.
- * @param index Plot index to update.
- * @param enabled true to mark running, false to pause.
  */
 void UI::Dashboard::setPlotRunning(const int index, const bool enabled)
 {
@@ -1143,8 +1101,6 @@ void UI::Dashboard::setPlotRunning(const int index, const bool enabled)
 
 /**
  * @brief Sets the active state of an FFT plot.
- * @param index FFT plot index to update.
- * @param enabled true to mark running, false to pause.
  */
 void UI::Dashboard::setFFTPlotRunning(const int index, const bool enabled)
 {
@@ -1154,8 +1110,6 @@ void UI::Dashboard::setFFTPlotRunning(const int index, const bool enabled)
 
 /**
  * @brief Sets the active state of a multiplot.
- * @param index Multiplot index to update.
- * @param enabled true to mark running, false to pause.
  */
 void UI::Dashboard::setMultiplotRunning(const int index, const bool enabled)
 {
@@ -1166,8 +1120,6 @@ void UI::Dashboard::setMultiplotRunning(const int index, const bool enabled)
 #ifdef BUILD_COMMERCIAL
 /**
  * @brief Sets the active state of a waterfall plot.
- * @param index Waterfall index to update.
- * @param enabled true to mark running, false to pause.
  */
 void UI::Dashboard::setWaterfallRunning(const int index, const bool enabled)
 {
@@ -1182,7 +1134,6 @@ void UI::Dashboard::setWaterfallRunning(const int index, const bool enabled)
 
 /**
  * @brief Processes an incoming data frame and updates the dashboard accordingly.
- * @param frame The new DataModel data frame to process.
  */
 void UI::Dashboard::hotpathRxFrame(const DataModel::TimestampedFramePtr& frame)
 {
@@ -1214,7 +1165,10 @@ void UI::Dashboard::hotpathRxFrame(const DataModel::TimestampedFramePtr& frame)
     for (const auto& sf : std::as_const(m_sourceRawFrames)) {
       combined.containsCommercialFeatures |= sf.containsCommercialFeatures;
       for (const auto& g : sf.groups)
+        // reconfigure path; not per-frame
+        // code-verify off
         combined.groups.push_back(g);
+      // code-verify on
     }
 
     reconfigureDashboard(combined);
@@ -1236,7 +1190,6 @@ void UI::Dashboard::hotpathRxFrame(const DataModel::TimestampedFramePtr& frame)
 
 /**
  * @brief Handles the case where a dataset UID is not in m_datasetReferences.
- * @param frame Frame that triggered the missing-dataset condition.
  */
 void UI::Dashboard::handleMissingDataset(const DataModel::Frame& frame)
 {
@@ -1287,7 +1240,6 @@ void UI::Dashboard::handleMissingDataset(const DataModel::Frame& frame)
 
 /**
  * @brief Updates dataset values and plot data based on the given frame.
- * @param frame The JSON frame containing new dataset values.
  */
 void UI::Dashboard::updateDashboardData(const DataModel::Frame& frame)
 {
@@ -1322,8 +1274,6 @@ void UI::Dashboard::updateDashboardData(const DataModel::Frame& frame)
 
 /**
  * @brief Registers a dataset's index and per-widget-key mappings.
- * @param dataset  Dataset to process.
- * @param ledPanel Group accumulating LED-panel datasets for the current group.
  */
 void UI::Dashboard::processDatasetIntoWidgetMaps(const DataModel::Dataset& dataset,
                                                  DataModel::Group& ledPanel)
@@ -1363,7 +1313,6 @@ void UI::Dashboard::processDatasetIntoWidgetMaps(const DataModel::Dataset& datas
 
 /**
  * @brief Reconfigures the dashboard layout and widgets based on the new frame.
- * @param frame The combined frame (all sources merged) to configure from.
  */
 void UI::Dashboard::reconfigureDashboard(const DataModel::Frame& frame)
 {
@@ -1426,8 +1375,6 @@ void UI::Dashboard::reconfigureDashboard(const DataModel::Frame& frame)
 
 /**
  * @brief Populates m_widgetGroups and m_widgetDatasets from the current frame.
- * @param frame The source frame (used for context only).
- * @param pro   Whether commercial/Pro features are active.
  */
 void UI::Dashboard::buildWidgetGroups(const DataModel::Frame& frame, bool pro)
 {
@@ -1608,7 +1555,6 @@ void UI::Dashboard::buildDatasetReferences()
 
 /**
  * @brief Updates time-series data for all dashboard widgets that require historical tracking.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updateDataSeries(int sourceId)
 {
@@ -1672,7 +1618,6 @@ void UI::Dashboard::updateDataSeries(int sourceId)
 
 /**
  * @brief Updates FFT data series for all active FFT plot widgets.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updateFftSeries(int sourceId)
 {
@@ -1694,7 +1639,6 @@ void UI::Dashboard::updateFftSeries(int sourceId)
 
 /**
  * @brief Updates GPS trajectory series for all GPS widgets.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updateGpsSeries(int sourceId)
 {
@@ -1723,7 +1667,6 @@ void UI::Dashboard::updateGpsSeries(int sourceId)
 
 /**
  * @brief Updates 3D trajectory plot series for all 3D plot widgets.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updatePlot3DSeries(int sourceId)
 {
@@ -1761,7 +1704,6 @@ void UI::Dashboard::updatePlot3DSeries(int sourceId)
 
 /**
  * @brief Updates linear plot data series for all active plot widgets.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updateLineSeries(int sourceId)
 {
@@ -1841,7 +1783,6 @@ void UI::Dashboard::configureFftSeries()
 #ifdef BUILD_COMMERCIAL
 /**
  * @brief Updates time-domain ring buffers feeding all active waterfall widgets.
- * @param sourceId Source to update, or -1 for all sources.
  */
 void UI::Dashboard::updateWaterfallSeries(int sourceId)
 {
@@ -1882,7 +1823,6 @@ void UI::Dashboard::configureWaterfallSeries()
 
 /**
  * @brief Registers an X-axis data buffer for a dataset's custom X source.
- * @param dataset Dataset whose xAxisId specifies the X data source.
  */
 void UI::Dashboard::registerXAxisIfNeeded(const DataModel::Dataset& dataset)
 {
@@ -2084,7 +2024,6 @@ void UI::Dashboard::configureMultiLineSeries()
 
 /**
  * @brief Configures dashboard actions and associated timers from the given DataModel frame.
- * @param frame The DataModel frame containing the user-defined actions to configure.
  */
 void UI::Dashboard::configureActions(const DataModel::Frame& frame)
 {

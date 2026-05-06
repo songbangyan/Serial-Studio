@@ -55,10 +55,6 @@ static NSApplicationTerminateReply swizzled_applicationShouldTerminate(id self, 
 
 /**
  * @brief Constructor for NativeWindow class.
- * @param parent The parent QObject.
- *
- * Connects theme change signals to the appropriate slot for handling UI theme
- * updates.
  */
 NativeWindow::NativeWindow(QObject *parent)
   : QObject(parent)
@@ -68,11 +64,7 @@ NativeWindow::NativeWindow(QObject *parent)
 }
 
 /**
- * @brief Installs a macOS quit interceptor that prevents NSApp terminate from
- *        killing the process, emitting quitRequested() instead.
- *
- * Uses Objective-C runtime method swizzling to replace
- * applicationShouldTerminate: on Qt's Cocoa app delegate.
+ * @brief Installs a macOS quit interceptor that prevents NSApp terminate from killing the process, emitting quitRequested() instead.
  */
 void NativeWindow::installMacOSQuitInterceptor()
 {
@@ -94,17 +86,6 @@ void NativeWindow::installMacOSQuitInterceptor()
 
 /**
  * @brief Retrieves the height of the title bar.
- *
- * This function returns the height of the title bar. When the window is in
- * full screen mode, the title bar height is considered to be 0. Otherwise,
- * it returns the standard title bar height. The titlebar height can be used
- * by the QML interface to provide functionality on macOS.
- *
- * @param window A pointer to the QWindow object for which to retrieve the
- *               title bar height.
- *
- * @return The height of the title bar. Returns 0 if the window is in full
- *         screen mode, else 32.
  */
 int NativeWindow::titlebarHeight(QObject *window)
 {
@@ -129,7 +110,6 @@ int NativeWindow::titlebarHeight(QObject *window)
 
 /**
  * @brief Removes a window to the management list of NativeWindow.
- * @param window Pointer to the window object to be managed.
  */
 void NativeWindow::removeWindow(QObject *window)
 {
@@ -145,15 +125,6 @@ void NativeWindow::removeWindow(QObject *window)
 
 /**
  * @brief Applies the integrated-titlebar style to a raw NSWindow.
- *
- * Also remaps the green traffic-light button to perform a regular zoom
- * (maximize within the current Space, keep the title bar) instead of the
- * macOS Spaces-style full-screen toggle. Spaces full-screen plays badly with
- * Serial Studio's own UI flow -- the user clicked Connect and would suddenly
- * find the window flipping out of the chrome they were just using. Holding
- * Option while clicking the button still triggers the legacy behavior, and
- * `View -> Enter Full Screen` (or programmatic `showFullScreen()`) still works
- * because AppKit honours those independently of the auxiliary flag.
  */
 static void applyMacOSWindowStyleToNSWindow(NSWindow *w)
 {
@@ -191,16 +162,6 @@ static void applyMacOSWindowStyle(QWindow *win)
 
 /**
  * @brief Initializes the native window customization for macOS.
- *
- * This function sets the native macOS window to have a transparent titlebar
- * and to integrate the titlebar with the window's content. It also activates
- * the window and brings it to the front. The window is added to the managed
- * list and monitored for state changes to re-apply customization after
- * full screen mode exit.
- *
- * @param window A pointer to the QWindow object that represents the window
- *               being customized.
- * @param color Optional color parameter (unused on macOS).
  */
 void NativeWindow::addWindow(QObject *window, const QString &color)
 {
@@ -252,12 +213,6 @@ void NativeWindow::onActiveChanged()
 
 /**
  * @brief Handles window state changes to re-apply customization.
- *
- * When a window exits full screen mode on macOS, the system resets the
- * window style flags. This slot detects when a window exits full screen
- * and re-applies the native window customization.
- *
- * @param state The new window state.
  */
 void NativeWindow::onWindowStateChanged(Qt::WindowState state)
 {

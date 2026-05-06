@@ -317,9 +317,6 @@ API::CommandResponse API::Handlers::ExtensionHandler::refreshRepositories(const 
 
 /**
  * @brief Saves a plugin's state to the current project file.
- *
- * The state is stored under "plugin:<pluginId>" in the project's
- * widgetSettings section, persisted to disk alongside layout data.
  */
 API::CommandResponse API::Handlers::ExtensionHandler::savePluginState(const QString& id,
                                                                       const QJsonObject& params)
@@ -339,8 +336,6 @@ API::CommandResponse API::Handlers::ExtensionHandler::savePluginState(const QStr
 
 /**
  * @brief Loads a plugin's state from the current project file.
- *
- * Returns the saved state object, or an empty object if no state was saved.
  */
 API::CommandResponse API::Handlers::ExtensionHandler::loadPluginState(const QString& id,
                                                                       const QJsonObject& params)
