@@ -755,6 +755,7 @@
         <file>ai/skills/can_modbus.md</file>
         <file>ai/skills/dashboard_layout.md</file>
         <file>ai/skills/debugging.md</file>
+        <file>ai/skills/api_semantics.md</file>
         <file>ai/search_index.json</file>
     </qresource>
 </RCC>

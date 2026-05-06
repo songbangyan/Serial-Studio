@@ -69,6 +69,10 @@ QString AI::ContextBuilder::roleBlock()
     "  can_modbus        -> io.canbus.*, io.modbus.*\n"
     "  debugging         -> meta.snapshot, project.validate, *.dryRun, "
     "io.tailFrames\n"
+    "  api_semantics     -> identity (datasetId vs index vs uniqueId), "
+    "frame execution order, transform/painter cycle, tableGet edge cases, "
+    "frame-parser batching timestamps. Load when a behavior/timing question "
+    "is about to send you down a rabbit hole.\n"
     "  tool_discovery    -> meta.* (always relevant when you're hunting for a "
     "command you don't recognise)\n"
     "  behavioral        -> conversational tone; load it once at the start of "
@@ -397,6 +401,7 @@ QStringList AI::ContextBuilder::skillIds()
     QStringLiteral("can_modbus"),
     QStringLiteral("dashboard_layout"),
     QStringLiteral("debugging"),
+    QStringLiteral("api_semantics"),
   };
 }
 
