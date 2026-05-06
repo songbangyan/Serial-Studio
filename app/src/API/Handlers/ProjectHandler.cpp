@@ -346,9 +346,11 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
                    "  16 = Compass (mutually exclusive with Bar / Gauge)\n"
                    "  32 = LED\n"
                    "  64 = Waterfall (Pro)\n"
-                   "Pass exactly ONE bit -- use project.dataset.setOptions to apply "
-                   "several at once, or project.dataset.update to mix with other "
-                   "field edits."),
+                   "Pass exactly ONE bit -- use project.dataset.setOptions (plural) to "
+                   "apply several at once, or project.dataset.update to mix with other "
+                   "field edits. NOTE: this is a DatasetOption bitflag, NOT a "
+                   "DashboardWidget enum -- the numbers do not line up with "
+                   "project.workspace.addWidget's widgetType."),
     makeSchema({
       {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
@@ -363,12 +365,15 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setOptions"),
-    QStringLiteral("Apply several DatasetOption flags at once. Pass `options` as the "
-                   "bitwise OR of the flags you want enabled; any flag NOT set in the "
-                   "value is disabled. Bits: 1=Plot, 2=FFT, 4=Bar, 8=Gauge, "
-                   "16=Compass, 32=LED, 64=Waterfall (Pro). Bar/Gauge/Compass are "
-                   "mutually exclusive -- if more than one is set, the highest bit "
-                   "wins. Updates the group's compatibleWidgetTypes immediately."),
+    QStringLiteral("Apply several DatasetOption flags at once (plural form of "
+                   "project.dataset.setOption). Pass `options` as the bitwise OR of the "
+                   "flags you want enabled; any flag NOT set in the value is disabled. "
+                   "Bits: 1=Plot, 2=FFT, 4=Bar, 8=Gauge, 16=Compass, 32=LED, "
+                   "64=Waterfall (Pro). Bar/Gauge/Compass are mutually exclusive -- if "
+                   "more than one is set, the highest bit wins. Updates the group's "
+                   "compatibleWidgetTypes immediately. NOTE: these are DatasetOption "
+                   "bitflags, NOT DashboardWidget enum values -- the numbers do not "
+                   "line up with project.workspace.addWidget's widgetType."),
     makeSchema({
       { QStringLiteral("groupId"),
        QStringLiteral("integer"),
