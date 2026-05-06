@@ -315,16 +315,18 @@ def test_group_delete_shifts_ref_group_id(api_client, clean_state):
     Refs in groups after the deleted one must have their groupId
     decremented by 1 (contiguous renumber).
     """
-    _add_group_with_datasets(api_client, "G0", dataset_count=1)
-    _add_group_with_datasets(api_client, "G1", dataset_count=1)
-    _add_group_with_datasets(api_client, "G2", dataset_count=1)
+    # GroupWidget::DataGrid (0) + DashboardWidget::DashboardDataGrid (1) is
+    # the compatible pair. Match the other group-delete tests in this file.
+    _add_group_with_datasets(api_client, "G0", widget_type=0, dataset_count=0)
+    _add_group_with_datasets(api_client, "G1", widget_type=0, dataset_count=0)
+    _add_group_with_datasets(api_client, "G2", widget_type=0, dataset_count=0)
     time.sleep(0.3)
 
     wid = _add_workspace(api_client, "W")["id"]
     time.sleep(0.15)
 
     # Widget ref pointing at G2
-    _widget_add(api_client, wid, widget_type=3, group_id=2, relative_index=2)
+    _widget_add(api_client, wid, widget_type=1, group_id=2, relative_index=2)
     time.sleep(0.15)
 
     # Delete G1 by id — surviving G2 becomes G1 (ids are sequential)
