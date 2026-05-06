@@ -15,6 +15,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QRegularExpression>
+#include <QSet>
 #include <QStandardPaths>
 #include <QTextDocument>
 #include <QUrl>
@@ -186,6 +187,11 @@ void AI::Conversation::cancel()
     m_awaitingConfirm.clear();
     setAwaitingConfirmation(false);
   }
+
+  // Synth results for already-persisted tool_use blocks happens in reconcileHistoryToolPairs()
+  m_pendingToolUseBlocks    = QJsonArray();
+  m_pendingToolResultBlocks = QJsonArray();
+  m_outstandingToolResults  = 0;
 
   setBusy(false);
 }
@@ -846,8 +852,10 @@ void AI::Conversation::onReplyError(const QString& message)
 
   m_assistantText.clear();
   m_assistantThinking.clear();
-  m_assistantIndex       = -1;
-  m_pendingToolUseBlocks = QJsonArray();
+  m_assistantIndex          = -1;
+  m_pendingToolUseBlocks    = QJsonArray();
+  m_pendingToolResultBlocks = QJsonArray();
+  m_outstandingToolResults  = 0;
   teardownReply();
   setBusy(false);
 }
@@ -861,6 +869,9 @@ void AI::Conversation::issueRequest()
 {
   Q_ASSERT(m_provider);
   Q_ASSERT(m_dispatcher);
+
+  // Pair up assistant.tool_use blocks with tool_result blocks in the next user message
+  reconcileHistoryToolPairs();
 
   // Compact older tool_result blocks before serializing
   ageHistoryToolResults();
@@ -893,6 +904,119 @@ void AI::Conversation::issueRequest()
   connect(m_reply, &Reply::cacheStatsAvailable, this, [](int read, int created) {
     Assistant::instance().reportCacheStats(read, created);
   });
+}
+
+/**
+ * @brief Synthesizes missing tool_results and drops orphan ones so every
+ *        assistant.tool_use is paired with a tool_result in the next user
+ *        message. Belt-and-suspenders against state leaks across turn
+ *        boundaries (cancel mid-batch, async tool callbacks after error).
+ */
+void AI::Conversation::reconcileHistoryToolPairs()
+{
+  static const QString kRoleAssistant   = QStringLiteral("assistant");
+  static const QString kRoleUser        = QStringLiteral("user");
+  static const QString kTypeToolUse     = QStringLiteral("tool_use");
+  static const QString kTypeToolResult  = QStringLiteral("tool_result");
+  static const QString kKeyType         = QStringLiteral("type");
+  static const QString kKeyId           = QStringLiteral("id");
+  static const QString kKeyToolUseId    = QStringLiteral("tool_use_id");
+  static const QString kKeyContent      = QStringLiteral("content");
+  static const QString kKeyRole         = QStringLiteral("role");
+  static const QString kSyntheticResult = QStringLiteral(
+    "{\"ok\":false,\"error\":\"unresolved\",\"note\":\"synthesized after a "
+    "cancelled or interrupted tool batch\"}");
+
+  for (int i = 0; i < m_history.size(); ++i) {
+    auto msg = m_history.at(i).toObject();
+    if (msg.value(kKeyRole).toString() != kRoleAssistant)
+      continue;
+
+    const auto contentValue = msg.value(kKeyContent);
+    if (!contentValue.isArray())
+      continue;
+
+    QStringList orderedToolUseIds;
+    QSet<QString> assistantIds;
+    for (const auto& bv : contentValue.toArray()) {
+      const auto block = bv.toObject();
+      if (block.value(kKeyType).toString() != kTypeToolUse)
+        continue;
+
+      const auto tid = block.value(kKeyId).toString();
+      if (tid.isEmpty() || assistantIds.contains(tid))
+        continue;
+
+      orderedToolUseIds.append(tid);
+      assistantIds.insert(tid);
+    }
+
+    if (assistantIds.isEmpty())
+      continue;
+
+    const int nextIdx = i + 1;
+    const bool hasNextUser =
+      nextIdx < m_history.size()
+      && m_history.at(nextIdx).toObject().value(kKeyRole).toString() == kRoleUser;
+
+    QJsonArray keptContent;
+    QSet<QString> seenResultIds;
+    if (hasNextUser) {
+      const auto userMsg     = m_history.at(nextIdx).toObject();
+      const auto userContent = userMsg.value(kKeyContent);
+      if (userContent.isArray()) {
+        for (const auto& bv : userContent.toArray()) {
+          const auto block = bv.toObject();
+          if (block.value(kKeyType).toString() != kTypeToolResult) {
+            keptContent.append(block);
+            continue;
+          }
+
+          const auto tid = block.value(kKeyToolUseId).toString();
+          if (assistantIds.contains(tid) && !seenResultIds.contains(tid)) {
+            keptContent.append(block);
+            seenResultIds.insert(tid);
+          }
+        }
+      } else if (userContent.isString()) {
+        QJsonObject textBlock;
+        textBlock[kKeyType]               = QStringLiteral("text");
+        textBlock[QStringLiteral("text")] = userContent.toString();
+        keptContent.append(textBlock);
+      }
+    }
+
+    QJsonArray synthesized;
+    for (const auto& tid : orderedToolUseIds) {
+      if (seenResultIds.contains(tid))
+        continue;
+
+      QJsonObject block;
+      block[kKeyType]        = kTypeToolResult;
+      block[kKeyToolUseId]   = tid;
+      block[kKeyContent]     = kSyntheticResult;
+      synthesized.append(block);
+    }
+
+    QJsonArray newContent;
+    for (const auto& bv : synthesized)
+      newContent.append(bv);
+
+    for (const auto& bv : keptContent)
+      newContent.append(bv);
+
+    if (hasNextUser) {
+      auto userMsg          = m_history.at(nextIdx).toObject();
+      userMsg[kKeyContent]  = newContent;
+      m_history[nextIdx]    = userMsg;
+    } else if (!synthesized.isEmpty()) {
+      QJsonObject userMsg;
+      userMsg[kKeyRole]    = kRoleUser;
+      userMsg[kKeyContent] = newContent;
+      m_history.insert(nextIdx, userMsg);
+      ++i;
+    }
+  }
 }
 
 /** @brief Stubs older tool_result blocks; keeps the kKeepRecentUserTurns most recent verbatim. */

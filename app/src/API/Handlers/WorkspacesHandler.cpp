@@ -298,14 +298,20 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
      "unless you are intentionally adding a second tile with the "
      "same widgetType and groupId to the same workspace.")                                  }
   });
-  registry.registerCommand(QStringLiteral("project.workspace.addWidget"),
-                           QStringLiteral("Pin a visualization tile onto a workspace. The tile "
-                                          "renders the dashboard widget of the given widgetType "
-                                          "fed by the given groupId. Read project.groups.list "
-                                          "and project.workspaces.list first to get valid IDs "
-                                          "and the group's compatibleWidgetTypes."),
-                           addSchema,
-                           &widgetAdd);
+  registry.registerCommand(
+    QStringLiteral("project.workspace.addWidget"),
+    QStringLiteral("Pin a visualization tile onto a workspace. The tile renders the "
+                   "dashboard widget of the given widgetType fed by the given groupId. "
+                   "MANDATORY pre-flight: call project.group.list (for groupId + "
+                   "compatibleWidgetTypes) and project.workspace.list (for workspaceId) "
+                   "BEFORE calling this command. Calling it without that information "
+                   "produces validation errors. If your widgetType isn't in the group's "
+                   "compatibleWidgetTypes, first flip the matching dataset option via "
+                   "project.dataset.setOption / project.dataset.setOptions / "
+                   "project.dataset.update {graph|fft|led|waterfall}, then re-list and "
+                   "call addWidget."),
+    addSchema,
+    &widgetAdd);
 
   const auto removeSchema = API::makeSchema({
     {  QStringLiteral("workspaceId"),QStringLiteral("integer"),QStringLiteral("Workspace id")                                                                },

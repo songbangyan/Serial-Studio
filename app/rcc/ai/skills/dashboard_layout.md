@@ -98,6 +98,33 @@ project.workspace.setCustomizeMode{enabled: false}    // optional
 adding a SECOND tile of the same widgetType+groupId combination to the
 same workspace. For all normal cases, leave it 0.
 
+## MANDATORY pre-flight before any workspace edit
+
+Trial-and-error against `addWidget` burns calls on validation errors and
+leaves the workspace half-built. ALWAYS run this exact sequence first:
+
+```
+1. project.group.list       -> for every group, read groupId,
+                                compatibleWidgetTypes, and
+                                datasetSummary[].enabledWidgetTypes
+2. project.workspace.list   -> read existing workspaceIds (the ones
+                                you may need to delete or reuse)
+3. (optional, if a command schema is unfamiliar)
+   meta.describeCommand{name: "project.workspace.addWidget"}
+4. NOW you can plan and execute.
+```
+
+The plan is: for each widget the user asked for, pick a `groupId` whose
+`compatibleWidgetTypes` contains the desired `widgetType`. If the
+desired type isn't in any group's compatible list, FIRST flip the
+matching dataset option (see "How to enable a workspace tile from
+scratch" above), THEN re-read `project.group.list` to confirm the type
+is now compatible, THEN call `addWidget`.
+
+`relativeIndex` is almost always `0`. Only use a non-zero value when
+you are intentionally pinning a SECOND tile of the same `(widgetType,
+groupId)` pair to the same workspace.
+
 ## Customize mode
 
 Workspace mutations require `customizeWorkspaces = true`. You toggle

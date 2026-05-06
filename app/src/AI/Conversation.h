@@ -103,6 +103,7 @@ private slots:
 private:
   void issueRequest();
   void ageHistoryToolResults();
+  void reconcileHistoryToolPairs();
   void fetchHelpPage(const QString& callId, const QString& path);
   void fetchHelpIndex(const QString& callId, const QUrl& missedUrl);
   void completeHelpFetch(const QString& callId, const QUrl& url, QNetworkReply* reply);
