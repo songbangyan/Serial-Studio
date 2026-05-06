@@ -88,9 +88,11 @@ project.workspace.addWidget{workspaceId, widgetType: 15,
 The OutputPanel shows ALL output widgets in that group on one tile.
 Don't add one tile per output widget — that's not how it's structured.
 
-## Hardware writes are gated
+## Hardware writes go through the user, not you
 
-Every transmit is a hardware write. The runtime tags it AlwaysConfirm,
-which means the user is shown the exact bytes and must approve EACH
-press, even when auto-approve is on. Don't try to bypass this; the
-shielding is intentional.
+You cannot transmit bytes yourself. `console.send` and `io.writeData`
+are Blocked at the dispatcher. The whole point of an output widget is
+that the *user* presses the button and the JS transmit function you
+generated runs on their behalf. Frame your help around that: write a
+clean transmit() that produces the right bytes, and let the user be
+the one who fires it.

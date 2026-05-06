@@ -23,11 +23,6 @@ Rectangle {
   property string resultJson: ""
 
   //
-  // Optional hardware-write preview {kind, text, hex, byteCount, textNote}
-  //
-  property var payloadPreview: null
-
-  //
   // True when the parent groups this card under a batched-confirm header
   //
   property bool groupedConfirm: false
@@ -176,96 +171,8 @@ Rectangle {
       Layout.fillWidth: true
       visible: root.expanded
 
-      //
-      // Hardware-write preview: shows the actual bytes the device will see.
-      //
-      ColumnLayout {
-        spacing: 4
-        Layout.fillWidth: true
-        visible: root.payloadPreview
-
-        Label {
-          text: root.payloadPreview
-                ? qsTr("Payload sent to device (%1 bytes)")
-                    .arg(root.payloadPreview.byteCount)
-                : ""
-          font: Cpp_Misc_CommonFonts.customUiFont(0.75, true)
-          color: Cpp_ThemeManager.colors["pane_section_label"]
-          Component.onCompleted: font.capitalization = Font.AllUppercase
-        }
-
-        Label {
-          Layout.fillWidth: true
-          text: root.payloadPreview ? root.payloadPreview.textNote || "" : ""
-          visible: text.length > 0
-          opacity: 0.75
-          wrapMode: Text.WordWrap
-          font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
-          color: Cpp_ThemeManager.colors["text"]
-        }
-
-        Label {
-          text: qsTr("Text")
-          font: Cpp_Misc_CommonFonts.customUiFont(0.72, true)
-          color: Cpp_ThemeManager.colors["pane_section_label"]
-          Component.onCompleted: font.capitalization = Font.AllUppercase
-        }
-
-        Rectangle {
-          radius: 2
-          Layout.fillWidth: true
-          implicitHeight: payloadTextView.implicitHeight + 8
-          color: Cpp_ThemeManager.colors["base"]
-          border.width: 1
-          border.color: Cpp_ThemeManager.colors["groupbox_border"]
-
-          TextEdit {
-            id: payloadTextView
-
-            readOnly: true
-            selectByMouse: true
-            wrapMode: TextEdit.Wrap
-            anchors.margins: 4
-            anchors.fill: parent
-            text: root.payloadPreview ? root.payloadPreview.text || "" : ""
-            font: Cpp_Misc_CommonFonts.monoFont
-            color: Cpp_ThemeManager.colors["text"]
-          }
-        }
-
-        Label {
-          text: qsTr("Hex")
-          font: Cpp_Misc_CommonFonts.customUiFont(0.72, true)
-          color: Cpp_ThemeManager.colors["pane_section_label"]
-          Component.onCompleted: font.capitalization = Font.AllUppercase
-        }
-
-        Rectangle {
-          radius: 2
-          Layout.fillWidth: true
-          implicitHeight: payloadHexView.implicitHeight + 8
-          color: Cpp_ThemeManager.colors["base"]
-          border.width: 1
-          border.color: Cpp_ThemeManager.colors["groupbox_border"]
-
-          TextEdit {
-            id: payloadHexView
-
-            readOnly: true
-            selectByMouse: true
-            wrapMode: TextEdit.NoWrap
-            anchors.margins: 4
-            anchors.fill: parent
-            text: root.payloadPreview ? root.payloadPreview.hex || "" : ""
-            font: Cpp_Misc_CommonFonts.monoFont
-            color: Cpp_ThemeManager.colors["text"]
-          }
-        }
-      }
-
       Label {
         text: qsTr("Arguments")
-        visible: !root.payloadPreview
         font: Cpp_Misc_CommonFonts.customUiFont(0.75, true)
         color: Cpp_ThemeManager.colors["pane_section_label"]
         Component.onCompleted: font.capitalization = Font.AllUppercase
@@ -274,7 +181,6 @@ Rectangle {
       Rectangle {
         radius: 2
         Layout.fillWidth: true
-        visible: !root.payloadPreview
         implicitHeight: argsView.implicitHeight + 8
         color: Cpp_ThemeManager.colors["base"]
         border.width: 1

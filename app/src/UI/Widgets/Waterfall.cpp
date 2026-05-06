@@ -1341,9 +1341,7 @@ void Widgets::Waterfall::setColorbarVisible(const bool enabled)
 }
 
 /**
- * @brief Multiplies both axis zooms by @a factor, anchored at (anchorX,anchorY) in normalized [0,1]
- * item coordinates. Mirrors the wheel-zoom UX of the plot widgets -- zooming centers on the cursor,
- * not the plot midpoint.
+ * @brief Multiplies both axis zooms by factor, anchored at (anchorX,anchorY) in [0,1] coordinates.
  */
 void Widgets::Waterfall::zoomBy(double factor, double anchorX, double anchorY)
 {

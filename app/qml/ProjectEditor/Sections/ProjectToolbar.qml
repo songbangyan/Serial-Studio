@@ -506,11 +506,11 @@ Rectangle {
 
       Widgets.ToolbarButton {
         text: qsTr("Assistant")
+        visible: Cpp_CommercialBuild
         Layout.alignment: Qt.AlignVCenter
         ToolTip.text: qsTr("Open the Assistant")
         icon.source: "qrc:/icons/project-editor/toolbar/ai.svg"
-        onClicked: app.proVersion ? app.showAIAssistant()
-                                  : app.showAIProUpgradeNotice()
+        onClicked: app.showAIAssistant()
       }
 
       Widgets.ToolbarButton {

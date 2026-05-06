@@ -89,7 +89,7 @@ def main():
     sock.connect(("127.0.0.1", 7777))
 
     while True:
-        result = send_command(sock, "io.manager.getStatus")
+        result = send_command(sock, "io.getStatus")
         print(f"Connected: {result.get('result', {}).get('isConnected')}")
         time.sleep(1)
 
@@ -278,7 +278,7 @@ stub = rpc.SerialStudioAPIStub(channel)
 
 # Execute any API command
 resp = stub.ExecuteCommand(pb.CommandRequest(
-    id="1", command="io.manager.getStatus"))
+    id="1", command="io.getStatus"))
 
 # Stream frames
 for frame in stub.StreamFrames(pb.StreamRequest()):
@@ -301,7 +301,7 @@ sock.connect(("127.0.0.1", 7777))
 msg = json.dumps({
     "type": "command",
     "id": "1",
-    "command": "io.manager.getStatus"
+    "command": "io.getStatus"
 }) + "\n"
 
 sock.sendall(msg.encode())
@@ -439,7 +439,7 @@ Before building a full plugin, test your API connection independently:
 
 ```bash
 # Test TCP/JSON
-echo '{"type":"command","id":"1","command":"api.getCommands"}' | nc localhost 7777
+echo '{"type":"command","id":"1","command":"io.getStatus"}' | nc localhost 7777
 
 # Test gRPC
 grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/ListCommands

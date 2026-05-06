@@ -263,13 +263,9 @@ Rectangle {
 
       Widgets.ToolbarButton {
         text: qsTr("Assistant")
+        visible: Cpp_CommercialBuild
         Layout.alignment: Qt.AlignLeft
-        onClicked: {
-          if (app.proVersion)
-            app.showAIAssistant()
-          else
-            app.showAIProUpgradeNotice()
-        }
+        onClicked: app.showAIAssistant()
         icon.source: "qrc:/icons/toolbar/ai.svg"
         ToolTip.text: qsTr("Chat with an AI to build and edit your project")
       }

@@ -79,22 +79,34 @@ QString AI::OpenAIProvider::keyVendorUrl() const
 QStringList AI::OpenAIProvider::availableModels() const
 {
   return {
-    QStringLiteral("gpt-4.1-mini"),
+    QStringLiteral("gpt-5-mini"),
+    QStringLiteral("gpt-5.2"),
+    QStringLiteral("gpt-5.2-chat-latest"),
     QStringLiteral("gpt-4.1"),
-    QStringLiteral("gpt-4o-mini"),
+    QStringLiteral("gpt-4.1-mini"),
     QStringLiteral("gpt-4o"),
+    QStringLiteral("gpt-4o-mini"),
   };
 }
 
 /** @brief Returns the default OpenAI model for new sessions. */
 QString AI::OpenAIProvider::defaultModel() const
 {
-  return QStringLiteral("gpt-4.1-mini");
+  return QStringLiteral("gpt-5-mini");
 }
 
 /** @brief Returns a human-friendly label for a known OpenAI model id. */
 QString AI::OpenAIProvider::modelDisplayName(const QString& modelId) const
 {
+  if (modelId == QStringLiteral("gpt-5-mini"))
+    return QStringLiteral("GPT-5 mini");
+
+  if (modelId == QStringLiteral("gpt-5.2"))
+    return QStringLiteral("GPT-5.2");
+
+  if (modelId == QStringLiteral("gpt-5.2-chat-latest"))
+    return QStringLiteral("GPT-5.2 Chat");
+
   if (modelId == QStringLiteral("gpt-4.1-mini"))
     return QStringLiteral("GPT-4.1 mini");
 
@@ -110,19 +122,37 @@ QString AI::OpenAIProvider::modelDisplayName(const QString& modelId) const
   return modelId;
 }
 
+/** @brief Returns true when the model should receive top-level instructions as a developer message.
+ */
+bool AI::OpenAIProvider::prefersDeveloperRole(const QString& modelId)
+{
+  return modelId.startsWith(QStringLiteral("gpt-5")) || modelId.startsWith(QStringLiteral("o1"))
+      || modelId.startsWith(QStringLiteral("o3")) || modelId.startsWith(QStringLiteral("o4"));
+}
+
+/** @brief Returns true when the model supports reasoning effort controls. */
+bool AI::OpenAIProvider::isReasoningModel(const QString& modelId)
+{
+  return modelId.startsWith(QStringLiteral("gpt-5.1"))
+      || modelId.startsWith(QStringLiteral("gpt-5.2")) || modelId.startsWith(QStringLiteral("o1"))
+      || modelId.startsWith(QStringLiteral("o3")) || modelId.startsWith(QStringLiteral("o4"));
+}
+
 //--------------------------------------------------------------------------------------------------
 // Translators
 //--------------------------------------------------------------------------------------------------
 
 /** @brief Converts Anthropic-shaped history into the OpenAI Chat Completions shape. */
 QJsonArray AI::OpenAIProvider::translateHistory(const QJsonArray& history,
-                                                const QString& systemText)
+                                                const QString& systemText,
+                                                bool useDeveloperRole)
 {
   QJsonArray out;
 
   if (!systemText.isEmpty()) {
     QJsonObject sys;
-    sys[QStringLiteral("role")]    = QStringLiteral("system");
+    sys[QStringLiteral("role")] =
+      useDeveloperRole ? QStringLiteral("developer") : QStringLiteral("system");
     sys[QStringLiteral("content")] = systemText;
     out.append(sys);
   }
@@ -265,10 +295,21 @@ AI::Reply* AI::OpenAIProvider::sendMessage(const QJsonArray& history, const QJso
     }
   }
 
+  const auto model            = currentModel();
+  const bool useDeveloperRole = prefersDeveloperRole(model);
+
   QJsonObject body;
-  body[QStringLiteral("model")]    = currentModel();
-  body[QStringLiteral("stream")]   = true;
-  body[QStringLiteral("messages")] = translateHistory(history, systemText);
+  body[QStringLiteral("model")]                  = model;
+  body[QStringLiteral("stream")]                 = true;
+  body[QStringLiteral("store")]                  = false;
+  body[QStringLiteral("parallel_tool_calls")]    = true;
+  body[QStringLiteral("prompt_cache_key")]       = QStringLiteral("serial-studio-ai-assistant");
+  body[QStringLiteral("prompt_cache_retention")] = QStringLiteral("24h");
+  body[QStringLiteral("messages")] = translateHistory(history, systemText, useDeveloperRole);
+
+  if (isReasoningModel(model))
+    body[QStringLiteral("reasoning_effort")] = QStringLiteral("none");
+
   if (!tools.isEmpty()) {
     body[QStringLiteral("tools")]       = translateTools(tools);
     body[QStringLiteral("tool_choice")] = QStringLiteral("auto");

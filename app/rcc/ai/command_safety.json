@@ -1,5 +1,5 @@
 {
-  "_comment": "AI safety tags for the in-process tool dispatcher. Names mirror API::CommandRegistry. 'safe' auto-executes, 'alwaysConfirm' requires user approval even when Cpp_AI_Assistant.autoApproveEdits is on (reserved for hardware writes), 'blocked' is denied, anything else falls through to Confirm.",
+  "_comment": "AI safety tags for the in-process tool dispatcher. Names mirror API::CommandRegistry. 'safe' auto-executes, 'blocked' is denied outright (driver settings, connection state, licensing mutations, and any command that writes bytes to the device), anything else falls through to Confirm and requires a user click.",
   "safe": [
     "console.getConfig",
     "consoleExport.getStatus",
@@ -86,11 +86,9 @@
     "ui.window.getWidgetSettings",
     "ui.window.listGroups"
   ],
-  "alwaysConfirm": [
-    "console.send",
-    "io.writeData"
-  ],
   "blocked": [
+    "console.send",
+    "io.writeData",
     "io.audio.setInputChannelConfig",
     "io.audio.setInputDevice",
     "io.audio.setInputSampleFormat",

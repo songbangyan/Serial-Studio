@@ -199,7 +199,7 @@ def main():
                 for content in current_frame:
                     print(f"\n{content.get('text', 'No data')}")
 
-        # Example: Get API status
+        # Example: Calling api.getCommands tool
         print("\n" + "=" * 60)
         print("Example: Calling api.getCommands tool")
         print("=" * 60)

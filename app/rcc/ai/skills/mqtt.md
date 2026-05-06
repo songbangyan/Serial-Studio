@@ -21,8 +21,9 @@ publish.
 1. Mode: `mqtt.setMode{mode}` (almost always 1 for our use cases).
 2. Broker: `mqtt.setHostname{hostname}`, `mqtt.setPort{port}`. Defaults
    are 1883 (plaintext) or 8883 (TLS).
-3. Auth (optional): `mqtt.setUsername`, `mqtt.setPassword`. The password
-   is gated AlwaysConfirm even with auto-approve on.
+3. Auth (optional): `mqtt.setUsername`. `mqtt.setPassword` is Blocked --
+   the assistant cannot set it; ask the user to enter it through the
+   MQTT configuration dialog.
 4. TLS (if the broker requires): `mqtt.setSslEnabled{enabled: true}`,
    then `mqtt.setSslProtocol{protocol}`,
    `mqtt.setPeerVerifyMode{mode}`. Default verify mode is 0 (None) —

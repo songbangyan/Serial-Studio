@@ -33,9 +33,10 @@ Widgets.SmartDialog {
               + "and Opus 4.7 are also available. Supports streaming, "
               + "tool use, extended thinking, and prompt caching.")
     } else if (idx === 1) {
-      return qsTr("OpenAI Chat Completions. The default is GPT-4o mini "
-              + "($0.15 input / $0.60 output per million tokens). "
-              + "GPT-4o, GPT-4 Turbo, and o1-mini are also available.")
+      return qsTr("OpenAI Chat Completions. The default is GPT-5 mini "
+              + "for fast, cost-conscious agentic work. GPT-5.2 is the "
+              + "stronger general-purpose option, and GPT-5.2 Chat "
+              + "tracks the model currently used in ChatGPT.")
     } else if (idx === 2) {
       return qsTr("Google Gemini. The default is Gemini 2.0 Flash, which "
               + "has a generous free tier (subject to rate limits). "

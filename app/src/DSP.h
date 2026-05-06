@@ -120,9 +120,7 @@ public:
   [[nodiscard]] bool empty() const { return m_size == 0; }
 
   /**
-   * @brief Returns the internal index of the front (oldest) element. This is the raw index into the
-   * underlying buffer where the first valid element resides. Useful for direct buffer access or
-   * optimized iteration.
+   * @brief Returns the internal index of the front (oldest) element.
    */
   [[nodiscard]] std::size_t frontIndex() const { return m_start; }
 

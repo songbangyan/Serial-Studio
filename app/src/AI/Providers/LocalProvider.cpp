@@ -285,9 +285,10 @@ AI::Reply* AI::LocalProvider::sendMessage(const QJsonArray& history, const QJson
   }
 
   QJsonObject body;
-  body[QStringLiteral("model")]    = currentModel();
-  body[QStringLiteral("stream")]   = true;
-  body[QStringLiteral("messages")] = OpenAIProvider::translateHistory(history, systemText);
+  body[QStringLiteral("model")]  = currentModel();
+  body[QStringLiteral("stream")] = true;
+  body[QStringLiteral("messages")] =
+    OpenAIProvider::translateHistory(history, systemText, /*useDeveloperRole=*/false);
   if (!tools.isEmpty()) {
     body[QStringLiteral("tools")]       = OpenAIProvider::translateTools(tools);
     body[QStringLiteral("tool_choice")] = QStringLiteral("auto");

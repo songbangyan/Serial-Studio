@@ -140,13 +140,15 @@ ss> io.uart.getConfig
 }
 
 ss> list
-Available commands (158 total):
+Available commands (~290 total):
   api.getCommands - Get list of all available commands
-  io.connect - Connect to the currently configured device
-  io.disconnect - Disconnect from the current device
+  io.connect - Open the configured connection
+  io.disconnect - Close the current connection
+  io.getStatus - Get connection state and bus type
+  io.uart.listPorts - List available serial ports
   csvPlayer.open - Open CSV file for playback
-  console.send - Send data to device
-  project.open - Open project file
+  project.exportJson - Export the active project as JSON
+  project.template.list - List bundled project templates
   ...
 
 ss> quit
@@ -228,47 +230,70 @@ python test_api.py monitor --interval 500
 python test_api.py monitor --compact
 ```
 
-### Run Test Suite
+### Run Smoke Tests
+
+The `test` mode is a small smoke suite, not a per-command verifier. It
+introspects the live server with `api.getCommands`, then exercises:
+
+- protocol invariants (unknown command -> structured error, response IDs
+  match request IDs, batch order is preserved);
+- one read-only command per scope (`io.getStatus`, `dashboard.getStatus`,
+  `project.exportJson`, `console.getConfig`, ...) -- skipped automatically
+  when the command isn't registered (GPL build, feature off, missing Pro
+  tier);
+- error-shape behavior (missing required param and type-mismatched param
+  both come back as structured errors).
 
 ```bash
-# Run all automated tests
+# Run smoke tests
 python test_api.py test
 
-# Verbose output
+# Verbose output (logs each request/response)
 python test_api.py test --verbose
 ```
+
+If a command vanishes from the C++ registry, the corresponding line in
+the suite reports it as `not registered` -- which is the right signal
+without needing per-handler test code that constantly drifts. For
+exhaustive end-to-end coverage of every command, see the integration
+test suite under `tests/integration/`.
 
 ## Available API Commands
 
 Use `python test_api.py list` to see all commands, or run `python test_api.py interactive` and type `list` in the REPL.
 
 ### Core API (GPL)
-- `api.*` - API introspection (1 command)
-- `io.manager.*` - I/O manager control (12 commands)
-- `io.driver.uart.*` - UART/Serial configuration (12 commands)
-- `io.driver.network.*` - Network (TCP/UDP) configuration (10 commands)
-- `io.driver.ble.*` - Bluetooth Low Energy (9 commands)
-- `csv.export.*` - CSV file export control (3 commands)
-- `csv.player.*` - CSV file playback (9 commands)
-- `console.*` - Console/terminal control (11 commands)
-- `dashboard.*` - Dashboard configuration (7 commands)
-- `project.*` - Project management (19+ commands)
-  - `project.file.*` - File operations (new, open, save)
-  - `project.group.*` - Group management (add, delete, duplicate)
-  - `project.dataset.*` - Dataset management (add, delete, duplicate, setOption)
-  - `project.action.*` - Action management (add, delete, duplicate)
-  - `project.parser.*` - Frame parser code (getCode, setCode)
-  - `project.*.list` - List operations (groups.list, datasets.list, actions.list)
+- `io.*` - I/O manager (`connect`, `disconnect`, `setPaused`, `setBusType`, `writeData`, `getStatus`, `listBuses`)
+- `io.uart.*` - UART/Serial driver
+- `io.network.*` - Network (TCP/UDP) driver
+- `io.ble.*` - Bluetooth Low Energy driver
+- `io.usb.*` - Raw USB driver
+- `io.hid.*` - HID driver
+- `io.process.*` - Process I/O driver
+- `console.*` - Console/terminal control
+- `dashboard.*` - Dashboard introspection
+- `project.*` - Project model & editor
+  - `project.exportJson`, `project.validate`, `project.template.list`, `project.template.apply`
+  - `project.source.*` - Multi-source list/add/update/delete
+  - `project.group.*` - Group add/list/update/delete/duplicate
+  - `project.dataset.*` - Dataset add/list/update/delete/duplicate/setOption
+  - `project.action.*` - Action add/list/update/delete
+  - `project.workspace.*` - Workspace add/list/update/delete
+  - `project.frameParser.*` - Frame parser get/set/dryRun
+- `extensions.*` - Extension repository management
+- `notifications.*` - Notification center
+- `ui.window.*` - Dashboard window layout
+- `licensing.*` - License inspection (mutations are AI-blocked)
+- `scripts.*` - Read-only script asset access
 
 ### Pro Features (Commercial License Required)
-- `io.driver.modbus.*` - Modbus RTU/TCP configuration (21 commands)
-- `io.driver.canbus.*` - CAN Bus configuration (9 commands)
-- `mqtt.*` - MQTT client configuration (27 commands)
-- `mdf4.export.*` - MDF4 file export control (3 commands)
-- `mdf4.player.*` - MDF4 file playback (9 commands)
-- `io.driver.audio.*` - Audio input/output (13 commands)
+- `io.modbus.*` - Modbus RTU/TCP driver
+- `io.canbus.*` - CAN Bus driver
+- `io.audio.*` - Audio input/output driver
+- `mqtt.*` - MQTT client configuration (`connect`, `disconnect`, plus broker/auth/TLS/will/identity setters)
+- `sessions.*` - Session database browse/replay/export
 
-For full command reference, see [API_REFERENCE.md](API_REFERENCE.md).
+For the full reference with parameters and examples, see [API-Reference.md](../../doc/help/API-Reference.md).
 
 ## Common Usage Examples
 

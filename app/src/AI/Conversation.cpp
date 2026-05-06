@@ -718,9 +718,8 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
     return;
   }
 
-  if (safety == Safety::Confirm || safety == Safety::AlwaysConfirm) {
-    // AlwaysConfirm bypasses auto-approve; reserved for hardware writes.
-    if (safety == Safety::Confirm && Assistant::instance().autoApproveEdits()) {
+  if (safety == Safety::Confirm) {
+    if (Assistant::instance().autoApproveEdits()) {
       appendToolCallCard(callId, name, arguments, CallStatus::Running);
       runToolCall(callId, name, arguments, /*autoConfirmSafe=*/true);
       return;
@@ -1169,85 +1168,6 @@ static QString toolCallCategory(const QString& name)
   return QStringLiteral("execution");
 }
 
-/** @brief Returns the ASCII-view rendering of one byte (printable or escaped). */
-static QString asciiByte(unsigned char u)
-{
-  if (u == 0x0A)
-    return QStringLiteral("\\n");
-
-  if (u == 0x0D)
-    return QStringLiteral("\\r");
-
-  if (u == 0x09)
-    return QStringLiteral("\\t");
-
-  if (u >= 0x20 && u < 0x7F)
-    return QString(QChar(u));
-
-  return QStringLiteral("\\x") + QString::number(u, 16).rightJustified(2, '0');
-}
-
-/** @brief Renders an ASCII view: printable bytes verbatim, others escaped \xNN. */
-static QString renderAsciiView(const QByteArray& bytes)
-{
-  QString textView;
-  textView.reserve(bytes.size() * 2);
-  for (auto b : bytes)
-    textView += asciiByte(static_cast<unsigned char>(b));
-
-  return textView;
-}
-
-/** @brief Renders a hex view: groups of 2, 16 bytes per row, space separator. */
-static QString renderHexView(const QByteArray& bytes)
-{
-  QString hexView;
-  hexView.reserve(bytes.size() * 3);
-  for (int i = 0; i < bytes.size(); ++i) {
-    if (i > 0)
-      hexView += (i % 16 == 0) ? QLatin1Char('\n') : QLatin1Char(' ');
-
-    hexView +=
-      QString::number(static_cast<unsigned char>(bytes[i]), 16).rightJustified(2, '0').toUpper();
-  }
-  return hexView;
-}
-
-/** @brief Returns a text + hex preview of bytes for hardware-write tool calls. */
-static QVariantMap buildPayloadPreview(const QString& name, const QJsonObject& arguments)
-{
-  QVariantMap preview;
-  if (name != QStringLiteral("console.send") && name != QStringLiteral("io.writeData"))
-    return preview;
-
-  const auto data = arguments.value(QStringLiteral("data")).toString();
-  QByteArray bytes;
-  bool ascii_safe = false;
-
-  if (name == QStringLiteral("console.send")) {
-    bytes                           = data.toUtf8();
-    ascii_safe                      = true;
-    preview[QStringLiteral("kind")] = QStringLiteral("console.send");
-    preview[QStringLiteral("textNote")] =
-      QStringLiteral("The console layer appends the configured line ending "
-                     "(see console.setLineEnding) and may apply the configured "
-                     "data-mode encoding before transmission.");
-  } else {
-    bytes                           = QByteArray::fromBase64(data.toUtf8());
-    preview[QStringLiteral("kind")] = QStringLiteral("io.writeData");
-    preview[QStringLiteral("textNote")] =
-      QStringLiteral("Raw binary write -- bytes are decoded from base64 and "
-                     "transmitted verbatim to the active device, with no line "
-                     "ending or encoding applied.");
-  }
-
-  preview[QStringLiteral("text")]      = renderAsciiView(bytes);
-  preview[QStringLiteral("hex")]       = renderHexView(bytes);
-  preview[QStringLiteral("byteCount")] = static_cast<int>(bytes.size());
-  Q_UNUSED(ascii_safe)
-  return preview;
-}
-
 /** @brief Adds a ToolCallCard payload to the active assistant message. */
 void AI::Conversation::appendToolCallCard(const QString& callId,
                                           const QString& name,
@@ -1274,11 +1194,6 @@ void AI::Conversation::appendToolCallCard(const QString& callId,
   card[QStringLiteral("args")]     = QJsonDocument(arguments).toJson(QJsonDocument::Indented);
   card[QStringLiteral("status")]   = static_cast<int>(status);
   card[QStringLiteral("result")]   = QString();
-
-  // Payload preview for hardware writes
-  const auto payload = buildPayloadPreview(name, arguments);
-  if (!payload.isEmpty())
-    card[QStringLiteral("payloadPreview")] = payload;
 
   calls.append(card);
   map.insert(QStringLiteral("toolCalls"), calls);

@@ -21,10 +21,9 @@ namespace AI {
  * @brief Action-safety classification for AI tool dispatch.
  */
 enum class Safety : quint8 {
-  Safe          = 0,
-  Confirm       = 1,
-  AlwaysConfirm = 2,
-  Blocked       = 3,
+  Safe    = 0,
+  Confirm = 1,
+  Blocked = 2,
 };
 
 /**

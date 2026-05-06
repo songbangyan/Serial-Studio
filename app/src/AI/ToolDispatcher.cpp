@@ -218,7 +218,7 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& name,
     return reply;
   }
 
-  if ((safety == Safety::Confirm || safety == Safety::AlwaysConfirm) && !autoConfirmSafe) {
+  if (safety == Safety::Confirm && !autoConfirmSafe) {
     Q_EMIT confirmationRequested(name, args);
     QJsonObject reply;
     reply[QStringLiteral("ok")]    = false;

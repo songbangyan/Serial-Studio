@@ -86,7 +86,7 @@ stub = rpc.SerialStudioAPIStub(channel)
 
 # Execute a command
 resp = stub.ExecuteCommand(pb.CommandRequest(
-    id="1", command="io.manager.getStatus"))
+    id="1", command="io.getStatus"))
 print(resp.result)
 
 # Stream frames in real-time
@@ -105,7 +105,7 @@ for frame in stub.StreamFrames(pb.StreamRequest()):
 grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/ListCommands
 
 # Execute a command
-grpcurl -plaintext -d '{"command":"io.manager.getStatus","id":"1"}' \
+grpcurl -plaintext -d '{"command":"io.getStatus","id":"1"}' \
   localhost:8888 serialstudio.SerialStudioAPI/ExecuteCommand
 
 # Stream frames (Ctrl+C to stop)

@@ -37,10 +37,14 @@ public:
   [[nodiscard]] Reply* sendMessage(const QJsonArray& history, const QJsonArray& tools) override;
 
   [[nodiscard]] static QJsonArray translateHistory(const QJsonArray& history,
-                                                   const QString& systemText);
+                                                   const QString& systemText,
+                                                   bool useDeveloperRole);
   [[nodiscard]] static QJsonArray translateTools(const QJsonArray& tools);
 
 private:
+  [[nodiscard]] static bool prefersDeveloperRole(const QString& modelId);
+  [[nodiscard]] static bool isReasoningModel(const QString& modelId);
+
   static void translateBlocks(const QJsonArray& blocks,
                               QString& textAccumulator,
                               QJsonArray& toolCalls,

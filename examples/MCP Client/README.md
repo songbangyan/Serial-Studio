@@ -28,12 +28,13 @@ python3 client.py
   Server: Serial Studio
   Version: 3.2.7
 
-✓ Available tools (50+):
+✓ Available tools (~290):
   • api.getCommands: Get list of all available commands
-  • io.connect: Connect to configured device
-  • io.disconnect: Disconnect from device
+  • io.connect: Open the configured connection
+  • io.disconnect: Close the current connection
   • io.getStatus: Query connection status
   • io.uart.setBaudRate: Set UART baud rate
+  • project.template.list: List bundled project templates
   ...
 
 ✓ Available resources (2):
@@ -102,19 +103,27 @@ Every Serial Studio API command is exposed as an MCP tool:
 - `io.uart.setParity` - Set parity
 
 **Network Configuration:**
-- `io.driver.network.setTcpHost` - Set TCP host
+- `io.network.setRemoteAddress` - Set remote host
 - `io.network.setTcpPort` - Set TCP port
-- `io.driver.network.setUdpPort` - Set UDP port
+- `io.network.setUdpRemotePort` - Set UDP remote port
+- `io.network.setUdpLocalPort` - Set UDP local port
 
 **Project Management:**
-- `project.openFromFile` - Load project file
-- `project.save` - Save project
+- `project.exportJson` - Read the active project as JSON
+- `project.template.list` / `project.template.apply` - Browse and apply
+  bundled starters
+- `project.group.add` / `project.dataset.add` / `project.workspace.add`
+  - Edit the in-memory project
+- `project.frameParser.setCode` - Update frame parser source
 
 **Export:**
-- `csv.export.start` - Start CSV export
-- `csv.export.stop` - Stop CSV export
+- `csvExport.setEnabled` - Toggle CSV export
+- `csvExport.close` - Close the current CSV file
+- `mdf4Export.setEnabled` (Pro) - Toggle MDF4 export
 
-**...and many more!** Use `api.getCommands` to list all available tools.
+**...and many more!** Send `tools/list` over MCP (or
+`{"command": "api.getCommands"}` over the legacy JSON protocol) to
+enumerate the complete surface.
 
 ### 2. Resources
 

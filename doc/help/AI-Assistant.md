@@ -1,10 +1,10 @@
 # AI Assistant
 
-A chat-based assistant that lives inside Serial Studio and edits the project for you. Open it from the toolbar (the small spark icon, next to *Open Project*) or from the **Project Editor** toolbar, describe what you want to build, and the assistant configures sources, groups, datasets, frame parsers, transforms, output widgets, painters, and workspaces by calling the same in-process API your scripts and the MCP server already use.
+A chat-based assistant that lives inside Serial Studio and edits the project for you. Open it from the main toolbar (the **Assistant** button next to *Extensions*) or from the **Project Editor** toolbar, describe what you want to build, and the assistant configures sources, groups, datasets, frame parsers, transforms, output widgets, painters, and workspaces by calling the same in-process API your scripts and the MCP server already use.
 
 It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, Google Gemini, DeepSeek, or a local model server) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected. The local-server option lets you run everything offline against Ollama, llama.cpp, LM Studio, or vLLM.
 
-> **Pro feature.** The Assistant button is visible in GPL builds, but clicking it opens an upgrade notice. The Pro build is what wires the chat to a provider. Operator deployments (`--runtime`) hide the Assistant entirely; it is a build-time author tool, not something you ship to operators.
+> **Pro feature.** The Assistant button is only present in Pro builds; GPL builds hide it entirely. Operator deployments (`--runtime`) also hide it — it is a build-time author tool, not something you ship to operators.
 
 ## What it can do
 
@@ -34,14 +34,14 @@ Five providers are wired in. They all do roughly the same job; the trade-offs ar
 | Provider | Default model | What it costs | What it does well |
 |---|---|---|---|
 | **Anthropic** (Claude) | Haiku 4.5 | ~$1 / $5 per million tokens (in/out) | Default. Streaming, tool use, prompt caching, extended thinking on Sonnet/Opus. Sonnet 4.6 and Opus 4.7 are also selectable for harder tasks. |
-| **OpenAI** | GPT-4.1 mini | Pay-per-token; mini tier is cheap | GPT-4.1, GPT-4o, GPT-4o mini also available. |
+| **OpenAI** | GPT-5 mini | Pay-per-token; mini tier is cheap | Default. Streaming, parallel tool calls, native function-calling. GPT-5.2 and GPT-5.2 Chat are the strongest options for hard tasks. GPT-4.1, GPT-4.1 mini, GPT-4o, and GPT-4o mini remain available. Reasoning-capable models run at `reasoning_effort: none` -- right for fast, interactive tool-calling. |
 | **Google Gemini** | 2.5 Flash | Generous free tier (rate-limited via AI Studio) | 2.5 Flash and 2.0 Flash run on the free tier. 2.5 Pro is paid. |
 | **DeepSeek** | deepseek-chat (V3) | Often the cheapest cloud option for tool use | OpenAI-compatible API. `deepseek-reasoner` (R1) is also selectable. |
 | **Local model** | (whatever your server has loaded) | Free | OpenAI-compatible local endpoint. Works with Ollama (default `http://localhost:11434/v1`), llama.cpp's `llama-server`, LM Studio, or vLLM. The model list is queried live from `/v1/models`. Nothing leaves your machine. |
 
 You switch providers from the footer combo box. Each provider keeps its own model selection — Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
 
-> **Anthropic is the primary target.** Prompt caching, adaptive thinking budgets, and the curated essential-tool set are all tuned for Claude. The others work, and work well, but Anthropic is what gets the sharpest behavior by default.
+> **Anthropic and OpenAI are the most polished paths today.** Anthropic surfaces cache read/write counts and adaptive extended thinking back to the UI; the OpenAI path uses server-side prompt caching (silent), parallel tool calls, and the GPT-5 / o-series developer-role conventions, with `reasoning_effort: none` so tool-calling stays snappy. Gemini, DeepSeek, and Local work but don't have cache reporting or thinking integration.
 
 ### Local models
 
@@ -85,13 +85,13 @@ Every command is tagged at startup. There are three buckets:
 
 | Tier | Behavior | Examples |
 |---|---|---|
-| **Safe** | Auto-runs. No prompt. Read-only inspection. | `project.groups.list`, `dashboard.getStatus`, `io.driver.uart.getPortList`, every `get*` and `*.list` |
-| **Confirm** | Card with **Approve** / **Deny** buttons. Anything that mutates the project counts. | `project.group.add`, `project.dataset.update`, `project.workspaces.add`, `project.file.save` |
-| **Blocked** | Refused outright. The model is told it isn't available. | `io.manager.connect`, `io.manager.disconnect`, `console.send`, `licensing.activate`, `mqtt.toggleConnection`, every driver `set*` |
+| **Safe** | Auto-runs. No prompt. Read-only inspection. | `project.group.list`, `dashboard.getStatus`, `io.uart.listPorts`, every `get*` and `*.list` |
+| **Confirm** | Card with **Approve** / **Deny** buttons. Anything that mutates the project counts. | `project.group.add`, `project.dataset.update`, `project.workspace.add`, `project.template.apply` |
+| **Blocked** | Refused outright. The model is told it isn't available. | `io.connect`, `io.disconnect`, `io.setPaused`, `io.writeData`, `console.send`, every driver `set*`, `mqtt.set*` (password/SSL), `licensing.*` mutations |
 
-You can approve a single call (**Approve**) or, when the assistant queues several mutations in a row, approve the whole group at once (**Approve all of these**). Denial is logged and the assistant is told — it will usually offer an alternative or back off, not retry blindly.
+You can approve a single call (**Approve**) or, when the assistant queues several mutations in a row, approve the whole batch at once (**Approve all**). Denial is logged and the assistant is told — it will usually offer an alternative or back off, not retry blindly.
 
-The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers.
+The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers. There is also an **Auto-approve edits** toggle in the panel footer: when on, **Confirm**-tier project edits run without asking. **Blocked** and **Safe** are unaffected.
 
 ---
 
@@ -125,6 +125,14 @@ The assistant can pull `doc/help/*.md` pages directly off the Serial Studio GitH
 
 For scripting, there's a parallel surface called `meta.fetchScriptingDocs` that returns the API reference for one of six scripting contexts (frame parser JS, frame parser Lua, dataset transform JS, dataset transform Lua, output widget JS, painter JS). The assistant is wired to call this **before** writing or modifying any script — that's why frame parsers it generates use real APIs and not made-up function names.
 
+There's also `meta.searchDocs` (a small built-in BM25 index over the bundled help and scripting docs, used to find the right page when a path isn't obvious) and `meta.loadSkill` (loads one of a handful of focused skill briefs — `painter`, `frame_parsers`, `transforms`, `output_widgets`, `dashboard_layout`, `mqtt`, `can_modbus`, `debugging`, `project_basics`, `tool_discovery`, `behavioral` — when the assistant needs deeper guidance for a specific kind of task).
+
+---
+
+## Project templates
+
+When you're starting from a blank project, you can ask the assistant to "use a template" and it will call `project.template.list` (Safe) followed by `project.template.apply` (Confirm) with one of the bundled starters: blank, IMU over UART, GPS over UART (NMEA), multi-channel UART scope, MQTT subscriber, or telemetry over UDP. Templates load instantly into an empty project and give you a working scaffold to edit from.
+
 ---
 
 ## Frequently asked
@@ -139,16 +147,16 @@ Five providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, and a L
 Yes — that's exactly what the **Confirm** tier is for. The card shows the command name and the full arguments object before you approve.
 
 **Can the assistant connect or disconnect my device?**
-No. Connection-state changes (`io.manager.connect`, `io.manager.disconnect`, `io.manager.setPaused`, every `set*` on every driver) are permanently blocked. The assistant can read your device list and your current configuration, but it can't pick up the receiver.
+No. Connection-state changes (`io.connect`, `io.disconnect`, `io.setPaused`) and every `set*` on every driver are permanently blocked. The assistant can read your device list and your current configuration, but it can't pick up the receiver.
 
 **Can it write data to my device?**
-No. `console.send`, `licensing.*` mutations, and `mqtt.toggleConnection` are blocked. If you want the assistant to drive a device, build an [Output Control](Output-Controls.md) and let it generate the JavaScript for you — *you* press the button.
+No. `console.send` (text/serial writes) and `io.writeData` (raw binary writes) are both blocked outright, alongside every driver `set*`, every connection-state command, `licensing.*` mutations, and `mqtt.set*` (password / SSL). If you want the assistant to drive a device, ask it to build an [Output Control](Output-Controls.md) — it can write the JavaScript that generates the bytes, but *you* press the button at runtime.
 
 **Why does my project state show up in the prompt?**
 So the assistant can answer "what sources are configured?", "which datasets feed this group?", or "is the frame parser doing what I think it is?" without first running ten read-only tool calls. The state snapshot lives outside the cached prefix so it can change between turns without invalidating the cache.
 
 **The assistant suggested an API call that doesn't exist.**
-Tell it; it will usually call `meta.listCommands` or `meta.describeCommand` to recover. If you keep hitting hallucinated commands on a given provider, switch to a stronger model (Sonnet 4.6 or Opus 4.7 on Anthropic, GPT-4.1 on OpenAI, 2.5 Pro on Gemini).
+Tell it; it will usually call `meta.listCommands` or `meta.describeCommand` to recover. If you keep hitting hallucinated commands on a given provider, switch to a stronger model (Sonnet 4.6 or Opus 4.7 on Anthropic, GPT-5.2 on OpenAI, 2.5 Pro on Gemini).
 
 **Where do I report a bug or a wrong answer?**
 File an issue on the Serial Studio GitHub repo. Include the prompt, the reply, and ideally the project file (or a stripped-down repro). Provider name and model help too.

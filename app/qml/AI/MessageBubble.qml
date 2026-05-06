@@ -279,7 +279,6 @@ Item {
           resultJson: modelData.result
           statusValue: modelData.status
           Layout.topMargin: showSectionLabel ? 0 : 4
-          payloadPreview: modelData.payloadPreview || null
         }
       }
     }
