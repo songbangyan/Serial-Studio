@@ -24,7 +24,9 @@
 static constexpr int kInitialResponseTimeoutMs = 30 * 1000;
 static const char* kEndpoint                   = "https://api.anthropic.com/v1/messages";
 
-/** @brief Resolves an Anthropic-sanitized tool name back to its dotted form. */
+/**
+ * @brief Resolves an Anthropic-sanitized tool name back to its dotted form.
+ */
 static QString resolveCanonicalToolName(const QString& sanitized)
 {
   const auto& commands = API::CommandRegistry::instance().commands();
@@ -56,7 +58,9 @@ static QString resolveCanonicalToolName(const QString& sanitized)
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Issues the POST and wires SSE / network slots. */
+/**
+ * @brief Issues the POST and wires SSE / network slots.
+ */
 AI::AnthropicReply::AnthropicReply(QNetworkAccessManager& nam,
                                    const QString& apiKey,
                                    const QByteArray& requestBody,
@@ -94,14 +98,18 @@ AI::AnthropicReply::AnthropicReply(QNetworkAccessManager& nam,
 // Public API
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Cancels the in-flight network reply if any. */
+/**
+ * @brief Cancels the in-flight network reply if any.
+ */
 void AI::AnthropicReply::abort()
 {
   if (m_reply && m_reply->isRunning())
     m_reply->abort();
 }
 
-/** @brief Returns the Anthropic stop_reason from message_delta if seen. */
+/**
+ * @brief Returns the Anthropic stop_reason from message_delta if seen.
+ */
 QString AI::AnthropicReply::stopReason() const noexcept
 {
   return m_stopReason;
@@ -111,7 +119,9 @@ QString AI::AnthropicReply::stopReason() const noexcept
 // SSE event handler
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Routes a single SSE event to the right handler branch. */
+/**
+ * @brief Routes a single SSE event to the right handler branch.
+ */
 void AI::AnthropicReply::onSseEvent(const QString& name, const QJsonObject& data)
 {
   if (m_finished)
@@ -158,7 +168,9 @@ void AI::AnthropicReply::onSseEvent(const QString& name, const QJsonObject& data
   }
 }
 
-/** @brief Pulls cache-token stats from the message_start envelope. */
+/**
+ * @brief Pulls cache-token stats from the message_start envelope.
+ */
 void AI::AnthropicReply::handleMessageStart(const QJsonObject& data)
 {
   const auto message = data.value(QStringLiteral("message")).toObject();
@@ -169,7 +181,9 @@ void AI::AnthropicReply::handleMessageStart(const QJsonObject& data)
     Q_EMIT cacheStatsAvailable(read, created);
 }
 
-/** @brief Records the type and (for tool_use) id/name of a new content block. */
+/**
+ * @brief Records the type and (for tool_use) id/name of a new content block.
+ */
 void AI::AnthropicReply::handleContentBlockStart(const QJsonObject& data)
 {
   const int idx    = data.value(QStringLiteral("index")).toInt(-1);
@@ -184,7 +198,9 @@ void AI::AnthropicReply::handleContentBlockStart(const QJsonObject& data)
     m_blocks.insert(idx, bs);
 }
 
-/** @brief Forwards text/thinking deltas and accumulates partial tool-input JSON. */
+/**
+ * @brief Forwards text/thinking deltas and accumulates partial tool-input JSON.
+ */
 void AI::AnthropicReply::handleContentBlockDelta(const QJsonObject& data)
 {
   const int idx        = data.value(QStringLiteral("index")).toInt(-1);
@@ -214,7 +230,9 @@ void AI::AnthropicReply::handleContentBlockDelta(const QJsonObject& data)
   }
 }
 
-/** @brief On block close, validates accumulated tool-use JSON and emits the tool call. */
+/**
+ * @brief On block close, validates accumulated tool-use JSON and emits the tool call.
+ */
 void AI::AnthropicReply::handleContentBlockStop(const QJsonObject& data)
 {
   const int idx = data.value(QStringLiteral("index")).toInt(-1);
@@ -228,7 +246,9 @@ void AI::AnthropicReply::handleContentBlockStop(const QJsonObject& data)
   m_blocks.remove(idx);
 }
 
-/** @brief Validates the buffered tool input JSON and fires toolCallRequested. */
+/**
+ * @brief Validates the buffered tool input JSON and fires toolCallRequested.
+ */
 void AI::AnthropicReply::emitToolUseFromBlock(const BlockState& bs)
 {
   Misc::JsonValidator::Limits limits;
@@ -251,7 +271,9 @@ void AI::AnthropicReply::emitToolUseFromBlock(const BlockState& bs)
     bs.toolUseId, resolveCanonicalToolName(bs.toolUseName), result.document.object());
 }
 
-/** @brief Logs and ends the stream when the SSE parser rejects a frame. */
+/**
+ * @brief Logs and ends the stream when the SSE parser rejects a frame.
+ */
 void AI::AnthropicReply::onSseError(const QString& reason)
 {
   qCWarning(serialStudioAI) << "SSE parse error:" << reason;
@@ -262,7 +284,9 @@ void AI::AnthropicReply::onSseError(const QString& reason)
 // QNetworkReply slots
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Forwards every chunk from the network reply into the SSE reader. */
+/**
+ * @brief Forwards every chunk from the network reply into the SSE reader.
+ */
 void AI::AnthropicReply::onReplyReadyRead()
 {
   if (!m_reply || m_finished)
@@ -275,7 +299,9 @@ void AI::AnthropicReply::onReplyReadyRead()
   m_sse->feed(m_reply->readAll());
 }
 
-/** @brief Handles end-of-stream cleanup and surfaces 4xx/5xx error bodies. */
+/**
+ * @brief Handles end-of-stream cleanup and surfaces 4xx/5xx error bodies.
+ */
 void AI::AnthropicReply::onReplyFinished()
 {
   if (m_finished)
@@ -315,7 +341,9 @@ void AI::AnthropicReply::onReplyFinished()
   finishOk();
 }
 
-/** @brief Logs transport-level errors; surfacing happens in onReplyFinished. */
+/**
+ * @brief Logs transport-level errors; surfacing happens in onReplyFinished.
+ */
 void AI::AnthropicReply::onReplyError()
 {
   if (!m_reply || m_finished)
@@ -328,7 +356,9 @@ void AI::AnthropicReply::onReplyError()
 // Finalization
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Marks the stream finished, emits @ref finished. */
+/**
+ * @brief Marks the stream finished, emits @ref finished.
+ */
 void AI::AnthropicReply::finishOk()
 {
   if (m_finished)
@@ -338,7 +368,9 @@ void AI::AnthropicReply::finishOk()
   Q_EMIT finished();
 }
 
-/** @brief Marks the stream finished with an error message. */
+/**
+ * @brief Marks the stream finished with an error message.
+ */
 void AI::AnthropicReply::finishWithError(const QString& message)
 {
   if (m_finished)

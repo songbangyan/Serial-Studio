@@ -29,7 +29,9 @@ using DataModel::CodeFormatter::Language;
 
 namespace detail {
 
-/** @brief Scanner mode for the formatter's per-character pass. */
+/**
+ * @brief Scanner mode for the formatter's per-character pass.
+ */
 enum class ScanIn : uint8_t {
   Code,
   JsTemplate,
@@ -38,20 +40,26 @@ enum class ScanIn : uint8_t {
   LuaBlockComment
 };
 
-/** @brief Carry-over state threaded across lines by the scanner. */
+/**
+ * @brief Carry-over state threaded across lines by the scanner.
+ */
 struct ScanState {
   ScanIn in    = ScanIn::Code;
   int luaLevel = 0;
 };
 
-/** @brief Per-line indent/outdent deltas produced by the scanner. */
+/**
+ * @brief Per-line indent/outdent deltas produced by the scanner.
+ */
 struct LineInfo {
   bool startsInsideMultiline = false;
   int outdentLeading         = 0;
   int netDelta               = 0;
 };
 
-/** @brief Result of a full-file scan: per-line info paired with the brace depth at line start. */
+/**
+ * @brief Result of a full-file scan: per-line info paired with the brace depth at line start.
+ */
 struct ScanResult {
   QList<LineInfo> infos;
   QList<int> depthAtStart;
@@ -68,7 +76,9 @@ using detail::ScanState;
 // Helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns true when ch can begin or continue a Lua identifier. */
+/**
+ * @brief Returns true when ch can begin or continue a Lua identifier.
+ */
 static bool isLuaIdentChar(QChar ch, bool first)
 {
   if (ch == QLatin1Char('_'))
@@ -83,7 +93,9 @@ static bool isLuaIdentChar(QChar ch, bool first)
   return false;
 }
 
-/** @brief If line[i:] opens a Lua long-bracket form, returns its level and length. */
+/**
+ * @brief If line[i:] opens a Lua long-bracket form, returns its level and length.
+ */
 static bool tryLuaLongOpen(QStringView line, int i, int& outLevel, int& outConsume)
 {
   if (i >= line.size() || line[i] != QLatin1Char('['))
@@ -104,7 +116,9 @@ static bool tryLuaLongOpen(QStringView line, int i, int& outLevel, int& outConsu
   return true;
 }
 
-/** @brief If line[i:] closes a Lua long-bracket form at the given level, returns the length. */
+/**
+ * @brief If line[i:] closes a Lua long-bracket form at the given level, returns the length.
+ */
 static bool tryLuaLongClose(QStringView line, int i, int level, int& outConsume)
 {
   if (i >= line.size() || line[i] != QLatin1Char(']'))
@@ -127,7 +141,9 @@ static bool tryLuaLongClose(QStringView line, int i, int level, int& outConsume)
   return true;
 }
 
-/** @brief Skips a quoted string literal starting at line[i] (assumes line[i] is the open quote). */
+/**
+ * @brief Skips a quoted string literal starting at line[i] (assumes line[i] is the open quote).
+ */
 static int skipQuotedString(QStringView line, int i)
 {
   const QChar quote = line[i];
@@ -146,7 +162,9 @@ static int skipQuotedString(QStringView line, int i)
   return j;
 }
 
-/** @brief Advances past a JS block comment, possibly closing it. */
+/**
+ * @brief Advances past a JS block comment, possibly closing it.
+ */
 static void advanceJsBlockComment(QStringView line, int& i, int n, ScanState& state)
 {
   if (i + 1 < n && line[i] == QLatin1Char('*') && line[i + 1] == QLatin1Char('/')) {
@@ -156,7 +174,9 @@ static void advanceJsBlockComment(QStringView line, int& i, int n, ScanState& st
     ++i;
 }
 
-/** @brief Advances past characters inside a JS template literal. */
+/**
+ * @brief Advances past characters inside a JS template literal.
+ */
 static void advanceJsTemplate(QStringView line, int& i, ScanState& state)
 {
   const QChar c = line[i];
@@ -172,7 +192,9 @@ static void advanceJsTemplate(QStringView line, int& i, ScanState& state)
   ++i;
 }
 
-/** @brief Advances past characters inside a Lua long string or block comment. */
+/**
+ * @brief Advances past characters inside a Lua long string or block comment.
+ */
 static void advanceLuaLong(QStringView line, int& i, ScanState& state)
 {
   int consume = 0;
@@ -184,7 +206,9 @@ static void advanceLuaLong(QStringView line, int& i, ScanState& state)
     ++i;
 }
 
-/** @brief Returns the open/close keyword sets for Lua block tokens. */
+/**
+ * @brief Returns the open/close keyword sets for Lua block tokens.
+ */
 static const QSet<QString>& luaOpenKeywords()
 {
   static const QSet<QString> kSet = {
@@ -197,7 +221,9 @@ static const QSet<QString>& luaOpenKeywords()
   return kSet;
 }
 
-/** @brief Returns the close keyword set for Lua block tokens. */
+/**
+ * @brief Returns the close keyword set for Lua block tokens.
+ */
 static const QSet<QString>& luaCloseKeywords()
 {
   static const QSet<QString> kSet = {
@@ -280,7 +306,9 @@ static bool tryEnterStringLiteral(
   return false;
 }
 
-/** @brief Computes outdent/indent deltas for a single line and updates the carry-over state. */
+/**
+ * @brief Computes outdent/indent deltas for a single line and updates the carry-over state.
+ */
 static LineInfo analyzeLine(QStringView line, Language lang, ScanState& state)
 {
   LineInfo info;
@@ -373,14 +401,18 @@ static LineInfo analyzeLine(QStringView line, Language lang, ScanState& state)
   return info;
 }
 
-/** @brief Splits text into lines while preserving the trailing-newline shape. */
+/**
+ * @brief Splits text into lines while preserving the trailing-newline shape.
+ */
 static QStringList splitLines(const QString& text)
 {
   // Use Qt::KeepEmptyParts to retain trailing empty line semantics.
   return text.split(QLatin1Char('\n'), Qt::KeepEmptyParts);
 }
 
-/** @brief Returns line stripped of trailing whitespace and any '\r' from CRLF normalization. */
+/**
+ * @brief Returns line stripped of trailing whitespace and any '\r' from CRLF normalization.
+ */
 static QString rtrim(const QString& line)
 {
   int end = line.size();
@@ -391,7 +423,9 @@ static QString rtrim(const QString& line)
   return line.left(end);
 }
 
-/** @brief Returns the count of leading space/tab characters in the line. */
+/**
+ * @brief Returns the count of leading space/tab characters in the line.
+ */
 static int leadingWhitespaceCount(QStringView line)
 {
   int i = 0;
@@ -425,7 +459,9 @@ static ScanResult scanAllLines(const QStringList& lines, Language lang)
   return result;
 }
 
-/** @brief Returns the rendered indentation string for a line. */
+/**
+ * @brief Returns the rendered indentation string for a line.
+ */
 static QString computeIndent(int depth, int outdentLeading, int indentSpaces)
 {
   int rendered = depth - outdentLeading;
@@ -435,7 +471,9 @@ static QString computeIndent(int depth, int outdentLeading, int indentSpaces)
   return QString(rendered * indentSpaces, QLatin1Char(' '));
 }
 
-/** @brief Reformats one line based on its scanner state and depth. */
+/**
+ * @brief Reformats one line based on its scanner state and depth.
+ */
 static QString reformatOne(const QString& raw,
                            const LineInfo& info,
                            int depthAtStart,
@@ -458,7 +496,9 @@ static QString reformatOne(const QString& raw,
 
 namespace DataModel::CodeFormatter {
 
-/** @brief Reformats the entire source string with normalized indentation. */
+/**
+ * @brief Reformats the entire source string with normalized indentation.
+ */
 QString formatDocument(const QString& source, Language language, int indentSpaces)
 {
   if (source.isEmpty())
@@ -475,7 +515,9 @@ QString formatDocument(const QString& source, Language language, int indentSpace
   return out.join(QLatin1Char('\n'));
 }
 
-/** @brief Reformats only the given inclusive line range, preserving everything else. */
+/**
+ * @brief Reformats only the given inclusive line range, preserving everything else.
+ */
 QString formatLineRange(
   const QString& source, Language language, int firstLine, int lastLine, int indentSpaces)
 {

@@ -17,14 +17,18 @@
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Constructs an empty SSE reader with no parent ownership transfer. */
+/**
+ * @brief Constructs an empty SSE reader with no parent ownership transfer.
+ */
 AI::SseEventReader::SseEventReader(QObject* parent) : QObject(parent) {}
 
 //--------------------------------------------------------------------------------------------------
 // Public API
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Appends a network chunk to the rolling buffer and drains complete frames. */
+/**
+ * @brief Appends a network chunk to the rolling buffer and drains complete frames.
+ */
 void AI::SseEventReader::feed(const QByteArray& chunk)
 {
   if (chunk.isEmpty())
@@ -42,13 +46,17 @@ void AI::SseEventReader::feed(const QByteArray& chunk)
   drainFrames();
 }
 
-/** @brief Discards any partially-received frame data. */
+/**
+ * @brief Discards any partially-received frame data.
+ */
 void AI::SseEventReader::reset()
 {
   m_buffer.clear();
 }
 
-/** @brief Returns the number of bytes currently held in the buffer. */
+/**
+ * @brief Returns the number of bytes currently held in the buffer.
+ */
 qsizetype AI::SseEventReader::bufferedBytes() const noexcept
 {
   return m_buffer.size();
@@ -58,7 +66,9 @@ qsizetype AI::SseEventReader::bufferedBytes() const noexcept
 // Frame extraction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Pulls every complete frame out of the buffer in order. */
+/**
+ * @brief Pulls every complete frame out of the buffer in order.
+ */
 void AI::SseEventReader::drainFrames()
 {
   // Bounded loop: each iteration consumes >=2 bytes (NASA P10 rule 2)
@@ -85,7 +95,9 @@ void AI::SseEventReader::drainFrames()
   reset();
 }
 
-/** @brief Parses one SSE frame's lines into eventName + dataPayload. */
+/**
+ * @brief Parses one SSE frame's lines into eventName + dataPayload.
+ */
 void AI::SseEventReader::parseFrameLines(const QByteArray& frame,
                                          QString& eventName,
                                          QByteArray& dataPayload)
@@ -119,7 +131,9 @@ void AI::SseEventReader::parseFrameLines(const QByteArray& frame,
   }
 }
 
-/** @brief Validates and emits a single SSE event after JSON parsing. */
+/**
+ * @brief Validates and emits a single SSE event after JSON parsing.
+ */
 void AI::SseEventReader::emitFrame(const QString& name, const QByteArray& data)
 {
   if (name == QStringLiteral("ping"))

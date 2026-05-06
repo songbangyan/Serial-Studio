@@ -17,7 +17,9 @@ class QNetworkAccessManager;
 
 namespace AI {
 
-/** @brief Functor that returns the current API key (or empty when unset). */
+/**
+ * @brief Functor that returns the current API key (or empty when unset).
+ */
 using KeyGetter = std::function<QString()>;
 
 /**

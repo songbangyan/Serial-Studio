@@ -40,7 +40,9 @@ void API::Handlers::ConsoleHandler::registerCommands()
   registerIoAndExportCommands();
 }
 
-/** @brief Register display + data-formatting commands. */
+/**
+ * @brief Register display + data-formatting commands.
+ */
 void API::Handlers::ConsoleHandler::registerDisplayCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -85,7 +87,9 @@ void API::Handlers::ConsoleHandler::registerDisplayCommands()
                            &setLineEnding);
 }
 
-/** @brief Register font, checksum, VT100/ANSI, and text-encoding commands. */
+/**
+ * @brief Register font, checksum, VT100/ANSI, and text-encoding commands.
+ */
 void API::Handlers::ConsoleHandler::registerFontAndChecksumCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -146,7 +150,9 @@ void API::Handlers::ConsoleHandler::registerFontAndChecksumCommands()
     &setEncoding);
 }
 
-/** @brief Register lifecycle, send, export, and getConfig commands. */
+/**
+ * @brief Register lifecycle, send, export, and getConfig commands.
+ */
 void API::Handlers::ConsoleHandler::registerIoAndExportCommands()
 {
   auto& registry = CommandRegistry::instance();

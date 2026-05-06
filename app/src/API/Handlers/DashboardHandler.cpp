@@ -47,7 +47,9 @@ void API::Handlers::DashboardHandler::registerCommands()
   registerQueryCommands();
 }
 
-/** @brief Register operation-mode and refresh-rate (FPS) commands. */
+/**
+ * @brief Register operation-mode and refresh-rate (FPS) commands.
+ */
 void API::Handlers::DashboardHandler::registerModeAndFpsCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -104,7 +106,9 @@ void API::Handlers::DashboardHandler::registerModeAndFpsCommands()
                            &getFPS);
 }
 
-/** @brief Register plot-points get/set commands. */
+/**
+ * @brief Register plot-points get/set commands.
+ */
 void API::Handlers::DashboardHandler::registerPointsCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -137,7 +141,9 @@ void API::Handlers::DashboardHandler::registerPointsCommands()
                            &getPoints);
 }
 
-/** @brief Register status, getData, and tailFrames query commands. */
+/**
+ * @brief Register status, getData, and tailFrames query commands.
+ */
 void API::Handlers::DashboardHandler::registerQueryCommands()
 {
   auto& registry = CommandRegistry::instance();

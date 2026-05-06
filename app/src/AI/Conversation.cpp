@@ -35,7 +35,9 @@
 // Construction / destruction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Creates an idle conversation; provider and dispatcher are wired later. */
+/**
+ * @brief Creates an idle conversation; provider and dispatcher are wired later.
+ */
 AI::Conversation::Conversation(QObject* parent)
   : QObject(parent)
   , m_provider(nullptr)
@@ -80,7 +82,9 @@ AI::Conversation::Conversation(QObject* parent)
   // Persistence disabled (call restoreFromDisk() / saveToDisk() to enable)
 }
 
-/** @brief Aborts any in-flight reply and frees owned resources. */
+/**
+ * @brief Aborts any in-flight reply and frees owned resources.
+ */
 AI::Conversation::~Conversation()
 {
   teardownReply();
@@ -90,13 +94,17 @@ AI::Conversation::~Conversation()
 // Wiring
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Sets the active provider. The conversation does not take ownership. */
+/**
+ * @brief Sets the active provider. The conversation does not take ownership.
+ */
 void AI::Conversation::setProvider(Provider* provider)
 {
   m_provider = provider;
 }
 
-/** @brief Sets the tool dispatcher. The conversation does not take ownership. */
+/**
+ * @brief Sets the tool dispatcher. The conversation does not take ownership.
+ */
 void AI::Conversation::setDispatcher(ToolDispatcher* dispatcher)
 {
   m_dispatcher = dispatcher;
@@ -106,25 +114,33 @@ void AI::Conversation::setDispatcher(ToolDispatcher* dispatcher)
 // Property getters
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the QVariantList of UI message rows. */
+/**
+ * @brief Returns the QVariantList of UI message rows.
+ */
 QVariantList AI::Conversation::messages() const
 {
   return m_uiMessages;
 }
 
-/** @brief Returns true when a request is in flight or a tool batch is pending. */
+/**
+ * @brief Returns true when a request is in flight or a tool batch is pending.
+ */
 bool AI::Conversation::busy() const noexcept
 {
   return m_busy;
 }
 
-/** @brief Returns true when at least one tool call is awaiting user approval. */
+/**
+ * @brief Returns true when at least one tool call is awaiting user approval.
+ */
 bool AI::Conversation::awaitingConfirmation() const noexcept
 {
   return !m_awaitingConfirm.isEmpty();
 }
 
-/** @brief Returns the most recent error message, or empty. */
+/**
+ * @brief Returns the most recent error message, or empty.
+ */
 QString AI::Conversation::lastError() const noexcept
 {
   return m_lastError;
@@ -134,7 +150,9 @@ QString AI::Conversation::lastError() const noexcept
 // Public slots
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Sends a new user message after gating on Pro and idle state. */
+/**
+ * @brief Sends a new user message after gating on Pro and idle state.
+ */
 void AI::Conversation::start(const QString& userText)
 {
   const auto trimmed = userText.trimmed();
@@ -171,7 +189,9 @@ void AI::Conversation::start(const QString& userText)
   issueRequest();
 }
 
-/** @brief Aborts the in-flight reply and cancels any pending confirmations. */
+/**
+ * @brief Aborts the in-flight reply and cancels any pending confirmations.
+ */
 void AI::Conversation::cancel()
 {
   m_cancelled = true;
@@ -196,7 +216,9 @@ void AI::Conversation::cancel()
   setBusy(false);
 }
 
-/** @brief Approves a pending Confirm-tagged tool call by id. */
+/**
+ * @brief Approves a pending Confirm-tagged tool call by id.
+ */
 void AI::Conversation::approveToolCall(const QString& callId)
 {
   const auto it = m_awaitingConfirm.constFind(callId);
@@ -216,7 +238,9 @@ void AI::Conversation::approveToolCall(const QString& callId)
     resumeAfterToolBatch();
 }
 
-/** @brief Denies a pending Confirm-tagged tool call and feeds back a denial result. */
+/**
+ * @brief Denies a pending Confirm-tagged tool call and feeds back a denial result.
+ */
 void AI::Conversation::denyToolCall(const QString& callId)
 {
   const auto it = m_awaitingConfirm.constFind(callId);
@@ -238,7 +262,9 @@ void AI::Conversation::denyToolCall(const QString& callId)
     resumeAfterToolBatch();
 }
 
-/** @brief Approves every pending Confirm whose tool name starts with prefix. */
+/**
+ * @brief Approves every pending Confirm whose tool name starts with prefix.
+ */
 void AI::Conversation::approveToolCallGroup(const QString& family)
 {
   if (family.isEmpty())
@@ -254,7 +280,9 @@ void AI::Conversation::approveToolCallGroup(const QString& family)
     approveToolCall(id);
 }
 
-/** @brief Denies every pending Confirm whose tool name starts with prefix. */
+/**
+ * @brief Denies every pending Confirm whose tool name starts with prefix.
+ */
 void AI::Conversation::denyToolCallGroup(const QString& family)
 {
   if (family.isEmpty())
@@ -269,7 +297,9 @@ void AI::Conversation::denyToolCallGroup(const QString& family)
     denyToolCall(id);
 }
 
-/** @brief Clears history and UI state. Aborts any in-flight reply. */
+/**
+ * @brief Clears history and UI state. Aborts any in-flight reply.
+ */
 void AI::Conversation::clear()
 {
   cancel();
@@ -293,7 +323,9 @@ void AI::Conversation::clear()
 // Reply slot handlers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Appends streamed text and schedules a coalesced UI refresh. */
+/**
+ * @brief Appends streamed text and schedules a coalesced UI refresh.
+ */
 void AI::Conversation::onPartialText(const QString& chunk)
 {
   if (m_cancelled || m_assistantIndex < 0)
@@ -311,7 +343,9 @@ void AI::Conversation::onPartialText(const QString& chunk)
     m_streamFlushTimer->start();
 }
 
-/** @brief Appends streamed thinking text to the live assistant preamble. */
+/**
+ * @brief Appends streamed thinking text to the live assistant preamble.
+ */
 void AI::Conversation::onPartialThinking(const QString& chunk)
 {
   if (m_cancelled || m_assistantIndex < 0)
@@ -372,7 +406,9 @@ QString AI::Conversation::rewriteHelpLinks(const QString& text)
   return out;
 }
 
-/** @brief Pushes accumulated text/thinking into the live row. Coalesced. */
+/**
+ * @brief Pushes accumulated text/thinking into the live row. Coalesced.
+ */
 void AI::Conversation::flushPendingStreamUpdate()
 {
   if (!m_streamDirty) {
@@ -394,7 +430,9 @@ void AI::Conversation::flushPendingStreamUpdate()
   Q_EMIT messagesChanged();
 }
 
-/** @brief Records a tool-use request and dispatches per safety tag. */
+/**
+ * @brief Records a tool-use request and dispatches per safety tag.
+ */
 void AI::Conversation::onToolCallRequested(const QString& callId,
                                            const QString& name,
                                            const QJsonObject& arguments)
@@ -429,7 +467,9 @@ void AI::Conversation::onToolCallRequested(const QString& callId,
   dispatchByCallSafety(callId, name, arguments);
 }
 
-/** @brief Auto-handles meta-tool calls; returns true when consumed. */
+/**
+ * @brief Auto-handles meta-tool calls; returns true when consumed.
+ */
 bool AI::Conversation::dispatchMetaTool(const QString& callId,
                                         const QString& name,
                                         const QJsonObject& arguments)
@@ -489,7 +529,9 @@ bool AI::Conversation::dispatchMetaTool(const QString& callId,
   return false;
 }
 
-/** @brief meta.listCategories: returns the dispatcher's category list. */
+/**
+ * @brief meta.listCategories: returns the dispatcher's category list.
+ */
 void AI::Conversation::runMetaListCategories(const QString& callId,
                                              const QString& name,
                                              const QJsonObject& arguments)
@@ -501,7 +543,9 @@ void AI::Conversation::runMetaListCategories(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.snapshot: returns the dispatcher's current state snapshot. */
+/**
+ * @brief meta.snapshot: returns the dispatcher's current state snapshot.
+ */
 void AI::Conversation::runMetaSnapshot(const QString& callId,
                                        const QString& name,
                                        const QJsonObject& arguments)
@@ -515,7 +559,9 @@ void AI::Conversation::runMetaSnapshot(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.listCommands: lists available commands filtered by prefix. */
+/**
+ * @brief meta.listCommands: lists available commands filtered by prefix.
+ */
 void AI::Conversation::runMetaListCommands(const QString& callId,
                                            const QString& name,
                                            const QJsonObject& arguments)
@@ -528,7 +574,9 @@ void AI::Conversation::runMetaListCommands(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.executeCommand: dispatches the inner tool with the same safety policy. */
+/**
+ * @brief meta.executeCommand: dispatches the inner tool with the same safety policy.
+ */
 void AI::Conversation::runMetaExecuteCommand(const QString& callId,
                                              const QString& name,
                                              const QJsonObject& arguments)
@@ -550,7 +598,9 @@ void AI::Conversation::runMetaExecuteCommand(const QString& callId,
   dispatchByCallSafety(callId, target, innerArgs);
 }
 
-/** @brief meta.loadSkill: returns the markdown body of a registered skill. */
+/**
+ * @brief meta.loadSkill: returns the markdown body of a registered skill.
+ */
 void AI::Conversation::runMetaLoadSkill(const QString& callId,
                                         const QString& name,
                                         const QJsonObject& arguments)
@@ -580,7 +630,9 @@ void AI::Conversation::runMetaLoadSkill(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.searchDocs: BM25-style doc search via DocSearch singleton. */
+/**
+ * @brief meta.searchDocs: BM25-style doc search via DocSearch singleton.
+ */
 void AI::Conversation::runMetaSearchDocs(const QString& callId,
                                          const QString& name,
                                          const QJsonObject& arguments)
@@ -619,7 +671,9 @@ void AI::Conversation::runMetaSearchDocs(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief Returns the skill id whose body documents @a commandName, or empty. */
+/**
+ * @brief Returns the skill id whose body documents @a commandName, or empty.
+ */
 static QString skillForCommand(const QString& commandName)
 {
   if (commandName.startsWith(QStringLiteral("project.workspace."))
@@ -655,7 +709,9 @@ static QString skillForCommand(const QString& commandName)
   return QString();
 }
 
-/** @brief meta.describeCommand handler: returns command schema or not_found. */
+/**
+ * @brief meta.describeCommand handler: returns command schema or not_found.
+ */
 void AI::Conversation::runMetaDescribe(const QString& callId,
                                        const QString& name,
                                        const QJsonObject& arguments)
@@ -688,7 +744,9 @@ void AI::Conversation::runMetaDescribe(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.fetchScriptingDocs handler: returns the canonical doc body for a kind. */
+/**
+ * @brief meta.fetchScriptingDocs handler: returns the canonical doc body for a kind.
+ */
 void AI::Conversation::runMetaScriptingDocs(const QString& callId,
                                             const QString& name,
                                             const QJsonObject& arguments)
@@ -717,7 +775,9 @@ void AI::Conversation::runMetaScriptingDocs(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief meta.howTo handler: returns a canned step-by-step recipe by task id. */
+/**
+ * @brief meta.howTo handler: returns a canned step-by-step recipe by task id.
+ */
 void AI::Conversation::runMetaHowTo(const QString& callId,
                                     const QString& name,
                                     const QJsonObject& arguments)
@@ -744,7 +804,9 @@ void AI::Conversation::runMetaHowTo(const QString& callId,
   --m_outstandingToolResults;
 }
 
-/** @brief Routes a non-meta tool call by its CommandRegistry safety tag. */
+/**
+ * @brief Routes a non-meta tool call by its CommandRegistry safety tag.
+ */
 void AI::Conversation::dispatchByCallSafety(const QString& callId,
                                             const QString& name,
                                             const QJsonObject& arguments)
@@ -783,7 +845,9 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
   runToolCall(callId, name, arguments, /*autoConfirmSafe=*/true);
 }
 
-/** @brief Handles end-of-stream: either continue with tool results or end the turn. */
+/**
+ * @brief Handles end-of-stream: either continue with tool results or end the turn.
+ */
 void AI::Conversation::onReplyFinished()
 {
   // Flush coalesced text before end-of-stream so the bubble is complete
@@ -863,7 +927,9 @@ void AI::Conversation::onReplyFinished()
   setBusy(false);
 }
 
-/** @brief Records a network or stream error and ends the turn. */
+/**
+ * @brief Records a network or stream error and ends the turn.
+ */
 void AI::Conversation::onReplyError(const QString& message)
 {
   qCWarning(serialStudioAI) << "Reply error:" << message;
@@ -903,7 +969,9 @@ void AI::Conversation::onReplyError(const QString& message)
 // Internals
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Issues a fresh request to the active provider with the current history. */
+/**
+ * @brief Issues a fresh request to the active provider with the current history.
+ */
 void AI::Conversation::issueRequest()
 {
   Q_ASSERT(m_provider);
@@ -946,119 +1014,169 @@ void AI::Conversation::issueRequest()
 }
 
 /**
- * @brief Synthesizes missing tool_results and drops orphan ones so every
- *        assistant.tool_use is paired with a tool_result in the next user
- *        message. Belt-and-suspenders against state leaks across turn
- *        boundaries (cancel mid-batch, async tool callbacks after error).
+ * @brief Returns the ordered, deduped tool_use ids declared by an assistant message.
+ */
+static QStringList collectAssistantToolUseIds(const QJsonArray& content, QSet<QString>& outIds)
+{
+  static const QString kKeyType     = QStringLiteral("type");
+  static const QString kKeyId       = QStringLiteral("id");
+  static const QString kTypeToolUse = QStringLiteral("tool_use");
+
+  QStringList ordered;
+  for (const auto& bv : content) {
+    const auto block = bv.toObject();
+    if (block.value(kKeyType).toString() != kTypeToolUse)
+      continue;
+
+    const auto tid = block.value(kKeyId).toString();
+    if (tid.isEmpty() || outIds.contains(tid))
+      continue;
+
+    ordered.append(tid);
+    outIds.insert(tid);
+  }
+  return ordered;
+}
+
+/**
+ * @brief Filters a user message's content, keeping non-tool_result blocks and tool_result
+ *        blocks whose id matches an assistant tool_use id (deduped via seenResultIds).
+ */
+static QJsonArray keepValidUserContent(const QJsonValue& userContent,
+                                       const QSet<QString>& assistantIds,
+                                       QSet<QString>& seenResultIds)
+{
+  static const QString kKeyType        = QStringLiteral("type");
+  static const QString kKeyToolUseId   = QStringLiteral("tool_use_id");
+  static const QString kTypeToolResult = QStringLiteral("tool_result");
+
+  QJsonArray kept;
+  if (userContent.isArray()) {
+    for (const auto& bv : userContent.toArray()) {
+      const auto block = bv.toObject();
+      if (block.value(kKeyType).toString() != kTypeToolResult) {
+        kept.append(block);
+        continue;
+      }
+
+      const auto tid = block.value(kKeyToolUseId).toString();
+      if (assistantIds.contains(tid) && !seenResultIds.contains(tid)) {
+        kept.append(block);
+        seenResultIds.insert(tid);
+      }
+    }
+  } else if (userContent.isString()) {
+    QJsonObject textBlock;
+    textBlock[kKeyType]               = QStringLiteral("text");
+    textBlock[QStringLiteral("text")] = userContent.toString();
+    kept.append(textBlock);
+  }
+  return kept;
+}
+
+/**
+ * @brief Builds synthetic tool_result blocks for every tool_use id that lacks a real result.
+ */
+static QJsonArray synthesizeMissingResults(const QStringList& orderedToolUseIds,
+                                           const QSet<QString>& seenResultIds)
+{
+  static const QString kKeyType        = QStringLiteral("type");
+  static const QString kKeyToolUseId   = QStringLiteral("tool_use_id");
+  static const QString kKeyContent     = QStringLiteral("content");
+  static const QString kTypeToolResult = QStringLiteral("tool_result");
+  static const QString kSyntheticResult =
+    QStringLiteral("{\"ok\":false,\"error\":\"unresolved\",\"note\":\"synthesized after a "
+                   "cancelled or interrupted tool batch\"}");
+
+  QJsonArray out;
+  for (const auto& tid : orderedToolUseIds) {
+    if (seenResultIds.contains(tid))
+      continue;
+
+    QJsonObject block;
+    block[kKeyType]      = kTypeToolResult;
+    block[kKeyToolUseId] = tid;
+    block[kKeyContent]   = kSyntheticResult;
+    out.append(block);
+  }
+  return out;
+}
+
+/**
+ * @brief Pairs every assistant.tool_use with a tool_result, synthesizing or pruning as needed.
  */
 void AI::Conversation::reconcileHistoryToolPairs()
 {
-  static const QString kRoleAssistant   = QStringLiteral("assistant");
-  static const QString kRoleUser        = QStringLiteral("user");
-  static const QString kTypeToolUse     = QStringLiteral("tool_use");
-  static const QString kTypeToolResult  = QStringLiteral("tool_result");
-  static const QString kKeyType         = QStringLiteral("type");
-  static const QString kKeyId           = QStringLiteral("id");
-  static const QString kKeyToolUseId    = QStringLiteral("tool_use_id");
-  static const QString kKeyContent      = QStringLiteral("content");
-  static const QString kKeyRole         = QStringLiteral("role");
-  static const QString kSyntheticResult = QStringLiteral(
-    "{\"ok\":false,\"error\":\"unresolved\",\"note\":\"synthesized after a "
-    "cancelled or interrupted tool batch\"}");
-
-  for (int i = 0; i < m_history.size(); ++i) {
-    auto msg = m_history.at(i).toObject();
-    if (msg.value(kKeyRole).toString() != kRoleAssistant)
-      continue;
-
-    const auto contentValue = msg.value(kKeyContent);
-    if (!contentValue.isArray())
-      continue;
-
-    QStringList orderedToolUseIds;
-    QSet<QString> assistantIds;
-    for (const auto& bv : contentValue.toArray()) {
-      const auto block = bv.toObject();
-      if (block.value(kKeyType).toString() != kTypeToolUse)
-        continue;
-
-      const auto tid = block.value(kKeyId).toString();
-      if (tid.isEmpty() || assistantIds.contains(tid))
-        continue;
-
-      orderedToolUseIds.append(tid);
-      assistantIds.insert(tid);
-    }
-
-    if (assistantIds.isEmpty())
-      continue;
-
-    const int nextIdx = i + 1;
-    const bool hasNextUser =
-      nextIdx < m_history.size()
-      && m_history.at(nextIdx).toObject().value(kKeyRole).toString() == kRoleUser;
-
-    QJsonArray keptContent;
-    QSet<QString> seenResultIds;
-    if (hasNextUser) {
-      const auto userMsg     = m_history.at(nextIdx).toObject();
-      const auto userContent = userMsg.value(kKeyContent);
-      if (userContent.isArray()) {
-        for (const auto& bv : userContent.toArray()) {
-          const auto block = bv.toObject();
-          if (block.value(kKeyType).toString() != kTypeToolResult) {
-            keptContent.append(block);
-            continue;
-          }
-
-          const auto tid = block.value(kKeyToolUseId).toString();
-          if (assistantIds.contains(tid) && !seenResultIds.contains(tid)) {
-            keptContent.append(block);
-            seenResultIds.insert(tid);
-          }
-        }
-      } else if (userContent.isString()) {
-        QJsonObject textBlock;
-        textBlock[kKeyType]               = QStringLiteral("text");
-        textBlock[QStringLiteral("text")] = userContent.toString();
-        keptContent.append(textBlock);
-      }
-    }
-
-    QJsonArray synthesized;
-    for (const auto& tid : orderedToolUseIds) {
-      if (seenResultIds.contains(tid))
-        continue;
-
-      QJsonObject block;
-      block[kKeyType]        = kTypeToolResult;
-      block[kKeyToolUseId]   = tid;
-      block[kKeyContent]     = kSyntheticResult;
-      synthesized.append(block);
-    }
-
-    QJsonArray newContent;
-    for (const auto& bv : synthesized)
-      newContent.append(bv);
-
-    for (const auto& bv : keptContent)
-      newContent.append(bv);
-
-    if (hasNextUser) {
-      auto userMsg          = m_history.at(nextIdx).toObject();
-      userMsg[kKeyContent]  = newContent;
-      m_history[nextIdx]    = userMsg;
-    } else if (!synthesized.isEmpty()) {
-      QJsonObject userMsg;
-      userMsg[kKeyRole]    = kRoleUser;
-      userMsg[kKeyContent] = newContent;
-      m_history.insert(nextIdx, userMsg);
-      ++i;
-    }
-  }
+  for (int i = 0; i < m_history.size(); ++i)
+    reconcileHistoryToolPairsAt(i);
 }
 
-/** @brief Stubs older tool_result blocks; keeps the kKeepRecentUserTurns most recent verbatim. */
+/**
+ * @brief Reconciles tool pairs for the assistant message at index i; advances i across an
+ *        inserted synthetic user message. Returns true if the message was modified.
+ */
+bool AI::Conversation::reconcileHistoryToolPairsAt(int& i)
+{
+  static const QString kKeyRole       = QStringLiteral("role");
+  static const QString kKeyContent    = QStringLiteral("content");
+  static const QString kRoleAssistant = QStringLiteral("assistant");
+  static const QString kRoleUser      = QStringLiteral("user");
+
+  const auto msg = m_history.at(i).toObject();
+  if (msg.value(kKeyRole).toString() != kRoleAssistant)
+    return false;
+
+  const auto contentValue = msg.value(kKeyContent);
+  if (!contentValue.isArray())
+    return false;
+
+  QSet<QString> assistantIds;
+  const QStringList orderedToolUseIds =
+    collectAssistantToolUseIds(contentValue.toArray(), assistantIds);
+  if (assistantIds.isEmpty())
+    return false;
+
+  const int nextIdx      = i + 1;
+  const bool hasNextUser = nextIdx < m_history.size()
+                        && m_history.at(nextIdx).toObject().value(kKeyRole).toString() == kRoleUser;
+
+  QSet<QString> seenResultIds;
+  QJsonArray keptContent;
+  if (hasNextUser) {
+    const auto userMsg = m_history.at(nextIdx).toObject();
+    keptContent = keepValidUserContent(userMsg.value(kKeyContent), assistantIds, seenResultIds);
+  }
+
+  const QJsonArray synthesized = synthesizeMissingResults(orderedToolUseIds, seenResultIds);
+
+  QJsonArray newContent;
+  for (const auto& bv : synthesized)
+    newContent.append(bv);
+
+  for (const auto& bv : keptContent)
+    newContent.append(bv);
+
+  if (hasNextUser) {
+    auto userMsg         = m_history.at(nextIdx).toObject();
+    userMsg[kKeyContent] = newContent;
+    m_history[nextIdx]   = userMsg;
+    return true;
+  }
+
+  if (!synthesized.isEmpty()) {
+    QJsonObject userMsg;
+    userMsg[kKeyRole]    = kRoleUser;
+    userMsg[kKeyContent] = newContent;
+    m_history.insert(nextIdx, userMsg);
+    ++i;
+    return true;
+  }
+  return false;
+}
+
+/**
+ * @brief Stubs older tool_result blocks; keeps the kKeepRecentUserTurns most recent verbatim.
+ */
 void AI::Conversation::ageHistoryToolResults()
 {
   constexpr int kKeepRecentUserTurns = 2;
@@ -1168,7 +1286,9 @@ void AI::Conversation::fetchHelpPage(const QString& callId, const QString& path)
   });
 }
 
-/** @brief Finalizes a meta.fetchHelp request: parses the body, records, resumes. */
+/**
+ * @brief Finalizes a meta.fetchHelp request: parses the body, records, resumes.
+ */
 void AI::Conversation::completeHelpFetch(const QString& callId,
                                          const QUrl& url,
                                          QNetworkReply* reply)
@@ -1229,7 +1349,9 @@ void AI::Conversation::completeHelpFetch(const QString& callId,
     resumeAfterToolBatch();
 }
 
-/** @brief Fetches help.json so a guessed page-name 404 can be self-corrected. */
+/**
+ * @brief Fetches help.json so a guessed page-name 404 can be self-corrected.
+ */
 void AI::Conversation::fetchHelpIndex(const QString& callId, const QUrl& missedUrl)
 {
   static const QUrl kIndexUrl(
@@ -1283,7 +1405,9 @@ void AI::Conversation::fetchHelpIndex(const QString& callId, const QUrl& missedU
   });
 }
 
-/** @brief Adds a user message to both history and the UI message list. */
+/**
+ * @brief Adds a user message to both history and the UI message list.
+ */
 void AI::Conversation::appendUserMessage(const QString& text)
 {
   QJsonObject content;
@@ -1303,7 +1427,9 @@ void AI::Conversation::appendUserMessage(const QString& text)
   Q_EMIT messagesChanged();
 }
 
-/** @brief Adds a placeholder assistant row that subsequent deltas fill. */
+/**
+ * @brief Adds a placeholder assistant row that subsequent deltas fill.
+ */
 void AI::Conversation::beginAssistantMessage()
 {
   m_assistantText.clear();
@@ -1319,7 +1445,9 @@ void AI::Conversation::beginAssistantMessage()
   Q_EMIT messagesChanged();
 }
 
-/** @brief Returns "discovery" for read-only / meta calls, "execution" otherwise. */
+/**
+ * @brief Returns "discovery" for read-only / meta calls, "execution" otherwise.
+ */
 static QString toolCallCategory(const QString& name)
 {
   if (name.startsWith(QStringLiteral("meta.")))
@@ -1331,7 +1459,9 @@ static QString toolCallCategory(const QString& name)
   return QStringLiteral("execution");
 }
 
-/** @brief Adds a ToolCallCard payload to the active assistant message. */
+/**
+ * @brief Adds a ToolCallCard payload to the active assistant message.
+ */
 void AI::Conversation::appendToolCallCard(const QString& callId,
                                           const QString& name,
                                           const QJsonObject& arguments,
@@ -1364,7 +1494,9 @@ void AI::Conversation::appendToolCallCard(const QString& callId,
   Q_EMIT messagesChanged();
 }
 
-/** @brief Updates the status (and optional result) of an existing ToolCallCard. */
+/**
+ * @brief Updates the status (and optional result) of an existing ToolCallCard.
+ */
 void AI::Conversation::updateToolCallCard(const QString& callId,
                                           CallStatus status,
                                           const QJsonObject& result)
@@ -1396,7 +1528,9 @@ void AI::Conversation::updateToolCallCard(const QString& callId,
   }
 }
 
-/** @brief Executes a single tool call and feeds its result back. */
+/**
+ * @brief Executes a single tool call and feeds its result back.
+ */
 void AI::Conversation::runToolCall(const QString& callId,
                                    const QString& name,
                                    const QJsonObject& arguments,
@@ -1437,7 +1571,9 @@ void AI::Conversation::runToolCall(const QString& callId,
     m_autoSaveTimer->start();
 }
 
-/** @brief Stores a tool_result block to be sent back in the next request. */
+/**
+ * @brief Stores a tool_result block to be sent back in the next request.
+ */
 void AI::Conversation::recordToolResult(const QString& callId,
                                         const QString& name,
                                         const QJsonObject& payload)
@@ -1480,7 +1616,9 @@ void AI::Conversation::recordToolResult(const QString& callId,
   m_pendingToolResultBlocks.append(block);
 }
 
-/** @brief Sends the accumulated tool_result blocks and continues the turn. */
+/**
+ * @brief Sends the accumulated tool_result blocks and continues the turn.
+ */
 void AI::Conversation::resumeAfterToolBatch()
 {
   if (m_cancelled) {
@@ -1504,7 +1642,9 @@ void AI::Conversation::resumeAfterToolBatch()
   issueRequest();
 }
 
-/** @brief Disconnects and deletes the active reply, if any. */
+/**
+ * @brief Disconnects and deletes the active reply, if any.
+ */
 void AI::Conversation::teardownReply()
 {
   if (!m_reply)
@@ -1515,7 +1655,9 @@ void AI::Conversation::teardownReply()
   m_reply = nullptr;
 }
 
-/** @brief Sets and notifies the busy property. */
+/**
+ * @brief Sets and notifies the busy property.
+ */
 void AI::Conversation::setBusy(bool busy)
 {
   if (m_busy == busy)
@@ -1525,7 +1667,9 @@ void AI::Conversation::setBusy(bool busy)
   Q_EMIT busyChanged();
 }
 
-/** @brief Notifies awaitingConfirmation when the underlying flag flips. */
+/**
+ * @brief Notifies awaitingConfirmation when the underlying flag flips.
+ */
 void AI::Conversation::setAwaitingConfirmation(bool flag)
 {
   if (m_lastAwaitingFlag == flag)
@@ -1535,7 +1679,9 @@ void AI::Conversation::setAwaitingConfirmation(bool flag)
   Q_EMIT awaitingConfirmationChanged();
 }
 
-/** @brief Sets and notifies the lastError property. */
+/**
+ * @brief Sets and notifies the lastError property.
+ */
 void AI::Conversation::setLastError(const QString& message)
 {
   if (m_lastError == message)
@@ -1545,7 +1691,9 @@ void AI::Conversation::setLastError(const QString& message)
   Q_EMIT lastErrorChanged();
 }
 
-/** @brief Builds a single meta-tool definition for the discovery surface. */
+/**
+ * @brief Builds a single meta-tool definition for the discovery surface.
+ */
 static QJsonObject makeMetaTool(const QString& name,
                                 const QString& description,
                                 const QJsonObject& schema)
@@ -1557,7 +1705,9 @@ static QJsonObject makeMetaTool(const QString& name,
   return tool;
 }
 
-/** @brief Returns the schema { type:object, properties:{<key>:propSchema}, required:[<key>] }. */
+/**
+ * @brief Returns the schema { type:object, properties:{<key>:propSchema}, required:[<key>] }.
+ */
 static QJsonObject objectSchemaWithProperty(const QString& key,
                                             const QJsonObject& propSchema,
                                             bool required)
@@ -1573,7 +1723,9 @@ static QJsonObject objectSchemaWithProperty(const QString& key,
   return schema;
 }
 
-/** @brief Returns a string-typed property schema with description (and optional enum). */
+/**
+ * @brief Returns a string-typed property schema with description (and optional enum).
+ */
 static QJsonObject stringProp(const QString& description, const QJsonArray& enumValues = {})
 {
   QJsonObject prop;
@@ -1585,7 +1737,9 @@ static QJsonObject stringProp(const QString& description, const QJsonArray& enum
   return prop;
 }
 
-/** @brief Appends meta.listCategories, meta.snapshot, meta.listCommands tools. */
+/**
+ * @brief Appends meta.listCategories, meta.snapshot, meta.listCommands tools.
+ */
 static void appendBasicMetaTools(QJsonArray& out)
 {
   {
@@ -1634,7 +1788,9 @@ static void appendBasicMetaTools(QJsonArray& out)
   }
 }
 
-/** @brief Appends meta.describeCommand, meta.executeCommand, meta.fetchHelp tools. */
+/**
+ * @brief Appends meta.describeCommand, meta.executeCommand, meta.fetchHelp tools.
+ */
 static void appendCommandMetaTools(QJsonArray& out)
 {
   {
@@ -1695,14 +1851,18 @@ static void appendCommandMetaTools(QJsonArray& out)
   }
 }
 
-/** @brief Builds the core meta tools (categories / list / describe / execute / fetchHelp). */
+/**
+ * @brief Builds the core meta tools (categories / list / describe / execute / fetchHelp).
+ */
 static void appendCoreMetaTools(QJsonArray& out)
 {
   appendBasicMetaTools(out);
   appendCommandMetaTools(out);
 }
 
-/** @brief Appends meta.fetchScriptingDocs + meta.howTo + meta.loadSkill. */
+/**
+ * @brief Appends meta.fetchScriptingDocs + meta.howTo + meta.loadSkill.
+ */
 static void appendReferenceMetaTools(QJsonArray& out)
 {
   {
@@ -1773,7 +1933,9 @@ static void appendReferenceMetaTools(QJsonArray& out)
   }
 }
 
-/** @brief Appends meta.searchDocs (BM25 search across bundled docs). */
+/**
+ * @brief Appends meta.searchDocs (BM25 search across bundled docs).
+ */
 static void appendSearchMetaTool(QJsonArray& out)
 {
   QJsonObject schema;
@@ -1811,14 +1973,18 @@ static void appendSearchMetaTool(QJsonArray& out)
                  schema));
 }
 
-/** @brief Builds the meta.fetchScriptingDocs + meta.howTo tools. */
+/**
+ * @brief Builds the meta.fetchScriptingDocs + meta.howTo tools.
+ */
 static void appendDocMetaTools(QJsonArray& out)
 {
   appendReferenceMetaTools(out);
   appendSearchMetaTool(out);
 }
 
-/** @brief Returns the AI tool surface: 3 meta tools + a small curated set. */
+/**
+ * @brief Returns the AI tool surface: 3 meta tools + a small curated set.
+ */
 QJsonArray AI::Conversation::dispatcherTools() const
 {
   if (!m_dispatcher)
@@ -1904,14 +2070,18 @@ QJsonArray AI::Conversation::dispatcherTools() const
 // Persistence (round-trips m_history + m_uiMessages across app restarts)
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the absolute path of the saved-conversation JSON file. */
+/**
+ * @brief Returns the absolute path of the saved-conversation JSON file.
+ */
 QString AI::Conversation::persistencePath()
 {
   const auto base = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
   return base + QStringLiteral("/ai/last_conversation.json");
 }
 
-/** @brief Writes the current conversation snapshot to disk; best effort. */
+/**
+ * @brief Writes the current conversation snapshot to disk; best effort.
+ */
 void AI::Conversation::saveToDisk() const
 {
   if (m_uiMessages.isEmpty() && m_history.isEmpty())
@@ -1935,7 +2105,9 @@ void AI::Conversation::saveToDisk() const
   f.close();
 }
 
-/** @brief Reads the previous conversation snapshot, if any, into memory. */
+/**
+ * @brief Reads the previous conversation snapshot, if any, into memory.
+ */
 void AI::Conversation::restoreFromDisk()
 {
   QFile f(persistencePath());

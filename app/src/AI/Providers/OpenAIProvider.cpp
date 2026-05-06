@@ -26,7 +26,9 @@ namespace detail {
  */
 class ImmediateErrorReply : public AI::Reply {
 public:
-  /** @brief Schedules errorOccurred + finished on the next event-loop tick. */
+  /**
+   * @brief Schedules errorOccurred + finished on the next event-loop tick.
+   */
   ImmediateErrorReply(const QString& message, QObject* parent = nullptr)
     : AI::Reply(parent), m_message(message)
   {
@@ -36,7 +38,9 @@ public:
     });
   }
 
-  /** @brief No-op since the error fires immediately. */
+  /**
+   * @brief No-op since the error fires immediately.
+   */
   void abort() override {}
 
 private:
@@ -45,7 +49,9 @@ private:
 
 }  // namespace detail
 
-/** @brief OpenAI enforces tool names ^[a-zA-Z0-9_-]+; encode dots/colons. */
+/**
+ * @brief OpenAI enforces tool names ^[a-zA-Z0-9_-]+; encode dots/colons.
+ */
 static QString sanitizeName(const QString& original)
 {
   QString out = original;
@@ -58,24 +64,32 @@ static QString sanitizeName(const QString& original)
 // Construction and provider metadata
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Stores QNAM ref and key getter. */
+/**
+ * @brief Stores QNAM ref and key getter.
+ */
 AI::OpenAIProvider::OpenAIProvider(QNetworkAccessManager& nam, KeyGetter keyGetter)
   : m_nam(nam), m_keyGetter(std::move(keyGetter))
 {}
 
-/** @brief Returns the human-readable provider name. */
+/**
+ * @brief Returns the human-readable provider name.
+ */
 QString AI::OpenAIProvider::displayName() const
 {
   return QStringLiteral("OpenAI");
 }
 
-/** @brief Returns the vendor "Get a key" deep link. */
+/**
+ * @brief Returns the vendor "Get a key" deep link.
+ */
 QString AI::OpenAIProvider::keyVendorUrl() const
 {
   return QStringLiteral("https://platform.openai.com/api-keys");
 }
 
-/** @brief Returns the list of selectable OpenAI models, default first. */
+/**
+ * @brief Returns the list of selectable OpenAI models, default first.
+ */
 QStringList AI::OpenAIProvider::availableModels() const
 {
   return {
@@ -89,13 +103,17 @@ QStringList AI::OpenAIProvider::availableModels() const
   };
 }
 
-/** @brief Returns the default OpenAI model for new sessions. */
+/**
+ * @brief Returns the default OpenAI model for new sessions.
+ */
 QString AI::OpenAIProvider::defaultModel() const
 {
   return QStringLiteral("gpt-5-mini");
 }
 
-/** @brief Returns a human-friendly label for a known OpenAI model id. */
+/**
+ * @brief Returns a human-friendly label for a known OpenAI model id.
+ */
 QString AI::OpenAIProvider::modelDisplayName(const QString& modelId) const
 {
   if (modelId == QStringLiteral("gpt-5-mini"))
@@ -130,7 +148,9 @@ bool AI::OpenAIProvider::prefersDeveloperRole(const QString& modelId)
       || modelId.startsWith(QStringLiteral("o3")) || modelId.startsWith(QStringLiteral("o4"));
 }
 
-/** @brief Returns true when the model supports reasoning effort controls. */
+/**
+ * @brief Returns true when the model supports reasoning effort controls.
+ */
 bool AI::OpenAIProvider::isReasoningModel(const QString& modelId)
 {
   return modelId.startsWith(QStringLiteral("gpt-5.1"))
@@ -142,7 +162,9 @@ bool AI::OpenAIProvider::isReasoningModel(const QString& modelId)
 // Translators
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Converts Anthropic-shaped history into the OpenAI Chat Completions shape. */
+/**
+ * @brief Converts Anthropic-shaped history into the OpenAI Chat Completions shape.
+ */
 QJsonArray AI::OpenAIProvider::translateHistory(const QJsonArray& history,
                                                 const QString& systemText,
                                                 bool useDeveloperRole)
@@ -202,7 +224,9 @@ QJsonArray AI::OpenAIProvider::translateHistory(const QJsonArray& history,
   return out;
 }
 
-/** @brief Splits Anthropic content blocks into OpenAI text / tool_calls / tool messages. */
+/**
+ * @brief Splits Anthropic content blocks into OpenAI text / tool_calls / tool messages.
+ */
 void AI::OpenAIProvider::translateBlocks(const QJsonArray& blocks,
                                          QString& textAccumulator,
                                          QJsonArray& toolCalls,
@@ -250,7 +274,9 @@ void AI::OpenAIProvider::translateBlocks(const QJsonArray& blocks,
   }
 }
 
-/** @brief Converts AI-tool definitions into the OpenAI tool-choice schema. */
+/**
+ * @brief Converts AI-tool definitions into the OpenAI tool-choice schema.
+ */
 QJsonArray AI::OpenAIProvider::translateTools(const QJsonArray& tools)
 {
   QJsonArray out;
@@ -273,7 +299,9 @@ QJsonArray AI::OpenAIProvider::translateTools(const QJsonArray& tools)
 // sendMessage
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the Chat Completions request body and returns a streaming Reply. */
+/**
+ * @brief Builds the Chat Completions request body and returns a streaming Reply.
+ */
 AI::Reply* AI::OpenAIProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();

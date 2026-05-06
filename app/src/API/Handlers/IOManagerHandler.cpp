@@ -42,7 +42,9 @@ void API::Handlers::IOManagerHandler::registerCommands()
   registerQueryCommands();
 }
 
-/** @brief Register connect/disconnect/setPaused lifecycle commands. */
+/**
+ * @brief Register connect/disconnect/setPaused lifecycle commands.
+ */
 void API::Handlers::IOManagerHandler::registerConnectionCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -93,7 +95,9 @@ void API::Handlers::IOManagerHandler::registerConnectionCommands()
   }
 }
 
-/** @brief Register setBusType + writeData configuration commands. */
+/**
+ * @brief Register setBusType + writeData configuration commands.
+ */
 void API::Handlers::IOManagerHandler::registerBusConfigCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -157,7 +161,9 @@ void API::Handlers::IOManagerHandler::registerBusConfigCommands()
   }
 }
 
-/** @brief Register io.getStatus and io.listBuses query commands. */
+/**
+ * @brief Register io.getStatus and io.listBuses query commands.
+ */
 void API::Handlers::IOManagerHandler::registerQueryCommands()
 {
   auto& registry = CommandRegistry::instance();

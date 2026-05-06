@@ -23,6 +23,10 @@
 
 #include "API/CommandProtocol.h"
 
+namespace DataModel {
+struct Dataset;
+}
+
 namespace API {
 namespace Handlers {
 /**
@@ -38,9 +42,13 @@ private:
   static void registerFileMetadataCommands();
   static void registerGroupCommands();
   static void registerDatasetCommands();
+  static void registerDatasetCrudCommands();
+  static void registerDatasetFieldCommands();
   static void registerActionCommands();
   static void registerOutputWidgetCommands();
   static void registerParserCommands();
+  static void registerParserCodeCommands();
+  static void registerParserConfigCommands();
   static void registerPainterCommands();
   static void registerPainterCodeCommands();
   static void registerUpdateCommands();
@@ -107,6 +115,12 @@ private:
 
   static CommandResponse datasetSetVirtual(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetTransformCode(const QString& id, const QJsonObject& params);
+
+  static void applyDatasetVisualizationFlags(DataModel::Dataset& d, int options);
+  static QString widgetForDatasetOptions(int options);
+  static QString applyDatasetUpdateParams(DataModel::Dataset& d,
+                                          const QJsonObject& params,
+                                          bool& rebuildTree);
 };
 
 }  // namespace Handlers

@@ -42,7 +42,9 @@
 #include "IO/ConnectionManager.h"
 #include "SerialStudio.h"
 
-/** @brief Appends a dataset's compatible DashboardWidget enums to compat (deduped). */
+/**
+ * @brief Appends a dataset's compatible DashboardWidget enums to compat (deduped).
+ */
 static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& compat)
 {
   for (const auto w : SerialStudio::getDashboardWidgets(ds)) {
@@ -52,17 +54,28 @@ static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& c
   }
 }
 
-/** @brief Flags obvious language/syntax mismatches; returns a short warning or empty. */
+/**
+ * @brief Flags obvious language/syntax mismatches; returns a short warning or empty.
+ */
 [[nodiscard]] static QString detectLanguageMismatch(const QString& code, int language)
 {
   static const QString kJsHallmarks[] = {
-    QStringLiteral("\nvar "), QStringLiteral("\nlet "),  QStringLiteral("\nconst "),
-    QStringLiteral(" => "),   QStringLiteral("=== "),    QStringLiteral("!== "),
-    QStringLiteral(") {"),    QStringLiteral("} else"),
+    QStringLiteral("\nvar "),
+    QStringLiteral("\nlet "),
+    QStringLiteral("\nconst "),
+    QStringLiteral(" => "),
+    QStringLiteral("=== "),
+    QStringLiteral("!== "),
+    QStringLiteral(") {"),
+    QStringLiteral("} else"),
   };
   static const QString kLuaHallmarks[] = {
-    QStringLiteral("\nlocal "), QStringLiteral("\nfunction "), QStringLiteral(" then\n"),
-    QStringLiteral(" do\n"),    QStringLiteral("\nend\n"),     QStringLiteral("\nelseif "),
+    QStringLiteral("\nlocal "),
+    QStringLiteral("\nfunction "),
+    QStringLiteral(" then\n"),
+    QStringLiteral(" do\n"),
+    QStringLiteral("\nend\n"),
+    QStringLiteral("\nelseif "),
     QStringLiteral("--[["),
   };
 
@@ -94,7 +107,9 @@ static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& c
   return QString();
 }
 
-/** @brief Returns the DatasetOption bitflag value of @a ds (1=Plot, 2=FFT, ...). */
+/**
+ * @brief Returns the DatasetOption bitflag value of @a ds (1=Plot, 2=FFT, ...).
+ */
 static int datasetOptionsBitflag(const DataModel::Dataset& ds)
 {
   int flags = SerialStudio::DatasetGeneric;
@@ -149,7 +164,9 @@ void API::Handlers::ProjectHandler::registerFileCommands()
   registerFileMetadataCommands();
 }
 
-/** @brief Register project new/open/save/loadJson/setTitle commands. */
+/**
+ * @brief Register project new/open/save/loadJson/setTitle commands.
+ */
 void API::Handlers::ProjectHandler::registerFileLifecycleCommands()
 {
   auto& registry   = CommandRegistry::instance();
@@ -226,7 +243,9 @@ void API::Handlers::ProjectHandler::registerFileLifecycleCommands()
     &loadFromJSON);
 }
 
-/** @brief Register project getStatus/validate/exportJson/activate commands. */
+/**
+ * @brief Register project getStatus/validate/exportJson/activate commands.
+ */
 void API::Handlers::ProjectHandler::registerFileMetadataCommands()
 {
   auto& registry   = CommandRegistry::instance();
@@ -327,8 +346,16 @@ void API::Handlers::ProjectHandler::registerGroupCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  registerDatasetCrudCommands();
+  registerDatasetFieldCommands();
+}
+
+/**
+ * @brief Register dataset add/delete/duplicate and option-bitfield commands.
+ */
+void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.add"),
@@ -389,13 +416,13 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
                    "widgetType."),
     makeSchema({
       {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
-      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
+      {          Keys::DatasetId, QStringLiteral("integer"),        QStringLiteral("Dataset id within the group")},
       { QStringLiteral("option"),
        QStringLiteral("integer"),
-       QStringLiteral("DatasetOption bitflag value (1, 2, 4, 8, 16, 32, or 64)")                          },
+       QStringLiteral("DatasetOption bitflag value (1, 2, 4, 8, 16, 32, or 64)")                                 },
       {QStringLiteral("enabled"),
        QStringLiteral("boolean"),
-       QStringLiteral("Whether to enable or disable the option")                                          }
+       QStringLiteral("Whether to enable or disable the option")                                                 }
   }),
     &datasetSetOption);
 
@@ -411,17 +438,21 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
                    "bitflags, NOT DashboardWidget enum values -- the numbers do not "
                    "line up with project.workspace.addWidget's widgetType."),
     makeSchema({
-      { QStringLiteral("groupId"),
-       QStringLiteral("integer"),
-       QStringLiteral("Owning group id")                                              },
-      {           Keys::DatasetId,
-       QStringLiteral("integer"),
-       QStringLiteral("Dataset id within the group")                                  },
+      {QStringLiteral("groupId"),QStringLiteral("integer"),  QStringLiteral("Owning group id")                                                            },
+      {          Keys::DatasetId, QStringLiteral("integer"),                 QStringLiteral("Dataset id within the group")},
       {QStringLiteral("options"),
        QStringLiteral("integer"),
-       QStringLiteral("Bitwise OR of DatasetOption flags (e.g. 67 = Plot|FFT|Waterfall)")}
+       QStringLiteral("Bitwise OR of DatasetOption flags (e.g. 67 = Plot|FFT|Waterfall)")                                 }
   }),
     &datasetSetOptions);
+}
+
+/**
+ * @brief Register dataset field setters (virtual flag, transform code).
+ */
+void API::Handlers::ProjectHandler::registerDatasetFieldCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setVirtual"),
@@ -448,18 +479,18 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
                    "project.dataset.setVirtual or project.dataset.update."),
     makeSchema(
       {
-        {QString(Keys::GroupId),    QStringLiteral("integer"),
-         QStringLiteral("Owning group id")},
-        {QString(Keys::DatasetId),  QStringLiteral("integer"),
-         QStringLiteral("Dataset id within the group")},
-        {QStringLiteral("code"),    QStringLiteral("string"),
+        {  QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Owning group id")                           },
+        {QString(Keys::DatasetId),
+         QStringLiteral("integer"),
+         QStringLiteral("Dataset id within the group")                        },
+        {  QStringLiteral("code"),
+         QStringLiteral("string"),
          QStringLiteral("Transform source (Lua or JS, must match `language`)")}
-      },
-      {
-        {QStringLiteral("language"),QStringLiteral("integer"),
-         QStringLiteral("Optional: 0=JavaScript, 1=Lua (recommended). If omitted, "
-                        "the dataset inherits the source's frameParserLanguage.")}
-      }),
+  },
+      {{QStringLiteral("language"),
+        QStringLiteral("integer"),
+        QStringLiteral("Optional: 0=JavaScript, 1=Lua (recommended). If omitted, "
+                       "the dataset inherits the source's frameParserLanguage.")}}),
     &datasetSetTransformCode);
 }
 
@@ -566,6 +597,15 @@ void API::Handlers::ProjectHandler::registerOutputWidgetCommands()
  */
 void API::Handlers::ProjectHandler::registerParserCommands()
 {
+  registerParserCodeCommands();
+  registerParserConfigCommands();
+}
+
+/**
+ * @brief Register frame-parser code and language commands (set/get code, set/get language).
+ */
+void API::Handlers::ProjectHandler::registerParserCodeCommands()
+{
   auto& registry = CommandRegistry::instance();
 
   const auto setCodeSchema = makeSchema(
@@ -638,6 +678,14 @@ void API::Handlers::ProjectHandler::registerParserCommands()
         QStringLiteral("integer"),
         QStringLiteral("Source identifier (default 0)")}}),
     &parserGetLanguage);
+}
+
+/**
+ * @brief Register frame-parser configuration commands (delimiters, checksum, mode, getConfig).
+ */
+void API::Handlers::ProjectHandler::registerParserConfigCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.frameParser.update"),
@@ -938,6 +986,46 @@ API::CommandResponse API::Handlers::ProjectHandler::groupDuplicate(const QString
 }
 
 /**
+ * @brief Returns the widget string matching a one-of DatasetOption bit (compass > gauge > bar).
+ */
+QString API::Handlers::ProjectHandler::widgetForDatasetOptions(int options)
+{
+  if (options & SerialStudio::DatasetCompass)
+    return QStringLiteral("compass");
+
+  if (options & SerialStudio::DatasetGauge)
+    return QStringLiteral("gauge");
+
+  if (options & SerialStudio::DatasetBar)
+    return QStringLiteral("bar");
+
+  return QString();
+}
+
+/**
+ * @brief Sets plt/fft/led/waterfall/widget on @p d from a DatasetOption bitfield.
+ */
+void API::Handlers::ProjectHandler::applyDatasetVisualizationFlags(DataModel::Dataset& d,
+                                                                   int options)
+{
+  if (options & SerialStudio::DatasetPlot)
+    d.plt = true;
+
+  if (options & SerialStudio::DatasetFFT)
+    d.fft = true;
+
+  if (options & SerialStudio::DatasetLED)
+    d.led = true;
+
+  if (options & SerialStudio::DatasetWaterfall)
+    d.waterfall = true;
+
+  const QString widget = widgetForDatasetOptions(options);
+  if (!widget.isEmpty())
+    d.widget = widget;
+}
+
+/**
  * @brief Add a dataset to a specific group by id
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id,
@@ -965,14 +1053,13 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
 
   // Headline flag drives the auto-generated title; remaining bits are applied below
   SerialStudio::DatasetOption headline = SerialStudio::DatasetGeneric;
-  for (const auto cand :
-       {SerialStudio::DatasetPlot,
-        SerialStudio::DatasetFFT,
-        SerialStudio::DatasetBar,
-        SerialStudio::DatasetGauge,
-        SerialStudio::DatasetCompass,
-        SerialStudio::DatasetLED,
-        SerialStudio::DatasetWaterfall}) {
+  for (const auto cand : {SerialStudio::DatasetPlot,
+                          SerialStudio::DatasetFFT,
+                          SerialStudio::DatasetBar,
+                          SerialStudio::DatasetGauge,
+                          SerialStudio::DatasetCompass,
+                          SerialStudio::DatasetLED,
+                          SerialStudio::DatasetWaterfall}) {
     if (options & cand) {
       headline = cand;
       break;
@@ -984,32 +1071,12 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
 
   // Apply any remaining bits on top of the headline-seeded dataset
   const int remaining = options & ~static_cast<int>(headline);
-  if (remaining != 0) {
-    const auto& post   = project.groups();
-    const int newIndex = static_cast<int>(post[groupId].datasets.size()) - 1;
-    if (newIndex >= 0) {
-      DataModel::Dataset d = post[groupId].datasets[newIndex];
-      if (remaining & SerialStudio::DatasetPlot)
-        d.plt = true;
-
-      if (remaining & SerialStudio::DatasetFFT)
-        d.fft = true;
-
-      if (remaining & SerialStudio::DatasetLED)
-        d.led = true;
-
-      if (remaining & SerialStudio::DatasetWaterfall)
-        d.waterfall = true;
-
-      if (remaining & SerialStudio::DatasetCompass)
-        d.widget = QStringLiteral("compass");
-      else if (remaining & SerialStudio::DatasetGauge)
-        d.widget = QStringLiteral("gauge");
-      else if (remaining & SerialStudio::DatasetBar)
-        d.widget = QStringLiteral("bar");
-
-      project.updateDataset(groupId, newIndex, d, /*rebuildTree=*/true);
-    }
+  const auto& post    = project.groups();
+  const int newIndex  = static_cast<int>(post[groupId].datasets.size()) - 1;
+  if (remaining != 0 && newIndex >= 0) {
+    DataModel::Dataset d = post[groupId].datasets[newIndex];
+    applyDatasetVisualizationFlags(d, remaining);
+    project.updateDataset(groupId, newIndex, d, /*rebuildTree=*/true);
   }
 
   QJsonObject result;
@@ -1183,15 +1250,13 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QStr
   d.led                = (options & SerialStudio::DatasetLED) != 0;
   d.waterfall          = (options & SerialStudio::DatasetWaterfall) != 0;
 
-  // widget string is a one-of group; Compass beats Gauge beats Bar when caller passes more than one
-  if (options & SerialStudio::DatasetCompass)
-    d.widget = QStringLiteral("compass");
-  else if (options & SerialStudio::DatasetGauge)
-    d.widget = QStringLiteral("gauge");
-  else if (options & SerialStudio::DatasetBar)
-    d.widget = QStringLiteral("bar");
-  else if (d.widget == QStringLiteral("bar") || d.widget == QStringLiteral("gauge")
-           || d.widget == QStringLiteral("compass"))
+  // widget string is a one-of group; clear if caller did not request bar/gauge/compass
+  const QString chosen = widgetForDatasetOptions(options);
+  const bool wasOneOf  = d.widget == QStringLiteral("bar") || d.widget == QStringLiteral("gauge")
+                     || d.widget == QStringLiteral("compass");
+  if (!chosen.isEmpty())
+    d.widget = chosen;
+  else if (wasOneOf)
     d.widget = QString();
 
   project.updateDataset(groupId, datasetId, d, /*rebuildTree=*/true);
@@ -2155,7 +2220,9 @@ API::CommandResponse API::Handlers::ProjectHandler::loadIntoFrameBuilder(const Q
 // Painter (group widget JS) command surface
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Register painter setCode/getCode commands. */
+/**
+ * @brief Register painter setCode/getCode commands.
+ */
 void API::Handlers::ProjectHandler::registerPainterCommands()
 {
   registerPainterCodeCommands();
@@ -2163,7 +2230,9 @@ void API::Handlers::ProjectHandler::registerPainterCommands()
   registerDryRunCommands();
 }
 
-/** @brief Register painter widget JS setCode/getCode commands. */
+/**
+ * @brief Register painter widget JS setCode/getCode commands.
+ */
 void API::Handlers::ProjectHandler::registerPainterCodeCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -2192,7 +2261,9 @@ void API::Handlers::ProjectHandler::registerPainterCodeCommands()
     &painterGetCode);
 }
 
-/** @brief Register patching update commands for groups/datasets/actions/outputs. */
+/**
+ * @brief Register patching update commands for groups/datasets/actions/outputs.
+ */
 void API::Handlers::ProjectHandler::registerUpdateCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -2252,7 +2323,9 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
     &outputWidgetUpdate);
 }
 
-/** @brief Register dryRun endpoints (compile + execute in throwaway engines). */
+/**
+ * @brief Register dryRun endpoints (compile + execute in throwaway engines).
+ */
 void API::Handlers::ProjectHandler::registerDryRunCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -2310,7 +2383,9 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
     &painterDryRun);
 }
 
-/** @brief Set painter code for a specific group by id. */
+/**
+ * @brief Set painter code for a specific group by id.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::painterSetCode(const QString& id,
                                                                    const QJsonObject& params)
 {
@@ -2341,7 +2416,9 @@ API::CommandResponse API::Handlers::ProjectHandler::painterSetCode(const QString
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Read the painter code for a group. */
+/**
+ * @brief Read the painter code for a group.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::painterGetCode(const QString& id,
                                                                    const QJsonObject& params)
 {
@@ -2365,7 +2442,9 @@ API::CommandResponse API::Handlers::ProjectHandler::painterGetCode(const QString
 // Bulk update mutators -- stateless, id required, PATCH semantics
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Patch any subset of group fields by id. */
+/**
+ * @brief Patch any subset of group fields by id.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& id,
                                                                 const QJsonObject& params)
 {
@@ -2408,36 +2487,13 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Patch any subset of dataset fields by groupId + datasetId. */
-API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString& id,
-                                                                  const QJsonObject& params)
+/**
+ * @brief Patch optional dataset fields onto @p d; returns non-empty error string on failure.
+ */
+QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Dataset& d,
+                                                                const QJsonObject& params,
+                                                                bool& rebuildTree)
 {
-  if (!params.contains(QStringLiteral("groupId")))
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
-
-  if (!params.contains(Keys::DatasetId))
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
-
-  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
-  const int datasetId = params.value(Keys::DatasetId).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& groups  = project.groups();
-  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
-    return CommandResponse::makeError(
-      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
-
-  const auto& datasets = groups[groupId].datasets;
-  if (datasetId < 0 || static_cast<size_t>(datasetId) >= datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
-
-  DataModel::Dataset d = datasets[datasetId];
-  bool rebuildTree     = false;
-
   if (params.contains(QStringLiteral("title"))) {
     d.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
@@ -2507,16 +2563,51 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
   if (params.contains(Keys::TransformLanguage)) {
     const int lang = params.value(Keys::TransformLanguage).toInt();
     if (lang != -1 && lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
-      return CommandResponse::makeError(
-        id,
-        ErrorCode::InvalidParam,
-        QStringLiteral("Invalid transformLanguage: must be -1 (inherit), 0 (JS), or 1 (Lua)"));
+      return QStringLiteral("Invalid transformLanguage: must be -1 (inherit), 0 (JS), or 1 (Lua)");
 
     d.transformLanguage = lang;
   }
 
   if (params.contains(Keys::Virtual))
     d.virtual_ = params.value(Keys::Virtual).toBool();
+
+  return QString();
+}
+
+/**
+ * @brief Patch any subset of dataset fields by groupId + datasetId.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(Keys::DatasetId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
+
+  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  auto& project       = DataModel::ProjectModel::instance();
+  const auto& groups  = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const auto& datasets = groups[groupId].datasets;
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= datasets.size())
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+
+  DataModel::Dataset d = datasets[datasetId];
+  bool rebuildTree     = false;
+  const QString err    = applyDatasetUpdateParams(d, params, rebuildTree);
+  if (!err.isEmpty())
+    return CommandResponse::makeError(id, ErrorCode::InvalidParam, err);
 
   project.updateDataset(groupId, datasetId, d, rebuildTree);
 
@@ -2540,7 +2631,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Patch any subset of action fields by id. */
+/**
+ * @brief Patch any subset of action fields by id.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::actionUpdate(const QString& id,
                                                                  const QJsonObject& params)
 {
@@ -2590,7 +2683,9 @@ API::CommandResponse API::Handlers::ProjectHandler::actionUpdate(const QString& 
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Patch any subset of output-widget fields by groupId + widgetId. */
+/**
+ * @brief Patch any subset of output-widget fields by groupId + widgetId.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QString& id,
                                                                        const QJsonObject& params)
 {
@@ -2644,7 +2739,9 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
 // Project templates -- starter projects loaded from rcc:/ai/templates/*
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the templates manifest as a QJsonDocument, or empty on error. */
+/**
+ * @brief Returns the templates manifest as a QJsonDocument, or empty on error.
+ */
 static QJsonDocument loadTemplateManifest()
 {
   QFile f(QStringLiteral(":/ai/templates/manifest.json"));
@@ -2654,7 +2751,9 @@ static QJsonDocument loadTemplateManifest()
   return QJsonDocument::fromJson(f.readAll());
 }
 
-/** @brief Loads a template body file by id. Returns empty doc when not found. */
+/**
+ * @brief Loads a template body file by id. Returns empty doc when not found.
+ */
 static QJsonDocument loadTemplateBodyById(const QString& templateId)
 {
   const auto manifest = loadTemplateManifest().object();
@@ -2674,7 +2773,9 @@ static QJsonDocument loadTemplateBodyById(const QString& templateId)
   return {};
 }
 
-/** @brief Register project.template.* commands. */
+/**
+ * @brief Register project.template.* commands.
+ */
 void API::Handlers::ProjectHandler::registerTemplateCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -2721,7 +2822,9 @@ void API::Handlers::ProjectHandler::registerTemplateCommands()
     &templateApply);
 }
 
-/** @brief Returns the templates manifest. */
+/**
+ * @brief Returns the templates manifest.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::templateList(const QString& id,
                                                                  const QJsonObject& params)
 {
@@ -2737,7 +2840,9 @@ API::CommandResponse API::Handlers::ProjectHandler::templateList(const QString& 
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Loads a template into the project model. */
+/**
+ * @brief Loads a template into the project model.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::templateApply(const QString& id,
                                                                   const QJsonObject& params)
 {
@@ -2778,7 +2883,9 @@ API::CommandResponse API::Handlers::ProjectHandler::templateApply(const QString&
 // Project consistency validation
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Adds a structured issue row to the validate() result array. */
+/**
+ * @brief Adds a structured issue row to the validate() result array.
+ */
 static void addIssue(QJsonArray& issues,
                      const QString& level,
                      const QString& location,
@@ -2791,7 +2898,9 @@ static void addIssue(QJsonArray& issues,
   issues.append(row);
 }
 
-/** @brief Validates per-source frame parsers (compiles each, flags failures). */
+/**
+ * @brief Validates per-source frame parsers (compiles each, flags failures).
+ */
 static void validateSources(const std::vector<DataModel::Source>& sources,
                             QJsonArray& issues,
                             bool& ok)
@@ -2817,7 +2926,9 @@ static void validateSources(const std::vector<DataModel::Source>& sources,
   }
 }
 
-/** @brief Validates a single dataset's references and per-field invariants. */
+/**
+ * @brief Validates a single dataset's references and per-field invariants.
+ */
 static void validateDataset(const DataModel::Dataset& d,
                             const DataModel::Group& g,
                             const QSet<int>& sourceIds,
@@ -2860,7 +2971,9 @@ static void validateDataset(const DataModel::Dataset& d,
   }
 }
 
-/** @brief Validates each group and its datasets against the source-id set. */
+/**
+ * @brief Validates each group and its datasets against the source-id set.
+ */
 static void validateGroups(const std::vector<DataModel::Group>& groups,
                            const QSet<int>& sourceIds,
                            QJsonArray& issues,
@@ -2892,7 +3005,9 @@ static void validateGroups(const std::vector<DataModel::Group>& groups,
   }
 }
 
-/** @brief Validates actions (non-blocking sanity checks: titles, payloads). */
+/**
+ * @brief Validates actions (non-blocking sanity checks: titles, payloads).
+ */
 static void validateActions(const std::vector<DataModel::Action>& actions, QJsonArray& issues)
 {
   for (const auto& a : actions) {
@@ -2906,7 +3021,9 @@ static void validateActions(const std::vector<DataModel::Action>& actions, QJson
   }
 }
 
-/** @brief Walks the project model, reports inconsistencies. */
+/**
+ * @brief Walks the project model, reports inconsistencies.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::validate(const QString& id,
                                                              const QJsonObject& params)
 {
@@ -2951,7 +3068,9 @@ API::CommandResponse API::Handlers::ProjectHandler::validate(const QString& id,
 // Script dry-run helpers (compile + run in throwaway engines, never touch project)
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the right script engine for a language tag (0=JS, 1=Lua). */
+/**
+ * @brief Builds the right script engine for a language tag (0=JS, 1=Lua).
+ */
 static std::unique_ptr<DataModel::IScriptEngine> makeScriptEngine(int language)
 {
   if (language == 1)
@@ -2960,7 +3079,9 @@ static std::unique_ptr<DataModel::IScriptEngine> makeScriptEngine(int language)
   return std::make_unique<DataModel::JsScriptEngine>();
 }
 
-/** @brief Frame parser dry-run: compile + parse a sample frame. */
+/**
+ * @brief Frame parser dry-run: compile + parse a sample frame.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::frameParserDryRun(const QString& id,
                                                                       const QJsonObject& params)
 {
@@ -3008,7 +3129,9 @@ API::CommandResponse API::Handlers::ProjectHandler::frameParserDryRun(const QStr
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Transform dry-run: compile + apply transform() to a list of values. */
+/**
+ * @brief Transform dry-run: compile + apply transform() to a list of values.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::transformDryRun(const QString& id,
                                                                     const QJsonObject& params)
 {
@@ -3087,7 +3210,9 @@ API::CommandResponse API::Handlers::ProjectHandler::transformDryRun(const QStrin
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Painter dry-run: verify the script compiles and exposes paint(). */
+/**
+ * @brief Painter dry-run: verify the script compiles and exposes paint().
+ */
 API::CommandResponse API::Handlers::ProjectHandler::painterDryRun(const QString& id,
                                                                   const QJsonObject& params)
 {

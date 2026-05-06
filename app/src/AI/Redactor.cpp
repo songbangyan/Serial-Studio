@@ -13,7 +13,9 @@
 
 namespace detail {
 
-/** @brief One redaction pattern paired with its replacement reason. */
+/**
+ * @brief One redaction pattern paired with its replacement reason.
+ */
 struct Pattern {
   QRegularExpression re;
   QString reason;
@@ -75,7 +77,9 @@ QStringLiteral("\\beyJ[A-Za-z0-9_\\-]{8,}\\.[A-Za-z0-9_\\-]{8,}\\.[A-Za-z0-9_\\-
   return kPatterns;
 }
 
-/** @brief Replaces any sensitive-shaped substring with [REDACTED:<reason>]. */
+/**
+ * @brief Replaces any sensitive-shaped substring with [REDACTED:<reason>].
+ */
 bool AI::Redactor::scrub(QString& text)
 {
   if (text.isEmpty())
@@ -92,7 +96,9 @@ bool AI::Redactor::scrub(QString& text)
   return changed;
 }
 
-/** @brief Recursively scrubs a single JSON leaf, returning the redacted value. */
+/**
+ * @brief Recursively scrubs a single JSON leaf, returning the redacted value.
+ */
 static QJsonValue scrubValue(const QJsonValue& v)
 {
   if (v.isString()) {
@@ -110,7 +116,9 @@ static QJsonValue scrubValue(const QJsonValue& v)
   return v;
 }
 
-/** @brief Walks every string leaf inside a QJsonObject and scrubs it. */
+/**
+ * @brief Walks every string leaf inside a QJsonObject and scrubs it.
+ */
 QJsonObject AI::Redactor::scrubObject(const QJsonObject& obj)
 {
   QJsonObject out;
@@ -120,7 +128,9 @@ QJsonObject AI::Redactor::scrubObject(const QJsonObject& obj)
   return out;
 }
 
-/** @brief Walks every string leaf inside a QJsonArray and scrubs it. */
+/**
+ * @brief Walks every string leaf inside a QJsonArray and scrubs it.
+ */
 QJsonArray AI::Redactor::scrubArray(const QJsonArray& arr)
 {
   QJsonArray out;

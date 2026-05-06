@@ -30,7 +30,9 @@ namespace DataModel {
  */
 namespace CodeFormatter {
 
-/** @brief Selects which language grammar drives indentation. */
+/**
+ * @brief Selects which language grammar drives indentation.
+ */
 enum class Language {
   JavaScript,
   Lua

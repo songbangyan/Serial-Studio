@@ -16,43 +16,69 @@
 namespace API {
 namespace EnumLabels {
 
-/** @brief Returns a short machine-friendly slug for a BusType value (e.g. "uart"). */
+/**
+ * @brief Returns a short machine-friendly slug for a BusType value (e.g. "uart").
+ */
 [[nodiscard]] QString busTypeSlug(int value);
 
-/** @brief Returns a human-friendly label for a BusType value (e.g. "UART (serial port)"). */
+/**
+ * @brief Returns a human-friendly label for a BusType value (e.g. "UART (serial port)").
+ */
 [[nodiscard]] QString busTypeLabel(int value);
 
-/** @brief Returns a short slug for a FrameDetection value (e.g. "start-end-delimiter"). */
+/**
+ * @brief Returns a short slug for a FrameDetection value (e.g. "start-end-delimiter").
+ */
 [[nodiscard]] QString frameDetectionSlug(int value);
 
-/** @brief Returns a human-friendly label for a FrameDetection value. */
+/**
+ * @brief Returns a human-friendly label for a FrameDetection value.
+ */
 [[nodiscard]] QString frameDetectionLabel(int value);
 
-/** @brief Returns a short slug for a DecoderMethod value (e.g. "plain-text"). */
+/**
+ * @brief Returns a short slug for a DecoderMethod value (e.g. "plain-text").
+ */
 [[nodiscard]] QString decoderMethodSlug(int value);
 
-/** @brief Returns a human-friendly label for a DecoderMethod value. */
+/**
+ * @brief Returns a human-friendly label for a DecoderMethod value.
+ */
 [[nodiscard]] QString decoderMethodLabel(int value);
 
-/** @brief Returns a short slug for an OperationMode value (e.g. "project-file"). */
+/**
+ * @brief Returns a short slug for an OperationMode value (e.g. "project-file").
+ */
 [[nodiscard]] QString operationModeSlug(int value);
 
-/** @brief Returns a human-friendly label for an OperationMode value. */
+/**
+ * @brief Returns a human-friendly label for an OperationMode value.
+ */
 [[nodiscard]] QString operationModeLabel(int value);
 
-/** @brief Returns a short slug for a SerialStudio::GroupWidget value. */
+/**
+ * @brief Returns a short slug for a SerialStudio::GroupWidget value.
+ */
 [[nodiscard]] QString groupWidgetSlug(int value);
 
-/** @brief Returns a human-friendly label for a SerialStudio::GroupWidget value. */
+/**
+ * @brief Returns a human-friendly label for a SerialStudio::GroupWidget value.
+ */
 [[nodiscard]] QString groupWidgetLabel(int value);
 
-/** @brief Returns a short slug for a SerialStudio::DatasetWidget value. */
+/**
+ * @brief Returns a short slug for a SerialStudio::DatasetWidget value.
+ */
 [[nodiscard]] QString datasetWidgetSlug(int value);
 
-/** @brief Returns a human-friendly label for a SerialStudio::DatasetWidget value. */
+/**
+ * @brief Returns a human-friendly label for a SerialStudio::DatasetWidget value.
+ */
 [[nodiscard]] QString datasetWidgetLabel(int value);
 
-/** @brief Returns a comma-separated list of dataset option flags set in @c value. */
+/**
+ * @brief Returns a comma-separated list of dataset option flags set in @c value.
+ */
 [[nodiscard]] QString datasetOptionsLabel(int value);
 
 }  // namespace EnumLabels

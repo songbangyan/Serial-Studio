@@ -53,7 +53,9 @@ class Conversation : public QObject {
 public:
   static constexpr int kMaxToolCalls = 25;
 
-  /** @brief Status pill rendered by QML for each tool-call card. */
+  /**
+   * @brief Status pill rendered by QML for each tool-call card.
+   */
   enum class CallStatus : int {
     Running         = 0,
     AwaitingConfirm = 1,
@@ -104,6 +106,7 @@ private:
   void issueRequest();
   void ageHistoryToolResults();
   void reconcileHistoryToolPairs();
+  bool reconcileHistoryToolPairsAt(int& i);
   void fetchHelpPage(const QString& callId, const QString& path);
   void fetchHelpIndex(const QString& callId, const QUrl& missedUrl);
   void completeHelpFetch(const QString& callId, const QUrl& url, QNetworkReply* reply);
@@ -154,7 +157,9 @@ private:
   void saveToDisk() const;
   void restoreFromDisk();
 
-  /** @brief Captured Confirm-state info pending user approval. */
+  /**
+   * @brief Captured Confirm-state info pending user approval.
+   */
   struct PendingCall {
     QString name;
     QJsonObject arguments;

@@ -19,7 +19,9 @@
 
 namespace detail {
 
-/** @brief One script kind paired with its rcc base path and language tag. */
+/**
+ * @brief One script kind paired with its rcc base path and language tag.
+ */
 struct Kind {
   QString id;           // "painter", "frame_parser_js", ...
   QString manifest;     // qrc:/scripts/<dir>/templates.json
@@ -30,7 +32,9 @@ struct Kind {
 
 }  // namespace detail
 
-/** @brief Static catalog of every script kind exposed via scripts.*. */
+/**
+ * @brief Static catalog of every script kind exposed via scripts.*.
+ */
 static const QList<detail::Kind>& kinds()
 {
   static const QList<detail::Kind> kCatalog = {
@@ -79,7 +83,9 @@ static const QList<detail::Kind>& kinds()
   return kCatalog;
 }
 
-/** @brief Looks up a kind by id; returns nullptr when unknown. */
+/**
+ * @brief Looks up a kind by id; returns nullptr when unknown.
+ */
 static const detail::Kind* findKind(const QString& id)
 {
   for (const auto& k : kinds())
@@ -89,7 +95,9 @@ static const detail::Kind* findKind(const QString& id)
   return nullptr;
 }
 
-/** @brief Reads the manifest for one kind into a QJsonArray of entries. */
+/**
+ * @brief Reads the manifest for one kind into a QJsonArray of entries.
+ */
 static QJsonArray loadManifest(const detail::Kind& kind)
 {
   QFile f(kind.manifest);
@@ -99,7 +107,9 @@ static QJsonArray loadManifest(const detail::Kind& kind)
   return QJsonDocument::fromJson(f.readAll()).array();
 }
 
-/** @brief Returns a brief catalog row for one manifest entry. */
+/**
+ * @brief Returns a brief catalog row for one manifest entry.
+ */
 static QJsonObject summarizeEntry(const detail::Kind& kind, const QJsonObject& entry)
 {
   QJsonObject row;
@@ -116,7 +126,9 @@ static QJsonObject summarizeEntry(const detail::Kind& kind, const QJsonObject& e
   return row;
 }
 
-/** @brief Wires scripts.list and scripts.get into CommandRegistry. */
+/**
+ * @brief Wires scripts.list and scripts.get into CommandRegistry.
+ */
 void API::Handlers::ScriptsHandler::registerCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -156,7 +168,9 @@ void API::Handlers::ScriptsHandler::registerCommands()
                            &get);
 }
 
-/** @brief Returns the full catalog (or one kind's slice) of bundled scripts. */
+/**
+ * @brief Returns the full catalog (or one kind's slice) of bundled scripts.
+ */
 API::CommandResponse API::Handlers::ScriptsHandler::list(const QString& id,
                                                          const QJsonObject& params)
 {
@@ -204,7 +218,9 @@ API::CommandResponse API::Handlers::ScriptsHandler::list(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Returns the body of one script (UTF-8 text). */
+/**
+ * @brief Returns the body of one script (UTF-8 text).
+ */
 API::CommandResponse API::Handlers::ScriptsHandler::get(const QString& id,
                                                         const QJsonObject& params)
 {

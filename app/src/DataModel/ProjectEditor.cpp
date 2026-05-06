@@ -3638,7 +3638,9 @@ void DataModel::ProjectEditor::syncDatasetItemCache(int groupId, int datasetId)
 // Private slot: tree selection changed
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Refreshes the selected-source snapshot and switches to the parser view. */
+/**
+ * @brief Refreshes the selected-source snapshot and switches to the parser view.
+ */
 bool DataModel::ProjectEditor::selectSourceParserItem(QStandardItem* item)
 {
   if (!m_sourceParserItems.contains(item))
@@ -3660,7 +3662,9 @@ bool DataModel::ProjectEditor::selectSourceParserItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Switches the form to the SourceView for the clicked source item. */
+/**
+ * @brief Switches the form to the SourceView for the clicked source item.
+ */
 bool DataModel::ProjectEditor::selectSourceItem(QStandardItem* item)
 {
   if (!m_sourceItems.contains(item))
@@ -3684,7 +3688,9 @@ bool DataModel::ProjectEditor::selectSourceItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Switches the form to the GroupView for the clicked group item. */
+/**
+ * @brief Switches the form to the GroupView for the clicked group item.
+ */
 bool DataModel::ProjectEditor::selectGroupItem(QStandardItem* item)
 {
   if (!m_groupItems.contains(item))
@@ -3703,7 +3709,9 @@ bool DataModel::ProjectEditor::selectGroupItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Switches the form to the DatasetView for the clicked dataset item. */
+/**
+ * @brief Switches the form to the DatasetView for the clicked dataset item.
+ */
 bool DataModel::ProjectEditor::selectDatasetItem(QStandardItem* item)
 {
   if (!m_datasetItems.contains(item))
@@ -3728,7 +3736,9 @@ bool DataModel::ProjectEditor::selectDatasetItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Switches the form to the ActionView for the clicked action item. */
+/**
+ * @brief Switches the form to the ActionView for the clicked action item.
+ */
 bool DataModel::ProjectEditor::selectActionItem(QStandardItem* item)
 {
   if (!m_actionItems.contains(item))
@@ -3751,7 +3761,9 @@ bool DataModel::ProjectEditor::selectActionItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Switches the form to the OutputWidgetView for the clicked widget item. */
+/**
+ * @brief Switches the form to the OutputWidgetView for the clicked widget item.
+ */
 bool DataModel::ProjectEditor::selectOutputWidgetItem(QStandardItem* item)
 {
   if (!m_outputWidgetItems.contains(item))
@@ -3776,7 +3788,9 @@ bool DataModel::ProjectEditor::selectOutputWidgetItem(QStandardItem* item)
   return true;
 }
 
-/** @brief Routes selections under the data-tables tree branch. */
+/**
+ * @brief Routes selections under the data-tables tree branch.
+ */
 bool DataModel::ProjectEditor::selectDataTableItem(QStandardItem* item)
 {
   if (item == m_tablesRootItem) {
@@ -3802,7 +3816,9 @@ bool DataModel::ProjectEditor::selectDataTableItem(QStandardItem* item)
   return false;
 }
 
-/** @brief Routes selections under the workspaces tree branch. */
+/**
+ * @brief Routes selections under the workspaces tree branch.
+ */
 bool DataModel::ProjectEditor::selectWorkspaceTreeItem(QStandardItem* item)
 {
   if (item == m_workspacesRootItem) {

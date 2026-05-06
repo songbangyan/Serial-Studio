@@ -442,7 +442,9 @@ private:
   QMetaObject::Connection m_deviceListConn;
   QMetaObject::Connection m_currentSelectionConnection;
 
-  /** @brief Kind of node queued for selection after the next tree rebuild. */
+  /**
+   * @brief Kind of node queued for selection after the next tree rebuild.
+   */
   enum class PendingSelectionKind {
     None,
     Source,

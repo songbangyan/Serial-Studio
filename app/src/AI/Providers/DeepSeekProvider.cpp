@@ -27,7 +27,9 @@ namespace detail {
  */
 class ImmediateErrorReplyDS : public AI::Reply {
 public:
-  /** @brief Schedules errorOccurred + finished on the next event-loop tick. */
+  /**
+   * @brief Schedules errorOccurred + finished on the next event-loop tick.
+   */
   ImmediateErrorReplyDS(const QString& message, QObject* parent = nullptr)
     : AI::Reply(parent), m_message(message)
   {
@@ -37,7 +39,9 @@ public:
     });
   }
 
-  /** @brief No-op since the error fires immediately. */
+  /**
+   * @brief No-op since the error fires immediately.
+   */
   void abort() override {}
 
 private:
@@ -52,25 +56,33 @@ static const char* const kDeepSeekEndpoint = "https://api.deepseek.com/v1/chat/c
 // Construction and provider metadata
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Stores QNAM ref and key getter. */
+/**
+ * @brief Stores QNAM ref and key getter.
+ */
 AI::DeepSeekProvider::DeepSeekProvider(QNetworkAccessManager& nam,
                                        std::function<QString()> keyGetter)
   : m_nam(nam), m_keyGetter(std::move(keyGetter))
 {}
 
-/** @brief Returns the human-readable provider name. */
+/**
+ * @brief Returns the human-readable provider name.
+ */
 QString AI::DeepSeekProvider::displayName() const
 {
   return QStringLiteral("DeepSeek");
 }
 
-/** @brief Returns the vendor "Get a key" deep link. */
+/**
+ * @brief Returns the vendor "Get a key" deep link.
+ */
 QString AI::DeepSeekProvider::keyVendorUrl() const
 {
   return QStringLiteral("https://platform.deepseek.com/api_keys");
 }
 
-/** @brief Returns the list of selectable DeepSeek models, default first. */
+/**
+ * @brief Returns the list of selectable DeepSeek models, default first.
+ */
 QStringList AI::DeepSeekProvider::availableModels() const
 {
   return {
@@ -79,13 +91,17 @@ QStringList AI::DeepSeekProvider::availableModels() const
   };
 }
 
-/** @brief Returns the default DeepSeek model for new sessions. */
+/**
+ * @brief Returns the default DeepSeek model for new sessions.
+ */
 QString AI::DeepSeekProvider::defaultModel() const
 {
   return QStringLiteral("deepseek-chat");
 }
 
-/** @brief Returns a human-friendly label for a known DeepSeek model id. */
+/**
+ * @brief Returns a human-friendly label for a known DeepSeek model id.
+ */
 QString AI::DeepSeekProvider::modelDisplayName(const QString& modelId) const
 {
   if (modelId == QStringLiteral("deepseek-chat"))
@@ -101,7 +117,9 @@ QString AI::DeepSeekProvider::modelDisplayName(const QString& modelId) const
 // sendMessage
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the Chat Completions request body and returns a streaming Reply. */
+/**
+ * @brief Builds the Chat Completions request body and returns a streaming Reply.
+ */
 AI::Reply* AI::DeepSeekProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();

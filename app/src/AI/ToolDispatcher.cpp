@@ -22,14 +22,18 @@
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Creates a tool dispatcher with the given Qt parent. */
+/**
+ * @brief Creates a tool dispatcher with the given Qt parent.
+ */
 AI::ToolDispatcher::ToolDispatcher(QObject* parent) : QObject(parent) {}
 
 //--------------------------------------------------------------------------------------------------
 // Catalog
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns AI-tool catalog derived from API::CommandRegistry, minus Blocked entries. */
+/**
+ * @brief Returns AI-tool catalog derived from API::CommandRegistry, minus Blocked entries.
+ */
 QJsonArray AI::ToolDispatcher::availableTools(const QString& category) const
 {
   QJsonArray tools;
@@ -83,7 +87,9 @@ QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix) const
   return reply;
 }
 
-/** @brief Returns the top-level scope namespaces with descriptions. */
+/**
+ * @brief Returns the top-level scope namespaces with descriptions.
+ */
 QJsonObject AI::ToolDispatcher::listCategories() const
 {
   // Curated scope descriptions (only emitted when scope has non-Blocked commands)
@@ -167,7 +173,9 @@ QJsonObject AI::ToolDispatcher::listCategories() const
   return reply;
 }
 
-/** @brief Returns the metadata block for a single command, or an empty object. */
+/**
+ * @brief Returns the metadata block for a single command, or an empty object.
+ */
 QJsonObject AI::ToolDispatcher::describeCommand(const QString& name) const
 {
   const auto& commands = API::CommandRegistry::instance().commands();
@@ -189,7 +197,9 @@ QJsonObject AI::ToolDispatcher::describeCommand(const QString& name) const
 // Dispatch
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Validates args and forwards to API::CommandRegistry honoring AI safety tags. */
+/**
+ * @brief Validates args and forwards to API::CommandRegistry honoring AI safety tags.
+ */
 QJsonObject AI::ToolDispatcher::executeCommand(const QString& name,
                                                const QJsonObject& args,
                                                bool autoConfirmSafe)
@@ -250,7 +260,9 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& name,
 // Context (placeholders for the next slice)
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the result.result field of a safe command, or an empty object. */
+/**
+ * @brief Returns the result.result field of a safe command, or an empty object.
+ */
 static QJsonObject runSafeCommand(const QString& name)
 {
   const auto callId   = QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -261,7 +273,9 @@ static QJsonObject runSafeCommand(const QString& name)
   return response.result;
 }
 
-/** @brief Returns a one-shot composite of every readable status endpoint. */
+/**
+ * @brief Returns a one-shot composite of every readable status endpoint.
+ */
 QJsonObject AI::ToolDispatcher::getSnapshot() const
 {
   // Curated read-only commands; missing ones (e.g. commercial-only) are skipped.
@@ -298,7 +312,9 @@ QJsonObject AI::ToolDispatcher::getSnapshot() const
   return snapshot;
 }
 
-/** @brief Returns project structure assembled from a curated set of safe list commands. */
+/**
+ * @brief Returns project structure assembled from a curated set of safe list commands.
+ */
 QJsonObject AI::ToolDispatcher::getProjectState() const
 {
   static const QStringList kSafeListCommands = {
@@ -323,7 +339,9 @@ QJsonObject AI::ToolDispatcher::getProjectState() const
   return state;
 }
 
-/** @brief Returns the markdown reference body for the given scripting kind. */
+/**
+ * @brief Returns the markdown reference body for the given scripting kind.
+ */
 QJsonObject AI::ToolDispatcher::getScriptingDocs(const QString& kind) const
 {
   static const QStringList kAllowed = {

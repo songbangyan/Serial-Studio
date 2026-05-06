@@ -37,7 +37,9 @@ void API::Handlers::SessionsHandler::registerCommands()
   registerTagCommands();
 }
 
-/** @brief Register the recorder lifecycle commands (status, enable, close, dbPath). */
+/**
+ * @brief Register the recorder lifecycle commands (status, enable, close, dbPath).
+ */
 void API::Handlers::SessionsHandler::registerLifecycleCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -96,7 +98,9 @@ void API::Handlers::SessionsHandler::registerLifecycleCommands()
   }
 }
 
-/** @brief Register database browsing/management commands (open, list, get, delete...). */
+/**
+ * @brief Register database browsing/management commands (open, list, get, delete...).
+ */
 void API::Handlers::SessionsHandler::registerBrowsingCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -185,7 +189,9 @@ void API::Handlers::SessionsHandler::registerBrowsingCommands()
   }
 }
 
-/** @brief Register tag-related commands (list/add/delete/rename/assign/remove). */
+/**
+ * @brief Register tag-related commands (list/add/delete/rename/assign/remove).
+ */
 void API::Handlers::SessionsHandler::registerTagCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -355,7 +361,9 @@ API::CommandResponse API::Handlers::SessionsHandler::getCanonicalDbPath(const QS
 // Database browsing / management
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Open a session database file by path. */
+/**
+ * @brief Open a session database file by path.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::openDatabase(const QString& id,
                                                                   const QJsonObject& params)
 {
@@ -372,7 +380,9 @@ API::CommandResponse API::Handlers::SessionsHandler::openDatabase(const QString&
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Return all sessions in the open database. */
+/**
+ * @brief Return all sessions in the open database.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::list(const QString& id,
                                                           const QJsonObject& params)
 {
@@ -393,7 +403,9 @@ API::CommandResponse API::Handlers::SessionsHandler::list(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Return one session's metadata + tags. */
+/**
+ * @brief Return one session's metadata + tags.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::get(const QString& id,
                                                          const QJsonObject& params)
 {
@@ -421,7 +433,9 @@ API::CommandResponse API::Handlers::SessionsHandler::get(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Delete a stored session by id. */
+/**
+ * @brief Delete a stored session by id.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::deleteSession(const QString& id,
                                                                    const QJsonObject& params)
 {
@@ -445,7 +459,9 @@ API::CommandResponse API::Handlers::SessionsHandler::deleteSession(const QString
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Set the free-form notes on a stored session. */
+/**
+ * @brief Set the free-form notes on a stored session.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::setNotes(const QString& id,
                                                               const QJsonObject& params)
 {
@@ -469,7 +485,9 @@ API::CommandResponse API::Handlers::SessionsHandler::setNotes(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Replay a stored session through the player. */
+/**
+ * @brief Replay a stored session through the player.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::replay(const QString& id,
                                                             const QJsonObject& params)
 {
@@ -488,7 +506,9 @@ API::CommandResponse API::Handlers::SessionsHandler::replay(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Export a session to CSV (async; check sessions.getStatus / busy). */
+/**
+ * @brief Export a session to CSV (async; check sessions.getStatus / busy).
+ */
 API::CommandResponse API::Handlers::SessionsHandler::exportToCsv(const QString& id,
                                                                  const QJsonObject& params)
 {
@@ -509,7 +529,9 @@ API::CommandResponse API::Handlers::SessionsHandler::exportToCsv(const QString& 
 // Tags
 //--------------------------------------------------------------------------------------------------
 
-/** @brief List all tags defined in the open database. */
+/**
+ * @brief List all tags defined in the open database.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::listTags(const QString& id,
                                                               const QJsonObject& params)
 {
@@ -527,7 +549,9 @@ API::CommandResponse API::Handlers::SessionsHandler::listTags(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Create a new tag. */
+/**
+ * @brief Create a new tag.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::addTag(const QString& id,
                                                             const QJsonObject& params)
 {
@@ -544,7 +568,9 @@ API::CommandResponse API::Handlers::SessionsHandler::addTag(const QString& id,
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Delete a tag by id. */
+/**
+ * @brief Delete a tag by id.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::deleteTag(const QString& id,
                                                                const QJsonObject& params)
 {
@@ -561,7 +587,9 @@ API::CommandResponse API::Handlers::SessionsHandler::deleteTag(const QString& id
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Rename a tag. */
+/**
+ * @brief Rename a tag.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::renameTag(const QString& id,
                                                                const QJsonObject& params)
 {
@@ -584,7 +612,9 @@ API::CommandResponse API::Handlers::SessionsHandler::renameTag(const QString& id
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Attach a tag to a stored session. */
+/**
+ * @brief Attach a tag to a stored session.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::assignTag(const QString& id,
                                                                const QJsonObject& params)
 {
@@ -607,7 +637,9 @@ API::CommandResponse API::Handlers::SessionsHandler::assignTag(const QString& id
   return CommandResponse::makeSuccess(id, result);
 }
 
-/** @brief Detach a tag from a stored session. */
+/**
+ * @brief Detach a tag from a stored session.
+ */
 API::CommandResponse API::Handlers::SessionsHandler::removeTag(const QString& id,
                                                                const QJsonObject& params)
 {

@@ -40,7 +40,9 @@ void API::Handlers::CSVPlayerHandler::registerCommands()
   registerPlaybackCommands();
 }
 
-/** @brief Register csvPlayer.open + csvPlayer.close commands. */
+/**
+ * @brief Register csvPlayer.open + csvPlayer.close commands.
+ */
 void API::Handlers::CSVPlayerHandler::registerFileCommands()
 {
   auto& registry = CommandRegistry::instance();
@@ -74,7 +76,9 @@ void API::Handlers::CSVPlayerHandler::registerFileCommands()
     QStringLiteral("csvPlayer.close"), QStringLiteral("Close CSV file"), emptySchema, &close);
 }
 
-/** @brief Register csvPlayer.setPaused/step/setProgress/getStatus commands. */
+/**
+ * @brief Register csvPlayer.setPaused/step/setProgress/getStatus commands.
+ */
 void API::Handlers::CSVPlayerHandler::registerPlaybackCommands()
 {
   auto& registry = CommandRegistry::instance();

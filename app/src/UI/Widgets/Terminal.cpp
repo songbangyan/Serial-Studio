@@ -1131,7 +1131,9 @@ void Widgets::Terminal::loadWelcomeGuide()
 /**
  * @brief Appends a string of data to the terminal, processing each character accordingly.
  */
-/** @brief Scans a printable-character run starting at @p pos in @p data; returns end offset. */
+/**
+ * @brief Scans a printable-character run starting at @p pos in @p data; returns end offset.
+ */
 int Widgets::Terminal::scanPrintableRun(const QString& data, int pos)
 {
   const int len = data.size();
@@ -1473,7 +1475,9 @@ void Widgets::Terminal::processFormat(const QChar& byte, QString& text)
   m_state = Text;
 }
 
-/** @brief Dispatches the final byte of a CSI sequence; returns true if handled. */
+/**
+ * @brief Dispatches the final byte of a CSI sequence; returns true if handled.
+ */
 bool Widgets::Terminal::dispatchCsiFinal(const QChar& byte)
 {
   const char final = byte.toLatin1();
@@ -1556,7 +1560,9 @@ bool Widgets::Terminal::dispatchCsiFinal(const QChar& byte)
   }
 }
 
-/** @brief Handles CSI cursor movement letters A-F (CUU/CUD/CUF/CUB/CNL/CPL). */
+/**
+ * @brief Handles CSI cursor movement letters A-F (CUU/CUD/CUF/CUB/CNL/CPL).
+ */
 void Widgets::Terminal::handleCsiCursorMove(char final)
 {
   if (m_privateMode)
@@ -1589,7 +1595,9 @@ void Widgets::Terminal::handleCsiCursorMove(char final)
   }
 }
 
-/** @brief Handles CSI absolute cursor placement (H/f/G/d). */
+/**
+ * @brief Handles CSI absolute cursor placement (H/f/G/d).
+ */
 void Widgets::Terminal::handleCsiCursorAbsolute(char final)
 {
   if (m_privateMode)
@@ -1611,7 +1619,9 @@ void Widgets::Terminal::handleCsiCursorAbsolute(char final)
     setCursorPosition(m_cursorPosition.x(), v);
 }
 
-/** @brief Handles CSI Erase-in-Display (J). */
+/**
+ * @brief Handles CSI Erase-in-Display (J).
+ */
 void Widgets::Terminal::handleCsiEraseDisplay()
 {
   if (m_privateMode)
@@ -1649,7 +1659,9 @@ void Widgets::Terminal::handleCsiEraseDisplay()
   }
 }
 
-/** @brief Handles CSI Erase-in-Line (K). */
+/**
+ * @brief Handles CSI Erase-in-Line (K).
+ */
 void Widgets::Terminal::handleCsiEraseLine()
 {
   if (m_privateMode)
@@ -1671,7 +1683,9 @@ void Widgets::Terminal::handleCsiEraseLine()
   }
 }
 
-/** @brief Handles CSI DEC private mode set/reset for cursor visibility (h/l). */
+/**
+ * @brief Handles CSI DEC private mode set/reset for cursor visibility (h/l).
+ */
 void Widgets::Terminal::handleCsiDecPrivateMode(const QChar& byte)
 {
   if (m_privateMode && m_currentFormatValue == 25) {
@@ -1690,7 +1704,9 @@ void Widgets::Terminal::processResetFont(const QChar& byte, QString& text)
   m_state = Text;
 }
 
-/** @brief Consumes one byte while in OSC state (BEL terminator or ESC -> CSI). */
+/**
+ * @brief Consumes one byte while in OSC state (BEL terminator or ESC -> CSI).
+ */
 void Widgets::Terminal::processOsc(const QChar& byte)
 {
   const char latin = byte.toLatin1();
@@ -1701,7 +1717,9 @@ void Widgets::Terminal::processOsc(const QChar& byte)
     m_state = Escape;
 }
 
-/** @brief Consumes one byte while ignoring an unknown CSI sequence. */
+/**
+ * @brief Consumes one byte while ignoring an unknown CSI sequence.
+ */
 void Widgets::Terminal::processIgnoreSeq(const QChar& byte)
 {
   if ((byte >= 'A' && byte <= 'Z') || (byte >= 'a' && byte <= 'z'))
@@ -1778,7 +1796,9 @@ void Widgets::Terminal::applyAnsiColor(const QList<int>& codes)
     i += applyAnsiSgrCode(codes, i);
 }
 
-/** @brief Applies one SGR code at @p i in @p codes; returns number of extra params consumed. */
+/**
+ * @brief Applies one SGR code at @p i in @p codes; returns number of extra params consumed.
+ */
 int Widgets::Terminal::applyAnsiSgrCode(const QList<int>& codes, int i)
 {
   const int code = codes[i];

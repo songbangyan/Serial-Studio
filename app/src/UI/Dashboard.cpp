@@ -49,7 +49,9 @@ constexpr int kDefaultPlotPoints = 100;
 // File-local helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Decrements a RepeatNTimes counter and stops the timer when it hits zero. */
+/**
+ * @brief Decrements a RepeatNTimes counter and stops the timer when it hits zero.
+ */
 static void tickRepeatTimer(int index, QMap<int, QTimer*>& timers, QMap<int, int>& counters)
 {
   const auto it = counters.find(index);
@@ -67,7 +69,9 @@ static void tickRepeatTimer(int index, QMap<int, QTimer*>& timers, QMap<int, int
 }
 
 #ifdef BUILD_COMMERCIAL
-/** @brief Routes a 3D-plot dataset value into the matching X/Y/Z component of point. */
+/**
+ * @brief Routes a 3D-plot dataset value into the matching X/Y/Z component of point.
+ */
 static inline void readPlot3DAxis(const DataModel::Dataset& dataset, QVector3D& point)
 {
   const QString& id = dataset.widget;
@@ -80,7 +84,9 @@ static inline void readPlot3DAxis(const DataModel::Dataset& dataset, QVector3D& 
 }
 #endif
 
-/** @brief Routes a numeric GPS dataset value into the lat/lon/alt accumulator. */
+/**
+ * @brief Routes a numeric GPS dataset value into the lat/lon/alt accumulator.
+ */
 static inline void readGpsField(const DataModel::Dataset& dataset,
                                 double& lat,
                                 double& lon,
@@ -98,7 +104,9 @@ static inline void readGpsField(const DataModel::Dataset& dataset,
     alt = dataset.numericValue;
 }
 
-/** @brief Applies a non-RepeatNTimes timer mode to an action's QTimer. */
+/**
+ * @brief Applies a non-RepeatNTimes timer mode to an action's QTimer.
+ */
 static void applyTimerMode(QTimer* timer,
                            DataModel::TimerMode mode,
                            bool guiTrigger,

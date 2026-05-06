@@ -39,7 +39,9 @@ public:
   [[nodiscard]] QString stopReason() const noexcept;
 
 private:
-  /** @brief Per-content-block state captured between start and stop events. */
+  /**
+   * @brief Per-content-block state captured between start and stop events.
+   */
   struct BlockState {
     QString type;
     QString toolUseId;

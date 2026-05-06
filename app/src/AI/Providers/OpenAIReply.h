@@ -45,7 +45,9 @@ public:
   void abort() override;
 
 private:
-  /** @brief Per-tool-call accumulator keyed by the streamed `index`. */
+  /**
+   * @brief Per-tool-call accumulator keyed by the streamed `index`.
+   */
   struct ToolCallState {
     QString id;
     QString name;

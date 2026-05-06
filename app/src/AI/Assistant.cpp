@@ -25,7 +25,9 @@
 // Singleton accessor
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the process-wide AI Assistant. */
+/**
+ * @brief Returns the process-wide AI Assistant.
+ */
 AI::Assistant& AI::Assistant::instance()
 {
   static Assistant singleton;
@@ -36,7 +38,9 @@ AI::Assistant& AI::Assistant::instance()
 // Construction and destruction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the QNAM, dispatcher, providers, and conversation. */
+/**
+ * @brief Builds the QNAM, dispatcher, providers, and conversation.
+ */
 AI::Assistant::Assistant()
   : QObject(nullptr)
   , m_currentProvider(0)
@@ -68,20 +72,26 @@ AI::Assistant::Assistant()
     m_conversation.get(), &Conversation::errorOccurred, this, &Assistant::onConversationError);
 }
 
-/** @brief Releases owned resources in reverse construction order. */
+/**
+ * @brief Releases owned resources in reverse construction order.
+ */
 AI::Assistant::~Assistant() = default;
 
 //--------------------------------------------------------------------------------------------------
 // Property getters
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the index of the currently selected provider. */
+/**
+ * @brief Returns the index of the currently selected provider.
+ */
 int AI::Assistant::currentProvider() const noexcept
 {
   return m_currentProvider;
 }
 
-/** @brief Returns true if any provider has a stored key, or the Local provider is wired. */
+/**
+ * @brief Returns true if any provider has a stored key, or the Local provider is wired.
+ */
 bool AI::Assistant::hasAnyKey() const
 {
   if (m_vault.hasAnyKey())
@@ -91,44 +101,58 @@ bool AI::Assistant::hasAnyKey() const
   return m_local != nullptr;
 }
 
-/** @brief Returns true when the running build holds a valid Pro license token. */
+/**
+ * @brief Returns true when the running build holds a valid Pro license token.
+ */
 bool AI::Assistant::isProAvailable() const
 {
   const auto& tk = Licensing::CommercialToken::current();
   return tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Pro;
 }
 
-/** @brief Returns true while the conversation is awaiting a reply. */
+/**
+ * @brief Returns true while the conversation is awaiting a reply.
+ */
 bool AI::Assistant::busy() const noexcept
 {
   return m_conversation && m_conversation->busy();
 }
 
-/** @brief Returns the Conversation as a QObject* for QML binding. */
+/**
+ * @brief Returns the Conversation as a QObject* for QML binding.
+ */
 QObject* AI::Assistant::conversationObject() const noexcept
 {
   return m_conversation.get();
 }
 
-/** @brief Returns the most recent cache_read_input_tokens reported by a provider. */
+/**
+ * @brief Returns the most recent cache_read_input_tokens reported by a provider.
+ */
 int AI::Assistant::cacheReadTokens() const noexcept
 {
   return m_cacheReadTokens;
 }
 
-/** @brief Returns the most recent cache_creation_input_tokens reported by a provider. */
+/**
+ * @brief Returns the most recent cache_creation_input_tokens reported by a provider.
+ */
 int AI::Assistant::cacheCreatedTokens() const noexcept
 {
   return m_cacheCreatedTokens;
 }
 
-/** @brief Returns whether Confirm-gated edits run without per-call approval. */
+/**
+ * @brief Returns whether Confirm-gated edits run without per-call approval.
+ */
 bool AI::Assistant::autoApproveEdits() const noexcept
 {
   return m_autoApproveEdits;
 }
 
-/** @brief Persists the toggle and notifies QML listeners. */
+/**
+ * @brief Persists the toggle and notifies QML listeners.
+ */
 void AI::Assistant::setAutoApproveEdits(bool enabled)
 {
   if (m_autoApproveEdits == enabled)
@@ -139,7 +163,9 @@ void AI::Assistant::setAutoApproveEdits(bool enabled)
   Q_EMIT autoApproveEditsChanged();
 }
 
-/** @brief Returns the display names of the registered providers in order. */
+/**
+ * @brief Returns the display names of the registered providers in order.
+ */
 QStringList AI::Assistant::providerNames() const
 {
   QStringList names;
@@ -165,7 +191,9 @@ QStringList AI::Assistant::providerNames() const
 // QML-invokable per-provider queries
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns true when the provider at the given index is ready to use. */
+/**
+ * @brief Returns true when the provider at the given index is ready to use.
+ */
 bool AI::Assistant::hasKey(int providerIdx) const
 {
   // The Local provider is always "ready" -- it needs a base URL, not an API key
@@ -175,42 +203,54 @@ bool AI::Assistant::hasKey(int providerIdx) const
   return m_vault.hasKey(static_cast<ProviderId>(providerIdx));
 }
 
-/** @brief Returns a redacted form of the stored key safe to display. */
+/**
+ * @brief Returns a redacted form of the stored key safe to display.
+ */
 QString AI::Assistant::redactedKey(int providerIdx) const
 {
   const auto k = m_vault.key(static_cast<ProviderId>(providerIdx));
   return KeyVault::redact(k);
 }
 
-/** @brief Returns the vendor URL for the provider at the given index. */
+/**
+ * @brief Returns the vendor URL for the provider at the given index.
+ */
 QString AI::Assistant::keyVendorUrl(int providerIdx) const
 {
   const auto* p = providerAt(providerIdx);
   return p ? p->keyVendorUrl() : QString();
 }
 
-/** @brief Returns the available model list for the given provider. */
+/**
+ * @brief Returns the available model list for the given provider.
+ */
 QStringList AI::Assistant::availableModels(int providerIdx) const
 {
   const auto* p = providerAt(providerIdx);
   return p ? p->availableModels() : QStringList();
 }
 
-/** @brief Returns the current model selection for the given provider. */
+/**
+ * @brief Returns the current model selection for the given provider.
+ */
 QString AI::Assistant::currentModel(int providerIdx) const
 {
   const auto* p = providerAt(providerIdx);
   return p ? p->currentModel() : QString();
 }
 
-/** @brief Returns a friendly label for a model id (e.g. "Claude Haiku 4.5"). */
+/**
+ * @brief Returns a friendly label for a model id (e.g. "Claude Haiku 4.5").
+ */
 QString AI::Assistant::modelDisplayName(int providerIdx, const QString& modelId) const
 {
   const auto* p = providerAt(providerIdx);
   return p ? p->modelDisplayName(modelId) : modelId;
 }
 
-/** @brief Sets and persists the model for the given provider. */
+/**
+ * @brief Sets and persists the model for the given provider.
+ */
 void AI::Assistant::setModel(int providerIdx, const QString& model)
 {
   auto* p = providerAt(providerIdx);
@@ -230,7 +270,9 @@ void AI::Assistant::setModel(int providerIdx, const QString& model)
                           << p->currentModel();
 }
 
-/** @brief Updates the cache-stats properties from a Reply. */
+/**
+ * @brief Updates the cache-stats properties from a Reply.
+ */
 void AI::Assistant::reportCacheStats(int readTokens, int createdTokens)
 {
   if (m_cacheReadTokens == readTokens && m_cacheCreatedTokens == createdTokens)
@@ -245,7 +287,9 @@ void AI::Assistant::reportCacheStats(int readTokens, int createdTokens)
 // Mutators
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Selects the active provider by index, persisting the choice. */
+/**
+ * @brief Selects the active provider by index, persisting the choice.
+ */
 void AI::Assistant::setCurrentProvider(int providerIdx)
 {
   if (m_currentProvider == providerIdx)
@@ -257,19 +301,25 @@ void AI::Assistant::setCurrentProvider(int providerIdx)
   Q_EMIT currentProviderChanged();
 }
 
-/** @brief Asks QML to display the Key Manager dialog. */
+/**
+ * @brief Asks QML to display the Key Manager dialog.
+ */
 void AI::Assistant::openKeyManager()
 {
   Q_EMIT requestKeyManager();
 }
 
-/** @brief Slot variant of setCurrentProvider for QML. */
+/**
+ * @brief Slot variant of setCurrentProvider for QML.
+ */
 void AI::Assistant::selectProvider(int idx)
 {
   setCurrentProvider(idx);
 }
 
-/** @brief Switches provider, prompting via Misc::Utilities if a conversation is in progress. */
+/**
+ * @brief Switches provider, prompting via Misc::Utilities if a conversation is in progress.
+ */
 void AI::Assistant::requestProviderSwitch(int idx)
 {
   if (idx == m_currentProvider)
@@ -296,21 +346,27 @@ void AI::Assistant::requestProviderSwitch(int idx)
   setCurrentProvider(idx);
 }
 
-/** @brief Stores an API key for the given provider, encrypted at rest. */
+/**
+ * @brief Stores an API key for the given provider, encrypted at rest.
+ */
 void AI::Assistant::setKey(int providerIdx, const QString& plaintext)
 {
   m_vault.setKey(static_cast<ProviderId>(providerIdx), plaintext);
   Q_EMIT keysChanged();
 }
 
-/** @brief Removes the stored key for the given provider. */
+/**
+ * @brief Removes the stored key for the given provider.
+ */
 void AI::Assistant::clearKey(int providerIdx)
 {
   m_vault.clearKey(static_cast<ProviderId>(providerIdx));
   Q_EMIT keysChanged();
 }
 
-/** @brief Forwards a user message to the active conversation after Pro gate. */
+/**
+ * @brief Forwards a user message to the active conversation after Pro gate.
+ */
 void AI::Assistant::sendMessage(const QString& userText)
 {
   if (!isProAvailable()) {
@@ -327,55 +383,71 @@ void AI::Assistant::sendMessage(const QString& userText)
   m_conversation->start(userText);
 }
 
-/** @brief Aborts the in-flight reply, if any. */
+/**
+ * @brief Aborts the in-flight reply, if any.
+ */
 void AI::Assistant::cancel()
 {
   if (m_conversation)
     m_conversation->cancel();
 }
 
-/** @brief Approves a Confirm-tagged tool call by id. */
+/**
+ * @brief Approves a Confirm-tagged tool call by id.
+ */
 void AI::Assistant::approveToolCall(const QString& callId)
 {
   if (m_conversation)
     m_conversation->approveToolCall(callId);
 }
 
-/** @brief Denies a Confirm-tagged tool call by id. */
+/**
+ * @brief Denies a Confirm-tagged tool call by id.
+ */
 void AI::Assistant::denyToolCall(const QString& callId)
 {
   if (m_conversation)
     m_conversation->denyToolCall(callId);
 }
 
-/** @brief Approves every pending Confirm whose tool name shares this family. */
+/**
+ * @brief Approves every pending Confirm whose tool name shares this family.
+ */
 void AI::Assistant::approveToolCallGroup(const QString& family)
 {
   if (m_conversation)
     m_conversation->approveToolCallGroup(family);
 }
 
-/** @brief Denies every pending Confirm whose tool name shares this family. */
+/**
+ * @brief Denies every pending Confirm whose tool name shares this family.
+ */
 void AI::Assistant::denyToolCallGroup(const QString& family)
 {
   if (m_conversation)
     m_conversation->denyToolCallGroup(family);
 }
 
-/** @brief Clears the chat history and any in-flight state. */
+/**
+ * @brief Clears the chat history and any in-flight state.
+ */
 void AI::Assistant::clearConversation()
 {
   if (m_conversation)
     m_conversation->clear();
 }
 
-/** @brief Re-emits the conversation busy signal as the Assistant's. */
+/**
+ * @brief Re-emits the conversation busy signal as the Assistant's.
+ */
 void AI::Assistant::onConversationBusyChanged()
 {
   Q_EMIT busyChanged();
 }
 
-/** @brief Re-emits conversation errors as the Assistant's. */
+/**
+ * @brief Re-emits conversation errors as the Assistant's.
+ */
 void AI::Assistant::onConversationError(const QString& message)
 {
   Q_EMIT errorOccurred(message);
@@ -385,7 +457,9 @@ void AI::Assistant::onConversationError(const QString& message)
 // Helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Constructs the provider adapters with key-getter lambdas. */
+/**
+ * @brief Constructs the provider adapters with key-getter lambdas.
+ */
 void AI::Assistant::rebuildProviders()
 {
   m_anthropic = std::make_unique<AnthropicProvider>(
@@ -404,7 +478,9 @@ void AI::Assistant::rebuildProviders()
   m_local.reset(local);
 }
 
-/** @brief Points the conversation at the currently selected provider. */
+/**
+ * @brief Points the conversation at the currently selected provider.
+ */
 void AI::Assistant::rewireConversationProvider()
 {
   if (!m_conversation)
@@ -413,7 +489,9 @@ void AI::Assistant::rewireConversationProvider()
   m_conversation->setProvider(providerAt(m_currentProvider));
 }
 
-/** @brief Loads each provider's previously-selected model from QSettings. */
+/**
+ * @brief Loads each provider's previously-selected model from QSettings.
+ */
 void AI::Assistant::restoreModelSelections()
 {
   m_settings.beginGroup(QStringLiteral("ai/model"));
@@ -445,7 +523,9 @@ void AI::Assistant::restoreModelSelections()
   m_settings.endGroup();
 }
 
-/** @brief Returns the QSettings sub-key name for the provider's model. */
+/**
+ * @brief Returns the QSettings sub-key name for the provider's model.
+ */
 QString AI::Assistant::modelSettingsKey(int providerIdx)
 {
   switch (static_cast<ProviderId>(providerIdx)) {
@@ -463,7 +543,9 @@ QString AI::Assistant::modelSettingsKey(int providerIdx)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns the Provider* matching the integer index, or nullptr. */
+/**
+ * @brief Returns the Provider* matching the integer index, or nullptr.
+ */
 AI::Provider* AI::Assistant::providerAt(int idx) const
 {
   switch (static_cast<ProviderId>(idx)) {
@@ -481,13 +563,17 @@ AI::Provider* AI::Assistant::providerAt(int idx) const
   return nullptr;
 }
 
-/** @brief Returns true when the given provider needs a stored API key. */
+/**
+ * @brief Returns true when the given provider needs a stored API key.
+ */
 bool AI::Assistant::requiresApiKey(int providerIdx) const
 {
   return static_cast<ProviderId>(providerIdx) != ProviderId::Local;
 }
 
-/** @brief Returns the configured base URL of the local model provider. */
+/**
+ * @brief Returns the configured base URL of the local model provider.
+ */
 QString AI::Assistant::localBaseUrl() const
 {
   if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get()))
@@ -496,7 +582,9 @@ QString AI::Assistant::localBaseUrl() const
   return LocalProvider::defaultBaseUrl();
 }
 
-/** @brief Updates the local-model base URL and triggers a fresh model query. */
+/**
+ * @brief Updates the local-model base URL and triggers a fresh model query.
+ */
 void AI::Assistant::setLocalBaseUrl(const QString& url)
 {
   if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get())) {
@@ -505,7 +593,9 @@ void AI::Assistant::setLocalBaseUrl(const QString& url)
   }
 }
 
-/** @brief Re-queries the local model list (typically after the user edits the URL). */
+/**
+ * @brief Re-queries the local model list (typically after the user edits the URL).
+ */
 void AI::Assistant::refreshLocalModels()
 {
   if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get()))

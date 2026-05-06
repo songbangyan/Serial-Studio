@@ -18,7 +18,9 @@
 
 #include "AI/Logging.h"
 
-/** @brief English stopwords skipped during query tokenization. */
+/**
+ * @brief English stopwords skipped during query tokenization.
+ */
 static const QSet<QString>& stopwords()
 {
   static const QSet<QString> kStop = {
@@ -49,7 +51,9 @@ static const QSet<QString>& stopwords()
   return kStop;
 }
 
-/** @brief Tokenizer mirrors the Python build script: word chars, lowercased. */
+/**
+ * @brief Tokenizer mirrors the Python build script: word chars, lowercased.
+ */
 static QStringList tokenize(const QString& text)
 {
   static const QRegularExpression re(QStringLiteral("[A-Za-z][A-Za-z0-9_]+"));
@@ -69,20 +73,26 @@ static QStringList tokenize(const QString& text)
   return out;
 }
 
-/** @brief Singleton accessor. Index loads on first call. */
+/**
+ * @brief Singleton accessor. Index loads on first call.
+ */
 AI::DocSearch& AI::DocSearch::instance()
 {
   static DocSearch singleton;
   return singleton;
 }
 
-/** @brief Constructs the searcher and triggers a one-shot index load. */
+/**
+ * @brief Constructs the searcher and triggers a one-shot index load.
+ */
 AI::DocSearch::DocSearch() : m_loaded(false), m_k1(1.5), m_b(0.75), m_avgdl(0.0)
 {
   load();
 }
 
-/** @brief Reads and decodes the rcc:/ai/search_index.json blob. */
+/**
+ * @brief Reads and decodes the rcc:/ai/search_index.json blob.
+ */
 void AI::DocSearch::load()
 {
   QFile f(QStringLiteral(":/ai/search_index.json"));
@@ -129,7 +139,9 @@ void AI::DocSearch::load()
   qCDebug(serialStudioAI) << "DocSearch: loaded" << m_docs.size() << "chunks";
 }
 
-/** @brief Returns up to k highest-BM25-scoring chunks. */
+/**
+ * @brief Returns up to k highest-BM25-scoring chunks.
+ */
 QList<AI::DocSearch::Hit> AI::DocSearch::search(const QString& query, int k)
 {
   if (!m_loaded || m_docs.isEmpty())
@@ -188,7 +200,9 @@ QList<AI::DocSearch::Hit> AI::DocSearch::search(const QString& query, int k)
   return out;
 }
 
-/** @brief Reports the number of indexed chunks (0 if load failed). */
+/**
+ * @brief Reports the number of indexed chunks (0 if load failed).
+ */
 int AI::DocSearch::corpusSize() const noexcept
 {
   return m_docs.size();

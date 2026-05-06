@@ -494,10 +494,10 @@ void CLI::applyOperatorTaskbarSettings()
     tbs.setAutohide(false);
   }
 
-  // Missing flag means the deploy dialog left the pin list empty; do not fall back to persisted defaults
+  // Missing flag means the deploy dialog left pins empty; do not fall back to persisted defaults
   const QStringList pinned = m_parser.isSet(m_opts.taskbarButtonsOpt)
-                               ? splitTaskbarButtonIds(m_parser.value(m_opts.taskbarButtonsOpt))
-                               : QStringList{};
+                             ? splitTaskbarButtonIds(m_parser.value(m_opts.taskbarButtonsOpt))
+                             : QStringList{};
   tbs.setPinnedButtons(pinned);
 }
 

@@ -33,7 +33,9 @@ namespace detail {
  */
 class ImmediateErrorReplyLP : public AI::Reply {
 public:
-  /** @brief Schedules errorOccurred + finished on the next event-loop tick. */
+  /**
+   * @brief Schedules errorOccurred + finished on the next event-loop tick.
+   */
   ImmediateErrorReplyLP(const QString& message, QObject* parent = nullptr)
     : AI::Reply(parent), m_message(message)
   {
@@ -43,7 +45,9 @@ public:
     });
   }
 
-  /** @brief No-op since the error fires immediately. */
+  /**
+   * @brief No-op since the error fires immediately.
+   */
   void abort() override {}
 
 private:
@@ -56,13 +60,17 @@ private:
 // Static fallbacks
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the default base URL (Ollama on localhost:11434). */
+/**
+ * @brief Returns the default base URL (Ollama on localhost:11434).
+ */
 QString AI::LocalProvider::defaultBaseUrl()
 {
   return QStringLiteral("http://localhost:11434/v1");
 }
 
-/** @brief Static fallback model list shown when the live query has not (yet) succeeded. */
+/**
+ * @brief Static fallback model list shown when the live query has not (yet) succeeded.
+ */
 static QStringList fallbackModels()
 {
   return {
@@ -79,7 +87,9 @@ static QStringList fallbackModels()
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Loads the persisted base URL + cached model list and kicks off a refresh. */
+/**
+ * @brief Loads the persisted base URL + cached model list and kicks off a refresh.
+ */
 AI::LocalProvider::LocalProvider(QNetworkAccessManager& nam) : QObject(nullptr), m_nam(nam)
 {
   m_settings.beginGroup(QStringLiteral("ai/local"));
@@ -96,19 +106,25 @@ AI::LocalProvider::LocalProvider(QNetworkAccessManager& nam) : QObject(nullptr),
 // Provider metadata
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the human-readable provider name. */
+/**
+ * @brief Returns the human-readable provider name.
+ */
 QString AI::LocalProvider::displayName() const
 {
   return QStringLiteral("Local model");
 }
 
-/** @brief Returns a documentation link rather than a paid-key portal. */
+/**
+ * @brief Returns a documentation link rather than a paid-key portal.
+ */
 QString AI::LocalProvider::keyVendorUrl() const
 {
   return QStringLiteral("https://ollama.com/download");
 }
 
-/** @brief Returns the cached model list, falling back to a small static set. */
+/**
+ * @brief Returns the cached model list, falling back to a small static set.
+ */
 QStringList AI::LocalProvider::availableModels() const
 {
   if (!m_models.isEmpty())
@@ -117,20 +133,26 @@ QStringList AI::LocalProvider::availableModels() const
   return fallbackModels();
 }
 
-/** @brief Returns the first available model as the default. */
+/**
+ * @brief Returns the first available model as the default.
+ */
 QString AI::LocalProvider::defaultModel() const
 {
   const auto list = availableModels();
   return list.isEmpty() ? QStringLiteral("llama3.2") : list.first();
 }
 
-/** @brief Local model ids are passed through verbatim. */
+/**
+ * @brief Local model ids are passed through verbatim.
+ */
 QString AI::LocalProvider::modelDisplayName(const QString& modelId) const
 {
   return modelId;
 }
 
-/** @brief Accepts any non-empty model id since the live list may not yet be loaded. */
+/**
+ * @brief Accepts any non-empty model id since the live list may not yet be loaded.
+ */
 void AI::LocalProvider::setCurrentModel(const QString& model)
 {
   if (model.isEmpty())
@@ -143,13 +165,17 @@ void AI::LocalProvider::setCurrentModel(const QString& model)
 // Base URL
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the configured base URL (e.g. http://localhost:11434/v1). */
+/**
+ * @brief Returns the configured base URL (e.g. http://localhost:11434/v1).
+ */
 QString AI::LocalProvider::baseUrl() const
 {
   return m_baseUrl;
 }
 
-/** @brief Sets and persists the base URL, then re-queries the model list. */
+/**
+ * @brief Sets and persists the base URL, then re-queries the model list.
+ */
 void AI::LocalProvider::setBaseUrl(const QString& url)
 {
   auto trimmed = url.trimmed();
@@ -175,19 +201,25 @@ void AI::LocalProvider::setBaseUrl(const QString& url)
 // Live model query
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the configured chat completions endpoint URL. */
+/**
+ * @brief Returns the configured chat completions endpoint URL.
+ */
 QString AI::LocalProvider::chatEndpoint() const
 {
   return m_baseUrl + QStringLiteral("/chat/completions");
 }
 
-/** @brief Returns the OpenAI-compatible models listing URL. */
+/**
+ * @brief Returns the OpenAI-compatible models listing URL.
+ */
 QString AI::LocalProvider::modelsEndpoint() const
 {
   return m_baseUrl + QStringLiteral("/models");
 }
 
-/** @brief Loads the previously-cached model list from QSettings. */
+/**
+ * @brief Loads the previously-cached model list from QSettings.
+ */
 void AI::LocalProvider::loadCachedModels()
 {
   m_settings.beginGroup(QStringLiteral("ai/local"));
@@ -195,7 +227,9 @@ void AI::LocalProvider::loadCachedModels()
   m_settings.endGroup();
 }
 
-/** @brief Persists the current model list to QSettings for next launch. */
+/**
+ * @brief Persists the current model list to QSettings for next launch.
+ */
 void AI::LocalProvider::persistCachedModels() const
 {
   m_settings.beginGroup(QStringLiteral("ai/local"));
@@ -203,7 +237,9 @@ void AI::LocalProvider::persistCachedModels() const
   m_settings.endGroup();
 }
 
-/** @brief Issues a GET to /v1/models and refreshes the cached model list. */
+/**
+ * @brief Issues a GET to /v1/models and refreshes the cached model list.
+ */
 void AI::LocalProvider::refreshModels()
 {
   QNetworkRequest req((QUrl(modelsEndpoint())));
@@ -263,7 +299,9 @@ void AI::LocalProvider::refreshModels()
 // sendMessage
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the Chat Completions request body and returns a streaming Reply. */
+/**
+ * @brief Builds the Chat Completions request body and returns a streaming Reply.
+ */
 AI::Reply* AI::LocalProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   if (m_baseUrl.isEmpty())

@@ -33,7 +33,9 @@ enum class ProviderId : int {
   Local     = 4,
 };
 
-/** @brief Total number of AI providers wired into the Assistant. */
+/**
+ * @brief Total number of AI providers wired into the Assistant.
+ */
 inline constexpr int kProviderCount = 5;
 
 /**

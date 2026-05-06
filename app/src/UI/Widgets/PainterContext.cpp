@@ -930,7 +930,9 @@ void Widgets::PainterContext::rect(qreal x, qreal y, qreal w, qreal h)
   m_path.addRect(x, y, w, h);
 }
 
-/** @brief Parses a Canvas2D radii array into the four per-corner radii. */
+/**
+ * @brief Parses a Canvas2D radii array into the four per-corner radii.
+ */
 static void parseRoundRectRadiiArray(
   const QJSValue& radii, qreal& tl, qreal& tr, qreal& br, qreal& bl)
 {
@@ -1684,7 +1686,9 @@ bool Widgets::PainterContext::shadowActive() const noexcept
   return m_state.shadowBlur > 0.0 || m_state.shadowOffsetX != 0.0 || m_state.shadowOffsetY != 0.0;
 }
 
-/** @brief Horizontal pass of a box-blur with the given radius. */
+/**
+ * @brief Horizontal pass of a box-blur with the given radius.
+ */
 static void boxBlurHorizontal(const QImage& src, QImage& dst, int radius)
 {
   const int w = src.width();
@@ -1708,7 +1712,9 @@ static void boxBlurHorizontal(const QImage& src, QImage& dst, int radius)
   }
 }
 
-/** @brief Vertical pass of a box-blur with the given radius. */
+/**
+ * @brief Vertical pass of a box-blur with the given radius.
+ */
 static void boxBlurVertical(const QImage& src, QImage& dst, int radius)
 {
   const int w = src.width();
@@ -1731,7 +1737,9 @@ static void boxBlurVertical(const QImage& src, QImage& dst, int radius)
   }
 }
 
-/** @brief Three-pass separable box-blur applied in place to the given image. */
+/**
+ * @brief Three-pass separable box-blur applied in place to the given image.
+ */
 static void applyBoxBlur(QImage& image, int radius)
 {
   for (int pass = 0; pass < 3; ++pass) {

@@ -5322,7 +5322,9 @@ bool DataModel::ProjectModel::finalizeProjectSave()
 // Stateless id-based mutators
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Deletes the group at @p groupId via the existing selection-based path. */
+/**
+ * @brief Deletes the group at @p groupId via the existing selection-based path.
+ */
 void DataModel::ProjectModel::deleteGroup(int groupId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
@@ -5343,7 +5345,9 @@ void DataModel::ProjectModel::deleteGroup(int groupId)
     setSelectedGroup(m_groups[previousSelection.groupId]);
 }
 
-/** @brief Duplicates the group at @p groupId via the existing selection-based path. */
+/**
+ * @brief Duplicates the group at @p groupId via the existing selection-based path.
+ */
 void DataModel::ProjectModel::duplicateGroup(int groupId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
@@ -5358,7 +5362,9 @@ void DataModel::ProjectModel::duplicateGroup(int groupId)
     setSelectedGroup(m_groups[previousSelection.groupId]);
 }
 
-/** @brief Deletes the dataset at @p groupId/@p datasetId. */
+/**
+ * @brief Deletes the dataset at @p groupId/@p datasetId.
+ */
 void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
@@ -5384,7 +5390,9 @@ void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId)
     setSelectedDataset(m_groups[previousSelection.groupId].datasets[previousSelection.datasetId]);
 }
 
-/** @brief Duplicates the dataset at @p groupId/@p datasetId. */
+/**
+ * @brief Duplicates the dataset at @p groupId/@p datasetId.
+ */
 void DataModel::ProjectModel::duplicateDataset(int groupId, int datasetId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
@@ -5405,7 +5413,9 @@ void DataModel::ProjectModel::duplicateDataset(int groupId, int datasetId)
     setSelectedDataset(m_groups[previousSelection.groupId].datasets[previousSelection.datasetId]);
 }
 
-/** @brief Deletes the action at @p actionId via the existing selection-based path. */
+/**
+ * @brief Deletes the action at @p actionId via the existing selection-based path.
+ */
 void DataModel::ProjectModel::deleteAction(int actionId)
 {
   if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
@@ -5425,7 +5435,9 @@ void DataModel::ProjectModel::deleteAction(int actionId)
     setSelectedAction(m_actions[previousSelection.actionId]);
 }
 
-/** @brief Duplicates the action at @p actionId. */
+/**
+ * @brief Duplicates the action at @p actionId.
+ */
 void DataModel::ProjectModel::duplicateAction(int actionId)
 {
   if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
@@ -5440,7 +5452,9 @@ void DataModel::ProjectModel::duplicateAction(int actionId)
     setSelectedAction(m_actions[previousSelection.actionId]);
 }
 
-/** @brief Deletes the output widget at @p groupId/@p widgetId. */
+/**
+ * @brief Deletes the output widget at @p groupId/@p widgetId.
+ */
 void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
@@ -5467,7 +5481,9 @@ void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId)
       m_groups[previousSelection.groupId].outputWidgets[previousSelection.widgetId]);
 }
 
-/** @brief Duplicates the output widget at @p groupId/@p widgetId. */
+/**
+ * @brief Duplicates the output widget at @p groupId/@p widgetId.
+ */
 void DataModel::ProjectModel::duplicateOutputWidget(int groupId, int widgetId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())

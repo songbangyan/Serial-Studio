@@ -17,10 +17,14 @@
 // ZeroOnDestroy
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Stores a reference to the target QString to be scrubbed on destruction. */
+/**
+ * @brief Stores a reference to the target QString to be scrubbed on destruction.
+ */
 AI::ZeroOnDestroy::ZeroOnDestroy(QString& target) noexcept : m_ref(target) {}
 
-/** @brief Best-effort overwrite and clear of the referenced QString. */
+/**
+ * @brief Best-effort overwrite and clear of the referenced QString.
+ */
 AI::ZeroOnDestroy::~ZeroOnDestroy()
 {
   m_ref.fill(QChar(QChar::Null));
@@ -31,7 +35,9 @@ AI::ZeroOnDestroy::~ZeroOnDestroy()
 // KeyVault construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Configures SimpleCrypt with a per-machine key and HMAC integrity. */
+/**
+ * @brief Configures SimpleCrypt with a per-machine key and HMAC integrity.
+ */
 AI::KeyVault::KeyVault()
 {
   m_simpleCrypt.setKey(Licensing::MachineID::instance().machineSpecificKey());
@@ -42,13 +48,17 @@ AI::KeyVault::KeyVault()
 // Queries
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns true when a non-empty key is stored for the given provider. */
+/**
+ * @brief Returns true when a non-empty key is stored for the given provider.
+ */
 bool AI::KeyVault::hasKey(ProviderId provider) const
 {
   return !key(provider).isEmpty();
 }
 
-/** @brief Returns true when at least one provider has a key stored. */
+/**
+ * @brief Returns true when at least one provider has a key stored.
+ */
 bool AI::KeyVault::hasAnyKey() const
 {
   for (int i = 0; i < kProviderCount; ++i)
@@ -58,7 +68,9 @@ bool AI::KeyVault::hasAnyKey() const
   return false;
 }
 
-/** @brief Decrypts and returns the plaintext key for the given provider. */
+/**
+ * @brief Decrypts and returns the plaintext key for the given provider.
+ */
 QString AI::KeyVault::key(ProviderId provider) const
 {
   m_settings.beginGroup(QStringLiteral("ai/keys"));
@@ -81,7 +93,9 @@ QString AI::KeyVault::key(ProviderId provider) const
 // Mutations
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Encrypts and writes the given plaintext key to QSettings. */
+/**
+ * @brief Encrypts and writes the given plaintext key to QSettings.
+ */
 void AI::KeyVault::setKey(ProviderId provider, const QString& plaintext)
 {
   auto trimmed = plaintext.trimmed();
@@ -100,7 +114,9 @@ void AI::KeyVault::setKey(ProviderId provider, const QString& plaintext)
   qCDebug(serialStudioAI) << "Key set for" << settingsKey(provider) << "value" << redact(trimmed);
 }
 
-/** @brief Removes the stored key for the given provider. */
+/**
+ * @brief Removes the stored key for the given provider.
+ */
 void AI::KeyVault::clearKey(ProviderId provider)
 {
   m_settings.beginGroup(QStringLiteral("ai/keys"));
@@ -110,7 +126,9 @@ void AI::KeyVault::clearKey(ProviderId provider)
   qCDebug(serialStudioAI) << "Key cleared for" << settingsKey(provider);
 }
 
-/** @brief Removes the stored key for every provider. */
+/**
+ * @brief Removes the stored key for every provider.
+ */
 void AI::KeyVault::clearAllKeys()
 {
   for (int i = 0; i < kProviderCount; ++i)
@@ -121,7 +139,9 @@ void AI::KeyVault::clearAllKeys()
 // Helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a redacted form of the key, safe to log. */
+/**
+ * @brief Returns a redacted form of the key, safe to log.
+ */
 QString AI::KeyVault::redact(const QString& key)
 {
   if (key.size() < 8)
@@ -130,7 +150,9 @@ QString AI::KeyVault::redact(const QString& key)
   return key.left(4) + QStringLiteral("...") + key.right(4);
 }
 
-/** @brief Returns the QSettings sub-key name for the given provider. */
+/**
+ * @brief Returns the QSettings sub-key name for the given provider.
+ */
 QString AI::KeyVault::settingsKey(ProviderId provider)
 {
   switch (provider) {

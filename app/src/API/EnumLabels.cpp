@@ -15,7 +15,9 @@
 // BusType
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for a BusType value. */
+/**
+ * @brief Returns a short slug for a BusType value.
+ */
 QString API::EnumLabels::busTypeSlug(int value)
 {
   switch (static_cast<SerialStudio::BusType>(value)) {
@@ -43,7 +45,9 @@ QString API::EnumLabels::busTypeSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for a BusType value. */
+/**
+ * @brief Returns a human-friendly label for a BusType value.
+ */
 QString API::EnumLabels::busTypeLabel(int value)
 {
   switch (static_cast<SerialStudio::BusType>(value)) {
@@ -75,7 +79,9 @@ QString API::EnumLabels::busTypeLabel(int value)
 // FrameDetection
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for a FrameDetection value. */
+/**
+ * @brief Returns a short slug for a FrameDetection value.
+ */
 QString API::EnumLabels::frameDetectionSlug(int value)
 {
   switch (static_cast<SerialStudio::FrameDetection>(value)) {
@@ -91,7 +97,9 @@ QString API::EnumLabels::frameDetectionSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for a FrameDetection value. */
+/**
+ * @brief Returns a human-friendly label for a FrameDetection value.
+ */
 QString API::EnumLabels::frameDetectionLabel(int value)
 {
   switch (static_cast<SerialStudio::FrameDetection>(value)) {
@@ -111,7 +119,9 @@ QString API::EnumLabels::frameDetectionLabel(int value)
 // DecoderMethod
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for a DecoderMethod value. */
+/**
+ * @brief Returns a short slug for a DecoderMethod value.
+ */
 QString API::EnumLabels::decoderMethodSlug(int value)
 {
   switch (static_cast<SerialStudio::DecoderMethod>(value)) {
@@ -127,7 +137,9 @@ QString API::EnumLabels::decoderMethodSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for a DecoderMethod value. */
+/**
+ * @brief Returns a human-friendly label for a DecoderMethod value.
+ */
 QString API::EnumLabels::decoderMethodLabel(int value)
 {
   switch (static_cast<SerialStudio::DecoderMethod>(value)) {
@@ -147,7 +159,9 @@ QString API::EnumLabels::decoderMethodLabel(int value)
 // OperationMode
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for an OperationMode value. */
+/**
+ * @brief Returns a short slug for an OperationMode value.
+ */
 QString API::EnumLabels::operationModeSlug(int value)
 {
   switch (static_cast<SerialStudio::OperationMode>(value)) {
@@ -161,7 +175,9 @@ QString API::EnumLabels::operationModeSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for an OperationMode value. */
+/**
+ * @brief Returns a human-friendly label for an OperationMode value.
+ */
 QString API::EnumLabels::operationModeLabel(int value)
 {
   switch (static_cast<SerialStudio::OperationMode>(value)) {
@@ -179,7 +195,9 @@ QString API::EnumLabels::operationModeLabel(int value)
 // GroupWidget
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for a GroupWidget value. */
+/**
+ * @brief Returns a short slug for a GroupWidget value.
+ */
 QString API::EnumLabels::groupWidgetSlug(int value)
 {
   switch (static_cast<SerialStudio::GroupWidget>(value)) {
@@ -205,7 +223,9 @@ QString API::EnumLabels::groupWidgetSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for a GroupWidget value. */
+/**
+ * @brief Returns a human-friendly label for a GroupWidget value.
+ */
 QString API::EnumLabels::groupWidgetLabel(int value)
 {
   switch (static_cast<SerialStudio::GroupWidget>(value)) {
@@ -235,7 +255,9 @@ QString API::EnumLabels::groupWidgetLabel(int value)
 // DatasetWidget
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a short slug for a DatasetWidget value. */
+/**
+ * @brief Returns a short slug for a DatasetWidget value.
+ */
 QString API::EnumLabels::datasetWidgetSlug(int value)
 {
   switch (static_cast<SerialStudio::DatasetWidget>(value)) {
@@ -251,7 +273,9 @@ QString API::EnumLabels::datasetWidgetSlug(int value)
   return QStringLiteral("unknown");
 }
 
-/** @brief Returns a human-friendly label for a DatasetWidget value. */
+/**
+ * @brief Returns a human-friendly label for a DatasetWidget value.
+ */
 QString API::EnumLabels::datasetWidgetLabel(int value)
 {
   switch (static_cast<SerialStudio::DatasetWidget>(value)) {
@@ -271,7 +295,9 @@ QString API::EnumLabels::datasetWidgetLabel(int value)
 // DatasetOption
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns a comma-separated list of dataset option flags set in value. */
+/**
+ * @brief Returns a comma-separated list of dataset option flags set in value.
+ */
 QString API::EnumLabels::datasetOptionsLabel(int value)
 {
   QStringList parts;

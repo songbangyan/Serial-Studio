@@ -27,7 +27,9 @@ static constexpr int kInitialResponseTimeoutMs = 30 * 1000;
 static const char* const kOpenAIEndpoint       = "https://api.openai.com/v1/chat/completions";
 static const char* const kOpenAIAuthHeader     = "Authorization";
 
-/** @brief Resolves a sanitized tool name back to its dotted canonical form. */
+/**
+ * @brief Resolves a sanitized tool name back to its dotted canonical form.
+ */
 static QString resolveCanonicalToolName(const QString& sanitized)
 {
   const auto& commands = API::CommandRegistry::instance().commands();
@@ -55,7 +57,9 @@ static QString resolveCanonicalToolName(const QString& sanitized)
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Convenience constructor for the canonical OpenAI Chat Completions endpoint. */
+/**
+ * @brief Convenience constructor for the canonical OpenAI Chat Completions endpoint.
+ */
 AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
                              const QString& apiKey,
                              const QByteArray& requestBody,
@@ -69,7 +73,9 @@ AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
                 parent)
 {}
 
-/** @brief Generic constructor for any OpenAI-compatible endpoint (DeepSeek, Local, etc.). */
+/**
+ * @brief Generic constructor for any OpenAI-compatible endpoint (DeepSeek, Local, etc.).
+ */
 AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
                              const QString& endpointUrl,
                              const QString& authHeader,
@@ -94,7 +100,9 @@ AI::OpenAIReply::OpenAIReply(QNetworkAccessManager& nam,
   issueRequest();
 }
 
-/** @brief Builds the request, sets headers, and connects QNetworkReply slots. */
+/**
+ * @brief Builds the request, sets headers, and connects QNetworkReply slots.
+ */
 void AI::OpenAIReply::issueRequest()
 {
   QNetworkRequest req((QUrl(m_endpointUrl)));
@@ -120,7 +128,9 @@ void AI::OpenAIReply::issueRequest()
 // Public API
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Cancels the in-flight network reply if any. */
+/**
+ * @brief Cancels the in-flight network reply if any.
+ */
 void AI::OpenAIReply::abort()
 {
   if (m_reply && m_reply->isRunning())
@@ -131,7 +141,9 @@ void AI::OpenAIReply::abort()
 // SSE event handler
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Routes a single SSE event into the OpenAI delta processor. */
+/**
+ * @brief Routes a single SSE event into the OpenAI delta processor.
+ */
 void AI::OpenAIReply::onSseEvent(const QString& name, const QJsonObject& data)
 {
   Q_UNUSED(name);
@@ -151,7 +163,9 @@ void AI::OpenAIReply::onSseEvent(const QString& name, const QJsonObject& data)
     m_finishReason = reason.toString();
 }
 
-/** @brief Logs but does not abort on transient SSE parse errors. */
+/**
+ * @brief Logs but does not abort on transient SSE parse errors.
+ */
 void AI::OpenAIReply::onSseError(const QString& reason)
 {
   qCWarning(serialStudioAI) << m_providerLabel << "SSE parse error:" << reason;
@@ -161,7 +175,9 @@ void AI::OpenAIReply::onSseError(const QString& reason)
 // Choice / tool call deltas
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Processes a single choice delta: text and tool-call fragments. */
+/**
+ * @brief Processes a single choice delta: text and tool-call fragments.
+ */
 void AI::OpenAIReply::processChoiceDelta(const QJsonObject& choice)
 {
   const auto delta = choice.value(QStringLiteral("delta")).toObject();
@@ -202,7 +218,9 @@ void AI::OpenAIReply::processChoiceDelta(const QJsonObject& choice)
   }
 }
 
-/** @brief Emits accumulated tool calls once the choice closes with stop_reason. */
+/**
+ * @brief Emits accumulated tool calls once the choice closes with stop_reason.
+ */
 void AI::OpenAIReply::emitPendingToolCalls()
 {
   if (m_toolCalls.isEmpty())
@@ -247,7 +265,9 @@ void AI::OpenAIReply::emitPendingToolCalls()
 // QNetworkReply slots
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Forwards every chunk into the SSE reader, stripping [DONE] sentinel. */
+/**
+ * @brief Forwards every chunk into the SSE reader, stripping [DONE] sentinel.
+ */
 void AI::OpenAIReply::onReplyReadyRead()
 {
   if (!m_reply || m_finished)
@@ -273,7 +293,9 @@ void AI::OpenAIReply::onReplyReadyRead()
   m_sse->feed(chunk);
 }
 
-/** @brief Handles end-of-stream: flushes any pending tool calls and finalizes. */
+/**
+ * @brief Handles end-of-stream: flushes any pending tool calls and finalizes.
+ */
 void AI::OpenAIReply::onReplyFinished()
 {
   if (m_finished)
@@ -325,7 +347,9 @@ void AI::OpenAIReply::onReplyFinished()
 // Finalization
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Marks the stream finished, emits @ref finished. */
+/**
+ * @brief Marks the stream finished, emits @ref finished.
+ */
 void AI::OpenAIReply::finishOk()
 {
   if (m_finished)
@@ -335,7 +359,9 @@ void AI::OpenAIReply::finishOk()
   Q_EMIT finished();
 }
 
-/** @brief Marks the stream finished with an error message. */
+/**
+ * @brief Marks the stream finished with an error message.
+ */
 void AI::OpenAIReply::finishWithError(const QString& message)
 {
   if (m_finished)

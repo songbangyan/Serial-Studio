@@ -17,7 +17,9 @@
 #include "AI/Redactor.h"
 #include "AI/ToolDispatcher.h"
 
-/** @brief Reads a Qt resource into a QString, returning empty on failure. */
+/**
+ * @brief Reads a Qt resource into a QString, returning empty on failure.
+ */
 static QString readResource(const QString& path)
 {
   QFile file(path);
@@ -37,7 +39,9 @@ static QString readResource(const QString& path)
 
 // Single string-literal return; line count is content, not control flow
 // code-verify off
-/** @brief Returns the role description used as the first cached system block. */
+/**
+ * @brief Returns the role description used as the first cached system block.
+ */
 QString AI::ContextBuilder::roleBlock()
 {
   return QStringLiteral(
@@ -188,7 +192,9 @@ QString AI::ContextBuilder::roleBlock()
 
 // code-verify on
 
-/** @brief Returns the list of canned how-to task ids meta.howTo accepts. */
+/**
+ * @brief Returns the list of canned how-to task ids meta.howTo accepts.
+ */
 QStringList AI::ContextBuilder::howToTasks()
 {
   return {
@@ -205,7 +211,9 @@ QStringList AI::ContextBuilder::howToTasks()
 
 // String-literal recipe table; line count is content, not control flow
 // code-verify off
-/** @brief Returns a step-by-step recipe for one of the canned how-to tasks. */
+/**
+ * @brief Returns a step-by-step recipe for one of the canned how-to tasks.
+ */
 QString AI::ContextBuilder::howToRecipe(const QString& task)
 {
   if (task == QStringLiteral("add_painter"))
@@ -412,7 +420,9 @@ QString AI::ContextBuilder::howToRecipe(const QString& task)
 
 // code-verify on
 
-/** @brief Returns a single scripting reference doc body by kind, or empty. */
+/**
+ * @brief Returns a single scripting reference doc body by kind, or empty.
+ */
 QString AI::ContextBuilder::scriptingDocFor(const QString& kind)
 {
   static const QSet<QString> kAllowed = {QStringLiteral("frame_parser_js"),
@@ -428,7 +438,9 @@ QString AI::ContextBuilder::scriptingDocFor(const QString& kind)
   return readResource(QStringLiteral(":/ai/docs/%1.md").arg(kind));
 }
 
-/** @brief Returns the list of skill ids meta.loadSkill accepts. */
+/**
+ * @brief Returns the list of skill ids meta.loadSkill accepts.
+ */
 QStringList AI::ContextBuilder::skillIds()
 {
   return {
@@ -447,7 +459,9 @@ QStringList AI::ContextBuilder::skillIds()
   };
 }
 
-/** @brief Returns the body of one skill by id, or empty when unknown. */
+/**
+ * @brief Returns the body of one skill by id, or empty when unknown.
+ */
 QString AI::ContextBuilder::skillBody(const QString& id)
 {
   if (!skillIds().contains(id))
@@ -456,7 +470,9 @@ QString AI::ContextBuilder::skillBody(const QString& id)
   return readResource(QStringLiteral(":/ai/skills/%1.md").arg(id));
 }
 
-/** @brief Returns the concatenation of all scripting reference docs. */
+/**
+ * @brief Returns the concatenation of all scripting reference docs.
+ */
 QString AI::ContextBuilder::scriptingDocsBlock()
 {
   static const QStringList kKinds = {
@@ -484,7 +500,9 @@ QString AI::ContextBuilder::scriptingDocsBlock()
   return out;
 }
 
-/** @brief Returns the current project state assembled from safe list commands. */
+/**
+ * @brief Returns the current project state assembled from safe list commands.
+ */
 QString AI::ContextBuilder::liveProjectStateBlock()
 {
   ToolDispatcher dispatcher;
@@ -506,7 +524,9 @@ QString AI::ContextBuilder::liveProjectStateBlock()
 // Composer
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the array of system blocks for the Anthropic Messages API. */
+/**
+ * @brief Returns the array of system blocks for the Anthropic Messages API.
+ */
 QJsonArray AI::ContextBuilder::buildSystemArray(bool includeScriptingDocs)
 {
   // role + scripting docs + project state under one ephemeral cache breakpoint

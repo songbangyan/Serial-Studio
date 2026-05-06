@@ -23,7 +23,9 @@ namespace AI {
  */
 class DocSearch {
 public:
-  /** @brief One search result row. */
+  /**
+   * @brief One search result row.
+   */
   struct Hit {
     QString id;      // stable doc id (e.g. "skill/painter.md#3")
     QString source;  // category tag (skill, doc, template, example, script:*)

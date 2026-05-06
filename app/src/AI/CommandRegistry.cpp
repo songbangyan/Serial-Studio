@@ -20,7 +20,9 @@
 // Singleton accessor
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the process-wide AI command registry. */
+/**
+ * @brief Returns the process-wide AI command registry.
+ */
 AI::CommandRegistry& AI::CommandRegistry::instance()
 {
   static CommandRegistry singleton;
@@ -31,13 +33,17 @@ AI::CommandRegistry& AI::CommandRegistry::instance()
 // Construction and load
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Loads the safety map at first use. */
+/**
+ * @brief Loads the safety map at first use.
+ */
 AI::CommandRegistry::CommandRegistry()
 {
   load();
 }
 
-/** @brief Reads the safety JSON resource into the tag map. */
+/**
+ * @brief Reads the safety JSON resource into the tag map.
+ */
 void AI::CommandRegistry::load()
 {
   QFile file(QStringLiteral(":/ai/command_safety.json"));
@@ -81,13 +87,17 @@ void AI::CommandRegistry::load()
 // Queries
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Returns the safety classification for a command name. */
+/**
+ * @brief Returns the safety classification for a command name.
+ */
 AI::Safety AI::CommandRegistry::safetyOf(const QString& commandName) const
 {
   return m_tags.value(commandName, Safety::Confirm);
 }
 
-/** @brief Returns the names of all explicitly Safe commands. */
+/**
+ * @brief Returns the names of all explicitly Safe commands.
+ */
 QStringList AI::CommandRegistry::safeNames() const
 {
   QStringList result;
@@ -98,7 +108,9 @@ QStringList AI::CommandRegistry::safeNames() const
   return result;
 }
 
-/** @brief Returns the names of all explicitly Blocked commands. */
+/**
+ * @brief Returns the names of all explicitly Blocked commands.
+ */
 QStringList AI::CommandRegistry::blockedNames() const
 {
   QStringList result;

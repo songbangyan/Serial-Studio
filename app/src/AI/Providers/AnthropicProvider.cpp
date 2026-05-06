@@ -28,7 +28,9 @@ namespace AI::detail {
  */
 class ImmediateErrorReply : public AI::Reply {
 public:
-  /** @brief Schedules an error+finished pair via QTimer::singleShot(0, ...). */
+  /**
+   * @brief Schedules an error+finished pair via QTimer::singleShot(0, ...).
+   */
   ImmediateErrorReply(const QString& message, QObject* parent = nullptr)
     : AI::Reply(parent), m_message(message)
   {
@@ -38,7 +40,9 @@ public:
     });
   }
 
-  /** @brief No-op: the timer-driven completion cannot be cancelled. */
+  /**
+   * @brief No-op: the timer-driven completion cannot be cancelled.
+   */
   void abort() override {}
 
 private:
@@ -47,7 +51,9 @@ private:
 
 }  // namespace AI::detail
 
-/** @brief Anthropic enforces tool names ^[a-zA-Z0-9_-]+; encode dots/colons. */
+/**
+ * @brief Anthropic enforces tool names ^[a-zA-Z0-9_-]+; encode dots/colons.
+ */
 static QString anthropicToolName(const QString& original)
 {
   QString out = original;
@@ -56,7 +62,9 @@ static QString anthropicToolName(const QString& original)
   return out;
 }
 
-/** @brief Rewrites a single content block in-place for Anthropic's tool format. */
+/**
+ * @brief Rewrites a single content block in-place for Anthropic's tool format.
+ */
 static QJsonObject sanitizeBlock(QJsonObject block)
 {
   const auto type = block.value(QStringLiteral("type")).toString();
@@ -71,7 +79,9 @@ static QJsonObject sanitizeBlock(QJsonObject block)
   return block;
 }
 
-/** @brief Sanitizes tool_use names and strips non-Anthropic fields from tool_result blocks. */
+/**
+ * @brief Sanitizes tool_use names and strips non-Anthropic fields from tool_result blocks.
+ */
 static QJsonArray sanitizeHistoryToolNames(const QJsonArray& history)
 {
   QJsonArray out;
@@ -97,24 +107,32 @@ static QJsonArray sanitizeHistoryToolNames(const QJsonArray& history)
 // AnthropicProvider
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Stores QNAM ref and key getter. No state touched at construction. */
+/**
+ * @brief Stores QNAM ref and key getter. No state touched at construction.
+ */
 AI::AnthropicProvider::AnthropicProvider(QNetworkAccessManager& nam, KeyGetter keyGetter)
   : m_nam(nam), m_keyGetter(std::move(keyGetter))
 {}
 
-/** @brief Returns the human-readable provider name. */
+/**
+ * @brief Returns the human-readable provider name.
+ */
 QString AI::AnthropicProvider::displayName() const
 {
   return QStringLiteral("Anthropic");
 }
 
-/** @brief Returns the vendor "Get a key" deep link. */
+/**
+ * @brief Returns the vendor "Get a key" deep link.
+ */
 QString AI::AnthropicProvider::keyVendorUrl() const
 {
   return QStringLiteral("https://console.anthropic.com/settings/keys");
 }
 
-/** @brief Returns the list of selectable Anthropic models, default first. */
+/**
+ * @brief Returns the list of selectable Anthropic models, default first.
+ */
 QStringList AI::AnthropicProvider::availableModels() const
 {
   return {
@@ -124,13 +142,17 @@ QStringList AI::AnthropicProvider::availableModels() const
   };
 }
 
-/** @brief Returns the default Anthropic model for new sessions. */
+/**
+ * @brief Returns the default Anthropic model for new sessions.
+ */
 QString AI::AnthropicProvider::defaultModel() const
 {
   return QStringLiteral("claude-haiku-4-5");
 }
 
-/** @brief Returns a human-friendly label for a known Anthropic model id. */
+/**
+ * @brief Returns a human-friendly label for a known Anthropic model id.
+ */
 QString AI::AnthropicProvider::modelDisplayName(const QString& modelId) const
 {
   if (modelId == QStringLiteral("claude-haiku-4-5"))
@@ -145,7 +167,9 @@ QString AI::AnthropicProvider::modelDisplayName(const QString& modelId) const
   return modelId;
 }
 
-/** @brief Builds the Messages API request body and returns a streaming Reply. */
+/**
+ * @brief Builds the Messages API request body and returns a streaming Reply.
+ */
 AI::Reply* AI::AnthropicProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();

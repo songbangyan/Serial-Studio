@@ -27,7 +27,9 @@
 // Closest-match suggestion helpers
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Levenshtein distance between two strings, capped for speed. */
+/**
+ * @brief Levenshtein distance between two strings, capped for speed.
+ */
 static int editDistance(const QString& a, const QString& b)
 {
   const int la = a.size();
@@ -54,7 +56,9 @@ static int editDistance(const QString& a, const QString& b)
   return prev[lb];
 }
 
-/** @brief Lower-is-better score: prefers names sharing the dotted prefix. */
+/**
+ * @brief Lower-is-better score: prefers names sharing the dotted prefix.
+ */
 static int similarityScore(const QString& want, const QString& have)
 {
   const auto wantParts = want.split(QLatin1Char('.'));
@@ -156,7 +160,9 @@ API::CommandResponse API::CommandRegistry::execute(const QString& name,
   }
 }
 
-/** @brief Builds a "Unknown command" error response with did_you_mean suggestions. */
+/**
+ * @brief Builds a "Unknown command" error response with did_you_mean suggestions.
+ */
 API::CommandResponse API::CommandRegistry::buildUnknownCommandResponse(const QString& name,
                                                                        const QString& id) const
 {
@@ -187,7 +193,9 @@ API::CommandResponse API::CommandRegistry::buildUnknownCommandResponse(const QSt
     id, ErrorCode::UnknownCommand, QStringLiteral("Unknown command: %1").arg(name), data);
 }
 
-/** @brief Attaches inputSchema + structured category to a failed response. */
+/**
+ * @brief Attaches inputSchema + structured category to a failed response.
+ */
 void API::CommandRegistry::attachErrorMetadata(const QString& name, CommandResponse& response) const
 {
   if (response.success)
@@ -216,7 +224,9 @@ void API::CommandRegistry::attachErrorMetadata(const QString& name, CommandRespo
   response.errorData               = data;
 }
 
-/** @brief Returns a structured error category for a failed CommandResponse. */
+/**
+ * @brief Returns a structured error category for a failed CommandResponse.
+ */
 QString API::CommandRegistry::classifyErrorCategory(const CommandResponse& response)
 {
   if (response.errorCode == ErrorCode::MissingParam || response.errorCode == ErrorCode::InvalidParam

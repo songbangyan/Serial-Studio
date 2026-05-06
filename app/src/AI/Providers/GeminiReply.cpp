@@ -51,7 +51,9 @@ static QString redactUrl(const QUrl& url)
 // Construction
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Issues the POST and wires SSE / network slots. */
+/**
+ * @brief Issues the POST and wires SSE / network slots.
+ */
 AI::GeminiReply::GeminiReply(QNetworkAccessManager& nam,
                              const QUrl& endpoint,
                              const QString& apiKey,
@@ -88,7 +90,9 @@ AI::GeminiReply::GeminiReply(QNetworkAccessManager& nam,
 // Public API
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Cancels the in-flight network reply if any. */
+/**
+ * @brief Cancels the in-flight network reply if any.
+ */
 void AI::GeminiReply::abort()
 {
   if (m_reply && m_reply->isRunning())
@@ -99,7 +103,9 @@ void AI::GeminiReply::abort()
 // SSE event handler
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Routes a single SSE event into the Gemini chunk processor. */
+/**
+ * @brief Routes a single SSE event into the Gemini chunk processor.
+ */
 void AI::GeminiReply::onSseEvent(const QString& name, const QJsonObject& data)
 {
   Q_UNUSED(name);
@@ -110,7 +116,9 @@ void AI::GeminiReply::onSseEvent(const QString& name, const QJsonObject& data)
   processChunk(data);
 }
 
-/** @brief Logs but does not abort on transient SSE parse errors. */
+/**
+ * @brief Logs but does not abort on transient SSE parse errors.
+ */
 void AI::GeminiReply::onSseError(const QString& reason)
 {
   qCWarning(serialStudioAI) << "Gemini SSE parse error:" << reason;
@@ -120,7 +128,9 @@ void AI::GeminiReply::onSseError(const QString& reason)
 // Chunk processing
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Walks one GenerateContentResponse chunk and emits text + tool calls. */
+/**
+ * @brief Walks one GenerateContentResponse chunk and emits text + tool calls.
+ */
 void AI::GeminiReply::processChunk(const QJsonObject& chunk)
 {
   // Top-level error envelope (some failures arrive on the stream)
@@ -184,7 +194,9 @@ void AI::GeminiReply::processChunk(const QJsonObject& chunk)
 // QNetworkReply slots
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Forwards every chunk into the SSE reader. */
+/**
+ * @brief Forwards every chunk into the SSE reader.
+ */
 void AI::GeminiReply::onReplyReadyRead()
 {
   if (!m_reply || m_finished)
@@ -197,7 +209,9 @@ void AI::GeminiReply::onReplyReadyRead()
   m_sse->feed(m_reply->readAll());
 }
 
-/** @brief Handles end-of-stream: drain remaining buffer and finalize. */
+/**
+ * @brief Handles end-of-stream: drain remaining buffer and finalize.
+ */
 void AI::GeminiReply::onReplyFinished()
 {
   if (m_finished)
@@ -218,7 +232,9 @@ void AI::GeminiReply::onReplyFinished()
   finishOk();
 }
 
-/** @brief Reads a Gemini error body and dispatches finishWithError with a friendly message. */
+/**
+ * @brief Reads a Gemini error body and dispatches finishWithError with a friendly message.
+ */
 void AI::GeminiReply::handleHttpError(int status)
 {
   const auto body = m_reply->readAll();
@@ -247,7 +263,9 @@ void AI::GeminiReply::handleHttpError(int status)
 // Finalization
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Marks the stream finished, emits @ref finished. */
+/**
+ * @brief Marks the stream finished, emits @ref finished.
+ */
 void AI::GeminiReply::finishOk()
 {
   if (m_finished)
@@ -257,7 +275,9 @@ void AI::GeminiReply::finishOk()
   Q_EMIT finished();
 }
 
-/** @brief Marks the stream finished with an error message. */
+/**
+ * @brief Marks the stream finished with an error message.
+ */
 void AI::GeminiReply::finishWithError(const QString& message)
 {
   if (m_finished)

@@ -29,7 +29,9 @@ namespace AI::detail {
  */
 class ImmediateErrorReply : public AI::Reply {
 public:
-  /** @brief Schedules an error+finished pair via QTimer::singleShot(0, ...). */
+  /**
+   * @brief Schedules an error+finished pair via QTimer::singleShot(0, ...).
+   */
   ImmediateErrorReply(const QString& message, QObject* parent = nullptr)
     : AI::Reply(parent), m_message(message)
   {
@@ -39,7 +41,9 @@ public:
     });
   }
 
-  /** @brief No-op: the timer-driven completion cannot be cancelled. */
+  /**
+   * @brief No-op: the timer-driven completion cannot be cancelled.
+   */
   void abort() override {}
 
 private:
@@ -52,24 +56,32 @@ private:
 // Construction and provider metadata
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Stores QNAM ref and key getter. */
+/**
+ * @brief Stores QNAM ref and key getter.
+ */
 AI::GeminiProvider::GeminiProvider(QNetworkAccessManager& nam, KeyGetter keyGetter)
   : m_nam(nam), m_keyGetter(std::move(keyGetter))
 {}
 
-/** @brief Returns the human-readable provider name. */
+/**
+ * @brief Returns the human-readable provider name.
+ */
 QString AI::GeminiProvider::displayName() const
 {
   return QStringLiteral("Gemini");
 }
 
-/** @brief Returns the vendor "Get a key" deep link. */
+/**
+ * @brief Returns the vendor "Get a key" deep link.
+ */
 QString AI::GeminiProvider::keyVendorUrl() const
 {
   return QStringLiteral("https://aistudio.google.com/app/apikey");
 }
 
-/** @brief Returns the list of selectable Gemini models, default first. */
+/**
+ * @brief Returns the list of selectable Gemini models, default first.
+ */
 QStringList AI::GeminiProvider::availableModels() const
 {
   return {
@@ -79,13 +91,17 @@ QStringList AI::GeminiProvider::availableModels() const
   };
 }
 
-/** @brief Returns the default Gemini model for new sessions. */
+/**
+ * @brief Returns the default Gemini model for new sessions.
+ */
 QString AI::GeminiProvider::defaultModel() const
 {
   return QStringLiteral("gemini-2.5-flash");
 }
 
-/** @brief Returns a human-friendly label for a known Gemini model id. */
+/**
+ * @brief Returns a human-friendly label for a known Gemini model id.
+ */
 QString AI::GeminiProvider::modelDisplayName(const QString& modelId) const
 {
   // Free tier covers 2.5 Flash + 2.0 Flash; 2.5 Pro is paid
@@ -105,7 +121,9 @@ QString AI::GeminiProvider::modelDisplayName(const QString& modelId) const
 // Translators
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Translates a single Anthropic-shaped content block into a Gemini part. */
+/**
+ * @brief Translates a single Anthropic-shaped content block into a Gemini part.
+ */
 QJsonObject AI::GeminiProvider::translateBlock(const QJsonObject& block)
 {
   const auto type = block.value(QStringLiteral("type")).toString();
@@ -159,7 +177,9 @@ QJsonObject AI::GeminiProvider::translateBlock(const QJsonObject& block)
   return {};
 }
 
-/** @brief Collects translated Gemini parts from a single message's content value. */
+/**
+ * @brief Collects translated Gemini parts from a single message's content value.
+ */
 QJsonArray AI::GeminiProvider::collectMessageParts(const QJsonValue& contentValue)
 {
   QJsonArray parts;
@@ -181,7 +201,9 @@ QJsonArray AI::GeminiProvider::collectMessageParts(const QJsonValue& contentValu
   return parts;
 }
 
-/** @brief Converts Anthropic-shaped history into Gemini's contents array. */
+/**
+ * @brief Converts Anthropic-shaped history into Gemini's contents array.
+ */
 QJsonArray AI::GeminiProvider::translateHistory(const QJsonArray& history)
 {
   QJsonArray out;
@@ -205,7 +227,9 @@ QJsonArray AI::GeminiProvider::translateHistory(const QJsonArray& history)
   return out;
 }
 
-/** @brief Converts AI-tool definitions into Gemini's functionDeclarations. */
+/**
+ * @brief Converts AI-tool definitions into Gemini's functionDeclarations.
+ */
 QJsonArray AI::GeminiProvider::translateTools(const QJsonArray& tools)
 {
   if (tools.isEmpty())
@@ -233,7 +257,9 @@ QJsonArray AI::GeminiProvider::translateTools(const QJsonArray& tools)
 // sendMessage
 //--------------------------------------------------------------------------------------------------
 
-/** @brief Builds the streamGenerateContent request and returns a streaming Reply. */
+/**
+ * @brief Builds the streamGenerateContent request and returns a streaming Reply.
+ */
 AI::Reply* AI::GeminiProvider::sendMessage(const QJsonArray& history, const QJsonArray& tools)
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();

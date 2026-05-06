@@ -96,6 +96,14 @@ run_clang_format() {
     done
 }
 
+# expand-doxygen rewrites every `/** text */` one-liner into the canonical
+# 3-line form. Mechanical pass that runs before clang-format so clang-format
+# normalizes the resulting indentation.
+if [[ -f scripts/expand-doxygen.py ]]; then
+    echo "Expanding single-line doxygen comments..."
+    python3 scripts/expand-doxygen.py || echo "expand-doxygen failed"
+fi
+
 echo "Running clang-format (pass 1)..."
 run_clang_format
 
@@ -126,6 +134,13 @@ fi
 if [[ -f scripts/documentation-verify.py ]]; then
     echo "Running documentation-verify..."
     python3 scripts/documentation-verify.py --quiet || echo "documentation-verify found issues"
+fi
+
+# Rebuild the BM25 search index that ships with the app's AI assistant so the
+# corpus (skills, docs, scripts, examples) stays in sync with the tree.
+if [[ -f app/rcc/ai/build_search_index.py ]]; then
+    echo "Rebuilding AI search index..."
+    python3 app/rcc/ai/build_search_index.py || echo "build_search_index failed"
 fi
 
 # Get a list of changed files (unstaged + staged)
