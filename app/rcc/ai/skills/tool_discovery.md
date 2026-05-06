@@ -63,6 +63,26 @@ of 6 scripting contexts: `frame_parser_js`, `frame_parser_lua`,
 this BEFORE writing any user-authored script — APIs differ between
 contexts and you must not invent function names from one in another.
 
+## io.* is a forest, not a flat scope
+
+Eight driver subscopes live under `io.*`. Don't `meta.listCommands`
+each one blindly — pick by the device class the user is asking about:
+
+| Subscope         | When to use                                 |
+|------------------|---------------------------------------------|
+| `io.audio.*`     | Microphone / line-in capture                |
+| `io.ble.*`       | Bluetooth Low Energy peripherals            |
+| `io.canbus.*`    | CAN bus (load `can_modbus` skill)           |
+| `io.hid.*`       | USB HID gamepads / sensors                  |
+| `io.modbus.*`    | Modbus RTU/TCP (load `can_modbus` skill)    |
+| `io.network.*`   | TCP / UDP                                   |
+| `io.process.*`   | Subprocess stdout (Pro)                     |
+| `io.serial.*`    | Generic serial port settings                |
+| `io.uart.*`      | UART driver (most projects start here)      |
+
+Top-level `io.*` itself has bus-management and tail/peek commands; use
+`meta.listCommands{prefix:"io."}` (no trailing subscope) to see them.
+
 ## Bundled reference scripts
 
 `scripts.list{kind}` enumerates the ~50 reference scripts that ship with

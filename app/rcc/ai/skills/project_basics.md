@@ -91,6 +91,22 @@ to the project's existing file path. So:
 - New/empty projects without a file path skip auto-save (nothing to
   save to). The user must explicitly save with a path.
 
+## Settings that look project-shaped but live elsewhere
+
+A few things you'd intuitively look for under `project.*` actually live
+under other scopes because they're dashboard-wide preferences, not
+project state:
+
+| Setting                       | Command                          |
+|-------------------------------|----------------------------------|
+| Plot point count (rolling history per series) | `dashboard.setPoints{points}` |
+| Theme                         | `ui.theme.*` / `--theme` flag     |
+| Operation mode                | `dashboard.setOperationMode`     |
+| Console terminal display      | `console.set*`                   |
+
+If the user asks for "more points on the plot" or "longer plot history",
+that's `dashboard.setPoints`, not a `project.*` command.
+
 ## Templates as starting points
 
 For typed projects (IMU, GPS, scope, telemetry, MQTT subscriber), prefer

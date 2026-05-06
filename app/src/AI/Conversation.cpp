@@ -619,6 +619,42 @@ void AI::Conversation::runMetaSearchDocs(const QString& callId,
   --m_outstandingToolResults;
 }
 
+/** @brief Returns the skill id whose body documents @a commandName, or empty. */
+static QString skillForCommand(const QString& commandName)
+{
+  if (commandName.startsWith(QStringLiteral("project.workspace."))
+      || commandName == QStringLiteral("project.dataset.setOption")
+      || commandName == QStringLiteral("project.dataset.setOptions"))
+    return QStringLiteral("dashboard_layout");
+
+  if (commandName.startsWith(QStringLiteral("project.frameParser."))
+      || commandName.startsWith(QStringLiteral("project.parser.")))
+    return QStringLiteral("frame_parsers");
+
+  if (commandName.startsWith(QStringLiteral("project.painter.")))
+    return QStringLiteral("painter");
+
+  if (commandName.startsWith(QStringLiteral("project.outputWidget.")))
+    return QStringLiteral("output_widgets");
+
+  if (commandName == QStringLiteral("project.dataset.setTransformCode")
+      || commandName == QStringLiteral("project.dataset.transform.dryRun")
+      || commandName.startsWith(QStringLiteral("project.dataTable.")))
+    return QStringLiteral("transforms");
+
+  if (commandName.startsWith(QStringLiteral("mqtt.")))
+    return QStringLiteral("mqtt");
+
+  if (commandName.startsWith(QStringLiteral("io.canbus."))
+      || commandName.startsWith(QStringLiteral("io.modbus.")))
+    return QStringLiteral("can_modbus");
+
+  if (commandName.startsWith(QStringLiteral("project.")))
+    return QStringLiteral("project_basics");
+
+  return QString();
+}
+
 /** @brief meta.describeCommand handler: returns command schema or not_found. */
 void AI::Conversation::runMetaDescribe(const QString& callId,
                                        const QString& name,
@@ -639,6 +675,9 @@ void AI::Conversation::runMetaDescribe(const QString& callId,
     } else {
       reply[QStringLiteral("ok")]      = true;
       reply[QStringLiteral("command")] = desc;
+      const auto skill                 = skillForCommand(target);
+      if (!skill.isEmpty())
+        reply[QStringLiteral("loadSkillFirst")] = skill;
     }
   }
   recordToolResult(callId, name, reply);
