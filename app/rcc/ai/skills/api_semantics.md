@@ -26,7 +26,40 @@ project-editor row order is `datasetId`, the parser-output position is
 
 ## Frame execution cycle — what runs in what order
 
-For each parsed frame in a source:
+```
+   bytes from driver
+         │
+         ▼
+   FrameReader splits on delimiters, stamps each frame with a timestamp
+         │
+         ▼
+   FrameBuilder: parse(frame) -> array of channel strings (or 2D array)
+         │
+         │   for each parsed row (1+):
+         ▼
+   ┌─────────────────────────────────────────────────────────────┐
+   │ Computed registers RESET (Constant registers untouched)     │
+   ├─────────────────────────────────────────────────────────────┤
+   │ for each group (project order):                              │
+   │   for each dataset (project order):                          │
+   │     1. raw = channels[index - 1]                             │
+   │     2. setDatasetRaw(uniqueId, raw)                          │
+   │     3. if transformCode: final = transform(raw)              │
+   │        - sees: all raw, final of EARLIER datasets only,      │
+   │                Constant + this-frame's Computed writes        │
+   │     4. setDatasetFinal(uniqueId, final)                      │
+   ├─────────────────────────────────────────────────────────────┤
+   │ TimestampedFramePtr published once, shared by all consumers  │
+   └─────────────────────────────────────────────────────────────┘
+         │
+         ├─► Dashboard widgets (visualization update on UI tick ~24 Hz)
+         │       └─► Painter onFrame() then paint(ctx,w,h) per painter widget
+         ├─► CSV / MDF4 export workers (lock-free queue, batch on worker thread)
+         ├─► API / gRPC / MQTT publishers
+         └─► Session DB writer (Pro)
+```
+
+The cycle in prose form, for each parsed frame in a source:
 
 1. **Computed registers reset.** `m_tableStore.resetComputedRegisters()`
    runs once at the top of the frame, BEFORE any dataset is touched.

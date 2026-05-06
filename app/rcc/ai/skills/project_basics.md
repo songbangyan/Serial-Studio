@@ -107,6 +107,94 @@ project state:
 If the user asks for "more points on the plot" or "longer plot history",
 that's `dashboard.setPoints`, not a `project.*` command.
 
+## Glossary — terms that look interchangeable but aren't
+
+These are the pairs and triples that LLMs (and humans) routinely
+conflate. Memorize them once.
+
+### Dataset identifiers
+
+| Term         | Range            | Set by    | Used for                                      |
+|--------------|------------------|-----------|-----------------------------------------------|
+| `datasetId`  | per-group, 0..N  | API auto  | CRUD: `dataset.update / delete / setOptions`  |
+| `index`      | 1-based int      | User      | Position in `parse(frame)` output array       |
+| `uniqueId`   | global int       | Derived   | Runtime key for `datasetGetRaw / Final`       |
+
+`uniqueId = sourceId * 1_000_000 + groupId * 10_000 + datasetId`. Read
+it from `dataset.list` — don't compute by hand.
+
+### Numeric ranges on a dataset
+
+A single dataset can carry **three independent min/max pairs**, each
+driving a different surface:
+
+| Range pair             | Drives                                                                |
+|------------------------|-----------------------------------------------------------------------|
+| `plotMin` / `plotMax`  | Y-axis on Plot/MultiPlot                                              |
+| `widgetMin` / `widgetMax` | Gauge / Bar / Compass scales (radial dial limits, bar fill range)  |
+| `fftMin` / `fftMax`    | dB floor/ceiling on FFT and Waterfall plots                           |
+
+Setting one doesn't cascade. A gauge that runs 0–360 (`widgetMin/Max`)
+might still want the underlying plot Y-axis at -50–50 (`plotMin/Max`).
+
+### Frame detection enum (`frameDetection` field)
+
+```
+0 = EndDelimiterOnly      most common; e.g. line-based `\n`
+1 = StartAndEndDelimiter  bracketed frames; e.g. `$...;`
+2 = NoDelimiters          fixed-length packets (binary protocols)
+3 = StartDelimiterOnly    start marker, length follows
+```
+
+### Decoder method enum (`decoderMethod` / `decoder` field)
+
+```
+0 = PlainText     UTF-8 text frames
+1 = Hexadecimal   "DEADBEEF" hex-encoded bytes
+2 = Base64        base64-encoded binary
+3 = Binary        raw bytes, no decoding
+```
+
+### Constant vs Computed registers (data tables)
+
+| Kind       | Lifetime       | Writable at runtime?                      | Use for                                     |
+|------------|----------------|-------------------------------------------|---------------------------------------------|
+| Constant   | Whole session  | NO (project-static; `tableSet` no-ops)    | Calibration coefficients, thresholds, gains |
+| Computed   | One frame      | YES via `tableSet` (resets each frame)    | Cross-dataset rolling state, derived totals |
+
+Computed registers reset at the START of every parsed frame, before
+any transform runs. If you want state that survives across frames,
+use a top-level `var` in your transform's IIFE — see `transforms`
+skill.
+
+### Schema version metadata (already in every saved project)
+
+Every `.ssproj` file carries three root-level keys stamped by Serial
+Studio at save time:
+
+| Key                        | Meaning                                              |
+|----------------------------|------------------------------------------------------|
+| `schemaVersion`            | Project file format version (currently 1)            |
+| `writerVersion`            | Serial Studio version that wrote this file           |
+| `writerVersionAtCreation`  | Serial Studio version that originally created it     |
+
+Use `project.getStatus` to see them on the loaded project. Older
+Serial Studio versions ignore unknown keys, so a 3.4 project still
+loads in 3.2 with any 3.4-only fields silently dropped.
+
+### widgetType depends on context
+
+Don't conflate these — they live in different namespaces:
+
+| Where you see it             | Type                                              |
+|------------------------------|---------------------------------------------------|
+| `project.group.add{widgetType}` | GroupWidget enum (group SHAPE, e.g. DataGrid, MultiPlot) |
+| `project.dataset.options` bit  | DatasetOption bitflag (per-dataset visualisation) |
+| `project.workspace.addWidget{widgetType}` | DashboardWidget enum (the rendered tile) |
+
+`dashboard_layout` skill has the full mapping; `api_semantics` has the
+identity rules.
+
 ## Templates as starting points
 
 For typed projects (IMU, GPS, scope, telemetry, MQTT subscriber), prefer

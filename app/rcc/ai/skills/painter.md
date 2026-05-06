@@ -20,14 +20,77 @@ group.
 
 ## Entry points
 
-- **`paint(ctx, w, h)` — REQUIRED.** Called every UI tick (24 Hz default)
-  to redraw the canvas. The function name is `paint`, not `draw`, not
+- **`paint(ctx, w, h)` — REQUIRED.** Called every UI tick (~24 Hz) to
+  redraw the canvas. The function name is `paint`, not `draw`, not
   `render`. The engine looks up `globalThis.paint` by name.
-- **`onFrame()` — optional.** Called once per parsed frame, before the
-  next paint, with no arguments. Cache state in top-level `var`s.
+- **`onFrame()` — optional, but powerful.** Called immediately before
+  each `paint(ctx, w, h)`. No arguments. This is where you do
+  expensive per-tick computation so `paint` stays cheap.
+- `bootstrap()` does NOT exist. Top-level statements at the script's
+  outer scope run once when the script compiles — that is your
+  bootstrap.
 
-`bootstrap()` does NOT exist. Top-level statements at the script's outer
-scope run once when the script compiles — that is your bootstrap.
+### When `onFrame` actually fires (timing reality)
+
+`onFrame` runs at the **dashboard's UI tick rate (~24 Hz)**, NOT once
+per parsed frame. If frames arrive at 1 kHz, `onFrame` still fires only
+~24 times per second, sampling whichever dataset values were latest at
+tick time. So:
+
+- **Per-tick work (FFT, downsampling, formatting, computing visible
+  ranges)** → put it in `onFrame`. Doing it in `paint` makes you pay
+  the cost on every redraw, including idle redraws when no new data
+  arrived.
+- **Per-frame work (rolling EMA, per-sample integration, alarm
+  detection that must see every value)** → DOES NOT belong in
+  `onFrame`. The painter will skip frames between two ticks. Move that
+  computation into a per-dataset **transform**, where every parsed
+  frame fires; the painter then reads the transform's output via
+  `datasetGetFinal(uniqueId)`.
+- **Pure layout / drawing** → keep in `paint`. It runs against
+  whatever `onFrame` last computed.
+
+### Recipe — spectrum analyzer painter
+
+```js
+// Top-level: bootstrap once at compile time
+var SAMPLES = 1024;
+var ring    = new Array(SAMPLES).fill(0);
+var spectrum = new Array(SAMPLES / 2).fill(0);
+var head    = 0;
+
+function onFrame() {
+  // Cheap: copy the latest sample into the ring
+  var v = datasetGetFinal(/*uniqueId*/ 0);
+  if (typeof v !== 'number') return;
+  ring[head] = v;
+  head = (head + 1) % SAMPLES;
+
+  // Run FFT on tick (24 Hz), not on every parsed frame -- a 48 kHz
+  // audio source emits 48000 frames/s; we only render 24/s, so doing
+  // FFT here gets us a ~2 kHz redraw rate against a recent window.
+  spectrum = computeFFT(ring, head);
+}
+
+function paint(ctx, w, h) {
+  ctx.fillStyle = theme.widget_base;
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = theme.widget_highlight;
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+  for (var i = 0; i < spectrum.length; ++i) {
+    var x = (i / spectrum.length) * w;
+    var y = h - spectrum[i] * h;
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+```
+
+Without `onFrame`, that FFT would run inside `paint` and recompute on
+every redraw — including ones triggered by mouse hover and theme
+changes. With it, `paint` only laces lines through the cached
+`spectrum` array.
 
 ## Iteration workflow
 

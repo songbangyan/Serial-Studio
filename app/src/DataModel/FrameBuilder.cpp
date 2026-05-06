@@ -1036,11 +1036,10 @@ void DataModel::FrameBuilder::compileTransformsJS(TransformEngine& engine,
   DataModel::NotificationCenter::installScriptApi(js);
 
   for (const auto& entry : entries) {
-    // Wrap the user's code in an IIFE for per-dataset closure isolation
+    // Single-line IIFE prefix; user code stays at line 1 so the engine's lineNumber matches the source
     const QString wrapped =
-      QStringLiteral("(function() {\n"
-                     "%1\n"
-                     "return (typeof transform === 'function') ? transform : null;\n"
+      QStringLiteral("(function() {%1\n"
+                     ";return (typeof transform === 'function') ? transform : null;\n"
                      "})();")
         .arg(entry.code);
 
@@ -1048,7 +1047,9 @@ void DataModel::FrameBuilder::compileTransformsJS(TransformEngine& engine,
     auto evalResult = js->evaluate(wrapped);
     if (evalResult.isError()) {
       qWarning() << "[FrameBuilder] Transform compile error for"
-                 << "dataset" << entry.uniqueId << ":" << evalResult.property("message").toString();
+                 << "dataset" << entry.uniqueId
+                 << "at line" << evalResult.property("lineNumber").toInt() << ":"
+                 << evalResult.property("message").toString();
       continue;
     }
 
