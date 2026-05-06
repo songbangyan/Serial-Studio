@@ -4,6 +4,11 @@ The Painter widget (Pro) gives you a Canvas-2D drawing surface. One per
 group with `widgetType: 8`. Bind code via
 `project.painter.setCode{groupId, code}`.
 
+**Painter scripts are JavaScript-only** — the Lua-first guidance in
+the `frame_parsers` and `transforms` skills does NOT apply here. The
+canvas API and the QJSEngine integration are both JS-bound. Don't try
+to author painter code in Lua; it will not compile.
+
 ## Decision: when to use a painter
 
 - **Don't** for standard widgets (gauge, plot, bar, LED, compass) — those

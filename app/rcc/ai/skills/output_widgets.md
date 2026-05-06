@@ -4,6 +4,12 @@ Output widgets (Pro) are interactive controls that transmit bytes back to
 the device. Each one belongs to a group and has its own JavaScript
 "transmit function" that converts UI state into bytes.
 
+**Output transmit functions are JavaScript-only** — the Lua-first
+guidance in the `frame_parsers` and `transforms` skills does NOT apply
+here. The protocol helpers (CRC, NMEA, Modbus, SLCAN, GRBL, GCode,
+SCPI, binary packet) are JS-bound. Author transmit functions in JS;
+Lua will not compile.
+
 ## Five widget types
 
 Output widgets live in a group's output panel. Each has a `type`:

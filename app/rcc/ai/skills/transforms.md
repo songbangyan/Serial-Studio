@@ -43,6 +43,42 @@ project.dataset.update {
 If `virtual=false` and `index<=0` after a `setTransformCode`, the API
 returns a `hint` field telling you to flip `virtual`. Listen to it.
 
+### Why prefer virtual datasets over an extra parser slot
+
+You COULD parse-and-emit a derived value from the frame parser
+directly (so the parser writes `channels[N] = computeSpeed(...)` and
+a regular dataset reads slot N). Don't. Virtual datasets are the
+right shape because:
+
+- **Separation of concerns.** Frame parsers turn bytes into raw
+  channels — that's their whole job. Computation, calibration, and
+  derivation belong in transforms. Mixing both in the parser turns
+  it into an opaque blob that's painful to debug with `dryRun`.
+- **Testability.** `project.dataset.transform.dryRun{values, code}`
+  exercises a transform in isolation. You can't dry-run a derived
+  channel that lives inside `parse()`; you'd have to invent fake
+  byte frames every iteration.
+- **Cross-source reach.** A virtual dataset's transform can read
+  `datasetGetFinal(uniqueId)` of any dataset, including peers from
+  *other* sources via the shared data table. A parser only sees its
+  own source's bytes.
+- **Unit + range hygiene.** Virtual datasets carry their own
+  `units`, `plotMin/Max`, `widgetMin/Max`, alarms, and widget
+  bitflags. They show up cleanly in the project tree, the dashboard,
+  and CSV/MDF4 exports. A computation hidden inside the parser has
+  no presence in the schema.
+- **Templates.** A virtual dataset (transform + units + widget
+  config) is the unit you copy across projects. Parser code is
+  source-bus-specific; transforms are portable.
+- **Performance.** Virtual datasets share the source's transform
+  engine — no extra QJSEngine / Lua state per derivation. A bloated
+  parser, by contrast, runs every byte through one big function on
+  every frame, allocating intermediate arrays.
+
+Use a parser-emitted slot only when the derivation needs raw bytes
+that aren't otherwise exposed (uncommon — most cases are downstream
+arithmetic on already-extracted channels).
+
 ## Contract
 
 ```lua
