@@ -9,33 +9,31 @@
 
 **Serial Studio** turns data from your hardware into a live dashboard.
 
-Connect an Arduino, ESP32, STM32, Raspberry Pi, Teensy, or any device that speaks serial, Bluetooth, a network protocol, or an industrial bus. Describe the data format once in a project file, and Serial Studio draws plots, gauges, maps, and 3D views around it. Send commands back with buttons, sliders, and knobs. Record a session, replay it later, or export it as a PDF report. No scrolling terminal, no custom GUI to maintain.
+Connect an Arduino, ESP32, STM32, Raspberry Pi, Teensy, or anything else that speaks serial, Bluetooth, a network protocol, or an industrial bus. Describe the data format once in a project file. Serial Studio draws the plots, gauges, maps, and 3D views around it. Send commands back with buttons, sliders, and knobs. Record a session, replay it, export it as a PDF. No more scrolling terminal streams, and no more custom dashboards to maintain.
 
-It runs on Windows, macOS, Linux, and Raspberry Pi.
+Runs on Windows, macOS, Linux, and Raspberry Pi.
 
 ![Software usage](doc/screenshot.png)
 
 ## What you can do with it
 
-**Connect to a device.** Serial/UART, Bluetooth LE, and TCP/UDP in the GPL build. MQTT, Modbus TCP/RTU, CAN Bus, Audio input, raw USB (libusb), HID (hidapi), and Process I/O are Pro. Multi-source projects (several devices in one project, each on its own protocol) are Pro.
+**Connect to a device.** Serial/UART, Bluetooth LE, and TCP/UDP in the GPL build. MQTT, Modbus TCP/RTU, CAN Bus, audio input, raw USB (libusb), HID (hidapi), and Process I/O are Pro. Multiple devices in one project is also Pro.
 
-**Visualize data live.** 15+ widget types: line plots, gauges, bar charts, GPS maps, FFT spectrum, accelerometer, gyroscope, compass, data grids, LED panels, terminal, and multi-channel plots in the GPL build. 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera feed), and the scriptable Painter widget are Pro. The Painter exposes a JavaScript `paint(ctx, w, h)` callback with a Canvas2D-style API and ships 18 templates (oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, vector field, XY scope, and more).
+**Visualize data.** 15+ widgets in the GPL build: line plots, gauges, bar charts, GPS maps, FFT spectrum, accelerometer, gyroscope, compass, data grids, LED panels, terminal, multi-channel plots. Pro adds 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera), and the Painter widget. Painter is a JavaScript `paint(ctx, w, h)` callback with a Canvas2D-style API and 18 templates: oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, vector field, XY scope, and others.
 
-**Configure dashboards without custom code.** The Project Editor defines groups, datasets, and widgets through structured forms — closer to editing a schema than coding a UI. Or skip the project file entirely with Quick Plot: print comma-separated values from your device and see them plot instantly. Workspaces split large projects into focused tabs, with a taskbar search.
+**Build dashboards.** The Project Editor defines groups, datasets, and widgets through forms. Or skip the project file: print CSV from your device and Quick Plot draws it. Workspaces split big projects into tabs with a searchable taskbar.
 
-**Parse and transform data.** Frame parsers in JavaScript or Lua 5.4, plus 28 bundled templates (MAVLink, NMEA 0183/2000, UBX, SiRF, RTCM, MessagePack, TLV, COBS, SLIP, JSON, XML, YAML, INI, Modbus, and more). Per-dataset transforms (EMA, scaling, calibration, unit conversion) run every frame as short JS or Lua snippets, no re-flashing firmware needed. Data Tables act as a shared bus so transforms can derive virtual datasets from each other.
+**Parse and transform data.** Frame parsers in JavaScript or Lua 5.4, plus 28 templates: MAVLink, NMEA 0183/2000, UBX, SiRF, RTCM, MessagePack, TLV, COBS, SLIP, JSON, XML, YAML, INI, Modbus, and others. Per-dataset transforms (EMA, scaling, calibration, unit conversion) run every frame as short JS or Lua snippets. Data Tables act as a shared bus so transforms can derive virtual datasets from each other.
 
-**Send commands back (Pro).** Buttons, toggles, sliders, knobs, text fields, and freeform output panels run JS templates that emit GCode, SCPI, Modbus, NMEA, CAN, or whatever your device speaks. Define Actions with optional timers for polling or periodic control.
+**Send commands back (Pro).** Buttons, toggles, sliders, knobs, text fields, and freeform output panels run JS templates that emit GCode, SCPI, Modbus, NMEA, CAN, or whatever your device speaks. Actions run on demand or on a timer.
 
-**Record, replay, and share.** CSV export is in the GPL build. MDF4 import/export, full session recording (frames plus raw bytes) into a SQLite database with the Database Explorer for browsing, tagging, exporting, and replay, HTML or PDF session reports with interactive charts, and XMODEM/YMODEM/ZMODEM file transfer are Pro.
+**Record and replay.** CSV export in the GPL build. MDF4 import/export, session recording (frames and raw bytes) into SQLite, PDF session reports, and XMODEM/YMODEM/ZMODEM file transfer are Pro.
 
-**Automate and integrate.** A TCP API on port 7777 exposes 320+ commands for programmatic control. An MCP server wraps the same surface for external AI clients (Claude Desktop, custom MCP hosts).
+**Automate it.** A TCP API on port 7777 with 320+ commands. An MCP server wraps the same surface for Claude Desktop or any other MCP host.
 
-**AI Assistant for project editing (Pro).** A bring-your-own-key chat panel that edits the *project* for you, not the live device. Describe what you want and it configures sources, groups, datasets, frame parsers, transforms, output widgets, and workspaces by calling the same project-editing API your scripts and the MCP server already use. It does not read live telemetry, does not connect or disconnect drivers, and cannot write to the device, those commands are blocked. Five providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, and a local OpenAI-compatible endpoint (Ollama, llama.cpp, LM Studio, vLLM) for fully offline use. Mutating actions show an Approve/Deny card before running. See the [AI Assistant docs](./doc/help/AI-Assistant.md) for the full safety map and what gets sent to the provider.
+**AI Assistant for project editing (Pro).** A bring-your-own-key chat panel that edits the project. Five providers: Anthropic, OpenAI, Google Gemini, DeepSeek, and local OpenAI-compatible endpoints (Ollama, llama.cpp, LM Studio, vLLM) for offline use. Mutating actions show an Approve/Deny card first. See the [AI Assistant docs](./doc/help/AI-Assistant.md).
 
-**Vendor-document importers (Pro).** The Modbus register-map importer turns a vendor CSV / XML / JSON map into a ready-to-use project. DBC import decodes CAN signals straight from the standard automotive description files.
-
-New here? The [help center](https://serial-studio.com/help) has FAQs, use cases, and comparisons with similar tools.
+**Vendor-document importers (Pro).** Feed the Modbus register-map importer a vendor CSV/XML/JSON and get a project. DBC import decodes CAN signals from the standard automotive files.
 
 ## Download
 
