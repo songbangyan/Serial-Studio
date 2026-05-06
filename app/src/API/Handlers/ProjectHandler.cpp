@@ -52,6 +52,48 @@ static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& c
   }
 }
 
+/** @brief Flags obvious language/syntax mismatches; returns a short warning or empty. */
+[[nodiscard]] static QString detectLanguageMismatch(const QString& code, int language)
+{
+  static const QString kJsHallmarks[] = {
+    QStringLiteral("\nvar "), QStringLiteral("\nlet "),  QStringLiteral("\nconst "),
+    QStringLiteral(" => "),   QStringLiteral("=== "),    QStringLiteral("!== "),
+    QStringLiteral(") {"),    QStringLiteral("} else"),
+  };
+  static const QString kLuaHallmarks[] = {
+    QStringLiteral("\nlocal "), QStringLiteral("\nfunction "), QStringLiteral(" then\n"),
+    QStringLiteral(" do\n"),    QStringLiteral("\nend\n"),     QStringLiteral("\nelseif "),
+    QStringLiteral("--[["),
+  };
+
+  bool looksJs  = false;
+  bool looksLua = false;
+  for (const auto& m : kJsHallmarks)
+    if (code.contains(m)) {
+      looksJs = true;
+      break;
+    }
+  for (const auto& m : kLuaHallmarks)
+    if (code.contains(m)) {
+      looksLua = true;
+      break;
+    }
+
+  if (language == SerialStudio::JavaScript && looksLua && !looksJs)
+    return QStringLiteral("language=0 (JavaScript) but the code contains Lua-only "
+                          "syntax (e.g. 'local', 'end', 'then'). The script will "
+                          "fail to compile silently. Either pass language=1 (Lua) "
+                          "or rewrite the code in JavaScript.");
+
+  if (language == SerialStudio::Lua && looksJs && !looksLua)
+    return QStringLiteral("language=1 (Lua) but the code contains JS-only syntax "
+                          "(e.g. 'var', 'let', 'const', '=>'). The script will "
+                          "fail to compile silently. Either pass language=0 "
+                          "(JavaScript) or rewrite the code in Lua.");
+
+  return QString();
+}
+
 /** @brief Returns the DatasetOption bitflag value of @a ds (1=Plot, 2=FFT, ...). */
 static int datasetOptionsBitflag(const DataModel::Dataset& ds)
 {
@@ -397,16 +439,27 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setTransformCode"),
-    QStringLiteral("Set dataset transformCode (params: groupId, datasetId, code). Empty clears."),
-    makeSchema({
-      {  QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Owning group id")                           },
-      {QString(Keys::DatasetId),
-       QStringLiteral("integer"),
-       QStringLiteral("Dataset id within the group")                          },
-      {  QStringLiteral("code"),
-       QStringLiteral("string"),
-       QStringLiteral("Transform source (Lua or JS matching source language)")}
-  }),
+    QStringLiteral("Set dataset transformCode. Empty clears. Pass `language` whenever "
+                   "you author code so the dataset's transformLanguage matches the "
+                   "syntax you wrote -- mismatches compile-fail silently. Lua (1) is "
+                   "the recommended default; it's measurably faster than JavaScript "
+                   "on hot transforms. If this dataset is compute-only (no slot in "
+                   "the parser output array), also set virtual=true via "
+                   "project.dataset.setVirtual or project.dataset.update."),
+    makeSchema(
+      {
+        {QString(Keys::GroupId),    QStringLiteral("integer"),
+         QStringLiteral("Owning group id")},
+        {QString(Keys::DatasetId),  QStringLiteral("integer"),
+         QStringLiteral("Dataset id within the group")},
+        {QStringLiteral("code"),    QStringLiteral("string"),
+         QStringLiteral("Transform source (Lua or JS, must match `language`)")}
+      },
+      {
+        {QStringLiteral("language"),QStringLiteral("integer"),
+         QStringLiteral("Optional: 0=JavaScript, 1=Lua (recommended). If omitted, "
+                        "the dataset inherits the source's frameParserLanguage.")}
+      }),
     &datasetSetTransformCode);
 }
 
@@ -532,7 +585,14 @@ void API::Handlers::ProjectHandler::registerParserCommands()
 
   registry.registerCommand(QStringLiteral("project.frameParser.setCode"),
                            QStringLiteral("Set frame parser code (params: code, "
-                                          "optional sourceId, optional language)"),
+                                          "optional sourceId, optional language). "
+                                          "Always pass `language` when authoring code "
+                                          "to lock in the runtime engine -- mismatch = "
+                                          "silent compile failure. Lua (1) is the "
+                                          "recommended default; it's faster than "
+                                          "JavaScript on the hotpath at typical "
+                                          "telemetry rates. Use JavaScript only when "
+                                          "you need a JS-specific library or feature."),
                            setCodeSchema,
                            &parserSetCode);
 
@@ -1248,13 +1308,40 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
 
   DataModel::Dataset updated = *dit;
   updated.transformCode      = code;
+
+  if (params.contains(QStringLiteral("language"))) {
+    const int lang = params.value(QStringLiteral("language")).toInt();
+    if (lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
+      return CommandResponse::makeError(
+        id,
+        ErrorCode::InvalidParam,
+        QStringLiteral("Invalid language: must be 0 (JavaScript) or 1 (Lua)"));
+
+    updated.transformLanguage = lang;
+  }
+
   pm.updateDataset(groupId, datasetId, updated, false);
 
   QJsonObject result;
   result[Keys::GroupId]                = groupId;
   result[Keys::DatasetId]              = datasetId;
   result[QStringLiteral("codeLength")] = code.size();
+  result[QStringLiteral("language")]   = updated.transformLanguage;
   result[QStringLiteral("updated")]    = true;
+
+  if (!code.isEmpty() && updated.transformLanguage != -1) {
+    const auto warning = detectLanguageMismatch(code, updated.transformLanguage);
+    if (!warning.isEmpty())
+      result[QStringLiteral("warning")] = warning;
+  }
+
+  if (!code.isEmpty() && !updated.virtual_ && updated.index <= 0)
+    result[QStringLiteral("hint")] =
+      QStringLiteral("transformCode set but virtual=false and index<=0; if this "
+                     "dataset has no slot in the parser output array, set "
+                     "virtual=true via project.dataset.update{virtual:true} "
+                     "or the dataset will read empty channel data.");
+
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1544,9 +1631,19 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetCode(const QString&
   else
     model.updateSourceFrameParser(sourceId, code);
 
+  const int effectiveLanguage = model.frameParserLanguage(sourceId);
+
   QJsonObject result;
   result[Keys::SourceId]               = sourceId;
   result[QStringLiteral("codeLength")] = code.length();
+  result[QStringLiteral("language")]   = effectiveLanguage;
+
+  if (!code.isEmpty()) {
+    const auto warning = detectLanguageMismatch(code, effectiveLanguage);
+    if (!warning.isEmpty())
+      result[QStringLiteral("warning")] = warning;
+  }
+
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2114,9 +2211,19 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
     QStringLiteral("Patch dataset fields by id (params: groupId, datasetId, plus any of "
                    "title, units, widget, graph, fft, led, waterfall, xAxisId, "
                    "waterfallYAxis, fftMin, fftMax, pltMin, pltMax, wgtMin, wgtMax, "
-                   "alarmLow, alarmHigh, ledHigh, transformCode). The boolean fields "
-                   "graph/fft/led/waterfall toggle the same flags as project.dataset."
-                   "setOption -- use them here when patching multiple fields at once."),
+                   "alarmLow, alarmHigh, ledHigh, transformCode, transformLanguage, "
+                   "virtual). The boolean fields graph/fft/led/waterfall toggle the "
+                   "same flags as project.dataset.setOption -- use them here when "
+                   "patching multiple fields at once.\n"
+                   "REMINDERS for compute-only datasets:\n"
+                   "  - Set virtual=true when the dataset's value comes from "
+                   "transformCode rather than from a slot in the parser output. "
+                   "Without virtual=true the dataset still tries to read "
+                   "channels[index-1] and ends up empty.\n"
+                   "  - Set transformLanguage explicitly (0=JavaScript, 1=Lua, "
+                   "-1=inherit from source). Mismatched language vs code = silent "
+                   "compile failure. Lua is the recommended default; it's faster "
+                   "on the hotpath."),
     makeSchema({
       {QStringLiteral("groupId"), QStringLiteral("integer"),   QStringLiteral("Target group id")},
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Target dataset id")}
@@ -2397,12 +2504,39 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
   if (params.contains(QStringLiteral("transformCode")))
     d.transformCode = params.value(QStringLiteral("transformCode")).toString();
 
+  if (params.contains(Keys::TransformLanguage)) {
+    const int lang = params.value(Keys::TransformLanguage).toInt();
+    if (lang != -1 && lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
+      return CommandResponse::makeError(
+        id,
+        ErrorCode::InvalidParam,
+        QStringLiteral("Invalid transformLanguage: must be -1 (inherit), 0 (JS), or 1 (Lua)"));
+
+    d.transformLanguage = lang;
+  }
+
+  if (params.contains(Keys::Virtual))
+    d.virtual_ = params.value(Keys::Virtual).toBool();
+
   project.updateDataset(groupId, datasetId, d, rebuildTree);
 
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
   result[Keys::DatasetId]           = datasetId;
   result[QStringLiteral("updated")] = true;
+
+  if (!d.transformCode.isEmpty() && d.transformLanguage != -1) {
+    const auto warning = detectLanguageMismatch(d.transformCode, d.transformLanguage);
+    if (!warning.isEmpty())
+      result[QStringLiteral("warning")] = warning;
+  }
+
+  if (!d.transformCode.isEmpty() && !d.virtual_ && d.index <= 0)
+    result[QStringLiteral("hint")] =
+      QStringLiteral("transformCode set but virtual=false and index<=0; if this "
+                     "dataset has no slot in the parser output array, set "
+                     "virtual=true (next call: project.dataset.update{virtual:true}).");
+
   return CommandResponse::makeSuccess(id, result);
 }
 

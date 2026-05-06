@@ -12,17 +12,28 @@ Frame parsers turn one logical frame (the bytes between `frameStart` and
   the dashboard widget consumes the unframed payload directly. Set
   `frameDetection = NoDelimiters (2)` and skip the parser.
 
-## JS vs Lua
+## Pick Lua first
 
-- **JS** (language=0): default. QJSEngine, ConsoleExtension only. Watchdog
-  protected. Use this unless you have a Lua-specific reason.
-- **Lua** (language=1): embedded Lua 5.4. Slightly faster for tight
-  numeric loops; we ship a `LuaCompat` shim so 5.1/5.2-era idioms
-  (`math.log10`, `math.pow`, `bit32`, `unpack`) keep working.
+- **Lua** (language=1): **recommended default.** Embedded Lua 5.4. The
+  interpreter is faster than `QJSEngine` on the parser hotpath, the
+  per-call overhead is lower, and at high frame rates (audio at
+  48 kHz, multi-channel UART at 1 kHz+) that compounds. We ship a
+  `LuaCompat` shim so 5.1/5.2-era idioms (`math.log10`, `math.pow`,
+  `bit32`, `unpack`) keep working.
+- **JS** (language=0): use only when you need a JS-specific feature
+  (regex flavors, JSON.stringify, etc.). QJSEngine + ConsoleExtension,
+  watchdog protected.
+
+ALWAYS pass `language` on `project.frameParser.setCode`. A mismatch
+(JS code under language=Lua or vice versa) is a silent compile failure
+— the dashboard receives no data and there's no popup. The API now
+returns a `warning` field in the response when the syntax doesn't
+match the declared language; do not ignore it.
 
 `project.frameParser.setLanguage` WIPES existing code and replaces it
 with the new language's default template. Read the existing source with
-`getCode` first if you want to preserve it.
+`getCode` first if you want to preserve it; or just pass `language`
+directly to `setCode` to flip and replace in one call.
 
 ## Iteration workflow
 

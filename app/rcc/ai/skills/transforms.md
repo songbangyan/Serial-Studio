@@ -3,7 +3,53 @@
 Transforms run on every parsed frame, after the frame parser, before the
 dashboard sees the value. They turn a raw value into the displayed value.
 
+## Pick Lua first
+
+Both Lua and JavaScript work, but **Lua is the recommended default** —
+it's measurably faster on the hotpath at typical telemetry rates and
+the embedded interpreter has a lighter per-call cost than `QJSEngine`.
+Use JavaScript only when you need a JS-specific feature (regex
+flavours, `JSON.stringify`, etc.).
+
+When you push transform code, ALWAYS pass `language` so the dataset's
+`transformLanguage` is locked to the syntax you wrote. A mismatch is a
+silent compile failure — the dashboard will show the raw value with no
+visible error. Two ways to set both at once:
+
+```
+project.dataset.setTransformCode {groupId, datasetId, code, language: 1}
+project.dataset.update            {groupId, datasetId, transformCode, transformLanguage: 1}
+```
+
+## Adding a compute-only dataset (no parser slot)
+
+A dataset whose value is *computed* by a transform — derived from peers,
+table registers, or constants — is **virtual**. Set `virtual: true` on
+creation, otherwise the runtime tries to read `channels[index - 1]`
+from the parser output and the dataset ends up empty.
+
+```
+project.dataset.add {groupId, options: 1}        // creates dataset N
+project.dataset.update {
+  groupId, datasetId: N,
+  virtual: true,                                 // compute-only
+  title: "Speed",
+  units: "m/s",
+  transformLanguage: 1,                          // 1 = Lua
+  transformCode: "..."
+}
+```
+
+If `virtual=false` and `index<=0` after a `setTransformCode`, the API
+returns a `hint` field telling you to flip `virtual`. Listen to it.
+
 ## Contract
+
+```lua
+function transform(value)
+  return value  -- must return a finite number or string
+end
+```
 
 ```js
 function transform(value) {
@@ -91,32 +137,45 @@ Trying to read `datasetGetFinal` of a dataset processed later returns 0.
   Computed register in the earlier transform and `tableGet` it from the
   later one.
 
-## Examples
+## Examples (Lua — preferred)
+
+```lua
+-- EMA smoothing (per-dataset state via upvalue)
+local ema = 0
+local alpha = 0.2
+function transform(value)
+  ema = alpha * value + (1 - alpha) * ema
+  return ema
+end
+
+-- Calibration from constants table
+function transform(value)
+  local offset = tableGet("Calibration", "offset")
+  local scale  = tableGet("Calibration", "scale")
+  return (value - offset) * scale
+end
+
+-- Cross-dataset speed (DT_MS_UID from project.dataset.list)
+local DT_MS_UID = 10003
+function transform(dx)
+  local dt = datasetGetRaw(DT_MS_UID)
+  if dt and dt > 0 then return (dx / dt) * 1000 end
+  return 0
+end
+```
+
+## Examples (JavaScript — when Lua won't do)
 
 ```js
-// EMA smoothing (per-dataset state)
 let ema = 0;
 const alpha = 0.2;
 function transform(value) {
   ema = alpha * value + (1 - alpha) * ema;
   return ema;
 }
-
-// Calibration from constants table
-function transform(value) {
-  const offset = tableGet('Calibration', 'offset');
-  const scale  = tableGet('Calibration', 'scale');
-  return (value - offset) * scale;
-}
-
-// Cross-dataset speed (DT_MS_UID from project.dataset.list)
-const DT_MS_UID = 10003;
-function transform(dx) {
-  const dt = datasetGetRaw(DT_MS_UID);
-  return dt > 0 ? (dx / dt) * 1000 : 0;
-}
 ```
 
 For ~20 more reference transforms (clamp, dead-zone, ADC-to-voltage,
 celsius/fahrenheit, accumulator, autozero, bit extract, ...), call
-`scripts.list{kind: "transform_js"}` or `scripts.list{kind: "transform_lua"}`.
+`scripts.list{kind: "transform_lua"}` or
+`scripts.list{kind: "transform_js"}`.
