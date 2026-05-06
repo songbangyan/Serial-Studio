@@ -132,21 +132,19 @@ Widgets.SmartDialog {
             ],
             "concepts": [
               qsTr("What is a session database, and why would I use one?"),
-              qsTr("CSV vs MDF4 export — what is the difference?"),
+              qsTr("CSV vs MDF4 export - what is the difference?"),
               qsTr("What is a frame parser, and when do I need one?"),
               qsTr("When should I use Lua vs JavaScript for the parser?"),
-              qsTr("Plot, Bar, and Gauge — when to use each?"),
+              qsTr("Plot, Bar, and Gauge - when to use each?"),
               qsTr("What is the difference between a transform and a frame parser?")
             ],
-            "setup": [
+            "build": [
               qsTr("Add a UART source for an Arduino"),
               qsTr("Set up an IMU project from scratch"),
               qsTr("Configure an MQTT subscriber"),
               qsTr("Add a CAN bus source"),
               qsTr("Set up a Modbus poller"),
-              qsTr("Add a network (TCP/UDP) source")
-            ],
-            "parsers": [
+              qsTr("Add a network (TCP/UDP) source"),
               qsTr("Write a CSV frame parser for me"),
               qsTr("Help me parse a JSON frame"),
               qsTr("Add an EMA smoothing transform to a dataset"),
