@@ -133,11 +133,16 @@ class TestSourceConfigure:
         })
 
     def test_configure_with_missing_params_returns_error(self, api_client, clean_state):
-        """configure without required params must return an API error."""
+        """configure without sourceId must return an API error.
+
+        project.source.update has PATCH semantics: every field other than
+        sourceId is optional, so omitting sourceId is the only way to trigger
+        MISSING_PARAM here.
+        """
         from utils.api_client import APIError
 
         with pytest.raises(APIError) as exc_info:
-            api_client.command("project.source.update", {"sourceId": 0})
+            api_client.command("project.source.update", {})
 
         assert exc_info.value.code == "MISSING_PARAM"
 

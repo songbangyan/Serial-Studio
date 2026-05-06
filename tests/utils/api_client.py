@@ -631,14 +631,15 @@ class SerialStudioClient:
         """
         Add a group and return its groupId.
 
-        project.group.add doesn't echo the new id; ids are sequential indexes
-        so the new group is the last entry in project.group.list.
+        project.group.add doesn't echo the new id and project.group.list does
+        not include groupId in each entry; ids are sequential indexes so the
+        new group's id is the last array index in project.group.list.
         """
         self.command(
             "project.group.add", {"title": title, "widgetType": widget_type}
         )
         groups = self.list_groups()
-        return groups[-1]["groupId"] if groups else -1
+        return len(groups) - 1 if groups else -1
 
     def update_group(self, group_id: int, **fields) -> dict:
         """PATCH a group (title, widget, columns, sourceId, painterCode, ...)."""

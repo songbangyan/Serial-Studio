@@ -137,16 +137,21 @@ void Console::ExportWorker::createFile(int deviceId)
 
   fileName += QStringLiteral(".txt");
 
-  // Derive project subdirectory name
+  // Pick the subdirectory bucket per operation mode
   const auto opMode        = AppState::instance().operationMode();
   const auto& projectTitle = DataModel::ProjectModel::instance().title();
   QString subdirName;
-  if (opMode == SerialStudio::ProjectFile && !projectTitle.isEmpty())
-    subdirName = projectTitle;
-  else if (opMode == SerialStudio::QuickPlot)
-    subdirName = QStringLiteral("Quick Plot");
-  else
-    subdirName = QStringLiteral("Untitled");
+  switch (opMode) {
+    case SerialStudio::ProjectFile:
+      subdirName = projectTitle.isEmpty() ? QStringLiteral("Untitled") : projectTitle;
+      break;
+    case SerialStudio::QuickPlot:
+      subdirName = QStringLiteral("Quick Plot");
+      break;
+    case SerialStudio::ConsoleOnly:
+      subdirName = QStringLiteral("Console");
+      break;
+  }
 
   // Ensure output directory exists
   QDir dir(Misc::WorkspaceManager::instance().path("Console"));
@@ -342,8 +347,19 @@ void Console::Export::setExportEnabled(const bool enabled)
 void Console::Export::registerData(int deviceId, QStringView data)
 {
 #ifdef BUILD_COMMERCIAL
-  if (exportEnabled() && !data.isEmpty() && !SerialStudio::isAnyPlayerOpen())
-    enqueueData(std::make_shared<ExportData>(deviceId, QString(data)));
+  if (!exportEnabled() || data.isEmpty() || SerialStudio::isAnyPlayerOpen())
+    return;
+
+  // Strip ANSI CSI / OSC escape sequences so the txt log stays plain text
+  static const QRegularExpression ansiRegex(
+    QStringLiteral("\\x1B(?:\\[[0-9;?]*[ -/]*[@-~]|\\][^\\x07]*(?:\\x07|\\x1B\\\\)|[@-_])"));
+
+  QString plain = data.toString();
+  plain.remove(ansiRegex);
+  if (plain.isEmpty())
+    return;
+
+  enqueueData(std::make_shared<ExportData>(deviceId, std::move(plain)));
 #else
   (void)deviceId;
   (void)data;

@@ -28,7 +28,7 @@ def _status(api_client):
 def _last_group_id(api_client) -> int:
     groups = api_client.list_groups()
     assert groups, "Expected at least one group"
-    return groups[-1]["groupId"]
+    return len(groups) - 1
 
 
 def _last_dataset(api_client) -> tuple[int, int]:

@@ -1,14 +1,14 @@
 # Vibration test rig
 
-A Python script that simulates a small electric motor on a test bench: a single accelerometer channel sees rotational imbalance, misalignment, a non-integer bearing-defect harmonic, and broadband noise; a stereo microphone in the enclosure picks up the airborne sound. The script sweeps the motor's RPM up and down so the **Waterfall** widget renders an order-tracking spectrogram, and the **Painter** widget drives an audio VU meter and a smoothed dial gauge — all from the same UDP stream.
+A Python script that simulates a small electric motor on a test bench: a single accelerometer channel sees rotational imbalance, misalignment, a non-integer bearing-defect harmonic, and broadband noise; a stereo microphone in the enclosure picks up the airborne sound. The script sweeps the motor's RPM up and down so the **Waterfall** widget renders an order-tracking spectrogram, and the **Painter** widget drives an audio VU meter and a smoothed dial gauge, all from the same UDP stream.
 
 ## Overview
 
 This example exercises both new Pro widgets introduced in v3.3:
 
-- **Waterfall (Campbell mode)** — the vibration channel feeds a 512-sample FFT at 1 kHz. The waterfall's Y axis is bound to the RPM dataset, so the spectrogram becomes a Campbell diagram (frequency on X, RPM on Y, amplitude as colour). Order lines (1×, 2×, 3×) appear as straight rays through the origin; the bearing harmonic at 5.43× shows up as a diagonal line at a different slope.
-- **Painter — audio VU meter** — broadcast-style stereo VU with green/yellow/red zones, peak-hold markers that decay over 1.5 s, and dB-scale tick labels. All drawn in ~70 lines of JavaScript inside the project file.
-- **Painter — vibration dial** — analog-style needle with three coloured zones, smooth inter-frame interpolation (no snapping), peak marker, and a numeric readout. ~80 lines of JavaScript.
+- **Waterfall (Campbell mode).** The vibration channel feeds a 512-sample FFT at 1 kHz. The waterfall's Y axis is bound to the RPM dataset, so the spectrogram becomes a Campbell diagram (frequency on X, RPM on Y, amplitude as colour). Order lines (1×, 2×, 3×) appear as straight rays through the origin; the bearing harmonic at 5.43× shows up as a diagonal line at a different slope.
+- **Painter (audio VU meter).** Broadcast-style stereo VU with green/yellow/red zones, peak-hold markers that decay over 1.5 s, and dB-scale tick labels. All drawn in ~70 lines of JavaScript inside the project file.
+- **Painter (vibration dial).** Analog-style needle with three coloured zones, smooth inter-frame interpolation (no snapping), peak marker, and a numeric readout. ~80 lines of JavaScript.
 
 A line plot of motor RPM rounds out the dashboard so you can correlate spectrogram features with the sweep position.
 
@@ -73,7 +73,7 @@ The script logs frame count and current RPM/vibration every two seconds.
 
 ### 2. Configure Serial Studio
 
-1. Open Serial Studio (Pro build — the Painter and Waterfall widgets are commercial features).
+1. Open Serial Studio (Pro build, since the Painter and Waterfall widgets are commercial features).
 2. **File → Open Project File**, choose `VibrationTestRig.ssproj`.
 3. The Network/UDP source is preconfigured for `127.0.0.1:9000`. Hit **Connect**.
 

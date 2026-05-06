@@ -149,12 +149,12 @@ flowchart TD
 
 - Auto-created for datasets with `waterfall: true`.
 - Scrolling time-frequency plot (spectrogram). Each row is one FFT magnitude spectrum, with the newest row drawn at the top and older rows scrolling down.
-- Reuses the dataset's FFT settings — `fftSamples`, `fftSamplingRate`, `fftMin`, `fftMax`. Enable both `fft: true` and `waterfall: true` if you want the FFT plot alongside the waterfall.
+- Reuses the dataset's FFT settings (`fftSamples`, `fftSamplingRate`, `fftMin`, `fftMax`). Enable both `fft: true` and `waterfall: true` if you want the FFT plot alongside the waterfall.
 - Magnitude is converted to dB. The dynamic range (`minDb` / `maxDb`) is adjustable from the widget toolbar.
 - Built-in color maps: Viridis, Inferno, Magma, Plasma, Turbo, Jet, Hot, Grayscale.
 - Mouse wheel to zoom, drag to pan, hover for a frequency/time readout. Reset view from the toolbar.
 - Configurable history depth (number of stored rows).
-- **Y-axis source.** Defaults to elapsed time. Set `waterfallYAxis` to another dataset's frame index to drive the Y axis from that dataset's value instead — typically used for order-tracking plots (for example RPM vs. frequency).
+- **Y-axis source.** Defaults to elapsed time. Set `waterfallYAxis` to another dataset's frame index to drive the Y axis from that dataset's value instead. This is typically used for order-tracking plots (for example RPM vs. frequency).
 - Best for: vibration order tracking, audio spectrograms, RF band monitoring, transient frequency events.
 - Configuration fields: `waterfall: true`, `waterfallYAxis` (0 = time; otherwise the index of the dataset to use as the Y axis), plus the FFT fields above.
 - Pro license required.
@@ -188,7 +188,7 @@ flowchart TD
 
 | Widget        | Type    | Key            | Min datasets | Key settings                                 |
 |---------------|---------|----------------|--------------|----------------------------------------------|
-| Data Grid     | Group   | `datagrid`     | 1+           | —                                            |
+| Data Grid     | Group   | `datagrid`     | 1+           | (none)                                       |
 | MultiPlot     | Group   | `multiplot`    | 1+           | `graph: true` on datasets                    |
 | GPS Map       | Group   | `map`          | 2-3          | lat, lon, (alt) datasets                     |
 | Gyroscope     | Group   | `gyro`         | 3            | yaw, pitch, roll                             |
@@ -211,8 +211,8 @@ Every dataset in a project file supports these visualization-related fields:
 | Field              | Type   | Default | Description |
 |--------------------|--------|---------|-------------|
 | `index`            | int    | 0       | Frame offset index (column position in CSV data). |
-| `title`            | string | —       | Human-readable display name. |
-| `units`            | string | —       | Measurement units (for example "m/s", "degC"). |
+| `title`            | string | (none)  | Human-readable display name. |
+| `units`            | string | (none)  | Measurement units (for example "m/s", "degC"). |
 | `widget`           | string | `""`    | Dataset widget type: `"bar"`, `"gauge"`, or `"compass"`. |
 | `plt` (graph)      | bool   | false   | Enable time-series plot. |
 | `fft`              | bool   | false   | Enable FFT spectrum plot. |

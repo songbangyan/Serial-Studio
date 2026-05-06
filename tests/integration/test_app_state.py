@@ -433,18 +433,18 @@ def test_mode_change_via_configure_and_dashboard_produce_same_state(api_client, 
 
 
 @pytest.mark.project
-def test_new_project_does_not_reset_operation_mode(api_client, clean_state):
-    """Creating a new project does not reset the operation mode."""
+def test_new_project_resets_operation_mode_to_project_file(api_client, clean_state):
+    """project.new parks the app in ProjectFile mode (the project editor's mode)."""
     api_client.command("dashboard.setOperationMode", {"mode": 2})
     time.sleep(0.1)
 
     api_client.command("project.new")
     time.sleep(0.2)
 
-    # Operation mode is owned by AppState, not ProjectModel — must survive new project
+    # project.new explicitly sets ProjectFile (mode 0) so the editor is usable
     mode = _get_operation_mode(api_client)
-    assert mode == 2, (
-        f"Operation mode must not be reset by project.new; expected 2, got {mode}"
+    assert mode == 0, (
+        f"project.new must switch to ProjectFile mode; expected 0, got {mode}"
     )
 
 

@@ -6,7 +6,7 @@ The intended workflow: an engineer configures a project once, generates a deploy
 
 > **Pro feature.** Deployment generation and the `--runtime` flag are part of the commercial build. Deployments created on a Pro machine still launch under GPL builds (the runtime CLI flags are honoured by GPL builds), but they can only be *generated* from a Pro install.
 
-> **Serial Studio must be installed on the target machine.** A deployment is a launcher, not a self-contained bundle. It records the absolute path of the Serial Studio executable at the moment it was created, plus the project file path and runtime flags. If Serial Studio isn't installed on the operator's machine — or if it has been uninstalled, moved, or the project file is missing — double-clicking the deployment will fail with the OS's "missing application" or "file not found" error. Install Serial Studio on the target machine first (the same installer the engineer uses), then drop the deployment file onto the desktop.
+> **Serial Studio must be installed on the target machine.** A deployment is a launcher, not a self-contained bundle. It records the absolute path of the Serial Studio executable at the moment it was created, plus the project file path and runtime flags. If Serial Studio isn't installed on the operator's machine (or if it has been uninstalled, moved, or the project file is missing), double-clicking the deployment will fail with the OS's "missing application" or "file not found" error. Install Serial Studio on the target machine first (the same installer the engineer uses), then drop the deployment file onto the desktop.
 
 ## What gets created
 
@@ -18,7 +18,7 @@ Pick **Deploy** from the toolbar. Fill in a name, optionally swap the icon, choo
 | macOS    | `.app` bundle (Bash-launched, with custom `.icns`) | Desktop, opens via Finder/Dock |
 | Linux    | `.desktop` (freedesktop.org Desktop Entry) | Desktop; move to `~/.local/share/applications/` to surface it in the launcher |
 
-Every deployment hard-codes a single project file path plus the runtime flags you picked in the dialog. Double-clicking it relaunches Serial Studio with those exact arguments — there is no "remember last project" guessing involved.
+Every deployment hard-codes a single project file path plus the runtime flags you picked in the dialog. Double-clicking it relaunches Serial Studio with those exact arguments. There is no "remember last project" guessing involved.
 
 ```mermaid
 flowchart LR
@@ -28,7 +28,7 @@ flowchart LR
     D --> E["Dashboard launches<br/>(toolbar hidden, auto-connect)"]
 ```
 
-> **Legend:** Deployments capture the project path and CLI flags at creation time. Editing the project later doesn't re-stamp the deployment — it just keeps pointing at the same file.
+> **Legend:** Deployments capture the project path and CLI flags at creation time. Editing the project later doesn't re-stamp the deployment; it just keeps pointing at the same file.
 
 ---
 
@@ -46,7 +46,7 @@ Two tabs.
 
 ### Logging
 
-Optional toggles that pre-arm the export modules at startup. These are the same flags as the corresponding modules' Enable Export checkboxes — turning them on in the deployment means the export starts the moment the device connects, with no extra clicks.
+Optional toggles that pre-arm the export modules at startup. These are the same flags as the corresponding modules' Enable Export checkboxes. Turning them on in the deployment means the export starts the moment the device connects, with no extra clicks.
 
 | Switch              | CLI flag              | What it does on launch |
 |---------------------|-----------------------|------------------------|
@@ -55,7 +55,7 @@ Optional toggles that pre-arm the export modules at startup. These are the same 
 | **Session Database**| `--session-export`    | Enables Session Database recording to the configured `.db` location. |
 | **Console Log**     | `--console-export`    | Enables Console export to the configured log location. |
 
-Each export module decides where the file lands — the deployment just flips the switch.
+Each export module decides where the file lands; the deployment just flips the switch.
 
 ### Save
 
@@ -71,7 +71,7 @@ Every generated deployment adds `--runtime`. This flag adjusts the dashboard for
 
 | Behaviour                             | Effect with `--runtime` |
 |---------------------------------------|--------------------------|
-| Toolbar                               | Hidden from launch — the Setup, Console, and Project Editor buttons are not visible. |
+| Toolbar                               | Hidden from launch. The Setup, Console, and Project Editor buttons are not visible. |
 | Project loading                       | Loads the file passed via `--project` immediately, in Project mode. No project picker. |
 | Auto-connect                          | Once the QML loads, Serial Studio calls `connectDevice()` automatically if the project's bus type has a usable configuration. |
 | Failed initial connect (4 s grace)    | If no connection is established within 4 seconds of launch, a **Device Unavailable** dialog is shown. |

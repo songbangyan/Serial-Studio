@@ -271,30 +271,33 @@ def test_auto_generate_refuses_to_clobber_customised(api_client, clean_state):
 @pytest.mark.project
 def test_widget_add_and_get(api_client, clean_state):
     """Adding a widget ref appears in the workspace's widgets list."""
+    # widget_type=3 is DashboardAccelerometer; the group must render it
+    gid = _add_group_with_datasets(api_client, "G", widget_type=1, dataset_count=3)
     wid = _add_workspace(api_client, "W")["id"]
     time.sleep(0.15)
 
-    _widget_add(api_client, wid, widget_type=3, group_id=0, relative_index=0)
+    _widget_add(api_client, wid, widget_type=3, group_id=gid, relative_index=0)
     time.sleep(0.15)
 
     widgets = _get_workspace(api_client, wid)["widgets"]
     assert len(widgets) == 1
     assert widgets[0]["widgetType"] == 3
-    assert widgets[0]["groupId"] == 0
+    assert widgets[0]["groupId"] == gid
     assert widgets[0]["relativeIndex"] == 0
 
 
 @pytest.mark.project
 def test_widget_remove_takes_triple_key(api_client, clean_state):
     """Widget removal matches the full (type, groupId, relativeIndex) triple."""
+    gid = _add_group_with_datasets(api_client, "G", widget_type=1, dataset_count=3)
     wid = _add_workspace(api_client, "W")["id"]
     time.sleep(0.15)
 
-    _widget_add(api_client, wid, widget_type=3, group_id=0, relative_index=0)
-    _widget_add(api_client, wid, widget_type=3, group_id=0, relative_index=1)
+    _widget_add(api_client, wid, widget_type=3, group_id=gid, relative_index=0)
+    _widget_add(api_client, wid, widget_type=3, group_id=gid, relative_index=1)
     time.sleep(0.15)
 
-    _widget_remove(api_client, wid, widget_type=3, group_id=0, relative_index=0)
+    _widget_remove(api_client, wid, widget_type=3, group_id=gid, relative_index=0)
     time.sleep(0.15)
 
     widgets = _get_workspace(api_client, wid)["widgets"]

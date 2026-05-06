@@ -271,7 +271,7 @@ private:
   QString dataToString(QByteArrayView data);
   QString plainTextStr(QByteArrayView data);
   QString hexadecimalStr(QByteArrayView data);
-  void appendToDevice(int deviceId, const QString& str, bool addTimestamp);
+  [[nodiscard]] QString appendToDevice(int deviceId, const QString& str, bool addTimestamp);
 
 private:
   DataMode m_dataMode;

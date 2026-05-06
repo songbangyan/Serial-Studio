@@ -807,8 +807,8 @@ void Console::Handler::hotpathRxDeviceData(int deviceId, const IO::ByteArrayPtr&
   if (str.isEmpty())
     return;
 
-  appendToDevice(deviceId, str, showTimestamp());
-  Q_EMIT deviceDataReady(deviceId, str);
+  const auto processed = appendToDevice(deviceId, str, showTimestamp());
+  Q_EMIT deviceDataReady(deviceId, processed);
 }
 
 /**
@@ -828,9 +828,9 @@ void Console::Handler::displaySentData(int deviceId, QByteArrayView data)
   if (!echo())
     return;
 
-  const auto str = dataToString(data);
-  appendToDevice(deviceId, str, showTimestamp());
-  Q_EMIT deviceDataReady(deviceId, str);
+  const auto str       = dataToString(data);
+  const auto processed = appendToDevice(deviceId, str, showTimestamp());
+  Q_EMIT deviceDataReady(deviceId, processed);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -945,12 +945,13 @@ void Console::Handler::onDevicesChanged()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Appends a string to the per-device buffer and optionally displays it.
+ * @brief Appends a string to the per-device buffer and returns the processed (timestamp-prefixed)
+ * form.
  */
-void Console::Handler::appendToDevice(int deviceId, const QString& str, bool addTimestamp)
+QString Console::Handler::appendToDevice(int deviceId, const QString& str, bool addTimestamp)
 {
   if (str.isEmpty())
-    return;
+    return QString();
 
   // Get or create per-device state
   auto& state = m_deviceState[deviceId];
@@ -967,18 +968,8 @@ void Console::Handler::appendToDevice(int deviceId, const QString& str, bool add
 
   QString timestamp;
   if (addTimestamp) {
-    QDateTime dateTime    = QDateTime::currentDateTime();
-    const QString timeStr = dateTime.toString(QStringLiteral("HH:mm:ss.zzz -> "));
-
-    if (ansiColorsEnabled()) {
-      const QString ansiCyan  = QStringLiteral("\033[36m");
-      const QString ansiReset = QStringLiteral("\033[0m");
-      timestamp               = QStringLiteral("%1%2%3").arg(ansiCyan, timeStr, ansiReset);
-    }
-
-    else {
-      timestamp = timeStr;
-    }
+    const QDateTime dateTime = QDateTime::currentDateTime();
+    timestamp                = dateTime.toString(QStringLiteral("HH:mm:ss.zzz -> "));
   }
 
   QString processedString;
@@ -1025,6 +1016,8 @@ void Console::Handler::appendToDevice(int deviceId, const QString& str, bool add
     m_textBuffer.append(processedString.toUtf8());
     m_pendingDisplay.append(processedString);
   }
+
+  return processedString;
 }
 
 /**

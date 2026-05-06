@@ -1,17 +1,17 @@
 # Project Lock
 
-A password gate for the Project Editor. Lock a project once, and from that point on the editor opens behind a blurred "Project Locked" screen until someone enters the password. The dashboard keeps running normally — only editing is gated.
+A password gate for the Project Editor. Lock a project once, and from that point on the editor opens behind a blurred "Project Locked" screen until someone enters the password. The dashboard keeps running normally; only editing is gated.
 
 This is a lightweight feature by design. The goal is **operator/engineer separation**: keep curious operators from rewiring frame parsers or moving widgets around mid-shift, without pretending to defend against an attacker with a text editor and ten minutes.
 
-> **Pro feature.** Lock is part of the commercial build. Locked projects still open under GPL builds — the editor is just hidden the same way it is in Pro.
+> **Pro feature.** Lock is part of the commercial build. Locked projects still open under GPL builds; the editor is just hidden the same way it is in Pro.
 
 ## What the lock does
 
 The Project Editor has a **Lock** button on the toolbar (next to Save As, before Add Device). Click it once and Serial Studio walks you through two prompts:
 
-1. **Choose a password** — the password you want operators to type when they need to unlock.
-2. **Confirm the password** — paranoia check, exact-match.
+1. **Choose a password.** The password you want operators to type when they need to unlock.
+2. **Confirm the password.** Paranoia check, exact-match.
 
 Once both prompts close cleanly:
 
