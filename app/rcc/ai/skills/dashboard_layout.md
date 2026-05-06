@@ -44,8 +44,8 @@ The same visualization choice shows up in three places with three
 different names and numbers. Mixing them up is the most common source
 of "I enabled it but the workspace still won't accept it" confusion.
 
-| Visualization | JSON key (`.ssproj`) | `DatasetOption` bitflag (`setOption`) | `DashboardWidget` enum (`addWidget`) |
-|---------------|----------------------|---------------------------------------|--------------------------------------|
+| Visualization | JSON key (`.ssproj`) | `DatasetOption` bitflag (`setOptions`) | `DashboardWidget` enum (`addWidget`) |
+|---------------|----------------------|----------------------------------------|--------------------------------------|
 | Plot          | `graph: true`        | `1`  (DatasetPlot)                    | `9`  (DashboardPlot)                 |
 | FFT           | `fft: true`          | `2`  (DatasetFFT)                     | `7`  (DashboardFFT)                  |
 | Bar           | `widget: "bar"`      | `4`  (DatasetBar)                     | `10` (DashboardBar)                  |
@@ -56,8 +56,8 @@ of "I enabled it but the workspace still won't accept it" confusion.
 
 Notes:
 - Bar / Gauge / Compass are **mutually exclusive** — a dataset's `widget`
-  string holds at most one of them. The `setOption` calls reflect that:
-  enabling Bar clears Gauge and Compass on the same dataset.
+  string holds at most one of them. `setOptions` enforces this: if more
+  than one of those bits is set in the value, the highest bit wins.
 - Plot / FFT / LED / Waterfall are **independent flags** — a dataset can
   have Plot + FFT + Waterfall all on at once, and the group's
   `compatibleWidgetTypes` will list all three.
@@ -73,11 +73,15 @@ If `addWidget` rejects your `widgetType` with "not compatible with group N":
 1. Pick the right dataset in that group.
 2. Look up the bitflag value from the table above (Plot is `1`, FFT is
    `2`, Waterfall is `64`).
-3. `project.dataset.setOption{groupId, datasetId, option, enabled: true}`,
-   OR `project.dataset.setOptions{groupId, datasetId, options: <bitflag>}`
-   to set several at once,
-   OR `project.dataset.update{groupId, datasetId, graph: true, fft: true,
-   waterfall: true}` to set them inline alongside other field edits.
+3. `project.dataset.setOptions{groupId, datasetId, options: <bitfield>}`
+   is the canonical call -- pass the bitwise OR of every flag you want
+   enabled (any flag NOT in the value is disabled).
+   `project.dataset.update{groupId, datasetId, graph: true, fft: true,
+   waterfall: true}` is the alternative when you're patching other
+   dataset fields (title, units, ranges) in the same call.
+   `project.dataset.setOption` (singular) is deprecated; only use it
+   when you genuinely need to flip ONE bit while preserving the rest
+   and you don't already have the dataset's current options handy.
 4. Re-run `addWidget` — `compatibleWidgetTypes` now includes the
    corresponding `DashboardWidget` enum.
 
@@ -208,8 +212,7 @@ project.workspace.addWidget { workspaceId: <wsId>, widgetType: 17,
 
 Common mistake: setting `widgetType: 1` (Plot bitflag) instead of
 `widgetType: 9` (DashboardPlot enum). The bitflag is only for
-`setOption` / `setOptions`; `addWidget` always takes the
-`DashboardWidget` enum.
+`setOptions`; `addWidget` always takes the `DashboardWidget` enum.
 
 ## Common gotchas
 

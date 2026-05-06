@@ -77,40 +77,51 @@
 {
   switch (wtype) {
     case SerialStudio::DashboardPlot:
-      return QStringLiteral(" To enable widgetType=9 (Plot), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:1, enabled:true}.")
+      return QStringLiteral(" To enable widgetType=9 (Plot), set DatasetOption "
+                            "bit 1 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<currentBitfield|1>} or "
+                            "project.dataset.update{groupId:%1, datasetId:<n>, "
+                            "graph:true}.")
         .arg(gid);
     case SerialStudio::DashboardFFT:
-      return QStringLiteral(" To enable widgetType=7 (FFT), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:2, enabled:true}.")
+      return QStringLiteral(" To enable widgetType=7 (FFT), set DatasetOption "
+                            "bit 2 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<currentBitfield|2>} or "
+                            "project.dataset.update{groupId:%1, datasetId:<n>, "
+                            "fft:true}.")
         .arg(gid);
     case SerialStudio::DashboardBar:
-      return QStringLiteral(" To enable widgetType=10 (Bar), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:4, enabled:true} (clears Gauge/Compass).")
+      return QStringLiteral(" To enable widgetType=10 (Bar), set DatasetOption "
+                            "bit 4 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<bitfield with bit 4>} "
+                            "(clears Gauge/Compass).")
         .arg(gid);
     case SerialStudio::DashboardGauge:
-      return QStringLiteral(" To enable widgetType=11 (Gauge), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:8, enabled:true} (clears Bar/Compass).")
+      return QStringLiteral(" To enable widgetType=11 (Gauge), set DatasetOption "
+                            "bit 8 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<bitfield with bit 8>} "
+                            "(clears Bar/Compass).")
         .arg(gid);
     case SerialStudio::DashboardCompass:
-      return QStringLiteral(" To enable widgetType=12 (Compass), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:16, enabled:true} (clears Bar/Gauge).")
+      return QStringLiteral(" To enable widgetType=12 (Compass), set DatasetOption "
+                            "bit 16 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<bitfield with bit 16>} "
+                            "(clears Bar/Gauge).")
         .arg(gid);
     case SerialStudio::DashboardLED:
-      return QStringLiteral(" To enable widgetType=8 (LED), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:32, enabled:true}.")
+      return QStringLiteral(" To enable widgetType=8 (LED), set DatasetOption "
+                            "bit 32 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<currentBitfield|32>} or "
+                            "project.dataset.update{groupId:%1, datasetId:<n>, "
+                            "led:true}.")
         .arg(gid);
 #ifdef BUILD_COMMERCIAL
     case SerialStudio::DashboardWaterfall:
-      return QStringLiteral(" To enable widgetType=17 (Waterfall), call "
-                            "project.dataset.setOption{groupId:%1, datasetId:<n>, "
-                            "option:64, enabled:true}.")
+      return QStringLiteral(" To enable widgetType=17 (Waterfall), set DatasetOption "
+                            "bit 64 via project.dataset.setOptions{groupId:%1, "
+                            "datasetId:<n>, options:<currentBitfield|64>} or "
+                            "project.dataset.update{groupId:%1, datasetId:<n>, "
+                            "waterfall:true}.")
         .arg(gid);
 #endif
     default:

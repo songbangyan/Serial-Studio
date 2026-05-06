@@ -335,22 +335,16 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setOption"),
-    QStringLiteral("Toggle one DatasetOption flag on a dataset. Updates the group's "
-                   "compatibleWidgetTypes immediately so project.workspace.addWidget "
-                   "will accept the corresponding DashboardWidget enum.\n"
-                   "option values (DatasetOption bitflag):\n"
-                   "  1  = Plot (time-series; JSON key 'graph')\n"
-                   "  2  = FFT\n"
-                   "  4  = Bar     (mutually exclusive with Gauge / Compass)\n"
-                   "  8  = Gauge   (mutually exclusive with Bar / Compass)\n"
-                   "  16 = Compass (mutually exclusive with Bar / Gauge)\n"
-                   "  32 = LED\n"
-                   "  64 = Waterfall (Pro)\n"
-                   "Pass exactly ONE bit -- use project.dataset.setOptions (plural) to "
-                   "apply several at once, or project.dataset.update to mix with other "
-                   "field edits. NOTE: this is a DatasetOption bitflag, NOT a "
-                   "DashboardWidget enum -- the numbers do not line up with "
-                   "project.workspace.addWidget's widgetType."),
+    QStringLiteral("DEPRECATED -- prefer project.dataset.setOptions, which takes the "
+                   "full bitfield in one call and removes the singular/plural ambiguity. "
+                   "Kept for backward compatibility with existing scripts. Toggles one "
+                   "DatasetOption flag on a dataset and updates the group's "
+                   "compatibleWidgetTypes immediately. option values (DatasetOption "
+                   "bitflag): 1=Plot, 2=FFT, 4=Bar, 8=Gauge, 16=Compass, 32=LED, "
+                   "64=Waterfall (Pro). Bar/Gauge/Compass are mutually exclusive. "
+                   "NOTE: this is a DatasetOption bitflag, NOT a DashboardWidget enum -- "
+                   "the numbers do not line up with project.workspace.addWidget's "
+                   "widgetType."),
     makeSchema({
       {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
