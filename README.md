@@ -17,23 +17,23 @@ It runs on Windows, macOS, Linux, and Raspberry Pi.
 
 ## What you can do with it
 
-**Connect to almost anything.** Serial/UART, Bluetooth LE, TCP/UDP, CAN Bus, Modbus TCP/RTU, MQTT, Audio, raw USB (libusb), HID (gamepads, custom devices), and Process I/O. One project can talk to several devices at once, each on its own protocol.
+**Connect to a device.** Serial/UART, Bluetooth LE, and TCP/UDP in the GPL build. MQTT, Modbus TCP/RTU, CAN Bus, Audio input, raw USB (libusb), HID (hidapi), and Process I/O are Pro. Multi-source projects (several devices in one project, each on its own protocol) are Pro.
 
-**Visualize data live.** 15+ widget types: line plots, XY plots, gauges, bar charts, GPS maps, FFT spectrum, waterfall (spectrogram), accelerometer, gyroscope, compass, data grids, 3D views, and live camera feed. When none of the built-ins fit, the **Painter** widget exposes a `paint(ctx, w, h)` JavaScript callback with a Canvas2D-style API and ships ~17 templates (oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, and more) so you can draw exactly what your data looks like. 60 FPS with under 50 ms latency.
+**Visualize data live.** 15+ widget types: line plots, gauges, bar charts, GPS maps, FFT spectrum, accelerometer, gyroscope, compass, data grids, LED panels, terminal, and multi-channel plots in the GPL build. 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera feed), and the scriptable Painter widget are Pro. The Painter exposes a JavaScript `paint(ctx, w, h)` callback with a Canvas2D-style API and ships 18 templates (oscilloscope, polar plot, artificial horizon, audio VU, dial gauge, heatmap, sparklines, vector field, XY scope, and more).
 
-**Configure dashboards without custom code.** The Project Editor lets you define groups, datasets, and widgets through structured forms, closer to editing a schema than coding a UI. Or skip the project file entirely with Quick Plot: print comma-separated values from your device and see them plot instantly. Workspaces split large projects into focused tabs, with a taskbar search for big setups.
+**Configure dashboards without custom code.** The Project Editor defines groups, datasets, and widgets through structured forms — closer to editing a schema than coding a UI. Or skip the project file entirely with Quick Plot: print comma-separated values from your device and see them plot instantly. Workspaces split large projects into focused tabs, with a taskbar search.
 
-**Parse and transform data.** Write frame parsers in JavaScript or Lua 5.4, or pick from 20+ templates (MAVLink, NMEA, UBX, RTCM, MessagePack, COBS, SLIP, JSON, Modbus, and more). Apply per-dataset transforms (EMA filters, scaling, calibration, unit conversion) with short scripts that run every frame, no re-flashing firmware needed. Data Tables act as a shared bus so transforms can derive virtual datasets from each other.
+**Parse and transform data.** Frame parsers in JavaScript or Lua 5.4, plus 28 bundled templates (MAVLink, NMEA 0183/2000, UBX, SiRF, RTCM, MessagePack, TLV, COBS, SLIP, JSON, XML, YAML, INI, Modbus, and more). Per-dataset transforms (EMA, scaling, calibration, unit conversion) run every frame as short JS or Lua snippets, no re-flashing firmware needed. Data Tables act as a shared bus so transforms can derive virtual datasets from each other.
 
-**Send commands back.** Buttons, toggles, sliders, knobs, text fields, and freeform output panels run JS templates that emit GCode, SCPI, Modbus, NMEA, CAN, or whatever your device speaks. Define Actions with optional timers for polling or periodic control.
+**Send commands back (Pro).** Buttons, toggles, sliders, knobs, text fields, and freeform output panels run JS templates that emit GCode, SCPI, Modbus, NMEA, CAN, or whatever your device speaks. Define Actions with optional timers for polling or periodic control.
 
-**Record, replay, and share.** Export to CSV or MDF4. Record full sessions (frames plus raw bytes) into a SQLite database, then browse, tag, replay, or export them from the Database Explorer. Turn a session into a styled HTML or PDF report with interactive charts for sharing results. Transfer files over XMODEM, YMODEM, or ZMODEM with CRC and crash recovery.
+**Record, replay, and share.** CSV export is in the GPL build. MDF4 import/export, full session recording (frames plus raw bytes) into a SQLite database with the Database Explorer for browsing, tagging, exporting, and replay, HTML or PDF session reports with interactive charts, and XMODEM/YMODEM/ZMODEM file transfer are Pro.
 
-**Automate and integrate.** A TCP API on port 7777 exposes 290+ commands for programmatic control. An MCP server lets AI models like Claude drive the app directly for automated analysis.
+**Automate and integrate.** A TCP API on port 7777 exposes 320+ commands for programmatic control. An MCP server wraps the same surface for external AI clients (Claude Desktop, custom MCP hosts).
 
-**Chat with your data.** A built-in AI Assistant panel lets you talk to your live dashboard from inside Serial Studio. Bring your own API key for OpenAI, Anthropic, or Google Gemini and ask the model to explain a spike, summarize a session, tweak a parser, or send a command back to the device. The model uses the same TCP API to read datasets, trigger actions, and reason about what's coming off the wire.
+**AI Assistant for project editing (Pro).** A bring-your-own-key chat panel that edits the *project* for you, not the live device. Describe what you want and it configures sources, groups, datasets, frame parsers, transforms, output widgets, and workspaces by calling the same project-editing API your scripts and the MCP server already use. It does not read live telemetry, does not connect or disconnect drivers, and cannot write to the device, those commands are blocked. Five providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, and a local OpenAI-compatible endpoint (Ollama, llama.cpp, LM Studio, vLLM) for fully offline use. Mutating actions show an Approve/Deny card before running. See the [AI Assistant docs](./doc/help/AI-Assistant.md) for the full safety map and what gets sent to the provider.
 
-**Industrial and automotive ready.** A Modbus register-map importer (CSV/XML/JSON) builds a ready-to-use project straight from vendor documentation. DBC files import decoded CAN signals.
+**Vendor-document importers (Pro).** The Modbus register-map importer turns a vendor CSV / XML / JSON map into a ready-to-use project. DBC import decodes CAN signals straight from the standard automotive description files.
 
 New here? The [help center](https://serial-studio.com/help) has FAQs, use cases, and comparisons with similar tools.
 
@@ -96,7 +96,7 @@ An ARM64 AppImage is available for Raspberry Pi and similar boards. Performance 
 
 ### At a glance
 
-- **Protocols:** Serial/UART, Bluetooth LE, TCP/UDP, Audio, raw USB, HID, Process I/O, plus MQTT, Modbus TCP/RTU, and CAN Bus (Pro).
+- **Protocols:** Serial/UART, Bluetooth LE, and TCP/UDP in the GPL build. MQTT, Modbus TCP/RTU, CAN Bus, Audio, raw USB (libusb), HID (hidapi), and Process I/O are Pro.
 - **Visualization:** 15+ widgets — line plots, gauges, bar charts, GPS maps, FFT, waterfall (spectrogram), accelerometer, gyroscope, compass, data grids, 3D views, and live camera feed (some Pro).
 - **Painter widget (Pro):** scriptable Canvas2D-style canvas driven by a JS `paint(ctx, w, h)` callback. Watchdog-protected QJSEngine, persistent script state across frames, ~17 ready-to-use templates (oscilloscope, polar plot, artificial horizon, audio VU meter, dial gauge, heatmap, LED matrix, sparklines, vector field, XY scope, and more).
 - **Output widgets:** buttons, toggles, sliders, knobs, text fields, and freeform panels, with JS templates for GCode, SCPI, Modbus, NMEA, CAN, and more (Pro).
@@ -113,9 +113,9 @@ An ARM64 AppImage is available for Raspberry Pi and similar boards. Performance 
 - **CAN DBC import:** decoded signals for automotive and industrial work (Pro).
 - **Image view:** live JPEG or PNG camera streams alongside telemetry on the same connection (Pro).
 - **Multi-device:** several devices in one project, each with its own protocol (Pro).
-- **TCP API on port 7777:** 290+ commands for programmatic control (see the [API client example](./examples/API%20Test)).
-- **AI Assistant (Pro):** built-in chat panel for OpenAI, Anthropic, and Google Gemini. Bring your own API key, then ask the model to inspect live data, summarize a session, or send commands back to the device.
-- **AI integration:** Claude and other models via the Model Context Protocol (see [MCP Client](./examples/MCP%20Client)).
+- **TCP API on port 7777:** 320+ commands for programmatic control (see the [API client example](./examples/API%20Test)).
+- **AI Assistant (Pro):** in-app chat panel that edits the project (sources, datasets, parsers, transforms, output widgets, workspaces) by calling the project-editing API. Bring-your-own-key for Anthropic, OpenAI, Gemini, DeepSeek, or a local OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM); the local option runs fully offline. Mutating commands require explicit approval; connection control and device writes are permanently blocked. Hidden in operator deployments.
+- **MCP integration:** external AI clients (Claude Desktop, custom MCP hosts) can call the full TCP API, including connection control and device writes, over the Model Context Protocol (see [MCP Client](./examples/MCP%20Client)).
 - **Fast and cross-platform:** 60 FPS, under 50 ms latency, on Windows 10/11, macOS 11+ (Intel and Apple Silicon), Linux x64, and Raspberry Pi ARM64.
 - **Dual licensed:** open source GPL-3.0 core with proprietary Pro features (see [LICENSE.md](LICENSE.md)).
 
@@ -189,7 +189,7 @@ First time using it? The [help center](https://serial-studio.com/help) covers tr
 - **MDF4 playback and export:** CAN Bus, LIN, FlexRay, and analog (Pro).
 - **Session database and Explorer:** record, tag, export, and replay full sessions from SQLite (Pro).
 - **Session reports:** export HTML or PDF reports with interactive Chart.js plots (Pro).
-- **TCP API:** 290+ commands for programmatic control (see [API Client](./examples/API%20Test)).
+- **TCP API:** 320+ commands for programmatic control (see [API Client](./examples/API%20Test)).
 
 ## Building Serial Studio
 
@@ -197,9 +197,9 @@ First time using it? The [help center](https://serial-studio.com/help) covers tr
 
 Minimum:
 
-- **Qt 6.7 or later** (6.9.2 recommended). Required modules: QtCore, QtGui, QtWidgets, QtSerialPort, QtNetwork, QtCharts, QtSvg, QtBluetooth, QtQuick.
+- **Qt 6.9 or later** (6.9.2 recommended). Required modules: QtCore, QtGui, QtWidgets, QtSerialPort, QtNetwork, QtCharts, QtSvg, QtBluetooth, QtQuick.
 - **C++20 compiler:** GCC 10+ (Linux), Clang 12+ (macOS), or MSVC 2019+ (Windows).
-- **CMake 3.16 or later.**
+- **CMake 3.20 or later.**
 - Platform toolchain (see [Platform specifics](#platform-specifics)).
 
 #### Platform specifics
@@ -232,7 +232,9 @@ cmake --build build -j$(nproc)
 
 You can also open `CMakeLists.txt` in Qt Creator or any CMake-aware IDE without extra setup.
 
-By default the build produces a fully GPLv3-compliant version. It includes most core features but leaves out commercial modules like MQTT, 3D visualization, XY plotting, and other advanced tools that depend on proprietary Qt components.
+The default build is the GPLv3 edition. It includes the core: UART/TCP/UDP/BLE drivers, the Project Editor, Quick Plot and Console modes, the standard widgets (line plot, gauge, bar, GPS, FFT, accelerometer, gyroscope, compass, data grid, LED panel, terminal, multiplot), JavaScript and Lua frame parsers, per-dataset transforms, CSV export, and the local TCP/MCP API.
+
+Pro-only modules are not built into the GPL edition: MQTT, Modbus, CAN Bus, Audio, USB, HID, Process I/O, multi-source projects, the 3D Plot, XY Plot, Waterfall, Image View, and Painter widgets, the output widgets, MDF4 import/export, the session database and Database Explorer, session reports, XMODEM/YMODEM/ZMODEM file transfer, the Modbus register-map and CAN DBC importers, and the AI Assistant. Some of those depend on proprietary Qt modules (Modbus, CAN Bus, MQTT); others are simply commercial-licensed code in this repository. See [Pro vs Free Features](./doc/help/Pro-vs-Free.md) for the full matrix.
 
 If you are a Pro user or have a commercial license, [contact the maintainer](mailto:alex@serial-studio.com) for build instructions and activation details.
 
