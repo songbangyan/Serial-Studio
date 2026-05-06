@@ -650,17 +650,24 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("widgetType=0 is DashboardTerminal, not a workspace "
-                     "tile. Pick a real visualization type from the "
-                     "group's compatibleWidgetTypes "
-                     "(see project.groups.list)."));
+      QStringLiteral(
+        "widgetType=0 is DashboardTerminal/Console, not a workspace tile. "
+        "Common cause: confusing the DatasetOption bitflag (used by "
+        "project.dataset.setOptions: 1=Plot, 2=FFT, 4=Bar, 8=Gauge, "
+        "16=Compass, 32=LED, 64=Waterfall) with the DashboardWidget enum "
+        "(used here: 9=Plot, 7=FFT, 10=Bar, 11=Gauge, 12=Compass, 8=LED, "
+        "17=Waterfall, 1=DataGrid, 2=MultiPlot, 5=GPS). The numbers do not "
+        "line up. Pick a value from the group's compatibleWidgetTypes "
+        "(see project.group.list)."));
 
   if (wtype == SerialStudio::DashboardNoWidget)
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("widgetType=13 is DashboardNoWidget. Pick a real "
-                     "visualization type."));
+      QStringLiteral("widgetType=13 is DashboardNoWidget (a sentinel value, "
+                     "not a tile). Pick a real visualization type from the "
+                     "group's compatibleWidgetTypes "
+                     "(see project.group.list)."));
 
   // Validate the target workspace exists; reject stale IDs explicitly
   const auto& wsList = pm.editorWorkspaces();
