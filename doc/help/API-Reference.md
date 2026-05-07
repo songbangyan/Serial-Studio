@@ -996,9 +996,8 @@ Get list of available socket types.
 ```json
 {
   "socketTypes": [
-    {"index": 0, "name": "TCP Client"},
-    {"index": 1, "name": "TCP Server"},
-    {"index": 2, "name": "UDP"}
+    {"index": 0, "name": "TCP"},
+    {"index": 1, "name": "UDP"}
   ]
 }
 ```
@@ -1051,7 +1050,7 @@ python test_api.py send io.network.setUdpRemotePort -p port=9001
 Set socket type.
 
 **Parameters:**
-- `socketTypeIndex` (int): 0=TCP Client, 1=TCP Server, 2=UDP
+- `socketTypeIndex` (int): 0=TCP (client), 1=UDP. Serial Studio does not act as a TCP server.
 
 **Example:**
 ```bash

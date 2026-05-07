@@ -98,27 +98,30 @@ For Serial Studio, multicast is useful when:
 
 ## How Serial Studio uses it
 
-The Network driver wraps Qt's `QTcpSocket` (client mode), `QTcpServer` (server mode), and `QUdpSocket`. The driver lives on the main thread and uses Qt's async I/O; no dedicated thread (see [Threading and Timing Guarantees](Threading-and-Timing.md)).
+The Network driver wraps Qt's `QTcpSocket` and `QUdpSocket`. The driver lives on the main thread and uses Qt's async I/O; no dedicated thread (see [Threading and Timing Guarantees](Threading-and-Timing.md)).
 
-You configure four things:
+> **Serial Studio is a TCP client only.** It dials out to an existing TCP server — it does not listen for incoming TCP connections, and there is no setting to make it act as a server. If your device expects to push data to a listener, run a tiny TCP server in front of Serial Studio (see [Common pitfalls](#common-pitfalls)).
 
-| Setting | Controls |
-|---------|----------|
-| **Protocol** | TCP or UDP |
-| **Mode** (TCP) | Client (Serial Studio dials out) or Server (Serial Studio listens for incoming connections) |
-| **Mode** (UDP) | Receiver, Sender, or Multicast |
-| **Address** | Remote IP / hostname (TCP client, UDP sender) or local interface (TCP server, UDP receiver) |
-| **Port** | TCP/UDP port number |
+The Setup panel exposes these fields:
 
-For multicast UDP, the address is the multicast group (e.g. `239.1.1.1`) and Serial Studio joins the group on connect. For multicast send, the destination address is the group; the OS handles IGMP transparently.
+| Field | Applies to | Controls |
+|-------|------------|----------|
+| **Socket Type** | both | TCP or UDP |
+| **Remote Address** | both | Server IP / hostname (TCP) or peer / multicast group (UDP) |
+| **Remote Port** | TCP, UDP non-multicast | Port to connect to (TCP) or send to (UDP) |
+| **Local Port** | UDP only | Port to bind for receiving; `0` = OS-assigned |
+| **Multicast** | UDP only | When checked, **Remote Address** is treated as a multicast group (e.g. `239.1.1.1`) and Serial Studio joins it on connect; the OS handles IGMP transparently |
+
+UDP is a single bidirectional socket — there is no separate Receiver / Sender / Multicast mode. Serial Studio binds **Local Port** to receive, and uses **Remote Address** + **Remote Port** as the destination when you write data back.
 
 Setup steps live in the [Protocol Setup Guides → Network section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **"Serial Studio can't connect" with TCP client mode.** Check whether the device or remote service is actually listening. From a terminal, `telnet host port` (or `nc host port`) tries the same connection; if it fails, the problem is the network or the remote, not Serial Studio.
+- **"Serial Studio can't connect" over TCP.** Check whether the device or remote service is actually listening. From a terminal, `telnet host port` (or `nc host port`) tries the same connection; if it fails, the problem is the network or the remote, not Serial Studio.
+- **"My device wants to push to a listener — how do I make Serial Studio listen on TCP?"** You can't. Serial Studio is TCP client only. Stand up a small TCP server your device connects to, and point Serial Studio at that server. A ~10-line Python script does the job (the [FAQ](FAQ.md) has one); `ncat -lk <port>` and `socat` work too. If you don't want to run a relay at all, send the data over UDP instead — Serial Studio binds a local port for that.
 - **Firewall blocks the port.** On Windows, the Windows Firewall pop-up may have been dismissed without granting access. Re-allow Serial Studio in Windows Firewall settings. On Linux, `ufw status` shows whether the port is blocked.
-- **Address already in use (TCP server, UDP receiver).** Another process is bound to the same port. Find it with `netstat -an | findstr :7777` (Windows) or `lsof -i :7777` (Linux/macOS).
+- **Address already in use (UDP local port).** Another process is bound to the same port. Find it with `netstat -an | findstr :7777` (Windows) or `lsof -i :7777` (Linux/macOS). Doesn't apply to TCP — Serial Studio is a TCP client and uses an OS-assigned ephemeral source port.
 - **UDP packets arrive out of order or get lost.** That's UDP working as designed, not a bug. If you can't tolerate it, switch to TCP. Or layer your own sequence numbers on top.
 - **Multicast traffic doesn't reach the receiver across subnets.** Most home routers don't forward multicast across VLANs without explicit IGMP snooping configuration. Multicast is reliable on a single LAN segment; cross-subnet routing is a network admin problem.
 - **TCP appears slow on Windows.** Nagle's algorithm is on by default and bunches small writes together to amortize header overhead. For interactive serial-style streams it can add up to 200 ms of latency. Most embedded TCP stacks let you disable Nagle (TCP_NODELAY); Serial Studio sets this where Qt allows.
