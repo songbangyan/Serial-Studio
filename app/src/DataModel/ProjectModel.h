@@ -314,6 +314,7 @@ public slots:
     int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon);
   void addWidgetToWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
   void removeWidgetFromWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
+  int cleanupWorkspaceWidgetRefs(const QSet<qint64>& validKeys);
 
   void promptAddWorkspace();
   void promptRenameWorkspace(int workspaceId);

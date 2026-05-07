@@ -384,6 +384,32 @@ Item {
             }
           }
         }
+
+        MouseArea {
+          id: colorbarHover
+
+          hoverEnabled: true
+          anchors.fill: parent
+          cursorShape: Qt.CrossCursor
+          acceptedButtons: Qt.NoButton
+
+          readonly property real hoverDb: {
+            if (!root.model || height <= 0)
+              return 0
+
+            const t = Math.max(0, Math.min(1, mouseY / height))
+            return root.model.maxDb - t * (root.model.maxDb - root.model.minDb)
+          }
+        }
+
+        ToolTip {
+          delay: 0
+          parent: colorbarStrip
+          x: colorbarHover.mouseX + 12
+          y: colorbarHover.mouseY + 12
+          visible: colorbarHover.containsMouse
+          text: colorbarHover.hoverDb.toFixed(1) + " dB"
+        }
       }
 
       Label {

@@ -27,6 +27,7 @@
   { "id": "api-reference", "title": "API Reference", "section": "Integration", "file": "API-Reference.md" },
   { "id": "grpc-server", "title": "gRPC Server", "section": "Integration", "file": "gRPC-Server.md" },
   { "id": "plugin-development", "title": "Plugin Development", "section": "Integration", "file": "Plugin-Development.md" },
+  { "id": "about", "title": "About Serial Studio", "section": "Support", "file": "About.md" },
   { "id": "faq", "title": "FAQ", "section": "Support", "file": "FAQ.md" },
   { "id": "troubleshooting", "title": "Troubleshooting Guide", "section": "Support", "file": "Troubleshooting.md" },
   { "id": "use-cases", "title": "Use Cases", "section": "Support", "file": "Use-Cases.md" },

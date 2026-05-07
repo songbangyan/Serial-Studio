@@ -60,16 +60,16 @@ workspaces start at 5000.
    ┌─────────────────────────────────────────────────────────────┐
    │ Computed registers RESET (Constant registers untouched)     │
    ├─────────────────────────────────────────────────────────────┤
-   │ for each group (project order):                              │
-   │   for each dataset (project order):                          │
-   │     1. raw = channels[index - 1]                             │
-   │     2. setDatasetRaw(uniqueId, raw)                          │
-   │     3. if transformCode: final = transform(raw)              │
-   │        - sees: all raw, final of EARLIER datasets only,      │
-   │                Constant + this-frame's Computed writes        │
-   │     4. setDatasetFinal(uniqueId, final)                      │
+   │ for each group (project order):                             │
+   │   for each dataset (project order):                         │
+   │     1. raw = channels[index - 1]                            │
+   │     2. setDatasetRaw(uniqueId, raw)                         │
+   │     3. if transformCode: final = transform(raw)             │
+   │        - sees: all raw, final of EARLIER datasets only,     │
+   │                Constant + this-frame's Computed writes      │
+   │     4. setDatasetFinal(uniqueId, final)                     │
    ├─────────────────────────────────────────────────────────────┤
-   │ TimestampedFramePtr published once, shared by all consumers  │
+   │ TimestampedFramePtr published once, shared by all consumers │
    └─────────────────────────────────────────────────────────────┘
          │
          ├─► Dashboard widgets (visualization update on UI tick ~24 Hz)
@@ -192,6 +192,34 @@ The integer bitflags above do NOT line up with the `DashboardWidget`
 enum integers used by `project.workspace.addWidget` -- which is
 exactly why slugs exist. Use slugs and the collision disappears. See
 `dashboard_layout` for the full table.
+
+## Dataset min/max — abbreviated on write, full-name on read
+
+Three independent pairs per dataset (Plot, Widget, FFT/Waterfall). The
+API parameter names you write are NOT the keys you read back:
+
+| Read (responses, `.ssproj`)    | Write (`project.dataset.update`) | Drives                                                                              |
+|--------------------------------|----------------------------------|-------------------------------------------------------------------------------------|
+| `plotMin` / `plotMax`          | `pltMin` / `pltMax`              | Plot, MultiPlot Y-axis                                                              |
+| `widgetMin` / `widgetMax`      | `wgtMin` / `wgtMax`              | Gauge dial, Bar fill                                                                |
+| `fftMin` / `fftMax`            | `fftMin` / `fftMax`              | Expected raw input range used to normalize the FFT/Waterfall input to [-1, +1]. NOT a dB axis. |
+
+Writing `{"plotMin": 100}` to `dataset.update` returns `success: true`
+and writes nothing — the field name doesn't match the param check.
+Always:
+
+1. Use `pltMin`/`wgtMin` (etc.) on the WRITE side.
+2. After writing, call `project.dataset.getByPath` and confirm the
+   response shows your values under `plotMin`/`widgetMin`/`fftMin`. If
+   they're still 0, the write was silently dropped.
+
+`fftMin`/`fftMax` are identical in both directions, so they don't trip
+this trap.
+
+The pairs DO NOT CASCADE. A dataset wired to Plot + Gauge needs both
+`pltMin`/`pltMax` AND `wgtMin`/`wgtMax` set, or one widget renders
+against the default 0/0. See `dashboard_layout` for the full
+widget→pair mapping and recipes.
 
 ## Error categories
 

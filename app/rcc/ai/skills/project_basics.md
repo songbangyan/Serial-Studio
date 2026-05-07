@@ -152,16 +152,30 @@ Workspace IDs live in a separate range -- always `>= 1000`.
 ### Numeric ranges on a dataset
 
 A single dataset can carry **three independent min/max pairs**, each
-driving a different surface:
+driving a different surface. They do NOT cascade — setting one does not
+affect any other. Always define the pair(s) for every visualization
+you enable on a dataset, otherwise the matching widget renders against
+a default 0/0 range and looks empty / collapsed / max'd out.
 
-| Range pair             | Drives                                                                |
-|------------------------|-----------------------------------------------------------------------|
-| `plotMin` / `plotMax`  | Y-axis on Plot/MultiPlot                                              |
-| `widgetMin` / `widgetMax` | Gauge / Bar / Compass scales (radial dial limits, bar fill range)  |
-| `fftMin` / `fftMax`    | dB floor/ceiling on FFT and Waterfall plots                           |
+| Range pair (file/response key) | API write-form (`dataset.update`) | Drives                                                                                                          |
+|--------------------------------|-----------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `plotMin` / `plotMax`          | `pltMin` / `pltMax`               | Y-axis on Plot / MultiPlot                                                                                      |
+| `widgetMin` / `widgetMax`      | `wgtMin` / `wgtMax`               | Gauge dial, Bar fill, Compass dial (Compass is fixed 0–360 and ignores these)                                   |
+| `fftMin` / `fftMax`            | `fftMin` / `fftMax`               | Expected raw input range, used to normalize the time-domain signal to [-1, +1] before windowing + FFT. NOT a dB axis (the dB Y-axis on FFT/Waterfall widgets is fixed). |
 
-Setting one doesn't cascade. A gauge that runs 0–360 (`widgetMin/Max`)
-might still want the underlying plot Y-axis at -50–50 (`plotMin/Max`).
+**Naming asymmetry — silent footgun.** Project files (`.ssproj`) and API
+responses (`project.dataset.getByPath`, `project.snapshot`) use the FULL
+form `plotMin` / `widgetMin`. The `project.dataset.update` API accepts
+ONLY the abbreviated form `pltMin` / `wgtMin`. Round-tripping a response
+field name into an update call writes nothing and returns success. After
+any write, read back via `dataset.getByPath` and confirm the response
+shows the new values under the full key names. `fftMin` / `fftMax` are
+the same in both directions.
+
+A gauge that runs 0–360 (`wgtMin`/`wgtMax`) might still want the
+underlying plot Y-axis at −50…+50 (`pltMin`/`pltMax`) — set both. See
+the `dashboard_layout` skill for which widget needs which pair, the
+verify-after-update rule, and full recipes.
 
 ### Frame detection enum (`frameDetection` field)
 

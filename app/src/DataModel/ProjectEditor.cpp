@@ -25,6 +25,7 @@
 #include <memory>
 #include <QDirIterator>
 #include <QFileInfo>
+#include <QSet>
 #include <QTimer>
 
 #include "DataModel/FrameBuilder.h"
@@ -32,6 +33,7 @@
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/Translator.h"
+#include "Misc/Utilities.h"
 #include "SerialStudio.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -1483,6 +1485,7 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
     wsItem->setData(KindWorkspace, TreeItemKind);
     wsItem->setData(ws.workspaceId, TreeItemId);
     wsItem->setData(-1, TreeItemParentId);
+    wsItem->setData(workspaceHasUnresolvedRefs(ws.workspaceId), TreeViewWorkspaceStale);
     wsRoot->appendRow(wsItem);
     m_workspaceItems.insert(wsItem, ws.workspaceId);
   }
@@ -4401,35 +4404,29 @@ QVariantList DataModel::ProjectEditor::workspacesSummary() const
   return result;
 }
 
+// Mirror buildAutoWorkspaces(): relativeIndex is project-wide per widget type.
+namespace {
+struct ResolvedWidget {
+  QString groupTitle;
+  QString datasetTitle;
+};
+
 /**
- * @brief Returns the widget references attached to the given workspace.
+ * @brief Encodes (widgetType, groupId, relativeIndex) into a single 64-bit key.
  */
-QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) const
+[[nodiscard]] inline qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx)
 {
-  QVariantList result;
-  const auto& pm     = DataModel::ProjectModel::instance();
-  const auto& wsList = pm.editorWorkspaces();
+  return (static_cast<qint64>(widgetType) << 40) | (static_cast<qint64>(groupId) << 20)
+       | static_cast<qint64>(relIdx);
+}
 
-  // Locate the workspace
-  auto wsIt = std::find_if(wsList.begin(), wsList.end(), [workspaceId](const auto& w) {
-    return w.workspaceId == workspaceId;
-  });
-
-  if (wsIt == wsList.end())
-    return result;
-
-  // Mirror buildAutoWorkspaces(): relativeIndex is project-wide per widget type.
-  struct ResolvedWidget {
-    QString groupTitle;
-    QString datasetTitle;
-  };
-
+/**
+ * @brief Builds the lookup of every widget reference the project currently exposes.
+ */
+[[nodiscard]] QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
+  const DataModel::ProjectModel& pm)
+{
   QHash<qint64, ResolvedWidget> lookup;
-  const auto makeKey = [](int widgetType, int groupId, int relIdx) {
-    return (static_cast<qint64>(widgetType) << 40) | (static_cast<qint64>(groupId) << 20)
-         | static_cast<qint64>(relIdx);
-  };
-
   const auto& groups = pm.groups();
   const bool pro     = SerialStudio::proWidgetsEnabled();
   QHash<int, int> groupRunning;
@@ -4455,7 +4452,7 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
       ResolvedWidget entry;
       entry.groupTitle   = g.title;
       entry.datasetTitle = QString();
-      lookup.insert(makeKey(typeKey, g.groupId, relIdx), entry);
+      lookup.insert(workspaceWidgetKey(typeKey, g.groupId, relIdx), entry);
     }
 
     // Records one dataset-widget reference into the lookup table.
@@ -4468,7 +4465,7 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
       ResolvedWidget entry;
       entry.groupTitle   = g.title;
       entry.datasetTitle = ds.title;
-      lookup.insert(makeKey(typeKey, g.groupId, relIdx), entry);
+      lookup.insert(workspaceWidgetKey(typeKey, g.groupId, relIdx), entry);
     };
 
     // Walk dataset widgets through a lambda so the predicate filter resets nesting.
@@ -4483,6 +4480,29 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
       walkDatasetWidgets(ds);
   }
 
+  return lookup;
+}
+}  // namespace
+
+/**
+ * @brief Returns the widget references attached to the given workspace.
+ */
+QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) const
+{
+  QVariantList result;
+  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto& wsList = pm.editorWorkspaces();
+
+  // Locate the workspace
+  auto wsIt = std::find_if(wsList.begin(), wsList.end(), [workspaceId](const auto& w) {
+    return w.workspaceId == workspaceId;
+  });
+
+  if (wsIt == wsList.end())
+    return result;
+
+  const auto lookup = buildResolvedWidgetLookup(pm);
+
   for (const auto& ref : wsIt->widgetRefs) {
     QVariantMap row;
     row["widgetType"]     = ref.widgetType;
@@ -4493,7 +4513,8 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
     row["groupTitle"]    = QString();
     row["datasetTitle"]  = QString();
 
-    const auto it = lookup.constFind(makeKey(ref.widgetType, ref.groupId, ref.relativeIndex));
+    const auto it =
+      lookup.constFind(workspaceWidgetKey(ref.widgetType, ref.groupId, ref.relativeIndex));
     if (it != lookup.constEnd()) {
       row["groupTitle"]   = it->groupTitle;
       row["datasetTitle"] = it->datasetTitle;
@@ -4503,6 +4524,98 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
   }
 
   return result;
+}
+
+/**
+ * @brief Returns true if the workspace contains at least one ref the project can no longer resolve.
+ */
+bool DataModel::ProjectEditor::workspaceHasUnresolvedRefs(int workspaceId) const
+{
+  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto& wsList = pm.editorWorkspaces();
+
+  const auto wsIt = std::find_if(wsList.begin(), wsList.end(), [workspaceId](const auto& w) {
+    return w.workspaceId == workspaceId;
+  });
+
+  if (wsIt == wsList.end())
+    return false;
+
+  if (wsIt->widgetRefs.empty())
+    return false;
+
+  const auto lookup = buildResolvedWidgetLookup(pm);
+  for (const auto& ref : wsIt->widgetRefs) {
+    const auto key = workspaceWidgetKey(ref.widgetType, ref.groupId, ref.relativeIndex);
+    if (!lookup.contains(key))
+      return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Counts every widget reference in every workspace whose target no longer exists.
+ */
+int DataModel::ProjectEditor::unresolvedWorkspaceWidgetCount() const
+{
+  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto lookup  = buildResolvedWidgetLookup(pm);
+  const auto& wsList = pm.editorWorkspaces();
+
+  int count = 0;
+  for (const auto& ws : wsList) {
+    for (const auto& ref : ws.widgetRefs) {
+      const auto key = workspaceWidgetKey(ref.widgetType, ref.groupId, ref.relativeIndex);
+      if (!lookup.contains(key))
+        ++count;
+    }
+  }
+
+  return count;
+}
+
+/**
+ * @brief Drops every workspace widget reference whose target group/dataset no longer exists.
+ */
+int DataModel::ProjectEditor::cleanupUnresolvedWorkspaceWidgets()
+{
+  auto& pm          = DataModel::ProjectModel::instance();
+  const auto lookup = buildResolvedWidgetLookup(pm);
+
+  QSet<qint64> validKeys;
+  validKeys.reserve(lookup.size());
+  for (auto it = lookup.constBegin(); it != lookup.constEnd(); ++it)
+    validKeys.insert(it.key());
+
+  return pm.cleanupWorkspaceWidgetRefs(validKeys);
+}
+
+/**
+ * @brief Asks the user to confirm before removing every stale workspace widget reference.
+ */
+void DataModel::ProjectEditor::confirmCleanupUnresolvedWorkspaceWidgets()
+{
+  const int count = unresolvedWorkspaceWidgetCount();
+  if (count <= 0)
+    return;
+
+  const QString text = (count == 1)
+    ? tr("Remove 1 widget reference whose target group or dataset no longer exists?")
+    : tr("Remove %1 widget references whose target groups or datasets no longer exist?")
+        .arg(count);
+
+  const int choice =
+    Misc::Utilities::showMessageBox(text,
+                                    tr("This will only affect workspace tile placement; "
+                                       "no groups, datasets, or data are deleted."),
+                                    QMessageBox::Question,
+                                    tr("Clean Up Workspaces"),
+                                    QMessageBox::Yes | QMessageBox::Cancel,
+                                    QMessageBox::Cancel);
+
+  if (choice == QMessageBox::Yes)
+    cleanupUnresolvedWorkspaceWidgets();
 }
 
 /**

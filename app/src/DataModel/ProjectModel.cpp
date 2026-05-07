@@ -4625,6 +4625,45 @@ void DataModel::ProjectModel::removeWidgetFromWorkspace(int workspaceId,
 }
 
 /**
+ * @brief Drops every workspace widget ref whose encoded key isn't in validKeys.
+ */
+int DataModel::ProjectModel::cleanupWorkspaceWidgetRefs(const QSet<qint64>& validKeys)
+{
+  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    return 0;
+
+  const auto encode = [](int widgetType, int groupId, int relIdx) {
+    return (static_cast<qint64>(widgetType) << 40) | (static_cast<qint64>(groupId) << 20)
+         | static_cast<qint64>(relIdx);
+  };
+
+  int removed = 0;
+  for (auto& ws : m_workspaces) {
+    auto& refs    = ws.widgetRefs;
+    const auto it = std::remove_if(refs.begin(), refs.end(), [&](const auto& r) {
+      return !validKeys.contains(encode(r.widgetType, r.groupId, r.relativeIndex));
+    });
+
+    const auto count = std::distance(it, refs.end());
+    if (count > 0) {
+      refs.erase(it, refs.end());
+      removed += static_cast<int>(count);
+    }
+  }
+
+  if (removed == 0)
+    return 0;
+
+  if (!m_customizeWorkspaces)
+    setCustomizeWorkspaces(true);
+
+  setModified(true);
+  Q_EMIT editorWorkspacesChanged();
+  Q_EMIT activeWorkspacesChanged();
+  return removed;
+}
+
+/**
  * @brief Returns the title of a workspace, or empty if not found.
  */
 QString DataModel::ProjectModel::workspaceTitle(int workspaceId) const

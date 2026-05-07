@@ -17,7 +17,7 @@ existing scripts and clients that haven't migrated.
 
 | Slug                | Integer enum | Notes                                          |
 |---------------------|--------------|------------------------------------------------|
-| `"terminal"`        | 0            | Console; DON'T pin this as a tile             |
+| `"terminal"`        | 0            | Console; DON'T pin this as a tile              |
 | `"datagrid"`        | 1            |                                                |
 | `"multiplot"`       | 2            |                                                |
 | `"accelerometer"`   | 3            |                                                |
@@ -32,7 +32,7 @@ existing scripts and clients that haven't migrated.
 | `"compass"`         | 12           |                                                |
 | `"none"`            | 13           | Sentinel; never pin                            |
 | `"imageview"`       | 14           | Pro                                            |
-| `"output-panel"`    | 15           | Pro; ALL output widgets in a group on one tile|
+| `"output-panel"`    | 15           | Pro; ALL output widgets in a group on one tile |
 | `"notification-log"`| 16           | Pro                                            |
 | `"waterfall"`       | 17           | Pro                                            |
 | `"painter"`         | 18           | Pro                                            |
@@ -87,6 +87,89 @@ Notes:
 - `compatibleWidgetTypes` is computed live from the dataset flags +
   the group's own widget shape (see next section). Toggling a dataset
   option immediately expands or shrinks the group's compatible set.
+
+## Min/max ranges — three independent pairs, set BEFORE you addWidget
+
+Every dataset carries **three separate min/max pairs**, one per visualization
+family. They do NOT cascade. If you only set one, the other surfaces render at
+the default `0` / `0` — a flat, useless scale. This is the #1 reason a
+freshly-pinned Gauge / Bar / FFT looks empty or maxed out.
+
+| Pair (file/response key)         | API write-param name           | Drives                                                                              |
+|----------------------------------|--------------------------------|-------------------------------------------------------------------------------------|
+| `plotMin` / `plotMax`            | `pltMin` / `pltMax`            | Plot, MultiPlot Y-axis                                                              |
+| `widgetMin` / `widgetMax`        | `wgtMin` / `wgtMax`            | Gauge dial, Bar fill, Compass dial                                                  |
+| `fftMin` / `fftMax`              | `fftMin` / `fftMax`            | Expected raw input range — used to normalize the time-domain signal to [-1, +1] before windowing + FFT (FFT and Waterfall). The dB Y-axis itself is hardcoded. |
+
+**The naming asymmetry is real and silent.** `project.dataset.getByPath`,
+`project.snapshot`, and the `.ssproj` file all use the full form
+(`plotMin`, `widgetMin`). `project.dataset.update` accepts only the
+abbreviated form (`pltMin`, `wgtMin`). Round-tripping a response field name
+into an update call writes nothing and returns success. **Always use
+`pltMin`/`wgtMin`/`fftMin` when WRITING; read back the full names when
+verifying.** `fftMin`/`fftMax` happen to be the same in both directions.
+
+### Which pair goes with which widget
+
+| Widget slug          | REQUIRED min/max pair (write-param names)  | Notes                                             |
+|----------------------|--------------------------------------------|---------------------------------------------------|
+| `"plot"`             | `pltMin` / `pltMax`                        | Y-axis. Auto-fits if both are 0.                  |
+| `"multiplot"`        | `pltMin` / `pltMax` on EACH dataset        | Group-level tile; per-dataset Y-axis bounds.      |
+| `"gauge"`            | `wgtMin` / `wgtMax`                        | Dial is unusable without bounds.                  |
+| `"bar"`              | `wgtMin` / `wgtMax`                        | Fill is unusable without bounds.                  |
+| `"compass"`          | (none — fixed 0–360)                       | `wgtMin`/`wgtMax` ignored.                        |
+| `"fft"`              | `fftMin` / `fftMax`                        | Expected raw signal range for input normalization (NOT a dB axis). Also tune `fftSamples` + `fftSamplingRate`. |
+| `"waterfall"` (Pro)  | `fftMin` / `fftMax`                        | Reuses the dataset's FFT settings, including the input-normalization range. |
+| `"led"`              | (none — uses `ledHigh` threshold)          | `ledHigh` is on/off boundary.                     |
+| `"datagrid"`         | (none)                                     | Shows raw values.                                 |
+
+A single dataset that drives multiple visualizations (e.g. Plot + FFT +
+Waterfall) needs **every** relevant pair set:
+`pltMin/pltMax` AND `fftMin/fftMax` in that case.
+
+### Mandatory step before `addWidget`
+
+After flipping `setOptions` and BEFORE calling `addWidget`, set the matching
+min/max for every visualization you just enabled. One `dataset.update` call
+can carry all three pairs:
+
+```
+project.dataset.update {
+  groupId: <gid>, datasetId: <did>,
+  pltMin: -1.0, pltMax: 1.0,         // Plot/MultiPlot Y-axis
+  wgtMin:  0.0, wgtMax: 100.0,       // Gauge/Bar scale
+  fftMin: -1.0, fftMax: 1.0          // FFT/Waterfall expected input range
+                                     //  (so the FFT can normalize the signal
+                                     //   to [-1, +1] before windowing). Use
+                                     //   the actual range of your raw
+                                     //   samples, NOT a dB scale.
+}
+```
+
+Pick numerically meaningful bounds for each surface:
+- **Plot Y-axis** (`pltMin`/`pltMax`): the value range you want the chart to
+  display — temperature 0–100 °C, RPM 0–8000, accelerometer −2…+2 g.
+- **Gauge / Bar scale** (`wgtMin`/`wgtMax`): the dial / fill range — same
+  units as the signal.
+- **FFT / Waterfall input range** (`fftMin`/`fftMax`): the **expected
+  amplitude range of the raw time-domain samples** so the FFT input can be
+  normalized to [-1, +1]. For 16-bit audio: −32768…32767. For normalized
+  audio: −1…+1. For a 0–3.3 V ADC reading: 0…3.3. The FFT's dB Y-axis
+  itself is fixed in the widget — these values do NOT control it.
+
+**Never leave these at 0/0 for a widget that needs them.** If the user
+didn't give you a range, ask, or pick a defensible default from the
+dataset's units/title and say so out loud.
+
+### Verify-after-update for min/max
+
+`project.dataset.update` returns `success: true` even when a typo silently
+dropped the field. After writing min/max, call
+`project.dataset.getByPath{path: "Group/Dataset"}` (or re-snapshot) and
+read `plotMin`/`plotMax`/`widgetMin`/`widgetMax`/`fftMin`/`fftMax` back
+from the response. If they're still 0, you almost certainly used the
+response-form key (`plotMin`) on the write side instead of the abbreviated
+write-form (`pltMin`). Re-issue with the right name.
 
 ## Group widget shape — separate from per-dataset flags
 
@@ -151,7 +234,13 @@ If `addWidget` rejects your `widgetType` with "not compatible with group N":
    `enabledWidgetTypesSlugs` of every dataset in that group, the
    slug you flipped, and that you used the right (groupId,
    datasetId) pair.
-5. Now re-run `addWidget` -- pass `widgetType: "<slug>"`.
+5. **Set min/max for the visualization you just enabled.** See the
+   "Min/max ranges" section above for the pair-to-widget mapping. Use
+   the abbreviated write-form: `pltMin`/`pltMax`, `wgtMin`/`wgtMax`,
+   `fftMin`/`fftMax`. A dataset that drives multiple visualizations
+   needs every relevant pair. Skipping this is the #1 reason a
+   freshly-pinned tile renders empty or stuck at zero.
+6. Now re-run `addWidget` -- pass `widgetType: "<slug>"`.
 
 **Never call `addWidget` twice with identical args expecting a
 different result.** If a call failed, something must change between
@@ -235,9 +324,21 @@ Mutations that affect `compatibleWidgetTypes`:
 - `project.group.update{widget: "..."}`  (string, see next bullet)
 - `project.group.add{widgetType: <int>}`  (GroupWidget enum int)
 
-What does NOT affect it (silent no-op when used wrongly):
+Mutations that **must also be verified by reading back the response**:
+- `project.dataset.update{pltMin/pltMax/wgtMin/wgtMax/fftMin/fftMax}` —
+  the API silently drops unknown keys, so a typo (`plotMin` vs `pltMin`)
+  returns `success: true` and writes nothing. After updating, call
+  `project.dataset.getByPath` and confirm the response carries the new
+  values under `plotMin`/`plotMax`/`widgetMin`/`widgetMax`/`fftMin`/
+  `fftMax` (responses use the FULL form). 0/0 in the response = your
+  write didn't land.
+
+What does NOT affect `compatibleWidgetTypes` (silent no-op when used wrongly):
 - `project.group.update{widgetType: ...}` — `update` does not accept
   `widgetType`. Use `widget` (string) instead.
+- `project.dataset.update{plotMin/widgetMin/...}` — `update` does not
+  accept the full-name min/max form. Use the abbreviated `pltMin`/
+  `wgtMin`/`fftMin` write-params.
 
 ## Customize mode
 
@@ -269,21 +370,29 @@ When the user asks for "an overview" or "executive dashboard":
    pressures) — those belong on dedicated diagnostic workspaces.
 3. For each pick, choose the most readable widgetType from
    compatibleWidgetTypes:
-   - Gauge (11) for single scalars with min/max
-   - MultiPlot (2) for related time-series
-   - DataGrid (1) for tabular reads
-   - Compass (12) for headings
-   - Bar (10) for bounded levels
-   - LED (8) for booleans/alarms
-   - Plot (9) for single time-series
-   - FFT (7) for spectra of audio / vibration / signals
-   - Waterfall (17, Pro) for spectrograms
+   - Gauge (11) for single scalars with min/max — needs `wgtMin`/`wgtMax`
+   - MultiPlot (2) for related time-series — needs `pltMin`/`pltMax` per dataset
+   - DataGrid (1) for tabular reads — no min/max needed
+   - Compass (12) for headings — no min/max (fixed 0–360)
+   - Bar (10) for bounded levels — needs `wgtMin`/`wgtMax`
+   - LED (8) for booleans/alarms — uses `ledHigh` threshold
+   - Plot (9) for single time-series — needs `pltMin`/`pltMax`
+   - FFT (7) for spectra of audio / vibration / signals — needs `fftMin`/`fftMax` (expected raw input range, used for normalization)
+   - Waterfall (17, Pro) for spectrograms — needs `fftMin`/`fftMax` (same input-normalization range)
 4. NEVER widgetType=0 (Terminal).
-5. Show the user the curated list in chat BEFORE pushing. Let them
-   confirm or redirect.
+5. Show the user the curated list in chat BEFORE pushing. **Include the
+   min/max ranges you plan to set per dataset** so they can correct the
+   bounds. Don't pick 0..0 silently — pick a defensible default from the
+   dataset's units/title and say so.
 6. `setCustomizeMode{enabled: true}`, `workspace.add{title: 'Overview',
-   icon: 'qrc:/icons/panes/overview.svg'}` (always provide an icon),
-   then `addWidget` for each pick.
+   icon: 'qrc:/icons/panes/overview.svg'}` (always provide an icon).
+   For each pick: `dataset.update{...pltMin/pltMax or wgtMin/wgtMax or
+   fftMin/fftMax}`, then `addWidget`.
+7. Re-read `project.dataset.getByPath` for each updated dataset and
+   confirm the response carries the min/max under the FULL key names
+   (`plotMin`/`widgetMin`/`fftMin`). If they're still 0, you used the
+   response-form key on the write side — re-issue with the abbreviated
+   `pltMin`/`wgtMin` form.
 
 ## Recipe — Plot + FFT + Waterfall on the same dataset
 
@@ -302,21 +411,43 @@ project.dataset.setOptions {
   options: ["plot", "fft", "waterfall"]
 }
 
-// 3. Customize mode is required for any workspace edit.
+// 3. Set the min/max ranges for EACH visualization family.
+//    Plot + FFT + Waterfall = both pltMin/Max AND fftMin/Max.
+//    fftMin/fftMax are the EXPECTED RAW INPUT RANGE for the FFT to
+//    normalize against ([-1, +1] after normalization), NOT a dB axis.
+//    Skip this and you'll see flat 0..0 axes. Note the abbreviated write-side
+//    names: pltMin (not plotMin), wgtMin (not widgetMin) -- API silently
+//    drops the full-name form.
+project.dataset.update {
+  groupId: <gid>, datasetId: <did>,
+  pltMin: -1.0, pltMax: 1.0,           // time-domain Y-axis
+  fftMin: -1.0, fftMax: 1.0,           // expected raw amplitude range
+                                       //  (e.g. -32768..32767 for raw 16-bit
+                                       //   audio, or -1..+1 for normalized)
+  fftSamples: 1024, fftSamplingRate: 48000
+}
+
+// 4. Customize mode is required for any workspace edit.
 project.workspace.setCustomizeMode { enabled: true }
 
-// 4. Create the workspace.
+// 5. Create the workspace.
 project.workspace.add { title: "Signal Analysis",
                         icon: "qrc:/icons/panes/dashboard.svg" }
 // -> { id: <wsId> }
 
-// 5. Pin all three tiles. Omit relativeIndex; the API auto-assigns.
+// 6. Pin all three tiles. Omit relativeIndex; the API auto-assigns.
 project.workspace.addWidget { workspaceId: <wsId>, widgetType: "plot",
                               groupId: <gid> }
 project.workspace.addWidget { workspaceId: <wsId>, widgetType: "fft",
                               groupId: <gid> }
 project.workspace.addWidget { workspaceId: <wsId>, widgetType: "waterfall",
                               groupId: <gid> }
+
+// 7. Verify min/max landed (read the FULL-name keys, not the abbreviated
+//    write-form). Re-snapshot or getByPath; pltMin/pltMax appear as
+//    plotMin/plotMax in the response.
+project.dataset.getByPath { path: "Audio/Channel A" }
+  -> { plotMin: -1.0, plotMax: 1.0, fftMin: -1.0, fftMax: 1.0, ... }  -- good
 ```
 
 The slug form (`widgetType: "plot"`) makes the addWidget vs setOption
@@ -348,7 +479,21 @@ project.dataset.setOptions {
 project.group.list
   -> compatibleWidgetTypeSlugs: ["plot", "gauge"]  -- good
 
-// 4. Pin the Gauge tile.
+// 4. Set BOTH min/max pairs -- pltMin/pltMax for the existing Plot AND
+//    wgtMin/wgtMax for the new Gauge. They don't cascade. Use the
+//    abbreviated write-form names; the full plotMin/widgetMin form is
+//    silently dropped by the API.
+project.dataset.update {
+  groupId: 0, datasetId: 0,
+  pltMin: 0, pltMax: 100,
+  wgtMin: 0, wgtMax: 100
+}
+
+// 5. Verify the ranges landed (response uses the FULL key names).
+project.dataset.getByPath { path: "Engine/Coolant" }
+  -> { plotMin: 0, plotMax: 100, widgetMin: 0, widgetMax: 100, ... }
+
+// 6. Pin the Gauge tile.
 project.workspace.setCustomizeMode { enabled: true }
 project.workspace.addWidget {
   workspaceId: 5001,
@@ -356,14 +501,16 @@ project.workspace.addWidget {
   groupId: 0
 }
 
-// 5. Save.
+// 7. Save.
 project.save
 ```
 
-If step 4 returns "widgetType=gauge not compatible with group 0", step
+If step 6 returns "widgetType=gauge not compatible with group 0", step
 3 didn't actually pass -- re-read the group and check what
 `compatibleWidgetTypeSlugs` really contains, instead of issuing
-addWidget again.
+addWidget again. If step 5 shows `widgetMin: 0, widgetMax: 0` after you
+"set" them, you used `widgetMin`/`widgetMax` instead of the abbreviated
+`wgtMin`/`wgtMax` write-form -- re-issue the update with the right names.
 
 ## Troubleshooting — what the API errors actually mean
 
@@ -374,6 +521,8 @@ addWidget again.
 | Group widget didn't change after `project.group.update {widgetType: ...}` | `group.update` doesn't have a `widgetType` field. The param was silently ignored. | Use `project.group.update {widget: "multiplot"}` (string), or accept that the shape is locked at `add` time and `delete + add` if you really need to change it. |
 | `addWidget` succeeded but no tile appears on the dashboard | `customizeWorkspaces` mode is off, OR you pinned to the wrong workspaceId, OR the workspace title bar is filtered. | Confirm `setCustomizeMode {enabled: true}` ran successfully and the user is looking at the correct workspace tab. |
 | Same call keeps failing | The state hasn't changed between calls. | Read the error, read `project.group.list`, find the actual cause. Do NOT issue the same call a third time hoping for a different result. |
+| `dataset.update` returned success but Gauge/Bar/Plot/FFT scale is still 0..0 | You wrote `plotMin`/`widgetMin`/`plotMax`/`widgetMax` (the response/file form) instead of `pltMin`/`wgtMin`/`pltMax`/`wgtMax` (the API write-form). The API silently ignores unknown keys. | Re-issue with the abbreviated names. `fftMin`/`fftMax` are the same in both directions. |
+| Gauge / Bar / FFT mounts but the needle / fill / spectrum looks wrong | Min/max for that widget family was never set, or set on the wrong pair (e.g. `pltMin` for a Gauge). | Set the correct pair: `wgtMin`/`wgtMax` for Gauge/Bar, `pltMin`/`pltMax` for Plot, `fftMin`/`fftMax` for FFT/Waterfall. The pairs do NOT cascade — a dataset with Plot AND Gauge needs both. |
 
 ## Common gotchas
 
@@ -397,3 +546,10 @@ addWidget again.
 - **Customize mode persists**. If you turn it on and the user closes the
   app, it stays on. That's fine, but be aware that subsequent
   auto-generate calls become no-ops.
+- **Three independent min/max pairs per dataset, abbreviated on write**:
+  Plot uses `pltMin`/`pltMax`, Gauge/Bar use `wgtMin`/`wgtMax`, FFT/Waterfall
+  use `fftMin`/`fftMax` (only fftMin/fftMax keep the same name on read and
+  write). Setting one does NOT cascade. A dataset wired to Plot + Gauge needs
+  BOTH pairs set, or one of them renders 0..0. Always set ranges with
+  `dataset.update` after `setOptions` and BEFORE `addWidget`. See the
+  "Min/max ranges" section above for the full table.
