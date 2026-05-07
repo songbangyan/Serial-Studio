@@ -37,27 +37,27 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="332"/>
+        <location filename="../../src/AI/Assistant.cpp" line="344"/>
         <source>Switch AI provider?</source>
         <translation>Schimbați furnizorul AI?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="333"/>
+        <location filename="../../src/AI/Assistant.cpp" line="345"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Schimbarea furnizorului șterge conversația curentă. Doriți să continuați?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="336"/>
+        <location filename="../../src/AI/Assistant.cpp" line="348"/>
         <source>Assistant</source>
         <translation>Asistent</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="373"/>
+        <location filename="../../src/AI/Assistant.cpp" line="385"/>
         <source>AI Assistant requires a Pro license</source>
         <translation>Asistentul AI necesită o licență Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="378"/>
+        <location filename="../../src/AI/Assistant.cpp" line="390"/>
         <source>Set an API key first</source>
         <translation>Setați mai întâi o cheie API</translation>
     </message>
@@ -6847,17 +6847,17 @@ Dispozitivul poate să nu expună endpoint-uri de date în configurația sa acti
         <translation>Google Gemini. Implicit este Gemini 2.0 Flash, care are un nivel gratuit generos (supus limitelor de rată). Gemini 1.5 Pro și Gemini 1.5 Flash sunt de asemenea disponibile.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="72"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="85"/>
         <source>Bring your own API keys. They are encrypted at rest with a per-machine key and never leave your computer except to communicate with the provider you select.</source>
         <translation>Adaugă propriile chei API. Acestea sunt criptate în repaus cu o cheie specifică mașinii și nu părăsesc niciodată computerul tău, cu excepția comunicării cu furnizorul selectat.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="142"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="155"/>
         <source>Key set</source>
         <translation>Cheie setată</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="143"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="156"/>
         <source>No key</source>
         <translation>Fără cheie</translation>
     </message>
@@ -6877,86 +6877,101 @@ Dispozitivul poate să nu expună endpoint-uri de date în configurația sa acti
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="49"/>
+        <source>OpenRouter. One key, ~200 models from Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier models (suffixed :free) are rate-limited but require no additional billing. Pay-as-you-go for the rest.</source>
+        <translation>OpenRouter. O singură cheie, ~200 de modele de la Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen și altele. Modelele gratuite (cu sufix :free) au limite de rată, dar nu necesită facturare suplimentară. Plată pe măsură pentru restul.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="54"/>
+        <source>Groq. Hardware-accelerated inference (LPUs) for very fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen models. Generous free tier with daily token limits.</source>
+        <translation>Groq. Inferență accelerată hardware (LPU) pentru modele Llama, Mixtral, Gemma, DeepSeek-R1 distill și Qwen foarte rapide. Nivel gratuit generos cu limite zilnice de token-uri.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="58"/>
+        <source>Mistral. The default is Mistral Large. Codestral targets code completion, Pixtral handles vision, and the Ministral models are tuned for edge / low-latency use.</source>
+        <translation>Mistral. Implicit este Mistral Large. Codestral vizează completarea codului, Pixtral gestionează viziunea, iar modelele Ministral sunt optimizate pentru utilizare edge / latență redusă.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="62"/>
         <source>Local model server. Works with any OpenAI-compatible endpoint -- Ollama, llama.cpp's llama-server, LM Studio, or vLLM. Nothing leaves your machine. The model list is queried live from the server.</source>
         <translation>Server local de modele. Funcționează cu orice endpoint compatibil OpenAI -- Ollama, llama-server al llama.cpp, LM Studio sau vLLM. Nimic nu părăsește mașina ta. Lista de modele este interogată live de la server.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="180"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="193"/>
         <source>A key is on file -- paste a new one to replace it</source>
         <translation>O cheie este înregistrată -- lipește una nouă pentru a o înlocui</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="181"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="194"/>
         <source>Paste your API key here</source>
         <translation>Lipește cheia ta API aici</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Hide key</source>
         <translation>Ascunde cheia</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Show key while typing</source>
         <translation>Afișează cheia în timpul tastării</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="198"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="211"/>
         <source>Get key</source>
         <translation>Obține cheia</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="199"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="212"/>
         <source>Open the provider's console to create a new key</source>
         <translation>Deschide consola furnizorului pentru a crea o cheie nouă</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="210"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="223"/>
         <source>Save</source>
         <translation>Salvează</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="233"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="246"/>
         <source>Remove the stored key for %1</source>
         <translation>Elimină cheia stocată pentru %1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="256"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="269"/>
         <source>http://localhost:11434/v1</source>
         <translation>http://localhost:11434/v1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="260"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="273"/>
         <source>Install Ollama</source>
         <translation>Instalează Ollama</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="261"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="274"/>
         <source>Open the Ollama download page</source>
         <translation>Deschide pagina de descărcare Ollama</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="272"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="285"/>
         <source>Apply</source>
         <translation>Aplică</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="290"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="303"/>
         <source>Re-query the model list</source>
         <translation>Reinterogare listă modele</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="337"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="350"/>
         <source>No API keys configured yet. Add at least one above to get started.</source>
         <translation>Nicio cheie API configurată încă. Adaugă cel puțin una mai sus pentru a începe.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="340"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="353"/>
         <source>One provider is ready.</source>
         <translation>Un furnizor este pregătit.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="342"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="355"/>
         <source>%1 providers are ready.</source>
         <translation>%1 furnizori sunt pregătiți.</translation>
     </message>
@@ -10281,6 +10296,21 @@ Parametrul separator nu mai este necesar.</translation>
         <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="128"/>
         <source>No DeepSeek API key set. Open Manage Keys to add one.</source>
         <translation>Nicio cheie API DeepSeek setată. Deschide Gestionare Chei pentru a adăuga una.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="151"/>
+        <source>No Mistral API key set. Open Manage Keys to add one.</source>
+        <translation>Nicio cheie API Mistral configurată. Deschide Gestionare Chei pentru a adăuga una.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="160"/>
+        <source>No OpenRouter API key set. Open Manage Keys to add one.</source>
+        <translation>Nicio cheie API OpenRouter configurată. Deschide Gestionare Chei pentru a adăuga una.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="147"/>
+        <source>No Groq API key set. Open Manage Keys to add one.</source>
+        <translation>Nicio cheie API Groq configurată. Deschide Gestionare Chei pentru a adăuga una.</translation>
     </message>
 </context>
 <context>

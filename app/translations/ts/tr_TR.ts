@@ -37,27 +37,27 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="332"/>
+        <location filename="../../src/AI/Assistant.cpp" line="344"/>
         <source>Switch AI provider?</source>
         <translation>AI sağlayıcısı değiştirilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="333"/>
+        <location filename="../../src/AI/Assistant.cpp" line="345"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Farklı bir sağlayıcıya geçiş mevcut konuşmayı temizler. Devam etmek istiyor musunuz?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="336"/>
+        <location filename="../../src/AI/Assistant.cpp" line="348"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="373"/>
+        <location filename="../../src/AI/Assistant.cpp" line="385"/>
         <source>AI Assistant requires a Pro license</source>
         <translation>AI Asistanı Pro lisansı gerektirir</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="378"/>
+        <location filename="../../src/AI/Assistant.cpp" line="390"/>
         <source>Set an API key first</source>
         <translation>Önce bir API anahtarı ayarlayın</translation>
     </message>
@@ -6847,17 +6847,17 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
         <translation>Google Gemini. Varsayılan Gemini 2.0 Flash'tır ve cömert bir ücretsiz katmana sahiptir (hız limitlerine tabidir). Gemini 1.5 Pro ve Gemini 1.5 Flash de mevcuttur.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="72"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="85"/>
         <source>Bring your own API keys. They are encrypted at rest with a per-machine key and never leave your computer except to communicate with the provider you select.</source>
         <translation>Kendi API anahtarlarınızı getirin. Makineye özel bir anahtarla şifrelenmiş olarak saklanır ve seçtiğiniz sağlayıcıyla iletişim kurmak dışında bilgisayarınızdan asla ayrılmaz.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="142"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="155"/>
         <source>Key set</source>
         <translation>Anahtar ayarlandı</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="143"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="156"/>
         <source>No key</source>
         <translation>Anahtar yok</translation>
     </message>
@@ -6877,86 +6877,101 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="49"/>
+        <source>OpenRouter. One key, ~200 models from Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier models (suffixed :free) are rate-limited but require no additional billing. Pay-as-you-go for the rest.</source>
+        <translation>OpenRouter. Tek anahtar, Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen ve diğerlerinden ~200 model. Ücretsiz katman modelleri (:free son ekli) hız sınırlıdır ancak ek faturalandırma gerektirmez. Geri kalanı için kullandıkça öde.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="54"/>
+        <source>Groq. Hardware-accelerated inference (LPUs) for very fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen models. Generous free tier with daily token limits.</source>
+        <translation>Groq. Çok hızlı Llama, Mixtral, Gemma, DeepSeek-R1 distill ve Qwen modelleri için donanım hızlandırmalı çıkarım (LPU'lar). Günlük token limitleriyle cömert ücretsiz katman.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="58"/>
+        <source>Mistral. The default is Mistral Large. Codestral targets code completion, Pixtral handles vision, and the Ministral models are tuned for edge / low-latency use.</source>
+        <translation>Mistral. Varsayılan Mistral Large'dır. Codestral kod tamamlamayı hedefler, Pixtral görüntü işler ve Ministral modelleri kenar / düşük gecikme kullanımı için ayarlanmıştır.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="62"/>
         <source>Local model server. Works with any OpenAI-compatible endpoint -- Ollama, llama.cpp's llama-server, LM Studio, or vLLM. Nothing leaves your machine. The model list is queried live from the server.</source>
         <translation>Yerel model sunucusu. Herhangi bir OpenAI uyumlu uç nokta ile çalışır -- Ollama, llama.cpp'nin llama-server'ı, LM Studio veya vLLM. Hiçbir şey makinenizden çıkmaz. Model listesi sunucudan canlı olarak sorgulanır.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="180"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="193"/>
         <source>A key is on file -- paste a new one to replace it</source>
         <translation>Kayıtlı bir anahtar mevcut -- değiştirmek için yeni bir anahtar yapıştırın</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="181"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="194"/>
         <source>Paste your API key here</source>
         <translation>API anahtarınızı buraya yapıştırın</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Hide key</source>
         <translation>Anahtarı Gizle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Show key while typing</source>
         <translation>Yazarken Anahtarı Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="198"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="211"/>
         <source>Get key</source>
         <translation>Anahtar Al</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="199"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="212"/>
         <source>Open the provider's console to create a new key</source>
         <translation>Yeni anahtar oluşturmak için sağlayıcının konsolunu açın</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="210"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="223"/>
         <source>Save</source>
         <translation>Kaydet</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="233"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="246"/>
         <source>Remove the stored key for %1</source>
         <translation>%1 için saklanan anahtarı kaldır</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="256"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="269"/>
         <source>http://localhost:11434/v1</source>
         <translation>http://localhost:11434/v1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="260"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="273"/>
         <source>Install Ollama</source>
         <translation>Ollama'yı Yükle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="261"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="274"/>
         <source>Open the Ollama download page</source>
         <translation>Ollama indirme sayfasını aç</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="272"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="285"/>
         <source>Apply</source>
         <translation>Uygula</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="290"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="303"/>
         <source>Re-query the model list</source>
         <translation>Model listesini yeniden sorgula</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="337"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="350"/>
         <source>No API keys configured yet. Add at least one above to get started.</source>
         <translation>Henüz API anahtarı yapılandırılmadı. Başlamak için yukarıdan en az bir tane ekleyin.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="340"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="353"/>
         <source>One provider is ready.</source>
         <translation>Bir sağlayıcı hazır.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="342"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="355"/>
         <source>%1 providers are ready.</source>
         <translation>%1 sağlayıcı hazır.</translation>
     </message>
@@ -10281,6 +10296,21 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="128"/>
         <source>No DeepSeek API key set. Open Manage Keys to add one.</source>
         <translation>DeepSeek API anahtarı ayarlanmamış. Eklemek için Anahtarları Yönet'i açın.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="151"/>
+        <source>No Mistral API key set. Open Manage Keys to add one.</source>
+        <translation>Mistral API anahtarı ayarlanmamış. Bir tane eklemek için Anahtarları Yönet'i açın.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="160"/>
+        <source>No OpenRouter API key set. Open Manage Keys to add one.</source>
+        <translation>OpenRouter API anahtarı ayarlanmamış. Bir tane eklemek için Anahtarları Yönet'i açın.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="147"/>
+        <source>No Groq API key set. Open Manage Keys to add one.</source>
+        <translation>Groq API anahtarı ayarlanmamış. Bir tane eklemek için Anahtarları Yönet'i açın.</translation>
     </message>
 </context>
 <context>

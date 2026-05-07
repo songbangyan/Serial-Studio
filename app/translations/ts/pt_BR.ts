@@ -37,27 +37,27 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="332"/>
+        <location filename="../../src/AI/Assistant.cpp" line="344"/>
         <source>Switch AI provider?</source>
         <translation>Trocar provedor de IA?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="333"/>
+        <location filename="../../src/AI/Assistant.cpp" line="345"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Trocar para um provedor diferente limpa a conversa atual. Deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="336"/>
+        <location filename="../../src/AI/Assistant.cpp" line="348"/>
         <source>Assistant</source>
         <translation>Assistente</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="373"/>
+        <location filename="../../src/AI/Assistant.cpp" line="385"/>
         <source>AI Assistant requires a Pro license</source>
         <translation>Assistente de IA requer uma licença Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="378"/>
+        <location filename="../../src/AI/Assistant.cpp" line="390"/>
         <source>Set an API key first</source>
         <translation>Defina uma chave de API primeiro</translation>
     </message>
@@ -6847,17 +6847,17 @@ O dispositivo pode não expor endpoints de dados em sua configuração ativa, ou
         <translation>Google Gemini. O padrão é Gemini 2.0 Flash, que possui um nível gratuito generoso (sujeito a limites de taxa). Gemini 1.5 Pro e Gemini 1.5 Flash também estão disponíveis.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="72"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="85"/>
         <source>Bring your own API keys. They are encrypted at rest with a per-machine key and never leave your computer except to communicate with the provider you select.</source>
         <translation>Traga suas próprias chaves de API. Elas são criptografadas em repouso com uma chave por máquina e nunca saem do seu computador, exceto para comunicar com o provedor selecionado.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="142"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="155"/>
         <source>Key set</source>
         <translation>Chave definida</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="143"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="156"/>
         <source>No key</source>
         <translation>Sem chave</translation>
     </message>
@@ -6877,86 +6877,101 @@ O dispositivo pode não expor endpoints de dados em sua configuração ativa, ou
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="49"/>
+        <source>OpenRouter. One key, ~200 models from Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier models (suffixed :free) are rate-limited but require no additional billing. Pay-as-you-go for the rest.</source>
+        <translation>OpenRouter. Uma chave, ~200 modelos da Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen e outros. Modelos de nível gratuito (sufixo :free) têm limite de taxa, mas não exigem cobrança adicional. Pagamento conforme o uso para os demais.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="54"/>
+        <source>Groq. Hardware-accelerated inference (LPUs) for very fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen models. Generous free tier with daily token limits.</source>
+        <translation>Groq. Inferência acelerada por hardware (LPUs) para modelos Llama, Mixtral, Gemma, DeepSeek-R1 distill e Qwen muito rápidos. Nível gratuito generoso com limites diários de tokens.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="58"/>
+        <source>Mistral. The default is Mistral Large. Codestral targets code completion, Pixtral handles vision, and the Ministral models are tuned for edge / low-latency use.</source>
+        <translation>Mistral. O padrão é Mistral Large. Codestral é voltado para conclusão de código, Pixtral lida com visão, e os modelos Ministral são ajustados para uso em edge / baixa latência.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="62"/>
         <source>Local model server. Works with any OpenAI-compatible endpoint -- Ollama, llama.cpp's llama-server, LM Studio, or vLLM. Nothing leaves your machine. The model list is queried live from the server.</source>
         <translation>Servidor de modelo local. Funciona com qualquer endpoint compatível com OpenAI -- Ollama, llama-server do llama.cpp, LM Studio ou vLLM. Nada sai da sua máquina. A lista de modelos é consultada ao vivo do servidor.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="180"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="193"/>
         <source>A key is on file -- paste a new one to replace it</source>
         <translation>Uma chave está registrada -- cole uma nova para substituí-la</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="181"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="194"/>
         <source>Paste your API key here</source>
         <translation>Cole sua chave de API aqui</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Hide key</source>
         <translation>Ocultar chave</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="187"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="200"/>
         <source>Show key while typing</source>
         <translation>Mostrar chave durante a digitação</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="198"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="211"/>
         <source>Get key</source>
         <translation>Obter chave</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="199"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="212"/>
         <source>Open the provider's console to create a new key</source>
         <translation>Abra o console do provedor para criar uma nova chave</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="210"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="223"/>
         <source>Save</source>
         <translation>Salvar</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="233"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="246"/>
         <source>Remove the stored key for %1</source>
         <translation>Remover a chave armazenada para %1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="256"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="269"/>
         <source>http://localhost:11434/v1</source>
         <translation>http://localhost:11434/v1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="260"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="273"/>
         <source>Install Ollama</source>
         <translation>Instalar Ollama</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="261"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="274"/>
         <source>Open the Ollama download page</source>
         <translation>Abrir a página de download do Ollama</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="272"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="285"/>
         <source>Apply</source>
         <translation>Aplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="290"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="303"/>
         <source>Re-query the model list</source>
         <translation>Consultar novamente a lista de modelos</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="337"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="350"/>
         <source>No API keys configured yet. Add at least one above to get started.</source>
         <translation>Nenhuma chave de API configurada ainda. Adicione pelo menos uma acima para começar.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="340"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="353"/>
         <source>One provider is ready.</source>
         <translation>Um provedor está pronto.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/KeyManagerDialog.qml" line="342"/>
+        <location filename="../../qml/AI/KeyManagerDialog.qml" line="355"/>
         <source>%1 providers are ready.</source>
         <translation>%1 provedores estão prontos.</translation>
     </message>
@@ -10281,6 +10296,21 @@ O parâmetro separador não é mais necessário.</translation>
         <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="128"/>
         <source>No DeepSeek API key set. Open Manage Keys to add one.</source>
         <translation>Nenhuma chave de API DeepSeek definida. Abra Gerenciar Chaves para adicionar uma.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="151"/>
+        <source>No Mistral API key set. Open Manage Keys to add one.</source>
+        <translation>Nenhuma chave de API Mistral definida. Abra Gerenciar Chaves para adicionar uma.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="160"/>
+        <source>No OpenRouter API key set. Open Manage Keys to add one.</source>
+        <translation>Nenhuma chave de API OpenRouter definida. Abra Gerenciar Chaves para adicionar uma.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="147"/>
+        <source>No Groq API key set. Open Manage Keys to add one.</source>
+        <translation>Nenhuma chave de API Groq definida. Abra Gerenciar Chaves para adicionar uma.</translation>
     </message>
 </context>
 <context>

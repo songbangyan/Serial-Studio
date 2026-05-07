@@ -15,8 +15,11 @@
 #include "AI/Providers/AnthropicProvider.h"
 #include "AI/Providers/DeepSeekProvider.h"
 #include "AI/Providers/GeminiProvider.h"
+#include "AI/Providers/GroqProvider.h"
 #include "AI/Providers/LocalProvider.h"
+#include "AI/Providers/MistralProvider.h"
 #include "AI/Providers/OpenAIProvider.h"
+#include "AI/Providers/OpenRouterProvider.h"
 #include "AI/ToolDispatcher.h"
 #include "Licensing/CommercialToken.h"
 #include "Misc/Utilities.h"
@@ -180,6 +183,15 @@ QStringList AI::Assistant::providerNames() const
 
   if (m_deepseek)
     names.append(m_deepseek->displayName());
+
+  if (m_openrouter)
+    names.append(m_openrouter->displayName());
+
+  if (m_groq)
+    names.append(m_groq->displayName());
+
+  if (m_mistral)
+    names.append(m_mistral->displayName());
 
   if (m_local)
     names.append(m_local->displayName());
@@ -470,6 +482,12 @@ void AI::Assistant::rebuildProviders()
     std::make_unique<GeminiProvider>(*m_nam, [this]() { return m_vault.key(ProviderId::Gemini); });
   m_deepseek = std::make_unique<DeepSeekProvider>(
     *m_nam, [this]() { return m_vault.key(ProviderId::DeepSeek); });
+  m_openrouter = std::make_unique<OpenRouterProvider>(
+    *m_nam, [this]() { return m_vault.key(ProviderId::OpenRouter); });
+  m_groq =
+    std::make_unique<GroqProvider>(*m_nam, [this]() { return m_vault.key(ProviderId::Groq); });
+  m_mistral = std::make_unique<MistralProvider>(
+    *m_nam, [this]() { return m_vault.key(ProviderId::Mistral); });
 
   auto* local = new LocalProvider(*m_nam);
   connect(local, &LocalProvider::modelsChanged, this, []() {
@@ -537,6 +555,12 @@ QString AI::Assistant::modelSettingsKey(int providerIdx)
       return QStringLiteral("gemini");
     case ProviderId::DeepSeek:
       return QStringLiteral("deepseek");
+    case ProviderId::OpenRouter:
+      return QStringLiteral("openrouter");
+    case ProviderId::Groq:
+      return QStringLiteral("groq");
+    case ProviderId::Mistral:
+      return QStringLiteral("mistral");
     case ProviderId::Local:
       return QStringLiteral("local");
   }
@@ -557,6 +581,12 @@ AI::Provider* AI::Assistant::providerAt(int idx) const
       return m_gemini.get();
     case ProviderId::DeepSeek:
       return m_deepseek.get();
+    case ProviderId::OpenRouter:
+      return m_openrouter.get();
+    case ProviderId::Groq:
+      return m_groq.get();
+    case ProviderId::Mistral:
+      return m_mistral.get();
     case ProviderId::Local:
       return m_local.get();
   }

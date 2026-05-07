@@ -192,8 +192,10 @@
 /**
  * @brief Picks the next free relativeIndex for (widgetType, groupId) on the workspace.
  */
-[[nodiscard]] static int nextFreeRelativeIndex(
-  const std::vector<DataModel::Workspace>& wsList, int wid, int wtype, int gid)
+[[nodiscard]] static int nextFreeRelativeIndex(const std::vector<DataModel::Workspace>& wsList,
+                                               int wid,
+                                               int wtype,
+                                               int gid)
 {
   const auto wsIt = std::find_if(
     wsList.begin(), wsList.end(), [wid](const auto& ws) { return ws.workspaceId == wid; });
@@ -710,9 +712,8 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
         .arg(wtypeJson.toString()));
 
   const bool hasRelIndex = params.contains(QStringLiteral("relativeIndex"));
-  int relIndex =
-    hasRelIndex ? params.value(QStringLiteral("relativeIndex")).toInt()
-                : nextFreeRelativeIndex(pm.editorWorkspaces(), wid, wtype, gid);
+  int relIndex           = hasRelIndex ? params.value(QStringLiteral("relativeIndex")).toInt()
+                                       : nextFreeRelativeIndex(pm.editorWorkspaces(), wid, wtype, gid);
   const bool relIndexAutoAssigned = !hasRelIndex && relIndex != 0;
 
   // Reject DashboardTerminal / DashboardNoWidget with actionable errors

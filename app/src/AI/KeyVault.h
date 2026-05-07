@@ -26,17 +26,20 @@ namespace AI {
  * @brief AI provider identifiers, index-aligned with the QML combobox model.
  */
 enum class ProviderId : int {
-  Anthropic = 0,
-  OpenAI    = 1,
-  Gemini    = 2,
-  DeepSeek  = 3,
-  Local     = 4,
+  Anthropic  = 0,
+  OpenAI     = 1,
+  Gemini     = 2,
+  DeepSeek   = 3,
+  OpenRouter = 4,
+  Groq       = 5,
+  Mistral    = 6,
+  Local      = 7,
 };
 
 /**
  * @brief Total number of AI providers wired into the Assistant.
  */
-inline constexpr int kProviderCount = 5;
+inline constexpr int kProviderCount = 8;
 
 /**
  * @brief RAII helper that best-effort scrubs a QString on destruction.

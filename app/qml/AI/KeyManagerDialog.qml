@@ -46,6 +46,19 @@ Widgets.SmartDialog {
               + "deepseek-chat (V3). deepseek-reasoner (R1) is also "
               + "available. Often the cheapest cloud option for tool use.")
     } else if (idx === 4) {
+      return qsTr("OpenRouter. One key, ~200 models from Anthropic, OpenAI, "
+              + "Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier "
+              + "models (suffixed :free) are rate-limited but require no "
+              + "additional billing. Pay-as-you-go for the rest.")
+    } else if (idx === 5) {
+      return qsTr("Groq. Hardware-accelerated inference (LPUs) for very "
+              + "fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen "
+              + "models. Generous free tier with daily token limits.")
+    } else if (idx === 6) {
+      return qsTr("Mistral. The default is Mistral Large. Codestral targets "
+              + "code completion, Pixtral handles vision, and the Ministral "
+              + "models are tuned for edge / low-latency use.")
+    } else if (idx === 7) {
       return qsTr("Local model server. Works with any OpenAI-compatible "
               + "endpoint -- Ollama, llama.cpp's llama-server, LM Studio, "
               + "or vLLM. Nothing leaves your machine. The model list is "

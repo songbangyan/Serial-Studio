@@ -819,7 +819,8 @@ void API::Handlers::ProjectHandler::registerListCommands()
 }
 
 /**
- * @brief Register dataset resolver commands (getByUniqueId, getByTitle, getByPath, getExecutionOrder).
+ * @brief Register dataset resolver commands (getByUniqueId, getByTitle, getByPath,
+ * getExecutionOrder).
  */
 void API::Handlers::ProjectHandler::registerResolverCommands()
 {
@@ -833,7 +834,8 @@ void API::Handlers::ProjectHandler::registerResolverCommands()
     makeSchema({
       {QString(Keys::UniqueId),
        QStringLiteral("integer"),
-       QStringLiteral("Computed as sourceId*1000000 + groupId*10000 + datasetId. Treat as opaque.")}
+       QStringLiteral(
+         "Computed as sourceId*1000000 + groupId*10000 + datasetId. Treat as opaque.")}
   }),
     &datasetGetByUniqueId);
 
@@ -842,9 +844,11 @@ void API::Handlers::ProjectHandler::registerResolverCommands()
     QStringLiteral("Resolve a dataset by exact title. Pass sourceId / groupId to "
                    "disambiguate when titles repeat across groups."),
     makeSchema(
-      {{QString(Keys::Title),
-        QStringLiteral("string"),
-        QStringLiteral("Dataset title (exact match).")}},
+      {
+        {QString(Keys::Title),
+         QStringLiteral("string"),
+         QStringLiteral("Dataset title (exact match).")}
+  },
       {{QString(Keys::SourceId),
         QStringLiteral("integer"),
         QStringLiteral("Optional sourceId filter.")},
@@ -887,7 +891,8 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
                    "round trip. Pass verbose=true for source-level frame settings and "
                    "frame parser source. Prefer this over chaining list/get calls."),
     makeSchema(
-      {},
+      {
+  },
       {{QStringLiteral("verbose"),
         QStringLiteral("boolean"),
         QStringLiteral("Include frame parser source and source-level frame settings.")}}),
@@ -900,9 +905,9 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
                    "re-anchor automatically. Scripts that pinned a uniqueId must be "
                    "updated -- prefer dataset.getByPath in scripts."),
     makeSchema({
-      {QString(Keys::UniqueId),
+      {      QString(Keys::UniqueId),
        QStringLiteral("integer"),
-       QStringLiteral("Dataset uniqueId to move.")},
+       QStringLiteral("Dataset uniqueId to move.")                                     },
       {QStringLiteral("newPosition"),
        QStringLiteral("integer"),
        QStringLiteral("New 0-based position within the group; clamped to valid range.")},
@@ -916,7 +921,7 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
                    "Workspace refs re-anchor automatically; scripts pinning a uniqueId "
                    "must be updated."),
     makeSchema({
-      {QString(Keys::GroupId), QStringLiteral("integer"), QStringLiteral("Group id to move.")},
+      {       QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Group id to move.")                           },
       {QStringLiteral("newPosition"),
        QStringLiteral("integer"),
        QStringLiteral("New 0-based position; clamped to valid range.")},
@@ -1604,9 +1609,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   } else if (!code.isEmpty() && updated.transformLanguage < 0) {
     // No explicit language with non-empty code: resolve immediately from owning source
     const auto& srcs = pm.sources();
-    const auto sit   = std::find_if(srcs.begin(), srcs.end(), [&](const auto& s) {
-      return s.sourceId == updated.sourceId;
-    });
+    const auto sit   = std::find_if(
+      srcs.begin(), srcs.end(), [&](const auto& s) { return s.sourceId == updated.sourceId; });
     updated.transformLanguage = (sit != srcs.end()) ? sit->frameParserLanguage : 0;
     languageInherited         = true;
   }
@@ -2471,7 +2475,7 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
     const auto constants = std::count_if(t.registers.begin(), t.registers.end(), [](const auto& r) {
       return r.type == DataModel::RegisterType::Constant;
     });
-    const auto computed = std::count_if(t.registers.begin(), t.registers.end(), [](const auto& r) {
+    const auto computed  = std::count_if(t.registers.begin(), t.registers.end(), [](const auto& r) {
       return r.type == DataModel::RegisterType::Computed;
     });
 
