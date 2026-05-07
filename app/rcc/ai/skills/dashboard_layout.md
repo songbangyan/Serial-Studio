@@ -8,68 +8,84 @@ datasets.
 
 Widgets are the things you see on the dashboard. They are NOT the same
 as a group's `widget` string (that decides the group SHAPE, not what
-tiles render). Use the `DashboardWidget` enum for
-`project.workspace.addWidget`:
+tiles render).
 
-```
-0  = DashboardTerminal           (DON'T pick this for tiles - it's the console)
-1  = DashboardDataGrid
-2  = DashboardMultiPlot
-3  = DashboardAccelerometer
-4  = DashboardGyroscope
-5  = DashboardGPS
-6  = DashboardPlot3D              (Pro)
-7  = DashboardFFT
-8  = DashboardLED
-9  = DashboardPlot
-10 = DashboardBar
-11 = DashboardGauge
-12 = DashboardCompass
-13 = DashboardNoWidget            (sentinel; never pin this)
-14 = DashboardImageView           (Pro)
-15 = DashboardOutputPanel         (Pro; ALL output widgets in a group on one tile)
-16 = DashboardNotificationLog     (Pro)
-17 = DashboardWaterfall           (Pro)
-18 = DashboardPainter             (Pro)
-```
+`project.workspace.addWidget` now takes `widgetType` as **either a
+string slug or the integer enum**. Strings are unambiguous and
+forwards-compatible; the integer column is kept for back-compat with
+existing scripts and clients that haven't migrated.
+
+| Slug                | Integer enum | Notes                                          |
+|---------------------|--------------|------------------------------------------------|
+| `"terminal"`        | 0            | Console; DON'T pin this as a tile             |
+| `"datagrid"`        | 1            |                                                |
+| `"multiplot"`       | 2            |                                                |
+| `"accelerometer"`   | 3            |                                                |
+| `"gyroscope"`       | 4            |                                                |
+| `"gps"`             | 5            |                                                |
+| `"plot3d"`          | 6            | Pro                                            |
+| `"fft"`             | 7            |                                                |
+| `"led"`             | 8            |                                                |
+| `"plot"`            | 9            |                                                |
+| `"bar"`             | 10           |                                                |
+| `"gauge"`           | 11           |                                                |
+| `"compass"`         | 12           |                                                |
+| `"none"`            | 13           | Sentinel; never pin                            |
+| `"imageview"`       | 14           | Pro                                            |
+| `"output-panel"`    | 15           | Pro; ALL output widgets in a group on one tile|
+| `"notification-log"`| 16           | Pro                                            |
+| `"waterfall"`       | 17           | Pro                                            |
+| `"painter"`         | 18           | Pro                                            |
 
 Each group/dataset is "compatible" with a subset of these. Use
 `project.group.list` and read each group's `compatibleWidgetTypes`
 array — the workspace-add command validates against it and rejects
-mismatches.
+mismatches. Responses also include `compatibleWidgetTypeSlugs` next
+to the integer array.
 
-## Per-dataset visualization options — the bitflag table
+## Per-dataset visualization options
 
-A **dataset** carries its own visualization options as bit flags. Each
-flag toggles ONE per-dataset visualization. The same visualization shows
-up in three places with three different names and numbers — keep this
-table in front of you whenever you're enabling/disabling visualizations:
+A **dataset** carries its own visualization options. `setOptions` and
+`addWidget` both accept **string slugs** -- prefer those, since they
+are the same name in both places. (Integer bitflags / enums are still
+accepted for back-compat. Their numbers do NOT line up between the two
+APIs, which is why slugs exist.)
 
-| Visualization | JSON key (`.ssproj`) | `DatasetOption` bitflag (`setOptions`) | `DashboardWidget` enum (`addWidget`) |
-|---------------|----------------------|----------------------------------------|--------------------------------------|
-| Plot          | `graph: true`        | `1`  (DatasetPlot)                    | `9`  (DashboardPlot)                 |
-| FFT           | `fft: true`          | `2`  (DatasetFFT)                     | `7`  (DashboardFFT)                  |
-| Bar           | `widget: "bar"`      | `4`  (DatasetBar)                     | `10` (DashboardBar)                  |
-| Gauge         | `widget: "gauge"`    | `8`  (DatasetGauge)                   | `11` (DashboardGauge)                |
-| Compass       | `widget: "compass"`  | `16` (DatasetCompass)                 | `12` (DashboardCompass)              |
-| LED           | `led: true`          | `32` (DatasetLED)                     | `8`  (DashboardLED)                  |
-| Waterfall     | `waterfall: true`    | `64` (DatasetWaterfall)               | `17` (DashboardWaterfall) (Pro)      |
+| Visualization | Slug          | JSON key (`.ssproj`) | `setOptions` bit | `addWidget` enum |
+|---------------|---------------|----------------------|------------------|------------------|
+| Plot          | `"plot"`      | `graph: true`        | `1`              | `9`              |
+| FFT           | `"fft"`       | `fft: true`          | `2`              | `7`              |
+| Bar           | `"bar"`       | `widget: "bar"`      | `4`              | `10`             |
+| Gauge         | `"gauge"`     | `widget: "gauge"`    | `8`              | `11`             |
+| Compass       | `"compass"`   | `widget: "compass"`  | `16`             | `12`             |
+| LED           | `"led"`       | `led: true`          | `32`             | `8`              |
+| Waterfall     | `"waterfall"` | `waterfall: true`    | `64`             | `17` (Pro)       |
+
+Slug usage:
+- `setOptions` accepts **either** `options: ["plot","fft","waterfall"]`
+  (PREFERRED) **or** `options: 67` (bitfield).
+- `setOption` (singular) accepts **either** `option: "plot"`
+  (PREFERRED) **or** `option: 1` (bit).
+- `addWidget` accepts **either** `widgetType: "plot"` (PREFERRED)
+  **or** `widgetType: 9` (enum int).
+- Responses include slug fields next to the integers
+  (`enabledOptionsSlugs`, `enabledWidgetTypesSlugs`,
+  `compatibleWidgetTypeSlugs`, `widgetTypeSlug`).
 
 Notes:
-- Bar / Gauge / Compass are **mutually exclusive** — a dataset's `widget`
-  string holds at most one of them. `setOptions` enforces this: if more
-  than one of those bits is set in the value, the highest bit wins.
-- Plot / FFT / LED / Waterfall are **independent flags** — a dataset can
+- Bar / Gauge / Compass are **mutually exclusive** -- a dataset's
+  `widget` string holds at most one of them. `setOptions` enforces
+  this: if more than one of those bits is set, the highest bit wins.
+- Plot / FFT / LED / Waterfall are **independent** -- a dataset can
   have Plot + FFT + Waterfall all on at once, and the group's
   `compatibleWidgetTypes` will list all three.
-- The **DatasetOption bitflag and the DashboardWidget enum are
-  different numbering systems.** Plot is bit `1` for `setOptions` but
-  enum value `9` for `addWidget`. Bar is bit `4` but enum `10`.
-  Hardcoding `widgetType: 1` in `addWidget` thinking it means "Plot"
-  is the most common bug — that's `DashboardDataGrid`. Always read
-  the column you actually need.
-- `compatibleWidgetTypes` is computed live from the dataset flags + the
-  group's own widget shape (see next section). Toggling a dataset
+- The integer bitflag for `setOptions` and the integer enum for
+  `addWidget` are **different numbering systems** -- Plot is bit `1`
+  for `setOptions` but enum value `9` for `addWidget`. If you must
+  use integers, read the column you actually need. **Use slugs to
+  avoid this entirely.**
+- `compatibleWidgetTypes` is computed live from the dataset flags +
+  the group's own widget shape (see next section). Toggling a dataset
   option immediately expands or shrinks the group's compatible set.
 
 ## Group widget shape — separate from per-dataset flags
@@ -115,25 +131,27 @@ dataset options) and read the result back from `project.group.list`.
 If `addWidget` rejects your `widgetType` with "not compatible with group N":
 
 1. Pick the right dataset in that group.
-2. Look up the bitflag value from the per-dataset table above (Plot
-   is `1`, FFT is `2`, Gauge is `8`, Waterfall is `64`).
-3. `project.dataset.setOptions{groupId, datasetId, options: <bitfield>}`
-   is the canonical call. Pass the bitwise OR of every flag you want
-   enabled (any flag NOT in the value is **disabled**, so include the
-   ones already on). `project.dataset.update{..., graph: true, fft:
-   true, waterfall: true}` is the alternative when you're patching
-   other dataset fields (title, units, ranges) in the same call.
-   `project.dataset.setOption` (singular) is **deprecated** — it
+2. Pick the slug for the visualization you want from the per-dataset
+   table above (`"plot"`, `"fft"`, `"gauge"`, `"waterfall"`, ...).
+3. `project.dataset.setOptions{groupId, datasetId, options:
+   ["plot","fft","waterfall"]}` is the canonical call. Pass the
+   complete array of every option you want enabled -- any option NOT
+   in the array is **disabled**, so include the ones already on.
+   `project.dataset.update{..., graph: true, fft: true, waterfall:
+   true}` is the alternative when you're patching other dataset
+   fields (title, units, ranges) in the same call.
+   `project.dataset.setOption` (singular) is **deprecated** -- it
    silently corrupts state when the AI repeatedly toggles single
-   bits and forgets the rest. Don't use it from agent code; use
-   `setOptions` (plural) and recompute the bitfield each time.
-4. **VERIFY**: re-run `project.group.list` and read the target group's
-   `compatibleWidgetTypes`. The new DashboardWidget enum value MUST
-   appear in that list. If it doesn't, your `setOptions` call did not
-   land — check the `enabledWidgetTypes` of every dataset in that
-   group, the bit you flipped, and that you used the right (groupId,
+   options and forgets the rest. Don't use it from agent code; use
+   `setOptions` (plural) and recompute the array each time.
+4. **VERIFY**: re-run `project.group.list` and read the target
+   group's `compatibleWidgetTypeSlugs` (or `compatibleWidgetTypes`
+   for integers). The new slug MUST appear in that list. If it
+   doesn't, your `setOptions` call did not land -- check the
+   `enabledWidgetTypesSlugs` of every dataset in that group, the
+   slug you flipped, and that you used the right (groupId,
    datasetId) pair.
-5. Now re-run `addWidget`.
+5. Now re-run `addWidget` -- pass `widgetType: "<slug>"`.
 
 **Never call `addWidget` twice with identical args expecting a
 different result.** If a call failed, something must change between
@@ -150,14 +168,18 @@ references. The user creates them via:
 ```
 project.workspace.setCustomizeMode{enabled: true}    // required for edits
 project.workspace.add{title, icon}                    // -> workspaceId
-project.workspace.addWidget{workspaceId, widgetType, groupId,
-                            relativeIndex: 0}
+project.workspace.addWidget{workspaceId, widgetType, groupId}
+                                                      // relativeIndex auto-assigned
 project.workspace.setCustomizeMode{enabled: false}    // optional
 ```
 
-`relativeIndex` is **not** a dataset index. It's used only when you're
-adding a SECOND tile of the same widgetType+groupId combination to the
-same workspace. For all normal cases, leave it 0.
+`relativeIndex` is **optional and not a dataset index**. Omit it and
+the API auto-assigns the next free slot for `(widgetType, groupId)` on
+that workspace. The response includes the assigned value in
+`relativeIndex` and `relativeIndexAutoAssigned: true`. Pass an explicit
+integer ONLY when reproducing a specific layout (e.g. restoring from
+an export). Passing a dataset index here was the old pre-3.3 footgun;
+the auto-assign behavior makes that mistake impossible.
 
 ## MANDATORY pre-flight before any workspace edit
 
@@ -165,29 +187,32 @@ Trial-and-error against `addWidget` burns calls on validation errors and
 leaves the workspace half-built. ALWAYS run this exact sequence first:
 
 ```
-1. project.group.list       -> for every group, read groupId,
-                                compatibleWidgetTypes, and
-                                datasetSummary[].enabledWidgetTypes.
-                                READ THE ARRAY -- don't assume what's in it.
-2. project.workspace.list   -> read existing workspaceIds (the ones
-                                you may need to delete or reuse)
-3. (optional, if a command schema is unfamiliar)
+1. project.snapshot         -> ONE call returns sources, groups (with
+                                datasets and compatibleWidgetTypeSlugs),
+                                and the workspaces summary. Prefer this
+                                over chaining list calls.
+                                Pass verbose=true for parser code +
+                                source-level frame settings.
+2. (optional, if a command schema is unfamiliar)
    meta.describeCommand{name: "project.workspace.addWidget"}
-4. NOW you can plan and execute.
+3. NOW you can plan and execute.
 ```
 
-The plan is: for each widget the user asked for, pick a `groupId` whose
-`compatibleWidgetTypes` contains the desired `widgetType`. If the
-desired type isn't in any group's compatible list, FIRST flip the
-matching dataset option (see "How to enable a workspace tile from
-scratch" above), THEN re-read `project.group.list` to confirm the type
-is now compatible, THEN call `addWidget`.
+If you only need part of the picture, the granular calls still work:
+`project.group.list`, `project.workspace.list`, `project.dataset.list`,
+`project.dataset.getByPath{path: "Group/Dataset"}` for a specific
+dataset. Use `project.snapshot` when you need broad context.
 
-`relativeIndex` is almost always `0`. Only use a non-zero value when
-you are intentionally pinning a SECOND tile of the same `(widgetType,
-groupId)` pair to the same workspace. **It is NOT a dataset index.**
-Passing a dataset index here is a noise-free bug — you'll get a tile
-that overlaps an existing one, or no tile at all.
+The plan is: for each widget the user asked for, pick a `groupId` whose
+`compatibleWidgetTypeSlugs` contains the desired slug. If the desired
+slug isn't in any group's compatible list, FIRST flip the matching
+dataset option (see "How to enable a workspace tile from scratch"
+above), THEN re-read the relevant group to confirm the slug is now
+compatible, THEN call `addWidget`.
+
+`relativeIndex` is **optional**. Omit it and the API auto-assigns the
+next free slot for that `(widgetType, groupId)` pair on the workspace.
+Pass an explicit integer ONLY when reproducing a specific layout.
 
 ## Verify-after-mutation rule
 
@@ -266,15 +291,15 @@ Goal: one workspace tab that shows the time-domain signal, its FFT, and
 a waterfall (Pro) for the same audio/vibration channel.
 
 ```
-// 1. Find the dataset's groupId and datasetId.
-project.group.list                 -> note groupId for the channel
-project.dataset.list               -> note datasetId within that group
+// 1. Find the dataset by path, or via snapshot.
+project.dataset.getByPath { path: "Audio/Channel A" }
+  -> { groupId, datasetId, uniqueId, ... }
 
 // 2. Enable all three visualizations on the dataset in one shot.
 project.dataset.setOptions {
   groupId: <gid>,
   datasetId: <did>,
-  options: 67                      // 1 (Plot) | 2 (FFT) | 64 (Waterfall)
+  options: ["plot", "fft", "waterfall"]
 }
 
 // 3. Customize mode is required for any workspace edit.
@@ -285,19 +310,18 @@ project.workspace.add { title: "Signal Analysis",
                         icon: "qrc:/icons/panes/dashboard.svg" }
 // -> { id: <wsId> }
 
-// 5. Pin all three tiles. relativeIndex is 0 for each — it's only > 0
-//    when adding a second tile of the same widgetType+groupId.
-project.workspace.addWidget { workspaceId: <wsId>, widgetType: 9,
-                              groupId: <gid>, relativeIndex: 0 }   // Plot
-project.workspace.addWidget { workspaceId: <wsId>, widgetType: 7,
-                              groupId: <gid>, relativeIndex: 0 }   // FFT
-project.workspace.addWidget { workspaceId: <wsId>, widgetType: 17,
-                              groupId: <gid>, relativeIndex: 0 }   // Waterfall
+// 5. Pin all three tiles. Omit relativeIndex; the API auto-assigns.
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: "plot",
+                              groupId: <gid> }
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: "fft",
+                              groupId: <gid> }
+project.workspace.addWidget { workspaceId: <wsId>, widgetType: "waterfall",
+                              groupId: <gid> }
 ```
 
-Common mistake: setting `widgetType: 1` (Plot bitflag) instead of
-`widgetType: 9` (DashboardPlot enum). The bitflag is only for
-`setOptions`; `addWidget` always takes the `DashboardWidget` enum.
+The slug form (`widgetType: "plot"`) makes the addWidget vs setOption
+numbering collision impossible. Integers still work for back-compat
+(`widgetType: 9` is DashboardPlot), but the slugs are unambiguous.
 
 ## Recipe — Add a Gauge tile to an existing group
 
@@ -305,45 +329,41 @@ Goal: a group has one numeric dataset that you want to show as a radial
 gauge on the executive workspace.
 
 ```
-// 1. Pre-flight: identify groupId, current dataset options, and
-//    target workspace.
-project.group.list
-  -> note groupId (e.g. 0)
-  -> note compatibleWidgetTypes  (e.g. [9] = Plot only)
-  -> note datasetSummary[0]      (e.g. datasetId=0, options bit 1 = Plot on)
-project.workspace.list
-  -> note workspaceId for "Executive Overview" (e.g. 5001)
+// 1. Pre-flight: project.snapshot returns sources + groups + workspaces
+//    in one call.
+project.snapshot
+  -> note groupId (e.g. 0), compatibleWidgetTypeSlugs (e.g. ["plot"]),
+     and the workspaceId for "Executive Overview" (e.g. 5001)
 
-// 2. Gauge isn't in compatibleWidgetTypes yet. Flip Gauge (bit 8) on the
-//    dataset, preserving Plot (bit 1) -- pass the OR of every flag you
-//    want enabled.
+// 2. "gauge" isn't compatible yet. Flip Gauge on the dataset,
+//    preserving Plot -- pass the COMPLETE list of options you want on.
 project.dataset.setOptions {
   groupId: 0,
   datasetId: 0,
-  options: 9                         // 1 (Plot) | 8 (Gauge)
+  options: ["plot", "gauge"]
 }
 
-// 3. VERIFY. Re-list groups; compatibleWidgetTypes must now include 11.
+// 3. VERIFY. Read the group again; compatibleWidgetTypeSlugs must
+//    include "gauge".
 project.group.list
-  -> compatibleWidgetTypes: [9, 11]  -- good, addWidget will accept 11
+  -> compatibleWidgetTypeSlugs: ["plot", "gauge"]  -- good
 
 // 4. Pin the Gauge tile.
 project.workspace.setCustomizeMode { enabled: true }
 project.workspace.addWidget {
   workspaceId: 5001,
-  widgetType: 11,                    // DashboardGauge -- NOT 8 (that's bit value)
-  groupId: 0,
-  relativeIndex: 0
+  widgetType: "gauge",
+  groupId: 0
 }
 
 // 5. Save.
 project.save
 ```
 
-If step 4 returns "widgetType=11 not compatible with group 0", step 3
-didn't actually pass — re-list groups and check what
-`compatibleWidgetTypes` really contains, instead of issuing addWidget
-again.
+If step 4 returns "widgetType=gauge not compatible with group 0", step
+3 didn't actually pass -- re-read the group and check what
+`compatibleWidgetTypeSlugs` really contains, instead of issuing
+addWidget again.
 
 ## Troubleshooting — what the API errors actually mean
 
@@ -368,8 +388,12 @@ again.
   `widget` (string).** Different fields, different types. `update`
   silently drops `widgetType`.
 - **`setOption` (singular) is deprecated for agent use.** Always
-  `setOptions` (plural) with the full bitfield, or `dataset.update`
+  `setOptions` (plural) with the full slug array, or `dataset.update`
   with named booleans (`graph`, `fft`, `led`, `waterfall`).
+- **Prefer string slugs** (`widgetType: "plot"`,
+  `options: ["plot","fft"]`) over integers. The bitflag (`setOptions`)
+  and enum (`addWidget`) integer numbering systems were a 3.x
+  artifact; with slugs they're not even visible.
 - **Customize mode persists**. If you turn it on and the user closes the
   app, it stays on. That's fine, but be aware that subsequent
   auto-generate calls become no-ops.

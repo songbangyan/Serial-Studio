@@ -55,6 +55,77 @@ static void appendDatasetWidgetTypes(const DataModel::Dataset& ds, QJsonArray& c
 }
 
 /**
+ * @brief Returns the per-dataset bitflag summary (mirrors enabled visualization options).
+ */
+static int datasetOptionsBitflag(const DataModel::Dataset& d);
+
+/**
+ * @brief Builds the canonical dataset response object used by list / get* / snapshot.
+ */
+static QJsonObject buildDatasetObject(const DataModel::Dataset& dataset,
+                                      const DataModel::Group& group)
+{
+  QJsonObject dataset_obj = DataModel::serialize(dataset);
+
+  dataset_obj[QStringLiteral("groupId")]    = group.groupId;
+  dataset_obj[QStringLiteral("groupTitle")] = group.title;
+  dataset_obj[Keys::SourceId]               = dataset.sourceId;
+  dataset_obj[Keys::UniqueId] =
+    DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
+
+  QStringList enabled;
+  if (dataset.plt)
+    enabled.append(QStringLiteral("plot"));
+
+  if (dataset.fft)
+    enabled.append(QStringLiteral("FFT"));
+
+  if (dataset.led)
+    enabled.append(QStringLiteral("LED"));
+
+  if (dataset.log)
+    enabled.append(QStringLiteral("log"));
+
+  if (dataset.waterfall)
+    enabled.append(QStringLiteral("waterfall"));
+
+  if (dataset.alarmEnabled)
+    enabled.append(QStringLiteral("alarm"));
+
+  if (!dataset.widget.isEmpty())
+    enabled.append(dataset.widget);
+
+  dataset_obj[QStringLiteral("enabledFeatures")] =
+    enabled.isEmpty() ? QStringLiteral("plain numeric") : enabled.join(QStringLiteral(", "));
+
+  const int optionsBits                         = datasetOptionsBitflag(dataset);
+  dataset_obj[QStringLiteral("enabledOptions")] = optionsBits;
+
+  QJsonArray optionSlugs;
+  for (const auto& slug : API::EnumLabels::datasetOptionsBitsToSlugs(optionsBits))
+    optionSlugs.append(slug);
+
+  dataset_obj[QStringLiteral("enabledOptionsSlugs")] = optionSlugs;
+
+  QJsonArray ds_widget_types;
+  appendDatasetWidgetTypes(dataset, ds_widget_types);
+  dataset_obj[QStringLiteral("enabledWidgetTypes")] = ds_widget_types;
+
+  QJsonArray ds_widget_type_slugs;
+  for (const auto w : SerialStudio::getDashboardWidgets(dataset)) {
+    const auto slug = API::EnumLabels::dashboardWidgetSlug(static_cast<int>(w));
+    if (!ds_widget_type_slugs.contains(slug))
+      ds_widget_type_slugs.append(slug);
+  }
+  dataset_obj[QStringLiteral("enabledWidgetTypesSlugs")] = ds_widget_type_slugs;
+
+  dataset_obj[QStringLiteral("hasTransform")] = !dataset.transformCode.isEmpty();
+  dataset_obj[QStringLiteral("isVirtual")]    = dataset.virtual_;
+
+  return dataset_obj;
+}
+
+/**
  * @brief Flags obvious language/syntax mismatches; returns a short warning or empty.
  */
 [[nodiscard]] static QString detectLanguageMismatch(const QString& code, int language)
@@ -416,13 +487,15 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
                    "widgetType."),
     makeSchema({
       {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
-      {          Keys::DatasetId, QStringLiteral("integer"),        QStringLiteral("Dataset id within the group")},
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
       { QStringLiteral("option"),
-       QStringLiteral("integer"),
-       QStringLiteral("DatasetOption bitflag value (1, 2, 4, 8, 16, 32, or 64)")                                 },
+       QStringLiteral("string|integer"),
+       QStringLiteral("PREFERRED: a slug -- 'plot', 'fft', 'bar', 'gauge', 'compass', "
+       "'led', 'waterfall'. Integer DatasetOption bitflag still accepted "
+       "(1, 2, 4, 8, 16, 32, 64).")                                                                       },
       {QStringLiteral("enabled"),
        QStringLiteral("boolean"),
-       QStringLiteral("Whether to enable or disable the option")                                                 }
+       QStringLiteral("Whether to enable or disable the option")                                          }
   }),
     &datasetSetOption);
 
@@ -438,11 +511,13 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
                    "bitflags, NOT DashboardWidget enum values -- the numbers do not "
                    "line up with project.workspace.addWidget's widgetType."),
     makeSchema({
-      {QStringLiteral("groupId"),QStringLiteral("integer"),  QStringLiteral("Owning group id")                                                            },
-      {          Keys::DatasetId, QStringLiteral("integer"),                 QStringLiteral("Dataset id within the group")},
+      {QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Owning group id")                                                            },
+      {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")},
       {QStringLiteral("options"),
-       QStringLiteral("integer"),
-       QStringLiteral("Bitwise OR of DatasetOption flags (e.g. 67 = Plot|FFT|Waterfall)")                                 }
+       QStringLiteral("array|integer"),
+       QStringLiteral("PREFERRED: an array of slugs (e.g. ['plot','fft','waterfall']). "
+       "Integer bitflag still accepted (Plot=1, FFT=2, Bar=4, Gauge=8, "
+       "Compass=16, LED=32, Waterfall=64).")                                                              }
   }),
     &datasetSetOptions);
 }
@@ -738,6 +813,115 @@ void API::Handlers::ProjectHandler::registerListCommands()
                            &datasetsList);
   registry.registerCommand(
     QStringLiteral("project.action.list"), QStringLiteral("List all actions"), empty, &actionsList);
+
+  registerResolverCommands();
+  registerSnapshotAndMoveCommands();
+}
+
+/**
+ * @brief Register dataset resolver commands (getByUniqueId, getByTitle, getByPath, getExecutionOrder).
+ */
+void API::Handlers::ProjectHandler::registerResolverCommands()
+{
+  auto& registry   = CommandRegistry::instance();
+  const auto empty = emptySchema();
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.getByUniqueId"),
+    QStringLiteral("Resolve a dataset by its uniqueId. Returns the same shape as the "
+                   "elements of project.dataset.list."),
+    makeSchema({
+      {QString(Keys::UniqueId),
+       QStringLiteral("integer"),
+       QStringLiteral("Computed as sourceId*1000000 + groupId*10000 + datasetId. Treat as opaque.")}
+  }),
+    &datasetGetByUniqueId);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.getByTitle"),
+    QStringLiteral("Resolve a dataset by exact title. Pass sourceId / groupId to "
+                   "disambiguate when titles repeat across groups."),
+    makeSchema(
+      {{QString(Keys::Title),
+        QStringLiteral("string"),
+        QStringLiteral("Dataset title (exact match).")}},
+      {{QString(Keys::SourceId),
+        QStringLiteral("integer"),
+        QStringLiteral("Optional sourceId filter.")},
+       {QString(Keys::GroupId),
+        QStringLiteral("integer"),
+        QStringLiteral("Optional groupId filter.")}}),
+    &datasetGetByTitle);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.getByPath"),
+    QStringLiteral("Resolve a dataset by title path. Preferred for human-readable "
+                   "addressing -- survives uniqueId reordering."),
+    makeSchema({
+      {QStringLiteral("path"),
+       QStringLiteral("string"),
+       QStringLiteral("'Group/Dataset' or 'Source/Group/Dataset' (titles, '/'-separated).")}
+  }),
+    &datasetGetByPath);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.getExecutionOrder"),
+    QStringLiteral("Returns the order datasets execute in during transform processing. "
+                   "Useful for debugging cross-dataset transforms (a transform reads final "
+                   "values only for datasets earlier in this list)."),
+    empty,
+    &datasetGetExecutionOrder);
+}
+
+/**
+ * @brief Register the project.snapshot composite read and dataset/group move commands.
+ */
+void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.snapshot"),
+    QStringLiteral("Composite read of the active project: title, sources, groups + "
+                   "datasets, workspaces summary, and data tables summary -- in one "
+                   "round trip. Pass verbose=true for source-level frame settings and "
+                   "frame parser source. Prefer this over chaining list/get calls."),
+    makeSchema(
+      {},
+      {{QStringLiteral("verbose"),
+        QStringLiteral("boolean"),
+        QStringLiteral("Include frame parser source and source-level frame settings.")}}),
+    &projectSnapshot);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.move"),
+    QStringLiteral("Reorder a dataset within its group. Changes datasetId (and therefore "
+                   "uniqueId) for the moved dataset and any it crossed; workspace refs "
+                   "re-anchor automatically. Scripts that pinned a uniqueId must be "
+                   "updated -- prefer dataset.getByPath in scripts."),
+    makeSchema({
+      {QString(Keys::UniqueId),
+       QStringLiteral("integer"),
+       QStringLiteral("Dataset uniqueId to move.")},
+      {QStringLiteral("newPosition"),
+       QStringLiteral("integer"),
+       QStringLiteral("New 0-based position within the group; clamped to valid range.")},
+  }),
+    &datasetMove);
+
+  registry.registerCommand(
+    QStringLiteral("project.group.move"),
+    QStringLiteral("Reorder a group within the project. Changes groupId for the moved "
+                   "group and any it crossed (which propagates to dataset uniqueIds). "
+                   "Workspace refs re-anchor automatically; scripts pinning a uniqueId "
+                   "must be updated."),
+    makeSchema({
+      {QString(Keys::GroupId), QStringLiteral("integer"), QStringLiteral("Group id to move.")},
+      {QStringLiteral("newPosition"),
+       QStringLiteral("integer"),
+       QStringLiteral("New 0-based position; clamped to valid range.")},
+  }),
+    &groupMove);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1183,8 +1367,23 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
 
   const int groupId   = params.value(QStringLiteral("groupId")).toInt();
   const int datasetId = params.value(Keys::DatasetId).toInt();
-  const int option    = params.value(QStringLiteral("option")).toInt();
   const bool enabled  = params.value(QStringLiteral("enabled")).toBool();
+
+  // option accepts a string slug ('plot', 'fft', ...) or the DatasetOption integer
+  int option                  = 0;
+  const QJsonValue optionJson = params.value(QStringLiteral("option"));
+  if (optionJson.isString()) {
+    option = API::EnumLabels::datasetOptionFromSlug(optionJson.toString());
+    if (option == 0)
+      return CommandResponse::makeError(
+        id,
+        ErrorCode::InvalidParam,
+        QStringLiteral("Unknown option slug '%1'. Use one of: plot, fft, bar, gauge, "
+                       "compass, led, waterfall.")
+          .arg(optionJson.toString()));
+  } else {
+    option = optionJson.toInt();
+  }
 
   auto& project      = DataModel::ProjectModel::instance();
   const auto& groups = project.groups();
@@ -1203,10 +1402,11 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
   project.changeDatasetOption(static_cast<SerialStudio::DatasetOption>(option), enabled);
 
   QJsonObject result;
-  result[QStringLiteral("groupId")] = groupId;
-  result[Keys::DatasetId]           = datasetId;
-  result[QStringLiteral("option")]  = option;
-  result[QStringLiteral("enabled")] = enabled;
+  result[QStringLiteral("groupId")]    = groupId;
+  result[Keys::DatasetId]              = datasetId;
+  result[QStringLiteral("option")]     = option;
+  result[QStringLiteral("optionSlug")] = API::EnumLabels::datasetOptionSlug(option);
+  result[QStringLiteral("enabled")]    = enabled;
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1230,7 +1430,19 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QStr
 
   const int groupId   = params.value(QStringLiteral("groupId")).toInt();
   const int datasetId = params.value(Keys::DatasetId).toInt();
-  const int options   = params.value(QStringLiteral("options")).toInt();
+
+  // options accepts an integer bitflag OR an array of slug strings
+  int options                  = 0;
+  const QJsonValue optionsJson = params.value(QStringLiteral("options"));
+  if (optionsJson.isArray()) {
+    QStringList slugs;
+    for (const auto& v : optionsJson.toArray())
+      slugs.append(v.toString());
+
+    options = API::EnumLabels::datasetOptionsSlugsToBits(slugs);
+  } else {
+    options = optionsJson.toInt();
+  }
 
   auto& project      = DataModel::ProjectModel::instance();
   const auto& groups = project.groups();
@@ -1261,10 +1473,15 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QStr
 
   project.updateDataset(groupId, datasetId, d, /*rebuildTree=*/true);
 
+  QJsonArray slugs;
+  for (const auto& s : API::EnumLabels::datasetOptionsBitsToSlugs(options))
+    slugs.append(s);
+
   QJsonObject result;
-  result[QStringLiteral("groupId")] = groupId;
-  result[Keys::DatasetId]           = datasetId;
-  result[QStringLiteral("options")] = options;
+  result[QStringLiteral("groupId")]      = groupId;
+  result[Keys::DatasetId]                = datasetId;
+  result[QStringLiteral("options")]      = options;
+  result[QStringLiteral("optionsSlugs")] = slugs;
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1374,6 +1591,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   DataModel::Dataset updated = *dit;
   updated.transformCode      = code;
 
+  bool languageInherited = false;
   if (params.contains(QStringLiteral("language"))) {
     const int lang = params.value(QStringLiteral("language")).toInt();
     if (lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
@@ -1383,6 +1601,14 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
         QStringLiteral("Invalid language: must be 0 (JavaScript) or 1 (Lua)"));
 
     updated.transformLanguage = lang;
+  } else if (!code.isEmpty() && updated.transformLanguage < 0) {
+    // No explicit language with non-empty code: resolve immediately from owning source
+    const auto& srcs = pm.sources();
+    const auto sit   = std::find_if(srcs.begin(), srcs.end(), [&](const auto& s) {
+      return s.sourceId == updated.sourceId;
+    });
+    updated.transformLanguage = (sit != srcs.end()) ? sit->frameParserLanguage : 0;
+    languageInherited         = true;
   }
 
   pm.updateDataset(groupId, datasetId, updated, false);
@@ -1393,6 +1619,15 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   result[QStringLiteral("codeLength")] = code.size();
   result[QStringLiteral("language")]   = updated.transformLanguage;
   result[QStringLiteral("updated")]    = true;
+
+  if (languageInherited) {
+    result[QStringLiteral("languageInherited")] = true;
+    result[QStringLiteral("inheritNotice")] =
+      QStringLiteral("language was not provided; inherited from source "
+                     "frameParserLanguage (%1). Pass language explicitly "
+                     "to silence this notice.")
+        .arg(updated.transformLanguage == 1 ? QStringLiteral("Lua") : QStringLiteral("JavaScript"));
+  }
 
   if (!code.isEmpty() && updated.transformLanguage != -1) {
     const auto warning = detectLanguageMismatch(code, updated.transformLanguage);
@@ -1858,6 +2093,14 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
 
     obj[QStringLiteral("compatibleWidgetTypes")] = compat;
 
+    QJsonArray compatSlugs;
+    for (const auto& v : compat) {
+      const auto slug = API::EnumLabels::dashboardWidgetSlug(v.toInt());
+      if (!compatSlugs.contains(slug))
+        compatSlugs.append(slug);
+    }
+    obj[QStringLiteral("compatibleWidgetTypeSlugs")] = compatSlugs;
+
     groups_array.append(obj);
   }
 
@@ -1901,53 +2144,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 
   for (const auto& group : groups) {
     for (const auto& dataset : group.datasets) {
-      QJsonObject dataset_obj = DataModel::serialize(dataset);
-
-      dataset_obj[QStringLiteral("groupId")]    = group.groupId;
-      dataset_obj[QStringLiteral("groupTitle")] = group.title;
-      dataset_obj[Keys::SourceId]               = dataset.sourceId;
-
-      // Runtime key for transform & painter script lookups
-      dataset_obj[Keys::UniqueId] =
-        DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
-
-      // Visualization flags rolled into one comma-separated summary string
-      QStringList enabled;
-      if (dataset.plt)
-        enabled.append(QStringLiteral("plot"));
-
-      if (dataset.fft)
-        enabled.append(QStringLiteral("FFT"));
-
-      if (dataset.led)
-        enabled.append(QStringLiteral("LED"));
-
-      if (dataset.log)
-        enabled.append(QStringLiteral("log"));
-
-      if (dataset.waterfall)
-        enabled.append(QStringLiteral("waterfall"));
-
-      if (dataset.alarmEnabled)
-        enabled.append(QStringLiteral("alarm"));
-
-      if (!dataset.widget.isEmpty())
-        enabled.append(dataset.widget);
-
-      dataset_obj[QStringLiteral("enabledFeatures")] =
-        enabled.isEmpty() ? QStringLiteral("plain numeric") : enabled.join(QStringLiteral(", "));
-
-      // Machine-readable twins of enabledFeatures (bitflag + DashboardWidget enum array)
-      dataset_obj[QStringLiteral("enabledOptions")] = datasetOptionsBitflag(dataset);
-
-      QJsonArray ds_widget_types;
-      appendDatasetWidgetTypes(dataset, ds_widget_types);
-      dataset_obj[QStringLiteral("enabledWidgetTypes")] = ds_widget_types;
-
-      dataset_obj[QStringLiteral("hasTransform")] = !dataset.transformCode.isEmpty();
-      dataset_obj[QStringLiteral("isVirtual")]    = dataset.virtual_;
-
-      datasets_array.append(dataset_obj);
+      datasets_array.append(buildDatasetObject(dataset, group));
       ++total_datasets;
     }
   }
@@ -1966,6 +2163,373 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
   result[QStringLiteral("_summary")]     = summary;
   result[QStringLiteral("datasets")]     = datasets_array;
   result[QStringLiteral("datasetCount")] = total_datasets;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Find a dataset by its uniqueId across all groups.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetGetByUniqueId(const QString& id,
+                                                                         const QJsonObject& params)
+{
+  if (!params.contains(Keys::UniqueId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: uniqueId"));
+
+  const int uniqueId = params.value(Keys::UniqueId).toInt();
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+
+  for (const auto& group : groups) {
+    for (const auto& dataset : group.datasets) {
+      const int uid =
+        DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
+      if (uid == uniqueId)
+        return CommandResponse::makeSuccess(id, buildDatasetObject(dataset, group));
+    }
+  }
+
+  return CommandResponse::makeError(
+    id, ErrorCode::InvalidParam, QStringLiteral("Dataset not found for uniqueId %1").arg(uniqueId));
+}
+
+/**
+ * @brief Find a dataset by title (optionally narrowed by sourceId / groupId).
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetGetByTitle(const QString& id,
+                                                                      const QJsonObject& params)
+{
+  if (!params.contains(Keys::Title))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: title"));
+
+  const QString title        = params.value(Keys::Title).toString();
+  const bool hasSourceFilter = params.contains(Keys::SourceId);
+  const bool hasGroupFilter  = params.contains(Keys::GroupId);
+  const int filterSourceId   = hasSourceFilter ? params.value(Keys::SourceId).toInt() : 0;
+  const int filterGroupId    = hasGroupFilter ? params.value(Keys::GroupId).toInt() : 0;
+
+  if (title.isEmpty())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("title cannot be empty"));
+
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+
+  QJsonArray matches;
+  for (const auto& group : groups) {
+    if (hasGroupFilter && group.groupId != filterGroupId)
+      continue;
+
+    for (const auto& dataset : group.datasets) {
+      if (hasSourceFilter && dataset.sourceId != filterSourceId)
+        continue;
+
+      if (dataset.title == title)
+        matches.append(buildDatasetObject(dataset, group));
+    }
+  }
+
+  if (matches.isEmpty())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("No dataset matched title '%1'").arg(title));
+
+  if (matches.size() > 1) {
+    QJsonObject extra;
+    extra[QStringLiteral("matches")] = matches;
+    extra[QStringLiteral("hint")] =
+      QStringLiteral("Multiple datasets match this title. Pass sourceId or groupId to "
+                     "disambiguate, or call project.dataset.getByPath.");
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Ambiguous title '%1' (%2 matches)").arg(title).arg(matches.size()),
+      extra);
+  }
+
+  return CommandResponse::makeSuccess(id, matches.first().toObject());
+}
+
+/**
+ * @brief Find a dataset by 'Group/Dataset' or 'Source/Group/Dataset' path.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetGetByPath(const QString& id,
+                                                                     const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("path")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: path"));
+
+  const QString path  = params.value(QStringLiteral("path")).toString();
+  const auto segments = path.split(QChar('/'), Qt::SkipEmptyParts);
+
+  if (segments.size() != 2 && segments.size() != 3)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("path must be 'Group/Dataset' or 'Source/Group/Dataset'"));
+
+  const QString sourceTitle  = segments.size() == 3 ? segments.at(0) : QString();
+  const QString groupTitle   = segments.size() == 3 ? segments.at(1) : segments.at(0);
+  const QString datasetTitle = segments.last();
+
+  const auto& pm      = DataModel::ProjectModel::instance();
+  const auto& sources = pm.sources();
+  const auto& groups  = pm.groups();
+
+  int sourceFilterId = -1;
+  if (!sourceTitle.isEmpty()) {
+    for (const auto& src : sources)
+      if (src.title == sourceTitle) {
+        sourceFilterId = src.sourceId;
+        break;
+      }
+
+    if (sourceFilterId < 0)
+      return CommandResponse::makeError(
+        id, ErrorCode::InvalidParam, QStringLiteral("Source not found: '%1'").arg(sourceTitle));
+  }
+
+  for (const auto& group : groups) {
+    if (group.title != groupTitle)
+      continue;
+
+    for (const auto& dataset : group.datasets) {
+      if (sourceFilterId >= 0 && dataset.sourceId != sourceFilterId)
+        continue;
+
+      if (dataset.title == datasetTitle)
+        return CommandResponse::makeSuccess(id, buildDatasetObject(dataset, group));
+    }
+  }
+
+  return CommandResponse::makeError(
+    id, ErrorCode::InvalidParam, QStringLiteral("No dataset matched path '%1'").arg(path));
+}
+
+/**
+ * @brief Moves a dataset to a new position within its group.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& id,
+                                                                const QJsonObject& params)
+{
+  if (!params.contains(Keys::UniqueId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: uniqueId"));
+
+  if (!params.contains(QStringLiteral("newPosition")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: newPosition"));
+
+  const int uniqueId    = params.value(Keys::UniqueId).toInt();
+  const int newPosition = params.value(QStringLiteral("newPosition")).toInt();
+
+  auto& pm           = DataModel::ProjectModel::instance();
+  const auto& groups = pm.groups();
+
+  for (const auto& group : groups) {
+    for (const auto& dataset : group.datasets) {
+      const int uid =
+        DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
+      if (uid != uniqueId)
+        continue;
+
+      const int oldPosition = dataset.datasetId;
+      pm.moveDataset(group.groupId, oldPosition, newPosition);
+
+      QJsonObject result;
+      result[Keys::UniqueId]                = uniqueId;
+      result[Keys::GroupId]                 = group.groupId;
+      result[QStringLiteral("oldPosition")] = oldPosition;
+      result[QStringLiteral("newPosition")] = newPosition;
+      result[QStringLiteral("moved")]       = true;
+      result[QStringLiteral("warning")] =
+        QStringLiteral("Dataset reorder renumbers datasetId within the group, which "
+                       "changes uniqueId. Workspace refs are re-anchored automatically; "
+                       "scripts that hard-coded the old uniqueId must be updated. Prefer "
+                       "datasetGetByPath for stable script references.");
+      return CommandResponse::makeSuccess(id, result);
+    }
+  }
+
+  return CommandResponse::makeError(
+    id, ErrorCode::InvalidParam, QStringLiteral("Dataset not found for uniqueId %1").arg(uniqueId));
+}
+
+/**
+ * @brief Moves a group to a new position in the project.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
+                                                              const QJsonObject& params)
+{
+  if (!params.contains(Keys::GroupId))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("newPosition")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: newPosition"));
+
+  const int groupId     = params.value(Keys::GroupId).toInt();
+  const int newPosition = params.value(QStringLiteral("newPosition")).toInt();
+
+  auto& pm           = DataModel::ProjectModel::instance();
+  const auto& groups = pm.groups();
+  if (groupId < 0 || groupId >= static_cast<int>(groups.size()))
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id out of range: %1").arg(groupId));
+
+  pm.moveGroup(groupId, newPosition);
+
+  QJsonObject result;
+  result[QStringLiteral("oldPosition")] = groupId;
+  result[QStringLiteral("newPosition")] =
+    std::clamp(newPosition, 0, static_cast<int>(groups.size()) - 1);
+  result[QStringLiteral("moved")] = true;
+  result[QStringLiteral("warning")] =
+    QStringLiteral("Group reorder renumbers groupId, which changes uniqueIds for all "
+                   "datasets in the moved-past groups. Workspace refs are re-anchored "
+                   "automatically; scripts that hard-coded a uniqueId must be updated.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Returns a composite read of the entire project state.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
+                                                                    const QJsonObject& params)
+{
+  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
+  const auto& pm     = DataModel::ProjectModel::instance();
+
+  QJsonObject snapshot;
+  snapshot[Keys::Title]                = pm.title();
+  snapshot[Keys::PointCount]           = pm.pointCount();
+  snapshot[QStringLiteral("filePath")] = pm.jsonFilePath();
+  snapshot[QStringLiteral("modified")] = pm.modified();
+
+  // Sources: full when verbose, else summary
+  QJsonArray sources;
+  for (const auto& src : pm.sources()) {
+    QJsonObject s;
+    s[Keys::SourceId]                    = src.sourceId;
+    s[Keys::Title]                       = src.title;
+    s[Keys::BusType]                     = src.busType;
+    s[Keys::FrameParserLanguage]         = src.frameParserLanguage;
+    s[QStringLiteral("frameParserSize")] = src.frameParserCode.size();
+
+    if (verbose) {
+      s[Keys::FrameStart]        = src.frameStart;
+      s[Keys::FrameEnd]          = src.frameEnd;
+      s[Keys::ChecksumAlgorithm] = src.checksumAlgorithm;
+      s[Keys::FrameDetection]    = src.frameDetection;
+      s[Keys::FrameParserCode]   = src.frameParserCode;
+    }
+
+    sources.append(s);
+  }
+  snapshot[QStringLiteral("sources")] = sources;
+
+  // Groups + datasets (always full -- this is the most-asked-about data)
+  QJsonArray groups;
+  int totalDatasets = 0;
+  for (const auto& group : pm.groups()) {
+    QJsonObject g;
+    g[Keys::GroupId]                  = group.groupId;
+    g[Keys::Title]                    = group.title;
+    g[QStringLiteral("widget")]       = group.widget;
+    g[QStringLiteral("datasetCount")] = static_cast<int>(group.datasets.size());
+
+    QJsonArray ds;
+    for (const auto& dataset : group.datasets) {
+      ds.append(buildDatasetObject(dataset, group));
+      ++totalDatasets;
+    }
+    g[QStringLiteral("datasets")] = ds;
+    groups.append(g);
+  }
+  snapshot[QStringLiteral("groups")]       = groups;
+  snapshot[QStringLiteral("groupCount")]   = groups.size();
+  snapshot[QStringLiteral("datasetCount")] = totalDatasets;
+
+  // Workspaces summary
+  QJsonArray workspaces;
+  for (const auto& ws : pm.editorWorkspaces()) {
+    QJsonObject w;
+    w[Keys::WorkspaceId]             = ws.workspaceId;
+    w[Keys::Title]                   = ws.title;
+    w[QStringLiteral("widgetCount")] = static_cast<int>(ws.widgetRefs.size());
+    workspaces.append(w);
+  }
+  snapshot[QStringLiteral("workspaces")] = workspaces;
+
+  // Data tables: name + register count by type (full register lists are large)
+  QJsonArray tables;
+  for (const auto& t : pm.tables()) {
+    QJsonObject tbl;
+    tbl[Keys::Title]                     = t.name;
+    tbl[QStringLiteral("registerCount")] = static_cast<int>(t.registers.size());
+
+    const auto constants = std::count_if(t.registers.begin(), t.registers.end(), [](const auto& r) {
+      return r.type == DataModel::RegisterType::Constant;
+    });
+    const auto computed = std::count_if(t.registers.begin(), t.registers.end(), [](const auto& r) {
+      return r.type == DataModel::RegisterType::Computed;
+    });
+
+    tbl[QStringLiteral("constantCount")] = static_cast<int>(constants);
+    tbl[QStringLiteral("computedCount")] = static_cast<int>(computed);
+    tables.append(tbl);
+  }
+  snapshot[QStringLiteral("dataTables")] = tables;
+
+  // Operation mode
+  snapshot[QStringLiteral("operationMode")] =
+    static_cast<int>(AppState::instance().operationMode());
+
+  QJsonObject result;
+  result[QStringLiteral("snapshot")] = snapshot;
+  result[QStringLiteral("hint")] =
+    QStringLiteral("Pass verbose=true to include frame parser source and source-level "
+                   "frame settings. For per-table register details, call "
+                   "project.dataTable.get with the table name.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Returns datasets in the order FrameBuilder traverses them.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetGetExecutionOrder(
+  const QString& id, const QJsonObject& params)
+{
+  Q_UNUSED(params)
+
+  const auto& groups = DataModel::ProjectModel::instance().groups();
+
+  QJsonArray order;
+  for (const auto& group : groups) {
+    for (const auto& dataset : group.datasets) {
+      const int uid =
+        DataModel::dataset_unique_id(dataset.sourceId, group.groupId, dataset.datasetId);
+
+      QJsonObject entry;
+      entry[Keys::UniqueId]                      = uid;
+      entry[Keys::Title]                         = dataset.title;
+      entry[Keys::SourceId]                      = dataset.sourceId;
+      entry[Keys::GroupId]                       = group.groupId;
+      entry[Keys::DatasetId]                     = dataset.datasetId;
+      entry[QStringLiteral("hasTransform")]      = !dataset.transformCode.isEmpty();
+      entry[QStringLiteral("isVirtual")]         = dataset.virtual_;
+      entry[QStringLiteral("transformLanguage")] = dataset.transformLanguage;
+      order.append(entry);
+    }
+  }
+
+  QJsonObject result;
+  result[QStringLiteral("order")] = order;
+  result[QStringLiteral("count")] = order.size();
+  result[QStringLiteral("_explanation")] =
+    QStringLiteral("Datasets execute in (group-array, dataset-array) order. A transform "
+                   "may read raw values of ALL datasets via datasetGetRaw(uid), but only "
+                   "final values of datasets EARLIER in this list via datasetGetFinal(uid).");
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2332,22 +2896,40 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
 
   registry.registerCommand(
     QStringLiteral("project.frameParser.dryRun"),
-    QStringLiteral("Compile and execute frame parser code against a sample frame "
-                   "WITHOUT touching the live project. Returns either parsed values "
-                   "or compile/runtime errors. Use this to iterate before "
-                   "project.frameParser.setCode -- much cheaper than push-then-revert. "
-                   "Params: code (string), language (0=JS, 1=Lua), sampleFrame "
-                   "(string -- the raw frame body the parser would receive)."),
+    QStringLiteral("Compile and execute frame parser code against one or more sample "
+                   "frames WITHOUT touching the live project. Returns parsed values "
+                   "per frame, or compile/runtime errors. Pass either sampleFrame "
+                   "(single string) or sampleFrames (array of strings) -- the array "
+                   "form runs sequentially through one engine, so stateful parsers "
+                   "(top-level closures, EMA-style state) reveal their behavior. Use "
+                   "this to iterate before project.frameParser.setCode."),
     makeSchema({
-      {       QStringLiteral("code"),QStringLiteral("string"),QStringLiteral("Frame parser source")                          },
-      {   QStringLiteral("language"),
+      {        QStringLiteral("code"),QStringLiteral("string"),      QStringLiteral("Frame parser source")                          },
+      {    QStringLiteral("language"),
        QStringLiteral("integer"),
-       QStringLiteral("0 = JavaScript, 1 = Lua")                                    },
-      {QStringLiteral("sampleFrame"),
+       QStringLiteral("0 = JavaScript, 1 = Lua")                                               },
+      { QStringLiteral("sampleFrame"),
        QStringLiteral("string"),
-       QStringLiteral("Sample frame body to feed into parse(). Without delimiters.")}
+       QStringLiteral("Single frame body (without delimiters). Use sampleFrames for an array.")},
+      {QStringLiteral("sampleFrames"),
+       QStringLiteral("array"),
+       QStringLiteral("Array of frame bodies; runs sequentially in one engine instance.")      }
   }),
     &frameParserDryRun);
+
+  registry.registerCommand(
+    QStringLiteral("project.frameParser.dryCompile"),
+    QStringLiteral("Compile-only check for a frame parser. Catches syntax errors and the "
+                   "'wrong-language' silent failure (e.g. Lua code passed with language=0). "
+                   "Returns {ok, error?, warning?} without executing the parser. Cheap; use "
+                   "before frameParser.setCode when authoring."),
+    makeSchema({
+      {    QStringLiteral("code"),QStringLiteral("string"),QStringLiteral("Frame parser source")          },
+      {QStringLiteral("language"),
+       QStringLiteral("integer"),
+       QStringLiteral("0 = JavaScript, 1 = Lua")}
+  }),
+    &frameParserDryCompile);
 
   registry.registerCommand(
     QStringLiteral("project.dataset.transform.dryRun"),
@@ -3093,13 +3675,24 @@ API::CommandResponse API::Handlers::ProjectHandler::frameParserDryRun(const QStr
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: language"));
 
-  if (!params.contains(QStringLiteral("sampleFrame")))
+  const bool hasFrame  = params.contains(QStringLiteral("sampleFrame"));
+  const bool hasFrames = params.contains(QStringLiteral("sampleFrames"));
+  if (!hasFrame && !hasFrames)
     return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sampleFrame"));
+      id,
+      ErrorCode::MissingParam,
+      QStringLiteral("Missing required parameter: sampleFrame (string) or sampleFrames (array)"));
 
-  const auto code        = params.value(QStringLiteral("code")).toString();
-  const auto language    = params.value(QStringLiteral("language")).toInt();
-  const auto sampleFrame = params.value(QStringLiteral("sampleFrame")).toString();
+  const auto code     = params.value(QStringLiteral("code")).toString();
+  const auto language = params.value(QStringLiteral("language")).toInt();
+
+  // Collect frame samples in execution order
+  QStringList frames;
+  if (hasFrames)
+    for (const auto& v : params.value(QStringLiteral("sampleFrames")).toArray())
+      frames.append(v.toString());
+  else
+    frames.append(params.value(QStringLiteral("sampleFrame")).toString());
 
   auto engine = makeScriptEngine(language);
   if (!engine->loadScript(code, /*sourceId=*/0, /*showMessageBoxes=*/false))
@@ -3108,24 +3701,87 @@ API::CommandResponse API::Handlers::ProjectHandler::frameParserDryRun(const QStr
       ErrorCode::ExecutionError,
       QStringLiteral("Frame parser failed to compile or define parse(frame)"));
 
-  const auto parsed = engine->parseString(sampleFrame);
+  // Run all frames sequentially through the same engine to expose stateful parsers
+  QJsonArray frameResults;
+  int totalRows = 0;
+  for (const auto& sample : frames) {
+    const auto parsed = engine->parseString(sample);
 
-  QJsonArray rows;
-  for (const auto& row : parsed) {
-    QJsonArray cells;
-    for (const auto& cell : row)
-      cells.append(cell);
+    QJsonArray rows;
+    for (const auto& row : parsed) {
+      QJsonArray cells;
+      for (const auto& cell : row)
+        cells.append(cell);
 
-    rows.append(cells);
+      rows.append(cells);
+    }
+
+    QJsonObject perFrame;
+    perFrame[QStringLiteral("rows")]     = rows;
+    perFrame[QStringLiteral("rowCount")] = rows.size();
+    frameResults.append(perFrame);
+    totalRows += rows.size();
   }
 
   QJsonObject result;
-  result[QStringLiteral("ok")]       = true;
-  result[QStringLiteral("rows")]     = rows;
-  result[QStringLiteral("rowCount")] = rows.size();
+  result[QStringLiteral("ok")]         = true;
+  result[QStringLiteral("frames")]     = frameResults;
+  result[QStringLiteral("frameCount")] = frameResults.size();
+  result[QStringLiteral("totalRows")]  = totalRows;
+
+  // Back-compat: when caller used sampleFrame (string), also return flat rows[]
+  if (hasFrame && !hasFrames && !frameResults.isEmpty()) {
+    result[QStringLiteral("rows")]     = frameResults.first().toObject().value("rows");
+    result[QStringLiteral("rowCount")] = frameResults.first().toObject().value("rowCount");
+  }
+
   result[QStringLiteral("hint")] =
-    QStringLiteral("Each row is the array your parser returned for one logical frame. The "
-                   "live builder maps row[i] to dataset.index = i+1.");
+    QStringLiteral("Frames run sequentially through one engine instance, exposing state in "
+                   "stateful parsers. row[i] in the live builder maps to dataset.index = i+1.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Compile-only check for a frame parser; surfaces syntax errors without running.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::frameParserDryCompile(const QString& id,
+                                                                          const QJsonObject& params)
+{
+  if (!params.contains(QStringLiteral("code")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
+
+  if (!params.contains(QStringLiteral("language")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: language"));
+
+  const auto code     = params.value(QStringLiteral("code")).toString();
+  const auto language = params.value(QStringLiteral("language")).toInt();
+
+  if (language != 0 && language != 1)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Invalid language: must be 0 (JavaScript) or 1 (Lua)"));
+
+  auto engine   = makeScriptEngine(language);
+  const bool ok = engine->loadScript(code, /*sourceId=*/0, /*showMessageBoxes=*/false);
+
+  QJsonObject result;
+  result[QStringLiteral("ok")] = ok;
+  result[QStringLiteral("language")] =
+    (language == 1 ? QStringLiteral("lua") : QStringLiteral("javascript"));
+
+  if (!ok) {
+    result[QStringLiteral("error")] =
+      QStringLiteral("Compile failed or parse(frame) is not defined.");
+
+    // Surface a heuristic language-mismatch nudge when applicable
+    const auto warning = detectLanguageMismatch(code, language);
+    if (!warning.isEmpty())
+      result[QStringLiteral("warning")] = warning;
+  }
+
   return CommandResponse::makeSuccess(id, result);
 }
 

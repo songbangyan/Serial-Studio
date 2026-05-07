@@ -139,6 +139,20 @@ void API::Handlers::DashboardHandler::registerPointsCommands()
                            QStringLiteral("Get the current number of data points per plot"),
                            emptySchema,
                            &getPoints);
+
+  // Aliases under project.* -- the points value is per-project (saved/restored on load)
+  registry.registerCommand(
+    QStringLiteral("project.dashboard.setPoints"),
+    QStringLiteral("Set the number of data points per plot (alias of dashboard.setPoints; "
+                   "the value is per-project and survives project reload)."),
+    setPointsSchema,
+    &setPoints);
+
+  registry.registerCommand(
+    QStringLiteral("project.dashboard.getPoints"),
+    QStringLiteral("Get the number of data points per plot (alias of dashboard.getPoints)."),
+    emptySchema,
+    &getPoints);
 }
 
 /**

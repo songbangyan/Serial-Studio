@@ -1,6 +1,6 @@
 # Debugging Serial Studio Projects
 
-Five tools cover most "something is wrong" questions.
+Six tools cover most "something is wrong" questions.
 
 ## meta.snapshot — full status one-shot
 
@@ -9,6 +9,13 @@ sessions, mdf4, licensing, notifications status all in one object. Call
 this when the user vaguely says "something's not working" — it tells
 you immediately whether the connection is up, the project is loaded,
 the parser is set, the export is running, etc.
+
+## project.snapshot — project-only composite
+
+Sources, groups + datasets, workspaces summary, data tables summary --
+in one call. Pass `verbose: true` to also include source-level frame
+settings and parser source code. Cheaper than `meta.snapshot` when you
+don't need IO/dashboard/sessions/mqtt/etc. status.
 
 ## project.validate — semantic project sanity check
 
@@ -38,14 +45,21 @@ X but I see Y". You can:
 Filter to specific datasets with `{uniqueIds: [...]}`. Default is every
 plot-enabled dataset, last 32 samples.
 
-## The dryRun trio
+## The dry-run / dry-compile family
 
-When a script doesn't work as expected, dryRun it BEFORE pushing to the
-live project:
+When a script doesn't work as expected, validate it BEFORE pushing to
+the live project:
 
+- `project.frameParser.dryCompile{code, language}` — **compile-only**
+  check. Returns `{ok, error?, warning?}` without executing the
+  parser. Cheapest way to catch the "wrong-language" silent failure
+  (e.g. Lua code passed with `language: 0`). Use this first when
+  authoring; promote to dryRun once it compiles.
 - `project.frameParser.dryRun{code, language, sampleFrame}` — compiles
-  the parser, runs `parse(sample)` once, returns the rows or
-  compile/runtime errors. Fastest iteration loop for parsers.
+  AND runs `parse(sample)` once, returns the rows or compile/runtime
+  errors. For stateful parsers (top-level closures, EMA-style state),
+  pass `sampleFrames: ["...","...",...]` to run several frames
+  sequentially through one engine instance and reveal state.
 - `project.dataset.transform.dryRun{code, language, values}` — runs
   `transform(v)` against an array of inputs. Returns per-input outputs.
 - `project.painter.dryRun{code}` — verifies compile + that
@@ -53,6 +67,15 @@ live project:
 
 These are the "iterate without committing" lever. Always prefer them
 over push-then-revert.
+
+## project.dataset.getExecutionOrder — cross-dataset transform debugging
+
+Returns datasets in the order FrameBuilder traverses them, with
+`{uniqueId, title, sourceId, groupId, datasetId, hasTransform,
+transformLanguage}` per entry. Use when a transform reads
+`datasetGetFinal(uid)` and gets stale or zero values: the peer must
+appear EARLIER in the order, otherwise its `final` hasn't been
+written yet for this frame.
 
 ## meta.recentMutations isn't a thing
 
@@ -90,6 +113,34 @@ made the calls. Don't pretend a recall tool exists.
    wrapping (the IIFE handles isolation but `transform` must exist).
 4. Common cause for painters: function name `draw` instead of `paint`,
    or `bootstrap` (doesn't exist; top-level is bootstrap).
+
+### "tableGet returns 0 / nothing in my transform"
+
+`tableGet(table, register)` and `datasetGetRaw/Final(uid)` return
+nil/empty when the key is missing AND log a one-shot warning to the
+runtime console. Look in the runtime log for
+`[DataTableStore] Missing register <table>/<reg>` or
+`[DataTableStore] datasetGet... called with unknown uniqueId N`.
+The warning fires on the FIRST miss per (table, register) pair --
+subsequent calls stay silent to avoid spam, so don't expect the log
+to keep filling.
+
+If `uniqueId` looks wrong: it changes after a move/delete/duplicate.
+Re-resolve via `project.dataset.getByPath { path: "Group/Dataset" }`
+before reading the value.
+
+### "Hardware write was rejected"
+
+The error has `category: "hardware_write_blocked"` (NOT
+`permission_denied`). This is intentional: `io.writeData`,
+`console.send`, `io.connect`, `io.disconnect`, and driver `set*`
+calls are gated even with auto-approve on. Don't retry, don't try to
+bypass. Surface to the user; suggest building an Output Control tile
+whose JS button performs the write under user supervision.
+
+`permission_denied` is now reserved for OS-level refusals
+(filesystem, network sockets). If you see it, the issue is outside
+Serial Studio.
 
 ### "Connection drops mid-session"
 

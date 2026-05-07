@@ -37,6 +37,10 @@ Project
 The model's most-used reads:
 
 ```
+project.snapshot        // PREFERRED for broad context: sources, groups +
+                        // datasets, workspaces summary, data tables summary
+                        // -- one round trip. Pass verbose=true for parser
+                        // code + source-level frame settings.
 project.getStatus       // top-level: title, modified, mode, counts
 project.group.list      // every group + datasetSummary + compatibleWidgetTypes
 project.dataset.list    // every dataset across all groups
@@ -44,22 +48,36 @@ project.source.list     // every source with bus + parser info
 project.workspace.list  // every dashboard tab
 project.dataTable.list  // every user-defined data table
 project.validate        // semantic consistency check
-meta.snapshot           // composite of above + io/dashboard/etc.
+meta.snapshot           // composite across ALL subsystems (io + dashboard +
+                        // project); broader than project.snapshot
 ```
 
-`group.list` is denser than `dataset.list` in most cases — it shows
-groups and a summary of each dataset (title, units, uniqueId, etc.).
+For a SPECIFIC dataset, prefer the resolvers over walking the tree:
+```
+project.dataset.getByPath { path: "Group/Dataset" }
+project.dataset.getByPath { path: "Source/Group/Dataset" }
+project.dataset.getByTitle { title: "...", groupId?, sourceId? }
+project.dataset.getByUniqueId { uniqueId: ... }
+```
+
+`group.list` is denser than `dataset.list` -- it shows groups and a
+summary of each dataset (title, units, uniqueId, etc.). Use it when
+you need group-level metadata; use `project.snapshot` when you need
+the whole picture in one shot.
 
 ## Identifiers — what's stable, what's not
 
 - `sourceId`, `groupId`, `datasetId`, `actionId`, `widgetId`,
-  `workspaceId` — integer ids, ASSIGNED on creation. They're stable for
-  the lifetime of the project.
-- `uniqueId` (on datasets) — derived as
-  `sourceId * 1_000_000 + groupId * 10_000 + datasetId`. The runtime
-  uses uniqueId in `datasetGetRaw/datasetGetFinal` and in the system
-  `__datasets__` table. Get it from `project.dataset.list` or
-  compute. Stable within a project.
+  `workspaceId` — integer ids assigned on creation. **Stable until a
+  reorder/move/duplicate/delete.** `project.dataset.move` /
+  `project.group.move` renumber adjacent items; cache nothing across
+  those calls.
+- `uniqueId` (on datasets) — OPAQUE runtime handle used by
+  `datasetGetRaw/datasetGetFinal` and the system `__datasets__` table.
+  Read it from `project.dataset.getByPath`, `project.dataset.list`, or
+  `project.snapshot`. **Don't compute it.** It's derived from
+  `(sourceId, groupId, datasetId)`, but reordering changes those, and
+  arithmetic on the value will silently break.
 - `index` (on datasets) — the position in the parser's output array.
   1-based. The user sets this; the parser's `parse(frame)[i]` maps to
   the dataset whose `index` is `i + 1`.
@@ -97,15 +115,17 @@ A few things you'd intuitively look for under `project.*` actually live
 under other scopes because they're dashboard-wide preferences, not
 project state:
 
-| Setting                       | Command                          |
-|-------------------------------|----------------------------------|
-| Plot point count (rolling history per series) | `dashboard.setPoints{points}` |
-| Theme                         | `ui.theme.*` / `--theme` flag     |
-| Operation mode                | `dashboard.setOperationMode`     |
-| Console terminal display      | `console.set*`                   |
+| Setting                       | Command                                                                  |
+|-------------------------------|--------------------------------------------------------------------------|
+| Plot point count (rolling history per series) | `dashboard.setPoints{points}` (alias: `project.dashboard.setPoints`) |
+| Theme                         | `ui.theme.*` / `--theme` flag                                             |
+| Operation mode                | `dashboard.setOperationMode`                                              |
+| Console terminal display      | `console.set*`                                                            |
 
-If the user asks for "more points on the plot" or "longer plot history",
-that's `dashboard.setPoints`, not a `project.*` command.
+If the user asks for "more points on the plot" or "longer plot
+history", call `dashboard.setPoints` (or its `project.dashboard.setPoints`
+alias -- they delegate to the same handler). The points value is
+saved per-project and restored on load.
 
 ## Glossary — terms that look interchangeable but aren't
 
@@ -118,10 +138,16 @@ conflate. Memorize them once.
 |--------------|------------------|-----------|-----------------------------------------------|
 | `datasetId`  | per-group, 0..N  | API auto  | CRUD: `dataset.update / delete / setOptions`  |
 | `index`      | 1-based int      | User      | Position in `parse(frame)` output array       |
-| `uniqueId`   | global int       | Derived   | Runtime key for `datasetGetRaw / Final`       |
+| `uniqueId`   | global int       | Derived   | OPAQUE runtime handle for `datasetGetRaw / Final` |
 
-`uniqueId = sourceId * 1_000_000 + groupId * 10_000 + datasetId`. Read
-it from `dataset.list` — don't compute by hand.
+**Treat `uniqueId` as opaque.** It happens to be computed as
+`sourceId*1_000_000 + groupId*10_000 + datasetId`, but that arithmetic
+breaks the moment a dataset is moved or duplicated. Read `uniqueId`
+fresh from `project.dataset.getByPath {path: "Group/Dataset"}`,
+`project.dataset.getByTitle`, or `project.snapshot` -- never cache or
+compute it.
+
+Workspace IDs live in a separate range -- always `>= 1000`.
 
 ### Numeric ranges on a dataset
 
@@ -166,6 +192,29 @@ Computed registers reset at the START of every parsed frame, before
 any transform runs. If you want state that survives across frames,
 use a top-level `var` in your transform's IIFE — see `transforms`
 skill.
+
+`project.dataTable.get { name }` returns each register's `type` field
+(`"Constant"` or `"Computed"`) along with its current value. Read it
+when you need to know the kind without inspecting the raw project
+JSON.
+
+### Virtual datasets — auto-detected on save
+
+A virtual dataset has no slot in the parser's output array; its value
+comes entirely from its `transformCode` (typically reading peers via
+`datasetGetRaw / datasetGetFinal` / `tableGet`). Set `virtual: true`
+on creation, OR write a transform whose body never references `value`
+-- the save path auto-flags those as virtual. Explicit setting is
+still recommended for clarity.
+
+### Reordering — move endpoints
+
+`project.dataset.move { uniqueId, newPosition }` and
+`project.group.move { groupId, newPosition }` reorder in place.
+Workspace refs re-anchor automatically. **uniqueIds change** for the
+moved item and any items it crossed -- read fresh values from the
+response or a follow-up snapshot before issuing more uniqueId-based
+calls.
 
 ### Schema version metadata (already in every saved project)
 

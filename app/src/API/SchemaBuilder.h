@@ -94,7 +94,18 @@ struct SchemaProp {
 [[nodiscard]] inline QJsonObject schemaPropToJson(const SchemaProp& p)
 {
   QJsonObject prop;
-  prop.insert(QStringLiteral("type"), p.type);
+
+  // Pipe-separated union types ("string|integer") emit as JSON-Schema type arrays (draft 2020-12).
+  if (p.type.contains(QLatin1Char('|'))) {
+    QJsonArray types;
+    for (const auto& part : p.type.split(QLatin1Char('|'), Qt::SkipEmptyParts))
+      types.append(part.trimmed());
+
+    prop.insert(QStringLiteral("type"), types);
+  } else {
+    prop.insert(QStringLiteral("type"), p.type);
+  }
+
   prop.insert(QStringLiteral("description"), p.description);
   if (!p.enumValues.isEmpty())
     prop.insert(QStringLiteral("enum"), p.enumValues);
@@ -108,6 +119,7 @@ struct SchemaProp {
   if (!p.defaultValue.isUndefined() && !p.defaultValue.isNull())
     prop.insert(QStringLiteral("default"), p.defaultValue);
 
+  // items only applies when the type is exactly "array" (single, not union)
   if (p.type == QStringLiteral("array")) {
     QJsonObject items;
     items.insert(QStringLiteral("type"),

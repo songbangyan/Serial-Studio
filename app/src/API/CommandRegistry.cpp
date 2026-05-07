@@ -220,15 +220,32 @@ void API::CommandRegistry::attachErrorMetadata(const QString& name, CommandRespo
     return;
 
   auto data                        = response.errorData;
-  data[QStringLiteral("category")] = classifyErrorCategory(response);
+  data[QStringLiteral("category")] = classifyErrorCategory(name, response);
   response.errorData               = data;
 }
 
 /**
  * @brief Returns a structured error category for a failed CommandResponse.
  */
-QString API::CommandRegistry::classifyErrorCategory(const CommandResponse& response)
+QString API::CommandRegistry::classifyErrorCategory(const QString& commandName,
+                                                    const CommandResponse& response)
 {
+  // Hardware-write family: distinguish runtime safety blocks from filesystem perms
+  static const QStringList kHardwareWriteCommands = {
+    QStringLiteral("io.writeData"),
+    QStringLiteral("console.send"),
+    QStringLiteral("io.connect"),
+    QStringLiteral("io.disconnect"),
+  };
+
+  const auto msgLower = response.errorMessage.toLower();
+  if (kHardwareWriteCommands.contains(commandName)
+      && (msgLower.contains(QStringLiteral("denied"))
+          || msgLower.contains(QStringLiteral("blocked"))
+          || msgLower.contains(QStringLiteral("not allowed"))
+          || msgLower.contains(QStringLiteral("requires user"))))
+    return QStringLiteral("hardware_write_blocked");
+
   if (response.errorCode == ErrorCode::MissingParam || response.errorCode == ErrorCode::InvalidParam
       || response.errorCode == ErrorCode::InvalidJson)
     return QStringLiteral("validation_failed");
@@ -237,33 +254,35 @@ QString API::CommandRegistry::classifyErrorCategory(const CommandResponse& respo
     return QStringLiteral("unknown_command");
 
   // Heuristic message scan (unhappy path only)
-  const auto msg = response.errorMessage.toLower();
-  if (msg.contains(QStringLiteral("commercial")) || msg.contains(QStringLiteral("pro license"))
-      || msg.contains(QStringLiteral("requires a pro")))
+  if (msgLower.contains(QStringLiteral("commercial"))
+      || msgLower.contains(QStringLiteral("pro license"))
+      || msgLower.contains(QStringLiteral("requires a pro")))
     return QStringLiteral("license_required");
 
-  if (msg.contains(QStringLiteral("not connected"))
-      || msg.contains(QStringLiteral("connection lost"))
-      || msg.contains(QStringLiteral("device not")))
+  if (msgLower.contains(QStringLiteral("not connected"))
+      || msgLower.contains(QStringLiteral("connection lost"))
+      || msgLower.contains(QStringLiteral("device not")))
     return QStringLiteral("connection_lost");
 
-  if (msg.contains(QStringLiteral("compile")) || msg.contains(QStringLiteral("syntax"))
-      || msg.contains(QStringLiteral("script error"))
-      || msg.contains(QStringLiteral("define parse"))
-      || msg.contains(QStringLiteral("define paint"))
-      || msg.contains(QStringLiteral("define transform")))
+  if (msgLower.contains(QStringLiteral("compile")) || msgLower.contains(QStringLiteral("syntax"))
+      || msgLower.contains(QStringLiteral("script error"))
+      || msgLower.contains(QStringLiteral("define parse"))
+      || msgLower.contains(QStringLiteral("define paint"))
+      || msgLower.contains(QStringLiteral("define transform")))
     return QStringLiteral("script_compile_failed");
 
-  if (msg.contains(QStringLiteral("busy")) || msg.contains(QStringLiteral("in progress"))
-      || msg.contains(QStringLiteral("already running")))
+  if (msgLower.contains(QStringLiteral("busy")) || msgLower.contains(QStringLiteral("in progress"))
+      || msgLower.contains(QStringLiteral("already running")))
     return QStringLiteral("bus_busy");
 
-  if (msg.contains(QStringLiteral("no such file")) || msg.contains(QStringLiteral("not found"))
-      || msg.contains(QStringLiteral("does not exist")))
+  if (msgLower.contains(QStringLiteral("no such file"))
+      || msgLower.contains(QStringLiteral("not found"))
+      || msgLower.contains(QStringLiteral("does not exist")))
     return QStringLiteral("file_not_found");
 
-  if (msg.contains(QStringLiteral("permission")) || msg.contains(QStringLiteral("denied"))
-      || msg.contains(QStringLiteral("not allowed")) || msg.contains(QStringLiteral("blocked")))
+  if (msgLower.contains(QStringLiteral("permission")) || msgLower.contains(QStringLiteral("denied"))
+      || msgLower.contains(QStringLiteral("not allowed"))
+      || msgLower.contains(QStringLiteral("blocked")))
     return QStringLiteral("permission_denied");
 
   return QStringLiteral("execution_error");

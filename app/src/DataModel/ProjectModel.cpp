@@ -1624,6 +1624,7 @@ bool DataModel::ProjectModel::loadFromJsonDocument(const QJsonDocument& document
   loadProjectArrays(json, legacyParserCode);
   enforceGplSingleSource();
   resolveDatasetTransformLanguages();
+  resolveDatasetVirtualFlags();
   loadWidgetSettingsAndWorkspaces(json);
   loadPointCount(json);
   migrateLegacyLayoutKeys();
@@ -1812,6 +1813,174 @@ void DataModel::ProjectModel::resolveDatasetTransformLanguages()
     for (auto& dataset : group.datasets)
       if (dataset.transformLanguage < 0 && !dataset.transformCode.isEmpty())
         dataset.transformLanguage = languageForSource(dataset.sourceId);
+}
+
+/**
+ * @brief Tokenizer state for transformBodyReferencesValue.
+ */
+struct TransformScanner {
+  bool inStr          = false;
+  bool inLineComment  = false;
+  bool inBlockComment = false;
+  QChar quote;
+};
+
+/**
+ * @brief Tries to enter a comment at code[i]; returns true and advances i when entered.
+ */
+static bool tryEnterComment(const QString& code, int n, int& i, bool isLua, TransformScanner& s)
+{
+  const QChar c    = code[i];
+  const QChar next = (i + 1 < n) ? code[i + 1] : QChar();
+
+  if (isLua && c == '-' && next == '-') {
+    const bool isBlock = (i + 3 < n && code[i + 2] == '[' && code[i + 3] == '[');
+    s.inBlockComment   = isBlock;
+    s.inLineComment    = !isBlock;
+    i += isBlock ? 4 : 2;
+    return true;
+  }
+  if (!isLua && c == '/' && next == '/') {
+    s.inLineComment = true;
+    i += 2;
+    return true;
+  }
+  if (!isLua && c == '/' && next == '*') {
+    s.inBlockComment = true;
+    i += 2;
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Advances i through whatever comment/string state is currently active; returns true if so.
+ */
+static bool advanceInsideToken(const QString& code, int n, int& i, bool isLua, TransformScanner& s)
+{
+  const QChar c    = code[i];
+  const QChar next = (i + 1 < n) ? code[i + 1] : QChar();
+
+  if (s.inLineComment) {
+    if (c == '\n')
+      s.inLineComment = false;
+
+    ++i;
+    return true;
+  }
+
+  if (s.inBlockComment) {
+    const bool luaEnd = (isLua && c == ']' && next == ']');
+    const bool cEnd   = (!isLua && c == '*' && next == '/');
+    if (luaEnd || cEnd) {
+      s.inBlockComment = false;
+      i += 2;
+      return true;
+    }
+    ++i;
+    return true;
+  }
+
+  if (s.inStr) {
+    if (c == '\\' && i + 1 < n) {
+      i += 2;
+      return true;
+    }
+    if (c == s.quote)
+      s.inStr = false;
+
+    ++i;
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Scans an identifier at code[i] and returns true if it is a free reference to `value`.
+ */
+static bool identifierIsFreeValueRef(const QString& code, int n, int& i)
+{
+  const auto isIdCont = [](QChar c) {
+    return c.isLetterOrNumber() || c == '_';
+  };
+
+  const int start = i;
+  while (i < n && isIdCont(code[i]))
+    ++i;
+
+  const QStringView ident(code.constData() + start, i - start);
+  if (ident != QLatin1String("value"))
+    return false;
+
+  const QChar prev = start > 0 ? code[start - 1] : QChar();
+  return prev != '.' && prev != ':';
+}
+
+/**
+ * @brief Returns true when 'value' appears as an identifier outside strings/comments.
+ */
+static bool transformBodyReferencesValue(const QString& code, int language)
+{
+  if (code.isEmpty())
+    return true;
+
+  const int n      = code.size();
+  const bool isLua = (language == 1);
+  TransformScanner s;
+  int i = 0;
+
+  const auto isIdStart = [](QChar c) {
+    return c.isLetter() || c == '_';
+  };
+
+  while (i < n) {
+    if (advanceInsideToken(code, n, i, isLua, s))
+      continue;
+
+    if (tryEnterComment(code, n, i, isLua, s))
+      continue;
+
+    const QChar c = code[i];
+    if (c == '"' || c == '\'' || (isLua && c == '`')) {
+      s.inStr = true;
+      s.quote = c;
+      ++i;
+      continue;
+    }
+
+    if (isIdStart(c)) {
+      if (identifierIsFreeValueRef(code, n, i))
+        return true;
+
+      continue;
+    }
+
+    ++i;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Auto-flags datasets whose transform body never reads `value` as virtual.
+ */
+void DataModel::ProjectModel::resolveDatasetVirtualFlags()
+{
+  for (auto& group : m_groups) {
+    for (auto& dataset : group.datasets) {
+      if (dataset.virtual_)
+        continue;
+
+      if (dataset.transformCode.isEmpty())
+        continue;
+
+      const int lang = dataset.transformLanguage < 0 ? 0 : dataset.transformLanguage;
+      if (!transformBodyReferencesValue(dataset.transformCode, lang))
+        dataset.virtual_ = true;
+    }
+  }
 }
 
 /**
@@ -5304,6 +5473,10 @@ bool DataModel::ProjectModel::finalizeProjectSave()
 
     return false;
   }
+
+  // Auto-detect virtual datasets and resolve unset transform languages before save
+  resolveDatasetTransformLanguages();
+  resolveDatasetVirtualFlags();
 
   // Serialize and write
   const QJsonObject json = serializeToJson();

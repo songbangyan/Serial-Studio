@@ -22,10 +22,12 @@
 #include "API/Handlers/WorkspacesHandler.h"
 
 #include <algorithm>
+#include <optional>
 #include <QJsonArray>
 #include <QJsonObject>
 
 #include "API/CommandRegistry.h"
+#include "API/EnumLabels.h"
 #include "API/SchemaBuilder.h"
 #include "AppState.h"
 #include "DataModel/Frame.h"
@@ -151,6 +153,63 @@
   }
 
   return out;
+}
+
+/**
+ * @brief Resolves widgetType from int or slug; returns -1 when slug is unknown.
+ */
+[[nodiscard]] static int resolveWidgetType(const QJsonValue& wtypeJson)
+{
+  if (wtypeJson.isString())
+    return API::EnumLabels::dashboardWidgetFromSlug(wtypeJson.toString());
+
+  return wtypeJson.toInt();
+}
+
+/**
+ * @brief Validates wtype is compatible with the group; returns empty optional on success.
+ */
+[[nodiscard]] static std::optional<QString> validateGroupCompatibility(
+  const DataModel::Group& group, int wtype, int gid)
+{
+  const auto compatible = compatibleWidgetTypes(group);
+  if (compatible.contains(wtype))
+    return std::nullopt;
+
+  QStringList compat_strs;
+  for (int v : compatible)
+    compat_strs.append(QString::number(v));
+
+  return QStringLiteral("widgetType=%1 is not compatible with group %2 ('%3'). "
+                        "Compatible widgetTypes for this group: [%4].%5")
+    .arg(wtype)
+    .arg(gid)
+    .arg(group.title)
+    .arg(compat_strs.join(QStringLiteral(", ")))
+    .arg(unlockHint(wtype, gid));
+}
+
+/**
+ * @brief Picks the next free relativeIndex for (widgetType, groupId) on the workspace.
+ */
+[[nodiscard]] static int nextFreeRelativeIndex(
+  const std::vector<DataModel::Workspace>& wsList, int wid, int wtype, int gid)
+{
+  const auto wsIt = std::find_if(
+    wsList.begin(), wsList.end(), [wid](const auto& ws) { return ws.workspaceId == wid; });
+  if (wsIt == wsList.end())
+    return 0;
+
+  QSet<int> taken;
+  for (const auto& ref : wsIt->widgetRefs)
+    if (ref.widgetType == wtype && ref.groupId == gid)
+      taken.insert(ref.relativeIndex);
+
+  int relIndex = 0;
+  while (taken.contains(relIndex))
+    ++relIndex;
+
+  return relIndex;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -286,28 +345,23 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
     {  QStringLiteral("workspaceId"),
      QStringLiteral("integer"),
      QStringLiteral("Workspace id from project.workspaces.list (workspace IDs are >= 1000)")},
-    API::enumProp(QStringLiteral("widgetType"),
-                  QStringLiteral("DashboardWidget enum: 1=DataGrid, "
-                                 "2=MultiPlot, 3=Accelerometer, "
-                                 "4=Gyroscope, 5=GPS, 6=Plot3D, "
-                                 "7=FFT, 8=LED, 9=Plot, 10=Bar, "
-                                 "11=Gauge, 12=Compass, "
-                                 "14=ImageView (Pro), "
-                                 "15=OutputPanel (Pro), "
-                                 "16=NotificationLog (Pro), "
-                                 "17=Waterfall (Pro), "
-                                 "18=Painter (Pro). DO NOT pass 0 -- "
-                                 "that is Terminal, not a tile."),
-                  kWidgetTypeValues),
+    {   QStringLiteral("widgetType"),
+     QStringLiteral("string|integer"),
+     QStringLiteral("Widget kind. PREFERRED form: a string slug -- 'plot', 'fft', "
+     "'bar', 'gauge', 'compass', 'led', 'datagrid', 'multiplot', "
+     "'accelerometer', 'gyroscope', 'gps', 'plot3d', 'imageview' (Pro), "
+     "'output-panel' (Pro), 'notification-log' (Pro), 'waterfall' (Pro), "
+     "'painter' (Pro). Integer DashboardWidget enum still accepted for "
+     "back-compat (1=DataGrid, 2=MultiPlot, ... 9=Plot, 10=Bar, 11=Gauge, "
+     "12=Compass) but the strings are unambiguous and forwards-compatible.")                },
     {      QStringLiteral("groupId"),
      QStringLiteral("integer"),
      QStringLiteral("groupId from project.groups.list. Use group.id, NOT the array index.") },
     {QStringLiteral("relativeIndex"),
      QStringLiteral("integer"),
-     QStringLiteral("Almost always 0. This is a per-(widgetType,groupId) "
-     "deduplication counter -- it is NOT a dataset index. Pass 0 "
-     "unless you are intentionally adding a second tile with the "
-     "same widgetType and groupId to the same workspace.")                                  }
+     QStringLiteral("OPTIONAL. Per-(widgetType,groupId) deduplication counter; NOT a "
+     "dataset index. Omit to auto-assign the next free slot. Pass an "
+     "explicit value only when you are reproducing a prior layout.")                        }
   });
   registry.registerCommand(
     QStringLiteral("project.workspace.addWidget"),
@@ -625,7 +679,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
     QStringLiteral("workspaceId"),
     QStringLiteral("widgetType"),
     QStringLiteral("groupId"),
-    QStringLiteral("relativeIndex"),
   };
 
   for (const auto& key : required)
@@ -640,10 +693,27 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
       ErrorCode::InvalidParam,
       QStringLiteral("customizeWorkspaces is off; call project.workspaces.customize.set first"));
 
-  const int wid      = params.value(QStringLiteral("workspaceId")).toInt();
-  const int wtype    = params.value(QStringLiteral("widgetType")).toInt();
-  const int gid      = params.value(QStringLiteral("groupId")).toInt();
-  const int relIndex = params.value(QStringLiteral("relativeIndex")).toInt();
+  const int wid = params.value(QStringLiteral("workspaceId")).toInt();
+  const int gid = params.value(QStringLiteral("groupId")).toInt();
+
+  // widgetType accepts either an integer (DashboardWidget enum) or a string slug
+  const QJsonValue wtypeJson = params.value(QStringLiteral("widgetType"));
+  const int wtype            = resolveWidgetType(wtypeJson);
+  if (wtype < 0)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Unknown widgetType slug '%1'. Use one of: plot, fft, bar, gauge, "
+                     "compass, led, datagrid, multiplot, accelerometer, gyroscope, gps, "
+                     "plot3d, terminal, imageview, output-panel, notification-log, "
+                     "waterfall, painter.")
+        .arg(wtypeJson.toString()));
+
+  const bool hasRelIndex = params.contains(QStringLiteral("relativeIndex"));
+  int relIndex =
+    hasRelIndex ? params.value(QStringLiteral("relativeIndex")).toInt()
+                : nextFreeRelativeIndex(pm.editorWorkspaces(), wid, wtype, gid);
+  const bool relIndexAutoAssigned = !hasRelIndex && relIndex != 0;
 
   // Reject DashboardTerminal / DashboardNoWidget with actionable errors
   if (wtype == SerialStudio::DashboardTerminal)
@@ -668,7 +738,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
                      "group's compatibleWidgetTypes "
                      "(see project.group.list)."));
 
-  // Validate the target workspace exists; reject stale IDs explicitly
   const auto& wsList = pm.editorWorkspaces();
   const auto exists  = std::any_of(
     wsList.begin(), wsList.end(), [wid](const auto& ws) { return ws.workspaceId == wid; });
@@ -676,7 +745,6 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace not found: %1").arg(wid));
 
-  // Validate widgetType matches one the target group can render
   const auto& groups  = DataModel::ProjectModel::instance().groups();
   const auto group_it = std::find_if(
     groups.begin(), groups.end(), [gid](const DataModel::Group& g) { return g.groupId == gid; });
@@ -687,33 +755,19 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
                                                      "project.group.list, not the array index.")
                                         .arg(gid));
 
-  const auto compatible = compatibleWidgetTypes(*group_it);
-  if (!compatible.contains(wtype)) {
-    QStringList compat_strs;
-    for (int v : compatible)
-      compat_strs.append(QString::number(v));
-
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("widgetType=%1 is not compatible with group %2 "
-                     "('%3'). Compatible widgetTypes for this group: "
-                     "[%4].%5")
-        .arg(wtype)
-        .arg(gid)
-        .arg(group_it->title)
-        .arg(compat_strs.join(QStringLiteral(", ")))
-        .arg(unlockHint(wtype, gid)));
-  }
+  if (const auto err = validateGroupCompatibility(*group_it, wtype, gid))
+    return CommandResponse::makeError(id, ErrorCode::InvalidParam, *err);
 
   pm.addWidgetToWorkspace(wid, wtype, gid, relIndex);
 
   QJsonObject result;
-  result[QStringLiteral("workspaceId")]   = wid;
-  result[QStringLiteral("widgetType")]    = wtype;
-  result[QStringLiteral("groupId")]       = gid;
-  result[QStringLiteral("relativeIndex")] = relIndex;
-  result[QStringLiteral("added")]         = true;
+  result[QStringLiteral("workspaceId")]               = wid;
+  result[QStringLiteral("widgetType")]                = wtype;
+  result[QStringLiteral("widgetTypeSlug")]            = API::EnumLabels::dashboardWidgetSlug(wtype);
+  result[QStringLiteral("groupId")]                   = gid;
+  result[QStringLiteral("relativeIndex")]             = relIndex;
+  result[QStringLiteral("relativeIndexAutoAssigned")] = relIndexAutoAssigned;
+  result[QStringLiteral("added")]                     = true;
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -747,17 +801,31 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetRemove(const QStrin
       QStringLiteral("customizeWorkspaces is off; call project.workspaces.customize.set first"));
 
   const int wid      = params.value(QStringLiteral("workspaceId")).toInt();
-  const int wtype    = params.value(QStringLiteral("widgetType")).toInt();
   const int gid      = params.value(QStringLiteral("groupId")).toInt();
   const int relIndex = params.value(QStringLiteral("relativeIndex")).toInt();
+
+  // widgetType accepts integer or string slug
+  int wtype                  = -1;
+  const QJsonValue wtypeJson = params.value(QStringLiteral("widgetType"));
+  if (wtypeJson.isString()) {
+    wtype = API::EnumLabels::dashboardWidgetFromSlug(wtypeJson.toString());
+    if (wtype < 0)
+      return CommandResponse::makeError(
+        id,
+        ErrorCode::InvalidParam,
+        QStringLiteral("Unknown widgetType slug '%1'.").arg(wtypeJson.toString()));
+  } else {
+    wtype = wtypeJson.toInt();
+  }
 
   pm.removeWidgetFromWorkspace(wid, wtype, gid, relIndex);
 
   QJsonObject result;
-  result[QStringLiteral("workspaceId")]   = wid;
-  result[QStringLiteral("widgetType")]    = wtype;
-  result[QStringLiteral("groupId")]       = gid;
-  result[QStringLiteral("relativeIndex")] = relIndex;
-  result[QStringLiteral("removed")]       = true;
+  result[QStringLiteral("workspaceId")]    = wid;
+  result[QStringLiteral("widgetType")]     = wtype;
+  result[QStringLiteral("widgetTypeSlug")] = API::EnumLabels::dashboardWidgetSlug(wtype);
+  result[QStringLiteral("groupId")]        = gid;
+  result[QStringLiteral("relativeIndex")]  = relIndex;
+  result[QStringLiteral("removed")]        = true;
   return CommandResponse::makeSuccess(id, result);
 }

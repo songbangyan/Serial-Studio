@@ -354,6 +354,7 @@ private:
   void seedDefaultSourceFromUi(const QString& legacyParserCode);
   void enforceGplSingleSource();
   void resolveDatasetTransformLanguages();
+  void resolveDatasetVirtualFlags();
   void loadWidgetSettingsAndWorkspaces(const QJsonObject& json);
   void loadPointCount(const QJsonObject& json);
   void migrateLegacyLayoutKeys();

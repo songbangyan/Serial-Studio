@@ -757,5 +757,6 @@
         <file>ai/skills/debugging.md</file>
         <file>ai/skills/api_semantics.md</file>
         <file>ai/search_index.json</file>
+        <file>icons/taskbar/ai.svg</file>
     </qresource>
 </RCC>

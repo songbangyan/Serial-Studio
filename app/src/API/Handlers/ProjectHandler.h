@@ -54,6 +54,8 @@ private:
   static void registerUpdateCommands();
   static void registerDryRunCommands();
   static void registerListCommands();
+  static void registerResolverCommands();
+  static void registerSnapshotAndMoveCommands();
   static void registerTemplateCommands();
 
   static CommandResponse fileNew(const QString& id, const QJsonObject& params);
@@ -92,6 +94,7 @@ private:
   static CommandResponse painterGetCode(const QString& id, const QJsonObject& params);
 
   static CommandResponse frameParserDryRun(const QString& id, const QJsonObject& params);
+  static CommandResponse frameParserDryCompile(const QString& id, const QJsonObject& params);
   static CommandResponse transformDryRun(const QString& id, const QJsonObject& params);
   static CommandResponse painterDryRun(const QString& id, const QJsonObject& params);
 
@@ -112,6 +115,16 @@ private:
   static CommandResponse groupsList(const QString& id, const QJsonObject& params);
   static CommandResponse datasetsList(const QString& id, const QJsonObject& params);
   static CommandResponse actionsList(const QString& id, const QJsonObject& params);
+
+  static CommandResponse datasetGetByUniqueId(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetGetByTitle(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetGetByPath(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetGetExecutionOrder(const QString& id, const QJsonObject& params);
+
+  static CommandResponse projectSnapshot(const QString& id, const QJsonObject& params);
+
+  static CommandResponse datasetMove(const QString& id, const QJsonObject& params);
+  static CommandResponse groupMove(const QString& id, const QJsonObject& params);
 
   static CommandResponse datasetSetVirtual(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetTransformCode(const QString& id, const QJsonObject& params);

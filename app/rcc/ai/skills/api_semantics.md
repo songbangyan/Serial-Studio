@@ -14,15 +14,35 @@ same thing.
 |--------------|-------------|--------------------------------------------------|
 | `datasetId`  | Auto, on `dataset.add` | CRUD APIs: `project.dataset.update`, `project.dataset.delete`, every `setOption*`. Position within the group. |
 | `index`      | User        | Position in the parser's output array (1-based). The parser's `parse(frame)[i]` populates the dataset whose `index == i + 1`. |
-| `uniqueId`   | Derived     | Runtime key for `datasetGetRaw / datasetGetFinal` and the `__datasets__` system table. `sourceId * 1_000_000 + groupId * 10_000 + datasetId`. |
+| `uniqueId`   | Derived     | OPAQUE runtime handle for `datasetGetRaw / datasetGetFinal` and the `__datasets__` system table. |
 
-**Don't compute `uniqueId` by hand.** `project.dataset.list` returns it
-on every dataset; `project.group.list`'s `datasetSummary` returns it
-too. Read it, don't math it.
+**Treat `uniqueId` as opaque.** It happens to be computed as
+`sourceId*1_000_000 + groupId*10_000 + datasetId`, but **arithmetic on
+it is fragile** -- reordering a group or moving a dataset changes
+those numbers. The right pattern:
+
+```
+// Looking up a dataset by name, in scripts or tools
+project.dataset.getByPath { path: "Audio/Channel A" }
+project.dataset.getByTitle { title: "Channel A", groupId: 0 }
+project.dataset.getByUniqueId { uniqueId: 10001 }
+
+// Inside transforms / painter scripts: read peers via the API
+const v = datasetGetFinal(uid)        // uid from the response above
+```
+
+`project.dataset.list`, `project.group.list`'s `datasetSummary`, and
+`project.snapshot` all return `uniqueId` on every dataset. Read it
+fresh after every move/duplicate/delete -- don't cache it across
+mutations.
 
 When users say "the third dataset," ask them which they mean — the
 project-editor row order is `datasetId`, the parser-output position is
 `index`. They CAN diverge if `index` was edited.
+
+Workspace IDs are a separate range: **always >= 1000**. Auto-generated
+tabs start at 1000-1001 and per-group at 1002+; user-created
+workspaces start at 5000.
 
 ## Frame execution cycle — what runs in what order
 
@@ -129,8 +149,12 @@ populate it directly; UART / network usually leave it 0.
 
 `tableGet(table, register)` and `datasetGetRaw / datasetGetFinal(uid)`:
 
-- **Missing key returns `undefined` (JS) / `nil` (Lua).** No throw, no
-  zero. Always `if (val === undefined) ...` or `if val == nil then ...`.
+- **Missing key returns `undefined` (JS) / `nil` (Lua) AND logs a
+  one-shot warning per (table, register) miss to the runtime console.**
+  No throw. Always `if (val === undefined) ...` or `if val == nil
+  then ...`. The warning helps catch typos -- look for
+  `[DataTableStore] Missing register ...` in the runtime log on first
+  occurrence.
 - **Numeric vs string is preserved.** A register written by `tableSet`
   with a number stays numeric; written with a string stays string. Don't
   rely on coercion — when you need a number, `Number(val)` /
@@ -143,21 +167,48 @@ two registers: `raw:<uniqueId>` and `final:<uniqueId>`. You almost
 never read those directly — `datasetGetRaw` / `datasetGetFinal` are
 the typed shortcuts and avoid the string-key arithmetic.
 
-## DatasetOption bitflag, summarized
+## Dataset options — slugs preferred, bitflags accepted
 
-Numbers used by `project.dataset.setOptions`, `setOption`, and the
-`options` field on `dataset.add`:
+`project.dataset.setOptions`, `setOption`, and the `options` field on
+`dataset.add` accept **string slugs** (preferred) or integer bitflags
+(back-compat).
+
+| Slug          | Bit | JSON key (`.ssproj`)            |
+|---------------|-----|---------------------------------|
+| `"plot"`      | 1   | `graph: true`                   |
+| `"fft"`       | 2   | `fft: true`                     |
+| `"bar"`       | 4   | `widget: "bar"`     ┐           |
+| `"gauge"`     | 8   | `widget: "gauge"`   ├ mutually  |
+| `"compass"`   | 16  | `widget: "compass"` ┘ exclusive |
+| `"led"`       | 32  | `led: true`                     |
+| `"waterfall"` | 64  | `waterfall: true`  (Pro)        |
 
 ```
-1  = Plot           (JSON: graph)
-2  = FFT            (JSON: fft)
-4  = Bar            (JSON: widget = "bar")     ┐
-8  = Gauge          (JSON: widget = "gauge")   ├ mutually exclusive
-16 = Compass        (JSON: widget = "compass") ┘
-32 = LED            (JSON: led)
-64 = Waterfall (Pro)(JSON: waterfall)
+project.dataset.setOptions { groupId, datasetId, options: ["plot","fft"] }
+project.dataset.setOption  { groupId, datasetId, option: "fft", enabled: true }
 ```
 
-These do NOT line up with `DashboardWidget` enum values used by
-`project.workspace.addWidget`. See `dashboard_layout` for the full
-bitflag → DashboardWidget mapping.
+The integer bitflags above do NOT line up with the `DashboardWidget`
+enum integers used by `project.workspace.addWidget` -- which is
+exactly why slugs exist. Use slugs and the collision disappears. See
+`dashboard_layout` for the full table.
+
+## Error categories
+
+Failed tool calls carry `error.data.category`. Distinct categories
+that matter:
+
+- `validation_failed` -- fix args; schema is in `error.data.inputSchema`.
+- `unknown_command` -- look at `error.data.did_you_mean`.
+- `license_required` -- propose a non-Pro path.
+- `connection_lost` -- ask the user to reconnect; don't retry.
+- `script_compile_failed` -- iterate via `frameParser.dryCompile` (compile
+  only) or `frameParser.dryRun` / `transform.dryRun` (compile + execute).
+- `bus_busy` -- brief retry, then surface.
+- `permission_denied` -- OS-level (filesystem, network) refusal.
+- `hardware_write_blocked` -- the runtime refuses io.* / console.send
+  writes for safety. Distinct from `permission_denied`. Explain to the
+  user that hardware writes are gated; suggest building an Output
+  Control tile so the user triggers the write themselves.
+- `file_not_found` -- ask for the right path.
+- `execution_error` -- everything else; read the message.

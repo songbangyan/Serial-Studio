@@ -25,6 +25,7 @@
 #include <QMap>
 #include <QObject>
 #include <QPair>
+#include <QSet>
 #include <QString>
 #include <QVariant>
 #include <vector>
@@ -79,6 +80,9 @@ private:
 
   [[nodiscard]] int indexOf(const QString& table, const QString& reg) const;
 
+  void noteMissingLookup(const QString& table, const QString& reg) const;
+  void noteMissingDataset(int uniqueId, const char* kind) const;
+
 private:
   bool m_initialized;
 
@@ -91,6 +95,9 @@ private:
   std::vector<bool> m_isComputed;
 
   std::vector<std::pair<QString, std::vector<QString>>> m_tableRegNames;
+
+  mutable QSet<QPair<QString, QString>> m_warnedMissing;
+  mutable QSet<int> m_warnedMissingDatasets;
 };
 
 /**

@@ -42,12 +42,18 @@ directly to `setCode` to flip and replace in one call.
    - If connected: `dashboard.tailFrames{count: 4}` to see recent
      parsed values, then ask the user to paste an example raw frame.
    - If disconnected: ask for a sample.
-3. **Dry-run**: `project.frameParser.dryRun{code, language, sampleFrame}`
+3. **Compile-only**: `project.frameParser.dryCompile{code, language}`
+   verifies the script parses and `parse(frame)` is defined, without
+   executing. Cheapest way to catch the wrong-language silent failure
+   (Lua code with `language: 0`, or the reverse).
+4. **Dry-run**: `project.frameParser.dryRun{code, language, sampleFrame}`
    compiles the script and runs `parse(sample)` in a throwaway engine.
-   Returns the rows or compile/runtime errors. Use this to iterate before
-   pushing.
-4. Push: `project.frameParser.setCode{code, language, sourceId}`.
-5. Auto-save will write to disk within ~1s.
+   Returns the rows or compile/runtime errors. For STATEFUL parsers
+   (top-level closures, EMA-style state, frame-assembly buffers), pass
+   `sampleFrames: ["...","...",...]` to feed several frames sequentially
+   through one engine instance and see how state evolves.
+5. Push: `project.frameParser.setCode{code, language, sourceId}`.
+6. Auto-save will write to disk within ~1s.
 
 ## Common patterns
 
