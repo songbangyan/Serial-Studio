@@ -87,11 +87,8 @@ QStringList AI::GroqProvider::availableModels() const
   return {
     QStringLiteral("llama-3.3-70b-versatile"),
     QStringLiteral("llama-3.1-8b-instant"),
-    QStringLiteral("llama-3.2-90b-vision-preview"),
-    QStringLiteral("mixtral-8x7b-32768"),
-    QStringLiteral("gemma2-9b-it"),
-    QStringLiteral("deepseek-r1-distill-llama-70b"),
-    QStringLiteral("qwen-2.5-32b"),
+    QStringLiteral("openai/gpt-oss-120b"),
+    QStringLiteral("openai/gpt-oss-20b"),
   };
 }
 
@@ -114,20 +111,11 @@ QString AI::GroqProvider::modelDisplayName(const QString& modelId) const
   if (modelId == QStringLiteral("llama-3.1-8b-instant"))
     return QStringLiteral("Llama 3.1 8B Instant");
 
-  if (modelId == QStringLiteral("llama-3.2-90b-vision-preview"))
-    return QStringLiteral("Llama 3.2 90B Vision");
+  if (modelId == QStringLiteral("openai/gpt-oss-120b"))
+    return QStringLiteral("GPT-OSS 120B");
 
-  if (modelId == QStringLiteral("mixtral-8x7b-32768"))
-    return QStringLiteral("Mixtral 8x7B");
-
-  if (modelId == QStringLiteral("gemma2-9b-it"))
-    return QStringLiteral("Gemma 2 9B");
-
-  if (modelId == QStringLiteral("deepseek-r1-distill-llama-70b"))
-    return QStringLiteral("DeepSeek R1 Distill 70B");
-
-  if (modelId == QStringLiteral("qwen-2.5-32b"))
-    return QStringLiteral("Qwen 2.5 32B");
+  if (modelId == QStringLiteral("openai/gpt-oss-20b"))
+    return QStringLiteral("GPT-OSS 20B");
 
   return modelId;
 }

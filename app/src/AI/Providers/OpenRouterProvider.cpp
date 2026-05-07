@@ -90,11 +90,11 @@ QStringList AI::OpenRouterProvider::availableModels() const
     QStringLiteral("anthropic/claude-sonnet-4.6"),
     QStringLiteral("openai/gpt-5-mini"),
     QStringLiteral("openai/gpt-5.2"),
-    QStringLiteral("google/gemini-2.0-flash-exp:free"),
+    QStringLiteral("google/gemini-2.5-flash"),
     QStringLiteral("meta-llama/llama-3.3-70b-instruct"),
     QStringLiteral("meta-llama/llama-3.3-70b-instruct:free"),
     QStringLiteral("deepseek/deepseek-chat"),
-    QStringLiteral("mistralai/mistral-large-latest"),
+    QStringLiteral("mistralai/mistral-large-2411"),
     QStringLiteral("qwen/qwen-2.5-72b-instruct"),
   };
 }
@@ -124,8 +124,8 @@ QString AI::OpenRouterProvider::modelDisplayName(const QString& modelId) const
   if (modelId == QStringLiteral("openai/gpt-5.2"))
     return QStringLiteral("GPT-5.2");
 
-  if (modelId == QStringLiteral("google/gemini-2.0-flash-exp:free"))
-    return QStringLiteral("Gemini 2.0 Flash (free)");
+  if (modelId == QStringLiteral("google/gemini-2.5-flash"))
+    return QStringLiteral("Gemini 2.5 Flash");
 
   if (modelId == QStringLiteral("meta-llama/llama-3.3-70b-instruct"))
     return QStringLiteral("Llama 3.3 70B");
@@ -136,7 +136,7 @@ QString AI::OpenRouterProvider::modelDisplayName(const QString& modelId) const
   if (modelId == QStringLiteral("deepseek/deepseek-chat"))
     return QStringLiteral("DeepSeek V3");
 
-  if (modelId == QStringLiteral("mistralai/mistral-large-latest"))
+  if (modelId == QStringLiteral("mistralai/mistral-large-2411"))
     return QStringLiteral("Mistral Large");
 
   if (modelId == QStringLiteral("qwen/qwen-2.5-72b-instruct"))
