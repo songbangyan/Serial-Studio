@@ -1,6 +1,6 @@
 # Communication protocols
 
-Serial Studio supports 10 communication protocols across wired serial links, wireless radios, network sockets, industrial buses, and local inter-process channels. This page describes each one, covers when to pick it, and highlights the configuration parameters and platform details that matter in practice.
+Serial Studio supports 10 communication protocols across wired serial links, wireless radios, network sockets, industrial buses, and local inter-process channels. This page describes each one, covers when to pick it, and highlights the configuration parameters and platform details that matter in practice. For deeper per-protocol primers (theory, framing, common pitfalls, references), see the [Drivers section](Drivers-UART.md) of the docs.
 
 ## Protocol landscape
 

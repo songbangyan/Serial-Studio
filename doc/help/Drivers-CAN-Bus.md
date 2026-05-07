@@ -68,7 +68,7 @@ Because lower numerical IDs have more leading zeros (dominant bits), they always
 
 ### Bit timing
 
-CAN's reliability depends on every node sampling each bit at the right place. Bit timing is divided into **time quanta** allocated across four segments (sync, propagation, phase 1, phase 2). At a high level you don't need to know the details — you pick a **bit rate** (e.g. 500 kbps) and the controller computes the rest.
+CAN's reliability depends on every node sampling each bit at the right place. Bit timing is divided into **time quanta** allocated across four segments (sync, propagation, phase 1, phase 2). At a high level you don't need to know the details. You pick a **bit rate** (e.g. 500 kbps) and the controller computes the rest.
 
 Common bit rates: 125 kbps, 250 kbps, 500 kbps, 1 Mbps. CAN FD adds a faster data-phase rate (up to 8 Mbps) used after the arbitration phase.
 
@@ -81,7 +81,7 @@ CAN with **Flexible Data-rate**, introduced by Bosch in 2012. Two improvements:
 - **Up to 64 bytes of payload** per frame (vs 8 for classic).
 - **Higher data-phase bit rate** (up to 8 Mbps) after the arbitration phase, while keeping the arbitration phase at the slower bit rate to preserve priority semantics.
 
-If your hardware and all your nodes support CAN FD, use it. The payload increase is the bigger deal in practice — many automotive protocols (UDS, ISO-TP) get faster and simpler when each frame can carry more bytes.
+If your hardware and all your nodes support CAN FD, use it. The payload increase is the bigger deal in practice. Many automotive protocols (UDS, ISO-TP) get faster and simpler when each frame can carry more bytes.
 
 ### DBC: the signal database
 
@@ -100,7 +100,7 @@ That declares: message ID 256 (`0x100`), 8 bytes long, sent by `ECU`, received b
 - **ThrottlePosition** at bit 16, 8 bits wide, factor 0.392, offset 0, units %.
 - **EngineTemp** at bit 24, 8 bits wide, factor 1, offset -40, units °C.
 
-Most automotive and industrial CAN networks ship with a DBC describing every message and signal. Serial Studio's importer reads the file and generates a project automatically — see [Auto-Generating Projects](Auto-Generating-Projects.md).
+Most automotive and industrial CAN networks ship with a DBC describing every message and signal. Serial Studio's importer reads the file and generates a project automatically. See [Auto-Generating Projects](Auto-Generating-Projects.md).
 
 ## How Serial Studio uses it
 
@@ -143,7 +143,7 @@ For step-by-step setup, see the [Protocol Setup Guides → CAN Bus section](Prot
 ## Common pitfalls
 
 - **No frames received.** Bit-rate mismatch is the #1 cause. Even a 1% deviation rejects every frame. Verify with the bus owner or check the device documentation. Use a CAN analyzer (PCAN-View, candump, BusMaster) to confirm traffic exists at the bit rate you expect.
-- **Error frames only.** Termination missing or wrong. CAN buses need exactly **two** 120 Ω terminators, one at each physical end of the trunk. Measure between CAN-H and CAN-L with the bus powered off — should read about 60 Ω. Anything else is a wiring problem.
+- **Error frames only.** Termination missing or wrong. CAN buses need exactly **two** 120 Ω terminators, one at each physical end of the trunk. Measure between CAN-H and CAN-L with the bus powered off; you should read about 60 Ω. Anything else is a wiring problem.
 - **Interface not listed (Linux).** Run `ip link show can0`. If the interface isn't there, the kernel module isn't loaded. `modprobe can_dev` and `modprobe vcan` (for virtual CAN testing) usually fix it.
 - **Permission denied on SocketCAN.** Your user needs the `dialout` or `can` group depending on distro. `sudo` works as a quick test but isn't a long-term answer.
 - **DBC import generates wrong values.** Check byte order on the signals. DBC supports both little-endian (Intel) and big-endian (Motorola) encoding within the same message. Auto-generated parsers handle both, but if you've manually edited the DBC and the byte order is misdeclared, values will look scaled-and-shifted-wrong.
@@ -161,7 +161,11 @@ For step-by-step setup, see the [Protocol Setup Guides → CAN Bus section](Prot
 
 ## See also
 
-- [Auto-Generating Projects](Auto-Generating-Projects.md) — DBC file import.
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step CAN setup.
-- [Drivers — Modbus](Drivers-Modbus.md) — the other industrial protocol.
-- [Frame Parser Scripting](JavaScript-API.md) — for editing the generated parser by hand.
+- [Auto-Generating Projects](Auto-Generating-Projects.md): DBC file import.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step CAN setup.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Use Cases](Use-Cases.md): automotive and industrial CAN dashboards.
+- [Troubleshooting](Troubleshooting.md): bit-rate, termination, and adapter-detection diagnostics.
+- [Drivers — Modbus](Drivers-Modbus.md): the other industrial protocol.
+- [Frame Parser Scripting](JavaScript-API.md): for editing the generated parser by hand.

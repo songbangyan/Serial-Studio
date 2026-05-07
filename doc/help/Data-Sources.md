@@ -4,6 +4,8 @@
 
 Serial Studio connects to hardware and software data sources through nine driver types. Three ship in the free GPL edition; six more need a Pro license. Each driver feeds raw bytes into the frame-parsing pipeline. You pick the active driver in the Setup panel, or (for multi-device projects) in the Project Editor.
 
+For protocol theory, wire framing, and educational primers on each driver, see the dedicated **Drivers** section: [UART](Drivers-UART.md), [Network](Drivers-Network.md), [Bluetooth LE](Drivers-Bluetooth-LE.md), [MQTT](Drivers-MQTT.md), [Modbus](Drivers-Modbus.md), [CAN Bus](Drivers-CAN-Bus.md), [Audio](Drivers-Audio.md), [Raw USB](Drivers-USB.md), [HID](Drivers-HID.md), and [Process I/O](Drivers-Process-IO.md).
+
 The diagram below shows how each driver type feeds into the data pipeline.
 
 ```mermaid

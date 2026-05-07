@@ -98,3 +98,11 @@ Dataset
 ```
 
 That's the whole identity model. If something is ever ambiguous, default to looking it up fresh from the project snapshot rather than caching it across an edit.
+
+## See also
+
+- [Project Editor](Project-Editor.md): where datasets, groups, and sources are created and where their IDs come from.
+- [Frame Parser Scripting](JavaScript-API.md): the parser that picks values out of the frame and assigns them to datasets by `index`.
+- [Dataset Value Transforms](Dataset-Transforms.md): per-dataset scripts that read and write registers by `uniqueId`.
+- [Data Tables](Data-Tables.md): the system table (`__datasets__`) keyed by `raw:<uniqueId>` and `final:<uniqueId>`.
+- [API Reference](API-Reference.md): the JSON-RPC surface that exposes mutating CRUD by `(groupId, datasetId)` and live reads by `uniqueId`.

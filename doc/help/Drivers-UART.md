@@ -53,11 +53,11 @@ A parity bit is a single bit appended to the data that makes the total number of
 
 Parity options Serial Studio exposes:
 
-- **None** — no parity bit. Most common.
-- **Even** — total `1`s is always even.
-- **Odd** — total `1`s is always odd.
-- **Mark** — parity bit always `1`. Niche, used for inter-byte signaling on some legacy buses.
-- **Space** — parity bit always `0`. Niche.
+- **None.** no parity bit. Most common.
+- **Even.** total `1`s is always even.
+- **Odd.** total `1`s is always odd.
+- **Mark.** parity bit always `1`. Niche, used for inter-byte signaling on some legacy buses.
+- **Space.** parity bit always `0`. Niche.
 
 ### Stop bits
 
@@ -77,9 +77,9 @@ For typical Arduino, ESP32, and STM32 telemetry, **None** is correct. Hardware f
 
 UART is the protocol; the **physical layer** is something else. Serial Studio doesn't care which one you use as long as the OS exposes a serial port, but it helps to know the differences:
 
-- **TTL serial** — 0 V and 3.3 V (or 5 V) logic levels. What microcontroller pins speak directly. Short cables only.
-- **RS-232** — ±3 to ±15 V (typically ±12 V), single-ended, full-duplex (separate TX and RX wires). Cable lengths up to ~15 m. The classic 9-pin DE-9 connector. PC serial ports.
-- **RS-485** — Differential signaling on two wires (A and B), tolerant to 1200 m of cable, supports multi-drop buses (one master + many slaves on the same pair). Native operation is half-duplex but a 4-wire variant supports full-duplex. The physical layer Modbus RTU and many industrial buses ride on.
+- **TTL serial.** 0 V and 3.3 V (or 5 V) logic levels. What microcontroller pins speak directly. Short cables only.
+- **RS-232.** ±3 to ±15 V (typically ±12 V), single-ended, full-duplex (separate TX and RX wires). Cable lengths up to ~15 m. The classic 9-pin DE-9 connector. PC serial ports.
+- **RS-485.** Differential signaling on two wires (A and B), tolerant to 1200 m of cable, supports multi-drop buses (one master + many slaves on the same pair). Native operation is half-duplex but a 4-wire variant supports full-duplex. The physical layer Modbus RTU and many industrial buses ride on.
 
 When you plug a USB-to-serial adapter into your laptop, the chip on the cable converts USB to TTL or RS-232 levels. From Serial Studio's point of view, all of these look like a COM port (Windows) or `/dev/ttyUSB0` / `/dev/tty.usbserial-XXXX` (Linux/macOS).
 
@@ -120,7 +120,11 @@ For setup steps, see the [Protocol Setup Guides → Serial/UART section](Protoco
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step UART setup in the Setup Panel.
-- [Operation Modes](Operation-Modes.md) — Quick Plot vs Project File vs Console-only.
-- [Communication Protocols](Communication-Protocols.md) — overview of all supported transports.
-- [Drivers — Network](Drivers-Network.md) — TCP and UDP, the next step up when serial isn't enough.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step UART setup in the Setup Panel.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Operation Modes](Operation-Modes.md): Quick Plot vs Project File vs Console-only.
+- [Use Cases](Use-Cases.md): real-world examples built around UART-connected microcontrollers.
+- [Troubleshooting](Troubleshooting.md): diagnostic steps for connection problems.
+- [FAQ](FAQ.md): common questions about supported boards and adapters.
+- [Drivers — Network](Drivers-Network.md): TCP and UDP, the next step up when serial isn't enough.

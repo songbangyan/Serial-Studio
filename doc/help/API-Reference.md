@@ -43,6 +43,8 @@
 
 The Serial Studio API Server is a **TCP server** that listens on **port 7777** (default) and accepts JSON-formatted commands to control Serial Studio programmatically. It provides programmatic control over Serial Studio through a TCP socket connection.
 
+> **Identifier conventions.** Most API commands address objects through some combination of `sourceId`, `groupId`, `datasetId`, `index`, and `uniqueId`. They look interchangeable but are not. See the [Dataset Identity Model](Identity-Model.md) for the rules of thumb (mutate by `(groupId, datasetId)`, read by `uniqueId`, position by `index`).
+
 ### Key Capabilities
 
 - **Full Configuration Control**: Set bus types, configure UART/Network/BLE/Modbus/CAN/MQTT settings

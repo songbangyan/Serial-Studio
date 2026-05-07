@@ -127,13 +127,13 @@ Serial Studio is the **master** (Modbus client). It can poll any number of slave
 
 Setup is a hierarchy:
 
-1. **Connection** — pick RTU (serial port + baud) or TCP (host + port).
-2. **Slave address** — 1–247 for RTU, Unit ID for TCP.
-3. **Register groups** — one per contiguous block of same-type registers you want to read. Each group has:
+1. **Connection.** pick RTU (serial port + baud) or TCP (host + port).
+2. **Slave address.** 1–247 for RTU, Unit ID for TCP.
+3. **Register groups.** one per contiguous block of same-type registers you want to read. Each group has:
    - Register type (coils, discrete inputs, holding, input).
    - Starting address (0-based, protocol numbering).
    - Count of registers to read in one request.
-4. **Poll interval** — how often Serial Studio re-issues all the read requests.
+4. **Poll interval.** how often Serial Studio re-issues all the read requests.
 
 For each poll cycle, Serial Studio iterates through every configured register group, sends the read request, parses the response, and emits a frame containing all the read values. Your frame parser then extracts named datasets from those values.
 
@@ -156,7 +156,7 @@ For step-by-step setup, see the [Protocol Setup Guides → Modbus section](Proto
 - **Polling too fast.** Some devices, especially older PLCs, can't process requests faster than one every 100 ms or so. Serial Studio happily polls at 10 ms; the device may simply not respond. Slow it down.
 - **TCP works but RTU doesn't.** RS-485 is a hostile electrical environment. Long cables, missing ground, intermittent termination, biasing resistor needed (some adapters lack pull-up/pull-down on the bus when idle). Get an oscilloscope on the line if you're stuck.
 - **"Illegal data address" exception.** The slave's memory map doesn't have that register. Re-check the vendor docs. Some PLCs only respond to addresses that are actually configured in their program; others allow reads of any address.
-- **Slave responds slowly under load.** Modern Modbus TCP is fine. Modbus RTU at 9600 baud is slow by design — a 60-register read is ~12 ms of wire time alone, plus device processing. Don't expect kilohertz polling on serial.
+- **Slave responds slowly under load.** Modern Modbus TCP is fine. Modbus RTU at 9600 baud is slow by design. A 60-register read is ~12 ms of wire time alone, plus device processing. Don't expect kilohertz polling on serial.
 
 ## References
 
@@ -169,8 +169,12 @@ For step-by-step setup, see the [Protocol Setup Guides → Modbus section](Proto
 
 ## See also
 
-- [Auto-Generating Projects](Auto-Generating-Projects.md) — Modbus register-map import (CSV/XML/JSON).
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step Modbus setup.
-- [Drivers — UART](Drivers-UART.md) — RTU rides on serial; the UART page covers RS-485 physical layer.
-- [Drivers — Network](Drivers-Network.md) — TCP transport details.
-- [Drivers — CAN Bus](Drivers-CAN-Bus.md) — the other big industrial protocol.
+- [Auto-Generating Projects](Auto-Generating-Projects.md): Modbus register-map import (CSV/XML/JSON).
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step Modbus setup.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Use Cases](Use-Cases.md): industrial monitoring and PLC integration examples.
+- [Troubleshooting](Troubleshooting.md): wiring, addressing, and CRC-error diagnostics.
+- [Drivers — UART](Drivers-UART.md): RTU rides on serial; the UART page covers RS-485 physical layer.
+- [Drivers — Network](Drivers-Network.md): TCP transport details.
+- [Drivers — CAN Bus](Drivers-CAN-Bus.md): the other big industrial protocol.

@@ -1,6 +1,6 @@
 # Audio Driver (Pro)
 
-The Audio driver lets Serial Studio treat any OS-level audio input device as a high-rate analog data source. Microphones, line-in, audio interfaces, USB DACs, virtual loopback devices — anything the OS can record from. The driver became the proof-of-concept for Serial Studio's high-throughput hot path: if the FrameBuilder can keep up with 48 kHz multi-channel audio, it can keep up with almost anything else.
+The Audio driver lets Serial Studio treat any OS-level audio input device as a high-rate analog data source. Microphones, line-in, audio interfaces, USB DACs, virtual loopback devices: anything the OS can record from. The driver became the proof-of-concept for Serial Studio's high-throughput hot path. If the FrameBuilder can keep up with 48 kHz multi-channel audio, it can keep up with almost anything else.
 
 If you don't need acoustic analysis specifically, you can still use the audio driver as a quick way to feed analog signals into Serial Studio (vibration sensor on a microphone preamp, current shunt through an audio interface, etc.).
 
@@ -28,7 +28,7 @@ The Nyquist–Shannon sampling theorem says: to faithfully reconstruct a signal 
 Higher sample rates (96, 192 kHz) are common in studio work, mostly for headroom during processing rather than for capturing sound above 22 kHz. For Serial Studio's purposes:
 
 - **44.1 / 48 kHz** is plenty for general acoustic capture, vibration analysis up to ~20 kHz, audio fingerprinting.
-- **96 / 192 kHz** gives you ultrasonic headroom — useful for some non-destructive testing, bat detectors, ultrasound transducers.
+- **96 / 192 kHz** gives you ultrasonic headroom. Useful for some non-destructive testing, bat detectors, ultrasound transducers.
 - **Below 44.1 kHz** is rare on PC audio hardware. Some interfaces support 22, 16, or 8 kHz for legacy compatibility.
 
 If you sample below 2× the highest signal frequency, you get **aliasing**: high frequencies fold back into the audible band as ghost signals at the wrong pitch. Most audio hardware filters out high frequencies before sampling to prevent this; if you're feeding Serial Studio raw signals from custom hardware, make sure your input is bandwidth-limited.
@@ -115,7 +115,10 @@ For step-by-step setup, see the [Protocol Setup Guides → Audio Input section](
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step Audio Input setup.
-- [Widget Reference](Widget-Reference.md) — FFT Plot and Waterfall widget configuration.
-- [Threading and Timing Guarantees](Threading-and-Timing.md) — for why audio's timestamp handling matters.
-- [Use Cases](Use-Cases.md) — examples of acoustic analysis with Serial Studio.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step Audio Input setup.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Widget Reference](Widget-Reference.md): FFT Plot and Waterfall widget configuration.
+- [Dataset Value Transforms](Dataset-Transforms.md): per-channel calibration, scaling, and filtering of audio samples.
+- [Threading and Timing Guarantees](Threading-and-Timing.md): for why audio's timestamp handling matters.
+- [Use Cases](Use-Cases.md): examples of acoustic analysis with Serial Studio.

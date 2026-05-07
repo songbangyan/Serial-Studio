@@ -92,7 +92,7 @@ USB device access is permission-controlled differently on each OS:
   ```
   Then `sudo udevadm control --reload-rules && sudo udevadm trigger`.
 - **Windows.** A WinUSB driver must be installed for the device. The standard Windows class drivers (HID, CDC, etc.) hold the device open and prevent libusb from claiming it. Use **Zadig** to replace the driver with WinUSB for your VID:PID.
-- **macOS.** Devices that aren't already claimed by an OS class driver can be opened directly. If macOS has bound a kernel driver, libusb can detach it (Serial Studio doesn't do this automatically — it would interfere with system devices).
+- **macOS.** Devices that aren't already claimed by an OS class driver can be opened directly. If macOS has bound a kernel driver, libusb can detach it (Serial Studio doesn't do this automatically; it would interfere with system devices).
 
 For step-by-step setup, see the [Protocol Setup Guides → Raw USB section](Protocol-Setup-Guides.md).
 
@@ -100,7 +100,7 @@ For step-by-step setup, see the [Protocol Setup Guides → Raw USB section](Prot
 
 - **Device not listed.** On Linux, the udev rule isn't set or isn't taking effect. `lsusb` shows the device; `lsusb -v -d VID:PID` shows the descriptor. If `lsusb` works but Serial Studio doesn't, it's a permissions problem.
 - **Device is listed but won't open.** Another driver has claimed it. On Windows, swap to WinUSB via Zadig. On Linux, check `lsusb` and `dmesg | grep usb` for hints. Sometimes the device's CDC class driver takes precedence; Zadig (Windows) or unbinding from the kernel driver (Linux) fixes it.
-- **No data on the IN endpoint.** Verify you've selected the right endpoint number. Vendor docs always specify which endpoint streams data; pick the matching one in the dropdown. Also verify the device is actually streaming — some devices need a vendor-specific control write to start streaming.
+- **No data on the IN endpoint.** Verify you've selected the right endpoint number. Vendor docs always specify which endpoint streams data; pick the matching one in the dropdown. Also verify the device is actually streaming. Some devices need a vendor-specific control write to start streaming.
 - **Bulk reads time out.** Either the device isn't sending or the transfer size is wrong. Reduce the read buffer size if the device sends short packets infrequently.
 - **Isochronous mode drops samples.** Some hardware/OS combinations cap isochronous bandwidth. Check the device's datasheet for the recommended ISO packet size and adjust accordingly.
 - **Advanced Control mode warning.** It's there for a reason. Vendor-specific control transfers can issue any command the firmware understands, including writing to flash, changing calibration, and arbitrary memory writes. Only enable Advanced Control if you know exactly what you're sending.
@@ -116,6 +116,10 @@ For step-by-step setup, see the [Protocol Setup Guides → Raw USB section](Prot
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step Raw USB setup.
-- [Drivers — UART](Drivers-UART.md) — for USB-CDC virtual serial ports.
-- [Drivers — HID](Drivers-HID.md) — for HID-class devices.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step Raw USB setup.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Use Cases](Use-Cases.md): logic analyzers, scientific instruments, and bulk-endpoint devices.
+- [Troubleshooting](Troubleshooting.md): WinUSB, udev, and permission diagnostics.
+- [Drivers — UART](Drivers-UART.md): for USB-CDC virtual serial ports.
+- [Drivers — HID](Drivers-HID.md): for HID-class devices.

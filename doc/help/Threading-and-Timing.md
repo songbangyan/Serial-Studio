@@ -133,3 +133,10 @@ A few specific guarantees fall out of this:
 ## Summary, in one sentence
 
 Serial Studio is a soft-real-time pipeline that survives 256 kHz audio without missing a beat, optimized for throughput and zero copies, with timestamps owned by the driver and a deliberate single-threaded hot path that the project has earned the right to keep through years of profiling. Treat it as a logger, not a controller, and it will not surprise you.
+
+## See also
+
+- [Data Flow](Data-Flow.md): the high-level user view of how data moves from device to dashboard.
+- [The Data Hotpath](Data-Hotpath.md): the technical deep dive into FrameReader, FrameBuilder, and the lock-free queues.
+- [Data Sources](Data-Sources.md): per-driver capability summary, including where each driver sits in the threading model.
+- [Drivers — Audio Input](Drivers-Audio.md): the canonical proof-of-concept for the high-throughput hot path.

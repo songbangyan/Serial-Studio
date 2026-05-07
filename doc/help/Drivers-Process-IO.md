@@ -2,8 +2,8 @@
 
 The Process I/O driver lets Serial Studio ingest data from any external program. It has two modes:
 
-- **Launch mode** — Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, anything that writes bytes to stdout.
-- **Named pipe mode** — Serial Studio opens an existing named pipe (FIFO on Linux/macOS, Windows named pipe on Windows) and reads from it. The producer is whatever process opens the same pipe for writing.
+- **Launch mode.** Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, anything that writes bytes to stdout.
+- **Named pipe mode.** Serial Studio opens an existing named pipe (FIFO on Linux/macOS, Windows named pipe on Windows) and reads from it. The producer is whatever process opens the same pipe for writing.
 
 This is the universal escape hatch. If Serial Studio doesn't have a driver for your data source, but you can write a script that emits bytes for it, the Process I/O driver bridges the gap.
 
@@ -13,9 +13,9 @@ This is the universal escape hatch. If Serial Studio doesn't have a driver for y
 
 Every process on a Unix-like system (and Windows) has three standard streams attached to it at startup:
 
-- **stdin** (file descriptor 0) — input.
-- **stdout** (file descriptor 1) — normal output.
-- **stderr** (file descriptor 2) — error output.
+- **stdin** (file descriptor 0). Input.
+- **stdout** (file descriptor 1). Normal output.
+- **stderr** (file descriptor 2). Error output.
 
 By default these are connected to the terminal: keyboard for stdin, terminal display for stdout and stderr. They can be **redirected** to files, devices, or other processes. Pipes redirect stdout of one process to stdin of another.
 
@@ -128,6 +128,10 @@ For step-by-step setup, see the [Protocol Setup Guides → Process I/O section](
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step Process I/O setup, with both Launch and Named pipe examples.
-- [Drivers — Network](Drivers-Network.md) — for higher-rate streaming when a pipe isn't enough.
-- [Frame Parser Scripting](JavaScript-API.md) — for parsing whatever your producer emits.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step Process I/O setup, with both Launch and Named pipe examples.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Operation Modes](Operation-Modes.md): Quick Plot is the easiest way to visualize ad-hoc CSV from a script.
+- [Use Cases](Use-Cases.md): bridging exotic transports through helper processes.
+- [Drivers — Network](Drivers-Network.md): for higher-rate streaming when a pipe isn't enough.
+- [Frame Parser Scripting](JavaScript-API.md): for parsing whatever your producer emits.

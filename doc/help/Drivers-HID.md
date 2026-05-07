@@ -20,9 +20,9 @@ That's it. The USB packet structure is the standard interrupt-transfer mechanism
 
 A **report** is a unit of data exchanged between host and device. Three types:
 
-- **Input report** — device → host. Periodic. State of buttons, position of axes, sensor readings. The bread and butter of HID.
-- **Output report** — host → device. State the host wants the device to act on. LED on/off, vibration motor strength.
-- **Feature report** — bidirectional. Configuration values, calibration, things that aren't part of the streaming exchange.
+- **Input report.** device → host. Periodic. State of buttons, position of axes, sensor readings. The bread and butter of HID.
+- **Output report.** host → device. State the host wants the device to act on. LED on/off, vibration motor strength.
+- **Feature report.** bidirectional. Configuration values, calibration, things that aren't part of the streaming exchange.
 
 Reports can be **numbered** (each starts with a 1-byte report ID, used when the device has multiple report formats) or **unnumbered** (only one report format, no ID byte).
 
@@ -99,7 +99,7 @@ The HID driver runs a dedicated **read thread** that issues blocking `hid_read` 
 
 ### Frame parsing
 
-HID data is just bytes. If your device declares a custom HID report format (e.g. 8-byte reports containing two `int16` axes and a `uint8` button packed state), you write a frame parser to decode them just like any other binary protocol. The HID report descriptor itself is purely advisory at the protocol level — the host doesn't care if you ignore it.
+HID data is just bytes. If your device declares a custom HID report format (e.g. 8-byte reports containing two `int16` axes and a `uint8` button packed state), you write a frame parser to decode them just like any other binary protocol. The HID report descriptor itself is purely advisory at the protocol level; the host doesn't care if you ignore it.
 
 For step-by-step setup, see the [Protocol Setup Guides → HID section](Protocol-Setup-Guides.md).
 
@@ -128,6 +128,10 @@ For step-by-step setup, see the [Protocol Setup Guides → HID section](Protocol
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — step-by-step HID setup.
-- [Drivers — USB](Drivers-USB.md) — for vendor-specific (non-HID) USB devices.
-- [Drivers — UART](Drivers-UART.md) — for USB-CDC virtual serial ports.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step HID setup.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Use Cases](Use-Cases.md): gamepads, custom HID firmware, and HID-class sensors.
+- [Frame Parser Scripting](JavaScript-API.md): decoding custom HID report layouts into datasets.
+- [Drivers — USB](Drivers-USB.md): for vendor-specific (non-HID) USB devices.
+- [Drivers — UART](Drivers-UART.md): for USB-CDC virtual serial ports.

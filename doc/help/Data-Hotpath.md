@@ -2,7 +2,9 @@
 
 A technical reference for how a single byte travels from a connected device to a rendered widget,
 and how the frame parser and dataset transforms plug into that pipeline. If you're looking for
-the high-level user view, start with [Data Flow](Data-Flow.md). This page is for advanced users,
+the high-level user view, start with [Data Flow](Data-Flow.md). For threading-specific guarantees
+(what is and isn't guaranteed, why FrameReader stays on the main thread), see
+[Threading and Timing Guarantees](Threading-and-Timing.md). This page is for advanced users,
 plugin authors, and anyone debugging throughput, latency, or timing problems.
 
 The hotpath is the chain of components that runs once per received frame at full data rate.

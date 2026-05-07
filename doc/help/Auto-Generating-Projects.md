@@ -122,6 +122,10 @@ If you need to re-import (the vendor shipped a new DBC, you added a register), t
 
 ## See also
 
-- [Protocol Setup Guides](Protocol-Setup-Guides.md) — full format reference for Modbus register maps, plus connection setup for both drivers.
-- [Communication Protocols](Communication-Protocols.md) — Modbus and CAN Bus protocol overview.
-- [Frame Parser Scripting](JavaScript-API.md) — for editing the generated parser by hand if you need custom logic.
+- [Protocol Setup Guides](Protocol-Setup-Guides.md): full format reference for Modbus register maps, plus connection setup for both drivers.
+- [Communication Protocols](Communication-Protocols.md): Modbus and CAN Bus protocol overview.
+- [Project Editor](Project-Editor.md): where the generated project lands after import; adjust groups, datasets, and widgets there.
+- [Drivers — Modbus](Drivers-Modbus.md): protocol primer, including the function-code and register-table model the importer maps onto.
+- [Drivers — CAN Bus](Drivers-CAN-Bus.md): protocol primer, including the DBC signal model.
+- [Frame Parser Scripting](JavaScript-API.md): for editing the generated parser by hand if you need custom logic.
+- [Use Cases](Use-Cases.md): industrial and automotive examples that benefit from auto-generation.

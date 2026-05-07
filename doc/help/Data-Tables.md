@@ -45,7 +45,7 @@ Serial Studio maintains one built-in table called `__datasets__`, generated auto
 | `raw:<uniqueId>`  | Raw value from the frame parser, before the dataset's transform runs |
 | `final:<uniqueId>`| Final value after the dataset's transform has run                 |
 
-`<uniqueId>` is the integer unique ID shown next to each dataset in the Project Editor.
+`<uniqueId>` is the integer unique ID shown next to each dataset in the Project Editor. For the rules around `uniqueId`, `datasetId`, and `index`, see the [Dataset Identity Model](Identity-Model.md).
 
 In practice you'll rarely read `__datasets__` directly. The convenience functions `datasetGetRaw(uid)` and `datasetGetFinal(uid)` wrap it with a cleaner API and are the recommended way to read dataset values inside a transform.
 

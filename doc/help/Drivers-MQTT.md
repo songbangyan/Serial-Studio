@@ -32,7 +32,7 @@ home/livingroom/sensors/humidity
 serial-studio/devices/esp32-001/data
 ```
 
-There's no schema enforced by the broker — topics are just strings — but conventions matter for subscribers. Common practice is to put the most general scope first and the most specific last.
+There's no schema enforced by the broker (topics are just strings), but conventions matter for subscribers. Common practice is to put the most general scope first and the most specific last.
 
 Subscribers can use **wildcards**:
 
@@ -81,7 +81,7 @@ Retained messages don't expire (unless MQTT 5 message expiry is set). Publishing
 
 ### Last Will and Testament
 
-When a client connects to the broker, it can register a **Last Will** message: a topic, payload, and QoS that the broker will publish if the client disconnects ungracefully. This is how you detect dead clients — every client publishes a "I'm here" retained message on connect, and a Last Will of "I'm gone" on the same topic. Subscribers always know which clients are alive.
+When a client connects to the broker, it can register a **Last Will** message: a topic, payload, and QoS that the broker will publish if the client disconnects ungracefully. This is how you detect dead clients: every client publishes a "I'm here" retained message on connect, and a Last Will of "I'm gone" on the same topic. Subscribers always know which clients are alive.
 
 ### Sessions and clean session
 
@@ -103,7 +103,7 @@ For step-by-step setup (broker URL, topics, TLS, authentication, MQTT 5 features
 ## Common pitfalls
 
 - **Connection refused / authentication failed.** Re-verify the broker hostname, port, username, and password from another tool first (Mosquitto's `mosquitto_sub` or the MQTT Explorer GUI). Eliminate the broker as the variable before debugging Serial Studio.
-- **Subscribed but no data.** Check the topic spelling. Topics are case-sensitive. `Factory/Temp` is not the same as `factory/temp`. Also check whether the publisher is using a different topic level structure than you expected — `mosquitto_sub -t '#' -v` shows you everything the broker has, useful for discovery.
+- **Subscribed but no data.** Check the topic spelling. Topics are case-sensitive. `Factory/Temp` is not the same as `factory/temp`. Also check whether the publisher is using a different topic level structure than you expected. Running `mosquitto_sub -t '#' -v` shows you everything the broker has, useful for discovery.
 - **Connected but messages don't appear in real-time.** A retained message under a different topic level may be hiding the live one. Subscribe to `your/topic/#` to see everything in that hierarchy.
 - **Client ID conflict.** MQTT brokers enforce unique client IDs per connection. If two Serial Studio instances use the same client ID, the broker disconnects the older one. Set distinct client IDs per instance.
 - **TLS errors.** If the broker requires TLS (`mqtts://` on port 8883), Serial Studio needs the broker's CA certificate. Self-signed certs require importing the CA explicitly. See [MQTT Integration](MQTT-Integration.md) for TLS setup.
@@ -121,6 +121,8 @@ For step-by-step setup (broker URL, topics, TLS, authentication, MQTT 5 features
 
 ## See also
 
-- [MQTT Integration](MQTT-Integration.md) — full Serial Studio MQTT setup, including TLS, MQTT 5 features, and publishing options.
-- [Drivers — Network](Drivers-Network.md) — raw TCP/UDP, when you don't need a broker.
-- [Communication Protocols](Communication-Protocols.md) — overview of all supported transports.
+- [MQTT Integration](MQTT-Integration.md): full Serial Studio MQTT setup, including TLS, MQTT 5 features, and publishing options.
+- [Data Sources](Data-Sources.md): driver capability summary across all transports.
+- [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
+- [Use Cases](Use-Cases.md): IoT and distributed-sensor scenarios that fit MQTT's pub/sub model.
+- [Drivers — Network](Drivers-Network.md): raw TCP/UDP, when you don't need a broker.
