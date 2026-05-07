@@ -85,3 +85,12 @@ cmake-build-*/
 
 # Other
 *.layout
+
+# json
+*.json
+
+# VS
+*.vs/
+
+# out 
+out/
