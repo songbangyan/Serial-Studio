@@ -87,6 +87,38 @@ int NativeWindow::titlebarHeight(QObject* window)
 }
 
 /**
+ * @brief Returns the horizontal/bottom shadow margin reserved by CSD around the content area.
+ */
+int NativeWindow::frameMargin(QObject* window)
+{
+  auto* w = qobject_cast<QWindow*>(window);
+  if (!w)
+    return 0;
+
+  auto* decorator = s_decorators.value(w, nullptr);
+  if (!decorator)
+    return 0;
+
+  return decorator->shadowMargin();
+}
+
+/**
+ * @brief Returns the total top inset (shadow + CSD titlebar) reserved above the content area.
+ */
+int NativeWindow::frameTopInset(QObject* window)
+{
+  auto* w = qobject_cast<QWindow*>(window);
+  if (!w)
+    return 0;
+
+  auto* decorator = s_decorators.value(w, nullptr);
+  if (!decorator)
+    return 0;
+
+  return decorator->shadowMargin() + decorator->titleBarHeight();
+}
+
+/**
  * @brief Removes a window from the management list.
  */
 void NativeWindow::removeWindow(QObject* window)

@@ -109,6 +109,24 @@ int NativeWindow::titlebarHeight(QObject *window)
 }
 
 /**
+ * @brief No-op on macOS; native frames have no extra horizontal/bottom inset.
+ */
+int NativeWindow::frameMargin(QObject *window)
+{
+  Q_UNUSED(window)
+  return 0;
+}
+
+/**
+ * @brief No-op on macOS; the titlebar height is reported via titlebarHeight().
+ */
+int NativeWindow::frameTopInset(QObject *window)
+{
+  Q_UNUSED(window)
+  return 0;
+}
+
+/**
  * @brief Removes a window to the management list of NativeWindow.
  */
 void NativeWindow::removeWindow(QObject *window)

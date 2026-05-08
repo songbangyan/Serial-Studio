@@ -30,6 +30,8 @@ Window {
   // Custom properties
   //
   property int titlebarHeight: 0
+  property int frameMargin: 0
+  property int frameTopInset: 0
   property bool staysOnTop: false
   property bool fixedSize: true
   property bool nativeWindow: true
@@ -45,14 +47,14 @@ Window {
   property int preferredHeight: contentArea.implicitHeight
 
   //
-  // Window sizing -- internal padding + titlebar wrap the preferred size
+  // Window sizing -- internal padding + titlebar/CSD frame wrap the preferred size
   //
-  width: preferredWidth + 2 * contentPadding
-  minimumWidth: preferredWidth + 2 * contentPadding
-  height: preferredHeight + contentPadding * 1.50 + titlebarHeight
-  minimumHeight: preferredHeight + contentPadding * 1.50 + titlebarHeight
-  maximumWidth: fixedSize ? preferredWidth + 2 * contentPadding : 16777215
-  maximumHeight: fixedSize ? preferredHeight + contentPadding * 1.50 + titlebarHeight : 16777215
+  width: preferredWidth + 2 * contentPadding + 2 * frameMargin
+  minimumWidth: preferredWidth + 2 * contentPadding + 2 * frameMargin
+  maximumWidth: fixedSize ? preferredWidth + 2 * contentPadding + 2 * frameMargin : 16777215
+  height: preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin
+  minimumHeight: preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin
+  maximumHeight: fixedSize ? preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin : 16777215
 
   //
   // Configure window flags
@@ -85,6 +87,8 @@ Window {
       Cpp_NativeWindow.removeWindow(root)
 
     root.titlebarHeight = Cpp_NativeWindow.titlebarHeight(root)
+    root.frameMargin = Cpp_NativeWindow.frameMargin(root)
+    root.frameTopInset = Cpp_NativeWindow.frameTopInset(root)
   }
 
   //
