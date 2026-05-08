@@ -478,6 +478,10 @@ QJsonObject UI::WindowManager::serializeLayout() const
 
   layout["geometries"] = geometries;
 
+  // Canvas snapshot (Pro notice/actions panel can change available space)
+  layout["canvasWidth"] = static_cast<int>(width());
+  layout["canvasHeight"] = static_cast<int>(height());
+
   // Save window order and layout mode
   QJsonArray orderArray;
   for (int id : m_windowOrder)
@@ -500,6 +504,8 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
     return false;
 
   bool autoLayout = layout["autoLayout"].toBool(true);
+  const int savedCanvasW = layout["canvasWidth"].toInt(0);
+  const int savedCanvasH = layout["canvasHeight"].toInt(0);
   m_userReordered = layout["userReordered"].toBool(false);
 
   // Restore window order, appending any unsaved windows at the end
@@ -544,12 +550,12 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
         win->setY(geom.y());
         win->setWidth(geom.width());
         win->setHeight(geom.height());
-        storeManualGeometry(id, win);
+        storeManualGeometry(id, win, savedCanvasW, savedCanvasH);
       } else {
         m_manualGeometries.insert(id, geom);
 
-        const int canvasW = static_cast<int>(width());
-        const int canvasH = static_cast<int>(height());
+        const int canvasW = savedCanvasW > 0 ? savedCanvasW : static_cast<int>(width());
+        const int canvasH = savedCanvasH > 0 ? savedCanvasH : static_cast<int>(height());
         if (canvasW > 0 && canvasH > 0) {
           const int left   = qMax(0, geom.x());
           const int top    = qMax(0, geom.y());
@@ -996,7 +1002,8 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 /**
  * @brief Stores the preferred manual geometry and anchor margins for a window.
  */
-void UI::WindowManager::storeManualGeometry(const int id, QQuickItem* item)
+void UI::WindowManager::storeManualGeometry(
+  const int id, QQuickItem* item, const int canvasWidth, const int canvasHeight)
 {
   if (!item)
     return;
@@ -1004,8 +1011,8 @@ void UI::WindowManager::storeManualGeometry(const int id, QQuickItem* item)
   const QRect geom = extractGeometry(item);
   m_manualGeometries.insert(id, geom);
 
-  const int canvasW = static_cast<int>(width());
-  const int canvasH = static_cast<int>(height());
+  const int canvasW = canvasWidth > 0 ? canvasWidth : static_cast<int>(width());
+  const int canvasH = canvasHeight > 0 ? canvasHeight : static_cast<int>(height());
   if (canvasW <= 0 || canvasH <= 0)
     return;
 

@@ -126,7 +126,7 @@ private:
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);
   void applyManualAnchors(int previousWidth, int previousHeight, int newWidth, int newHeight);
-  void storeManualGeometry(int id, QQuickItem* item);
+  void storeManualGeometry(int id, QQuickItem* item, int canvasWidth = -1, int canvasHeight = -1);
   void updateManualSnapIndicator(int newX, int newY, int w, int h, int canvasW, int canvasH);
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
