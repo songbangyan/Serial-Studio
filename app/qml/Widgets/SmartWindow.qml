@@ -176,7 +176,9 @@ Window {
     if (root.visible) {
       if (root.visibility === Window.Maximized) {
         root.isMaximized = true
-      } else if (root.isMaximized && root.visibility !== Window.Minimized) {
+      } else if (root.isMaximized
+                 && root.visibility !== Window.Minimized
+                 && root.visibility !== Window.FullScreen) {
         root.isMaximized = false
         root.x = root.previousX
         root.y = root.previousY
@@ -195,7 +197,9 @@ Window {
     interval: 300
     repeat: false
     onTriggered: {
-      if (!root.isMaximized && root.visible && root.visibility !== Window.Maximized) {
+      if (!root.isMaximized && root.visible
+          && root.visibility !== Window.Maximized
+          && root.visibility !== Window.FullScreen) {
         root.previousX = root.x
         root.previousY = root.y
         root.previousWidth = root.width
