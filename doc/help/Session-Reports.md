@@ -18,8 +18,6 @@ A progress dialog appears while charts render and (for PDF) the page is rasteriz
 
 The workspace root is the folder set under **Settings → Workspace**. Project titles are sanitized so the filename is always safe.
 
----
-
 ## What's in the report
 
 The report has four sections, each independently toggleable:
@@ -30,8 +28,6 @@ The report has four sections, each independently toggleable:
 | **Test information** | Project title, session ID, start/end times, duration, sample count, parameter count, tags (as chips), and session notes |
 | **Measurement summary** | Per-parameter table with sample count, min, max, mean, and standard deviation. Non-numeric datasets show `—` for numeric columns |
 | **Parameter trends** | One Chart.js line chart per numeric dataset, laid out in a responsive grid. A screen-only overlay chart (hidden on print) plots all parameters on shared axes for shape comparison |
-
----
 
 ## Options
 
@@ -53,8 +49,6 @@ All options are persisted between runs, so you only configure them once per proj
 
 Toggle each of the four sections on or off independently. Turning off **Parameter trends** produces a text-only summary report that renders instantly and prints to a few pages.
 
----
-
 ## HTML vs PDF
 
 Both formats ship the same content, rendered from the same template.
@@ -68,8 +62,6 @@ Both formats ship the same content, rendered from the same template.
 | Best for | Internal review, web sharing, debugging | Customer deliverables, regulatory submissions, printing |
 
 Choose **Export Both** to get an interactive version for your team and a printable version for the archive in a single step.
-
----
 
 ## How charts are rendered
 
@@ -85,18 +77,14 @@ If you need the full-resolution data, export the session to **CSV** from the Ses
 
 Tick labels use scientific notation for values with magnitude below 10⁻³ or at or above 10⁶. Otherwise they display with three decimal places. Colors rotate through a muted HSL palette (base hue 210°, stepped by 48° per parameter) tuned for print legibility.
 
----
-
 ## Performance notes
 
 - HTML export is near-instant for any session size: the template inlines the data as JSON and all rendering happens in the browser when the file is opened.
 - PDF export is slower. Serial Studio loads the HTML in an off-screen browser, waits for Chart.js to finish rendering, then rasterizes the page. Expect a few seconds for sessions with many datasets.
 - The report is independent of the live project: it pulls session data directly from the SQLite database, so you can regenerate reports from archived sessions long after the original project has changed.
 
----
-
 ## See also
 
 - [Session Database](Session-Database.md): where sessions are recorded and browsed.
-- [CSV Import & Export](CSV-Import-Export.md): for full-resolution tabular exports.
+- [CSV Export & Playback](CSV-Export-Playback.md): for full-resolution tabular exports.
 - [Pro vs Free Features](Pro-vs-Free.md): full list of Pro-only features.

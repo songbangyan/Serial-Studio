@@ -19,8 +19,6 @@ Tables are useful when:
 - One transform derives a value (total current, RMS error, CRC) that another transform needs to consume.
 - You want a named, typed place for "magic numbers" instead of hard-coding them inside transform scripts.
 
----
-
 ## Register types
 
 Every register is one of two types:
@@ -34,8 +32,6 @@ Constants are the right tool for configuration: sensor slopes, offsets, threshol
 
 Computed registers are frame-scoped scratch space shared between transforms. A computed register's value survives across transforms inside one frame, but it's wiped back to its default at the start of the next frame. That keeps the model simple, so you never accidentally consume a stale value from the previous frame.
 
----
-
 ## The system table
 
 Serial Studio maintains one built-in table called `__datasets__`, generated automatically from your project. You don't define it, and it doesn't appear in the editor. It mirrors every dataset as two registers:
@@ -48,8 +44,6 @@ Serial Studio maintains one built-in table called `__datasets__`, generated auto
 `<uniqueId>` is the integer unique ID shown next to each dataset in the Project Editor. For the rules around `uniqueId`, `datasetId`, and `index`, see the [Dataset Identity Model](Identity-Model.md).
 
 In practice you'll rarely read `__datasets__` directly. The convenience functions `datasetGetRaw(uid)` and `datasetGetFinal(uid)` wrap it with a cleaner API and are the recommended way to read dataset values inside a transform.
-
----
 
 ## The transform API
 
@@ -102,8 +96,6 @@ end
 
 See [Dataset Value Transforms](Dataset-Transforms.md#data-table-api) for the per-language quick reference, including the equivalent JavaScript examples.
 
----
-
 ## Processing order and visibility
 
 Transforms are applied sequentially: groups in project order, datasets in group order. Within a single frame:
@@ -121,8 +113,6 @@ That gives these guarantees:
 
 If dataset B depends on dataset A's final value, make sure A is listed before B in the Project Editor tree. Otherwise `datasetGetFinal(A)` will still return the default value from the reset in step 2.
 
----
-
 ## Defining tables in the Project Editor
 
 1. Open the project in the Project Editor.
@@ -138,8 +128,6 @@ Tables are saved with the project file. When the project is shared, anyone openi
 ### Naming rules
 
 Table and register names are free-form strings, but keep them short and descriptive. They appear as string literals in every transform that uses them. Avoid whitespace and non-ASCII characters to keep scripts readable. The name `__datasets__` is reserved for the built-in system table.
-
----
 
 ## Common use cases
 
@@ -301,21 +289,15 @@ end
 - **Don't put arrays in a register.** Registers are scalars. Use multiple registers or multiple datasets.
 - **Don't use a data table as a configuration dialog.** Tables persist with the project file, so editing a Constant register always means saving the project. For UI knobs that change at runtime, use an Output widget instead.
 
----
-
 ## Virtual datasets
 
 A virtual dataset has no Frame Index. It receives no value from the frame parser and computes its entire output from transforms. Pair a virtual dataset with a transform that reads other datasets or table registers, and you can add a derived channel that's plotted, exported, and broadcast to the API alongside the real data.
 
 See [Virtual Datasets](Dataset-Transforms.md#virtual-datasets) in the Dataset Transforms reference for usage patterns.
 
----
-
 ## Multi-source projects
 
 Data tables are shared across all sources in a project. A transform on source A can read a computed register written by a transform on source B, as long as both transforms run within the same frame cycle. In practice, per-source frames are processed independently, so cross-source table communication is rarely useful. Prefer keeping each source's tables self-contained unless you specifically need to fuse values across sources.
-
----
 
 ## Rules and limitations
 
@@ -325,8 +307,6 @@ Data tables are shared across all sources in a project. A transform on source A 
 4. Computed registers reset to their default at the start of every frame. Don't rely on values surviving between frames. Use chunk-local variables in the transform itself for per-dataset state.
 5. The `__datasets__` table is reserved. Don't create a user table with that name.
 6. Table and register names are case-sensitive.
-
----
 
 ## See also
 

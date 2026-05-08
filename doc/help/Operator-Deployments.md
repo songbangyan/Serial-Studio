@@ -30,8 +30,6 @@ flowchart LR
 
 > **Legend:** Deployments capture the project path and CLI flags at creation time. Editing the project later doesn't re-stamp the deployment; it just keeps pointing at the same file.
 
----
-
 ## The dialog
 
 Two tabs.
@@ -63,8 +61,6 @@ Press **Save**. A native Save dialog opens with the right file filter for your O
 
 If anything goes wrong while writing the file, an inline red banner shows the OS error in the dialog. The dialog stays open so you can retry without losing your selections.
 
----
-
 ## Runtime mode
 
 Every generated deployment adds `--runtime`. This flag adjusts the dashboard for unattended/operator use:
@@ -89,8 +85,6 @@ When the initial connection fails or an active connection drops in runtime mode,
 2. **Page 1 — driver picker.** A bus-type combo plus the Hardware setup pane embedded in the dialog. Lets the user choose a different port or device without exposing the rest of the toolbar. Press **Connect** when ready.
 
 This is the only piece of the setup UI an operator interacts with under runtime mode, and it only appears when the connection is not established.
-
----
 
 ## CLI reference
 
@@ -123,8 +117,6 @@ serial-studio \
 
 The deployment generator passes `--shortcut-path` automatically; you only need it when crafting flags by hand and want the broken-deployment self-cleanup behaviour.
 
----
-
 ## When the project file goes missing
 
 If a project file is moved or deleted after the deployment was generated, the runtime detects this **before** any window appears and offers to clean up:
@@ -141,8 +133,6 @@ flowchart TD
 
 The cleanup treats macOS `.app` bundles as directories (recursive remove) and Windows `.lnk` / Linux `.desktop` as plain files. Nothing else on disk is touched.
 
----
-
 ## Tips for kiosk-style setups
 
 - **Install Serial Studio first.** The deployment is a launcher, not a bundle. Use the Serial Studio installer on the target machine before dropping the deployment file in place. If Serial Studio isn't installed on the operator's machine, the deployment will fail with the OS's "missing application" error.
@@ -152,8 +142,6 @@ The cleanup treats macOS `.app` bundles as directories (recursive remove) and Wi
 - **Linux launcher integration.** Save the `.desktop` file to `~/.local/share/applications/` to make it appear in GNOME/KDE/etc. application menus. Most desktop environments pick up new entries automatically; some need an `update-desktop-database` run.
 - **Windows icon caching.** If a deployment keeps showing the previous icon after you regenerate it, that's the Windows icon cache — sign out and back in, or rebuild it with `ie4uinit.exe -show`.
 - **macOS Gatekeeper.** First launch of an unsigned `.app` deployment may prompt for confirmation. Right-click → Open works around it. Signed/notarized Serial Studio installs don't carry the warning over to their generated deployments because the launcher just `exec`s the original signed binary.
-
----
 
 ## Frequently asked
 
@@ -178,12 +166,10 @@ The recovery dialog's **Pick Different Device** page lets them switch on the fly
 **Does the deployment survive a Serial Studio update?**
 Usually yes. The deployment targets the Serial Studio executable by absolute path; package upgrades that overwrite the binary in place leave the deployment intact. Reinstalls that move the executable will require regenerating the deployment.
 
----
-
 ## See also
 
 - [Project Lock](Project-Lock.md): pair a locked project with a runtime deployment to limit the editor surface at the workstation.
 - [Operation Modes](Operation-Modes.md): how Project mode (the only one runtime deployments use) compares to QuickPlot and Console-Only.
 - [Project Editor](Project-Editor.md): where the project that the deployment points to is built.
-- [CSV Import & Export](CSV-Import-Export.md), [Session Database](Session-Database.md): the recorders the Logging tab pre-arms.
+- [CSV Export & Playback](CSV-Export-Playback.md), [Session Database](Session-Database.md): the recorders the Logging tab pre-arms.
 - [Pro vs Free Features](Pro-vs-Free.md): what's bundled with a Pro license.

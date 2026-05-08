@@ -77,7 +77,7 @@ Widget rendering is capped at a configurable refresh rate. The default is 60 Hz,
 
 When CSV export, MDF4 export, the session database, or the API server is active, every frame is also handed to the export workers. Each export target writes data in the background, so disk I/O and network traffic never block the dashboard or slow down the pipeline.
 
-- **CSV** writes one file per session under `Documents/Serial Studio/CSV/`. See [CSV Import & Export](CSV-Import-Export.md).
+- **CSV** writes one file per session under `Documents/Serial Studio/CSV/`. See [CSV Export & Playback](CSV-Export-Playback.md).
 - **MDF4 (Pro)** writes a binary measurement file suitable for automotive and high-rate workflows.
 - **Session Database (Pro)** appends every frame, raw byte, and data-table snapshot to a per-project SQLite file that you can browse, tag, and replay later. See [Session Database](Session-Database.md).
 - **API** on port 7777 serializes frames to JSON and broadcasts them to connected clients using MCP (JSON-RPC 2.0) or the legacy protocol. See the [API Reference](API-Reference.md).
@@ -101,8 +101,6 @@ When CSV export, MDF4 export, the session database, or the API server is active,
 **High CPU from the dashboard itself.** Lower the UI refresh rate. Dropping from 60 Hz to 30 Hz roughly halves the cost of widget redraws without losing any incoming data.
 
 **Export files empty.** Export workers only write while a device is connected. Check that export was started before you disconnected.
-
----
 
 ## See also
 

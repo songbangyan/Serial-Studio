@@ -15,8 +15,6 @@
 - [Testing Your Plugin](#testing-your-plugin)
 - [Packaging and Distribution](#packaging-and-distribution)
 
----
-
 ## Overview
 
 Plugins are external programs that connect to Serial Studio's API to receive live data, compute statistics, display custom visualizations, or automate workflows. They run as separate processes alongside Serial Studio and communicate over the network.
@@ -31,8 +29,6 @@ Plugins can be written in any language (Python, C++, Go, Rust, Node.js, and so o
 - **Automated test sequences.** Connect, configure, validate, and report.
 - **Hardware control.** Send commands back to the device based on incoming data.
 
----
-
 ## How Plugins Work
 
 ```mermaid
@@ -46,8 +42,6 @@ flowchart LR
 3. Serial Studio ensures the API server is running, then launches the plugin process.
 4. The plugin connects to Serial Studio and starts sending commands or streaming data.
 5. The user clicks **Stop** (or Serial Studio exits) to terminate the plugin.
-
----
 
 ## Getting Started
 
@@ -142,8 +136,6 @@ if __name__ == "__main__":
 
 Generate `serialstudio_pb2.py` and `serialstudio_pb2_grpc.py` from the `.proto` file (see the [gRPC Server](gRPC-Server.md) guide).
 
----
-
 ## Plugin Structure
 
 A plugin lives in its own folder inside a repository:
@@ -204,8 +196,6 @@ venv\Scripts\python plugin.py
 
 When using launcher scripts, set `"runtime": ""` in `info.json` (the script itself is the executable).
 
----
-
 ## info.json Reference
 
 | Field | Required | Description |
@@ -260,8 +250,6 @@ When using launcher scripts, set `"runtime": ""` in `info.json` (the script itse
 }
 ```
 
----
-
 ## Connecting to Serial Studio
 
 ### Option 1: gRPC (Recommended for Real-Time Data)
@@ -310,8 +298,6 @@ response = json.loads(sock.recv(4096).decode())
 
 See the [API Reference](API-Reference.md) for the complete command list and protocol specification.
 
----
-
 ## Platform-Specific Builds
 
 Plugins can provide different entry points for each operating system and architecture. Use the `platforms` field in `info.json`:
@@ -338,8 +324,6 @@ Platform keys use the format `os/arch` or `os/*` (for universal builds):
 - Platform-specific `files` are **merged** with the base `files` array during installation.
 - If a plugin has no matching platform entry, the **Install** button is disabled and an **Unavailable** badge is shown.
 - If no `platforms` field is present, the plugin is assumed to work on all platforms.
-
----
 
 ## State Persistence
 
@@ -378,8 +362,6 @@ state = result.get("result", {}).get("state", {})
 
 Plugins that were running when Serial Studio closed are automatically relaunched on the next startup.
 
----
-
 ## Lifecycle Events
 
 The API server broadcasts events to all connected clients. Plugins should listen for these to coordinate with Serial Studio:
@@ -403,8 +385,6 @@ while True:
             on_device_disconnected()
 ```
 
----
-
 ## Extension Manager API
 
 Plugins can also interact with the Extension Manager programmatically:
@@ -421,8 +401,6 @@ Plugins can also interact with the Extension Manager programmatically:
 | `extensions.listRepositories` | List repository URLs (Pro only). |
 | `extensions.addRepository` | Add a repository URL (Pro only). |
 | `extensions.removeRepository` | Remove a repository by index (Pro only). |
-
----
 
 ## Testing Your Plugin
 
@@ -453,8 +431,6 @@ grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/ListCommands
 | `grpcio` import error | Package not installed | `pip install grpcio grpcio-tools` |
 | Plugin exits immediately | Unhandled exception | Set `"terminal": true` to see errors |
 | No frames streaming | Device not connected | Connect a device first |
-
----
 
 ## Packaging and Distribution
 

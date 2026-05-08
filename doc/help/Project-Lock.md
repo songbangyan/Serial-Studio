@@ -30,15 +30,11 @@ flowchart LR
 
 > **Legend:** The lock state lives in the project file, not in app settings. Move the `.ssproj` to another machine and the lock comes with it.
 
----
-
 ## What the dashboard sees
 
 Nothing changes. Locking a project does **not** affect the live dashboard, frame parsers, dataset transforms, output widgets, exports, the API server, or any other runtime feature. Operators can connect, disconnect, switch workspaces, change widget layouts, run reports — all of it works exactly as before.
 
 The lock is scoped to the **Project Editor body** only. If an operator clicks the wrench icon, they get the lock screen instead of the form panes; everything else in Serial Studio is untouched.
-
----
 
 ## What the lock does *not* do
 
@@ -53,8 +49,6 @@ Be honest with yourself about the threat model. The password hash sits in plain 
 | Is it a substitute for OS-level file permissions?     | No.    |
 
 If you need the project file itself protected from tampering — locked away from operators entirely — use your operating system's file ACLs, an admin-only network share, or a signed/read-only deployment. The lock here is a UI gate, not a vault.
-
----
 
 ## Lifecycle
 
@@ -84,8 +78,6 @@ There's no separate "change password" flow. Unlock the project, then lock it aga
 
 Unlock the project. The Lock toolbar button reappears; just don't press it. Save the project, and the `passwordHash` field is no longer written to the file.
 
----
-
 ## What lives in the project file
 
 A locked project carries a single extra key under the JSON root:
@@ -109,8 +101,6 @@ When Serial Studio loads the file, `passwordHash` being non-empty is the entire 
 
 > The lock state is **never** prompted at file-open time. Loading a locked project doesn't ask for the password; it just hides the editor body until the user explicitly clicks Unlock. This keeps live dashboards from being held hostage by a forgotten password during a shift change.
 
----
-
 ## Project mode and the lock screen
 
 The blurred overlay does double duty. You'll see the same backdrop in two situations:
@@ -121,8 +111,6 @@ The blurred overlay does double duty. You'll see the same backdrop in two situat
 | Editor opened while in QuickPlot or Console-Only mode | "Editing is available in Project mode" | **Switch to Project Mode** |
 
 Both states use the same blurred-glass treatment so the editor's chrome (toolbar, window caption) stays visible and you don't lose your place. Only the call to action changes.
-
----
 
 ## Frequently asked
 
@@ -140,8 +128,6 @@ No. The lock is purely a UI gate around the Project Editor. The API still serves
 
 **Will the dashboard still receive frames while the editor is locked?**
 Yes. The dashboard, exports, reports, and notifications are completely independent of the lock state.
-
----
 
 ## See also
 

@@ -11,8 +11,6 @@ Quick solutions to common Serial Studio issues. If you can't find your problem h
 - [Performance Issues](#performance-issues)
 - [Getting More Help](#getting-more-help)
 
----
-
 ## Installation Issues
 
 ### Windows: "Missing VCRUNTIME140.dll" or similar error
@@ -24,8 +22,6 @@ Quick solutions to common Serial Studio issues. If you can't find your problem h
 2. Get it from: [Microsoft's official download page](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
 3. Install both x64 and x86 versions if unsure
 4. Restart Serial Studio
-
----
 
 ### macOS: "App is damaged and can't be opened" or "Unidentified developer"
 
@@ -43,8 +39,6 @@ Quick solutions to common Serial Studio issues. If you can't find your problem h
    - Click "Open Anyway" button next to Serial Studio message
    - Or right-click Serial Studio and select "Open"
 
----
-
 ### Linux: AppImage won't run ("Permission denied")
 
 **Problem:** Downloaded AppImage file won't execute.
@@ -59,8 +53,6 @@ Quick solutions to common Serial Studio issues. If you can't find your problem h
    ```bash
    ./Serial-Studio-*.AppImage
    ```
-
----
 
 ### Linux: AppImage error "fuse: failed to exec fusermount"
 
@@ -84,8 +76,6 @@ sudo dnf install fuse-libs
 sudo pacman -S fuse2
 ```
 
----
-
 ### Linux: Serial port permission denied
 
 **Problem:** Serial Studio can't access serial ports (permission denied error).
@@ -108,8 +98,6 @@ sudo pacman -S fuse2
 ```bash
 sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 ```
-
----
 
 ## Connection Issues
 
@@ -159,8 +147,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - PuTTY / Screen / Minicom
    - Other Serial Studio instances
 
----
-
 #### "Failed to open port" error
 
 **Possible causes:**
@@ -186,8 +172,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 4. **Try different USB port**
 
 5. **Restart Serial Studio**
-
----
 
 #### Connected but no data appearing
 
@@ -220,8 +204,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 5. **Check frame delimiters:**
    - Verify delimiters match what device sends
    - Try "No Delimiters" mode temporarily
-
----
 
 ### Network Socket (TCP/UDP)
 
@@ -257,8 +239,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Make sure computer and device are on same network
    - Try `ping <device-ip>`
 
----
-
 #### UDP not receiving data
 
 **Possible causes:**
@@ -284,8 +264,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 
 4. **Use network sniffer to verify packets:**
    - Wireshark can show if UDP packets are arriving
-
----
 
 ### Bluetooth LE
 
@@ -315,8 +293,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Turn Bluetooth off and on
    - Or restart computer
 
----
-
 #### Connected to BLE but no data
 
 **Possible causes:**
@@ -333,8 +309,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 2. **Ensure notifications are enabled:**
    - Serial Studio should automatically enable notifications
    - Try disconnecting and reconnecting
-
----
 
 ## Dashboard & Visualization Issues
 
@@ -370,8 +344,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Use console output to see raw frames
    - Ensure format matches expectations
 
----
-
 ### Widgets not displaying or showing errors
 
 **Possible causes:**
@@ -400,8 +372,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Delete widget from project
    - Add it again with fresh configuration
 
----
-
 ### Dashboard layout broken after update
 
 **Possible causes:**
@@ -418,8 +388,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Test with CSV Player
 
 3. **Report issue** if project file should be compatible
-
----
 
 ## Frame Parsing Issues
 
@@ -448,8 +416,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
      - `\r\n` (CRLF) - Windows
      - `\r` (CR) - Old Mac
    - Try different delimiter combinations
-
----
 
 ### Parser function not working
 
@@ -500,8 +466,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
    - Base64: `frame` is base64 string
    - Binary (Direct) (Pro): `frame` is byte array
 
----
-
 ### Dataset transform not working
 
 **Problem:** You applied a `transform(value)` function but the dashboard still shows raw values.
@@ -521,8 +485,6 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 6. **Save and reload the project.** If the transform was applied during a live session, saving makes sure it persists. After reload, transforms are recompiled automatically.
 
 See [Dataset Value Transforms](Dataset-Transforms.md) for the complete reference.
-
----
 
 ### Parsing slow/laggy
 
@@ -558,8 +520,6 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the complete reference
    }
    ```
 
----
-
 ## CSV Player Issues
 
 ### Cannot open CSV file
@@ -585,8 +545,6 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the complete reference
    - Export to CSV
    - Compare format with your file
 
----
-
 ### Playback is choppy
 
 **Possible causes:**
@@ -606,8 +564,6 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the complete reference
    - Consider splitting into smaller segments
    - Export only needed columns
 
----
-
 ## Pro Feature Issues
 
 ### MQTT connection fails
@@ -620,8 +576,6 @@ Common issues:
 - Firewall blocking connection
 - TLS/SSL certificate issues
 
----
-
 ### Modbus connection fails
 
 **See:** [Protocol-Specific Setup Guides - Modbus](Protocol-Setup-Guides.md)
@@ -632,8 +586,6 @@ Common issues:
 - Baud rate mismatch (RTU)
 - IP/port wrong (TCP)
 
----
-
 ### CAN Bus issues
 
 **See:** [Protocol-Specific Setup Guides - CAN Bus](Protocol-Setup-Guides.md)
@@ -643,8 +595,6 @@ Common issues:
 - Missing termination resistors
 - Adapter not recognized
 - DBC file format errors
-
----
 
 ### Pro features show as locked
 
@@ -674,8 +624,6 @@ Common issues:
    - Trial is 14 days, one-time only
    - Based on hardware ID (can't reset by reinstalling)
 
----
-
 ## Performance Issues
 
 ### High CPU usage
@@ -701,8 +649,6 @@ Common issues:
    - Reduce plot history length
 
 4. **Close unused applications**
-
----
 
 ### Memory usage growing over time
 
@@ -739,8 +685,6 @@ Common issues:
    - Shorter time windows
    - Lower sample rate
 
----
-
 ### Slow frame rate / laggy dashboard
 
 **Possible causes:**
@@ -766,8 +710,6 @@ Common issues:
 4. **Update graphics drivers**
 
 5. **Close background applications**
-
----
 
 ## Getting More Help
 
@@ -800,8 +742,6 @@ Think you found a bug? Report it:
 For Pro license holders:
 - Email: alex@serial-studio.com
 - Include license key and detailed problem description
-
----
 
 ## Reporting Bugs Effectively
 
@@ -853,8 +793,6 @@ All gauges show "NaN"
 - Screenshot: screenshot.png
 ```
 
----
-
 ## See Also
 
 - [Getting Started](Getting-Started.md) - First-time setup guide
@@ -863,7 +801,5 @@ All gauges show "NaN"
 - [Frame Parser Scripting](JavaScript-API.md) - Lua and JavaScript parser reference
 - [Widget Reference](Widget-Reference.md) - Widget requirements and usage
 - [FAQ](FAQ.md) - Frequently asked questions
-
----
 
 **Still stuck?** Ask for help on [GitHub Discussions](https://github.com/Serial-Studio/Serial-Studio/discussions). The community is there to help.

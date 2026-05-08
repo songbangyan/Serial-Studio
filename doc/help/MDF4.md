@@ -2,7 +2,7 @@
 
 Serial Studio Pro can export incoming telemetry to MDF4 files during a live session and replay saved MDF4 files through the same data pipeline. MDF4 is an ASAM-standard binary format for measurement data, widely used in automotive and industrial testing alongside CAN, LIN, FlexRay, and analog channels. This page covers what MDF4 is, when to pick it over CSV, and how export and playback work in Serial Studio.
 
-For text-based logging and the broader "what file format should I pick?" comparison, see [CSV Import & Export](CSV-Import-Export.md). For project-scoped, queryable session storage with replay metadata and tagging, see [Session Database](Session-Database.md).
+For text-based logging and the broader "what file format should I pick?" comparison, see [CSV Export & Playback](CSV-Export-Playback.md). For project-scoped, queryable session storage with replay metadata and tagging, see [Session Database](Session-Database.md).
 
 ## What is MDF4?
 
@@ -25,8 +25,6 @@ flowchart LR
 
 > Like CSV, MDF4 export runs on a background thread and writes in batches. The dashboard never stalls.
 
----
-
 ## CSV or MDF4?
 
 | Aspect          | CSV                                  | MDF4 (Pro)                               |
@@ -39,8 +37,6 @@ flowchart LR
 | Best for        | General analysis, sharing            | Automotive, industrial, high-rate logging|
 
 Pick CSV for ad-hoc analysis, sharing with colleagues who don't have MDF4 tooling, or when you want to open the file in a spreadsheet without thinking about it. Pick MDF4 for long recordings at high data rates, automotive workflows that already use the format, or when channel metadata (units, conversions) matters at analysis time.
-
----
 
 ## MDF4 export
 
@@ -81,8 +77,6 @@ Each dataset becomes one MDF4 channel. The exporter writes:
 
 MDF4 export runs on its own worker thread and flushes to disk in batches. On modern desktop hardware, sustained 100 kHz frame rates are routine. The dashboard, the API server, and other consumers see the same parsed frame object — there is no copy or re-stamp.
 
----
-
 ## MDF4 playback
 
 ### Opening an MDF4 file
@@ -112,8 +106,6 @@ The current timestamp shows next to the slider as `HH:MM:SS.mmm`.
 
 Files exported by Serial Studio replay cleanly because the channel group structure matches the project that produced them. For files captured by other tools (CANape, vector loggers, custom acquisition systems), the player maps channel names back to project datasets by name; channels without a matching dataset are ignored.
 
----
-
 ## Analyzing exported data
 
 MDF4 readers worth knowing:
@@ -125,8 +117,6 @@ MDF4 readers worth knowing:
 
 For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.mat`, and a few other formats — useful when an analysis tool downstream doesn't speak MDF4 directly.
 
----
-
 ## Common pitfalls
 
 - **No frames written.** Export needs an active connection. The file is created on the first received frame, not on the toggle. If the device isn't sending, the file won't appear.
@@ -134,8 +124,6 @@ For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.
 - **MDF4 reader can't open the file.** Some older readers (pre-2015) only support MDF3. Confirm the reader supports the MDF4 (`.mf4`) format. `asammdf` handles both.
 - **Channel names look mangled.** MDF4 limits channel names to ASCII in some reader implementations. Non-ASCII characters in your dataset titles may render as `?` in third-party tools. Stick to ASCII for portability.
 - **Timestamps drift compared to CSV.** They shouldn't -- both formats record the same source-derived timestamps. If they disagree, the issue is almost always in how the reader interprets the time channel's master/slave configuration. See [Threading and Timing Guarantees](Threading-and-Timing.md) for what the source timestamp represents.
-
----
 
 ## Further reading
 
@@ -148,7 +136,7 @@ For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.
 
 ## See also
 
-- [CSV Import & Export](CSV-Import-Export.md): text-based logging and replay, when MDF4 tooling is overkill.
+- [CSV Export & Playback](CSV-Export-Playback.md): text-based logging and replay, when MDF4 tooling is overkill.
 - [Session Database](Session-Database.md): SQLite-backed project archive with built-in replay.
 - [Session Reports](Session-Reports.md): rendered HTML/PDF summaries of recorded sessions.
 - [Drivers — CAN Bus](Drivers-CAN-Bus.md): the canonical source for MDF4-style automotive recordings.

@@ -1,6 +1,6 @@
-# CSV import and export
+# CSV export and playback
 
-Serial Studio can export incoming telemetry to CSV during a live session and replay saved CSV files through the same data pipeline. This page covers both workflows and the file format. For high-rate binary logging with per-channel sample rates and rich metadata, see [MDF4 Export and Playback](MDF4.md) — Serial Studio Pro supports both formats and you can run them side by side.
+Serial Studio can export incoming telemetry to CSV during a live session and replay saved CSV files through the same data pipeline. This page covers both workflows and the file format. For high-rate binary logging with per-channel sample rates and rich metadata, see [MDF4 Export & Playback](MDF4.md) — Serial Studio Pro supports both formats and you can run them side by side.
 
 ## Export and playback pipeline
 
@@ -21,8 +21,6 @@ flowchart LR
     B --> C["Frame Builder"]
     C --> D["Dashboard"]
 ```
-
----
 
 ## CSV export
 
@@ -68,8 +66,6 @@ The first column is elapsed time in seconds since the session started, with nano
 
 CSV export runs in the background and flushes to disk in batches. So even on slow storage (spinning disks, network shares, SD cards), CSV export never stalls the dashboard, drops frames, or pauses the pipeline.
 
----
-
 ## CSV playback
 
 ### Opening a CSV file
@@ -113,8 +109,6 @@ For projects with multiple data sources, the CSV Player maps columns back to the
 
 Playback runs at real-time speed by default. The player uses the timestamp differences between consecutive rows to schedule frame delivery, so the original data rate is preserved.
 
----
-
 ## Analyzing exported data
 
 CSV opens in essentially every analysis tool:
@@ -124,13 +118,11 @@ CSV opens in essentially every analysis tool:
 - MATLAB: `data = readtable('file.csv');`.
 - R: `data <- read.csv('file.csv')`.
 
-For per-channel sample rates, channel-level units and metadata, or smaller files at high data rates, use MDF4 instead — see [MDF4 Export and Playback](MDF4.md).
-
----
+For per-channel sample rates, channel-level units and metadata, or smaller files at high data rates, use MDF4 instead — see [MDF4 Export & Playback](MDF4.md).
 
 ## See also
 
-- [MDF4 Export and Playback](MDF4.md): binary logging with per-channel sample rates and rich metadata (Pro).
+- [MDF4 Export & Playback](MDF4.md): binary logging with per-channel sample rates and rich metadata (Pro).
 - [Session Database](Session-Database.md): SQLite-backed project archive with built-in replay (Pro).
 - [Getting Started](Getting-Started.md): initial setup and first connection.
 - [Operation Modes](Operation-Modes.md): Quick Plot vs Project File mode.

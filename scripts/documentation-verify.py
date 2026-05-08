@@ -40,6 +40,7 @@ Findings are grouped by `kind`:
     style-shouting         -- trailing "!" in body prose
     style-non-ascii        -- curly quotes, em-dash, en-dash, arrows
     style-emdash-density   -- > 8 em-dashes per file (rhythm tic)
+    style-hr-separator     -- `---` / `***` / `___` horizontal rule used as section divider
 
 Wrap a region with `<!-- doc-verify off -->` / `<!-- doc-verify on -->`
 to disable scanning between the markers.
@@ -255,6 +256,12 @@ _RULES: list[tuple[str, list[tuple[re.Pattern, str]]]] = [
 # allowed a single closing punctuation that is rarely "!").
 _SHOUTING = re.compile(r"(?<![A-Z0-9!])!(?:\s|$|[)\]])")
 
+# Horizontal-rule separator on its own line: three or more dashes,
+# asterisks, or underscores. CommonMark also allows internal spaces
+# (e.g. `- - -`); we match those too. Front matter is already stripped
+# upstream, so any HR seen here is a body-prose separator.
+_HR_SEPARATOR = re.compile(r"^\s{0,3}(?:(?:-\s*){3,}|(?:\*\s*){3,}|(?:_\s*){3,})\s*$")
+
 # Non-ASCII typography that should be ASCII in source: em dash, en dash,
 # horizontal ellipsis, smart quotes, arrows, micro / degree / multiply
 # / division glyphs, non-breaking space.
@@ -415,6 +422,7 @@ def scan_file(path: Path) -> list[Finding]:
 
     # Per-line phrase rules.
     in_html_comment = False
+    prev_raw = ""
     for lineno, raw in prose:
         masked = _mask(raw)
         body = masked.lstrip()
@@ -425,16 +433,35 @@ def scan_file(path: Path) -> list[Finding]:
         if in_html_comment:
             if "-->" in raw:
                 in_html_comment = False
+            prev_raw = raw
             continue
         if body.startswith("<!--"):
             if "-->" not in raw:
                 in_html_comment = True
+            prev_raw = raw
+            continue
+
+        # Style: horizontal-rule separator used as a section divider.
+        # Only flag when the previous prose line is blank, to avoid
+        # mis-flagging a setext h2 underline (`Heading\n---`).
+        if _HR_SEPARATOR.match(raw) and prev_raw.strip() == "":
+            findings.append(Finding(
+                path=path,
+                line=lineno,
+                col=1,
+                kind="style-hr-separator",
+                message=("horizontal-rule separator; section headings "
+                         "already provide structure -- remove the rule"),
+                excerpt=raw.strip()[:140],
+            ))
+            prev_raw = raw
             continue
 
         # Skip headings -- the marketing tone is more tolerable in a
         # heading and rules trigger too often there. Body prose is what
         # this script cares about.
         if body.startswith("#"):
+            prev_raw = raw
             continue
 
         # Skip table-of-contents lines: a list bullet whose only
@@ -442,12 +469,14 @@ def scan_file(path: Path) -> list[Finding]:
         # and the anchor text often duplicates the section heading we
         # already chose to skip.
         if _is_toc_line(raw):
+            prev_raw = raw
             continue
 
         # Skip bold-as-heading lines: a line that is entirely wrapped
         # in `**...**` (with optional trailing colon) is acting as a
         # heading. Body prose containing inline `**bold**` is unaffected.
         if _is_bold_heading(raw):
+            prev_raw = raw
             continue
 
         for kind, rules in _RULES:
@@ -502,6 +531,8 @@ def scan_file(path: Path) -> list[Finding]:
                     excerpt=raw.strip()[:140],
                 ))
                 break  # one per line
+
+        prev_raw = raw
 
     # Whole-file rules.
 
@@ -627,6 +658,10 @@ These rules encode the writing principles we want the docs to follow:
   for parentheticals. Past 8 in a single file the dashes start to read
   as a writing tic; replace some with parentheses, commas, or split
   sentences.
+- **No horizontal-rule separators.** `---`, `***`, `___` on their own
+  line are visual noise; section headings already provide structure.
+  Setext-style heading underlines (a `---` directly under a heading
+  line) are not flagged.
 
 ## Skipped
 

@@ -12,8 +12,6 @@
 - [External connections](#external-connections)
 - [Comparison with the TCP/JSON API](#comparison-with-the-tcpjson-api)
 
----
-
 ## Overview
 
 Serial Studio exposes its entire API over gRPC on port 8888. The gRPC server starts automatically when the API server is enabled. It provides:
@@ -25,8 +23,6 @@ Serial Studio exposes its entire API over gRPC on port 8888. The gRPC server sta
 
 The gRPC server shares the same command set as the [TCP/JSON API](API-Reference.md). Any command available on port 7777 can run over gRPC on port 8888.
 
----
-
 ## Turning gRPC on
 
 The gRPC server starts automatically whenever the API server is enabled:
@@ -37,8 +33,6 @@ The gRPC server starts automatically whenever the API server is enabled:
 4. Click **OK**.
 
 Both the TCP/JSON server (port 7777) and the gRPC server (port 8888) start together.
-
----
 
 ## Service definition
 
@@ -63,8 +57,6 @@ service SerialStudioAPI {
 | `StreamRawData`   | Server-streaming RPC that pushes raw bytes from the device. |
 | `WriteRawData`    | Send raw bytes to the connected device. |
 | `ListCommands`    | List all available API commands. |
-
----
 
 ## Quick start (Python)
 
@@ -94,8 +86,6 @@ for frame in stub.StreamFrames(pb.StreamRequest()):
     print(frame.frame)  # protobuf Struct, convertible to dict
 ```
 
----
-
 ## Quick start (grpcurl)
 
 [grpcurl](https://github.com/fullstorydev/grpcurl) is a command-line tool for interacting with gRPC servers:
@@ -111,8 +101,6 @@ grpcurl -plaintext -d '{"command":"io.getStatus","id":"1"}' \
 # Stream frames (Ctrl+C to stop)
 grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/StreamFrames
 ```
-
----
 
 ## Generating client stubs
 
@@ -134,8 +122,6 @@ protoc -I. --java_out=. --grpc-java_out=. serialstudio.proto
 # C# / .NET
 protoc -I. --csharp_out=. --grpc_out=. --plugin=protoc-gen-grpc=grpc_csharp_plugin serialstudio.proto
 ```
-
----
 
 ## Frame streaming
 
@@ -162,8 +148,6 @@ Each `FrameData` message contains:
 - **frame.** The parsed frame as a protobuf `Struct` (equivalent to a JSON object).
 - **timestamp.** The frame's timestamp in milliseconds.
 
----
-
 ## External connections
 
 The gRPC server follows the same **Allow External API Connections** setting as the TCP server:
@@ -176,8 +160,6 @@ The gRPC server follows the same **Allow External API Connections** setting as t
 Enable external connections in **Preferences → Miscellaneous → Allow External API Connections**.
 
 > **Security note.** Enabling external connections exposes the API to your network. There is no authentication. Use only on trusted networks.
-
----
 
 ## Comparison with the TCP/JSON API
 

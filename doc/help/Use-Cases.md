@@ -16,8 +16,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 - [Home Automation](#home-automation)
 - [Custom Visualizations (Painter Widget)](#custom-visualizations-painter-widget)
 
----
-
 ## Robotics and Automation
 
 ### Mobile Robot Telemetry
@@ -34,8 +32,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Rate:** 20 Hz update rate via BLE GATT characteristic
 **Pro Feature Used:** MQTT for remote monitoring when robot is out of BLE range
 
----
-
 ### Robot Arm Calibration
 **Problem:** During development of a 6-DOF robot arm, need to visualize joint angles, end-effector position, and torque feedback in real-time.
 
@@ -47,8 +43,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Arduino Mega + servo controllers
 **Data Format:** Comma-separated values at 50 Hz
 **Key Benefit:** No custom software needed. Connect, set the baud rate, and visualize.
-
----
 
 ### Competition Robotics (FIRST, VEX)
 **Problem:** Teams need to debug sensor fusion algorithms, PID controllers, and autonomous routines during practice sessions.
@@ -64,8 +58,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Protocol:** JSON over TCP socket for structured telemetry
 **Educational Value:** Students learn data-driven debugging and performance tuning
 
----
-
 ### HID Gamepad Telemetry for Robotics
 **Problem:** A robotics team uses USB gamepads to control their robot and wants to log joystick inputs alongside the robot's sensor feedback.
 
@@ -77,8 +69,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Hardware:** USB gamepad + ESP32 robot controller
 **Pro Feature Used:** HID driver, multi-device projects
-
----
 
 ## Education and Research
 
@@ -95,8 +85,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Replaces:** Expensive commercial DAQ systems ($500-2000 per station)
 **Student Outcome:** Hands-on experience with sensors, data analysis, and experimental validation
 
----
-
 ### Graduate Research: Environmental Sensor Network
 **Problem:** Ecology researchers deploy 20 temperature/humidity sensors across a forest and need centralized monitoring.
 
@@ -109,8 +97,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** ESP32 + BME280 sensors + solar panels
 **Data Protocol:** MQTT over WiFi/4G
 **Research Impact:** Continuous 6-month data collection with minimal human intervention
-
----
 
 ### High School STEM Class: Weather Station Project
 **Problem:** Students build Arduino-based weather stations and need to present data visually.
@@ -125,8 +111,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Class Size:** 30 students (15 groups)
 **Learning Goals:** Sensors, serial communication, data presentation
 
----
-
 ### Process I/O: Simulation Dashboard
 **Problem:** A research team runs physics simulations that output CSV data to stdout. They want to visualize simulation results in real-time without writing custom GUI code.
 
@@ -138,8 +122,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Hardware:** Any computer (no external devices needed)
 **Pro Feature Used:** Process I/O driver
-
----
 
 ## IoT and Smart Devices
 
@@ -157,8 +139,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Protocol:** MQTT (local broker on Raspberry Pi)
 **Cost Savings:** Identified "vampire" devices consuming 15% of monthly bill
 
----
-
 ### Greenhouse Automation
 **Problem:** Monitor soil moisture, temperature, light levels, and control irrigation system.
 
@@ -173,8 +153,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Format:** JSON frames with custom frame parser for binary sensor data
 **Automation:** Thresholds trigger relay control for irrigation
 
----
-
 ### Smart Beehive Monitoring
 **Problem:** Beekeepers want to monitor hive temperature and weight without disturbing bees.
 
@@ -187,8 +165,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Arduino Pro Mini + HX711 + DS18B20 + LoRa module
 **Power:** Solar + LiPo battery (3-month autonomy)
 **Range:** 2 km rural area
-
----
 
 ## Environmental Monitoring
 
@@ -205,8 +181,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Deployment:** 10 units across city, data aggregated via MQTT
 **Public Impact:** Open data published to local community
 
----
-
 ### Water Quality Monitoring
 **Problem:** River monitoring for pH, turbidity, dissolved oxygen, and temperature.
 
@@ -219,8 +193,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** RS485 sensors + waterproof housing + solar panel
 **Data Rate:** 1 sample/minute for long-term stability
 **Compliance:** Data used for EPA reporting
-
----
 
 ### Weather Balloon Telemetry
 **Problem:** High-altitude balloon launches need real-time tracking and sensor monitoring.
@@ -235,8 +207,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Arduino + BMP280 + GPS + 433 MHz LoRa
 **Max Altitude:** 35 km (stratosphere)
 **Recovery:** GPS data logged to CSV for retrieval team
-
----
 
 ## Aerospace and Drones
 
@@ -255,8 +225,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Protocol:** MAVLink via UART or BLE telemetry module
 **Post-Flight Analysis:** CSV export analyzed for crash investigations
 
----
-
 ### Model Rocket Avionics
 **Problem:** Hobbyist rocket builders need altitude, acceleration, and apogee detection.
 
@@ -269,8 +237,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Arduino Pro Mini + BMP280 + MPU6050 + 433 MHz TX
 **Recording Rate:** 100 Hz during boost, 10 Hz during descent
 **Safety:** Real-time monitoring ensures recovery system fires
-
----
 
 ### Fixed-Wing UAV Endurance Test
 **Problem:** Long-range UAV needs battery monitoring, airspeed, and GPS tracking during 2-hour flights.
@@ -285,8 +251,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Pixhawk + airspeed sensor + GPS + 900 MHz telemetry
 **Range:** 10 km line-of-sight
 **Endurance:** 2-hour flight validated with data logs
-
----
 
 ### Multi-Device Drone Telemetry
 **Problem:** A drone swarm or dual-drone system needs to monitor multiple aircraft at the same time, each sending telemetry over different links, and the operator needs to send steering commands and toggle cameras from the same dashboard.
@@ -307,8 +271,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Two flight controllers + radio modems/Wi-Fi modules
 **Pro Feature Used:** Multi-device projects, output controls, MDF4 export
 
----
-
 ## Automotive and Racing
 
 ### CAN Bus Data Logger with DBC Decoding
@@ -326,8 +288,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Key Benefit:** CAN Bus monitoring without expensive Vector/PEAK software
 **Example:** Monitor engine ECU during test drive, recording 50+ signals at 100 Hz
 
----
-
 ### MDF4 File Analysis
 **Problem:** Test engineer has recorded MDF4 files from vehicle testing and needs to visualize the data for analysis.
 
@@ -343,8 +303,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Key Benefit:** Free alternative to expensive Vector/ETAS tools for post-processing
 **Example:** Analyze brake test data recorded from CAN Bus, comparing pedal force vs. deceleration
 
----
-
 ### Dynamometer (Dyno) Testing
 **Problem:** Performance shop needs real-time engine metrics during dyno runs.
 
@@ -357,8 +315,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** OBD-II Bluetooth adapter (ELM327 compatible)
 **Data Protocol:** AT commands parsed via custom JavaScript decoder
 **Use Case:** Tuning turbocharged engines for maximum power
-
----
 
 ### Race Car Telemetry
 **Problem:** Amateur racing team needs dashboard for pit crew to monitor driver and car status.
@@ -375,8 +331,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Rate:** 50 Hz for critical sensors
 **Competitive Advantage:** Data-driven setup changes between sessions
 
----
-
 ### Electric Vehicle Battery Monitor
 **Problem:** DIY EV builder needs to monitor 96-cell lithium battery pack.
 
@@ -390,8 +344,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Custom BMS + isolated UART interface
 **Safety Critical:** Real-time monitoring prevents over-discharge/overcharge
 **Range:** Track remaining range based on consumption rate
-
----
 
 ## Amateur Radio and RF
 
@@ -408,8 +360,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Frequency Range:** 24 MHz - 1.7 GHz
 **Application:** Monitoring local repeaters, satellite passes, ISM bands
 
----
-
 ### Antenna Analyzer
 **Problem:** Homebrew antenna designs need SWR, impedance, and resonance testing.
 
@@ -423,8 +373,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Tuning Process:** Adjust antenna length while watching real-time SWR plot
 **Result:** Optimized antenna with <1.5:1 SWR across ham bands
 
----
-
 ### APRS (Automatic Packet Reporting System) Tracker
 **Problem:** Mobile ham station needs to visualize APRS packets on map.
 
@@ -437,8 +385,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Mobilinkd TNC + handheld radio + smartphone
 **Coverage:** Local APRS digipeaters (10-50 km)
 **Use Case:** Public service events, emergency communications
-
----
 
 ## Medical and Health Devices
 
@@ -454,8 +400,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Safety:** Isolated power supply (battery only, no AC connection)
 **Educational Value:** Students learn signal processing and medical device design
 
----
-
 ### Pulse Oximeter Data Logger
 **Problem:** Wearable device developer prototypes SpO2 sensor.
 
@@ -470,8 +414,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Accuracy:** ±2% SpO2 compared to medical-grade oximeter
 **Application:** Sleep apnea monitoring, fitness tracking
 
----
-
 ### Gait Analysis System
 **Problem:** Physical therapy clinic needs affordable gait analysis tool.
 
@@ -485,8 +427,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** FSR sensors + Arduino Nano 33 BLE + battery
 **Clinical Use:** Rehab progress tracking, prosthetic fitting
 **Cost:** <$100 per system vs. $10,000+ commercial platforms
-
----
 
 ## Industrial and Manufacturing
 
@@ -505,8 +445,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Key Benefit:** Industry-standard protocol support without custom programming
 **Example:** Monitor a water treatment plant with 5 PLCs controlling pumps, valves, and sensors
 
----
-
 ### CNC Machine Monitor
 **Problem:** Machine shop wants to track spindle load, feed rate, and tool wear.
 
@@ -521,8 +459,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Predictive Maintenance:** Detect bearing wear from increased spindle current
 **Downtime Reduction:** Real-time monitoring prevents crashes
 
----
-
 ### Conveyor Belt Speed Monitor
 **Problem:** Packaging line needs to maintain constant belt speed for quality control.
 
@@ -535,8 +471,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** Rotary encoder + Arduino + proximity sensor
 **Quality Impact:** Reduced rejected products due to speed variations
 **Integration:** Data logged to CSV for ISO compliance
-
----
 
 ### Temperature Profiling for Reflow Oven
 **Problem:** Electronics assembly requires precise solder reflow temperature curve.
@@ -551,8 +485,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Precision:** ±2°C accuracy across 0-250°C range
 **Compliance:** IPC-A-610 solder joint quality standards
 
----
-
 ### USB Instrument Data Acquisition
 **Problem:** A test bench has USB instruments (oscilloscopes, multimeters) that expose bulk endpoints but no serial port. Need to log measurements alongside serial sensor data.
 
@@ -564,8 +496,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Hardware:** USB test instruments + serial sensors
 **Pro Feature Used:** Raw USB driver, multi-device projects, MDF4 export
-
----
 
 ## Home Automation
 
@@ -583,8 +513,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Data Logging:** CSV export analyzed monthly for performance trends
 **ROI Tracking:** Payback period calculated from energy data
 
----
-
 ### Aquarium Monitor
 **Problem:** Aquarium hobbyist needs to maintain stable pH, temperature, and salinity.
 
@@ -599,8 +527,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Automation:** Relay control for heater and dosing pumps
 **Fish Health:** Stable parameters reduce stress and disease
 
----
-
 ### HVAC Efficiency Monitor
 **Problem:** Homeowner wants to optimize heating/cooling system for lower bills.
 
@@ -614,8 +540,6 @@ Real-world applications of Serial Studio across industries, education, and hobby
 **Hardware:** ESP32 + DS18B20 sensors + WiFi
 **Data Analysis:** CSV export identifies inefficient operation times
 **Energy Savings:** 15% reduction after optimizing thermostat schedule
-
----
 
 ## Custom Visualizations (Painter Widget)
 
@@ -641,8 +565,6 @@ on a phosphor-green CRT background:
 **Hardware:** Any UART/USB device pushing one or more analog channels.
 **Pro Feature Used:** Painter widget, `oscilloscope.js` / `xy_scope.js` templates
 
----
-
 ### Artificial Horizon for Drones / Model Aircraft
 **Problem:** A 3D attitude widget is more than required for a pilot view; the
 intended display is a flat attitude indicator with pitch ladder, roll bank, and
@@ -657,8 +579,6 @@ a fixed aircraft symbol.
 **Hardware:** Pixhawk / Betaflight flight controller streaming MAVLink, or any
 source providing pitch and roll.
 **Pro Feature Used:** Painter widget, `horizon.js` template
-
----
 
 ### Lab Equipment Mimic
 **Problem:** A test bench dashboard needs to reproduce the appearance of the
@@ -676,8 +596,6 @@ tick layout, and label fonts to match the original instrument:
 thermocouple, RPM encoder).
 **Pro Feature Used:** Painter widget, `dial_gauge.js` template
 
----
-
 ### Audio VU Meter and Multi-Channel Bargraphs
 **Problem:** An audio engineer requires VU-style meters with peak hold across
 two or more channels alongside other telemetry.
@@ -694,8 +612,6 @@ card input).
 **Pro Feature Used:** Painter widget, Audio driver, `audio_meter.js` /
 `bar_peak_hold.js` templates
 
----
-
 ### Order-Tracking and Polar Diagnostics
 **Problem:** Rotating-machinery diagnostics require a polar plot of magnitude
 versus angle that the built-in widgets do not provide.
@@ -710,8 +626,6 @@ versus angle that the built-in widgets do not provide.
 **Hardware:** Accelerometer plus tachometer on the rotating shaft.
 **Pro Feature Used:** Painter widget, Waterfall widget, `polar_plot.js`
 template
-
----
 
 ## Getting Started with Your Use Case
 
@@ -743,8 +657,6 @@ template
 - Share project files with team members
 - Document your setup for reproducibility
 
----
-
 ## Community Contributions
 
 Have you used Serial Studio in a unique way? We'd like to hear about it.
@@ -752,7 +664,5 @@ Have you used Serial Studio in a unique way? We'd like to hear about it.
 - **Submit your use case:** Open a GitHub issue with the "Use Case" label
 - **Share on social media:** Tag @serialstudio.app on Instagram
 - **Contribute examples:** Add your project to the `/examples` folder via pull request
-
----
 
 **Need help with your project?** Check the [FAQ](FAQ.md) and [Troubleshooting](Troubleshooting.md) pages, or reach out to the community on [GitHub Discussions](https://github.com/Serial-Studio/Serial-Studio/discussions).

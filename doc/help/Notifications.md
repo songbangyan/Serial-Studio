@@ -27,8 +27,6 @@ flowchart LR
 
 > **Legend:** 1024-event ring buffer &bull; 100 ms dedup window per `(level, channel, title, subtitle)` tuple &bull; Main-thread only &bull; Cleared on disconnect
 
----
-
 ## Where notifications come from
 
 ### Dataset transforms
@@ -46,8 +44,6 @@ The `transmit(value)` function in output widgets can post notifications too. Use
 ### C++ and the MCP API
 
 Notifications can also be posted from the command-line MCP API (`notifications.postInfo`, `notifications.postWarning`, etc.). That makes it easy to tie Serial Studio into larger test harnesses: your Python test driver posts an event, it shows up on the operator's dashboard immediately.
-
----
 
 ## The function family
 
@@ -86,8 +82,6 @@ So `notify(Critical, "Engine", "EGT exceeded", "1052 C")` is equivalent to `noti
 ### Deduplication
 
 The `NotificationCenter` drops events whose `(level, channel, title, subtitle)` tuple matches the previous event within 100 ms. That keeps transforms running at 10+ kHz from flooding the log with identical rows. A rising-value alarm whose subtitle includes the measured value (for example `"1049 C"`, then `"1050 C"`) is never collapsed, because the subtitle is part of the dedup key.
-
----
 
 ## Examples
 
@@ -287,8 +281,6 @@ function transmit(value) {
 }
 ```
 
----
-
 ## The Notification Log widget
 
 The Notification Log is a Pro-only dashboard widget that renders events from the shared bus. Enable it from the Start Menu (**Notifications** toggle) or from the taskbar's bell icon while the dashboard is visible.
@@ -308,8 +300,6 @@ The widget is global: only one exists per dashboard, and it isn't tied to any da
 
 The log is wiped automatically on every dashboard reset (disconnect, project reload, playback stop). This keeps the dashboard honest: events from the previous session don't bleed into the new one.
 
----
-
 ## OS desktop notifications
 
 For Warning and Critical events, Serial Studio can also raise a native desktop notification via the system tray. This is opt-in and off by default. Enable it under **Preferences → Notifications → System Notifications**.
@@ -317,8 +307,6 @@ For Warning and Critical events, Serial Studio can also raise a native desktop n
 When enabled, Warning and Critical events fire a tray toast even when Serial Studio isn't the foreground window. The toast shows the channel and title on one line and the subtitle on a second line. `Info` events never produce OS notifications; they're logged in the widget only.
 
 Requires a system tray to be available. On macOS the tray is always present; on Linux, the result depends on the desktop environment (GNOME, KDE, Wayland compositors all behave slightly differently).
-
----
 
 ## Routing Qt log messages
 
@@ -332,8 +320,6 @@ Serial Studio already routes every `qDebug()`, `qWarning()`, `qCritical()`, and 
 
 Warnings are off by default because Qt and QML emit them frequently during normal operation (setGeometry hints, deprecation notices, platform quirks). Routing them unfiltered would drown out real alarms. Critical messages are rare and always meaningful, so they route unconditionally.
 
----
-
 ## Rules and limitations
 
 1. Notifications are Pro-only at runtime. `notify*` calls under GPL raise a clear `"notify() requires a Pro license. See https://serial-studio.com/pricing"` error from the script engine.
@@ -345,8 +331,6 @@ Warnings are off by default because Qt and QML emit them frequently during norma
 7. History is wiped on every dashboard reset (disconnect, project reload, playback open/close). Intentional: new sessions start with a clean log.
 8. Posting from a worker thread is not allowed. Script engines run on the main thread already, so this only matters for C++ callers: route via `QMetaObject::invokeMethod(&nc, Qt::QueuedConnection, ...)` when posting from a worker.
 9. Projects that use `notify*` in transforms are flagged as commercial by `SerialStudio::commercialCfg`, so the Pro-required overlay appears on the dashboard when loaded under GPL.
-
----
 
 ## See also
 

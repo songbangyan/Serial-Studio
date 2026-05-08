@@ -31,8 +31,6 @@ flowchart TD
 | HID                | Pro     | USB cable               | Up to 64 KB/s              | Gamepads, custom HID sensors           |
 | Process I/O        | Pro     | Local IPC               | OS-dependent               | Scripts, simulators, named pipes       |
 
----
-
 ## Free protocols
 
 ### Serial/UART
@@ -61,8 +59,6 @@ Serial/UART is the most common way to connect microcontrollers to a computer. It
 - **Linux:** The user has to belong to the `dialout` (or `uucp`) group to access `/dev/ttyUSBx` and `/dev/ttyACMx` without root.
 - **Windows:** CH340 and PL2303 adapters may need a manually installed driver. FTDI and CP210x drivers are bundled with Windows 10+.
 - **macOS:** Most USB-serial adapters work without setup on macOS 11+. Older CP210x chips may need a signed kext or VCP driver.
-
----
 
 ### TCP/UDP network
 
@@ -100,8 +96,6 @@ The Network driver connects to devices over TCP or UDP sockets. It's the natural
 - On macOS, the first network connection may trigger a system permission dialog.
 - DNS resolution runs asynchronously. A spinner appears while the hostname is looked up.
 
----
-
 ### Bluetooth Low Energy
 
 The BLE driver talks to Bluetooth Low Energy peripherals via GATT. It auto-discovers advertising devices, enumerates their services and characteristics, and streams notification data into Serial Studio's pipeline.
@@ -127,8 +121,6 @@ The BLE driver talks to Bluetooth Low Energy peripherals via GATT. It auto-disco
 - **macOS:** Needs macOS 11+ and Bluetooth entitlement. The system may prompt for Bluetooth permission.
 - **Linux:** Needs BlueZ 5.44+ and a Bluetooth 4.0+ adapter. The user may need to be in the `bluetooth` group. Some distros require `bluetoothd` to be running.
 - **All platforms:** The BLE device must be advertising and not already connected to another host. Move it closer if it doesn't show up in the scan.
-
----
 
 ## Pro protocols
 
@@ -167,8 +159,6 @@ MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe me
 
 For detailed setup, see [MQTT Integration](MQTT-Integration.md).
 
----
-
 ### Modbus
 
 Modbus is an industrial communication protocol for reading and writing registers on PLCs, SCADA devices, and other industrial equipment. Serial Studio Pro supports both Modbus RTU (over RS-485 serial) and Modbus TCP (over Ethernet/IP).
@@ -204,8 +194,6 @@ Modbus is an industrial communication protocol for reading and writing registers
 - Modbus TCP runs over standard Ethernet. No special hardware beyond network access.
 - The serial port list is refreshed automatically. On Linux, make sure the user has permission to access `/dev/ttyUSBx`.
 
----
-
 ### CAN Bus
 
 Controller Area Network (CAN) is a robust vehicle and industrial bus standard. Serial Studio Pro reads and writes CAN frames through the host platform's CAN interface layer.
@@ -235,8 +223,6 @@ Controller Area Network (CAN) is a robust vehicle and industrial bus standard. S
 - **Windows:** Needs vendor-specific drivers (PEAK, Vector, Systec). Install the driver before connecting the adapter.
 - **macOS:** Native CAN support is limited. Third-party CAN adapters with their own drivers may work through the Qt CAN bus plugin system, but support isn't guaranteed.
 
----
-
 ### Audio input
 
 The Audio Input driver captures raw PCM audio from the computer's sound input (microphone, line-in, audio interface) and feeds it into Serial Studio's data pipeline. It uses the miniaudio library for cross-platform low-latency audio capture.
@@ -263,8 +249,6 @@ The driver also exposes output device settings for audio passthrough, though the
 - **Windows:** May need "Stereo Mix" enabled or a specific input in Sound Settings.
 - **Linux:** Works with ALSA and PulseAudio. Use `arecord -l` to list capture devices.
 - For sensor measurement, prefer line-in over microphone input to avoid automatic gain control.
-
----
 
 ### Raw USB
 
@@ -300,8 +284,6 @@ The Raw USB driver gives direct access to USB device endpoints via libusb, bypas
 - **Windows:** Needs a WinUSB or libusb-compatible driver installed for the target device (for example via Zadig). Hotplug is supported on Windows 8+.
 - A dedicated event thread runs `libusb_handle_events_timeout()` continuously to service hotplug callbacks and isochronous completions.
 
----
-
 ### HID
 
 The HID driver accesses Human Interface Devices via the hidapi library. It reads interrupt reports from gamepads, joysticks, custom USB HID firmware, and HID-class sensors without custom OS drivers.
@@ -326,8 +308,6 @@ The HID driver accesses Human Interface Devices via the hidapi library. It reads
 - **macOS:** Uses IOHIDManager / IOKit. No extra drivers needed.
 - **Linux:** Uses the `hidraw` kernel interface. The user may need `udev` rules to access `/dev/hidrawX` without root. The hidraw backend avoids conflicts with the libusb-based Raw USB driver.
 - HID reports are 65 bytes (1 report ID byte + 64 data bytes). The driver forwards the full report to the data pipeline.
-
----
 
 ### Process I/O
 
@@ -365,8 +345,6 @@ The Process I/O driver captures data from child processes or named pipes, so Ser
 - If the child process crashes or exits unexpectedly, Serial Studio shows a warning and triggers a disconnect.
 - The process's stdout and stderr are merged into a single stream. Make sure your script writes only data frames to stdout if you want clean parsing.
 
----
-
 ## Picking the right protocol
 
 **By situation:**
@@ -392,8 +370,6 @@ The Process I/O driver captures data from child processes or named pipes, so Ser
 - **Lowest power on the device side:** Bluetooth LE.
 - **No special hardware:** Process I/O (just a script), Audio Input (just a microphone).
 
----
-
 ## Hardware requirements
 
 | Protocol       | Required hardware |
@@ -409,8 +385,6 @@ The Process I/O driver captures data from child processes or named pipes, so Ser
 | Raw USB        | USB device with accessible bulk, control, or isochronous endpoints |
 | HID            | USB HID-class device |
 | Process I/O    | None (runs a local program or reads a named pipe) |
-
----
 
 ## See also
 

@@ -14,8 +14,6 @@ flowchart LR
     A -.raw bytes.-> D
 ```
 
----
-
 ## Turning recording on
 
 Open the **Setup** panel and toggle **Create Session Log**. The first frame after you flip the toggle opens (or appends to) the project's session database. Recording stops automatically when the device disconnects, and the session's end timestamp is written at that point.
@@ -34,8 +32,6 @@ The workspace root is the folder set under **Settings → Workspace**. Project t
 
 Keeping all sessions for one project in the same `.db` file makes cross-session comparison and tagging practical. Sessions are separated internally by row, not by file.
 
----
-
 ## What gets recorded
 
 Each session captures four parallel streams, all keyed by session ID and nanosecond timestamp.
@@ -52,8 +48,6 @@ The embedded project JSON in `sessions.project_json` is a snapshot of the projec
 
 Both raw bytes and parsed frames are captured, so you can replay from either layer: re-render widgets from the parsed values, or re-run the parser over the raw stream. Tables and computed registers are snapshotted so data-table-aware transforms can be inspected after the fact.
 
----
-
 ## Session Explorer
 
 Open the Session Explorer from the **File** menu or the toolbar. It lists every session recorded for every project in the workspace, newest first. For each session you can:
@@ -67,8 +61,6 @@ Open the Session Explorer from the **File** menu or the toolbar. It lists every 
 - **Delete.** Remove a session and all of its readings, raw bytes, tags, and table snapshots in a single transaction.
 
 Sessions are identified by start time, project title, duration, and tag labels.
-
----
 
 ## Replay
 
@@ -86,15 +78,11 @@ When replay starts, Serial Studio saves the current operation mode and project p
 
 Replay is read-only. It doesn't modify the recorded session, and toggling CSV or MDF4 export during replay creates new output files as usual.
 
----
-
 ## Performance notes
 
 Sessions are written in Write-Ahead-Logging (WAL) mode with `synchronous=NORMAL`, batched up to 256 frames and 1,000 raw-byte entries per transaction. That's enough to keep up with sustained data rates in the tens of kHz on SSD storage, while still letting the explorer read the database concurrently with a live recording.
 
 Session DBs grow linearly with data rate and session length. There's no built-in retention policy: old sessions stick around until you delete them from the explorer. For long-running archive projects, consider exporting important sessions to MDF4 periodically and deleting them from the database.
-
----
 
 ## CSV, MDF4, session database, or report: which one?
 
@@ -107,12 +95,10 @@ Session DBs grow linearly with data rate and session length. There's no built-in
 
 CSV and MDF4 produce one file per session. The session database produces one file per project, indexed by session, with replay and metadata built in. Session reports are rendered on demand from the database: one HTML or PDF per session, ready to email or archive. They're not mutually exclusive: you can use all of them together.
 
----
-
 ## See also
 
 - [Session Reports](Session-Reports.md): export sessions as self-contained HTML or PDF reports with charts.
-- [CSV Import & Export](CSV-Import-Export.md): live CSV export and CSV playback.
+- [CSV Export & Playback](CSV-Export-Playback.md): live CSV export and CSV playback.
 - [Data Flow](Data-Flow.md): where session recording sits in the overall pipeline.
 - [Dataset Value Transforms](Dataset-Transforms.md): transforms contribute to the recorded final values.
 - [Data Tables](Data-Tables.md): recorded in `table_snapshots` alongside frames.

@@ -23,13 +23,9 @@ flowchart LR
 | YMODEM      | CRC-16           | 1024 B      | No               | Files where the receiver needs the filename and size |
 | ZMODEM      | CRC-32           | 64-8192 B   | Crash recovery   | Large files, unreliable links, modern firmware loaders |
 
----
-
 ## Opening the File Transmission dialog
 
 Click the **File Transmission** button in the toolbar while a device connection is active. The dialog closes automatically if the connection drops.
-
----
 
 ## Transfer modes
 
@@ -47,8 +43,6 @@ Sends the file line by line as text. Each line is terminated with a newline. A g
 - A newline is appended automatically if the line doesn't already end with one.
 - You can pause and resume transmission. It continues from where it left off.
 
----
-
 ### Raw binary
 
 Sends the file in fixed-size binary blocks with no framing or error checking. Use this when the receiver expects raw bytes and handles its own integrity checks.
@@ -63,8 +57,6 @@ Sends the file in fixed-size binary blocks with no framing or error checking. Us
 - The file is read in sequential chunks of the configured block size.
 - The last block may be smaller than the configured size.
 - You can pause and resume transmission.
-
----
 
 ### XMODEM
 
@@ -87,8 +79,6 @@ A classic byte-oriented protocol that sends data in 128-byte blocks with CRC-16 
 - Files smaller than 128 bytes are padded to fill the block.
 - Only CRC-16 mode is supported (not the legacy checksum mode).
 
----
-
 ### XMODEM-1K
 
 Identical to XMODEM but uses 1,024-byte blocks instead of 128-byte, which cuts protocol overhead for larger files.
@@ -96,8 +86,6 @@ Identical to XMODEM but uses 1,024-byte blocks instead of 128-byte, which cuts p
 **Configuration:**
 
 - Same as XMODEM: **Timeout** and **Max retries**.
-
----
 
 ### YMODEM
 
@@ -118,8 +106,6 @@ Extends XMODEM-1K with a metadata block that carries the filename and file size,
 
 - The receiver can use the file size from block 0 to strip padding from the last block.
 
----
-
 ### ZMODEM
 
 A streaming protocol that doesn't wait for per-block acknowledgment, which makes it much faster than XMODEM/YMODEM on high-latency or high-throughput links. It uses CRC-32 for stronger error detection and supports crash recovery.
@@ -137,8 +123,6 @@ A streaming protocol that doesn't wait for per-block acknowledgment, which makes
 - **File metadata.** The ZFILE header carries the filename, size, and modification timestamp.
 - **ZDLE escaping.** Control characters are transparently escaped, so the data stream doesn't interfere with terminal or modem control sequences.
 
----
-
 ## Progress and status
 
 During an active transfer, the dialog shows:
@@ -149,13 +133,9 @@ During an active transfer, the dialog shows:
 - **Error count.** Number of protocol-level errors (NAKs, retries, timeouts). Only incremented during protocol-based transfers.
 - **Status text.** Current protocol state or last event.
 
----
-
 ## Activity log
 
 The bottom section of the dialog has a scrollable activity log with timestamped events: block transmissions, acknowledgments, errors, retries, and completion status. It keeps the most recent 200 entries. Click **Clear** to reset it.
-
----
 
 ## Settings reference
 
@@ -167,8 +147,6 @@ All settings are saved automatically and restored between sessions.
 | Block size             | Raw Binary, ZMODEM                      | 64-8,192 bytes    | 1,024 bytes|
 | Timeout                | XMODEM, XMODEM-1K, YMODEM, ZMODEM       | 1,000-60,000 ms   | 10,000 ms  |
 | Max retries            | XMODEM, XMODEM-1K, YMODEM, ZMODEM       | 1-100             | 10         |
-
----
 
 ## Tips
 

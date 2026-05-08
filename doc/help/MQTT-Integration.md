@@ -107,8 +107,6 @@ flowchart LR
     SS2 -- publish --> Broker
 ```
 
----
-
 ## Setup
 
 ### Opening the MQTT dialog
@@ -156,8 +154,6 @@ Enter the topic in the **Topic Filter** field.
 
 After configuring the settings, click **Connect**. The button label reflects the connection state. Click it again to disconnect (or use `toggleConnection`).
 
----
-
 ## Subscriber mode
 
 In subscriber mode, Serial Studio subscribes to the configured topic filter as soon as the connection is up. Each message received from the broker is treated as a raw frame, just like the binary or text payload your device would send over serial or network.
@@ -171,8 +167,6 @@ In subscriber mode, Serial Studio subscribes to the configured topic filter as s
 
 **Example.** If your ESP32 publishes `23.5,48.2,1013.25` to `weather/data`, and Serial Studio subscribes to `weather/data` in Quick Plot mode, the dashboard shows three datasets.
 
----
-
 ## Publisher mode
 
 In publisher mode, Serial Studio publishes every frame received from the currently connected data source (serial port, network socket, BLE, and so on) to the configured topic. The published payload is the raw frame content between start and end delimiters.
@@ -180,8 +174,6 @@ In publisher mode, Serial Studio publishes every frame received from the current
 **Example.** If a serial device sends `/*1023,512,850*/` and the publish topic is `mydevice/sensors`, the broker receives `1023,512,850` on that topic.
 
 This mode is useful for bridging a local serial device to a remote MQTT infrastructure without modifying the device firmware.
-
----
 
 ## TLS/SSL configuration
 
@@ -203,8 +195,6 @@ For encrypted connections (strongly recommended for production and any broker ex
 
 To load certificates, click the certificate button in the SSL section and pick the PEM file(s) or directory containing your CA chain.
 
----
-
 ## Will message (Last Will and Testament)
 
 The MQTT will message is a message the broker stores and publishes on behalf of the client if the client disconnects unexpectedly (network failure, crash, and so on). It tells other subscribers the client is offline.
@@ -218,8 +208,6 @@ The MQTT will message is a message the broker stores and publishes on behalf of 
 
 **Example.** Set Will Topic to `mydevice/status`, Will Message to `offline`, and Will Retain to enabled. When Serial Studio disconnects unexpectedly, any subscriber to `mydevice/status` receives `offline`.
 
----
-
 ## Keep alive
 
 The keep-alive mechanism sends periodic PING packets to the broker to maintain the connection and detect network failures.
@@ -231,21 +219,15 @@ The keep-alive mechanism sends periodic PING packets to the broker to maintain t
 
 If the broker doesn't receive a PING within 1.5 times the keep-alive interval, it considers the client disconnected and publishes the will message (if configured).
 
----
-
 ## Client ID
 
 Every MQTT client on a broker needs a unique client ID. Serial Studio auto-generates a 16-character random string on first launch. Click **Regenerate** to create a new ID any time.
 
 If two clients connect to the same broker with the same client ID, the broker disconnects the older connection. Use unique IDs when running multiple Serial Studio instances.
 
----
-
 ## Quality of Service in Serial Studio
 
 The QoS setting in the MQTT Configuration dialog applies to the **will message**. The subscription QoS is determined by the broker's configuration and the publishing client's QoS — Serial Studio does not override what the publisher chose. See [Quality of Service (QoS)](#quality-of-service-qos) above for the protocol-level meaning of each level.
-
----
 
 ## Common pitfalls
 
@@ -256,8 +238,6 @@ The QoS setting in the MQTT Configuration dialog applies to the **will message**
 - **TLS errors.** A broker that requires TLS (`mqtts://` on port 8883) needs Serial Studio to trust its certificate authority. Self-signed certificates require importing the CA explicitly.
 - **Latency adds up on public brokers.** A free public broker such as `test.mosquitto.org` round-trips through the public Internet. For low-latency telemetry, run a local broker (Mosquitto on the same LAN, or Docker on the workstation).
 - **High-rate publishing falls behind.** MQTT is not a streaming protocol. At thousands of messages per second, broker queues back up, especially over slow networks. When per-reading granularity is not required, batch multiple readings into a single MQTT message.
-
----
 
 ## Troubleshooting
 
@@ -289,8 +269,6 @@ The QoS setting in the MQTT Configuration dialog applies to the **will message**
 - In Project File mode, the payload has to match the frame format expected by your project's parser.
 - Use the Serial Studio console to inspect incoming payloads.
 
----
-
 ## Popular MQTT brokers
 
 **Public test brokers (for development and testing only):**
@@ -310,8 +288,6 @@ The QoS setting in the MQTT Configuration dialog applies to the **will message**
 - Azure IoT Hub.
 - Google Cloud IoT Core.
 - HiveMQ Cloud.
-
----
 
 ## Further reading
 

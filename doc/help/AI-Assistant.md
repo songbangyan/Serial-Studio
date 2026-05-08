@@ -25,8 +25,6 @@ Typical things people ask it to do:
 
 The four chips on the empty-conversation card are starter prompts. Click one to drop it into the input box and edit before sending.
 
----
-
 ## Picking a provider
 
 Five providers are wired in. They all do roughly the same job; the trade-offs are price, speed, how generous the free tier is, and whether the data ever leaves your machine.
@@ -58,8 +56,6 @@ Whatever models are installed on the server show up in the model picker. Click t
 The empty-conversation card has a **Get a key from <provider>** link that opens the right signup page. Once you have the key, click **Open API Key Setup** (or the wrench icon in the footer), paste the key, and save. The key is checked, redacted in the UI (you only ever see the last few characters), and persisted under your local app settings encrypted with a per-machine key.
 
 You can change provider, change model, or revoke a key at any time from the same dialog. Revoking a key clears it from disk; revoking the active provider's key drops you back to the welcome screen until you paste a new one.
-
----
 
 ## How a turn works
 
@@ -93,8 +89,6 @@ You can approve a single call (**Approve**) or, when the assistant queues severa
 
 The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers. There is also an **Auto-approve edits** toggle in the panel footer: when on, **Confirm**-tier project edits run without asking. **Blocked** and **Safe** are unaffected.
 
----
-
 ## The composer
 
 The bar at the bottom is the input. It has three controls:
@@ -104,8 +98,6 @@ The bar at the bottom is the input. It has three controls:
 - **Send / Cancel**. Round button on the far right. While the model is generating, the icon flips to **Cancel** and clicking it stops the stream. Anything already produced stays in the chat.
 
 While the assistant is working you'll see a thin animated stripe under the message list. The footer **Status** pill shows *Working* or *Ready* and, when prompt caching is in use, how many cached tokens the current turn read from or wrote to the cache.
-
----
 
 ## Privacy and what gets sent
 
@@ -117,8 +109,6 @@ Read this before pasting anything sensitive. Every message you send goes to the 
 
 If your project file contains commercial firmware code or proprietary protocol notes inside frame parsers or transforms, that text will travel to the provider with each turn. Treat the provider's data-handling policy as the relevant constraint, not Serial Studio's.
 
----
-
 ## Documentation lookup
 
 The assistant can pull `doc/help/*.md` pages directly off the Serial Studio GitHub repo when it needs them. You'll see this as a tool call named `meta.fetchHelp` with a path like `Painter-Widget` or `JavaScript-API`. It is read-only and Safe. The first call usually grabs `help.json` (the page index), the second pulls the relevant page.
@@ -127,13 +117,9 @@ For scripting, there's a parallel surface called `meta.fetchScriptingDocs` that 
 
 There's also `meta.searchDocs` (a small built-in BM25 index over the bundled help and scripting docs, used to find the right page when a path isn't obvious) and `meta.loadSkill` (loads one of a handful of focused skill briefs: `painter`, `frame_parsers`, `transforms`, `output_widgets`, `dashboard_layout`, `mqtt`, `can_modbus`, `debugging`, `project_basics`, `tool_discovery`, `behavioral`) when the assistant needs deeper guidance for a specific task.
 
----
-
 ## Project templates
 
 When you're starting from a blank project, you can ask the assistant to "use a template" and it will call `project.template.list` (Safe) followed by `project.template.apply` (Confirm) with one of the bundled starters: blank, IMU over UART, GPS over UART (NMEA), multi-channel UART scope, MQTT subscriber, or telemetry over UDP. Templates load instantly into an empty project and give you a working scaffold to edit from.
-
----
 
 ## Frequently asked
 
@@ -160,8 +146,6 @@ Tell it; it will usually call `meta.listCommands` or `meta.describeCommand` to r
 
 **Where do I report a bug or a wrong answer?**
 File an issue on the Serial Studio GitHub repo. Include the prompt, the reply, and ideally the project file (or a stripped-down repro). Provider name and model help too.
-
----
 
 ## See also
 

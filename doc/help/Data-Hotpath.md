@@ -240,8 +240,6 @@ Treat these as load-bearing:
 If you're writing a plugin or a new driver, follow the existing drivers (see `BluetoothLE.h`
 and `BluetoothLE.cpp` as the canonical reference) and keep these invariants intact.
 
----
-
 ## See also
 
 - [Data Flow](Data-Flow.md): the user-facing version of this pipeline, with troubleshooting tips.
