@@ -80,7 +80,10 @@ the whole picture in one shot.
   arithmetic on the value will silently break.
 - `index` (on datasets) — the position in the parser's output array.
   1-based. The user sets this; the parser's `parse(frame)[i]` maps to
-  the dataset whose `index` is `i + 1`.
+  the dataset whose `index` is `i + 1`. **Patchable** via
+  `project.dataset.update {index: N}`. Bulk renumbering (e.g. compacting
+  40 datasets to indexes 1..40) should go through `project.batch` to
+  avoid per-call autosave restarts.
 
 ## Operation modes
 
@@ -101,13 +104,37 @@ ProjectFile.
 
 ## The auto-save loop
 
-Every successful mutating tool call schedules a debounced save (~800ms)
-to the project's existing file path. So:
+Mutating tool calls that emit `widgetSettingsChanged` (workspace edits,
+layout drags, source changes) schedule a debounced save (~1.5s) to the
+project's existing file path. Pure structural calls (e.g.
+`project.dataset.update`, `project.group.update`) flag the project as
+modified but rely on the next layout-touching event to schedule the
+disk write — so a save will land soon after the next interactive nudge.
+You don't need to drive it manually.
 
 - Don't call `project.save{}` after every edit — it's redundant.
 - Do call `project.save{filePath: "..."}` when the user wants Save As.
 - New/empty projects without a file path skip auto-save (nothing to
   save to). The user must explicitly save with a path.
+
+## Bulk edits — prefer `project.batch` and `project.dataset.addMany`
+
+40 sequential `project.dataset.update` calls is 40 round-trips. Two
+endpoints collapse that into one:
+
+- `project.batch { ops: [{command, params}, ...] }` runs a sequence of
+  mutations under a single suspended-autosave window, flushing one save
+  at the end. Returns per-op `{success, result|error}`. NOT
+  transactional — already-applied ops aren't rolled back on later
+  failures. Hard cap 1024 ops, nested batches rejected.
+- `project.dataset.addMany { groupId, count, options, titlePattern?,
+  startIndex? }` bulk-creates N datasets in one call with optional
+  `{n}` / `{i}` substitution in the title. Use it for sensor arrays
+  and channel banks instead of looping `project.dataset.add`.
+
+See `api_semantics` for the full contract (ordering guarantees,
+caveats, when NOT to use). Rule of thumb: if you would otherwise issue
+more than ~5 sequential mutations in a turn, batch them.
 
 ## Settings that look project-shaped but live elsewhere
 
@@ -163,14 +190,18 @@ a default 0/0 range and looks empty / collapsed / max'd out.
 | `widgetMin` / `widgetMax`      | `wgtMin` / `wgtMax`               | Gauge dial, Bar fill, Compass dial (Compass is fixed 0–360 and ignores these)                                   |
 | `fftMin` / `fftMax`            | `fftMin` / `fftMax`               | Expected raw input range, used to normalize the time-domain signal to [-1, +1] before windowing + FFT. NOT a dB axis (the dB Y-axis on FFT/Waterfall widgets is fixed). |
 
-**Naming asymmetry — silent footgun.** Project files (`.ssproj`) and API
-responses (`project.dataset.getByPath`, `project.snapshot`) use the FULL
-form `plotMin` / `widgetMin`. The `project.dataset.update` API accepts
-ONLY the abbreviated form `pltMin` / `wgtMin`. Round-tripping a response
-field name into an update call writes nothing and returns success. After
-any write, read back via `dataset.getByPath` and confirm the response
-shows the new values under the full key names. `fftMin` / `fftMax` are
-the same in both directions.
+**Naming asymmetry — almost-silent footgun.** Project files (`.ssproj`)
+and API responses (`project.dataset.getByPath`, `project.snapshot`) use
+the FULL form `plotMin` / `widgetMin`. The `project.dataset.update` API
+accepts ONLY the abbreviated form `pltMin` / `wgtMin`. Round-tripping a
+response field name into an update call writes nothing and returns
+success — but the response now carries `result.warnings` with a
+`code: "unknown_field"` entry listing the dropped keys. **Read it.**
+A success without warnings means the update applied; a success WITH an
+`unknown_field` warning means the misnamed parts were skipped. After
+any write, also verify via `dataset.getByPath` that the response shows
+the new values under the full key names. `fftMin` / `fftMax` are the
+same in both directions.
 
 A gauge that runs 0–360 (`wgtMin`/`wgtMax`) might still want the
 underlying plot Y-axis at −50…+50 (`pltMin`/`pltMax`) — set both. See

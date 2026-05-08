@@ -126,6 +126,39 @@ static QJsonObject buildDatasetObject(const DataModel::Dataset& dataset,
 }
 
 /**
+ * @brief Appends an unknown_field warning to @p result when @p params has unconsumed keys.
+ */
+static void appendUnknownFieldsWarning(QJsonObject& result,
+                                       const QJsonObject& params,
+                                       const QSet<QString>& consumed,
+                                       const QString& command)
+{
+  QJsonArray unknownFields;
+  for (const auto& key : params.keys())
+    if (!consumed.contains(key))
+      unknownFields.append(key);
+
+  if (unknownFields.isEmpty())
+    return;
+
+  QJsonArray warnings;
+  if (result.contains(QStringLiteral("warnings")))
+    warnings = result.value(QStringLiteral("warnings")).toArray();
+
+  QJsonObject w;
+  w[QStringLiteral("code")]   = QStringLiteral("unknown_field");
+  w[QStringLiteral("fields")] = unknownFields;
+  w[QStringLiteral("message")] =
+    QStringLiteral("These fields were ignored because they are not patchable via %1. "
+                   "Call project.describeCommand for the list of writable fields, "
+                   "or check your spelling.")
+      .arg(command);
+  warnings.append(w);
+
+  result[QStringLiteral("warnings")] = warnings;
+}
+
+/**
  * @brief Flags obvious language/syntax mismatches; returns a short warning or empty.
  */
 [[nodiscard]] static QString detectLanguageMismatch(const QString& code, int language)
@@ -454,6 +487,36 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
        QStringLiteral("Visualization bit flags. See description for decision guidance.")}
   }),
     &datasetAdd);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.addMany"),
+    QStringLiteral("Bulk-create N datasets in one call -- the right tool whenever you "
+                   "would otherwise loop project.dataset.add. Avoids per-call overhead "
+                   "and the autosave-debounce churn that comes with rapid mutation "
+                   "bursts. After creation, individual datasets can still be patched "
+                   "with project.dataset.update or another project.batch round-trip.\n"
+                   "  count          -- how many datasets to create (1..1024).\n"
+                   "  options        -- visualization bitfield (same as project.dataset.add).\n"
+                   "  titlePattern   -- optional, e.g. 'LED {n}'. {n} is replaced with "
+                   "the running counter (startNumber + i), {i} with the zero-based index. "
+                   "Omit to keep the auto-generated title from project.dataset.add.\n"
+                   "  startNumber    -- optional, default 1; first {n} value.\n"
+                   "  startIndex     -- optional, default -1 (auto-assign next free "
+                   "parser slot). Pass 0 to leave index unset, or 1+ to assign "
+                   "consecutive parser slots starting from there.\n"
+                   "Returns {count, created: [{datasetId, title, index, uniqueId}...]}."),
+    makeSchema({
+      {QStringLiteral("groupId"),
+       QStringLiteral("integer"),
+       QStringLiteral("Group to attach the datasets to")},
+      {  QStringLiteral("count"),
+       QStringLiteral("integer"),
+       QStringLiteral("How many datasets to create (1..1024)")},
+      {QStringLiteral("options"),
+       QStringLiteral("integer"),
+       QStringLiteral("Visualization bit flags. See project.dataset.add for the bit table.")}
+  }),
+    &datasetAddMany);
 
   registry.registerCommand(
     QStringLiteral("project.dataset.delete"),
@@ -1271,6 +1334,127 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
   result[QStringLiteral("options")] = options;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Add several datasets to a group in one call (bulk creation).
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString& id,
+                                                                   const QJsonObject& params)
+{
+  constexpr int kMaxAddManyCount = 1024;
+
+  if (!params.contains(QStringLiteral("groupId")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
+
+  if (!params.contains(QStringLiteral("count")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: count"));
+
+  if (!params.contains(QStringLiteral("options")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: options"));
+
+  const int groupId = params.value(QStringLiteral("groupId")).toInt();
+  const int count   = params.value(QStringLiteral("count")).toInt();
+  const int options = params.value(QStringLiteral("options")).toInt();
+
+  if (count <= 0 || count > kMaxAddManyCount)
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Invalid count: must be 1..%1 (got %2)")
+                                        .arg(kMaxAddManyCount)
+                                        .arg(count));
+
+  if (options < 0 || options > 0b01111111)
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-127 (bit flags)"));
+
+  auto& project      = DataModel::ProjectModel::instance();
+  const auto& groups = project.groups();
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const QString titlePattern = params.value(QStringLiteral("titlePattern")).toString();
+  const int startNumber      = params.contains(QStringLiteral("startNumber"))
+                                 ? params.value(QStringLiteral("startNumber")).toInt()
+                                 : 1;
+  const int startIndex       = params.contains(QStringLiteral("startIndex"))
+                                 ? params.value(QStringLiteral("startIndex")).toInt()
+                                 : -1;
+
+  if (startIndex < -1)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Invalid startIndex: must be -1 (auto), 0, or 1+"));
+
+  // Headline flag drives the auto-generated title; remaining bits are applied below
+  SerialStudio::DatasetOption headline = SerialStudio::DatasetGeneric;
+  for (const auto cand : {SerialStudio::DatasetPlot,
+                          SerialStudio::DatasetFFT,
+                          SerialStudio::DatasetBar,
+                          SerialStudio::DatasetGauge,
+                          SerialStudio::DatasetCompass,
+                          SerialStudio::DatasetLED,
+                          SerialStudio::DatasetWaterfall}) {
+    if (options & cand) {
+      headline = cand;
+      break;
+    }
+  }
+
+  const int remainingBits = options & ~static_cast<int>(headline);
+
+  // Suspend autosave so the whole burst lands as a single save at the end
+  project.setAutoSaveSuspended(true);
+  project.setSelectedGroup(groups[groupId]);
+
+  QJsonArray created;
+  for (int i = 0; i < count; ++i) {
+    project.addDataset(headline);
+
+    const auto& post   = project.groups();
+    const int newIndex = static_cast<int>(post[groupId].datasets.size()) - 1;
+    if (newIndex < 0)
+      continue;
+
+    DataModel::Dataset d = post[groupId].datasets[newIndex];
+    if (remainingBits != 0)
+      applyDatasetVisualizationFlags(d, remainingBits);
+
+    if (!titlePattern.isEmpty()) {
+      QString title = titlePattern;
+      title.replace(QStringLiteral("{n}"), QString::number(startNumber + i));
+      title.replace(QStringLiteral("{i}"), QString::number(i));
+      d.title = title;
+    }
+
+    if (startIndex >= 0)
+      d.index = startIndex + i;
+
+    project.updateDataset(groupId, newIndex, d, /*rebuildTree=*/true);
+
+    QJsonObject entry;
+    entry[QStringLiteral("groupId")] = groupId;
+    entry[Keys::DatasetId]           = d.datasetId;
+    entry[Keys::Title]                = d.title;
+    entry[QStringLiteral("index")]   = d.index;
+    entry[Keys::UniqueId] =
+      DataModel::dataset_unique_id(d.sourceId, groupId, d.datasetId);
+    created.append(entry);
+  }
+
+  project.setAutoSaveSuspended(false);
+  project.flushAutoSave();
+
+  QJsonObject result;
+  result[QStringLiteral("groupId")] = groupId;
+  result[QStringLiteral("count")]   = created.size();
+  result[QStringLiteral("created")] = created;
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2839,7 +3023,9 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
   registry.registerCommand(
     QStringLiteral("project.group.update"),
     QStringLiteral("Patch group fields by id (params: groupId, plus any of title, "
-                   "widget, columns, sourceId, painterCode)"),
+                   "widget, columns, sourceId, painterCode). Unknown fields are "
+                   "accepted but ignored, and surfaced in result.warnings[].fields "
+                   "with code 'unknown_field'."),
     makeSchema({
       {QStringLiteral("groupId"), QStringLiteral("integer"), QStringLiteral("Target group id")}
   }),
@@ -2848,17 +3034,26 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
   registry.registerCommand(
     QStringLiteral("project.dataset.update"),
     QStringLiteral("Patch dataset fields by id (params: groupId, datasetId, plus any of "
-                   "title, units, widget, graph, fft, led, waterfall, xAxisId, "
-                   "waterfallYAxis, fftMin, fftMax, pltMin, pltMax, wgtMin, wgtMax, "
-                   "alarmLow, alarmHigh, ledHigh, transformCode, transformLanguage, "
-                   "virtual). The boolean fields graph/fft/led/waterfall toggle the "
-                   "same flags as project.dataset.setOption -- use them here when "
-                   "patching multiple fields at once.\n"
+                   "title, units, widget, index, sourceId, graph, fft, led, waterfall, "
+                   "log, alarmEnabled, overviewDisplay, hideOnDashboard, xAxisId, "
+                   "waterfallYAxis, fftSamples, fftSamplingRate, fftMin, fftMax, "
+                   "pltMin, pltMax, wgtMin, wgtMax, alarmLow, alarmHigh, ledHigh, "
+                   "transformCode, transformLanguage, virtual). The boolean fields "
+                   "graph/fft/led/waterfall toggle the same flags as "
+                   "project.dataset.setOption -- use them here when patching multiple "
+                   "fields at once.\n"
+                   "Unknown fields are accepted but ignored, and surfaced in "
+                   "result.warnings[].fields with code 'unknown_field' so the caller "
+                   "can self-correct on the next turn instead of silently mis-applying "
+                   "a typo.\n"
                    "REMINDERS for compute-only datasets:\n"
                    "  - Set virtual=true when the dataset's value comes from "
                    "transformCode rather than from a slot in the parser output. "
                    "Without virtual=true the dataset still tries to read "
                    "channels[index-1] and ends up empty.\n"
+                   "  - `index` is the 1-based parser-output slot (0 = unassigned). "
+                   "Patchable via this call; bulk-renumbering 40 datasets is best "
+                   "done through project.batch to avoid round-trip overhead.\n"
                    "  - Set transformLanguage explicitly (0=JavaScript, 1=Lua, "
                    "-1=inherit from source). Mismatched language vs code = silent "
                    "compile failure. Lua is the recommended default; it's faster "
@@ -2872,7 +3067,10 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
   registry.registerCommand(
     QStringLiteral("project.action.update"),
     QStringLiteral("Patch action fields by id (params: actionId, plus any of title, icon, "
-                   "txData, eolSequence, timerMode, timerIntervalMs, repeatCount)"),
+                   "txData, eolSequence, timerMode, timerIntervalMs, repeatCount, "
+                   "sourceId, txEncoding, binaryData, autoExecuteOnConnect). Unknown "
+                   "fields are accepted but ignored, and surfaced in "
+                   "result.warnings[].fields with code 'unknown_field'."),
     makeSchema({
       {QStringLiteral("actionId"), QStringLiteral("integer"), QStringLiteral("Target action id")}
   }),
@@ -2881,7 +3079,8 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
   registry.registerCommand(
     QStringLiteral("project.outputWidget.update"),
     QStringLiteral("Patch output-widget fields by id (params: groupId, widgetId, plus any "
-                   "of title, icon, transmitFunction)"),
+                   "of title, icon, transmitFunction, sourceId, txEncoding, monoIcon, "
+                   "minValue, maxValue, stepSize, initialValue)"),
     makeSchema({
       { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Target group id")                           },
       {QStringLiteral("widgetId"),
@@ -2889,6 +3088,36 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
        QStringLiteral("Target widget index within the group")}
   }),
     &outputWidgetUpdate);
+
+  registry.registerCommand(
+    QStringLiteral("project.batch"),
+    QStringLiteral("Run several project mutations atomically WITH RESPECT TO AUTOSAVE -- "
+                   "all ops execute sequentially under one suspended-autosave window, "
+                   "and a single save is flushed at the end. Use this whenever you would "
+                   "otherwise issue more than ~5 sequential mutations (renames, retypes, "
+                   "reindexes), since N round-trips cost N times the latency and N times "
+                   "the autosave/tree-rebuild churn.\n"
+                   "Each op is {command: '<registered command name>', params: {...}}; "
+                   "results are returned in the same order with per-op success/error "
+                   "fields. Set stopOnError:true to abort the batch on the first failure "
+                   "(default false: best-effort, all ops attempted).\n"
+                   "Note: NOT transactional. Already-applied ops are NOT rolled back on "
+                   "later failures -- this is a save-suspend wrapper, not a database "
+                   "transaction. Nested project.batch calls are rejected. Hard cap of "
+                   "1024 ops per call.\n"
+                   "Example: rename 40 datasets in one round-trip:\n"
+                   "  ops: [\n"
+                   "    {command:'project.dataset.update', params:{groupId:0, datasetId:0, title:'LED 1', index:1}},\n"
+                   "    {command:'project.dataset.update', params:{groupId:0, datasetId:1, title:'LED 2', index:2}},\n"
+                   "    ...\n"
+                   "  ]"),
+    makeSchema({
+      {QStringLiteral("ops"),
+       QStringLiteral("array"),
+       QStringLiteral("Array of {command, params} ops to execute sequentially. "
+                      "Max 1024.")}
+  }),
+    &projectBatch);
 }
 
 /**
@@ -3047,22 +3276,31 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
 
   DataModel::Group g = groups[groupId];
   bool rebuildTree   = false;
+  QSet<QString> consumed{QStringLiteral("groupId")};
 
-  if (params.contains(QStringLiteral("title"))) {
+  const auto take = [&](const QString& key) -> bool {
+    if (!params.contains(key))
+      return false;
+
+    consumed.insert(key);
+    return true;
+  };
+
+  if (take(QStringLiteral("title"))) {
     g.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("widget"))) {
+  if (take(QStringLiteral("widget"))) {
     g.widget    = params.value(QStringLiteral("widget")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("columns")))
+  if (take(QStringLiteral("columns")))
     g.columns = params.value(QStringLiteral("columns")).toInt();
 
-  if (params.contains(Keys::SourceId))
+  if (take(Keys::SourceId))
     g.sourceId = params.value(Keys::SourceId).toInt();
 
-  if (params.contains(QStringLiteral("painterCode")))
+  if (take(QStringLiteral("painterCode")))
     g.painterCode = params.value(QStringLiteral("painterCode")).toString();
 
   project.updateGroup(groupId, g, rebuildTree);
@@ -3070,6 +3308,7 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
   result[QStringLiteral("updated")] = true;
+  appendUnknownFieldsWarning(result, params, consumed, QStringLiteral("project.group.update"));
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -3078,75 +3317,118 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
  */
 QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Dataset& d,
                                                                 const QJsonObject& params,
-                                                                bool& rebuildTree)
+                                                                bool& rebuildTree,
+                                                                QSet<QString>& consumed)
 {
-  if (params.contains(QStringLiteral("title"))) {
+  const auto take = [&](const QString& key) -> bool {
+    if (!params.contains(key))
+      return false;
+
+    consumed.insert(key);
+    return true;
+  };
+
+  if (take(QStringLiteral("title"))) {
     d.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("units")))
+  if (take(QStringLiteral("units")))
     d.units = params.value(QStringLiteral("units")).toString();
 
-  if (params.contains(QStringLiteral("widget"))) {
+  if (take(QStringLiteral("widget"))) {
     d.widget    = params.value(QStringLiteral("widget")).toString();
     rebuildTree = true;
   }
 
   // Visualization booleans share the project JSON keys (graph/fft/led/waterfall)
-  if (params.contains(Keys::Graph)) {
+  if (take(Keys::Graph)) {
     d.plt       = params.value(Keys::Graph).toBool();
     rebuildTree = true;
   }
-  if (params.contains(Keys::FFT)) {
+  if (take(Keys::FFT)) {
     d.fft       = params.value(Keys::FFT).toBool();
     rebuildTree = true;
   }
-  if (params.contains(Keys::LED)) {
+  if (take(Keys::LED)) {
     d.led       = params.value(Keys::LED).toBool();
     rebuildTree = true;
   }
-  if (params.contains(Keys::Waterfall)) {
+  if (take(Keys::Waterfall)) {
     d.waterfall = params.value(Keys::Waterfall).toBool();
     rebuildTree = true;
   }
 
-  if (params.contains(QStringLiteral("xAxisId")))
+  if (take(QStringLiteral("index"))) {
+    const int idx = params.value(QStringLiteral("index")).toInt();
+    if (idx < 0)
+      return QStringLiteral("Invalid index: must be >= 0 (0 = unassigned, 1+ = parser slot)");
+
+    d.index     = idx;
+    rebuildTree = true;
+  }
+
+  if (take(QStringLiteral("xAxisId")))
     d.xAxisId = params.value(QStringLiteral("xAxisId")).toInt();
 
-  if (params.contains(QStringLiteral("waterfallYAxis")))
+  if (take(QStringLiteral("waterfallYAxis")))
     d.waterfallYAxis = params.value(QStringLiteral("waterfallYAxis")).toInt();
 
-  if (params.contains(QStringLiteral("fftMin")))
+  if (take(Keys::SourceId))
+    d.sourceId = params.value(Keys::SourceId).toInt();
+
+  if (take(QStringLiteral("fftSamples")))
+    d.fftSamples = params.value(QStringLiteral("fftSamples")).toInt();
+
+  if (take(QStringLiteral("fftSamplingRate")))
+    d.fftSamplingRate = params.value(QStringLiteral("fftSamplingRate")).toInt();
+
+  if (take(QStringLiteral("fftMin")))
     d.fftMin = params.value(QStringLiteral("fftMin")).toDouble();
 
-  if (params.contains(QStringLiteral("fftMax")))
+  if (take(QStringLiteral("fftMax")))
     d.fftMax = params.value(QStringLiteral("fftMax")).toDouble();
 
-  if (params.contains(QStringLiteral("pltMin")))
+  if (take(QStringLiteral("pltMin")))
     d.pltMin = params.value(QStringLiteral("pltMin")).toDouble();
 
-  if (params.contains(QStringLiteral("pltMax")))
+  if (take(QStringLiteral("pltMax")))
     d.pltMax = params.value(QStringLiteral("pltMax")).toDouble();
 
-  if (params.contains(QStringLiteral("wgtMin")))
+  if (take(QStringLiteral("wgtMin")))
     d.wgtMin = params.value(QStringLiteral("wgtMin")).toDouble();
 
-  if (params.contains(QStringLiteral("wgtMax")))
+  if (take(QStringLiteral("wgtMax")))
     d.wgtMax = params.value(QStringLiteral("wgtMax")).toDouble();
 
-  if (params.contains(QStringLiteral("alarmLow")))
+  if (take(QStringLiteral("alarmLow")))
     d.alarmLow = params.value(QStringLiteral("alarmLow")).toDouble();
 
-  if (params.contains(QStringLiteral("alarmHigh")))
+  if (take(QStringLiteral("alarmHigh")))
     d.alarmHigh = params.value(QStringLiteral("alarmHigh")).toDouble();
 
-  if (params.contains(QStringLiteral("ledHigh")))
+  if (take(QStringLiteral("alarmEnabled")))
+    d.alarmEnabled = params.value(QStringLiteral("alarmEnabled")).toBool();
+
+  if (take(QStringLiteral("ledHigh")))
     d.ledHigh = params.value(QStringLiteral("ledHigh")).toDouble();
 
-  if (params.contains(QStringLiteral("transformCode")))
+  if (take(QStringLiteral("log")))
+    d.log = params.value(QStringLiteral("log")).toBool();
+
+  if (take(QStringLiteral("overviewDisplay"))) {
+    d.overviewDisplay = params.value(QStringLiteral("overviewDisplay")).toBool();
+    rebuildTree       = true;
+  }
+
+  if (take(QStringLiteral("hideOnDashboard"))) {
+    d.hideOnDashboard = params.value(QStringLiteral("hideOnDashboard")).toBool();
+    rebuildTree       = true;
+  }
+
+  if (take(QStringLiteral("transformCode")))
     d.transformCode = params.value(QStringLiteral("transformCode")).toString();
 
-  if (params.contains(Keys::TransformLanguage)) {
+  if (take(Keys::TransformLanguage)) {
     const int lang = params.value(Keys::TransformLanguage).toInt();
     if (lang != -1 && lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
       return QStringLiteral("Invalid transformLanguage: must be -1 (inherit), 0 (JS), or 1 (Lua)");
@@ -3154,7 +3436,7 @@ QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Datas
     d.transformLanguage = lang;
   }
 
-  if (params.contains(Keys::Virtual))
+  if (take(Keys::Virtual))
     d.virtual_ = params.value(Keys::Virtual).toBool();
 
   return QString();
@@ -3191,7 +3473,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
 
   DataModel::Dataset d = datasets[datasetId];
   bool rebuildTree     = false;
-  const QString err    = applyDatasetUpdateParams(d, params, rebuildTree);
+  QSet<QString> consumed{QStringLiteral("groupId"), Keys::DatasetId};
+  const QString err = applyDatasetUpdateParams(d, params, rebuildTree, consumed);
   if (!err.isEmpty())
     return CommandResponse::makeError(id, ErrorCode::InvalidParam, err);
 
@@ -3201,6 +3484,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
   result[QStringLiteral("groupId")] = groupId;
   result[Keys::DatasetId]           = datasetId;
   result[QStringLiteral("updated")] = true;
+
+  appendUnknownFieldsWarning(result, params, consumed, QStringLiteral("project.dataset.update"));
 
   if (!d.transformCode.isEmpty() && d.transformLanguage != -1) {
     const auto warning = detectLanguageMismatch(d.transformCode, d.transformLanguage);
@@ -3236,36 +3521,58 @@ API::CommandResponse API::Handlers::ProjectHandler::actionUpdate(const QString& 
 
   DataModel::Action a = actions[actionId];
   bool rebuildTree    = false;
+  QSet<QString> consumed{QStringLiteral("actionId")};
 
-  if (params.contains(QStringLiteral("title"))) {
+  const auto take = [&](const QString& key) -> bool {
+    if (!params.contains(key))
+      return false;
+
+    consumed.insert(key);
+    return true;
+  };
+
+  if (take(QStringLiteral("title"))) {
     a.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("icon"))) {
+  if (take(QStringLiteral("icon"))) {
     a.icon      = params.value(QStringLiteral("icon")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("txData")))
+  if (take(QStringLiteral("txData")))
     a.txData = params.value(QStringLiteral("txData")).toString();
 
-  if (params.contains(QStringLiteral("eolSequence")))
+  if (take(QStringLiteral("eolSequence")))
     a.eolSequence = params.value(QStringLiteral("eolSequence")).toString();
 
-  if (params.contains(QStringLiteral("timerMode")))
+  if (take(QStringLiteral("timerMode")))
     a.timerMode =
       static_cast<DataModel::TimerMode>(params.value(QStringLiteral("timerMode")).toInt());
 
-  if (params.contains(QStringLiteral("timerIntervalMs")))
+  if (take(QStringLiteral("timerIntervalMs")))
     a.timerIntervalMs = params.value(QStringLiteral("timerIntervalMs")).toInt();
 
-  if (params.contains(QStringLiteral("repeatCount")))
+  if (take(QStringLiteral("repeatCount")))
     a.repeatCount = params.value(QStringLiteral("repeatCount")).toInt();
+
+  if (take(Keys::SourceId))
+    a.sourceId = params.value(Keys::SourceId).toInt();
+
+  if (take(QStringLiteral("txEncoding")))
+    a.txEncoding = params.value(QStringLiteral("txEncoding")).toInt();
+
+  if (take(QStringLiteral("binaryData")))
+    a.binaryData = params.value(QStringLiteral("binaryData")).toBool();
+
+  if (take(QStringLiteral("autoExecuteOnConnect")))
+    a.autoExecuteOnConnect = params.value(QStringLiteral("autoExecuteOnConnect")).toBool();
 
   project.updateAction(actionId, a, rebuildTree);
 
   QJsonObject result;
   result[QStringLiteral("actionId")] = actionId;
   result[QStringLiteral("updated")]  = true;
+  appendUnknownFieldsWarning(result, params, consumed, QStringLiteral("project.action.update"));
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -3300,17 +3607,49 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
 
   DataModel::OutputWidget& w = g.outputWidgets[widgetId];
   bool rebuildTree           = false;
+  QSet<QString> consumed{QStringLiteral("groupId"), QStringLiteral("widgetId")};
 
-  if (params.contains(QStringLiteral("title"))) {
+  const auto take = [&](const QString& key) -> bool {
+    if (!params.contains(key))
+      return false;
+
+    consumed.insert(key);
+    return true;
+  };
+
+  if (take(QStringLiteral("title"))) {
     w.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("icon"))) {
+  if (take(QStringLiteral("icon"))) {
     w.icon      = params.value(QStringLiteral("icon")).toString();
     rebuildTree = true;
   }
-  if (params.contains(QStringLiteral("transmitFunction")))
+  if (take(QStringLiteral("transmitFunction")))
     w.transmitFunction = params.value(QStringLiteral("transmitFunction")).toString();
+
+  if (take(Keys::SourceId))
+    w.sourceId = params.value(Keys::SourceId).toInt();
+
+  if (take(QStringLiteral("txEncoding")))
+    w.txEncoding = params.value(QStringLiteral("txEncoding")).toInt();
+
+  if (take(QStringLiteral("monoIcon"))) {
+    w.monoIcon  = params.value(QStringLiteral("monoIcon")).toBool();
+    rebuildTree = true;
+  }
+
+  if (take(QStringLiteral("minValue")))
+    w.minValue = params.value(QStringLiteral("minValue")).toDouble();
+
+  if (take(QStringLiteral("maxValue")))
+    w.maxValue = params.value(QStringLiteral("maxValue")).toDouble();
+
+  if (take(QStringLiteral("stepSize")))
+    w.stepSize = params.value(QStringLiteral("stepSize")).toDouble();
+
+  if (take(QStringLiteral("initialValue")))
+    w.initialValue = params.value(QStringLiteral("initialValue")).toDouble();
 
   project.updateGroup(groupId, g, rebuildTree);
 
@@ -3318,6 +3657,146 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
   result[QStringLiteral("groupId")]  = groupId;
   result[QStringLiteral("widgetId")] = widgetId;
   result[QStringLiteral("updated")]  = true;
+  appendUnknownFieldsWarning(
+    result, params, consumed, QStringLiteral("project.outputWidget.update"));
+  return CommandResponse::makeSuccess(id, result);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Project batch -- run a sequence of commands under one autosave window
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Runs an array of project mutations sequentially under a suspended autosave.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::projectBatch(const QString& id,
+                                                                  const QJsonObject& params)
+{
+  constexpr int kMaxBatchOps = 1024;
+
+  if (!params.contains(QStringLiteral("ops")))
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: ops"));
+
+  const auto ops = params.value(QStringLiteral("ops")).toArray();
+  if (ops.isEmpty())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("ops array must not be empty"));
+
+  if (ops.size() > kMaxBatchOps)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("ops array exceeds limit of %1 (got %2)").arg(kMaxBatchOps).arg(ops.size()));
+
+  const bool stopOnError = params.value(QStringLiteral("stopOnError")).toBool(false);
+
+  auto& project = DataModel::ProjectModel::instance();
+  auto& registry = CommandRegistry::instance();
+
+  project.setAutoSaveSuspended(true);
+
+  QJsonArray results;
+  int successCount = 0;
+  int failureCount = 0;
+  bool aborted     = false;
+
+  for (int i = 0; i < ops.size(); ++i) {
+    const auto op = ops.at(i).toObject();
+    if (op.isEmpty()) {
+      QJsonObject entry;
+      entry[QStringLiteral("index")]   = i;
+      entry[QStringLiteral("success")] = false;
+      QJsonObject err;
+      err[QStringLiteral("code")]    = ErrorCode::InvalidParam;
+      err[QStringLiteral("message")] = QStringLiteral("ops[%1] must be an object").arg(i);
+      entry[QStringLiteral("error")] = err;
+      results.append(entry);
+      ++failureCount;
+      if (stopOnError) {
+        aborted = true;
+        break;
+      }
+      continue;
+    }
+
+    const auto command = op.value(QStringLiteral("command")).toString();
+    const auto opParams = op.value(QStringLiteral("params")).toObject();
+
+    if (command.isEmpty()) {
+      QJsonObject entry;
+      entry[QStringLiteral("index")]   = i;
+      entry[QStringLiteral("success")] = false;
+      QJsonObject err;
+      err[QStringLiteral("code")]    = ErrorCode::MissingParam;
+      err[QStringLiteral("message")] = QStringLiteral("ops[%1].command is required").arg(i);
+      entry[QStringLiteral("error")] = err;
+      results.append(entry);
+      ++failureCount;
+      if (stopOnError) {
+        aborted = true;
+        break;
+      }
+      continue;
+    }
+
+    if (command == QStringLiteral("project.batch")) {
+      QJsonObject entry;
+      entry[QStringLiteral("index")]   = i;
+      entry[QStringLiteral("command")] = command;
+      entry[QStringLiteral("success")] = false;
+      QJsonObject err;
+      err[QStringLiteral("code")]    = ErrorCode::InvalidParam;
+      err[QStringLiteral("message")] = QStringLiteral("project.batch cannot be nested");
+      entry[QStringLiteral("error")] = err;
+      results.append(entry);
+      ++failureCount;
+      if (stopOnError) {
+        aborted = true;
+        break;
+      }
+      continue;
+    }
+
+    const auto response = registry.execute(command, QString::number(i), opParams);
+
+    QJsonObject entry;
+    entry[QStringLiteral("index")]   = i;
+    entry[QStringLiteral("command")] = command;
+    entry[QStringLiteral("success")] = response.success;
+    if (response.success) {
+      if (!response.result.isEmpty())
+        entry[QStringLiteral("result")] = response.result;
+
+      ++successCount;
+    } else {
+      QJsonObject err;
+      err[QStringLiteral("code")]    = response.errorCode;
+      err[QStringLiteral("message")] = response.errorMessage;
+      if (!response.errorData.isEmpty())
+        err[QStringLiteral("data")] = response.errorData;
+
+      entry[QStringLiteral("error")] = err;
+      ++failureCount;
+    }
+    results.append(entry);
+
+    if (!response.success && stopOnError) {
+      aborted = true;
+      break;
+    }
+  }
+
+  project.setAutoSaveSuspended(false);
+  project.flushAutoSave();
+
+  QJsonObject result;
+  result[QStringLiteral("results")]      = results;
+  result[QStringLiteral("total")]        = ops.size();
+  result[QStringLiteral("succeeded")]    = successCount;
+  result[QStringLiteral("failed")]       = failureCount;
+  result[QStringLiteral("aborted")]      = aborted;
+  result[QStringLiteral("autoSaveMode")] = QStringLiteral("flushed");
   return CommandResponse::makeSuccess(id, result);
 }
 

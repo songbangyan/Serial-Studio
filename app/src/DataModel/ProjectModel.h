@@ -339,6 +339,7 @@ public slots:
 
 public:
   void flushAutoSave();
+  void setAutoSaveSuspended(bool suspend);
 
 private:
   int nextDatasetIndex();

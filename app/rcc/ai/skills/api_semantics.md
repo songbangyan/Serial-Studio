@@ -13,7 +13,7 @@ same thing.
 | Field        | Set by      | Used for                                         |
 |--------------|-------------|--------------------------------------------------|
 | `datasetId`  | Auto, on `dataset.add` | CRUD APIs: `project.dataset.update`, `project.dataset.delete`, every `setOption*`. Position within the group. |
-| `index`      | User        | Position in the parser's output array (1-based). The parser's `parse(frame)[i]` populates the dataset whose `index == i + 1`. |
+| `index`      | User        | Position in the parser's output array (1-based). The parser's `parse(frame)[i]` populates the dataset whose `index == i + 1`. **Patchable** via `project.dataset.update {index: N}` — bulk renumbers should go through `project.batch` (see "Bulk mutations" below). |
 | `uniqueId`   | Derived     | OPAQUE runtime handle for `datasetGetRaw / datasetGetFinal` and the `__datasets__` system table. |
 
 **Treat `uniqueId` as opaque.** It happens to be computed as
@@ -206,15 +206,131 @@ API parameter names you write are NOT the keys you read back:
 
 Writing `{"plotMin": 100}` to `dataset.update` returns `success: true`
 and writes nothing — the field name doesn't match the param check.
-Always:
+The response now carries `result.warnings` with a `code: "unknown_field"`
+entry listing every dropped key, so the trap is no longer fully silent —
+**but you have to read the warnings array.** Always:
 
 1. Use `pltMin`/`wgtMin` (etc.) on the WRITE side.
-2. After writing, call `project.dataset.getByPath` and confirm the
+2. Inspect `result.warnings` after the call. Any
+   `{code: "unknown_field", fields: [...]}` entry means those keys were
+   dropped — fix and re-issue, do not assume success means applied.
+3. After writing, call `project.dataset.getByPath` and confirm the
    response shows your values under `plotMin`/`widgetMin`/`fftMin`. If
    they're still 0, the write was silently dropped.
 
 `fftMin`/`fftMax` are identical in both directions, so they don't trip
 this trap.
+
+## Update commands — unknown-field warnings
+
+`project.{group,dataset,action,outputWidget}.update` accept any subset
+of writable fields and return `success: true`. Fields they don't
+recognize (typos, fields that aren't on this struct, runtime-only fields
+like `numericValue`) are dropped with a structured warning instead of a
+hard error:
+
+```json
+{
+  "success": true,
+  "result": {
+    "groupId": 0,
+    "datasetId": 5,
+    "updated": true,
+    "warnings": [
+      {
+        "code":   "unknown_field",
+        "fields": ["plotMin", "fooBar"],
+        "message": "These fields were ignored because they are not patchable via project.dataset.update. Call project.describeCommand for the list of writable fields, or check your spelling."
+      }
+    ]
+  }
+}
+```
+
+When you see `unknown_field`, the call did NOT mis-apply — it skipped
+those keys entirely. Re-issue with the correct names. Don't tell the
+user the change was applied without re-reading the dataset; an
+`unknown_field` warning means the parts you misnamed are still on the
+old value.
+
+Schema-side, `meta.describeCommand{name: "project.dataset.update"}` lists
+the canonical writable fields; the description block on each `*.update`
+command also enumerates them.
+
+## Bulk mutations — `project.batch` and `project.dataset.addMany`
+
+40 sequential `project.dataset.update` calls is 40 round-trips and 40
+autosave-debounce restarts. Two endpoints collapse that:
+
+### `project.batch`
+
+```
+project.batch {
+  ops: [
+    { command: "project.dataset.update", params: {groupId:0, datasetId:0, title:"LED 1", index:1} },
+    { command: "project.dataset.update", params: {groupId:0, datasetId:1, title:"LED 2", index:2} },
+    ...
+  ],
+  stopOnError: false   // default: keep going past failures
+}
+```
+
+Returns `{results: [{index, command, success, result|error}, ...],
+total, succeeded, failed, aborted}`. Each op is dispatched through
+the same `CommandRegistry::execute` path as a direct call, so per-op
+error semantics (validation_failed, missing_param, etc.) are
+unchanged.
+
+Critical caveats:
+
+- **Not transactional.** Already-applied ops are NOT rolled back when a
+  later op fails. `stopOnError: true` aborts the loop on the first
+  failure, but already-mutated state stays mutated. Treat it as
+  "save-suspend wrapper", not "database transaction."
+- **Nested batches are rejected** (`command: "project.batch"` inside
+  ops returns INVALID_PARAM). Don't wire batch into batch.
+- **Hard cap 1024 ops.** Split larger workloads.
+- **Autosave is suspended for the whole window** and flushed once at
+  the end. The on-disk file ends up consistent with the in-memory state
+  even if individual ops emit `widgetSettingsChanged` mid-loop.
+
+When to use:
+
+- Renaming, retyping, or reindexing more than ~5 datasets/groups in
+  one logical edit.
+- Applying a chain of related mutations where you only care about the
+  final state (e.g. add 10 groups, populate each with datasets, then
+  set a workspace).
+
+When NOT to use:
+
+- One-shot edits — the overhead isn't worth it.
+- Mixed read/write workflows — `project.batch` is mutation-oriented;
+  reads still work but you don't get cross-op transactionality.
+- Calls whose ordering depends on inspecting prior results — issue
+  separate calls and branch in client logic.
+
+### `project.dataset.addMany`
+
+```
+project.dataset.addMany {
+  groupId:      0,
+  count:        40,
+  options:      32,           // LED bitfield (same as project.dataset.add)
+  titlePattern: "LED {n}",    // {n} -> startNumber + i, {i} -> 0-based
+  startNumber:  1,            // optional, default 1
+  startIndex:   1             // optional: -1 = auto-assign next slot,
+                              // 0 = leave unset, 1+ = consecutive slots
+}
+```
+
+Returns `{count, created: [{groupId, datasetId, title, index, uniqueId}, ...]}`.
+
+Same autosave-suspend window as `project.batch`. Use it for sensor
+arrays, channel banks, or any "create N similar datasets" pattern. For
+finer post-creation tweaking (per-dataset transforms, units, ranges),
+follow up with one `project.batch` of `project.dataset.update` calls
+keyed off the returned `datasetId`s.
 
 The pairs DO NOT CASCADE. A dataset wired to Plot + Gauge needs both
 `pltMin`/`pltMax` AND `wgtMin`/`wgtMax` set, or one widget renders

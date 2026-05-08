@@ -160,6 +160,7 @@ Window {
   Page {
     id: contentArea
 
+    padding: 0
     anchors.fill: parent
     anchors.margins: root.contentPadding
     anchors.topMargin: (root.contentPadding / 2) + root.titlebarHeight

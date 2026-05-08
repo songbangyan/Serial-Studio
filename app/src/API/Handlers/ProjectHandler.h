@@ -21,6 +21,9 @@
 
 #pragma once
 
+#include <QSet>
+#include <QString>
+
 #include "API/CommandProtocol.h"
 
 namespace DataModel {
@@ -69,6 +72,7 @@ private:
   static CommandResponse groupDuplicate(const QString& id, const QJsonObject& params);
 
   static CommandResponse datasetAdd(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetAddMany(const QString& id, const QJsonObject& params);
   static CommandResponse datasetDelete(const QString& id, const QJsonObject& params);
   static CommandResponse datasetDuplicate(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetOption(const QString& id, const QJsonObject& params);
@@ -129,11 +133,14 @@ private:
   static CommandResponse datasetSetVirtual(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetTransformCode(const QString& id, const QJsonObject& params);
 
+  static CommandResponse projectBatch(const QString& id, const QJsonObject& params);
+
   static void applyDatasetVisualizationFlags(DataModel::Dataset& d, int options);
   static QString widgetForDatasetOptions(int options);
   static QString applyDatasetUpdateParams(DataModel::Dataset& d,
                                           const QJsonObject& params,
-                                          bool& rebuildTree);
+                                          bool& rebuildTree,
+                                          QSet<QString>& consumed);
 };
 
 }  // namespace Handlers

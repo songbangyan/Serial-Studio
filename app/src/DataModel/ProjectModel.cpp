@@ -5490,10 +5490,24 @@ void DataModel::ProjectModel::autoSave()
  */
 void DataModel::ProjectModel::flushAutoSave()
 {
-  if (m_autoSaveTimer && m_autoSaveTimer->isActive()) {
+  if (m_autoSaveTimer && m_autoSaveTimer->isActive())
     m_autoSaveTimer->stop();
-    autoSave();
-  }
+
+  // Batch callers need a flush even when no debounce timer was armed.
+  autoSave();
+}
+
+/**
+ * @brief Suspends or resumes the debounced autosave (used by the API batch endpoint).
+ */
+void DataModel::ProjectModel::setAutoSaveSuspended(bool suspend)
+{
+  if (m_autoSaveSuspended == suspend)
+    return;
+
+  m_autoSaveSuspended = suspend;
+  if (suspend && m_autoSaveTimer)
+    m_autoSaveTimer->stop();
 }
 
 /**
