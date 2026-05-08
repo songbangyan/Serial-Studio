@@ -1375,35 +1375,35 @@ std::unique_ptr<IO::HAL_Driver> IO::ConnectionManager::createDriver(
     }
     case SerialStudio::BusType::ModBus: {
       const auto& tk = Licensing::CommercialToken::current();
-      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
         return nullptr;
 
       return std::make_unique<IO::Drivers::Modbus>();
     }
     case SerialStudio::BusType::CanBus: {
       const auto& tk = Licensing::CommercialToken::current();
-      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
         return nullptr;
 
       return std::make_unique<IO::Drivers::CANBus>();
     }
     case SerialStudio::BusType::RawUsb: {
       const auto& tk = Licensing::CommercialToken::current();
-      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
         return nullptr;
 
       return std::make_unique<IO::Drivers::USB>();
     }
     case SerialStudio::BusType::HidDevice: {
       const auto& tk = Licensing::CommercialToken::current();
-      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
         return nullptr;
 
       return std::make_unique<IO::Drivers::HID>();
     }
     case SerialStudio::BusType::Process: {
       const auto& tk = Licensing::CommercialToken::current();
-      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+      if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
         return nullptr;
 
       return std::make_unique<IO::Drivers::Process>();

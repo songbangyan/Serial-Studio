@@ -468,7 +468,7 @@ void DataModel::NotificationCenter::appendEvent(Event&& e)
 {
 #ifdef BUILD_COMMERCIAL
   const auto& tk = Licensing::CommercialToken::current();
-  return tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Pro;
+  return tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Trial;
 #else
   return false;
 #endif

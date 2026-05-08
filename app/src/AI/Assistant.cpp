@@ -110,7 +110,7 @@ bool AI::Assistant::hasAnyKey() const
 bool AI::Assistant::isProAvailable() const
 {
   const auto& tk = Licensing::CommercialToken::current();
-  return tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Pro;
+  return tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Trial;
 }
 
 /**

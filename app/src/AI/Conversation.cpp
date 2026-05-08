@@ -159,9 +159,9 @@ void AI::Conversation::start(const QString& userText)
   if (trimmed.isEmpty())
     return;
 
-  // Pro tier guard
+  // Pro/Trial tier guard
   const auto& tk = Licensing::CommercialToken::current();
-  if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro) {
+  if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial) {
     setLastError(tr("AI Assistant requires a Pro license"));
     Q_EMIT errorOccurred(m_lastError);
     return;
