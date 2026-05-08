@@ -105,7 +105,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Audio Input section](
 - **Stereo input but only one channel visible.** Channel configuration is set to Mono. Switch to Stereo and the second channel appears as a second dataset.
 - **High CPU at 192 kHz.** FFT plus waterfall at a high sample rate is a lot of work. Reduce `fftSamples` or disable the waterfall on per-dataset settings.
 
-## References
+## Further reading
 
 - [Audio bit depth — Wikipedia](https://en.wikipedia.org/wiki/Audio_bit_depth)
 - [Digital audio basics: audio sample rate and bit depth — iZotope](https://www.izotope.com/en/learn/digital-audio-basics-sample-rate-and-bit-depth)

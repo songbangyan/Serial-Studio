@@ -151,7 +151,7 @@ For step-by-step setup, see the [Protocol Setup Guides — CAN Bus section](Prot
 - **CAN FD frames are dropped.** The bus, the adapter, and Serial Studio all need to be in CAN FD mode. Mixing classic-only nodes on a CAN FD bus works only if the FD nodes downshift, which not every adapter supports.
 - **PCAN/Vector/Kvaser SDK not found (Windows).** The vendor driver and runtime are separate installs. Qt's CAN plugin is only a wrapper; the actual hardware support comes from the vendor.
 
-## References
+## Further reading
 
 - [CAN bus — Wikipedia](https://en.wikipedia.org/wiki/CAN_bus)
 - [CAN Bus Explained: A Simple Intro — CSS Electronics](https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial)

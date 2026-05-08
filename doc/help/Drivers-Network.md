@@ -127,7 +127,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Network section](Prot
 - **TCP appears slow on Windows.** Nagle's algorithm is on by default and bunches small writes together to amortise header overhead. For interactive serial-style streams it can add up to 200 ms of latency. Most embedded TCP stacks support disabling Nagle (`TCP_NODELAY`); Serial Studio sets this where Qt allows.
 - **A "raw TCP socket" still imposes structure.** TCP is a byte stream and frame boundaries are the application's responsibility. If a device sends `frame1frame2frame3` with no delimiter and no length prefix, parsing is impossible. Add a delimiter (newline) or a length prefix.
 
-## References
+## Further reading
 
 - [RFC 793 — Transmission Control Protocol (TCP)](https://www.rfc-editor.org/rfc/rfc793)
 - [RFC 768 — User Datagram Protocol (UDP)](https://www.rfc-editor.org/rfc/rfc768)

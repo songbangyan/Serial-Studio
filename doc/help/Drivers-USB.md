@@ -106,7 +106,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Raw USB section](Prot
 - **Advanced Control mode warning.** Take it seriously. Vendor-specific control transfers can issue any command the firmware understands, including writing to flash, changing calibration, and arbitrary memory writes. Only enable Advanced Control with a full understanding of what is being sent.
 - **Permission denied on Linux, even with udev.** The udev rule did not reload, or the device was not unplugged and replugged after the rule was added. Trigger a re-enumeration with `sudo udevadm trigger`.
 
-## References
+## Further reading
 
 - [USB in a NutShell — Beyond Logic](https://www.beyondlogic.org/usbnutshell/usb1.shtml) — comprehensive introduction to USB.
 - [USB Endpoint Types — Beyond Logic Chapter 4](https://www.beyondlogic.org/usbnutshell/usb4.shtml)

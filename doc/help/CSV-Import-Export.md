@@ -1,6 +1,6 @@
 # CSV import and export
 
-Serial Studio can export incoming telemetry to CSV during a live session and replay saved CSV files through the same data pipeline. This page covers both workflows, the file format, and the MDF4 alternative in Pro.
+Serial Studio can export incoming telemetry to CSV during a live session and replay saved CSV files through the same data pipeline. This page covers both workflows and the file format. For high-rate binary logging with per-channel sample rates and rich metadata, see [MDF4 Export and Playback](MDF4.md) — Serial Studio Pro supports both formats and you can run them side by side.
 
 ## Export and playback pipeline
 
@@ -10,7 +10,7 @@ The diagrams below show how CSV export runs on a background thread during live d
 flowchart LR
     A["Device"] --> B["Frame Builder"]
     B --> C["Dashboard"]
-    B --> D["CSV / MDF4 File"]
+    B --> D["CSV File"]
 ```
 
 > Export runs in the background, writes in batches, and never blocks the dashboard.
@@ -115,42 +115,24 @@ Playback runs at real-time speed by default. The player uses the timestamp diffe
 
 ---
 
-## MDF4 export and playback (Pro)
+## Analyzing exported data
 
-Serial Studio Pro can also export and replay MDF4 (Measurement Data Format v4) files. MDF4 is an ASAM standard for storing measurement data in a compact binary format.
-
-### CSV or MDF4?
-
-| Aspect          | CSV                                  | MDF4 (Pro)                               |
-|-----------------|--------------------------------------|------------------------------------------|
-| File size       | Larger (text-based)                  | Smaller (binary, compressed)             |
-| Write speed     | Fine for most rates                  | Better for high-frequency data           |
-| Compatibility   | Universal (Excel, Python, MATLAB, R) | Specialized (CANape, DIAdem, asammdf)    |
-| Metadata        | Column headers only                  | Rich: channel names, units, conversions  |
-| Best for        | General analysis, sharing            | Automotive, industrial, high-rate logging|
-
-### Analyzing exported data
-
-**CSV files:**
+CSV opens in essentially every analysis tool:
 
 - Excel / LibreOffice Calc: open directly.
 - Python: `import pandas; df = pandas.read_csv('file.csv')`.
 - MATLAB: `data = readtable('file.csv');`.
 - R: `data <- read.csv('file.csv')`.
 
-**MDF4 files (Pro):**
-
-- Vector CANape: professional automotive analysis.
-- NI DIAdem: industrial data management.
-- MATLAB: Vehicle Network Toolbox.
-- Python: `from asammdf import MDF; mdf = MDF('file.mf4')`.
+For per-channel sample rates, channel-level units and metadata, or smaller files at high data rates, use MDF4 instead — see [MDF4 Export and Playback](MDF4.md).
 
 ---
 
 ## See also
 
+- [MDF4 Export and Playback](MDF4.md): binary logging with per-channel sample rates and rich metadata (Pro).
+- [Session Database](Session-Database.md): SQLite-backed project archive with built-in replay (Pro).
 - [Getting Started](Getting-Started.md): initial setup and first connection.
 - [Operation Modes](Operation-Modes.md): Quick Plot vs Project File mode.
 - [Project Editor](Project-Editor.md): define datasets and dashboard layout.
 - [Data Flow](Data-Flow.md): how data moves through the pipeline.
-- [Pro vs Free Features](Pro-vs-Free.md): MDF4 export is a Pro feature.

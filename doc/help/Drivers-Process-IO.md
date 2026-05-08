@@ -118,7 +118,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Process I/O section](
 - **Windows-specific pipe path syntax.** On Windows, the pipe must be named `\\.\pipe\<name>`. A Unix-style path fails silently or with an opaque error.
 - **Process I/O is convenient but not free.** At very high data rates (hundreds of kHz), the cost of stdout buffering, the OS pipe, and the cross-thread queue becomes noticeable. Direct drivers are always cheaper. Process I/O is the right tool at moderate rates and for prototype or integration work.
 
-## References
+## Further reading
 
 - [subprocess — Python Standard Library](https://docs.python.org/3/library/subprocess.html)
 - [Inter-process Communication: Pipes — OCaml UNIX](https://ocaml.github.io/ocamlunix/pipes.html)

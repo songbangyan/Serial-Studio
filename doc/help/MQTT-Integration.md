@@ -313,7 +313,7 @@ The QoS setting in the MQTT Configuration dialog applies to the **will message**
 
 ---
 
-## References
+## Further reading
 
 - [MQTT 2026 Guide — HiveMQ Essentials](https://www.hivemq.com/mqtt/)
 - [MQTT Publish/Subscribe Architecture — HiveMQ Essentials Part 2](https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/)

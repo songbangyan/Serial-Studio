@@ -117,7 +117,7 @@ For step-by-step setup, see the [Protocol Setup Guides — HID section](Protocol
 - **macOS reads work but writes do not.** On macOS, output reports sometimes require `hid_send_feature_report` instead of `hid_write`, depending on how the device declares its output endpoints. This is a hidapi-level quirk; the workaround usually has to be made on the firmware side.
 - **Re-enumeration interval feels slow.** The default is 2 seconds. To speed up hotplug detection, edit `kEnumIntervalMs` in `app/src/IO/Drivers/HID.cpp` and rebuild.
 
-## References
+## Further reading
 
 - [Human Interface Devices (HID) Specifications and Tools — USB-IF](https://www.usb.org/hid)
 - [Introduction to HID report descriptors — Linux Kernel Documentation](https://docs.kernel.org/hid/hidintro.html)

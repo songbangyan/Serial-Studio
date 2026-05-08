@@ -158,7 +158,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Modbus section](Proto
 - **"Illegal data address" exception.** The slave's memory map does not contain that register. Recheck the vendor documentation. Some PLCs only respond to addresses configured in their program; others allow reads of any address.
 - **Slave responds slowly under load.** Modern Modbus TCP is fast; Modbus RTU at 9600 baud is slow by design. A 60-register read takes about 12 ms of wire time alone, plus device processing time. Do not expect kilohertz polling on serial.
 
-## References
+## Further reading
 
 - [Modbus — Wikipedia](https://en.wikipedia.org/wiki/Modbus)
 - [Modbus Protocol Overview — modbustools.com](https://www.modbustools.com/modbus.html)

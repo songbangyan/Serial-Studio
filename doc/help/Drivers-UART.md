@@ -97,7 +97,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Serial/UART section](
 - **Long cable runs drop bytes.** TTL and RS-232 do not tolerate distance. Use RS-485 transceivers on both ends to reach 100 m or more reliably.
 - **The device disappears mid-session on Linux.** `udev` may have renamed it; `/dev/ttyUSB0` can become `/dev/ttyUSB1` after a hot-unplug. A `udev` rule pinning the device by VID/PID to a stable symlink fixes it permanently.
 
-## References
+## Further reading
 
 - [Universal asynchronous receiver-transmitter — Wikipedia](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
 - [UART: A Hardware Communication Protocol — Analog Devices](https://www.analog.com/en/resources/analog-dialogue/articles/uart-a-hardware-communication-protocol.html)

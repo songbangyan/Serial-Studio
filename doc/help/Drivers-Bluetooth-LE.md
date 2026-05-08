@@ -124,7 +124,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Bluetooth LE section]
 - **Multiple Serial Studio windows fight over the same device.** BLE is point-to-point: a peripheral can only be connected to one central at a time. Close the other window.
 - **Bluetooth radio "missing" on Linux.** Run `bluetoothctl` from a terminal; it tells you whether BlueZ sees the adapter. If not, the kernel module is probably not loaded.
 
-## References
+## Further reading
 
 - [Bluetooth Low Energy Fundamentals — Nordic Developer Academy](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/)
 - [Bluetooth Low Energy: A Primer — Memfault Interrupt blog](https://interrupt.memfault.com/blog/bluetooth-low-energy-a-primer)
