@@ -66,7 +66,13 @@ If the inference picks the wrong widget, change it in the Project Editor. The ge
 
 ### Mux signals
 
-Multiplexed signals (one CAN ID with different payloads gated by a mux byte) are not auto-generated. The importer treats every signal in the message as if it were always present. If your DBC uses mux, edit the generated Lua parser to add the mux check, or build a custom parser by hand.
+Simple multiplexing is supported. When a message declares a `MultiplexorSwitch` (the selector signal in the DBC) plus one or more `MultiplexedSignal` entries, the importer:
+
+- Creates one dataset for the selector itself, titled `<name> (selector)`.
+- Creates one dataset per muxed signal, titled `<name> (mux N)` so you can distinguish payloads that share the same bits.
+- Generates a Lua decoder that extracts the selector first and gates each muxed signal on `if raw_<selector> == N then ... end`. When the selector doesn't match, the muxed dataset retains its previous value rather than decoding noise from another payload.
+
+Extended multiplexing (DBC `SG_MUL_VAL_` rows, `SwitchAndSignal` intermediates, multi-range parents) is not supported. Those signals are skipped during import; the post-import dialog tells you how many were dropped. To handle them, edit the generated Lua parser by hand or write a custom one.
 
 ## Modbus map import
 

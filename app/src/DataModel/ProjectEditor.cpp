@@ -4416,8 +4416,8 @@ qint64 DataModel::ProjectEditor::workspaceWidgetKey(int widgetType, int groupId,
 /**
  * @brief Builds the lookup of every widget reference the project currently exposes.
  */
-QHash<qint64, DataModel::ProjectEditor::ResolvedWidget>
-DataModel::ProjectEditor::buildResolvedWidgetLookup(const DataModel::ProjectModel& pm)
+QHash<qint64, DataModel::ProjectEditor::ResolvedWidget> DataModel::ProjectEditor::
+  buildResolvedWidgetLookup(const DataModel::ProjectModel& pm)
 {
   // relativeIndex is project-wide per widget type, matching buildAutoWorkspaces.
   QHash<qint64, ResolvedWidget> lookup;

@@ -43,7 +43,7 @@
 /**
  * @brief Constructs the DBCImporter singleton.
  */
-DataModel::DBCImporter::DBCImporter() {}
+DataModel::DBCImporter::DBCImporter() : m_skippedExtendedMuxSignals(0) {}
 
 /**
  * @brief Returns the singleton DBCImporter instance.
@@ -90,9 +90,16 @@ QString DataModel::DBCImporter::messageInfo(int index) const
   if (index < 0 || index >= m_messages.count())
     return QString();
 
-  const auto& message    = m_messages.at(index);
-  const auto msgId       = static_cast<quint32>(message.uniqueId());
-  const auto signalCount = message.signalDescriptions().count();
+  const auto& message = m_messages.at(index);
+  const auto msgId    = static_cast<quint32>(message.uniqueId());
+
+  int signalCount = 0;
+  for (const auto& signal : message.signalDescriptions()) {
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role != MuxRole::ExtendedMuxed)
+      ++signalCount;
+  }
 
   return QString("%1: %2 @ 0x%3 (%4 signals)")
     .arg(index + 1)
@@ -208,22 +215,29 @@ void DataModel::DBCImporter::confirmImport()
   pm.openJsonFile(tempPath);
 
   // Single-shot listener fires for both accept and reject; cleanup runs in both
-  const int messageCount = m_messages.count();
-  const int signalCount  = countTotalSignals(m_messages);
+  const int messageCount  = m_messages.count();
+  const int signalCount   = countTotalSignals(m_messages);
+  const int skippedExtMux = m_skippedExtendedMuxSignals;
   QObject::connect(
     &pm,
     &ProjectModel::saveDialogCompleted,
     this,
-    [tempPath, messageCount, signalCount](bool accepted) {
+    [tempPath, messageCount, signalCount, skippedExtMux](bool accepted) {
       QFile::remove(tempPath);
       if (!accepted)
         return;
+
+      QString detail = tr("The project editor is now open for customization.");
+      if (skippedExtMux > 0)
+        detail += tr(" Skipped %1 signal(s) using extended multiplexing (SG_MUL_VAL_); "
+                     "only simple multiplexing is supported.")
+                    .arg(skippedExtMux);
 
       Misc::Utilities::showMessageBox(
         tr("Successfully imported DBC file with %1 messages and %2 signals.")
           .arg(messageCount)
           .arg(signalCount),
-        tr("The project editor is now open for customization."),
+        detail,
         QMessageBox::Information,
         tr("DBC Import Complete"));
     },
@@ -274,12 +288,22 @@ QJsonObject DataModel::DBCImporter::generateProject(const QList<QCanMessageDescr
  * @brief Builds a Dataset for a CAN signal, choosing widget and ranges sensibly.
  */
 DataModel::Dataset DataModel::DBCImporter::buildDatasetFromSignal(
-  const QCanSignalDescription& signal, const QString& groupWidget, int datasetIndex)
+  const QCanSignalDescription& signal,
+  const QString& groupWidget,
+  int datasetIndex,
+  MuxRole role,
+  qint64 muxValue)
 {
   DataModel::Dataset dataset;
   dataset.index = datasetIndex;
-  dataset.title = signal.name();
   dataset.units = signal.physicalUnit();
+
+  if (role == MuxRole::SimpleMuxed)
+    dataset.title = QString("%1 (mux %2)").arg(signal.name()).arg(muxValue);
+  else if (role == MuxRole::Selector)
+    dataset.title = QString("%1 (selector)").arg(signal.name());
+  else
+    dataset.title = signal.name();
 
   double minVal = signal.minimum();
   double maxVal = signal.maximum();
@@ -330,8 +354,7 @@ std::vector<DataModel::Group> DataModel::DBCImporter::generateGroups(
   int datasetIndex = 1;
 
   for (const auto& message : messages) {
-    const auto signalList = message.signalDescriptions();
-    if (signalList.isEmpty())
+    if (!hasImportableSignals(message))
       continue;
 
     DataModel::Group group;
@@ -339,8 +362,32 @@ std::vector<DataModel::Group> DataModel::DBCImporter::generateGroups(
     group.title   = message.name();
     group.widget  = selectGroupWidget(message);
 
-    for (const auto& signal : signalList)
-      group.datasets.push_back(buildDatasetFromSignal(signal, group.widget, datasetIndex++));
+    // Emit datasets in the same order the decoder writes values: selector, plain, muxed
+    const auto signalList    = message.signalDescriptions();
+    const auto selectorIndex = findSelectorIndex(message);
+    if (selectorIndex >= 0)
+      group.datasets.push_back(buildDatasetFromSignal(
+        signalList.at(selectorIndex), group.widget, datasetIndex++, MuxRole::Selector, 0));
+
+    for (const auto& signal : message.signalDescriptions()) {
+      qint64 muxValue = 0;
+      const auto role = classifyMux(signal, message, muxValue);
+      if (role != MuxRole::Plain)
+        continue;
+
+      group.datasets.push_back(
+        buildDatasetFromSignal(signal, group.widget, datasetIndex++, role, muxValue));
+    }
+
+    for (const auto& signal : message.signalDescriptions()) {
+      qint64 muxValue = 0;
+      const auto role = classifyMux(signal, message, muxValue);
+      if (role != MuxRole::SimpleMuxed)
+        continue;
+
+      group.datasets.push_back(
+        buildDatasetFromSignal(signal, group.widget, datasetIndex++, role, muxValue));
+    }
 
     groups.push_back(group);
     ++groupId;
@@ -356,13 +403,24 @@ QString DataModel::DBCImporter::generateFrameParser(const QList<QCanMessageDescr
 {
   QString code;
 
+  // Authoritative count of skipped extended-mux signals across all messages
+  m_skippedExtendedMuxSignals = 0;
+  for (const auto& message : messages) {
+    for (const auto& signal : message.signalDescriptions()) {
+      qint64 mv       = 0;
+      const auto role = classifyMux(signal, message, mv);
+      if (role == MuxRole::ExtendedMuxed)
+        ++m_skippedExtendedMuxSignals;
+    }
+  }
+
   const auto totalSignals = countTotalSignals(messages);
   code += frameParserHeader(totalSignals);
   code += frameParserExtractHelper();
 
   int datasetIndex = 1;
   for (const auto& message : messages) {
-    if (message.signalDescriptions().isEmpty())
+    if (!hasImportableSignals(message))
       continue;
 
     code += generateMessageDecoder(message, datasetIndex);
@@ -394,6 +452,11 @@ QString DataModel::DBCImporter::frameParserHeader(int totalSignals) const
   code += "--   Byte 1-2: CAN ID (big-endian, 16-bit)\n";
   code += "--   Byte 3:   Data Length Code (DLC)\n";
   code += "--   Byte 4+:  CAN data payload\n";
+  code += "--\n";
+  code += "-- Multiplex notes:\n";
+  code += "--   Selector signals are listed as [selector] and extracted first.\n";
+  code += "--   Muxed signals are listed as [mux N] and only updated when the\n";
+  code += "--   selector raw value equals N. Extended multiplexing is not supported.\n";
   code += "--\n\n";
 
   code += QString("local values = {}\nfor i = 1, %1 do values[i] = 0 end\n\n").arg(totalSignals);
@@ -488,7 +551,7 @@ QString DataModel::DBCImporter::frameParserDispatchTable(
   code += "  -- Route CAN ID to the matching message decoder\n";
   bool first = true;
   for (const auto& message : messages) {
-    if (message.signalDescriptions().isEmpty())
+    if (!hasImportableSignals(message))
       continue;
 
     const auto msgId = static_cast<quint32>(message.uniqueId());
@@ -520,36 +583,133 @@ QString DataModel::DBCImporter::frameParserDispatchTable(
 QString DataModel::DBCImporter::generateMessageDecoder(const QCanMessageDescription& message,
                                                        int& datasetIndex)
 {
+  const auto msgId         = static_cast<quint32>(message.uniqueId());
+  const auto signalList    = message.signalDescriptions();
+  const auto startIndex    = datasetIndex;
+  const auto selectorIndex = findSelectorIndex(message);
+  const QCanSignalDescription* selector =
+    selectorIndex >= 0 ? &signalList.at(selectorIndex) : nullptr;
+
+  QString code = generateDecoderHeader(message, selector, startIndex);
+  code += QString("local function decode_%1(data)\n").arg(QString::number(msgId, 16));
+
+  bool firstEmit = true;
+  if (selector) {
+    code += emitSelectorExtraction(*selector, datasetIndex);
+    firstEmit = false;
+  }
+
+  code += emitPlainExtractions(message, datasetIndex, firstEmit);
+  code += emitMuxedExtractions(message, selector, datasetIndex, firstEmit);
+  code += "end\n";
+
+  return code;
+}
+
+/**
+ * @brief Emits the per-message comment header listing all included signals in emission order.
+ */
+QString DataModel::DBCImporter::generateDecoderHeader(const QCanMessageDescription& message,
+                                                      const QCanSignalDescription* selector,
+                                                      int startIndex)
+{
   QString code;
   const auto msgId      = static_cast<quint32>(message.uniqueId());
   const auto signalList = message.signalDescriptions();
-  const auto startIndex = datasetIndex;
 
   code += "--\n";
   code += QString("-- Decodes CAN message: %1 (ID: 0x%2)\n")
             .arg(message.name())
             .arg(QString::number(msgId, 16).toUpper());
   code += "--\n";
-  code += QString("-- Signals (%1):\n").arg(signalList.count());
+
+  int includedCount = 0;
+  for (const auto& s : signalList) {
+    qint64 mv       = 0;
+    const auto role = classifyMux(s, message, mv);
+    if (role != MuxRole::ExtendedMuxed)
+      ++includedCount;
+  }
+
+  code += QString("-- Signals (%1):\n").arg(includedCount);
+
+  const auto listSignal =
+    [&](const QCanSignalDescription& signal, int idx, MuxRole role, qint64 mv) {
+      QString suffix;
+      if (role == MuxRole::SimpleMuxed)
+        suffix = QString(" [mux %1]").arg(mv);
+      else if (role == MuxRole::Selector)
+        suffix = QString(" [selector]");
+
+      code += QString("--   [%1] %2 (%3)%4\n")
+                .arg(idx)
+                .arg(signal.name())
+                .arg(signal.physicalUnit().isEmpty() ? "no unit" : signal.physicalUnit())
+                .arg(suffix);
+    };
 
   int idx = startIndex;
+  if (selector)
+    listSignal(*selector, idx++, MuxRole::Selector, 0);
+
   for (const auto& signal : signalList) {
-    code += QString("--   [%1] %2 (%3)\n")
-              .arg(idx)
-              .arg(signal.name())
-              .arg(signal.physicalUnit().isEmpty() ? "no unit" : signal.physicalUnit());
-    ++idx;
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role == MuxRole::Plain)
+      listSignal(signal, idx++, role, mv);
+  }
+
+  for (const auto& signal : signalList) {
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role == MuxRole::SimpleMuxed)
+      listSignal(signal, idx++, role, mv);
   }
 
   code += "--\n";
-  code += QString("local function decode_%1(data)\n").arg(QString::number(msgId, 16));
+  return code;
+}
 
-  bool firstSignal = true;
+/**
+ * @brief Emits the selector signal's Lua extraction (must run before any muxed gates).
+ */
+QString DataModel::DBCImporter::emitSelectorExtraction(const QCanSignalDescription& selector,
+                                                       int& datasetIndex)
+{
+  QString code;
+  const auto unit = selector.physicalUnit();
+  if (unit.isEmpty())
+    code += QString("  -- %1 [selector]\n").arg(selector.name());
+  else
+    code += QString("  -- %1 [%2] [selector]\n").arg(selector.name(), unit);
+
+  code += generateSignalExtraction(selector);
+  code += QString("  values[%1] = value_%2\n")
+            .arg(datasetIndex)
+            .arg(sanitizeJavaScriptString(selector.name()));
+  ++datasetIndex;
+  return code;
+}
+
+/**
+ * @brief Emits Lua extractions for all non-multiplexed signals in the message.
+ */
+QString DataModel::DBCImporter::emitPlainExtractions(const QCanMessageDescription& message,
+                                                     int& datasetIndex,
+                                                     bool& firstEmit)
+{
+  QString code;
+  const auto signalList = message.signalDescriptions();
   for (const auto& signal : signalList) {
-    if (!firstSignal)
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role != MuxRole::Plain)
+      continue;
+
+    if (!firstEmit)
       code += "\n";
 
-    firstSignal = false;
+    firstEmit = false;
 
     const auto unit = signal.physicalUnit();
     if (unit.isEmpty())
@@ -564,7 +724,54 @@ QString DataModel::DBCImporter::generateMessageDecoder(const QCanMessageDescript
     ++datasetIndex;
   }
 
-  code += "end\n";
+  return code;
+}
+
+/**
+ * @brief Emits gated Lua extractions for simple-muxed signals (skipped without a selector).
+ */
+QString DataModel::DBCImporter::emitMuxedExtractions(const QCanMessageDescription& message,
+                                                     const QCanSignalDescription* selector,
+                                                     int& datasetIndex,
+                                                     bool& firstEmit)
+{
+  QString code;
+  if (!selector)
+    return code;
+
+  const auto signalList = message.signalDescriptions();
+  const auto selectorId = sanitizeJavaScriptString(selector->name());
+  for (const auto& signal : signalList) {
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role != MuxRole::SimpleMuxed)
+      continue;
+
+    if (!firstEmit)
+      code += "\n";
+
+    firstEmit = false;
+
+    const auto unit = signal.physicalUnit();
+    if (unit.isEmpty())
+      code += QString("  -- %1 [mux %2]\n").arg(signal.name()).arg(mv);
+    else
+      code += QString("  -- %1 [%2] [mux %3]\n").arg(signal.name(), unit).arg(mv);
+
+    code += QString("  if raw_%1 == %2 then\n").arg(selectorId).arg(mv);
+
+    QString extraction = generateSignalExtraction(signal);
+    extraction.replace("\n  ", "\n    ");
+    if (extraction.startsWith("  "))
+      extraction.replace(0, 2, "    ");
+
+    code += extraction;
+    code += QString("    values[%1] = value_%2\n")
+              .arg(datasetIndex)
+              .arg(sanitizeJavaScriptString(signal.name()));
+    code += "  end\n";
+    ++datasetIndex;
+  }
 
   return code;
 }
@@ -572,6 +779,91 @@ QString DataModel::DBCImporter::generateMessageDecoder(const QCanMessageDescript
 //--------------------------------------------------------------------------------------------------
 // Signal processing
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns true if the message contributes at least one non-extended-mux signal.
+ */
+bool DataModel::DBCImporter::hasImportableSignals(const QCanMessageDescription& message) const
+{
+  for (const auto& signal : message.signalDescriptions()) {
+    qint64 mv       = 0;
+    const auto role = classifyMux(signal, message, mv);
+    if (role != MuxRole::ExtendedMuxed)
+      return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Returns the index of the message's top-level MultiplexorSwitch signal, or -1.
+ */
+int DataModel::DBCImporter::findSelectorIndex(const QCanMessageDescription& message) const
+{
+  const auto signalList = message.signalDescriptions();
+  for (qsizetype i = 0; i < signalList.size(); ++i)
+    if (signalList.at(i).multiplexState() == QtCanBus::MultiplexState::MultiplexorSwitch)
+      return static_cast<int>(i);
+
+  return -1;
+}
+
+/**
+ * @brief Classifies a signal's multiplex role and extracts the mux value when simple.
+ */
+DataModel::DBCImporter::MuxRole DataModel::DBCImporter::classifyMux(
+  const QCanSignalDescription& signal,
+  const QCanMessageDescription& message,
+  qint64& outMuxValue) const
+{
+  outMuxValue = 0;
+
+  const auto state = signal.multiplexState();
+  if (state == QtCanBus::MultiplexState::None)
+    return MuxRole::Plain;
+
+  if (state == QtCanBus::MultiplexState::MultiplexorSwitch)
+    return MuxRole::Selector;
+
+  // SwitchAndSignal is an intermediate node in extended multiplexing -- not supported
+  if (state == QtCanBus::MultiplexState::SwitchAndSignal)
+    return MuxRole::ExtendedMuxed;
+
+  // MultiplexedSignal: must reference a parent
+  const auto parents = signal.multiplexSignals();
+  if (parents.isEmpty())
+    return MuxRole::Plain;
+
+  // Extended mux: more than one parent OR parent is itself a muxed signal
+  if (parents.size() > 1)
+    return MuxRole::ExtendedMuxed;
+
+  const auto parentName    = parents.keys().first();
+  const auto selectorIndex = findSelectorIndex(message);
+  if (selectorIndex < 0)
+    return MuxRole::ExtendedMuxed;
+
+  const auto signalList = message.signalDescriptions();
+  if (signalList.at(selectorIndex).name() != parentName)
+    return MuxRole::ExtendedMuxed;
+
+  // Simple mux: single value range with min == max
+  const auto ranges = parents.value(parentName);
+  if (ranges.size() != 1)
+    return MuxRole::ExtendedMuxed;
+
+  const auto& range = ranges.first();
+  if (range.minimum != range.maximum)
+    return MuxRole::ExtendedMuxed;
+
+  bool ok      = false;
+  const auto v = range.minimum.toLongLong(&ok);
+  if (!ok)
+    return MuxRole::ExtendedMuxed;
+
+  outMuxValue = v;
+  return MuxRole::SimpleMuxed;
+}
 
 /**
  * @brief Generates the Lua code to extract and scale one CAN signal.
@@ -810,13 +1102,19 @@ QString DataModel::DBCImporter::selectWidgetForSignal(const QCanSignalDescriptio
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Returns the total number of signals across all messages.
+ * @brief Returns the total number of importable signals (excludes extended-mux signals).
  */
 int DataModel::DBCImporter::countTotalSignals(const QList<QCanMessageDescription>& messages) const
 {
   int count = 0;
-  for (const auto& message : messages)
-    count += message.signalDescriptions().count();
+  for (const auto& message : messages) {
+    for (const auto& signal : message.signalDescriptions()) {
+      qint64 mv       = 0;
+      const auto role = classifyMux(signal, message, mv);
+      if (role != MuxRole::ExtendedMuxed)
+        ++count;
+    }
+  }
 
   return count;
 }

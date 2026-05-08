@@ -30,6 +30,18 @@ For real CAN networks, import a DBC file via the Project Editor's DBC
 importer (no API endpoint yet — surface this to the user). The importer
 generates groups + datasets for every signal in every message.
 
+Multiplexed signals: simple multiplexing is supported. The importer
+recognises the message's `MultiplexorSwitch` selector and emits one
+dataset per muxed signal titled `<name> (mux N)`. The generated Lua
+decoder extracts the selector first and gates each muxed extraction on
+`if raw_<selector> == N then ... end`, so muxed datasets don't decode
+noise from other payloads sharing the same bits — they keep their last
+valid value when the selector doesn't match. Extended multiplexing
+(`SG_MUL_VAL_`, `SwitchAndSignal` intermediates, value ranges) is not
+supported; those signals are skipped and the post-import dialog reports
+how many were dropped. Tell the user to edit the generated Lua by hand
+if extended mux is required.
+
 ### Without a DBC
 
 If the user has a custom protocol on CAN, you'll write a frame parser
