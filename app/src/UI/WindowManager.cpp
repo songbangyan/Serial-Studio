@@ -81,6 +81,39 @@ static std::optional<QRect> computeSnapRect(
 }
 
 /**
+ * @brief Returns manual anchor margins for a geometry within a canvas.
+ */
+static QMargins manualMarginsForGeometry(const QRect& geom, const int canvasW, const int canvasH)
+{
+  if (canvasW <= 0 || canvasH <= 0)
+    return QMargins();
+
+  const int left   = qMax(0, geom.x());
+  const int top    = qMax(0, geom.y());
+  const int right  = qMax(0, canvasW - (geom.x() + geom.width()));
+  const int bottom = qMax(0, canvasH - (geom.y() + geom.height()));
+  return QMargins(left, top, right, bottom);
+}
+
+/**
+ * @brief Returns the anchored geometry for a preferred size within a canvas.
+ */
+static QRect anchoredGeometry(
+  const QRect& preferred, const QMargins& margins, const int canvasW, const int canvasH)
+{
+  if (canvasW <= 0 || canvasH <= 0)
+    return preferred;
+
+  const bool anchorLeft = margins.left() <= margins.right();
+  const bool anchorTop  = margins.top() <= margins.bottom();
+  const int x           = anchorLeft ? margins.left() :
+                                      canvasW - (margins.right() + preferred.width());
+  const int y           = anchorTop ? margins.top() :
+                                     canvasH - (margins.bottom() + preferred.height());
+  return QRect(x, y, preferred.width(), preferred.height());
+}
+
+/**
  * @brief Returns true if any tracked window is currently in the maximized state.
  */
 static bool anyWindowMaximized(const QMap<int, QQuickItem*>& windows)
@@ -543,30 +576,31 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
       const int w = static_cast<int>(winGeom["width"].toDouble(200));
       const int h = static_cast<int>(winGeom["height"].toDouble(150));
       const QRect geom(x, y, w, h);
+      const int canvasW      = static_cast<int>(width());
+      const int canvasH      = static_cast<int>(height());
+      const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
+      const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
+      const QMargins margins = manualMarginsForGeometry(geom, marginCanvasW, marginCanvasH);
+      const QRect anchored   = anchoredGeometry(geom, margins, canvasW, canvasH);
 
       auto* win = m_windows.value(id);
       if (win) {
-        win->setX(geom.x());
-        win->setY(geom.y());
-        win->setWidth(geom.width());
-        win->setHeight(geom.height());
-        storeManualGeometry(id, win, savedCanvasW, savedCanvasH);
-      } else {
-        m_manualGeometries.insert(id, geom);
+        win->setX(anchored.x());
+        win->setY(anchored.y());
+        win->setWidth(anchored.width());
+        win->setHeight(anchored.height());
+      }
 
-        const int canvasW = savedCanvasW > 0 ? savedCanvasW : static_cast<int>(width());
-        const int canvasH = savedCanvasH > 0 ? savedCanvasH : static_cast<int>(height());
-        if (canvasW > 0 && canvasH > 0) {
-          const int left   = qMax(0, geom.x());
-          const int top    = qMax(0, geom.y());
-          const int right  = qMax(0, canvasW - (geom.x() + geom.width()));
-          const int bottom = qMax(0, canvasH - (geom.y() + geom.height()));
-          m_manualMargins.insert(id, QMargins(left, top, right, bottom));
-        }
+      m_manualGeometries.insert(id, geom);
+      m_manualMargins.insert(id, margins);
+
+      if (!win) {
+        m_pendingGeometries.insert(id, anchored);
+        continue;
       }
 
       // Stash for late-arriving (or re-arriving) registrations
-      m_pendingGeometries.insert(id, geom);
+      m_pendingGeometries.insert(id, anchored);
     }
 
     constrainWindows();
@@ -1016,11 +1050,7 @@ void UI::WindowManager::storeManualGeometry(
   if (canvasW <= 0 || canvasH <= 0)
     return;
 
-  const int left   = qMax(0, geom.x());
-  const int top    = qMax(0, geom.y());
-  const int right  = qMax(0, canvasW - (geom.x() + geom.width()));
-  const int bottom = qMax(0, canvasH - (geom.y() + geom.height()));
-  m_manualMargins.insert(id, QMargins(left, top, right, bottom));
+  m_manualMargins.insert(id, manualMarginsForGeometry(geom, canvasW, canvasH));
 }
 
 /**
@@ -1043,19 +1073,12 @@ void UI::WindowManager::applyManualAnchors(
 
     const QRect prefGeom   = m_manualGeometries.value(id, extractGeometry(win));
     const QMargins margins = m_manualMargins.value(id, QMargins());
+    const QRect anchored   = anchoredGeometry(prefGeom, margins, newWidth, newHeight);
 
-    const bool anchorLeft = margins.left() <= margins.right();
-    const bool anchorTop  = margins.top() <= margins.bottom();
-
-    const int newX = anchorLeft ? margins.left() :
-                                newWidth - (margins.right() + prefGeom.width());
-    const int newY = anchorTop ? margins.top() :
-                               newHeight - (margins.bottom() + prefGeom.height());
-
-    win->setX(newX);
-    win->setY(newY);
-    win->setWidth(prefGeom.width());
-    win->setHeight(prefGeom.height());
+    win->setX(anchored.x());
+    win->setY(anchored.y());
+    win->setWidth(anchored.width());
+    win->setHeight(anchored.height());
   }
 }
 
