@@ -4404,17 +4404,10 @@ QVariantList DataModel::ProjectEditor::workspacesSummary() const
   return result;
 }
 
-// Mirror buildAutoWorkspaces(): relativeIndex is project-wide per widget type.
-namespace {
-struct ResolvedWidget {
-  QString groupTitle;
-  QString datasetTitle;
-};
-
 /**
  * @brief Encodes (widgetType, groupId, relativeIndex) into a single 64-bit key.
  */
-[[nodiscard]] inline qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx)
+qint64 DataModel::ProjectEditor::workspaceWidgetKey(int widgetType, int groupId, int relIdx)
 {
   return (static_cast<qint64>(widgetType) << 40) | (static_cast<qint64>(groupId) << 20)
        | static_cast<qint64>(relIdx);
@@ -4423,9 +4416,10 @@ struct ResolvedWidget {
 /**
  * @brief Builds the lookup of every widget reference the project currently exposes.
  */
-[[nodiscard]] QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
-  const DataModel::ProjectModel& pm)
+QHash<qint64, DataModel::ProjectEditor::ResolvedWidget>
+DataModel::ProjectEditor::buildResolvedWidgetLookup(const DataModel::ProjectModel& pm)
 {
+  // relativeIndex is project-wide per widget type, matching buildAutoWorkspaces.
   QHash<qint64, ResolvedWidget> lookup;
   const auto& groups = pm.groups();
   const bool pro     = SerialStudio::proWidgetsEnabled();
@@ -4440,7 +4434,6 @@ struct ResolvedWidget {
     if (groupKey == SerialStudio::DashboardPlot3D && !pro)
       groupKey = SerialStudio::DashboardMultiPlot;
 
-    // Skip empty output panels -- nothing to render on the dashboard.
     const bool isEmptyOutputPanel =
       g.groupType == DataModel::GroupType::Output && g.outputWidgets.empty();
 
@@ -4455,7 +4448,6 @@ struct ResolvedWidget {
       lookup.insert(workspaceWidgetKey(typeKey, g.groupId, relIdx), entry);
     }
 
-    // Records one dataset-widget reference into the lookup table.
     const auto recordDatasetWidget = [&](const DataModel::Dataset& ds,
                                          SerialStudio::DashboardWidget k) {
       const int typeKey = static_cast<int>(k);
@@ -4468,7 +4460,6 @@ struct ResolvedWidget {
       lookup.insert(workspaceWidgetKey(typeKey, g.groupId, relIdx), entry);
     };
 
-    // Walk dataset widgets through a lambda so the predicate filter resets nesting.
     const auto walkDatasetWidgets = [&](const DataModel::Dataset& ds) {
       const auto keys = SerialStudio::getDashboardWidgets(ds);
       for (const auto& k : keys)
@@ -4482,7 +4473,6 @@ struct ResolvedWidget {
 
   return lookup;
 }
-}  // namespace
 
 /**
  * @brief Returns the widget references attached to the given workspace.
@@ -4600,10 +4590,11 @@ void DataModel::ProjectEditor::confirmCleanupUnresolvedWorkspaceWidgets()
   if (count <= 0)
     return;
 
-  const QString text = (count == 1)
-    ? tr("Remove 1 widget reference whose target group or dataset no longer exists?")
-    : tr("Remove %1 widget references whose target groups or datasets no longer exist?")
-        .arg(count);
+  const QString text =
+    (count == 1)
+      ? tr("Remove 1 widget reference whose target group or dataset no longer exists?")
+      : tr("Remove %1 widget references whose target groups or datasets no longer exist?")
+          .arg(count);
 
   const int choice =
     Misc::Utilities::showMessageBox(text,

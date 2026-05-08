@@ -32,6 +32,7 @@
 
 namespace DataModel {
 class CustomModel;
+class ProjectModel;
 
 /**
  * @brief Editor controller for the Project Editor window (tree, forms, selection).
@@ -392,6 +393,18 @@ private:
   void buildOutputWidgetCommonRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetValueRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetTransmitRow(const DataModel::OutputWidget& widget);
+
+  /**
+   * @brief Resolved (groupTitle, datasetTitle) pair for a workspace widget reference.
+   */
+  struct ResolvedWidget {
+    QString groupTitle;
+    QString datasetTitle;
+  };
+
+  [[nodiscard]] static qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx);
+  [[nodiscard]] static QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
+    const DataModel::ProjectModel& pm);
 
 private:
   CurrentView m_currentView;
