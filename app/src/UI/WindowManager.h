@@ -23,6 +23,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMargins>
 #include <QMap>
 #include <QObject>
 #include <QQuickItem>
@@ -125,6 +126,7 @@ private:
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);
   void applyManualAnchors(int previousWidth, int previousHeight, int newWidth, int newHeight);
+  void storeManualGeometry(int id, QQuickItem* item);
   void updateManualSnapIndicator(int newX, int newY, int w, int h, int canvasW, int canvasH);
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
@@ -139,6 +141,7 @@ private:
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;
   bool m_userReordered;
+  bool m_suppressGeometrySignal;
   int m_lastCanvasWidth;
   int m_lastCanvasHeight;
   QString m_backgroundImage;
@@ -146,6 +149,8 @@ private:
   QVector<int> m_windowOrder;
   QMap<int, QQuickItem*> m_windows;
   QMap<QQuickItem*, int> m_windowZ;
+  QMap<int, QRect> m_manualGeometries;
+  QMap<int, QMargins> m_manualMargins;
   QMap<int, QRect> m_pendingGeometries;
 
   ResizeEdge m_resizeEdge;

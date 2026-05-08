@@ -346,6 +346,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_layoutRestored(false)
   , m_autoLayoutEnabled(true)
   , m_userReordered(false)
+  , m_suppressGeometrySignal(false)
   , m_lastCanvasWidth(0)
   , m_lastCanvasHeight(0)
   , m_resizeEdge(ResizeEdge::None)
@@ -520,6 +521,8 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
   }
 
   // Restore window positions in manual mode; stash unregistered ones for first paint
+  m_manualGeometries.clear();
+  m_manualMargins.clear();
   m_pendingGeometries.clear();
   if (!autoLayout && layout.contains("geometries")) {
     QJsonArray geometries = layout["geometries"].toArray();
@@ -541,6 +544,19 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
         win->setY(geom.y());
         win->setWidth(geom.width());
         win->setHeight(geom.height());
+        storeManualGeometry(id, win);
+      } else {
+        m_manualGeometries.insert(id, geom);
+
+        const int canvasW = static_cast<int>(width());
+        const int canvasH = static_cast<int>(height());
+        if (canvasW > 0 && canvasH > 0) {
+          const int left   = qMax(0, geom.x());
+          const int top    = qMax(0, geom.y());
+          const int right  = qMax(0, canvasW - (geom.x() + geom.width()));
+          const int bottom = qMax(0, canvasH - (geom.y() + geom.height()));
+          m_manualMargins.insert(id, QMargins(left, top, right, bottom));
+        }
       }
 
       // Stash for late-arriving (or re-arriving) registrations
@@ -655,9 +671,12 @@ void UI::WindowManager::clear()
   m_focusedWindow        = nullptr;
   m_layoutRestored       = false;
   m_userReordered        = false;
+  m_suppressGeometrySignal = false;
   m_lastCanvasWidth      = 0;
   m_lastCanvasHeight     = 0;
   m_snapIndicatorVisible = false;
+  m_manualGeometries.clear();
+  m_manualMargins.clear();
   m_pendingGeometries.clear();
 
   // Re-enable auto layout if it was disabled
@@ -955,13 +974,46 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
     m_autoLayoutEnabled = enabled;
     Q_EMIT autoLayoutEnabledChanged();
 
+    if (enabled) {
+      m_manualGeometries.clear();
+      m_manualMargins.clear();
+    }
+
     // Restore maximized windows before re-tiling
     for (auto* win : std::as_const(m_windows))
       if (win->state() == "maximized")
         QMetaObject::invokeMethod(win, "restoreClicked");
 
     loadLayout();
+
+    if (!m_autoLayoutEnabled) {
+      for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it)
+        storeManualGeometry(it.key(), it.value());
+    }
   }
+}
+
+/**
+ * @brief Stores the preferred manual geometry and anchor margins for a window.
+ */
+void UI::WindowManager::storeManualGeometry(const int id, QQuickItem* item)
+{
+  if (!item)
+    return;
+
+  const QRect geom = extractGeometry(item);
+  m_manualGeometries.insert(id, geom);
+
+  const int canvasW = static_cast<int>(width());
+  const int canvasH = static_cast<int>(height());
+  if (canvasW <= 0 || canvasH <= 0)
+    return;
+
+  const int left   = qMax(0, geom.x());
+  const int top    = qMax(0, geom.y());
+  const int right  = qMax(0, canvasW - (geom.x() + geom.width()));
+  const int bottom = qMax(0, canvasH - (geom.y() + geom.height()));
+  m_manualMargins.insert(id, QMargins(left, top, right, bottom));
 }
 
 /**
@@ -973,26 +1025,30 @@ void UI::WindowManager::applyManualAnchors(
   if (previousWidth <= 0 || previousHeight <= 0 || newWidth <= 0 || newHeight <= 0)
     return;
 
-  for (auto* win : std::as_const(m_windows)) {
+  for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it) {
+    const int id = it.key();
+    auto* win    = it.value();
     if (!win || win->state() != "normal")
       continue;
 
-    const QRect geom = extractGeometry(win);
-    const int winW   = geom.width();
-    const int winH   = geom.height();
-    const int left   = geom.x();
-    const int top    = geom.y();
-    const int right  = previousWidth - (left + winW);
-    const int bottom = previousHeight - (top + winH);
+    if (!m_manualGeometries.contains(id) || !m_manualMargins.contains(id))
+      storeManualGeometry(id, win);
 
-    const bool anchorLeft = left <= right;
-    const bool anchorTop  = top <= bottom;
+    const QRect prefGeom   = m_manualGeometries.value(id, extractGeometry(win));
+    const QMargins margins = m_manualMargins.value(id, QMargins());
 
-    const int newX = anchorLeft ? left : newWidth - (right + winW);
-    const int newY = anchorTop ? top : newHeight - (bottom + winH);
+    const bool anchorLeft = margins.left() <= margins.right();
+    const bool anchorTop  = margins.top() <= margins.bottom();
+
+    const int newX = anchorLeft ? margins.left() :
+                                newWidth - (margins.right() + prefGeom.width());
+    const int newY = anchorTop ? margins.top() :
+                               newHeight - (margins.bottom() + prefGeom.height());
 
     win->setX(newX);
     win->setY(newY);
+    win->setWidth(prefGeom.width());
+    win->setHeight(prefGeom.height());
   }
 }
 
@@ -1079,7 +1135,8 @@ void UI::WindowManager::constrainWindows()
       win->setY(winY);
       win->setWidth(winW);
       win->setHeight(winH);
-      Q_EMIT geometryChanged(win);
+      if (!m_suppressGeometrySignal)
+        Q_EMIT geometryChanged(win);
     }
   }
 
@@ -1120,10 +1177,12 @@ void UI::WindowManager::triggerLayoutUpdate()
     if (sizeChanged && m_lastCanvasWidth > 0 && m_lastCanvasHeight > 0)
       applyManualAnchors(m_lastCanvasWidth, m_lastCanvasHeight, canvasW, canvasH);
 
+    m_suppressGeometrySignal = sizeChanged;
     if (hasUninitializedWindows && !m_layoutRestored)
       cascadeLayout();
     else
       constrainWindows();
+    m_suppressGeometrySignal = false;
   }
 
   if (sizeValid) {
@@ -1610,11 +1669,21 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
       }
     }
 
-    if (m_dragWindow)
-      Q_EMIT geometryChanged(m_dragWindow);
+    if (m_dragWindow) {
+      const int id = getIdForWindow(m_dragWindow);
+      if (id >= 0)
+        storeManualGeometry(id, m_dragWindow);
 
-    else if (m_resizeWindow)
+      Q_EMIT geometryChanged(m_dragWindow);
+    }
+
+    else if (m_resizeWindow) {
+      const int id = getIdForWindow(m_resizeWindow);
+      if (id >= 0)
+        storeManualGeometry(id, m_resizeWindow);
+
       Q_EMIT geometryChanged(m_resizeWindow);
+    }
   }
 
   // Release mouse and reset cursor
