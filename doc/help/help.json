@@ -27,7 +27,6 @@
   { "id": "drivers-uart", "title": "UART / Serial", "section": "Drivers", "file": "Drivers-UART.md" },
   { "id": "drivers-network", "title": "Network (TCP / UDP)", "section": "Drivers", "file": "Drivers-Network.md" },
   { "id": "drivers-bluetooth-le", "title": "Bluetooth Low Energy", "section": "Drivers", "file": "Drivers-Bluetooth-LE.md" },
-  { "id": "drivers-mqtt", "title": "MQTT", "section": "Drivers", "file": "Drivers-MQTT.md" },
   { "id": "drivers-modbus", "title": "Modbus", "section": "Drivers", "file": "Drivers-Modbus.md" },
   { "id": "drivers-can-bus", "title": "CAN Bus", "section": "Drivers", "file": "Drivers-CAN-Bus.md" },
   { "id": "drivers-audio", "title": "Audio Input", "section": "Drivers", "file": "Drivers-Audio.md" },

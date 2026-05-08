@@ -144,5 +144,4 @@ For step-by-step setup, see the [Protocol Setup Guides — Network section](Prot
 - [MQTT Integration](MQTT-Integration.md): when you need pub/sub semantics on top of TCP.
 - [Troubleshooting](Troubleshooting.md): firewall, port-conflict, and connectivity diagnostics.
 - [Drivers — UART](Drivers-UART.md): the physical-layer alternative when both ends are local.
-- [Drivers — MQTT](Drivers-MQTT.md): pub/sub on top of TCP, when you have many publishers/subscribers and a broker.
 - [API Reference](API-Reference.md): Serial Studio's own JSON-RPC TCP API on port 7777.
