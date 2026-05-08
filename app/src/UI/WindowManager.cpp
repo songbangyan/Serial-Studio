@@ -359,7 +359,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
 {
   // Configure item flags for mouse event handling
   setEnabled(true);
-  setAcceptHoverEvents(false);
+  setAcceptHoverEvents(true);
   setFlag(ItemHasContents, false);
   setFiltersChildMouseEvents(true);
   setAcceptedMouseButtons(Qt::AllButtons);
@@ -1257,7 +1257,8 @@ QRect UI::WindowManager::extractGeometry(QQuickItem* item) const
 /**
  * @brief Determines which edge or corner of a window is being hovered for resizing.
  */
-UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* target) const
+UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(
+  QQuickItem* target, const QPointF& pos) const
 {
   // Only normal-state windows can be resized
   if (target->state() != "normal")
@@ -1265,7 +1266,7 @@ UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* ta
 
   // Map mouse position to window-local coordinates
   const int kResizeMargin = 8;
-  QPointF localPos        = target->mapFromItem(this, m_initialMousePos);
+  QPointF localPos        = target->mapFromItem(this, pos);
   const int x             = static_cast<int>(localPos.x());
   const int y             = static_cast<int>(localPos.y());
   const int w             = static_cast<int>(target->width());
@@ -1303,6 +1304,60 @@ UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* ta
     return ResizeEdge::Bottom;
 
   return ResizeEdge::None;
+}
+
+/**
+ * @brief Updates the cursor when hovering over resizable edges in manual layout mode.
+ */
+void UI::WindowManager::hoverMoveEvent(QHoverEvent* event)
+{
+  if (autoLayoutEnabled()) {
+    unsetCursor();
+    QQuickItem::hoverMoveEvent(event);
+    return;
+  }
+
+  const QPointF pos = event->position();
+  auto* target = getWindow(static_cast<int>(pos.x()), static_cast<int>(pos.y()));
+  if (!target || target->state() != "normal") {
+    unsetCursor();
+    QQuickItem::hoverMoveEvent(event);
+    return;
+  }
+
+  const ResizeEdge edge = detectResizeEdge(target, pos);
+  switch (edge) {
+    case ResizeEdge::Left:
+    case ResizeEdge::Right:
+      setCursor(Qt::SizeHorCursor);
+      break;
+    case ResizeEdge::Top:
+    case ResizeEdge::Bottom:
+      setCursor(Qt::SizeVerCursor);
+      break;
+    case ResizeEdge::TopRight:
+    case ResizeEdge::BottomLeft:
+      setCursor(Qt::SizeBDiagCursor);
+      break;
+    case ResizeEdge::TopLeft:
+    case ResizeEdge::BottomRight:
+      setCursor(Qt::SizeFDiagCursor);
+      break;
+    default:
+      unsetCursor();
+      break;
+  }
+
+  QQuickItem::hoverMoveEvent(event);
+}
+
+/**
+ * @brief Clears the resize cursor when the pointer leaves the canvas.
+ */
+void UI::WindowManager::hoverLeaveEvent(QHoverEvent* event)
+{
+  unsetCursor();
+  QQuickItem::hoverLeaveEvent(event);
 }
 
 /**
@@ -1585,7 +1640,7 @@ void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 
   // Start resize or drag for normal-state windows
   if (m_focusedWindow->state() == "normal") {
-    m_resizeEdge = detectResizeEdge(m_focusedWindow);
+    m_resizeEdge = detectResizeEdge(m_focusedWindow, m_initialMousePos);
     if (m_resizeEdge != ResizeEdge::None && !autoLayoutEnabled()) {
       grabMouse();
       switch (m_resizeEdge) {

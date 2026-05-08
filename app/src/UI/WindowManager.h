@@ -120,7 +120,7 @@ private:
   [[nodiscard]] QQuickItem* findOverlapTarget(const QRect& dragRect) const;
 
   [[nodiscard]] QRect extractGeometry(QQuickItem* item) const;
-  [[nodiscard]] ResizeEdge detectResizeEdge(QQuickItem* target) const;
+  [[nodiscard]] ResizeEdge detectResizeEdge(QQuickItem* target, const QPointF& pos) const;
   QQuickItem* getWindow(const int x, const int y) const;
 
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
@@ -131,6 +131,8 @@ private:
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
 protected:
+  void hoverLeaveEvent(QHoverEvent* event) override;
+  void hoverMoveEvent(QHoverEvent* event) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
