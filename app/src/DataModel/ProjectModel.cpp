@@ -5540,7 +5540,6 @@ bool DataModel::ProjectModel::finalizeProjectSave()
   AppState::instance().setOperationMode(SerialStudio::ProjectFile);
   setModified(false);
   Q_EMIT jsonFileChanged();
-  Q_EMIT sourceStructureChanged();
   return true;
 }
 

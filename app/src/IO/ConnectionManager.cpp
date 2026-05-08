@@ -87,6 +87,23 @@ IO::ConnectionManager::ConnectionManager()
   connect(
     this, &ConnectionManager::configurationChanged, this, &ConnectionManager::connectedChanged);
 
+  // Debounce project autosaves triggered by UI-driver edits (e.g. typing in port fields)
+  m_uiDriverSaveTimer.setSingleShot(true);
+  m_uiDriverSaveTimer.setInterval(750);
+  connect(&m_uiDriverSaveTimer, &QTimer::timeout, this, [this] {
+    auto& model = DataModel::ProjectModel::instance();
+    if (model.jsonFilePath().isEmpty())
+      return;
+
+    if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+      return;
+
+    if (model.sources().size() != 1)
+      return;
+
+    (void)model.saveJsonFile(false);
+  });
+
   // Disconnect all devices on application quit
   connect(qApp, &QApplication::aboutToQuit, this, &ConnectionManager::disconnectAllDevices);
 }
@@ -1104,9 +1121,9 @@ void IO::ConnectionManager::onUiDriverConfigurationChanged()
   model.setSource0ConnectionSettings(settings);
   model.setSource0BusType(static_cast<int>(m_busType));
 
-  // Auto-save if a project file path exists
+  // Debounce the file-system save so per-keystroke edits don't thrash disk I/O
   if (!model.jsonFilePath().isEmpty())
-    (void)model.saveJsonFile(false);
+    m_uiDriverSaveTimer.start();
 }
 
 /**
