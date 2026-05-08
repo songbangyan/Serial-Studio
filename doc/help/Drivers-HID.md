@@ -1,12 +1,12 @@
 # HID Driver (Pro)
 
-The HID driver lets Serial Studio talk to **USB Human Interface Device (HID) class** peripherals: keyboards, mice, gamepads, joysticks, drawing tablets, custom HID firmware, and any vendor-specific device that registers itself as a HID class member.
+The HID driver lets Serial Studio talk to USB Human Interface Device (HID) class peripherals: keyboards, mice, gamepads, joysticks, drawing tablets, custom HID firmware, and any vendor-specific device that registers itself as a HID class member.
 
-If you're building a custom controller, a low-cost data acquisition device, or anything that wants to be plug-and-play on every consumer OS without driver installs, HID is the path of least resistance. Every modern OS has a generic HID driver built in.
+HID is the simplest path to a plug-and-play device on every consumer OS without per-vendor driver installs. Every modern OS includes a generic HID driver, so a HID-class device shows up immediately. This makes HID a good choice for custom controllers and low-cost data-acquisition devices.
 
 ## What is USB HID?
 
-The HID class was defined by the USB-IF in 1996 to handle "input devices for humans" generically. The original goal was to standardize keyboards, mice, joysticks, and game controllers so the OS didn't need a per-vendor driver for each one. Over time, "human interface" stretched to cover anything with a small periodic data stream: barcode scanners, RFID readers, fingerprint sensors, simple instruments.
+The HID class was defined by the USB-IF in 1996 to handle "input devices for humans" generically. The original goal was to standardise keyboards, mice, joysticks, and game controllers so the OS would not need a per-vendor driver for each one. Over time, "human interface" stretched to include anything with a small periodic data stream: barcode scanners, RFID readers, fingerprint sensors, and simple instruments.
 
 A HID device is a USB device that:
 
@@ -18,20 +18,20 @@ That's it. The USB packet structure is the standard interrupt-transfer mechanism
 
 ### Reports
 
-A **report** is a unit of data exchanged between host and device. Three types:
+A **report** is a unit of data exchanged between host and device. There are three types:
 
-- **Input report.** device → host. Periodic. State of buttons, position of axes, sensor readings. The bread and butter of HID.
-- **Output report.** host → device. State the host wants the device to act on. LED on/off, vibration motor strength.
-- **Feature report.** bidirectional. Configuration values, calibration, things that aren't part of the streaming exchange.
+- **Input report** — device to host. Periodic. Carries button state, axis position, or sensor readings; the bread and butter of HID.
+- **Output report** — host to device. State the host wants the device to act on, such as an LED on/off or a vibration motor strength.
+- **Feature report** — bidirectional. Configuration values, calibration, anything outside the streaming exchange.
 
-Reports can be **numbered** (each starts with a 1-byte report ID, used when the device has multiple report formats) or **unnumbered** (only one report format, no ID byte).
+Reports may be *numbered* (each begins with a 1-byte report ID, used when the device has multiple report formats) or *unnumbered* (a single format, no ID byte).
 
 ### Report descriptors
 
-This is where HID gets clever. Instead of every HID device family having its own protocol, the device describes its data structure to the host through a **report descriptor**. A report descriptor is a sequence of small items declaring:
+Rather than each HID device family inventing its own protocol, the device describes its data structure to the host through a **report descriptor**. A report descriptor is a sequence of small items declaring:
 
-- What **usage page** and **usage** each field corresponds to (semantic meaning).
-- The **size** of each field in bits.
+- The **usage page** and **usage** of each field — its semantic meaning.
+- The **size** of each field, in bits.
 - The **count** of fields of that size.
 - The **logical and physical ranges** of values.
 
@@ -60,9 +60,9 @@ Collection (Application)
 End Collection
 ```
 
-Which says: this is a joystick, with two 8-bit signed axes (X and Y, ranging -127 to +127) and 8 single-bit buttons. A report is 3 bytes total: X, Y, and a packed byte of button states.
+That declares a joystick with two 8-bit signed axes (X and Y, range -127 to +127) and 8 single-bit buttons. A report is 3 bytes: X, Y, and a packed byte of button states.
 
-The OS's generic HID driver reads this descriptor, knows what the device is, and presents standardized events to user-space.
+The OS's generic HID driver reads this descriptor, identifies the device, and presents standardised events to user-space.
 
 ### Usage pages
 
@@ -74,48 +74,48 @@ A **usage page** is a namespace defining the meaning of fields. Standard usage p
 - **LED** (page `0x08`): caps lock, num lock, scroll lock indicators.
 - **Sensor** (page `0x20`): accelerometers, gyroscopes, environmental sensors.
 
-Vendors can also define **custom usage pages** (top half of the 32-bit page space). A custom usage page lets you declare arbitrary fields without colliding with anything in the standard space.
+Vendors can also define **custom usage pages** in the top half of the 32-bit page space. A custom page lets the device declare arbitrary fields without colliding with anything in the standard space.
 
 ### hidapi
 
 [**hidapi**](https://github.com/libusb/hidapi) is a small cross-platform C library that provides a uniform API for talking to HID devices on Windows, macOS, and Linux. It abstracts over the OS-specific HID stacks (HIDClass on Windows, IOHIDManager on macOS, hidraw or libusb on Linux). Serial Studio's HID driver is built on hidapi.
 
-The advantage of hidapi over raw libusb: HID devices are generally already claimed by OS drivers, and you can't open them with libusb without unbinding the OS driver first. hidapi cooperates with the OS HID stack, so reading a HID device alongside the OS driver Just Works.
+The advantage over raw libusb is that HID devices are typically already claimed by an OS driver, and libusb cannot open them without first unbinding that driver. hidapi cooperates with the OS HID stack, so reading a HID device alongside the OS driver works without extra setup.
 
 ## How Serial Studio uses it
 
-The HID driver wraps hidapi. Setup is:
+The HID driver wraps hidapi. The setup flow is:
 
 1. Wait for **device enumeration**. Serial Studio re-enumerates HID devices every 2 seconds for hotplug detection.
 2. Pick a device by **VID:PID, Product Name** from the dropdown.
-3. Confirm the **Usage Page** and **Usage** fields are the ones you expect (some devices register multiple HID interfaces; pick the right one).
+3. Confirm the **Usage Page** and **Usage** fields. A composite device may register multiple HID interfaces; pick the one you need.
 4. Connect.
 
 From that point, every input report's payload bytes become a frame that flows through the standard FrameReader pipeline.
 
 ### Threading
 
-The HID driver runs a dedicated **read thread** that issues blocking `hid_read` calls. When data arrives, the thread captures a `SteadyClock::now()` timestamp and posts the data to the main thread via `Qt::AutoConnection`, which becomes `Qt::QueuedConnection` for the cross-thread hop. See [Threading and Timing Guarantees](Threading-and-Timing.md).
+The HID driver runs a dedicated read thread that issues blocking `hid_read` calls. When data arrives, the thread captures a `SteadyClock::now()` timestamp and posts the data to the main thread via `Qt::AutoConnection`, which resolves to `Qt::QueuedConnection` for the cross-thread hop. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
 ### Frame parsing
 
-HID data is just bytes. If your device declares a custom HID report format (e.g. 8-byte reports containing two `int16` axes and a `uint8` button packed state), you write a frame parser to decode them just like any other binary protocol. The HID report descriptor itself is purely advisory at the protocol level; the host doesn't care if you ignore it.
+HID data is just bytes. If the device declares a custom report format (for example 8-byte reports with two `int16` axes and a `uint8` packed button byte), write a frame parser to decode it as you would any other binary protocol. The HID report descriptor itself is advisory at the protocol level; the host does not require you to honour it.
 
-For step-by-step setup, see the [Protocol Setup Guides → HID section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides — HID section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **Device not listed.** On Linux, your user needs `hidraw` access. Add a udev rule:
+- **Device not listed.** On Linux, the user needs `hidraw` access. Add a udev rule:
   ```
   /etc/udev/rules.d/99-hidraw.rules:
   KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0666"
   ```
-  More restrictive (preferred): scope it to your VID/PID. On Windows and macOS, HID is generally accessible without extra setup.
-- **Multiple entries for the same device.** A composite device may register multiple HID interfaces (e.g. one for keyboard, one for vendor data). Use the Usage Page / Usage fields to identify the right interface.
-- **Connected but no data arrives.** Some HID devices only send reports on state change. A gamepad sends a report when a button is pressed or an axis moves; if it's idle, no reports. Poke the device.
-- **Reports look corrupted.** Confirm whether the device uses **numbered reports**. If yes, the first byte of each read is the report ID, not data. The frame parser needs to skip it (or split by ID if there are multiple report formats).
-- **macOS reads work but writes don't.** Output reports on macOS sometimes require `hid_send_feature_report` instead of `hid_write` depending on how the device declares its output endpoints. This is a hidapi-level quirk; if Serial Studio's writes don't reach the device, the workaround is firmware-side.
-- **Re-enumeration interval feels slow.** 2 seconds is the default. If you need faster hotplug detection (e.g. for testing), edit `kEnumIntervalMs` in `app/src/IO/Drivers/HID.cpp` and rebuild.
+  Prefer scoping the rule to a specific VID/PID rather than opening every hidraw node. Windows and macOS expose HID without extra setup.
+- **Multiple entries for the same device.** A composite device can register several HID interfaces (for example one for the keyboard interface and one for vendor data). Use the Usage Page / Usage fields to pick the right interface.
+- **Connected but no data arrives.** Some HID devices only send reports on state change. A gamepad reports when a button is pressed or an axis moves; if it is idle, nothing arrives. Move the device to confirm.
+- **Reports look corrupted.** Check whether the device uses *numbered* reports. If so, the first byte of each read is the report ID, not data. The frame parser must skip it, or split by ID when multiple report formats exist.
+- **macOS reads work but writes do not.** On macOS, output reports sometimes require `hid_send_feature_report` instead of `hid_write`, depending on how the device declares its output endpoints. This is a hidapi-level quirk; the workaround usually has to be made on the firmware side.
+- **Re-enumeration interval feels slow.** The default is 2 seconds. To speed up hotplug detection, edit `kEnumIntervalMs` in `app/src/IO/Drivers/HID.cpp` and rebuild.
 
 ## References
 

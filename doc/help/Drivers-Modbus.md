@@ -1,18 +1,18 @@
 # Modbus Driver (Pro)
 
-Modbus is the industrial protocol that refused to die. Designed in 1979 by Modicon for their PLCs, it is now a de-facto standard across factory automation, building management, energy metering, and process control. If you're connecting Serial Studio to anything older than 10 years on a factory floor or anywhere with the words "PLC", "RTU", or "SCADA" nearby, Modbus is probably how it talks.
+Modbus is a long-standing industrial protocol. Designed in 1979 by Modicon for their PLCs, it is now a de-facto standard across factory automation, building management, energy metering, and process control. PLCs, RTUs, and SCADA equipment overwhelmingly speak Modbus, so Serial Studio uses it to read most factory-floor devices.
 
-Serial Studio Pro implements both **Modbus RTU** (over serial) and **Modbus TCP** (over Ethernet), and ships a [register-map importer](Auto-Generating-Projects.md) that turns vendor CSV/XML/JSON into a working project automatically.
+Serial Studio Pro implements both **Modbus RTU** (over serial) and **Modbus TCP** (over Ethernet), and ships a [register-map importer](Auto-Generating-Projects.md) that turns vendor CSV/XML/JSON files into a working project automatically.
 
 ## What is Modbus?
 
-Modbus is a **request/response, master/slave protocol** for reading and writing memory locations on a remote device. The model is intentionally simple:
+Modbus is a request/response, master/slave protocol for reading and writing memory locations on a remote device. The model is intentionally simple:
 
-- Every Modbus device exposes a flat memory map, divided into four register tables (more on this below).
+- Every Modbus device exposes a flat memory map, divided into four register tables (described below).
 - A **master** sends a request frame containing a function code (what to do) and addresses (where in the memory map).
 - The **slave** replies with the requested data or an error.
 
-There is no streaming, no events, no push notifications. The master polls; the slave answers. If you want continuous data, you poll continuously.
+There is no streaming, no events, and no push notifications. The master polls; the slave answers. Continuous data requires continuous polling.
 
 ```mermaid
 sequenceDiagram
@@ -33,7 +33,7 @@ sequenceDiagram
 
 ### The four register tables
 
-Modbus organizes data into four tables, distinguished by **read/write capability** and **bit width**:
+Modbus organises data into four tables, distinguished by read/write capability and bit width:
 
 | Table              | Width    | Access | Typical use                           |
 |--------------------|----------|--------|---------------------------------------|
@@ -42,18 +42,18 @@ Modbus organizes data into four tables, distinguished by **read/write capability
 | **Input registers**| 16 bits  | R only | Analog inputs (sensor readings)       |
 | **Holding registers**| 16 bits | R/W   | General-purpose storage (setpoints, configuration, scratch values) |
 
-In real-world devices, the boundaries are fuzzy. A modern temperature transmitter might expose its current reading as a holding register (writable in principle, but writing has no effect) just because that's what the firmware engineer chose. Read your device's documentation; don't assume.
+Real devices are fuzzier than the table suggests. A modern temperature transmitter might expose its current reading as a holding register (writable in principle, but writing has no effect) simply because that is what the firmware engineer chose. Always check the device's documentation rather than assume.
 
-Addresses inside each table go from 0 to 65535. Confusingly, vendors document addresses two ways:
+Addresses inside each table go from 0 to 65535. Vendors document them in two ways, which is a frequent source of confusion:
 
-- **PLC numbering** (1-based, table-prefixed): `40001`–`49999` for holding, `30001`–`39999` for input, etc.
-- **Protocol numbering** (0-based, no prefix): `0`–`65535` per table.
+- **PLC numbering** (1-based, table-prefixed): `40001`-`49999` for holding registers, `30001`-`39999` for input registers, and so on.
+- **Protocol numbering** (0-based, no prefix): `0`-`65535` per table.
 
-Modbus on the wire uses protocol numbering. PLC numbering is just a vendor convention. Holding register `40100` in PLC numbering is **address 99** in protocol numbering. Off-by-one is the most common Modbus debugging story in the world.
+Modbus on the wire uses protocol numbering. PLC numbering is a vendor convention. Holding register `40100` in PLC numbering is *address 99* in protocol numbering. Off-by-one is the single most common Modbus debugging story.
 
 ### Function codes
 
-Every Modbus request carries a one-byte **function code** identifying what to do. The common ones:
+Every Modbus request carries a one-byte function code identifying what to do. The common ones:
 
 | Code | Function | Tables it touches |
 |------|----------|-------------------|
@@ -66,22 +66,22 @@ Every Modbus request carries a one-byte **function code** identifying what to do
 | 15   | Write Multiple Coils | Coils |
 | 16   | Write Multiple Registers | Holding registers |
 
-There are more (read/write combined, file records, diagnostics) but those eight cover 95% of real-world traffic.
+More function codes exist (read/write combined, file records, diagnostics), but those eight cover 95% of real-world traffic.
 
 ### Multi-register data types
 
-A Modbus register is 16 bits. Anything bigger spans multiple consecutive registers:
+A Modbus register is 16 bits. Anything wider spans multiple consecutive registers:
 
-- `uint32` / `int32` / `float32` → 2 registers (4 bytes).
-- `uint64` / `int64` / `float64` → 4 registers (8 bytes).
+- `uint32`, `int32`, `float32`: 2 registers (4 bytes).
+- `uint64`, `int64`, `float64`: 4 registers (8 bytes).
 
-The **byte and word order** is up to the device:
+Byte and word order are device-specific:
 
-- **Big-endian** (most common): high-order byte first, high-order word first. `0x1234 5678` in two registers reads as register A = `0x1234`, register B = `0x5678`.
+- **Big-endian** (most common): high-order byte first, high-order word first. `0x12345678` in two registers reads as register A = `0x1234`, register B = `0x5678`.
 - **Little-endian word swap**: register A = `0x5678`, register B = `0x1234`. Common on some legacy gear.
-- **Mixed**: byte-swap inside each register but not between. Rare but it happens.
+- **Mixed**: byte-swap inside each register but not between them. Rare but it happens.
 
-Vendor docs always specify which one. Serial Studio's register-map importer handles big-endian by default (which is what most modern devices use); if your device is different, edit the generated frame parser.
+Vendor documentation always specifies the order. Serial Studio's register-map importer assumes big-endian by default (the convention used by most modern devices); for anything else, edit the generated frame parser.
 
 ### RTU vs TCP
 
@@ -98,7 +98,7 @@ flowchart LR
     C --> D[CRC-16<br/>2 bytes]
 ```
 
-RTU runs on RS-485 most of the time, supporting up to 247 slaves on the same pair of wires. Each slave has a unique address (1–247); address 0 is reserved for broadcast.
+RTU usually runs on RS-485, which supports up to 247 slaves on a single pair of wires. Each slave has a unique address from 1 to 247; address 0 is reserved for broadcast.
 
 #### Modbus TCP
 
@@ -115,48 +115,48 @@ flowchart LR
     F --> D[Data]
 ```
 
-There's no CRC because TCP already handles error detection. The **Unit ID** is the equivalent of the slave address (used when the TCP-to-RTU gateway fronts a multi-drop RS-485 bus). For native Modbus TCP devices it's typically 1 or 255.
+There is no CRC because TCP already handles error detection. The **Unit ID** is equivalent to the slave address; it identifies the target when a TCP-to-RTU gateway fronts a multi-drop RS-485 bus. Native Modbus TCP devices typically use Unit ID 1 or 255.
 
 The standard Modbus TCP port is **502**.
 
 ## How Serial Studio uses it
 
-Serial Studio is the **master** (Modbus client). It can poll any number of slaves on the same physical link.
+Serial Studio acts as the master (Modbus client) and can poll any number of slaves on the same physical link.
 
 ### Configuration model
 
 Setup is a hierarchy:
 
-1. **Connection.** pick RTU (serial port + baud) or TCP (host + port).
-2. **Slave address.** 1–247 for RTU, Unit ID for TCP.
-3. **Register groups.** one per contiguous block of same-type registers you want to read. Each group has:
+1. **Connection.** Choose RTU (serial port plus baud rate) or TCP (host plus port).
+2. **Slave address.** 1 to 247 for RTU, Unit ID for TCP.
+3. **Register groups.** One group per contiguous block of same-type registers you want to read. Each group has:
    - Register type (coils, discrete inputs, holding, input).
    - Starting address (0-based, protocol numbering).
    - Count of registers to read in one request.
-4. **Poll interval.** how often Serial Studio re-issues all the read requests.
+4. **Poll interval.** How often Serial Studio reissues all the read requests.
 
-For each poll cycle, Serial Studio iterates through every configured register group, sends the read request, parses the response, and emits a frame containing all the read values. Your frame parser then extracts named datasets from those values.
+On each poll cycle, Serial Studio iterates through every configured register group, sends the read request, parses the response, and emits a frame containing the read values. The frame parser then extracts named datasets from those values.
 
 ### Auto-generation
 
-For devices with documented register maps, the [Modbus map importer](Auto-Generating-Projects.md) reads vendor CSV/XML/JSON files and generates the register groups, datasets, and a complete Lua frame parser automatically. Most of the time you'll start there rather than hand-configuring registers.
+For devices with documented register maps, the [Modbus map importer](Auto-Generating-Projects.md) reads vendor CSV/XML/JSON files and generates the register groups, datasets, and a complete Lua frame parser automatically. This is the recommended starting point.
 
 ### Threading
 
 The Modbus driver wraps Qt's `QModbusClient` and runs on the main thread. Polling is event-driven (no busy loop); Qt's async I/O delivers responses via signals. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
-For step-by-step setup, see the [Protocol Setup Guides → Modbus section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides — Modbus section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **"No response from slave."** Verify the slave address. PLCs from different vendors default to different addresses (1 is common, but not universal). Check the wiring on RS-485: A-to-A, B-to-B, plus a common ground if the bus spans different power domains.
-- **Off-by-one address.** PLC numbering vs protocol numbering. If the docs say "holding register 40101", you want protocol address **100**, not 40101 and not 101.
-- **CRC errors on RTU.** Almost always a wiring or termination issue. RS-485 buses need 120 Ω terminators at each end of the trunk. Stub branches longer than a few inches at high baud rates corrupt the CRC.
-- **Wrong byte order for 32-bit values.** Read raw 16-bit registers, look at the bytes, compare to the vendor doc. Most modern devices are big-endian word, big-endian byte. If your float reads as `1.234e-23`, you're decoding the wrong endianness.
-- **Polling too fast.** Some devices, especially older PLCs, can't process requests faster than one every 100 ms or so. Serial Studio happily polls at 10 ms; the device may simply not respond. Slow it down.
-- **TCP works but RTU doesn't.** RS-485 is a hostile electrical environment. Long cables, missing ground, intermittent termination, biasing resistor needed (some adapters lack pull-up/pull-down on the bus when idle). Get an oscilloscope on the line if you're stuck.
-- **"Illegal data address" exception.** The slave's memory map doesn't have that register. Re-check the vendor docs. Some PLCs only respond to addresses that are actually configured in their program; others allow reads of any address.
-- **Slave responds slowly under load.** Modern Modbus TCP is fine. Modbus RTU at 9600 baud is slow by design. A 60-register read is ~12 ms of wire time alone, plus device processing. Don't expect kilohertz polling on serial.
+- **"No response from slave."** Verify the slave address. Different PLC vendors use different defaults (1 is common but not universal). On RS-485, check the wiring: A-to-A, B-to-B, plus a common ground when the bus spans different power domains.
+- **Off-by-one address.** PLC numbering versus protocol numbering. If the docs say "holding register 40101", the protocol address is *100*, not 40101 and not 101.
+- **CRC errors on RTU.** Almost always a wiring or termination issue. RS-485 needs 120 Ω terminators at both ends of the trunk. Stub branches longer than a few inches corrupt the CRC at high baud rates.
+- **Wrong byte order for 32-bit values.** Read raw 16-bit registers, inspect the bytes, and compare them to the vendor documentation. Most modern devices use big-endian word and big-endian byte order. A float that reads as `1.234e-23` is being decoded with the wrong endianness.
+- **Polling too fast.** Some devices, especially older PLCs, cannot process requests faster than about one every 100 ms. Serial Studio is happy to poll at 10 ms, but the device may simply not respond. Slow the poll interval down.
+- **TCP works but RTU does not.** RS-485 is an unforgiving electrical environment: long cables, missing ground, intermittent termination, or missing bias resistors can all break it. Some adapters lack pull-up/pull-down on the idle bus and need an external biasing network. An oscilloscope on the line is the fastest way to diagnose this.
+- **"Illegal data address" exception.** The slave's memory map does not contain that register. Recheck the vendor documentation. Some PLCs only respond to addresses configured in their program; others allow reads of any address.
+- **Slave responds slowly under load.** Modern Modbus TCP is fast; Modbus RTU at 9600 baud is slow by design. A 60-register read takes about 12 ms of wire time alone, plus device processing time. Do not expect kilohertz polling on serial.
 
 ## References
 

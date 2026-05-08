@@ -1,12 +1,12 @@
 # Bluetooth Low Energy Driver
 
-Bluetooth Low Energy (BLE) is the wireless transport of choice for battery-powered sensors, fitness wearables, and prototyping boards (ESP32, nRF52). Serial Studio's BLE driver is in the free build and lets you connect to any BLE peripheral that exposes its data through GATT services and characteristics.
+The Bluetooth Low Energy (BLE) driver lets Serial Studio connect to any BLE peripheral that exposes its data through GATT services and characteristics. It is shipped in the free build. BLE is the common wireless transport for battery-powered sensors, fitness wearables, and prototyping boards such as the ESP32 and nRF52.
 
-If your device speaks "classic" Bluetooth (the older 2.x flavor with SPP, the Serial Port Profile), the OS exposes it as a virtual COM port and you should use the [UART driver](Drivers-UART.md) instead. This page is for BLE specifically.
+For "classic" Bluetooth devices (the older 2.x flavor that uses the Serial Port Profile), the OS already exposes a virtual COM port — use the [UART driver](Drivers-UART.md) for those. This page covers BLE only.
 
 ## What is Bluetooth Low Energy?
 
-Bluetooth Low Energy was introduced in Bluetooth 4.0 (2010) as a low-power, low-data-rate cousin of classic Bluetooth. It is **not** wire-compatible with classic Bluetooth; the radio is shared but the protocol stack is entirely separate.
+Bluetooth Low Energy was introduced in Bluetooth 4.0 (2010) as a low-power, low-data-rate companion to classic Bluetooth. It is *not* wire-compatible with classic Bluetooth; the radio is shared but the protocol stack is entirely separate.
 
 The design goals are different too:
 
@@ -18,16 +18,16 @@ The design goals are different too:
 | Connection | Always-on while paired | Bursty: connect, exchange, sleep |
 | Topology | Star, piconet | Star, mesh, broadcast |
 
-BLE excels at **infrequent small bursts of data** from devices that need to live on a battery for weeks or months. It is a poor fit for high-throughput streaming.
+BLE excels at infrequent small bursts of data from devices that need to live on a battery for weeks or months. It is a poor fit for high-throughput streaming.
 
 ### Roles: peripheral and central
 
 Two roles matter:
 
-- **Peripheral.** the device that **advertises** its presence and **exposes** data. A heart-rate monitor, a temperature sensor, an ESP32 with custom firmware.
-- **Central.** the device that **scans** for advertisements and **connects** to a peripheral. Your laptop running Serial Studio is the central.
+- **Peripheral** — the device that *advertises* its presence and *exposes* data. A heart-rate monitor, a temperature sensor, or an ESP32 running custom firmware.
+- **Central** — the device that *scans* for advertisements and *connects* to a peripheral. The laptop running Serial Studio is the central.
 
-A peripheral broadcasts short advertising packets every few hundred milliseconds. A central scans those packets, picks one, and initiates a connection. Once connected, the conversation is point-to-point until either side disconnects.
+A peripheral broadcasts short advertising packets every few hundred milliseconds. A central scans those packets, picks one, and initiates a connection. Once connected, the link is point-to-point until either side disconnects.
 
 ```mermaid
 sequenceDiagram
@@ -51,9 +51,9 @@ sequenceDiagram
 
 Once connected, BLE devices talk over the **Generic Attribute Profile (GATT)**. GATT is a simple hierarchical data model:
 
-- A **service** is a logical grouping of related data. "Heart Rate Service", "Battery Service", "Custom Vendor Service".
-- A **characteristic** is one piece of data inside a service. "Heart Rate Measurement", "Battery Level", "Sensor X Reading".
-- A **descriptor** is metadata about a characteristic (units, format, valid range, "Client Characteristic Configuration" for enabling notifications).
+- A **service** is a logical grouping of related data — "Heart Rate Service", "Battery Service", "Custom Vendor Service".
+- A **characteristic** is one piece of data inside a service — "Heart Rate Measurement", "Battery Level", "Sensor X Reading".
+- A **descriptor** is metadata about a characteristic: units, format, valid range, or the Client Characteristic Configuration descriptor that enables notifications.
 
 ```mermaid
 flowchart TD
@@ -74,55 +74,55 @@ Standard services and characteristics use 16-bit UUIDs assigned by the Bluetooth
 
 ### How data flows
 
-There are four GATT operations a central can use against a characteristic:
+A central can use four GATT operations against a characteristic:
 
-- **Read.** pull the current value once. Used for things that don't change often (firmware version, calibration constant).
-- **Write.** push a value to the peripheral. Used for control (toggle a relay, set a sample rate).
-- **Notify.** peripheral pushes a new value to the central whenever the value changes. The central must enable notifications first by writing to the **Client Characteristic Configuration Descriptor (CCCD)**. This is the standard pattern for telemetry.
-- **Indicate.** like Notify but the central acks each update. Slightly more reliable, but slower.
+- **Read** — pull the current value once. Used for values that change rarely, such as firmware version or a calibration constant.
+- **Write** — push a value to the peripheral. Used for control: toggle a relay, set a sample rate.
+- **Notify** — the peripheral pushes a new value to the central whenever the value changes. The central must enable notifications first by writing to the **Client Characteristic Configuration Descriptor (CCCD)**. This is the standard pattern for telemetry.
+- **Indicate** — like Notify, but the central acknowledges each update. Slightly more reliable, slightly slower.
 
-For Serial Studio, the relevant operation is almost always **Notify**: select a characteristic, enable notifications, and every value the peripheral sends becomes a frame.
+For Serial Studio, the operation is almost always Notify: select a characteristic, enable notifications, and every value the peripheral sends becomes a frame.
 
 ### MTU and throughput
 
-BLE is **slow** compared to USB or TCP. The default MTU (Maximum Transmission Unit) is 23 bytes, of which 20 are usable for payload after ATT overhead. Modern BLE 4.2+ devices negotiate larger MTUs (up to 247 or more), but the practical ceiling on a single connection is around 1–2 Mbps under ideal conditions. **Plan your data rate accordingly.** If you need to stream 1 kHz of sensor data, BLE will struggle; consider Wi-Fi (TCP/UDP) instead.
+BLE is slow compared to USB or TCP. The default MTU (Maximum Transmission Unit) is 23 bytes, of which 20 are usable as payload after ATT overhead. Modern BLE 4.2+ devices negotiate larger MTUs (247 or more), but the practical ceiling on a single connection is around 1 to 2 Mbps under ideal conditions. Plan accordingly: 1 kHz of sensor data will struggle on BLE, and Wi-Fi (TCP or UDP) is the better choice in that case.
 
 ## How Serial Studio uses it
 
-Serial Studio's BLE driver wraps Qt's `QLowEnergyController` and `QLowEnergyService`. The setup flow is:
+The BLE driver wraps Qt's `QLowEnergyController` and `QLowEnergyService`. The setup flow has four steps:
 
-1. **Scan.** Serial Studio uses `QBluetoothDeviceDiscoveryAgent` to enumerate nearby BLE peripherals. The list is built up over a few seconds.
-2. **Select device.** pick a peripheral from the dropdown. Serial Studio connects and discovers services.
-3. **Select service.** pick the GATT service the data lives in. Most devices have several; you want the one containing your telemetry characteristic.
-4. **Select characteristic.** pick the specific characteristic to subscribe to. Serial Studio enables notifications on it (writes `0x0001` to the CCCD).
+1. **Scan.** Serial Studio uses `QBluetoothDeviceDiscoveryAgent` to enumerate nearby BLE peripherals. The list builds up over a few seconds.
+2. **Select device.** Pick a peripheral from the dropdown. Serial Studio connects and discovers services.
+3. **Select service.** Pick the GATT service that holds the telemetry data. Most devices expose several services; choose the one containing the characteristic you need.
+4. **Select characteristic.** Pick the specific characteristic to subscribe to. Serial Studio enables notifications on it by writing `0x0001` to the CCCD.
 
 From that point on, every notification's payload bytes become a frame, exactly as if they had arrived over UART.
 
 ### Discovery is shared across instances
 
-Serial Studio caches BLE device discovery state across all instances of the driver in static state. That means:
+Serial Studio caches BLE discovery state in static storage shared across all instances of the driver. The consequences:
 
-- Discovery runs once even if multiple driver instances exist (UI driver and live driver, for example).
-- The device list is **append-only** during rediscovery, so dropdown indices stay stable across QML rebuilds.
-- Selecting the same device twice is a no-op when already connected.
+- Discovery runs once even when multiple driver instances exist — for example a UI driver and a live driver.
+- The device list is append-only during rediscovery, so dropdown indices stay stable across QML rebuilds.
+- Selecting the same device twice is a no-op when it is already selected and connected.
 
-This is intentional behavior, not a quirk. It prevents the dropdown from snapping to a different selection every time the QML reloads.
+This is intentional. It prevents the dropdown from snapping to a different selection every time QML reloads.
 
 ### Threading
 
-The driver lives on the main thread; QtBluetooth's event-driven async I/O delivers notifications via Qt signals. There's no dedicated worker thread for BLE. See [Threading and Timing Guarantees](Threading-and-Timing.md).
+The driver lives on the main thread. QtBluetooth's event-driven async I/O delivers notifications via Qt signals; there is no dedicated worker thread. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
-For setup steps, see the [Protocol Setup Guides → Bluetooth LE section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides — Bluetooth LE section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **Device doesn't appear in the scan.** It may not be advertising, or the advertisement interval might be very long. Try power-cycling the peripheral. On macOS, grant Serial Studio Bluetooth permission in **System Settings → Privacy & Security → Bluetooth**. On Linux, your user may need to be in the `bluetooth` group.
-- **"Connected" but no characteristic shows up.** The device's GATT table may not have finished discovery. Wait a few seconds after connect; some peripherals are slow to respond to discovery requests. If it still shows nothing, check whether the device requires pairing or bonding before exposing the service (some Nordic-based devices do).
-- **Notifications enable but no data arrives.** You probably enabled notifications on a characteristic that doesn't actually push notifications. Look at the characteristic's **properties** (Read / Write / Notify / Indicate). Only Notify-capable characteristics will deliver data continuously.
-- **Throughput is much lower than expected.** That's BLE. The connection interval (negotiated between central and peripheral, typically 7.5 ms to 4 s) caps the rate at which packets can flow. A 7.5 ms interval with 247-byte MTU caps you at roughly 250 kbps payload. Many peripherals negotiate slow intervals to save power; check the device's firmware for a way to request a faster interval.
-- **Connection drops after a few seconds.** Peripheral may be enforcing a security requirement (encryption, bonding). Pair the device through your OS first, then reconnect from Serial Studio.
-- **Multiple Serial Studio windows fight over the same device.** BLE is point-to-point: one peripheral can only be connected to one central at a time. Close the other window.
-- **Bluetooth radio "missing" on Linux.** `bluetoothctl` from a terminal will tell you whether BlueZ sees the adapter. If not, the kernel module may not be loaded.
+- **Device does not appear in the scan.** The peripheral may not be advertising, or its advertisement interval may be very long. Power-cycle it. On macOS, grant Serial Studio Bluetooth permission in **System Settings → Privacy & Security → Bluetooth**. On Linux, the user may need to be in the `bluetooth` group.
+- **Connected, but no characteristic appears.** GATT discovery may not have finished. Wait a few seconds after connect; some peripherals are slow to respond to discovery requests. If nothing ever appears, the device may require pairing or bonding before exposing the service — some Nordic-based devices do.
+- **Notifications enable but no data arrives.** Notifications were probably enabled on a characteristic that does not push notifications. Check the characteristic's properties (Read / Write / Notify / Indicate). Only Notify-capable characteristics deliver data continuously.
+- **Throughput is much lower than expected.** This is BLE working as designed. The connection interval (negotiated between central and peripheral, typically 7.5 ms to 4 s) caps the packet rate. A 7.5 ms interval with a 247-byte MTU yields roughly 250 kbps of payload. Peripherals often negotiate slow intervals to save power; check the firmware for a way to request a faster interval.
+- **Connection drops after a few seconds.** The peripheral may be enforcing a security requirement (encryption or bonding). Pair the device through the OS first, then reconnect from Serial Studio.
+- **Multiple Serial Studio windows fight over the same device.** BLE is point-to-point: a peripheral can only be connected to one central at a time. Close the other window.
+- **Bluetooth radio "missing" on Linux.** Run `bluetoothctl` from a terminal; it tells you whether BlueZ sees the adapter. If not, the kernel module is probably not loaded.
 
 ## References
 

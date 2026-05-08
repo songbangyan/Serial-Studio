@@ -2,31 +2,31 @@
 
 The Process I/O driver lets Serial Studio ingest data from any external program. It has two modes:
 
-- **Launch mode.** Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, anything that writes bytes to stdout.
-- **Named pipe mode.** Serial Studio opens an existing named pipe (FIFO on Linux/macOS, Windows named pipe on Windows) and reads from it. The producer is whatever process opens the same pipe for writing.
+- **Launch mode.** Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, or anything else that writes bytes to stdout.
+- **Named pipe mode.** Serial Studio opens an existing named pipe (a FIFO on Linux/macOS, a Windows named pipe on Windows) and reads from it. The producer is whatever process opens the same pipe for writing.
 
-This is the universal escape hatch. If Serial Studio doesn't have a driver for your data source, but you can write a script that emits bytes for it, the Process I/O driver bridges the gap.
+This is the universal escape hatch. When no built-in driver fits a data source but a script can emit bytes for it, the Process I/O driver bridges the gap.
 
 ## What is process I/O?
 
 ### Standard streams
 
-Every process on a Unix-like system (and Windows) has three standard streams attached to it at startup:
+Every process on a Unix-like system, and on Windows, has three standard streams attached to it at startup:
 
 - **stdin** (file descriptor 0). Input.
 - **stdout** (file descriptor 1). Normal output.
 - **stderr** (file descriptor 2). Error output.
 
-By default these are connected to the terminal: keyboard for stdin, terminal display for stdout and stderr. They can be **redirected** to files, devices, or other processes. Pipes redirect stdout of one process to stdin of another.
+By default these are connected to the terminal: keyboard for stdin, terminal display for stdout and stderr. They can be redirected to files, devices, or other processes. Pipes redirect the stdout of one process to the stdin of another.
 
-When Serial Studio launches a child process in **Launch mode**, it captures the child's stdout and treats every byte the child writes as if it had arrived from a serial port. The child is just a black box that produces bytes.
+When Serial Studio launches a child process in Launch mode, it captures the child's stdout and treats every byte the child writes as if it had arrived from a serial port. The child is a black box that produces bytes.
 
 ### Pipes
 
 A **pipe** is an in-memory unidirectional byte channel between two processes. Two flavors:
 
-- **Anonymous pipe.** Created at process spawn time, accessible only to parent and child via inherited file descriptors. The shell `|` operator creates anonymous pipes.
-- **Named pipe (FIFO).** Has a path in the filesystem. Any process with the right permissions can open it for reading or writing. The classic Unix tool to create one is `mkfifo /tmp/mypipe`. Windows has its own named pipe API with paths like `\\.\pipe\mypipe`.
+- **Anonymous pipe.** Created at process-spawn time, accessible only to parent and child through inherited file descriptors. The shell `|` operator creates anonymous pipes.
+- **Named pipe (FIFO).** Has a path in the filesystem. Any process with the right permissions can open it for reading or writing. On Unix it is created with `mkfifo /tmp/mypipe`. Windows has its own named-pipe API with paths like `\\.\pipe\mypipe`.
 
 ```mermaid
 flowchart LR
@@ -41,7 +41,7 @@ flowchart LR
     end
 ```
 
-Use **Launch mode** when Serial Studio is the parent and you want a fresh process started fresh each connection. Use **Named pipe mode** when the producer is already running, when multiple producers might write to the same pipe, or when the same data feed needs to be readable by multiple consumers.
+Use Launch mode when Serial Studio is the parent and a fresh process should start with each connection. Use Named pipe mode when the producer is already running, when multiple producers may write to the same pipe, or when the same data feed needs to be readable by multiple consumers.
 
 ### What can you pipe in?
 
@@ -53,13 +53,13 @@ Practically anything that produces bytes:
 - A shell pipeline doing format conversion (`somecmd | sed | awk`).
 - An MQTT client subscribing to a topic and writing the payloads to stdout.
 - A gRPC client converting protobuf messages to JSON lines.
-- A simulation script generating fake telemetry for development.
+- A simulation script generating synthetic telemetry for development.
 
-Process I/O is the right driver when **the data source's transport is exotic but the data itself is text or binary that fits Serial Studio's frame parser**.
+Process I/O is the right driver when the data source's transport is exotic but the data itself is text or binary that Serial Studio's frame parser can handle.
 
 ## How Serial Studio uses it
 
-The Process I/O driver runs the child or pipe read on a **dedicated thread** (`m_pipeThread`), so blocking reads on slow children don't stall the main thread. Each chunk of bytes is timestamped at read time and forwarded to the FrameReader through Qt's auto-connection (which queues across the thread hop). See [Threading and Timing Guarantees](Threading-and-Timing.md).
+The Process I/O driver runs the child or pipe read on a dedicated thread (`m_pipeThread`), so a blocking read on a slow child does not stall the main thread. Each chunk of bytes is timestamped at read time and forwarded to the FrameReader through Qt's auto-connection (which queues across the thread hop). See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
 ### Launch mode configuration
 
@@ -70,7 +70,7 @@ The Process I/O driver runs the child or pipe read on a **dedicated thread** (`m
 | **Arguments** | Command-line arguments, space-separated |
 | **Working directory** | The directory the child should be spawned in (cwd) |
 
-When you connect, Serial Studio spawns the child process and reads its stdout until the child exits or you disconnect. If the child writes to stderr, that's not captured by the driver (it goes to Serial Studio's own stderr).
+On connect, Serial Studio spawns the child process and reads its stdout until the child exits or the user disconnects. The driver does not capture stderr — anything the child writes there flows to Serial Studio's own stderr.
 
 ### Named pipe mode configuration
 
@@ -103,20 +103,20 @@ while True:
     time.sleep(0.01)
 ```
 
-In Launch mode, set Executable to `/usr/bin/python3` (or wherever your Python lives) and Arguments to the script path. Connect, switch to Quick Plot mode, and the two sine/cosine signals will plot.
+In Launch mode, set Executable to `/usr/bin/python3` (or wherever Python lives on the system) and Arguments to the script path. Connect, switch to Quick Plot mode, and the two sine/cosine signals will plot.
 
-For step-by-step setup, see the [Protocol Setup Guides → Process I/O section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides — Process I/O section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **No data appears.** Most often, the child is buffering its own output. Standard library functions buffer stdout in 4 KB chunks when stdout isn't a terminal. Force a flush after each line: in Python use `print(..., flush=True)` or `sys.stdout.flush()`; in C use `fflush(stdout)`; in Bash use `stdbuf -oL` to force line-buffered output (`stdbuf -oL my_program`).
-- **Child process exits immediately.** Serial Studio shows the child as terminated and reads no data. Test the child from a normal terminal first to verify it actually runs.
-- **Path issues.** Spaces and Unicode in executable paths or arguments can be misparsed. On Windows, quote paths containing spaces. The arguments field is split on whitespace (no shell-like quoting), so a path with a space won't work as a single argument unless you wrap it correctly.
-- **Working directory matters.** Some programs read configuration files relative to their working directory. Set the Working directory field accordingly.
-- **Permission denied on the pipe.** On Linux/macOS, the FIFO inherits filesystem permissions. `chmod 666 /tmp/mypipe` opens it to all users; tighter permissions require both reader and writer to be the same user or in the same group.
-- **Pipe buffer fills up.** Linux pipes have a small buffer (typically 64 KB). If the writer outruns Serial Studio (or vice versa), the writer blocks until the reader catches up. This is normal flow control. If your producer is critical-path real-time, consider shoveling bytes through a TCP socket (see [Drivers — Network](Drivers-Network.md)) instead.
-- **Windows-specific pipe path syntax.** On Windows, the pipe must be named `\\.\pipe\<name>`. Using a Unix-style path will fail silently or with an opaque error.
-- **Process I/O makes "scripted" data sources easy, but...** at very high data rates (hundreds of kHz), the cost of going through stdout buffering, the OS pipe, and the cross-thread queue becomes noticeable. Direct drivers are always cheaper. Process I/O is the right tool at moderate rates and for prototype/integration work.
+- **No data appears.** The child is usually buffering its own output. Standard-library functions buffer stdout in 4 KB chunks when stdout is not a terminal. Force a flush after each line: in Python use `print(..., flush=True)` or `sys.stdout.flush()`; in C use `fflush(stdout)`; in Bash use `stdbuf -oL my_program` to force line-buffered output.
+- **Child process exits immediately.** Serial Studio reports the child as terminated and reads no data. Run the child from a normal terminal first to confirm it actually starts.
+- **Path issues.** Spaces and Unicode in executable paths or arguments can be misparsed. On Windows, quote paths that contain spaces. The arguments field is split on whitespace (no shell-style quoting), so an argument with a space requires the same care.
+- **Working directory matters.** Some programs read configuration files relative to their working directory. Set the Working Directory field accordingly.
+- **Permission denied on the pipe.** On Linux/macOS, the FIFO inherits filesystem permissions. `chmod 666 /tmp/mypipe` opens it to all users; tighter permissions require both reader and writer to share a user or group.
+- **Pipe buffer fills up.** Linux pipes have a small buffer (typically 64 KB). If the writer outruns Serial Studio (or vice versa), the writer blocks until the reader catches up. This is normal flow control. For real-time critical paths, send bytes through a TCP socket instead (see [Drivers — Network](Drivers-Network.md)).
+- **Windows-specific pipe path syntax.** On Windows, the pipe must be named `\\.\pipe\<name>`. A Unix-style path fails silently or with an opaque error.
+- **Process I/O is convenient but not free.** At very high data rates (hundreds of kHz), the cost of stdout buffering, the OS pipe, and the cross-thread queue becomes noticeable. Direct drivers are always cheaper. Process I/O is the right tool at moderate rates and for prototype or integration work.
 
 ## References
 
