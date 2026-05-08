@@ -346,6 +346,8 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_layoutRestored(false)
   , m_autoLayoutEnabled(true)
   , m_userReordered(false)
+  , m_lastCanvasWidth(0)
+  , m_lastCanvasHeight(0)
   , m_resizeEdge(ResizeEdge::None)
   , m_snapIndicatorVisible(false)
   , m_taskbar(nullptr)
@@ -653,6 +655,8 @@ void UI::WindowManager::clear()
   m_focusedWindow        = nullptr;
   m_layoutRestored       = false;
   m_userReordered        = false;
+  m_lastCanvasWidth      = 0;
+  m_lastCanvasHeight     = 0;
   m_snapIndicatorVisible = false;
   m_pendingGeometries.clear();
 
@@ -961,6 +965,38 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 }
 
 /**
+ * @brief Repositions manual-layout windows to preserve edge anchoring on resize.
+ */
+void UI::WindowManager::applyManualAnchors(
+  const int previousWidth, const int previousHeight, const int newWidth, const int newHeight)
+{
+  if (previousWidth <= 0 || previousHeight <= 0 || newWidth <= 0 || newHeight <= 0)
+    return;
+
+  for (auto* win : std::as_const(m_windows)) {
+    if (!win || win->state() != "normal")
+      continue;
+
+    const QRect geom = extractGeometry(win);
+    const int winW   = geom.width();
+    const int winH   = geom.height();
+    const int left   = geom.x();
+    const int top    = geom.y();
+    const int right  = previousWidth - (left + winW);
+    const int bottom = previousHeight - (top + winH);
+
+    const bool anchorLeft = left <= right;
+    const bool anchorTop  = top <= bottom;
+
+    const int newX = anchorLeft ? left : newWidth - (right + winW);
+    const int newY = anchorTop ? top : newHeight - (bottom + winH);
+
+    win->setX(newX);
+    win->setY(newY);
+  }
+}
+
+/**
  * @brief Constrains all windows to fit within the current canvas bounds.
  */
 void UI::WindowManager::constrainWindows()
@@ -1061,6 +1097,12 @@ void UI::WindowManager::constrainWindows()
  */
 void UI::WindowManager::triggerLayoutUpdate()
 {
+  const int canvasW      = static_cast<int>(width());
+  const int canvasH      = static_cast<int>(height());
+  const bool sizeValid   = canvasW > 0 && canvasH > 0;
+  const bool sizeChanged = sizeValid
+                         && (canvasW != m_lastCanvasWidth || canvasH != m_lastCanvasHeight);
+
   // Auto-layout mode: re-tile all windows
   if (autoLayoutEnabled())
     autoLayout();
@@ -1075,10 +1117,18 @@ void UI::WindowManager::triggerLayoutUpdate()
       }
     }
 
+    if (sizeChanged && m_lastCanvasWidth > 0 && m_lastCanvasHeight > 0)
+      applyManualAnchors(m_lastCanvasWidth, m_lastCanvasHeight, canvasW, canvasH);
+
     if (hasUninitializedWindows && !m_layoutRestored)
       cascadeLayout();
     else
       constrainWindows();
+  }
+
+  if (sizeValid) {
+    m_lastCanvasWidth  = canvasW;
+    m_lastCanvasHeight = canvasH;
   }
 }
 

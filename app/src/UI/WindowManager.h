@@ -124,6 +124,7 @@ private:
 
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);
+  void applyManualAnchors(int previousWidth, int previousHeight, int newWidth, int newHeight);
   void updateManualSnapIndicator(int newX, int newY, int w, int h, int canvasW, int canvasH);
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
@@ -138,6 +139,8 @@ private:
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;
   bool m_userReordered;
+  int m_lastCanvasWidth;
+  int m_lastCanvasHeight;
   QString m_backgroundImage;
 
   QVector<int> m_windowOrder;
