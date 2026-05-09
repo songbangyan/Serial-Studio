@@ -57,12 +57,8 @@ Window {
   maximumHeight: fixedSize ? preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin : 16777215
 
   //
-  // Configure window flags + seed CSD chrome insets before first show.
-  //
-  // Without this seeding, the chrome properties stay at 0 until onVisibilityChanged fires,
-  // which is too late for fixedSize dialogs: maximumHeight latches at the small initial value
-  // and the Wayland/X11 compositor refuses to grow the window past it on Linux/Win10. The
-  // native methods return platform-known fallbacks when no decorator is registered yet.
+  // Configure window flags; seed CSD chrome insets before first show so fixed-size dialogs
+  // don't latch maximumHeight at the small initial value (native fallback covers pre-show).
   //
   Component.onCompleted: {
     if (root.staysOnTop) {

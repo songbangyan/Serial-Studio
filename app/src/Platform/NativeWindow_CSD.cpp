@@ -103,8 +103,7 @@ int NativeWindow::frameMargin(QObject* window)
   if (auto* decorator = s_decorators.value(w, nullptr))
     return decorator->shadowMargin();
 
-  // Pre-show fallback: return the platform's normal-state shadow margin so SmartDialog
-  // can size the window correctly on the first binding pass, before addWindow() runs.
+  // Pre-show fallback: normal-state shadow margin so SmartDialog sizes before addWindow runs.
 #if defined(Q_OS_WIN)
   return 0;
 #else
@@ -121,8 +120,7 @@ int NativeWindow::frameTopInset(QObject* window)
   if (!w)
     return 0;
 
-  // Win11 uses the native caption; SmartDialog accounts for it via titlebarHeight() on macOS,
-  // and on Win11 the native caption sits outside the QQuickWindow client area.
+  // Win11: native caption sits outside the QQuickWindow client area, so no inset.
   if (isWindows11())
     return 0;
 

@@ -51,8 +51,7 @@ namespace CSD {
 // Platform-specific constants
 //--------------------------------------------------------------------------------------------------
 
-// ShadowRadius, TitleBarHeight, and TitleBarHeightMaximized live in CSD.h so NativeWindow_CSD.cpp
-// can use them as pre-show fallbacks (SmartDialog needs chrome insets before addWindow runs).
+// ShadowRadius / TitleBarHeight / TitleBarHeightMaximized live in CSD.h for pre-show fallback use.
 #if defined(Q_OS_WIN)
 constexpr int IconSize        = 16;
 constexpr int IconMargin      = 8;
