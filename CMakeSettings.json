@@ -7,13 +7,9 @@
             "inheritEnvironments": [ "msvc_x64_x64" ],
             "buildRoot": "${projectDir}\\out\\build\\${name}",
             "installRoot": "${projectDir}\\out\\install\\${name}",
-            "cmakeCommandArgs": "",
+            "cmakeCommandArgs": "-DBUILD_COMMERCIAL=OFF -DBUILD_GPL3=ON",
             "buildCommandArgs": "",
-            "ctestCommandArgs": "",
-            "cacheVariables": {
-                "BUILD_COMMERCIAL": "OFF",
-                "BUILD_GPL3": "ON"
-            }
+            "ctestCommandArgs": ""
         }
     ]
 }
