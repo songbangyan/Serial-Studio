@@ -455,9 +455,9 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
 }
 
 /**
- * @brief Register dataset add/delete/duplicate and option-bitfield commands.
+ * @brief Registers project.dataset.add and project.dataset.addMany.
  */
-void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
+void API::Handlers::ProjectHandler::registerDatasetCreateCommands()
 {
   auto& registry = CommandRegistry::instance();
 
@@ -508,15 +508,23 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
     makeSchema({
       {QStringLiteral("groupId"),
        QStringLiteral("integer"),
-       QStringLiteral("Group to attach the datasets to")},
+       QStringLiteral("Group to attach the datasets to")                                    },
       {  QStringLiteral("count"),
        QStringLiteral("integer"),
-       QStringLiteral("How many datasets to create (1..1024)")},
+       QStringLiteral("How many datasets to create (1..1024)")                              },
       {QStringLiteral("options"),
        QStringLiteral("integer"),
        QStringLiteral("Visualization bit flags. See project.dataset.add for the bit table.")}
   }),
     &datasetAddMany);
+}
+
+/**
+ * @brief Registers project.dataset.delete/duplicate (single-target lifecycle ops).
+ */
+void API::Handlers::ProjectHandler::registerDatasetLifecycleCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.delete"),
@@ -535,6 +543,14 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
       {          Keys::DatasetId, QStringLiteral("integer"), QStringLiteral("Dataset id within the group")}
   }),
     &datasetDuplicate);
+}
+
+/**
+ * @brief Registers project.dataset.setOption/setOptions option-bitfield commands.
+ */
+void API::Handlers::ProjectHandler::registerDatasetOptionCommands()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setOption"),
@@ -583,6 +599,16 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
        "Compass=16, LED=32, Waterfall=64).")                                                              }
   }),
     &datasetSetOptions);
+}
+
+/**
+ * @brief Register dataset add/delete/duplicate and option-bitfield commands.
+ */
+void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
+{
+  registerDatasetCreateCommands();
+  registerDatasetLifecycleCommands();
+  registerDatasetOptionCommands();
 }
 
 /**
@@ -1340,33 +1366,48 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
 /**
  * @brief Add several datasets to a group in one call (bulk creation).
  */
+/**
+ * @brief Picks the headline visualization flag from an options bitfield.
+ */
+static SerialStudio::DatasetOption pickHeadlineDatasetOption(int options)
+{
+  for (const auto cand : {SerialStudio::DatasetPlot,
+                          SerialStudio::DatasetFFT,
+                          SerialStudio::DatasetBar,
+                          SerialStudio::DatasetGauge,
+                          SerialStudio::DatasetCompass,
+                          SerialStudio::DatasetLED,
+                          SerialStudio::DatasetWaterfall}) {
+    if (options & cand)
+      return cand;
+  }
+  return SerialStudio::DatasetGeneric;
+}
+
+/**
+ * @brief Bulk-creates N datasets in one call with optional title/index patterns.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString& id,
                                                                    const QJsonObject& params)
 {
   constexpr int kMaxAddManyCount = 1024;
 
-  if (!params.contains(QStringLiteral("groupId")))
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
-
-  if (!params.contains(QStringLiteral("count")))
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: count"));
-
-  if (!params.contains(QStringLiteral("options")))
-    return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: options"));
+  for (const auto& key :
+       {QStringLiteral("groupId"), QStringLiteral("count"), QStringLiteral("options")}) {
+    if (!params.contains(key))
+      return CommandResponse::makeError(
+        id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: %1").arg(key));
+  }
 
   const int groupId = params.value(QStringLiteral("groupId")).toInt();
   const int count   = params.value(QStringLiteral("count")).toInt();
   const int options = params.value(QStringLiteral("options")).toInt();
 
   if (count <= 0 || count > kMaxAddManyCount)
-    return CommandResponse::makeError(id,
-                                      ErrorCode::InvalidParam,
-                                      QStringLiteral("Invalid count: must be 1..%1 (got %2)")
-                                        .arg(kMaxAddManyCount)
-                                        .arg(count));
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Invalid count: must be 1..%1 (got %2)").arg(kMaxAddManyCount).arg(count));
 
   if (options < 0 || options > 0b01111111)
     return CommandResponse::makeError(
@@ -1380,11 +1421,11 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString
 
   const QString titlePattern = params.value(QStringLiteral("titlePattern")).toString();
   const int startNumber      = params.contains(QStringLiteral("startNumber"))
-                                 ? params.value(QStringLiteral("startNumber")).toInt()
-                                 : 1;
+                               ? params.value(QStringLiteral("startNumber")).toInt()
+                               : 1;
   const int startIndex       = params.contains(QStringLiteral("startIndex"))
-                                 ? params.value(QStringLiteral("startIndex")).toInt()
-                                 : -1;
+                               ? params.value(QStringLiteral("startIndex")).toInt()
+                               : -1;
 
   if (startIndex < -1)
     return CommandResponse::makeError(
@@ -1392,21 +1433,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString
       ErrorCode::InvalidParam,
       QStringLiteral("Invalid startIndex: must be -1 (auto), 0, or 1+"));
 
-  // Headline flag drives the auto-generated title; remaining bits are applied below
-  SerialStudio::DatasetOption headline = SerialStudio::DatasetGeneric;
-  for (const auto cand : {SerialStudio::DatasetPlot,
-                          SerialStudio::DatasetFFT,
-                          SerialStudio::DatasetBar,
-                          SerialStudio::DatasetGauge,
-                          SerialStudio::DatasetCompass,
-                          SerialStudio::DatasetLED,
-                          SerialStudio::DatasetWaterfall}) {
-    if (options & cand) {
-      headline = cand;
-      break;
-    }
-  }
-
+  const auto headline     = pickHeadlineDatasetOption(options);
   const int remainingBits = options & ~static_cast<int>(headline);
 
   // Suspend autosave so the whole burst lands as a single save at the end
@@ -1441,10 +1468,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString
     QJsonObject entry;
     entry[QStringLiteral("groupId")] = groupId;
     entry[Keys::DatasetId]           = d.datasetId;
-    entry[Keys::Title]                = d.title;
+    entry[Keys::Title]               = d.title;
     entry[QStringLiteral("index")]   = d.index;
-    entry[Keys::UniqueId] =
-      DataModel::dataset_unique_id(d.sourceId, groupId, d.datasetId);
+    entry[Keys::UniqueId] = DataModel::dataset_unique_id(d.sourceId, groupId, d.datasetId);
     created.append(entry);
   }
 
@@ -2310,10 +2336,23 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
                 .arg(names.join(QStringLiteral(", ")));
   }
 
+  int totalDatasets = 0;
+  for (const auto& g : groups)
+    totalDatasets += static_cast<int>(g.datasets.size());
+
   QJsonObject result;
   result[QStringLiteral("_summary")]   = summary;
   result[QStringLiteral("groups")]     = groups_array;
   result[QStringLiteral("groupCount")] = static_cast<int>(groups.size());
+  if (groups.size() >= 5 || totalDatasets >= 10)
+    result[QStringLiteral("_hint")] =
+      QStringLiteral("%1 groups / %2 datasets present. For bulk edits across many "
+                     "groups/datasets use project.batch instead of looping per-item updates "
+                     "(see meta.describeCommand{name:\"project.batch\"}). For creating arrays "
+                     "of similar datasets, use project.dataset.addMany.")
+        .arg(groups.size())
+        .arg(totalDatasets);
+
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2351,6 +2390,15 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
   result[QStringLiteral("_summary")]     = summary;
   result[QStringLiteral("datasets")]     = datasets_array;
   result[QStringLiteral("datasetCount")] = total_datasets;
+  if (total_datasets >= 10)
+    result[QStringLiteral("_hint")] =
+      QStringLiteral("Bulk edits across %1 datasets: use project.batch (rename/retitle/reindex/"
+                     "update many at once) or project.dataset.addMany (create N similar). "
+                     "Looping single project.dataset.update calls costs N round-trips and N "
+                     "autosave-debounce restarts. See meta.describeCommand{name:"
+                     "\"project.batch\"} for the {ops:[{command,params},...]} shape.")
+        .arg(total_datasets);
+
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2582,19 +2630,11 @@ API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
 /**
  * @brief Returns a composite read of the entire project state.
  */
-API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
-                                                                    const QJsonObject& params)
+/**
+ * @brief Builds the per-source array used by project.snapshot.
+ */
+static QJsonArray buildSnapshotSources(const DataModel::ProjectModel& pm, bool verbose)
 {
-  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
-  const auto& pm     = DataModel::ProjectModel::instance();
-
-  QJsonObject snapshot;
-  snapshot[Keys::Title]                = pm.title();
-  snapshot[Keys::PointCount]           = pm.pointCount();
-  snapshot[QStringLiteral("filePath")] = pm.jsonFilePath();
-  snapshot[QStringLiteral("modified")] = pm.modified();
-
-  // Sources: full when verbose, else summary
   QJsonArray sources;
   for (const auto& src : pm.sources()) {
     QJsonObject s;
@@ -2614,11 +2654,16 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
 
     sources.append(s);
   }
-  snapshot[QStringLiteral("sources")] = sources;
+  return sources;
+}
 
-  // Groups + datasets (always full -- this is the most-asked-about data)
+/**
+ * @brief Builds the groups+datasets array; writes total dataset count to @a totalDatasets.
+ */
+static QJsonArray buildSnapshotGroups(const DataModel::ProjectModel& pm, int& totalDatasets)
+{
   QJsonArray groups;
-  int totalDatasets = 0;
+  totalDatasets = 0;
   for (const auto& group : pm.groups()) {
     QJsonObject g;
     g[Keys::GroupId]                  = group.groupId;
@@ -2634,11 +2679,14 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
     g[QStringLiteral("datasets")] = ds;
     groups.append(g);
   }
-  snapshot[QStringLiteral("groups")]       = groups;
-  snapshot[QStringLiteral("groupCount")]   = groups.size();
-  snapshot[QStringLiteral("datasetCount")] = totalDatasets;
+  return groups;
+}
 
-  // Workspaces summary
+/**
+ * @brief Builds the workspace summary array used by project.snapshot.
+ */
+static QJsonArray buildSnapshotWorkspaces(const DataModel::ProjectModel& pm)
+{
   QJsonArray workspaces;
   for (const auto& ws : pm.editorWorkspaces()) {
     QJsonObject w;
@@ -2647,9 +2695,14 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
     w[QStringLiteral("widgetCount")] = static_cast<int>(ws.widgetRefs.size());
     workspaces.append(w);
   }
-  snapshot[QStringLiteral("workspaces")] = workspaces;
+  return workspaces;
+}
 
-  // Data tables: name + register count by type (full register lists are large)
+/**
+ * @brief Builds the data-tables summary array used by project.snapshot.
+ */
+static QJsonArray buildSnapshotTables(const DataModel::ProjectModel& pm)
+{
   QJsonArray tables;
   for (const auto& t : pm.tables()) {
     QJsonObject tbl;
@@ -2667,18 +2720,56 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
     tbl[QStringLiteral("computedCount")] = static_cast<int>(computed);
     tables.append(tbl);
   }
-  snapshot[QStringLiteral("dataTables")] = tables;
+  return tables;
+}
 
-  // Operation mode
+/**
+ * @brief Returns project.snapshot's caller hint, with a bulk-edit nudge above 10 datasets.
+ */
+static QString buildSnapshotHint(int totalDatasets)
+{
+  QString hint =
+    QStringLiteral("Pass verbose=true to include frame parser source and source-level frame "
+                   "settings. For per-table register details, call project.dataTable.get with "
+                   "the table name.");
+  if (totalDatasets >= 10)
+    hint += QStringLiteral(" %1 datasets present -- bulk edits should go through project.batch "
+                           "(ops: [{command, params}, ...]) instead of looping individual updates; "
+                           "project.dataset.addMany handles 'create N similar' patterns.")
+              .arg(totalDatasets);
+
+  return hint;
+}
+
+/**
+ * @brief Returns a structured snapshot of the active project (sources, groups, tables, hint).
+ */
+API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
+                                                                    const QJsonObject& params)
+{
+  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
+  const auto& pm     = DataModel::ProjectModel::instance();
+
+  QJsonObject snapshot;
+  snapshot[Keys::Title]                = pm.title();
+  snapshot[Keys::PointCount]           = pm.pointCount();
+  snapshot[QStringLiteral("filePath")] = pm.jsonFilePath();
+  snapshot[QStringLiteral("modified")] = pm.modified();
+  snapshot[QStringLiteral("sources")]  = buildSnapshotSources(pm, verbose);
+
+  int totalDatasets                        = 0;
+  const QJsonArray groups                  = buildSnapshotGroups(pm, totalDatasets);
+  snapshot[QStringLiteral("groups")]       = groups;
+  snapshot[QStringLiteral("groupCount")]   = groups.size();
+  snapshot[QStringLiteral("datasetCount")] = totalDatasets;
+  snapshot[QStringLiteral("workspaces")]   = buildSnapshotWorkspaces(pm);
+  snapshot[QStringLiteral("dataTables")]   = buildSnapshotTables(pm);
   snapshot[QStringLiteral("operationMode")] =
     static_cast<int>(AppState::instance().operationMode());
 
   QJsonObject result;
   result[QStringLiteral("snapshot")] = snapshot;
-  result[QStringLiteral("hint")] =
-    QStringLiteral("Pass verbose=true to include frame parser source and source-level "
-                   "frame settings. For per-table register details, call "
-                   "project.dataTable.get with the table name.");
+  result[QStringLiteral("hint")]     = buildSnapshotHint(totalDatasets);
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -3016,7 +3107,10 @@ void API::Handlers::ProjectHandler::registerPainterCodeCommands()
 /**
  * @brief Register patching update commands for groups/datasets/actions/outputs.
  */
-void API::Handlers::ProjectHandler::registerUpdateCommands()
+/**
+ * @brief Registers project.group.update and project.dataset.update.
+ */
+void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
 {
   auto& registry = CommandRegistry::instance();
 
@@ -3088,29 +3182,38 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
        QStringLiteral("Target widget index within the group")}
   }),
     &outputWidgetUpdate);
+}
+
+/**
+ * @brief Registers the project.batch multi-op endpoint.
+ */
+void API::Handlers::ProjectHandler::registerBatchCommand()
+{
+  auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.batch"),
-    QStringLiteral("Run several project mutations atomically WITH RESPECT TO AUTOSAVE -- "
-                   "all ops execute sequentially under one suspended-autosave window, "
-                   "and a single save is flushed at the end. Use this whenever you would "
-                   "otherwise issue more than ~5 sequential mutations (renames, retypes, "
-                   "reindexes), since N round-trips cost N times the latency and N times "
-                   "the autosave/tree-rebuild churn.\n"
-                   "Each op is {command: '<registered command name>', params: {...}}; "
-                   "results are returned in the same order with per-op success/error "
-                   "fields. Set stopOnError:true to abort the batch on the first failure "
-                   "(default false: best-effort, all ops attempted).\n"
-                   "Note: NOT transactional. Already-applied ops are NOT rolled back on "
-                   "later failures -- this is a save-suspend wrapper, not a database "
-                   "transaction. Nested project.batch calls are rejected. Hard cap of "
-                   "1024 ops per call.\n"
-                   "Example: rename 40 datasets in one round-trip:\n"
-                   "  ops: [\n"
-                   "    {command:'project.dataset.update', params:{groupId:0, datasetId:0, title:'LED 1', index:1}},\n"
-                   "    {command:'project.dataset.update', params:{groupId:0, datasetId:1, title:'LED 2', index:2}},\n"
-                   "    ...\n"
-                   "  ]"),
+    QStringLiteral(
+      "Run several project mutations atomically WITH RESPECT TO AUTOSAVE -- "
+      "all ops execute sequentially under one suspended-autosave window, "
+      "and a single save is flushed at the end. Use this whenever you would "
+      "otherwise issue more than ~5 sequential mutations (renames, retypes, "
+      "reindexes), since N round-trips cost N times the latency and N times "
+      "the autosave/tree-rebuild churn.\n"
+      "Each op is {command: '<registered command name>', params: {...}}; "
+      "results are returned in the same order with per-op success/error "
+      "fields. Set stopOnError:true to abort the batch on the first failure "
+      "(default false: best-effort, all ops attempted).\n"
+      "Note: NOT transactional. Already-applied ops are NOT rolled back on "
+      "later failures -- this is a save-suspend wrapper, not a database "
+      "transaction. Nested project.batch calls are rejected. Hard cap of "
+      "1024 ops per call.\n"
+      "Example: rename 40 datasets in one round-trip:\n"
+      "  ops: [\n"
+      "    {command:'project.dataset.update', params:{groupId:0, datasetId:0, title:'LED 1', index:1}},\n"
+      "    {command:'project.dataset.update', params:{groupId:0, datasetId:1, title:'LED 2', index:2}},\n"
+      "    ...\n"
+      "  ]"),
     makeSchema({
       {QStringLiteral("ops"),
        QStringLiteral("array"),
@@ -3118,6 +3221,15 @@ void API::Handlers::ProjectHandler::registerUpdateCommands()
                       "Max 1024.")}
   }),
     &projectBatch);
+}
+
+/**
+ * @brief Register patch endpoints for groups/datasets/actions/widgets and project.batch.
+ */
+void API::Handlers::ProjectHandler::registerUpdateCommands()
+{
+  registerEntityUpdateCommands();
+  registerBatchCommand();
 }
 
 /**
@@ -3315,50 +3427,66 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
 /**
  * @brief Patch optional dataset fields onto @p d; returns non-empty error string on failure.
  */
-QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Dataset& d,
-                                                                const QJsonObject& params,
-                                                                bool& rebuildTree,
-                                                                QSet<QString>& consumed)
+/**
+ * @brief Returns true if @a params has @a key; records the key into @a consumed.
+ */
+static bool takeParam(const QJsonObject& params, QSet<QString>& consumed, const QString& key)
 {
-  const auto take = [&](const QString& key) -> bool {
-    if (!params.contains(key))
-      return false;
+  if (!params.contains(key))
+    return false;
 
-    consumed.insert(key);
-    return true;
-  };
+  consumed.insert(key);
+  return true;
+}
 
-  if (take(QStringLiteral("title"))) {
+/**
+ * @brief Applies title/units/widget text fields and visualization toggles to @a d.
+ */
+static void applyDatasetTextAndToggleFields(DataModel::Dataset& d,
+                                            const QJsonObject& params,
+                                            bool& rebuildTree,
+                                            QSet<QString>& consumed)
+{
+  if (takeParam(params, consumed, QStringLiteral("title"))) {
     d.title     = params.value(QStringLiteral("title")).toString();
     rebuildTree = true;
   }
-  if (take(QStringLiteral("units")))
+  if (takeParam(params, consumed, QStringLiteral("units")))
     d.units = params.value(QStringLiteral("units")).toString();
 
-  if (take(QStringLiteral("widget"))) {
+  if (takeParam(params, consumed, QStringLiteral("widget"))) {
     d.widget    = params.value(QStringLiteral("widget")).toString();
     rebuildTree = true;
   }
 
   // Visualization booleans share the project JSON keys (graph/fft/led/waterfall)
-  if (take(Keys::Graph)) {
+  if (takeParam(params, consumed, Keys::Graph)) {
     d.plt       = params.value(Keys::Graph).toBool();
     rebuildTree = true;
   }
-  if (take(Keys::FFT)) {
+  if (takeParam(params, consumed, Keys::FFT)) {
     d.fft       = params.value(Keys::FFT).toBool();
     rebuildTree = true;
   }
-  if (take(Keys::LED)) {
+  if (takeParam(params, consumed, Keys::LED)) {
     d.led       = params.value(Keys::LED).toBool();
     rebuildTree = true;
   }
-  if (take(Keys::Waterfall)) {
+  if (takeParam(params, consumed, Keys::Waterfall)) {
     d.waterfall = params.value(Keys::Waterfall).toBool();
     rebuildTree = true;
   }
+}
 
-  if (take(QStringLiteral("index"))) {
+/**
+ * @brief Applies index/sourceId/numeric range fields; returns error string on bad index.
+ */
+static QString applyDatasetNumericFields(DataModel::Dataset& d,
+                                         const QJsonObject& params,
+                                         bool& rebuildTree,
+                                         QSet<QString>& consumed)
+{
+  if (takeParam(params, consumed, QStringLiteral("index"))) {
     const int idx = params.value(QStringLiteral("index")).toInt();
     if (idx < 0)
       return QStringLiteral("Invalid index: must be >= 0 (0 = unassigned, 1+ = parser slot)");
@@ -3367,68 +3495,79 @@ QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Datas
     rebuildTree = true;
   }
 
-  if (take(QStringLiteral("xAxisId")))
+  if (takeParam(params, consumed, QStringLiteral("xAxisId")))
     d.xAxisId = params.value(QStringLiteral("xAxisId")).toInt();
 
-  if (take(QStringLiteral("waterfallYAxis")))
+  if (takeParam(params, consumed, QStringLiteral("waterfallYAxis")))
     d.waterfallYAxis = params.value(QStringLiteral("waterfallYAxis")).toInt();
 
-  if (take(Keys::SourceId))
+  if (takeParam(params, consumed, Keys::SourceId))
     d.sourceId = params.value(Keys::SourceId).toInt();
 
-  if (take(QStringLiteral("fftSamples")))
+  if (takeParam(params, consumed, QStringLiteral("fftSamples")))
     d.fftSamples = params.value(QStringLiteral("fftSamples")).toInt();
 
-  if (take(QStringLiteral("fftSamplingRate")))
+  if (takeParam(params, consumed, QStringLiteral("fftSamplingRate")))
     d.fftSamplingRate = params.value(QStringLiteral("fftSamplingRate")).toInt();
 
-  if (take(QStringLiteral("fftMin")))
+  if (takeParam(params, consumed, QStringLiteral("fftMin")))
     d.fftMin = params.value(QStringLiteral("fftMin")).toDouble();
 
-  if (take(QStringLiteral("fftMax")))
+  if (takeParam(params, consumed, QStringLiteral("fftMax")))
     d.fftMax = params.value(QStringLiteral("fftMax")).toDouble();
 
-  if (take(QStringLiteral("pltMin")))
+  if (takeParam(params, consumed, QStringLiteral("pltMin")))
     d.pltMin = params.value(QStringLiteral("pltMin")).toDouble();
 
-  if (take(QStringLiteral("pltMax")))
+  if (takeParam(params, consumed, QStringLiteral("pltMax")))
     d.pltMax = params.value(QStringLiteral("pltMax")).toDouble();
 
-  if (take(QStringLiteral("wgtMin")))
+  if (takeParam(params, consumed, QStringLiteral("wgtMin")))
     d.wgtMin = params.value(QStringLiteral("wgtMin")).toDouble();
 
-  if (take(QStringLiteral("wgtMax")))
+  if (takeParam(params, consumed, QStringLiteral("wgtMax")))
     d.wgtMax = params.value(QStringLiteral("wgtMax")).toDouble();
 
-  if (take(QStringLiteral("alarmLow")))
+  if (takeParam(params, consumed, QStringLiteral("alarmLow")))
     d.alarmLow = params.value(QStringLiteral("alarmLow")).toDouble();
 
-  if (take(QStringLiteral("alarmHigh")))
+  if (takeParam(params, consumed, QStringLiteral("alarmHigh")))
     d.alarmHigh = params.value(QStringLiteral("alarmHigh")).toDouble();
 
-  if (take(QStringLiteral("alarmEnabled")))
+  if (takeParam(params, consumed, QStringLiteral("alarmEnabled")))
     d.alarmEnabled = params.value(QStringLiteral("alarmEnabled")).toBool();
 
-  if (take(QStringLiteral("ledHigh")))
+  if (takeParam(params, consumed, QStringLiteral("ledHigh")))
     d.ledHigh = params.value(QStringLiteral("ledHigh")).toDouble();
 
-  if (take(QStringLiteral("log")))
+  return QString();
+}
+
+/**
+ * @brief Applies log/display/transform fields; returns error string on bad transformLanguage.
+ */
+static QString applyDatasetDisplayAndTransformFields(DataModel::Dataset& d,
+                                                     const QJsonObject& params,
+                                                     bool& rebuildTree,
+                                                     QSet<QString>& consumed)
+{
+  if (takeParam(params, consumed, QStringLiteral("log")))
     d.log = params.value(QStringLiteral("log")).toBool();
 
-  if (take(QStringLiteral("overviewDisplay"))) {
+  if (takeParam(params, consumed, QStringLiteral("overviewDisplay"))) {
     d.overviewDisplay = params.value(QStringLiteral("overviewDisplay")).toBool();
     rebuildTree       = true;
   }
 
-  if (take(QStringLiteral("hideOnDashboard"))) {
+  if (takeParam(params, consumed, QStringLiteral("hideOnDashboard"))) {
     d.hideOnDashboard = params.value(QStringLiteral("hideOnDashboard")).toBool();
     rebuildTree       = true;
   }
 
-  if (take(QStringLiteral("transformCode")))
+  if (takeParam(params, consumed, QStringLiteral("transformCode")))
     d.transformCode = params.value(QStringLiteral("transformCode")).toString();
 
-  if (take(Keys::TransformLanguage)) {
+  if (takeParam(params, consumed, Keys::TransformLanguage)) {
     const int lang = params.value(Keys::TransformLanguage).toInt();
     if (lang != -1 && lang != SerialStudio::JavaScript && lang != SerialStudio::Lua)
       return QStringLiteral("Invalid transformLanguage: must be -1 (inherit), 0 (JS), or 1 (Lua)");
@@ -3436,8 +3575,28 @@ QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Datas
     d.transformLanguage = lang;
   }
 
-  if (take(Keys::Virtual))
+  if (takeParam(params, consumed, Keys::Virtual))
     d.virtual_ = params.value(Keys::Virtual).toBool();
+
+  return QString();
+}
+
+/**
+ * @brief Patches dataset fields from a generic params object; returns error string on failure.
+ */
+QString API::Handlers::ProjectHandler::applyDatasetUpdateParams(DataModel::Dataset& d,
+                                                                const QJsonObject& params,
+                                                                bool& rebuildTree,
+                                                                QSet<QString>& consumed)
+{
+  applyDatasetTextAndToggleFields(d, params, rebuildTree, consumed);
+
+  if (auto err = applyDatasetNumericFields(d, params, rebuildTree, consumed); !err.isEmpty())
+    return err;
+
+  if (auto err = applyDatasetDisplayAndTransformFields(d, params, rebuildTree, consumed);
+      !err.isEmpty())
+    return err;
 
   return QString();
 }
@@ -3669,31 +3828,156 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
 /**
  * @brief Runs an array of project mutations sequentially under a suspended autosave.
  */
+/**
+ * @brief Returns the schema-hint object attached to every project.batch validation error.
+ */
+static QJsonObject buildBatchSchemaHint()
+{
+  QJsonObject example;
+  QJsonArray exampleOps;
+  QJsonObject op0;
+  op0[QStringLiteral("command")] = QStringLiteral("project.dataset.update");
+  QJsonObject p0;
+  p0[QStringLiteral("groupId")] = 0;
+  p0[Keys::DatasetId]           = 0;
+  p0[QStringLiteral("title")]   = QStringLiteral("LED 1");
+  p0[QStringLiteral("index")]   = 1;
+  op0[QStringLiteral("params")] = p0;
+  exampleOps.append(op0);
+  example[QStringLiteral("ops")]         = exampleOps;
+  example[QStringLiteral("stopOnError")] = false;
+
+  QJsonObject hint;
+  hint[QStringLiteral("expected")] =
+    QStringLiteral("{ ops: Array<{command: string, params: object}>, stopOnError?: boolean }");
+  hint[QStringLiteral("opShape")] =
+    QStringLiteral("Each op MUST be {command: '<registered name>', params: {...}}. Per-call "
+                   "args go INSIDE params, not at the top of the op object.");
+  hint[QStringLiteral("limits")] =
+    QStringLiteral("1 <= ops.length <= 1024. Nested project.batch is rejected.");
+  hint[QStringLiteral("example")] = example;
+  return hint;
+}
+
+/**
+ * @brief Builds a per-op result entry for a validation failure inside project.batch.
+ */
+static QJsonObject buildBatchErrorEntry(
+  int index, const QString& command, int code, const QString& message, const QJsonObject& data)
+{
+  QJsonObject entry;
+  entry[QStringLiteral("index")] = index;
+  if (!command.isEmpty())
+    entry[QStringLiteral("command")] = command;
+
+  entry[QStringLiteral("success")] = false;
+  QJsonObject err;
+  err[QStringLiteral("code")]    = code;
+  err[QStringLiteral("message")] = message;
+  if (!data.isEmpty())
+    err[QStringLiteral("data")] = data;
+
+  entry[QStringLiteral("error")] = err;
+  return entry;
+}
+
+/**
+ * @brief Validates and executes a single project.batch op; returns the per-op result entry.
+ */
+static QJsonObject executeBatchOp(int index, const QJsonObject& op, bool& success)
+{
+  success = false;
+
+  if (op.isEmpty()) {
+    return buildBatchErrorEntry(
+      index,
+      QString(),
+      ErrorCode::InvalidParam,
+      QStringLiteral("ops[%1] must be an object of shape {command: string, params: object}")
+        .arg(index),
+      buildBatchSchemaHint());
+  }
+
+  const auto command  = op.value(QStringLiteral("command")).toString();
+  const auto opParams = op.value(QStringLiteral("params")).toObject();
+
+  if (command.isEmpty()) {
+    return buildBatchErrorEntry(index,
+                                QString(),
+                                ErrorCode::MissingParam,
+                                QStringLiteral("ops[%1].command is required (each op is "
+                                               "{command: '<registered name>', params: {...}})")
+                                  .arg(index),
+                                buildBatchSchemaHint());
+  }
+
+  if (command == QStringLiteral("project.batch")) {
+    return buildBatchErrorEntry(index,
+                                command,
+                                ErrorCode::InvalidParam,
+                                QStringLiteral("project.batch cannot be nested"),
+                                QJsonObject());
+  }
+
+  const auto response =
+    CommandRegistry::instance().execute(command, QString::number(index), opParams);
+
+  QJsonObject entry;
+  entry[QStringLiteral("index")]   = index;
+  entry[QStringLiteral("command")] = command;
+  entry[QStringLiteral("success")] = response.success;
+  if (response.success) {
+    if (!response.result.isEmpty())
+      entry[QStringLiteral("result")] = response.result;
+
+    success = true;
+  } else {
+    QJsonObject err;
+    err[QStringLiteral("code")]    = response.errorCode;
+    err[QStringLiteral("message")] = response.errorMessage;
+    if (!response.errorData.isEmpty())
+      err[QStringLiteral("data")] = response.errorData;
+
+    entry[QStringLiteral("error")] = err;
+  }
+  return entry;
+}
+
+/**
+ * @brief Runs an array of project mutations under a single suspended-autosave window.
+ */
 API::CommandResponse API::Handlers::ProjectHandler::projectBatch(const QString& id,
-                                                                  const QJsonObject& params)
+                                                                 const QJsonObject& params)
 {
   constexpr int kMaxBatchOps = 1024;
 
   if (!params.contains(QStringLiteral("ops")))
+    return CommandResponse::makeError(id,
+                                      ErrorCode::MissingParam,
+                                      QStringLiteral("Missing required parameter: ops"),
+                                      buildBatchSchemaHint());
+
+  if (!params.value(QStringLiteral("ops")).isArray())
     return CommandResponse::makeError(
-      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: ops"));
+      id, ErrorCode::InvalidParam, QStringLiteral("ops must be an array"), buildBatchSchemaHint());
 
   const auto ops = params.value(QStringLiteral("ops")).toArray();
   if (ops.isEmpty())
-    return CommandResponse::makeError(
-      id, ErrorCode::InvalidParam, QStringLiteral("ops array must not be empty"));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("ops array must not be empty"),
+                                      buildBatchSchemaHint());
 
   if (ops.size() > kMaxBatchOps)
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("ops array exceeds limit of %1 (got %2)").arg(kMaxBatchOps).arg(ops.size()));
+      QStringLiteral("ops array exceeds limit of %1 (got %2)").arg(kMaxBatchOps).arg(ops.size()),
+      buildBatchSchemaHint());
 
   const bool stopOnError = params.value(QStringLiteral("stopOnError")).toBool(false);
 
   auto& project = DataModel::ProjectModel::instance();
-  auto& registry = CommandRegistry::instance();
-
   project.setAutoSaveSuspended(true);
 
   QJsonArray results;
@@ -3702,86 +3986,15 @@ API::CommandResponse API::Handlers::ProjectHandler::projectBatch(const QString& 
   bool aborted     = false;
 
   for (int i = 0; i < ops.size(); ++i) {
-    const auto op = ops.at(i).toObject();
-    if (op.isEmpty()) {
-      QJsonObject entry;
-      entry[QStringLiteral("index")]   = i;
-      entry[QStringLiteral("success")] = false;
-      QJsonObject err;
-      err[QStringLiteral("code")]    = ErrorCode::InvalidParam;
-      err[QStringLiteral("message")] = QStringLiteral("ops[%1] must be an object").arg(i);
-      entry[QStringLiteral("error")] = err;
-      results.append(entry);
-      ++failureCount;
-      if (stopOnError) {
-        aborted = true;
-        break;
-      }
-      continue;
-    }
-
-    const auto command = op.value(QStringLiteral("command")).toString();
-    const auto opParams = op.value(QStringLiteral("params")).toObject();
-
-    if (command.isEmpty()) {
-      QJsonObject entry;
-      entry[QStringLiteral("index")]   = i;
-      entry[QStringLiteral("success")] = false;
-      QJsonObject err;
-      err[QStringLiteral("code")]    = ErrorCode::MissingParam;
-      err[QStringLiteral("message")] = QStringLiteral("ops[%1].command is required").arg(i);
-      entry[QStringLiteral("error")] = err;
-      results.append(entry);
-      ++failureCount;
-      if (stopOnError) {
-        aborted = true;
-        break;
-      }
-      continue;
-    }
-
-    if (command == QStringLiteral("project.batch")) {
-      QJsonObject entry;
-      entry[QStringLiteral("index")]   = i;
-      entry[QStringLiteral("command")] = command;
-      entry[QStringLiteral("success")] = false;
-      QJsonObject err;
-      err[QStringLiteral("code")]    = ErrorCode::InvalidParam;
-      err[QStringLiteral("message")] = QStringLiteral("project.batch cannot be nested");
-      entry[QStringLiteral("error")] = err;
-      results.append(entry);
-      ++failureCount;
-      if (stopOnError) {
-        aborted = true;
-        break;
-      }
-      continue;
-    }
-
-    const auto response = registry.execute(command, QString::number(i), opParams);
-
-    QJsonObject entry;
-    entry[QStringLiteral("index")]   = i;
-    entry[QStringLiteral("command")] = command;
-    entry[QStringLiteral("success")] = response.success;
-    if (response.success) {
-      if (!response.result.isEmpty())
-        entry[QStringLiteral("result")] = response.result;
-
-      ++successCount;
-    } else {
-      QJsonObject err;
-      err[QStringLiteral("code")]    = response.errorCode;
-      err[QStringLiteral("message")] = response.errorMessage;
-      if (!response.errorData.isEmpty())
-        err[QStringLiteral("data")] = response.errorData;
-
-      entry[QStringLiteral("error")] = err;
-      ++failureCount;
-    }
+    bool opSucceeded  = false;
+    QJsonObject entry = executeBatchOp(i, ops.at(i).toObject(), opSucceeded);
     results.append(entry);
+    if (opSucceeded)
+      ++successCount;
+    else
+      ++failureCount;
 
-    if (!response.success && stopOnError) {
+    if (!opSucceeded && stopOnError) {
       aborted = true;
       break;
     }

@@ -46,6 +46,9 @@ private:
   static void registerGroupCommands();
   static void registerDatasetCommands();
   static void registerDatasetCrudCommands();
+  static void registerDatasetCreateCommands();
+  static void registerDatasetLifecycleCommands();
+  static void registerDatasetOptionCommands();
   static void registerDatasetFieldCommands();
   static void registerActionCommands();
   static void registerOutputWidgetCommands();
@@ -55,6 +58,8 @@ private:
   static void registerPainterCommands();
   static void registerPainterCodeCommands();
   static void registerUpdateCommands();
+  static void registerEntityUpdateCommands();
+  static void registerBatchCommand();
   static void registerDryRunCommands();
   static void registerListCommands();
   static void registerResolverCommands();

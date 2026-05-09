@@ -32,6 +32,18 @@ Project
 └── tables[]             (data-bus registers; central state)
 ```
 
+## Before you read further: `project.batch` exists
+
+If the user's task involves editing more than ~5 datasets/groups/widgets,
+or creating an array of similar datasets, **scroll to the "Bulk edits"
+section now**. `project.batch` and `project.dataset.addMany` are the
+canonical answers, and using them up-front saves an entire conversation
+turn over discovering them after a 30-call sequence stalls. They are
+NOT in the default essentials list of every Serial Studio model
+deployment, so you will not always see their schema until you call
+`meta.describeCommand{name: "project.batch"}` -- the call below at
+least keeps you from inventing parameter names.
+
 ## Listing the project
 
 The model's most-used reads:
@@ -117,24 +129,100 @@ You don't need to drive it manually.
 - New/empty projects without a file path skip auto-save (nothing to
   save to). The user must explicitly save with a path.
 
-## Bulk edits — prefer `project.batch` and `project.dataset.addMany`
+## Bulk edits — STOP. Use `project.batch` / `project.dataset.addMany`.
 
-40 sequential `project.dataset.update` calls is 40 round-trips. Two
-endpoints collapse that into one:
+**This is the #1 thing LLMs miss in this codebase.** Read this section
+even if you skip the rest. The triggers below are not suggestions —
+treat them as required pre-flight checks.
 
-- `project.batch { ops: [{command, params}, ...] }` runs a sequence of
-  mutations under a single suspended-autosave window, flushing one save
-  at the end. Returns per-op `{success, result|error}`. NOT
-  transactional — already-applied ops aren't rolled back on later
-  failures. Hard cap 1024 ops, nested batches rejected.
-- `project.dataset.addMany { groupId, count, options, titlePattern?,
-  startIndex? }` bulk-creates N datasets in one call with optional
-  `{n}` / `{i}` substitution in the title. Use it for sensor arrays
-  and channel banks instead of looping `project.dataset.add`.
+### When you MUST use a batch endpoint
 
-See `api_semantics` for the full contract (ordering guarantees,
-caveats, when NOT to use). Rule of thumb: if you would otherwise issue
-more than ~5 sequential mutations in a turn, batch them.
+Before you issue a 2nd similar mutation in the same turn, ask: "is the
+3rd one going to look like this too?" If yes, batch from the start.
+
+- Renaming, retyping, retitling, or reindexing more than ~5
+  datasets/groups/widgets in one logical edit -> `project.batch`.
+- Creating 5+ similar datasets (sensor array, channel bank, multi-axis
+  IMU) -> `project.dataset.addMany`. Do NOT loop `project.dataset.add`.
+- Compacting/renumbering 10+ dataset `index` fields -> `project.batch`.
+- Applying transforms / units / ranges to many datasets -> `project.batch`.
+- "Convert all of these to gauges", "set min/max on every one of them",
+  "rename everything matching pattern X" -> `project.batch`.
+
+40 sequential `project.dataset.update` calls is 40 round-trips AND 40
+autosave-debounce restarts. The batch endpoints collapse that into ONE
+suspended-autosave window with one final save.
+
+### `project.batch` — exact shape
+
+The parameter is `ops` (NOT `commands`, NOT `mutations`, NOT `requests`).
+Each op is `{command: string, params: object}`. Both fields are
+required — if you only have `{command, ...}` with params spread at the
+top level, the op is rejected.
+
+```json
+{
+  "ops": [
+    {
+      "command": "project.dataset.update",
+      "params": { "groupId": 0, "datasetId": 0, "title": "LED 1", "index": 1 }
+    },
+    {
+      "command": "project.dataset.update",
+      "params": { "groupId": 0, "datasetId": 1, "title": "LED 2", "index": 2 }
+    }
+  ],
+  "stopOnError": false
+}
+```
+
+Returns:
+```json
+{
+  "results": [
+    { "index": 0, "command": "...", "success": true,  "result": {...} },
+    { "index": 1, "command": "...", "success": false, "error": {...} }
+  ],
+  "total": 2, "succeeded": 1, "failed": 1, "aborted": false
+}
+```
+
+### `project.dataset.addMany` — exact shape
+
+```json
+{
+  "groupId":      0,
+  "count":        40,
+  "options":      32,
+  "titlePattern": "LED {n}",
+  "startNumber":  1,
+  "startIndex":   1
+}
+```
+`options` accepts the bitfield (1=Plot, 2=FFT, 4=Bar, 8=Gauge, 16=Compass,
+32=LED, 64=Waterfall) or an array of slugs (`["plot","fft"]`).
+`titlePattern` substitutes `{n}` with `startNumber + i` and `{i}` with
+the 0-based loop counter. Returns `{count, created: [{groupId,
+datasetId, title, index, uniqueId}, ...]}` — capture those `datasetId`s
+before the next call if you need to keep editing them.
+
+### Constraints
+
+- NOT transactional. Already-applied ops are NOT rolled back on later
+  failures. `stopOnError: true` aborts on first failure but does not
+  undo. Treat as a save-suspend wrapper, not a database transaction.
+- Nested batches rejected — `command: "project.batch"` inside ops is an
+  immediate error.
+- Hard cap **1024** ops per `project.batch` call. Split larger workloads.
+- After the batch, the server flushes one autosave; you should NOT call
+  `project.save` afterwards.
+- Read `result.warnings` on every per-op result — `unknown_field`
+  warnings mean the misnamed keys were silently dropped. See
+  `api_semantics` for the unknown-field protocol.
+
+If you would otherwise issue more than ~5 sequential mutations in a
+turn: STOP. Open a `project.batch` instead. The latency and
+turn-budget savings are dramatic.
 
 ## Settings that look project-shaped but live elsewhere
 

@@ -260,9 +260,34 @@ command also enumerates them.
 ## Bulk mutations — `project.batch` and `project.dataset.addMany`
 
 40 sequential `project.dataset.update` calls is 40 round-trips and 40
-autosave-debounce restarts. Two endpoints collapse that:
+autosave-debounce restarts. Two endpoints collapse that. **If the user
+is asking for a change that scales with N, your first thought should
+be batch.**
 
-### `project.batch`
+### Triggers — when to reach for batch BEFORE the first call
+
+- "Rename N datasets to ...", "set units on all of them", "reindex 1..N",
+  "convert these to gauges", "scale all by ...", "apply transform X
+  everywhere".
+- After a `project.dataset.list` returns more than ~10 rows the user
+  wants edited.
+- After applying a template, when the user wants to customize 5+ of the
+  generated datasets in a row.
+- Before generating any code that loops `project.dataset.update` /
+  `project.group.update` / `project.dataset.setOptions` more than ~5
+  times.
+
+If you've already issued 2 individual mutations and are about to issue
+a 3rd that looks similar — STOP and convert the rest into a batch.
+
+### `project.batch` — exact shape
+
+The single required parameter is `ops` (NOT `commands`, NOT `mutations`,
+NOT `requests`). Each element is `{command: <registered name>, params:
+<object>}`. Forgetting the `params` wrapper and putting per-call args at
+the top of the op object is the most common mistake — those args are
+silently ignored and the underlying handler then errors with `MissingParam`
+on the keys it expected to find inside `params`.
 
 ```
 project.batch {
@@ -316,15 +341,22 @@ When NOT to use:
 project.dataset.addMany {
   groupId:      0,
   count:        40,
-  options:      32,           // LED bitfield (same as project.dataset.add)
-  titlePattern: "LED {n}",    // {n} -> startNumber + i, {i} -> 0-based
-  startNumber:  1,            // optional, default 1
-  startIndex:   1             // optional: -1 = auto-assign next slot,
-                              // 0 = leave unset, 1+ = consecutive slots
+  options:      32,                  // bitfield, OR an array of slugs
+                                     //   ["plot","fft"]  -> 1|2 = 3
+                                     //   ["led"]         -> 32
+                                     // bits: 1=Plot, 2=FFT, 4=Bar, 8=Gauge,
+                                     //       16=Compass, 32=LED, 64=Waterfall (Pro)
+  titlePattern: "LED {n}",           // {n} -> startNumber + i, {i} -> 0-based
+  startNumber:  1,                   // optional, default 1
+  startIndex:   1                    // optional: -1 = auto-assign next slot,
+                                     // 0 = leave unset, 1+ = consecutive slots
 }
 ```
 
 Returns `{count, created: [{groupId, datasetId, title, index, uniqueId}, ...]}`.
+**Capture the response before the next call.** The `datasetId`s are
+the keys you'll need for any follow-up `project.dataset.update` /
+`setOptions` calls.
 
 Same autosave-suspend window as `project.batch`. Use it for sensor
 arrays, channel banks, or any "create N similar datasets" pattern. For
