@@ -381,6 +381,8 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_autoLayoutEnabled(true)
   , m_userReordered(false)
   , m_suppressGeometrySignal(false)
+  , m_manualCanvasWidth(0)
+  , m_manualCanvasHeight(0)
   , m_lastCanvasWidth(0)
   , m_lastCanvasHeight(0)
   , m_resizeEdge(ResizeEdge::None)
@@ -565,6 +567,13 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
   m_manualMargins.clear();
   m_pendingGeometries.clear();
   if (!autoLayout && layout.contains("geometries")) {
+    const int canvasW      = static_cast<int>(width());
+    const int canvasH      = static_cast<int>(height());
+    const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
+    const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
+    m_manualCanvasWidth    = marginCanvasW;
+    m_manualCanvasHeight   = marginCanvasH;
+
     QJsonArray geometries = layout["geometries"].toArray();
     for (const auto& val : std::as_const(geometries)) {
       QJsonObject winGeom = val.toObject();
@@ -577,10 +586,6 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
       const int w = static_cast<int>(winGeom["width"].toDouble(200));
       const int h = static_cast<int>(winGeom["height"].toDouble(150));
       const QRect geom(x, y, w, h);
-      const int canvasW      = static_cast<int>(width());
-      const int canvasH      = static_cast<int>(height());
-      const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
-      const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
       const QMargins margins = manualMarginsForGeometry(geom, marginCanvasW, marginCanvasH);
       const QRect anchored   = anchoredGeometry(geom, margins, canvasW, canvasH);
 
@@ -645,6 +650,8 @@ void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
   const int canvasH      = static_cast<int>(height());
   const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
   const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
+  m_manualCanvasWidth    = marginCanvasW;
+  m_manualCanvasHeight   = marginCanvasH;
 
   const QJsonArray geometries = layout["geometries"].toArray();
   for (const auto& val : std::as_const(geometries)) {
@@ -728,6 +735,8 @@ void UI::WindowManager::clear()
   m_layoutRestored       = false;
   m_userReordered        = false;
   m_suppressGeometrySignal = false;
+  m_manualCanvasWidth    = 0;
+  m_manualCanvasHeight   = 0;
   m_lastCanvasWidth      = 0;
   m_lastCanvasHeight     = 0;
   m_snapIndicatorVisible = false;
@@ -1032,6 +1041,8 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
     if (enabled) {
       m_manualGeometries.clear();
       m_manualMargins.clear();
+      m_manualCanvasWidth  = 0;
+      m_manualCanvasHeight = 0;
     }
 
     // Restore maximized windows before re-tiling
@@ -1067,6 +1078,8 @@ void UI::WindowManager::storeManualGeometry(
   if (canvasW <= 0 || canvasH <= 0)
     return;
 
+  m_manualCanvasWidth  = canvasW;
+  m_manualCanvasHeight = canvasH;
   m_manualMargins.insert(id, manualMarginsForGeometry(geom, canvasW, canvasH));
 }
 
@@ -1077,6 +1090,11 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 {
   if (newWidth <= 0 || newHeight <= 0)
     return;
+
+  const int refWidth  = m_manualCanvasWidth > 0 ? m_manualCanvasWidth : newWidth;
+  const int refHeight = m_manualCanvasHeight > 0 ? m_manualCanvasHeight : newHeight;
+  const double scaleX = refWidth > 0 ? qMin(1.0, double(newWidth) / double(refWidth)) : 1.0;
+  const double scaleY = refHeight > 0 ? qMin(1.0, double(newHeight) / double(refHeight)) : 1.0;
 
   for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it) {
     const int id = it.key();
@@ -1089,7 +1107,14 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 
     const QRect prefGeom   = m_manualGeometries.value(id, extractGeometry(win));
     const QMargins margins = m_manualMargins.value(id, QMargins());
-    const QRect anchored   = anchoredGeometry(prefGeom, margins, newWidth, newHeight);
+    const int scaledW = qMax(1, qRound(prefGeom.width() * scaleX));
+    const int scaledH = qMax(1, qRound(prefGeom.height() * scaleY));
+    const QMargins scaledMargins(qRound(margins.left() * scaleX),
+                                 qRound(margins.top() * scaleY),
+                                 qRound(margins.right() * scaleX),
+                                 qRound(margins.bottom() * scaleY));
+    const QRect scaledPref(0, 0, scaledW, scaledH);
+    const QRect anchored   = anchoredGeometry(scaledPref, scaledMargins, newWidth, newHeight);
 
     win->setX(anchored.x());
     win->setY(anchored.y());

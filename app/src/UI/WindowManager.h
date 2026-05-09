@@ -145,6 +145,8 @@ private:
   bool m_autoLayoutEnabled;
   bool m_userReordered;
   bool m_suppressGeometrySignal;
+  int m_manualCanvasWidth;
+  int m_manualCanvasHeight;
   int m_lastCanvasWidth;
   int m_lastCanvasHeight;
   QString m_backgroundImage;
