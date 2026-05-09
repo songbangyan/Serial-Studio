@@ -3862,8 +3862,11 @@ static QJsonObject buildBatchSchemaHint()
 /**
  * @brief Builds a per-op result entry for a validation failure inside project.batch.
  */
-static QJsonObject buildBatchErrorEntry(
-  int index, const QString& command, int code, const QString& message, const QJsonObject& data)
+static QJsonObject buildBatchErrorEntry(int index,
+                                        const QString& command,
+                                        const QString& code,
+                                        const QString& message,
+                                        const QJsonObject& data)
 {
   QJsonObject entry;
   entry[QStringLiteral("index")] = index;
@@ -3892,7 +3895,7 @@ static QJsonObject executeBatchOp(int index, const QJsonObject& op, bool& succes
     return buildBatchErrorEntry(
       index,
       QString(),
-      ErrorCode::InvalidParam,
+      API::ErrorCode::InvalidParam,
       QStringLiteral("ops[%1] must be an object of shape {command: string, params: object}")
         .arg(index),
       buildBatchSchemaHint());
@@ -3904,7 +3907,7 @@ static QJsonObject executeBatchOp(int index, const QJsonObject& op, bool& succes
   if (command.isEmpty()) {
     return buildBatchErrorEntry(index,
                                 QString(),
-                                ErrorCode::MissingParam,
+                                API::ErrorCode::MissingParam,
                                 QStringLiteral("ops[%1].command is required (each op is "
                                                "{command: '<registered name>', params: {...}})")
                                   .arg(index),
@@ -3914,13 +3917,13 @@ static QJsonObject executeBatchOp(int index, const QJsonObject& op, bool& succes
   if (command == QStringLiteral("project.batch")) {
     return buildBatchErrorEntry(index,
                                 command,
-                                ErrorCode::InvalidParam,
+                                API::ErrorCode::InvalidParam,
                                 QStringLiteral("project.batch cannot be nested"),
                                 QJsonObject());
   }
 
   const auto response =
-    CommandRegistry::instance().execute(command, QString::number(index), opParams);
+    API::CommandRegistry::instance().execute(command, QString::number(index), opParams);
 
   QJsonObject entry;
   entry[QStringLiteral("index")]   = index;
