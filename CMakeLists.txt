@@ -451,6 +451,31 @@ if(PRODUCTION_OPTIMIZATION)
    # Add NDEBUG definition for all configurations
    add_compile_definitions(NDEBUG)
 
+   # Force unwind tables on every translation unit, regardless of optimization
+   # level. Lua-as-C++ throws lua_longjmp* across the VM call stack on every
+   # runtime error; if the parent project applies -ffunction-sections +
+   # -dead_strip / --gc-sections + LTO without preserving unwind metadata for
+   # functions that only appear on a thrown-exception path, the unwinder hits
+   # a missing personality routine and aborts via std::terminate. The crash
+   # symptom is __cxa_throw -> demangling_terminate_handler -> abort even
+   # though the underlying error is a routine Lua-level type mismatch like
+   # "string expected, got table". The flags below ensure every C/C++ object
+   # we link carries enough unwind data for the C++ runtime to walk through
+   # it cleanly.
+   if(NOT MSVC)
+      add_compile_options(
+         -fexceptions                    # Enable C++ exceptions in all TUs
+         -funwind-tables                 # Emit unwind tables for every function
+         -fasynchronous-unwind-tables    # ... including async-safe ones
+      )
+      if(APPLE)
+         # macOS: prevent the linker from discarding compact unwind data when
+         # paired with -dead_strip + LTO. Without this, throws across stripped
+         # functions hit _Unwind_Resume -> terminate.
+         add_link_options(-Wl,-keep_dwarf_unwind)
+      endif()
+   endif()
+
    # LLVM (MinGW) on Windows
    if(WIN32 AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND MINGW)
       message(STATUS "Production branch: Clang/MinGW (Windows)")

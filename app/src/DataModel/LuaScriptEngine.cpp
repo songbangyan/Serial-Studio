@@ -25,7 +25,9 @@
 #include <lua.h>
 #include <lualib.h>
 
+#include <QDebug>
 #include <QMessageBox>
+#include <stdexcept>
 
 #include "DataModel/FrameBuilder.h"
 #include "DataModel/LuaCompat.h"
@@ -48,6 +50,35 @@ static const luaL_Reg kSafeLibs[] = {
   {"coroutine", luaopen_coroutine},
   {    nullptr,           nullptr}
 };
+
+/**
+ * @brief Calls lua_pcall under a C++ try/catch -- escaped exceptions become LUA_ERRRUN.
+ */
+[[nodiscard]] static int guardedPcall(lua_State* L, int nargs, int nresults, int msgh) noexcept
+{
+  try {
+    return lua_pcall(L, nargs, nresults, msgh);
+  } catch (...) {
+    qWarning() << "[LuaScriptEngine] Uncaught C++ exception escaped lua_pcall -- "
+                  "treating as LUA_ERRRUN. Check Lua build unwind tables.";
+    try {
+      lua_settop(L, 0);
+      lua_pushstring(L, "uncaught Lua exception (escaped lua_pcall)");
+    } catch (...) {
+    }
+    return LUA_ERRRUN;
+  }
+}
+
+/**
+ * @brief Lua atpanic handler that throws so abort() is never reached.
+ */
+static int luaPanicHandler(lua_State* L)
+{
+  const char* msg = lua_tostring(L, -1);
+  qWarning() << "[LuaScriptEngine] Lua panic:" << (msg ? msg : "<unknown>");
+  throw std::runtime_error(msg ? msg : "lua panic");
+}
 
 /**
  * @brief Opens the safe standard libraries and strips dangerous globals.
@@ -111,6 +142,9 @@ void DataModel::LuaScriptEngine::createState()
 
   m_state = luaL_newstate();
   Q_ASSERT(m_state != nullptr);
+
+  // Replace default panic (which aborts) with one that throws -> guardedPcall catches
+  lua_atpanic(m_state, luaPanicHandler);
 
   openSafeLibs(m_state);
 
@@ -253,7 +287,7 @@ bool DataModel::LuaScriptEngine::loadScript(const QString& script,
 bool DataModel::LuaScriptEngine::runLoadedChunk(int sourceId, bool showMessageBoxes)
 {
   m_deadline.setRemainingTime(kRuntimeWatchdogMs);
-  const int status = lua_pcall(m_state, 0, 0, 0);
+  const int status = guardedPcall(m_state, 0, 0, 0);
   m_deadline       = QDeadlineTimer(QDeadlineTimer::Forever);
   if (status == LUA_OK)
     return true;
@@ -311,7 +345,7 @@ bool DataModel::LuaScriptEngine::probeParseFunction(int sourceId, bool showMessa
     lua_pushstring(m_state, probe);
 
     m_deadline.setRemainingTime(kRuntimeWatchdogMs);
-    const int probeStatus = lua_pcall(m_state, 1, 1, 0);
+    const int probeStatus = guardedPcall(m_state, 1, 1, 0);
     m_deadline            = QDeadlineTimer(QDeadlineTimer::Forever);
 
     if (probeStatus == LUA_OK) {
@@ -331,7 +365,7 @@ bool DataModel::LuaScriptEngine::probeParseFunction(int sourceId, bool showMessa
     lua_rawseti(m_state, -2, 1);
 
     m_deadline.setRemainingTime(kRuntimeWatchdogMs);
-    const int probeStatus = lua_pcall(m_state, 1, 1, 0);
+    const int probeStatus = guardedPcall(m_state, 1, 1, 0);
     m_deadline            = QDeadlineTimer(QDeadlineTimer::Forever);
 
     if (probeStatus == LUA_OK) {
@@ -376,24 +410,33 @@ QList<QStringList> DataModel::LuaScriptEngine::parseString(const QString& frame)
   if (!m_loaded)
     return {};
 
-  // Push parse function and string argument
-  lua_getglobal(m_state, "parse");
-  const QByteArray utf8 = frame.toUtf8();
-  lua_pushlstring(m_state, utf8.constData(), utf8.size());
+  // C++-boundary exception guard -- a thrown Lua error must not crash the host
+  try {
+    lua_getglobal(m_state, "parse");
+    const QByteArray utf8 = frame.toUtf8();
+    lua_pushlstring(m_state, utf8.constData(), utf8.size());
 
-  // Arm the watchdog deadline for the duration of this call
-  m_deadline.setRemainingTime(kRuntimeWatchdogMs);
-  const int status = lua_pcall(m_state, 1, 1, 0);
-  m_deadline       = QDeadlineTimer(QDeadlineTimer::Forever);
+    m_deadline.setRemainingTime(kRuntimeWatchdogMs);
+    const int status = guardedPcall(m_state, 1, 1, 0);
+    m_deadline       = QDeadlineTimer(QDeadlineTimer::Forever);
 
-  if (status != LUA_OK) [[unlikely]] {
-    const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
-    lua_pop(m_state, 1);
-    qWarning() << "[LuaScriptEngine] Parse error:" << err;
-    return {};
+    if (status != LUA_OK) [[unlikely]] {
+      const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
+      lua_pop(m_state, 1);
+      qWarning() << "[LuaScriptEngine] Parse error:" << err;
+      return {};
+    }
+
+    return convertResult();
+  } catch (const std::exception& e) {
+    qWarning() << "[LuaScriptEngine] parseString uncaught exception:" << e.what();
+  } catch (...) {
+    qWarning() << "[LuaScriptEngine] parseString uncaught non-std exception";
   }
 
-  return convertResult();
+  m_deadline = QDeadlineTimer(QDeadlineTimer::Forever);
+  lua_settop(m_state, 0);
+  return {};
 }
 
 /**
@@ -407,29 +450,38 @@ QList<QStringList> DataModel::LuaScriptEngine::parseBinary(const QByteArray& fra
   if (!m_loaded)
     return {};
 
-  // Push parse function and byte-table argument
-  lua_getglobal(m_state, "parse");
+  // C++-boundary exception guard -- a thrown Lua error must not crash the host
+  try {
+    lua_getglobal(m_state, "parse");
 
-  lua_createtable(m_state, frame.size(), 0);
-  const auto* data = reinterpret_cast<const quint8*>(frame.constData());
-  for (int i = 0; i < frame.size(); ++i) {
-    lua_pushinteger(m_state, data[i]);
-    lua_rawseti(m_state, -2, i + 1);
+    lua_createtable(m_state, frame.size(), 0);
+    const auto* data = reinterpret_cast<const quint8*>(frame.constData());
+    for (int i = 0; i < frame.size(); ++i) {
+      lua_pushinteger(m_state, data[i]);
+      lua_rawseti(m_state, -2, i + 1);
+    }
+
+    m_deadline.setRemainingTime(kRuntimeWatchdogMs);
+    const int status = guardedPcall(m_state, 1, 1, 0);
+    m_deadline       = QDeadlineTimer(QDeadlineTimer::Forever);
+
+    if (status != LUA_OK) [[unlikely]] {
+      const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
+      lua_pop(m_state, 1);
+      qWarning() << "[LuaScriptEngine] Parse error:" << err;
+      return {};
+    }
+
+    return convertResult();
+  } catch (const std::exception& e) {
+    qWarning() << "[LuaScriptEngine] parseBinary uncaught exception:" << e.what();
+  } catch (...) {
+    qWarning() << "[LuaScriptEngine] parseBinary uncaught non-std exception";
   }
 
-  // Arm the watchdog deadline for the duration of this call
-  m_deadline.setRemainingTime(kRuntimeWatchdogMs);
-  const int status = lua_pcall(m_state, 1, 1, 0);
-  m_deadline       = QDeadlineTimer(QDeadlineTimer::Forever);
-
-  if (status != LUA_OK) [[unlikely]] {
-    const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
-    lua_pop(m_state, 1);
-    qWarning() << "[LuaScriptEngine] Parse error:" << err;
-    return {};
-  }
-
-  return convertResult();
+  m_deadline = QDeadlineTimer(QDeadlineTimer::Forever);
+  lua_settop(m_state, 0);
+  return {};
 }
 
 //--------------------------------------------------------------------------------------------------

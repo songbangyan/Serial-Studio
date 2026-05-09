@@ -29,6 +29,8 @@
 #include <cmath>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QDebug>
+#include <stdexcept>
 
 #include "API/Server.h"
 #include "AppState.h"
@@ -954,6 +956,13 @@ void DataModel::FrameBuilder::compileTransformsLua(TransformEngine& engine,
   if (!L) [[unlikely]]
     return;
 
+  // Replace default panic (which aborts) with one that throws -> caller's catch
+  lua_atpanic(L, [](lua_State* state) -> int {
+    const char* msg = lua_tostring(state, -1);
+    qWarning() << "[FrameBuilder] Lua transform panic:" << (msg ? msg : "<unknown>");
+    throw std::runtime_error(msg ? msg : "lua transform panic");
+  });
+
   openSafeLibsForTransform(L);
 
   // Re-add Lua 5.1 / 5.2 names that 5.4 dropped (math.log10, math.pow, bit32, ...)
@@ -976,43 +985,53 @@ void DataModel::FrameBuilder::compileTransformsLua(TransformEngine& engine,
   engine.luaDeadline.setRemainingTime(kTransformWatchdogMs);
 
   for (const auto& entry : entries) {
-    // Execute the user's code, which defines transform(value)
-    const QByteArray utf8 = entry.code.toUtf8();
-    if (luaL_dostring(L, utf8.constData()) != LUA_OK) {
-      qWarning() << "[FrameBuilder] Transform compile error for"
-                 << "dataset" << entry.uniqueId << ":" << lua_tostring(L, -1);
-      lua_pop(L, 1);
-      continue;
+    // Per-entry guard -- one bad transform must not abort the rest
+    try {
+      const QByteArray utf8 = entry.code.toUtf8();
+      if (luaL_dostring(L, utf8.constData()) != LUA_OK) {
+        qWarning() << "[FrameBuilder] Transform compile error for"
+                   << "dataset" << entry.uniqueId << ":" << lua_tostring(L, -1);
+        lua_pop(L, 1);
+        continue;
+      }
+
+      // Clear any values the chunk may have returned
+      lua_settop(L, 0);
+
+      // Verify that the user defined a transform() function
+      lua_getglobal(L, "transform");
+      if (!lua_isfunction(L, -1)) {
+        lua_pop(L, 1);
+        qWarning() << "[FrameBuilder] Dataset" << entry.uniqueId
+                   << "transform code does not define transform()";
+        continue;
+      }
+
+      // Move transform -> __tf_<id> so the next dataset can reuse the name
+      const auto alias = QStringLiteral("__tf_%1").arg(entry.uniqueId);
+      lua_setglobal(L, alias.toUtf8().constData());
+      lua_pushnil(L);
+      lua_setglobal(L, "transform");
+
+      // Store a registry reference for O(1) hotpath lookup
+      lua_getglobal(L, alias.toUtf8().constData());
+      Q_ASSERT(lua_isfunction(L, -1));
+
+      // Release any previous ref for this dataset before overwriting
+      auto existingIt = engine.luaRefs.find(entry.uniqueId);
+      if (existingIt != engine.luaRefs.end()) [[unlikely]]
+        luaL_unref(L, LUA_REGISTRYINDEX, existingIt->second);
+
+      engine.luaRefs[entry.uniqueId] = luaL_ref(L, LUA_REGISTRYINDEX);
+    } catch (const std::exception& e) {
+      qWarning() << "[FrameBuilder] Transform compile uncaught exception for dataset"
+                 << entry.uniqueId << ":" << e.what();
+      lua_settop(L, 0);
+    } catch (...) {
+      qWarning() << "[FrameBuilder] Transform compile uncaught non-std exception for dataset"
+                 << entry.uniqueId;
+      lua_settop(L, 0);
     }
-
-    // Clear any values the chunk may have returned
-    lua_settop(L, 0);
-
-    // Verify that the user defined a transform() function
-    lua_getglobal(L, "transform");
-    if (!lua_isfunction(L, -1)) {
-      lua_pop(L, 1);
-      qWarning() << "[FrameBuilder] Dataset" << entry.uniqueId
-                 << "transform code does not define transform()";
-      continue;
-    }
-
-    // Move transform -> __tf_<id> so the next dataset can reuse the name
-    const auto alias = QStringLiteral("__tf_%1").arg(entry.uniqueId);
-    lua_setglobal(L, alias.toUtf8().constData());
-    lua_pushnil(L);
-    lua_setglobal(L, "transform");
-
-    // Store a registry reference for O(1) hotpath lookup
-    lua_getglobal(L, alias.toUtf8().constData());
-    Q_ASSERT(lua_isfunction(L, -1));
-
-    // Release any previous ref for this dataset before overwriting
-    auto existingIt = engine.luaRefs.find(entry.uniqueId);
-    if (existingIt != engine.luaRefs.end()) [[unlikely]]
-      luaL_unref(L, LUA_REGISTRYINDEX, existingIt->second);
-
-    engine.luaRefs[entry.uniqueId] = luaL_ref(L, LUA_REGISTRYINDEX);
   }
 
   // Disarm the deadline -- subsequent arming happens per-call
@@ -1137,40 +1156,64 @@ QVariant DataModel::FrameBuilder::applyTransformLua(TransformEngine& engine,
   lua_State* L = engine.luaState;
   engine.luaDeadline.setRemainingTime(kTransformWatchdogMs);
 
-  lua_rawgeti(L, LUA_REGISTRYINDEX, refIt->second);
-  if (rawValue.typeId() == QMetaType::Double) {
-    lua_pushnumber(L, rawValue.toDouble());
-  } else {
-    const auto utf8 = rawValue.toString().toUtf8();
-    lua_pushlstring(L, utf8.constData(), static_cast<size_t>(utf8.size()));
-  }
+  // C++-boundary exception guard -- escaped Lua throws must not crash the host
+  try {
+    lua_rawgeti(L, LUA_REGISTRYINDEX, refIt->second);
+    if (rawValue.typeId() == QMetaType::Double) {
+      lua_pushnumber(L, rawValue.toDouble());
+    } else {
+      const auto utf8 = rawValue.toString().toUtf8();
+      lua_pushlstring(L, utf8.constData(), static_cast<size_t>(utf8.size()));
+    }
 
-  const int pcallStatus = lua_pcall(L, 1, 1, 0);
-  engine.luaDeadline    = QDeadlineTimer(QDeadlineTimer::Forever);
+    int pcallStatus = LUA_ERRRUN;
+    try {
+      pcallStatus = lua_pcall(L, 1, 1, 0);
+    } catch (...) {
+      qWarning() << "[FrameBuilder] Uncaught exception escaped lua_pcall in transform for"
+                 << uniqueId;
+      try {
+        lua_settop(L, 0);
+        lua_pushstring(L, "uncaught Lua exception (escaped lua_pcall)");
+      } catch (...) {
+      }
+      pcallStatus = LUA_ERRRUN;
+    }
+    engine.luaDeadline = QDeadlineTimer(QDeadlineTimer::Forever);
 
-  if (pcallStatus != LUA_OK) [[unlikely]] {
-    qWarning() << "[FrameBuilder] Lua transform call failed for dataset" << uniqueId << ":"
-               << lua_tostring(L, -1);
+    if (pcallStatus != LUA_OK) [[unlikely]] {
+      qWarning() << "[FrameBuilder] Lua transform call failed for dataset" << uniqueId << ":"
+                 << lua_tostring(L, -1);
+      lua_pop(L, 1);
+      return rawValue;
+    }
+
+    if (lua_isnumber(L, -1)) {
+      const double result = lua_tonumber(L, -1);
+      lua_pop(L, 1);
+      if (!std::isfinite(result)) [[unlikely]]
+        return rawValue;
+
+      return QVariant(result);
+    }
+
+    if (lua_isstring(L, -1)) {
+      const QString result = QString::fromUtf8(lua_tostring(L, -1));
+      lua_pop(L, 1);
+      return QVariant(result);
+    }
+
     lua_pop(L, 1);
     return rawValue;
+  } catch (const std::exception& e) {
+    qWarning() << "[FrameBuilder] applyTransformLua uncaught exception for" << uniqueId << ":"
+               << e.what();
+  } catch (...) {
+    qWarning() << "[FrameBuilder] applyTransformLua uncaught non-std exception for" << uniqueId;
   }
 
-  if (lua_isnumber(L, -1)) {
-    const double result = lua_tonumber(L, -1);
-    lua_pop(L, 1);
-    if (!std::isfinite(result)) [[unlikely]]
-      return rawValue;
-
-    return QVariant(result);
-  }
-
-  if (lua_isstring(L, -1)) {
-    const QString result = QString::fromUtf8(lua_tostring(L, -1));
-    lua_pop(L, 1);
-    return QVariant(result);
-  }
-
-  lua_pop(L, 1);
+  engine.luaDeadline = QDeadlineTimer(QDeadlineTimer::Forever);
+  lua_settop(L, 0);
   return rawValue;
 }
 
