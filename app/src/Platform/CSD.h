@@ -169,7 +169,9 @@ private:
 /**
  * @brief Manages client-side decorations for a QQuickWindow.
  */
-class Window : public QObject, public QAbstractNativeEventFilter {
+class Window
+  : public QObject
+  , public QAbstractNativeEventFilter {
   Q_OBJECT
 
 public:

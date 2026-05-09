@@ -38,6 +38,7 @@
 #if defined(Q_OS_WIN)
 #  include <dwmapi.h>
 #  include <windowsx.h>
+
 #  include <QGuiApplication>
 #endif
 
@@ -95,6 +96,105 @@ static bool isFixedSizeWindow(const QWindow* window)
 
   return minSize == maxSize;
 }
+
+#if defined(Q_OS_WIN)
+/**
+ * @brief Handles WM_NCCALCSIZE; clips client to monitor work area when maximized.
+ */
+static bool handleNCCalcSize(HWND ownHwnd, MSG* msg, qintptr* result)
+{
+  if (msg->wParam == FALSE)
+    return false;
+
+  auto* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
+  if (IsZoomed(ownHwnd)) {
+    HMONITOR mon = MonitorFromWindow(ownHwnd, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    if (GetMonitorInfoW(mon, &mi))
+      params->rgrc[0] = mi.rcWork;
+  }
+
+  *result = 0;
+  return true;
+}
+
+/**
+ * @brief Maps a client-relative point to a Win32 resize-edge HT* code, or 0 if none.
+ */
+static LRESULT resizeEdgeHitCode(int x, int y, int w, int h, int border)
+{
+  const bool top    = y < border;
+  const bool bottom = y >= h - border;
+  const bool left   = x < border;
+  const bool right  = x >= w - border;
+
+  if (top && left)
+    return HTTOPLEFT;
+
+  if (top && right)
+    return HTTOPRIGHT;
+
+  if (bottom && left)
+    return HTBOTTOMLEFT;
+
+  if (bottom && right)
+    return HTBOTTOMRIGHT;
+
+  if (top)
+    return HTTOP;
+
+  if (bottom)
+    return HTBOTTOM;
+
+  if (left)
+    return HTLEFT;
+
+  if (right)
+    return HTRIGHT;
+
+  return 0;
+}
+
+/**
+ * @brief Handles WM_NCHITTEST; returns the appropriate HT* code via @a result.
+ */
+static bool handleNCHitTest(
+  HWND ownHwnd, MSG* msg, QWindow* qtWindow, int titleBarHeight, qintptr* result)
+{
+  const POINT pt = {GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam)};
+  RECT wndRect;
+  if (!GetWindowRect(ownHwnd, &wndRect))
+    return false;
+
+  const int x = pt.x - wndRect.left;
+  const int y = pt.y - wndRect.top;
+  const int w = wndRect.right - wndRect.left;
+  const int h = wndRect.bottom - wndRect.top;
+
+  const bool maximized = IsZoomed(ownHwnd) || (qtWindow->windowStates() & Qt::WindowFullScreen);
+  const bool fixed     = isFixedSizeWindow(qtWindow);
+
+  if (!maximized && !fixed) {
+    if (const LRESULT edge = resizeEdgeHitCode(x, y, w, h, CSD::ResizeMargin); edge != 0) {
+      *result = edge;
+      return true;
+    }
+  }
+
+  // Titlebar drag: top strip; right-side button band stays HTCLIENT so QML owns Min/Max/Close.
+  if (y < titleBarHeight) {
+    const int buttonAreaWidth = 3 * CSD::ButtonWidth;
+    if (x < w - buttonAreaWidth) {
+      *result = HTCAPTION;
+      return true;
+    }
+  }
+
+  *result = HTCLIENT;
+  return true;
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------
 // Titlebar
@@ -934,7 +1034,7 @@ Window::Window(QWindow* window, const QString& color, QObject* parent)
   updateMinimumSize();
 
 #if defined(Q_OS_WIN)
-  // WS_THICKFRAME hands resize/snap/animations to DWM; WM_NCCALCSIZE/WM_NCHITTEST below keep client edge-to-edge.
+  // WS_THICKFRAME hands resize/snap/animations to DWM; NC handlers below keep client edge-to-edge.
   if (auto* qw = qobject_cast<QQuickWindow*>(m_window.data())) {
     if (HWND hwnd = reinterpret_cast<HWND>(qw->winId())) {
       const LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
@@ -1560,106 +1660,20 @@ bool Window::nativeEventFilter(const QByteArray& eventType, void* message, qintp
   if (eventType != "windows_generic_MSG" && eventType != "windows_dispatcher_MSG")
     return false;
 
-  auto* msg               = static_cast<MSG*>(message);
-  const HWND ownHwnd      = reinterpret_cast<HWND>(m_window->winId());
+  auto* msg          = static_cast<MSG*>(message);
+  const HWND ownHwnd = reinterpret_cast<HWND>(m_window->winId());
   if (msg->hwnd != ownHwnd)
     return false;
 
   switch (msg->message) {
-    case WM_NCCALCSIZE: {
-      // wParam==FALSE is the hint phase; let DefWindowProc handle it.
-      if (msg->wParam == FALSE)
-        return false;
+    case WM_NCCALCSIZE:
+      return handleNCCalcSize(ownHwnd, msg, result);
 
-      auto* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
-
-      // Maximized: clip to monitor work area or WS_THICKFRAME pushes us past the screen edges.
-      if (IsZoomed(ownHwnd)) {
-        HMONITOR mon = MonitorFromWindow(ownHwnd, MONITOR_DEFAULTTONEAREST);
-        MONITORINFO mi;
-        mi.cbSize = sizeof(mi);
-        if (GetMonitorInfoW(mon, &mi))
-          params->rgrc[0] = mi.rcWork;
-      }
-
-      // Non-maximized: leave rgrc[0] = full window rect. Client area runs edge-to-edge.
-      *result = 0;
-      return true;
-    }
-
-    case WM_NCHITTEST: {
-      const POINT pt = {GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam)};
-      RECT wndRect;
-      if (!GetWindowRect(ownHwnd, &wndRect))
-        return false;
-
-      const int x = pt.x - wndRect.left;
-      const int y = pt.y - wndRect.top;
-      const int w = wndRect.right - wndRect.left;
-      const int h = wndRect.bottom - wndRect.top;
-
-      const bool maximized = IsZoomed(ownHwnd)
-                             || (m_window->windowStates() & Qt::WindowFullScreen);
-      const bool fixed     = isFixedSizeWindow(m_window);
-
-      // Resize edges: only when the user can actually resize the window.
-      if (!maximized && !fixed) {
-        const int border  = CSD::ResizeMargin;
-        const bool top    = y < border;
-        const bool bottom = y >= h - border;
-        const bool left   = x < border;
-        const bool right  = x >= w - border;
-
-        if (top && left) {
-          *result = HTTOPLEFT;
-          return true;
-        }
-        if (top && right) {
-          *result = HTTOPRIGHT;
-          return true;
-        }
-        if (bottom && left) {
-          *result = HTBOTTOMLEFT;
-          return true;
-        }
-        if (bottom && right) {
-          *result = HTBOTTOMRIGHT;
-          return true;
-        }
-        if (top) {
-          *result = HTTOP;
-          return true;
-        }
-        if (bottom) {
-          *result = HTBOTTOM;
-          return true;
-        }
-        if (left) {
-          *result = HTLEFT;
-          return true;
-        }
-        if (right) {
-          *result = HTRIGHT;
-          return true;
-        }
-      }
-
-      // Titlebar drag: top strip; right-side button band stays HTCLIENT so QML owns Min/Max/Close.
-      const int tbHeight = titleBarHeight();
-      if (y < tbHeight) {
-        const int buttonAreaWidth = 3 * CSD::ButtonWidth;
-        if (x < w - buttonAreaWidth) {
-          *result = HTCAPTION;
-          return true;
-        }
-      }
-
-      *result = HTCLIENT;
-      return true;
-    }
+    case WM_NCHITTEST:
+      return handleNCHitTest(ownHwnd, msg, m_window, titleBarHeight(), result);
 
     case WM_NCACTIVATE:
-      // Suppress the NC-redraw flash on focus change; lParam=-1 means "don't invalidate any region".
+      // Suppress NC-redraw flash on focus change; lParam=-1 means do not invalidate any region.
       *result = DefWindowProcW(ownHwnd, WM_NCACTIVATE, msg->wParam, -1);
       return true;
   }
