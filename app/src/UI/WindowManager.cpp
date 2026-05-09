@@ -2,6 +2,7 @@
  * Serial Studio
  * https://serial-studio.com/
  *
+
  * Copyright (C) 2020-2025 Alex Spataru
  *
  * This file is dual-licensed:
@@ -1027,7 +1028,6 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
   if (m_autoLayoutEnabled != enabled) {
     m_layoutRestored    = false;
     m_autoLayoutEnabled = enabled;
-    Q_EMIT autoLayoutEnabledChanged();
 
     if (enabled) {
       m_manualGeometries.clear();
@@ -1045,6 +1045,8 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
       for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it)
         storeManualGeometry(it.key(), it.value());
     }
+
+    Q_EMIT autoLayoutEnabledChanged();
   }
 }
 
@@ -1071,10 +1073,9 @@ void UI::WindowManager::storeManualGeometry(
 /**
  * @brief Repositions manual-layout windows to preserve edge anchoring on resize.
  */
-void UI::WindowManager::applyManualAnchors(
-  const int previousWidth, const int previousHeight, const int newWidth, const int newHeight)
+void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeight)
 {
-  if (previousWidth <= 0 || previousHeight <= 0 || newWidth <= 0 || newHeight <= 0)
+  if (newWidth <= 0 || newHeight <= 0)
     return;
 
   for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it) {
@@ -1095,6 +1096,30 @@ void UI::WindowManager::applyManualAnchors(
     win->setWidth(anchored.width());
     win->setHeight(anchored.height());
   }
+}
+
+/**
+ * @brief Applies the manual snap indicator to the dragged window.
+ */
+void UI::WindowManager::applyManualSnap()
+{
+  if (!m_dragWindow || !m_snapIndicatorVisible)
+    return;
+
+  const int x = m_snapIndicator.x();
+  const int y = m_snapIndicator.y();
+  const int w = m_snapIndicator.width();
+  const int h = m_snapIndicator.height();
+
+  if (x == 0 && y == 0 && w >= width() && h >= height()) {
+    QMetaObject::invokeMethod(m_dragWindow, "maximizeClicked");
+    return;
+  }
+
+  m_dragWindow->setX(x);
+  m_dragWindow->setY(y);
+  m_dragWindow->setWidth(w);
+  m_dragWindow->setHeight(h);
 }
 
 /**
@@ -1219,14 +1244,17 @@ void UI::WindowManager::triggerLayoutUpdate()
       }
     }
 
-    if (sizeChanged && m_lastCanvasWidth > 0 && m_lastCanvasHeight > 0)
-      applyManualAnchors(m_lastCanvasWidth, m_lastCanvasHeight, canvasW, canvasH);
+    if (sizeChanged)
+      applyManualAnchors(canvasW, canvasH);
 
     m_suppressGeometrySignal = sizeChanged;
-    if (hasUninitializedWindows && !m_layoutRestored)
+    const bool shouldCascade = hasUninitializedWindows && !m_layoutRestored;
+    if (shouldCascade)
       cascadeLayout();
-    else
+
+    if (!shouldCascade)
       constrainWindows();
+
     m_suppressGeometrySignal = false;
   }
 
@@ -1752,22 +1780,7 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
 
   // Manual layout: snap window to indicator region or emit geometry change
   else {
-    if (m_dragWindow && m_snapIndicatorVisible) {
-      auto x = m_snapIndicator.x();
-      auto y = m_snapIndicator.y();
-      auto w = m_snapIndicator.width();
-      auto h = m_snapIndicator.height();
-
-      if (x == 0 && y == 0 && w >= width() && h >= height())
-        QMetaObject::invokeMethod(m_dragWindow, "maximizeClicked");
-
-      else {
-        m_dragWindow->setX(x);
-        m_dragWindow->setY(y);
-        m_dragWindow->setWidth(w);
-        m_dragWindow->setHeight(h);
-      }
-    }
+    applyManualSnap();
 
     if (m_dragWindow) {
       const int id = getIdForWindow(m_dragWindow);
