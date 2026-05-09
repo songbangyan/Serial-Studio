@@ -51,30 +51,26 @@ namespace CSD {
 // Platform-specific constants
 //--------------------------------------------------------------------------------------------------
 
+// ShadowRadius, TitleBarHeight, and TitleBarHeightMaximized live in CSD.h so NativeWindow_CSD.cpp
+// can use them as pre-show fallbacks (SmartDialog needs chrome insets before addWindow runs).
 #if defined(Q_OS_WIN)
-constexpr int IconSize                = 16;
-constexpr int IconMargin              = 8;
-constexpr int ButtonSize              = 28;
-constexpr int ButtonWidth             = 46;
-constexpr int ResizeMargin            = 8;
-constexpr int ButtonMargin            = 8;
-constexpr int ShadowRadius            = 24;
-constexpr int ButtonSpacing           = 18;
-constexpr int TitleBarHeight          = 32;
-constexpr int TitleBarHeightMaximized = 28;
-constexpr qreal ShadowOpacity         = 0.10;
+constexpr int IconSize        = 16;
+constexpr int IconMargin      = 8;
+constexpr int ButtonSize      = 28;
+constexpr int ButtonWidth     = 46;
+constexpr int ResizeMargin    = 8;
+constexpr int ButtonMargin    = 8;
+constexpr int ButtonSpacing   = 18;
+constexpr qreal ShadowOpacity = 0.10;
 #else
-constexpr int IconSize                = 16;
-constexpr int IconMargin              = 10;
-constexpr int ButtonSize              = 28;
-constexpr int ButtonWidth             = 32;
-constexpr int ResizeMargin            = 8;
-constexpr int ButtonMargin            = 12;
-constexpr int ShadowRadius            = 24;
-constexpr int ButtonSpacing           = 0;
-constexpr int TitleBarHeight          = 32;
-constexpr int TitleBarHeightMaximized = 28;
-constexpr qreal ShadowOpacity         = 0.10;
+constexpr int IconSize        = 16;
+constexpr int IconMargin      = 10;
+constexpr int ButtonSize      = 28;
+constexpr int ButtonWidth     = 32;
+constexpr int ResizeMargin    = 8;
+constexpr int ButtonMargin    = 12;
+constexpr int ButtonSpacing   = 0;
+constexpr qreal ShadowOpacity = 0.10;
 #endif
 
 /**

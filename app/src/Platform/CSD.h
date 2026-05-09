@@ -32,6 +32,18 @@
 #include <QWindow>
 
 namespace CSD {
+// Chrome dimensions consumed across translation units (CSD.cpp + NativeWindow_CSD.cpp).
+// Drawing-only constants (button metrics, icon sizes, hover swatches) stay private to CSD.cpp.
+#if defined(Q_OS_WIN)
+inline constexpr int ShadowRadius            = 24;
+inline constexpr int TitleBarHeight          = 32;
+inline constexpr int TitleBarHeightMaximized = 28;
+#else
+inline constexpr int ShadowRadius            = 24;
+inline constexpr int TitleBarHeight          = 32;
+inline constexpr int TitleBarHeightMaximized = 28;
+#endif
+
 /**
  * @brief Custom title bar widget with window controls for CSD windows.
  */

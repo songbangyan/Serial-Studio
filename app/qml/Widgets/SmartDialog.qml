@@ -57,7 +57,12 @@ Window {
   maximumHeight: fixedSize ? preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin : 16777215
 
   //
-  // Configure window flags
+  // Configure window flags + seed CSD chrome insets before first show.
+  //
+  // Without this seeding, the chrome properties stay at 0 until onVisibilityChanged fires,
+  // which is too late for fixedSize dialogs: maximumHeight latches at the small initial value
+  // and the Wayland/X11 compositor refuses to grow the window past it on Linux/Win10. The
+  // native methods return platform-known fallbacks when no decorator is registered yet.
   //
   Component.onCompleted: {
     if (root.staysOnTop) {
@@ -71,6 +76,12 @@ Window {
           Qt.CustomizeWindowHint |
           Qt.WindowTitleHint |
           Qt.WindowCloseButtonHint
+    }
+
+    if (root.nativeWindow) {
+      root.titlebarHeight = Cpp_NativeWindow.titlebarHeight(root)
+      root.frameMargin = Cpp_NativeWindow.frameMargin(root)
+      root.frameTopInset = Cpp_NativeWindow.frameTopInset(root)
     }
   }
 

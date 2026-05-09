@@ -95,11 +95,21 @@ int NativeWindow::frameMargin(QObject* window)
   if (!w)
     return 0;
 
-  auto* decorator = s_decorators.value(w, nullptr);
-  if (!decorator)
+  // Win11 uses the native caption; no CSD chrome is wrapped around the content.
+  if (isWindows11())
     return 0;
 
-  return decorator->shadowMargin();
+  // Decorator already exists (post-show): trust its live state (maximize/fullscreen aware).
+  if (auto* decorator = s_decorators.value(w, nullptr))
+    return decorator->shadowMargin();
+
+  // Pre-show fallback: return the platform's normal-state shadow margin so SmartDialog
+  // can size the window correctly on the first binding pass, before addWindow() runs.
+#if defined(Q_OS_WIN)
+  return 0;
+#else
+  return CSD::ShadowRadius;
+#endif
 }
 
 /**
@@ -111,11 +121,20 @@ int NativeWindow::frameTopInset(QObject* window)
   if (!w)
     return 0;
 
-  auto* decorator = s_decorators.value(w, nullptr);
-  if (!decorator)
+  // Win11 uses the native caption; SmartDialog accounts for it via titlebarHeight() on macOS,
+  // and on Win11 the native caption sits outside the QQuickWindow client area.
+  if (isWindows11())
     return 0;
 
-  return decorator->shadowMargin() + decorator->titleBarHeight();
+  if (auto* decorator = s_decorators.value(w, nullptr))
+    return decorator->shadowMargin() + decorator->titleBarHeight();
+
+  // Pre-show fallback: normal-state shadow + CSD titlebar height.
+#if defined(Q_OS_WIN)
+  return CSD::TitleBarHeight;
+#else
+  return CSD::ShadowRadius + CSD::TitleBarHeight;
+#endif
 }
 
 /**
