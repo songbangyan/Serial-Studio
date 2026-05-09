@@ -26,8 +26,6 @@ flowchart LR
     D --> E["Dashboard"]
 ```
 
----
-
 ## Installation
 
 ### Windows
@@ -98,8 +96,6 @@ cmake --build build -j$(nproc)
 
 The binary ends up in `build/`.
 
----
-
 ## Interface overview
 
 When you launch Serial Studio, the main window splits into four areas.
@@ -132,8 +128,6 @@ The Setup panel is where you configure the connection:
 - **Export options.** Turn on CSV or MDF4 logging.
 
 You can collapse the Setup panel by clicking its header to give the Dashboard more space.
-
----
 
 ## Your first connection: Quick Plot mode
 
@@ -188,8 +182,6 @@ That's all. No project file, no JSON, just connect and visualize.
 - Hover over plots to inspect values.
 - Enable CSV export in the Setup panel to record the session for later playback.
 
----
-
 ## Your first connection: Project File mode
 
 Project File mode provides full control over how Serial Studio interprets your data and what widgets show up on the dashboard. You create a `.ssproj` project file in the built-in Project Editor, and Serial Studio uses it to parse incoming data and build the dashboard. It's the recommended mode for most real-world projects.
@@ -221,8 +213,6 @@ Click the wrench icon in the toolbar, or pick **Project Editor** from the menu. 
 
 Configure your I/O interface and click **Connect**. Serial Studio uses your project file to parse incoming frames and draw the widgets you configured.
 
----
-
 ## Your first connection: Console Only mode
 
 Console Only is a diagnostic mode. Serial Studio doesn't try to parse anything; raw bytes from the data source go straight to the terminal. Use it when you want to verify that a device is alive, check the baud rate and framing, or send commands interactively.
@@ -236,8 +226,6 @@ Console Only is a diagnostic mode. Serial Studio doesn't try to parse anything; 
 5. Use the input box at the bottom of the console to send bytes back to the device.
 
 No dashboard, no CSV export, no parsing. Once the stream looks correct, switch to Quick Plot or Project File to visualize the data.
-
----
 
 ## Operation modes
 
@@ -277,8 +265,6 @@ Quick Plot treats each line as a frame and each comma-separated field as a datas
 
 This mode provides full control: define frame delimiters, map data fields to datasets, pick widget types, set units and ranges, configure alarms, add FFT analysis, write frame parser scripts (Lua or JavaScript) for binary protocols, and add per-dataset value transforms for calibration and filtering. Project File mode also supports multiple data sources for multi-device setups (Pro). It's the recommended mode for most real-world projects.
 
----
-
 ## Common first-time issues
 
 ### Serial port not showing up in the dropdown
@@ -305,8 +291,6 @@ This mode provides full control: define frame delimiters, map data fields to dat
 - Almost always a baud rate mismatch. Double-check both the device firmware and the Serial Studio setting.
 - Also check data bits, parity, and stop bits match your device (the 8-N-1 default works for most).
 
----
-
 ## Next steps
 
 Now that you've made your first connection, here are the recommended paths from here.
@@ -327,7 +311,7 @@ Now that you've made your first connection, here are the recommended paths from 
 
 ### Advanced features
 
-- **[CSV Import and Export](CSV-Import-Export.md):** record sessions and replay them later.
+- **[CSV Export and Playback](CSV-Export-Playback.md):** record sessions and replay them later.
 - **[MQTT Integration](MQTT-Integration.md):** subscribe to MQTT topics for IoT visualization.
 - **[Protocol Setup Guides (Pro)](Protocol-Setup-Guides.md):** step-by-step guides for Modbus, CAN Bus, Audio, USB, HID, and Process I/O.
 - **[API Reference](API-Reference.md):** automate Serial Studio from external scripts, or connect AI models via MCP on TCP port 7777.

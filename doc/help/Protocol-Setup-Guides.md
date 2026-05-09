@@ -2,8 +2,6 @@
 
 Step-by-step setup instructions for every communication protocol supported by Serial Studio. Each guide walks through the exact UI steps required to establish a connection. For protocol overviews and selection guidance, see [Communication Protocols](Communication-Protocols.md).
 
----
-
 ## Serial/UART Setup
 
 **License:** Free
@@ -27,8 +25,6 @@ Step-by-step setup instructions for every communication protocol supported by Se
 - **No data after connecting:** Verify the baud rate matches the device exactly. Check that your frame delimiters are configured correctly. Try toggling the DTR signal.
 - **Garbled data:** Baud rate mismatch is the most common cause. Double-check the device documentation.
 
----
-
 ## TCP Network Setup
 
 **License:** Free
@@ -49,8 +45,6 @@ Serial Studio will resolve the hostname (if provided) and attempt a TCP connecti
 
 - **Connection refused:** Verify the device is listening on the specified port. Ping the device to confirm network reachability. Check firewall rules on both ends.
 - **Connection times out:** The device may be on a different subnet or behind a NAT. Verify the IP address.
-
----
 
 ## UDP Network Setup
 
@@ -73,8 +67,6 @@ Serial Studio will resolve the hostname (if provided) and attempt a TCP connecti
 - **No data received.** Check that the device is sending to your computer's IP and the correct local port. Check firewall rules: UDP is often blocked by default. If you're using multicast, make sure both devices are on the same multicast-capable network segment.
 - **Data from wrong source:** UDP is connectionless. Any device sending to your bound port will be received. Use firewall rules or application-level filtering if needed.
 
----
-
 ## Bluetooth LE Setup
 
 **License:** Free
@@ -96,8 +88,6 @@ Serial Studio will resolve the hostname (if provided) and attempt a TCP connecti
 - **Device not found:** Ensure the device is advertising and not already paired with another host. Move the device closer. Restart Bluetooth on your computer. On macOS, grant Bluetooth permission to Serial Studio in System Settings.
 - **Connected but no data:** Verify you selected the correct service and characteristic. The characteristic must support notifications or indications. Check that the device is actively sending data.
 - **Adapter not available:** On Linux, ensure `bluetoothd` is running and the user is in the `bluetooth` group.
-
----
 
 ## MQTT Setup (Pro)
 
@@ -143,8 +133,6 @@ Serial Studio will resolve the hostname (if provided) and attempt a TCP connecti
 - **No messages received:** Topic names are case-sensitive. Verify the topic filter matches what the device publishes to. Use `#` as the topic filter to receive all messages for debugging.
 - **TLS handshake failure:** Verify the CA certificate matches the broker's certificate chain. Check that the SSL protocol version is supported by the broker.
 
----
-
 ## Modbus RTU Setup (Pro)
 
 **License:** Pro
@@ -183,8 +171,6 @@ The generated project includes one group per register block, one dataset per reg
 - **Timeout errors:** Increase the poll interval. Reduce the number of registers per group. Check the physical bus for noise or excessive cable length.
 - **CRC errors:** Almost always a wiring issue: swapped A/B lines, missing termination, or ground loop.
 
----
-
 ## Modbus TCP Setup (Pro)
 
 **License:** Pro
@@ -206,8 +192,6 @@ The generated project includes one group per register block, one dataset per reg
 
 - **Connection refused:** Verify the device is listening on the specified port. Check firewall rules. Confirm the IP address is correct.
 - **No data:** Verify the slave address, register type, start address, and count match the device's register map documentation.
-
----
 
 ## Modbus Register Map Import (Pro)
 
@@ -427,8 +411,6 @@ address,name,type,dataType,units,min,max,scale,offset
 </modbus>
 ```
 
----
-
 ## How Multi-Group Polling Works
 
 When a Modbus connection has multiple register groups, the driver and the auto-generated frame parser coordinate through a simple sequential protocol. Understanding this mechanism helps when debugging or customizing the generated parser.
@@ -492,8 +474,6 @@ Frame 2 arrives → parser is in `case 1` → extracts coil values → advances 
 - **Frame loss:** If a Modbus response times out or is dropped (rare over TCP, uncommon over RTU), the parser's counter may temporarily misalign for one poll cycle. It self-corrects on the next complete cycle. At typical poll rates (100ms+), this causes at most a brief glitch.
 - **Customization:** If you modify the generated parser, keep the `currentGroup` counter logic intact. Adding or removing register groups requires regenerating the parser (or manually updating the `switch` cases and modulo value).
 
----
-
 ## CAN Bus Setup (Pro)
 
 **License:** Pro
@@ -533,8 +513,6 @@ sudo ip link set up can0
 - **Interface not listed:** Ensure the adapter driver is installed. On Linux, verify the interface is up with `ip link show can0`. On Windows, check Device Manager for the CAN adapter.
 - **Error frames only:** Bitrate mismatch, missing termination, or bus contention. Check all physical connections.
 
----
-
 ## Audio Input Setup (Pro)
 
 **License:** Pro
@@ -557,8 +535,6 @@ Audio data flows into the pipeline as PCM samples, which can be visualized with 
 - **No audio detected:** Verify the input device is selected correctly in the dropdown. Check the OS audio settings to confirm the input is not muted and the level is adequate. On macOS, grant Microphone permission.
 - **Distorted signal:** Reduce the input gain in OS audio settings. Use a line-in input instead of a microphone input when connecting sensors.
 - **Wrong sample rate options:** The available sample rates are reported by the hardware. If the rate you need is not listed, try a different audio interface.
-
----
 
 ## Raw USB Setup (Pro)
 
@@ -585,8 +561,6 @@ Audio data flows into the pipeline as PCM samples, which can be visualized with 
 - **Permission denied:** On Linux, verify the `udev` rule is correct and the user is in the appropriate group. Running as root is a quick test but not recommended for production.
 - **No data:** Verify the correct IN endpoint is selected. Check that the device firmware is sending data on that endpoint.
 
----
-
 ## HID Setup (Pro)
 
 **License:** Pro
@@ -605,8 +579,6 @@ Audio data flows into the pipeline as PCM samples, which can be visualized with 
 
 - **Device not listed:** On Linux, add a `udev` rule for `hidraw` access: create a file in `/etc/udev/rules.d/` with `KERNEL=="hidraw*", SUBSYSTEM=="hidraw", MODE="0666"` (or a more restrictive rule targeting your VID/PID). On Windows and macOS, HID devices are generally accessible without additional configuration.
 - **No data:** Verify the device is actively sending HID reports. Some HID devices only send reports when there is a state change (e.g., button press on a gamepad).
-
----
 
 ## Process I/O setup: Launch mode (Pro)
 
@@ -631,8 +603,6 @@ Serial Studio spawns the process, reads its merged stdout and stderr, and feeds 
 - **No data:** Ensure the script flushes its stdout (Python: use `flush=True` in `print()` or run with `python3 -u`). Buffered output will not appear until the buffer fills.
 - **Process crashes immediately:** Check the working directory and arguments. Review the console output for error messages from the process.
 
----
-
 ## Process I/O setup: Named Pipe mode (Pro)
 
 **License:** Pro
@@ -654,8 +624,6 @@ Serial Studio opens the named pipe for reading and streams data into the pipelin
 
 - **Cannot open pipe:** Verify the pipe exists before connecting. On Linux/macOS, create it with `mkfifo /path/to/pipe`. On Windows, the pipe must be created by the writing process before Serial Studio connects.
 - **No data:** Ensure the external process is actively writing to the pipe. Named pipes block until both reader and writer are connected.
-
----
 
 ## See Also
 

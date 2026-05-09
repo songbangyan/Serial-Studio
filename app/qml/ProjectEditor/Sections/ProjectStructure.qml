@@ -443,6 +443,8 @@ Widgets.Pane {
           Label {
             id: label
 
+            readonly property bool stale: model.treeViewWorkspaceStale === true
+
             Layout.fillWidth: true
             elide: Label.ElideRight
             text: model.treeViewText
@@ -450,7 +452,8 @@ Widgets.Pane {
             font: depth === 0 ? Cpp_Misc_CommonFonts.boldUiFont :
                                 Cpp_Misc_CommonFonts.uiFont
             color: current ? Cpp_ThemeManager.colors["highlighted_text"] :
-                             Cpp_ThemeManager.colors["text"]
+                             (label.stale ? "#B8860B"
+                                          : Cpp_ThemeManager.colors["text"])
           }
 
           Label {

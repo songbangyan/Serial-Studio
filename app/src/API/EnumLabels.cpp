@@ -327,3 +327,223 @@ QString API::EnumLabels::datasetOptionsLabel(int value)
 
   return parts.join(QStringLiteral(", "));
 }
+
+//--------------------------------------------------------------------------------------------------
+// DashboardWidget slug -- bidirectional
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns a stable string slug for a DashboardWidget enum value.
+ */
+QString API::EnumLabels::dashboardWidgetSlug(int value)
+{
+  switch (static_cast<SerialStudio::DashboardWidget>(value)) {
+    case SerialStudio::DashboardTerminal:
+      return QStringLiteral("terminal");
+    case SerialStudio::DashboardDataGrid:
+      return QStringLiteral("datagrid");
+    case SerialStudio::DashboardMultiPlot:
+      return QStringLiteral("multiplot");
+    case SerialStudio::DashboardAccelerometer:
+      return QStringLiteral("accelerometer");
+    case SerialStudio::DashboardGyroscope:
+      return QStringLiteral("gyroscope");
+    case SerialStudio::DashboardGPS:
+      return QStringLiteral("gps");
+    case SerialStudio::DashboardPlot3D:
+      return QStringLiteral("plot3d");
+    case SerialStudio::DashboardFFT:
+      return QStringLiteral("fft");
+    case SerialStudio::DashboardLED:
+      return QStringLiteral("led");
+    case SerialStudio::DashboardPlot:
+      return QStringLiteral("plot");
+    case SerialStudio::DashboardBar:
+      return QStringLiteral("bar");
+    case SerialStudio::DashboardGauge:
+      return QStringLiteral("gauge");
+    case SerialStudio::DashboardCompass:
+      return QStringLiteral("compass");
+    case SerialStudio::DashboardNoWidget:
+      return QStringLiteral("none");
+#ifdef BUILD_COMMERCIAL
+    case SerialStudio::DashboardImageView:
+      return QStringLiteral("imageview");
+    case SerialStudio::DashboardOutputPanel:
+      return QStringLiteral("output-panel");
+    case SerialStudio::DashboardNotificationLog:
+      return QStringLiteral("notification-log");
+    case SerialStudio::DashboardWaterfall:
+      return QStringLiteral("waterfall");
+    case SerialStudio::DashboardPainter:
+      return QStringLiteral("painter");
+#endif
+  }
+  return QStringLiteral("unknown");
+}
+
+/**
+ * @brief Resolves a DashboardWidget slug back to its enum integer; returns -1 on miss.
+ */
+int API::EnumLabels::dashboardWidgetFromSlug(const QString& slug)
+{
+  const auto s = slug.trimmed().toLower();
+  if (s == QLatin1String("terminal"))
+    return SerialStudio::DashboardTerminal;
+
+  if (s == QLatin1String("datagrid") || s == QLatin1String("data-grid"))
+    return SerialStudio::DashboardDataGrid;
+
+  if (s == QLatin1String("multiplot") || s == QLatin1String("multi-plot"))
+    return SerialStudio::DashboardMultiPlot;
+
+  if (s == QLatin1String("accelerometer"))
+    return SerialStudio::DashboardAccelerometer;
+
+  if (s == QLatin1String("gyroscope"))
+    return SerialStudio::DashboardGyroscope;
+
+  if (s == QLatin1String("gps"))
+    return SerialStudio::DashboardGPS;
+
+  if (s == QLatin1String("plot3d") || s == QLatin1String("plot-3d"))
+    return SerialStudio::DashboardPlot3D;
+
+  if (s == QLatin1String("fft"))
+    return SerialStudio::DashboardFFT;
+
+  if (s == QLatin1String("led"))
+    return SerialStudio::DashboardLED;
+
+  if (s == QLatin1String("plot"))
+    return SerialStudio::DashboardPlot;
+
+  if (s == QLatin1String("bar"))
+    return SerialStudio::DashboardBar;
+
+  if (s == QLatin1String("gauge"))
+    return SerialStudio::DashboardGauge;
+
+  if (s == QLatin1String("compass"))
+    return SerialStudio::DashboardCompass;
+
+  if (s == QLatin1String("none"))
+    return SerialStudio::DashboardNoWidget;
+#ifdef BUILD_COMMERCIAL
+  if (s == QLatin1String("imageview") || s == QLatin1String("image-view"))
+    return SerialStudio::DashboardImageView;
+
+  if (s == QLatin1String("output-panel") || s == QLatin1String("outputpanel"))
+    return SerialStudio::DashboardOutputPanel;
+
+  if (s == QLatin1String("notification-log") || s == QLatin1String("notificationlog"))
+    return SerialStudio::DashboardNotificationLog;
+
+  if (s == QLatin1String("waterfall"))
+    return SerialStudio::DashboardWaterfall;
+
+  if (s == QLatin1String("painter"))
+    return SerialStudio::DashboardPainter;
+#endif
+  return -1;
+}
+
+//--------------------------------------------------------------------------------------------------
+// DatasetOption slug -- bidirectional
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns a stable slug for a single DatasetOption bit.
+ */
+QString API::EnumLabels::datasetOptionSlug(int singleBitValue)
+{
+  switch (singleBitValue) {
+    case SerialStudio::DatasetPlot:
+      return QStringLiteral("plot");
+    case SerialStudio::DatasetFFT:
+      return QStringLiteral("fft");
+    case SerialStudio::DatasetBar:
+      return QStringLiteral("bar");
+    case SerialStudio::DatasetGauge:
+      return QStringLiteral("gauge");
+    case SerialStudio::DatasetCompass:
+      return QStringLiteral("compass");
+    case SerialStudio::DatasetLED:
+      return QStringLiteral("led");
+    case SerialStudio::DatasetWaterfall:
+      return QStringLiteral("waterfall");
+  }
+  return QString();
+}
+
+/**
+ * @brief Resolves a DatasetOption slug to its bit value; returns 0 on miss.
+ */
+int API::EnumLabels::datasetOptionFromSlug(const QString& slug)
+{
+  const auto s = slug.trimmed().toLower();
+  if (s == QLatin1String("plot"))
+    return SerialStudio::DatasetPlot;
+
+  if (s == QLatin1String("fft"))
+    return SerialStudio::DatasetFFT;
+
+  if (s == QLatin1String("bar"))
+    return SerialStudio::DatasetBar;
+
+  if (s == QLatin1String("gauge"))
+    return SerialStudio::DatasetGauge;
+
+  if (s == QLatin1String("compass"))
+    return SerialStudio::DatasetCompass;
+
+  if (s == QLatin1String("led"))
+    return SerialStudio::DatasetLED;
+
+  if (s == QLatin1String("waterfall"))
+    return SerialStudio::DatasetWaterfall;
+
+  return 0;
+}
+
+/**
+ * @brief Splits a DatasetOption bitflag into individual slug strings (in canonical order).
+ */
+QStringList API::EnumLabels::datasetOptionsBitsToSlugs(int value)
+{
+  QStringList out;
+  if (value & SerialStudio::DatasetPlot)
+    out.append(QStringLiteral("plot"));
+
+  if (value & SerialStudio::DatasetFFT)
+    out.append(QStringLiteral("fft"));
+
+  if (value & SerialStudio::DatasetBar)
+    out.append(QStringLiteral("bar"));
+
+  if (value & SerialStudio::DatasetGauge)
+    out.append(QStringLiteral("gauge"));
+
+  if (value & SerialStudio::DatasetCompass)
+    out.append(QStringLiteral("compass"));
+
+  if (value & SerialStudio::DatasetLED)
+    out.append(QStringLiteral("led"));
+
+  if (value & SerialStudio::DatasetWaterfall)
+    out.append(QStringLiteral("waterfall"));
+
+  return out;
+}
+
+/**
+ * @brief Combines an array of DatasetOption slugs into a single bitflag value.
+ */
+int API::EnumLabels::datasetOptionsSlugsToBits(const QStringList& slugs)
+{
+  int bits = 0;
+  for (const auto& slug : slugs)
+    bits |= datasetOptionFromSlug(slug);
+
+  return bits;
+}

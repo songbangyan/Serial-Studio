@@ -155,6 +155,12 @@ Popup {
         visible: Cpp_CommercialBuild
                  && (!app.runtimeMode || Cpp_IO_FileTransmission.runtimeAccessAllowed),
         run: function() { app.showFileTransmission() }
+      },
+      {
+        name: qsTr("AI Assistant"),
+        icon: "qrc:/icons/taskbar/ai.svg",
+        visible: Cpp_CommercialBuild && !app.runtimeMode,
+        run: function() { app.showAIAssistant() }
       }
     ]
 
@@ -656,6 +662,7 @@ Popup {
       readonly property string kConsole: "console"
       readonly property string kSessions: "sessions"
       readonly property string kPreferences: "preferences"
+      readonly property string kAiAssistant: "ai_assistant"
       readonly property string kNotifications: "notifications"
       readonly property string kFileTransmission: "file_transmission"
 
@@ -682,6 +689,9 @@ Popup {
             } else if (value === _tools.kFileTransmission && Cpp_CommercialBuild) {
               root.close()
               app.showFileTransmission()
+            } else if (value === _tools.kAiAssistant && Cpp_CommercialBuild) {
+              root.close()
+              app.showAIAssistant()
             }
           })
         }
@@ -744,6 +754,14 @@ Popup {
             "id": _tools.kFileTransmission,
             "text": qsTr("File Transmission"),
             "icon": "qrc:/icons/taskbar/file-transmission.svg"
+          })
+        }
+
+        if (Cpp_CommercialBuild && !app.runtimeMode) {
+          model.push({
+            "id": _tools.kAiAssistant,
+            "text": qsTr("AI Assistant"),
+            "icon": "qrc:/icons/taskbar/ai.svg"
           })
         }
 

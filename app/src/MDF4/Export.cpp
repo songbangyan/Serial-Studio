@@ -387,7 +387,8 @@ void MDF4::ExportWorker::createFile(const DataModel::Frame& frame)
 
   // Validate license before creating the file
   const auto& token = Licensing::CommercialToken::current();
-  if (!token.isValid() || !SS_LICENSE_GUARD() || token.featureTier() < Licensing::FeatureTier::Pro)
+  if (!token.isValid() || !SS_LICENSE_GUARD()
+      || token.featureTier() < Licensing::FeatureTier::Trial)
     return;
 
   const auto dateTime = QDateTime::currentDateTime();
@@ -584,7 +585,7 @@ void MDF4::Export::setExportEnabled(const bool enabled)
   // Validate license and apply the export state
 #ifdef BUILD_COMMERCIAL
   const auto& tk = Licensing::CommercialToken::current();
-  if (tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Pro) {
+  if (tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Trial) {
     if (!allow && isOpen())
       closeFile();
 

@@ -29,16 +29,26 @@ creation, otherwise the runtime tries to read `channels[index - 1]`
 from the parser output and the dataset ends up empty.
 
 ```
-project.dataset.add {groupId, options: 1}        // creates dataset N
+project.dataset.add {groupId, options: ["plot"]}  // creates dataset N
 project.dataset.update {
   groupId, datasetId: N,
-  virtual: true,                                 // compute-only
+  virtual: true,                                  // compute-only
   title: "Speed",
   units: "m/s",
-  transformLanguage: 1,                          // 1 = Lua
+  transformLanguage: 1,                           // 1 = Lua
   transformCode: "..."
 }
 ```
+
+**Auto-detect**: when the project saves, the save path inspects each
+dataset's transform body. If `transformCode` is non-empty AND the body
+**never references `value`**, the dataset is auto-flagged `virtual:
+true`. So a transform like `function transform(_v) return
+datasetGetFinal(uid_speed) * 0.27778 end` is detected as virtual on
+save even if you forgot to set the flag. Manual setting is still
+recommended for clarity, because the auto-detect only fires at save
+time -- if you push the transform and run live before the next save,
+the dataset still misses its value.
 
 If `virtual=false` and `index<=0` after a `setTransformCode`, the API
 returns a `hint` field telling you to flip `virtual`. Listen to it.

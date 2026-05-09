@@ -17,8 +17,6 @@ A comparison of Serial Studio against other data visualization and telemetry too
 | CoolTerm                  | Free          | Limited plot | Serial only                   | Basic       | Freeware      | Serial port debugging                 |
 | Plotly Dash               | Free + Pro    | Good         | Manual                        | Code-based  | MIT           | Web dashboards, data apps             |
 
----
-
 ## Detailed comparisons
 
 ### Serial Studio vs Arduino Serial Plotter
@@ -52,8 +50,6 @@ The Arduino Serial Plotter is the built-in tool in the Arduino IDE for plotting 
 
 **Migration path.** Start with the Arduino Serial Plotter for early development, then switch to Serial Studio for deployment and presentation.
 
----
-
 ### Serial Studio vs Processing
 
 Processing is a creative coding environment popular for interactive art and visualizations.
@@ -75,8 +71,6 @@ Processing is a creative coding environment popular for interactive art and visu
 - Your team includes non-programmers who need dashboard access.
 
 **Example scenario.** An engineering team needs a robot telemetry dashboard. Processing would need a developer to write and maintain code. Serial Studio lets the team configure the dashboard in an afternoon without writing any.
-
----
 
 ### Serial Studio vs MATLAB/Simulink
 
@@ -105,8 +99,6 @@ MATLAB is industry-standard software for numerical computing and data analysis.
 - **Serial Studio Pro:** one-time payment (check current pricing at [serial-studio.com](https://serial-studio.com)).
 
 **Real-time capability.** Serial Studio updates at 60 FPS with no scripting. MATLAB requires writing data acquisition code and periodic plot updates.
-
----
 
 ### Serial Studio vs Python + Matplotlib/PySerial
 
@@ -140,8 +132,6 @@ Python with libraries like PySerial, Matplotlib, and Plotly is a popular DIY app
 
 **Hybrid approach.** Use Serial Studio for real-time monitoring, export CSV, then analyze in Python. Best of both.
 
----
-
 ### Serial Studio vs LabVIEW
 
 LabVIEW, by National Instruments, is visual programming software for test and measurement.
@@ -166,8 +156,6 @@ LabVIEW, by National Instruments, is visual programming software for test and me
 
 - **LabVIEW:** weeks to months to get proficient with visual programming.
 - **Serial Studio:** minutes to hours. GUI-based, no programming.
-
----
 
 ### Serial Studio vs Grafana + Telegraf
 
@@ -201,8 +189,6 @@ Grafana is a popular web-based dashboard for time-series data, often paired with
 
 **Complementary use.** Serial Studio for real-time field testing, and MQTT (Pro) to forward data to Grafana for a long-term web dashboard.
 
----
-
 ### Serial Studio vs TeraTerm / PuTTY
 
 TeraTerm and PuTTY are terminal emulators, mainly for text-based communication.
@@ -221,8 +207,6 @@ TeraTerm and PuTTY are terminal emulators, mainly for text-based communication.
 - You want CSV data logging.
 - You need multiple simultaneous data streams.
 - You want a dashboard-quality presentation.
-
----
 
 ### Serial Studio vs CoolTerm
 
@@ -243,8 +227,6 @@ CoolTerm is a serial port terminal with basic plotting.
 - You need custom frame parsing in JavaScript.
 - You want professional presentation quality.
 
----
-
 ### Serial Studio vs a custom web dashboard (Node.js + Chart.js)
 
 Some teams build custom dashboards with web tech.
@@ -263,8 +245,6 @@ Some teams build custom dashboards with web tech.
 - You'd prefer a desktop app, no server to maintain.
 - Your telemetry needs are already covered by existing widgets.
 
----
-
 ### Serial Studio vs Plotly Dash
 
 Plotly Dash is a Python framework for building web-based analytical dashboards.
@@ -282,8 +262,6 @@ Plotly Dash is a Python framework for building web-based analytical dashboards.
 - You need a desktop app for offline use.
 - You need direct hardware connection (serial, BLE).
 - You want faster prototyping for embedded systems.
-
----
 
 ## Decision matrix
 
@@ -333,8 +311,6 @@ Plotly Dash is a Python framework for building web-based analytical dashboards.
 - You're monitoring servers and infrastructure, not hardware.
 - You have existing time-series database infrastructure.
 
----
-
 ## Feature matrix
 
 | Feature                        | Serial Studio | Arduino Plotter | Processing  | MATLAB   | Python   | LabVIEW   | Grafana   |
@@ -357,8 +333,6 @@ Plotly Dash is a Python framework for building web-based analytical dashboards.
 | **Open source**                | GPL           | Yes             | Yes         | No       | Yes      | No        | Yes       |
 | **Learning curve**             | Minutes       | Minutes         | Hours       | Days     | Hours    | Weeks     | Hours     |
 
----
-
 ## Migration guides
 
 ### From Arduino Serial Plotter to Serial Studio
@@ -372,8 +346,6 @@ Optional next step: create a project file for a custom dashboard in the Project 
 
 No code changes on the Arduino side.
 
----
-
 ### From Processing to Serial Studio
 
 If you were using Processing just for visualization, replace the sketch with a Serial Studio project file:
@@ -384,8 +356,6 @@ If you were using Processing just for visualization, replace the sketch with a S
 
 If you need custom algorithms, keep Processing for custom visualizations but consider Serial Studio for standard telemetry dashboards.
 
----
-
 ### From Python to Serial Studio
 
 If you were using Python just for serial plotting, Serial Studio removes the need for a script:
@@ -395,7 +365,5 @@ If you were using Python just for serial plotting, Serial Studio removes the nee
 - Faster real-time visualization.
 
 If you need custom analysis, use Serial Studio for real-time monitoring, export CSV, and run Python scripts for the analysis. Best of both.
-
----
 
 Questions, or want to talk about a specific use case? Open an issue on [GitHub](https://github.com/Serial-Studio/Serial-Studio/issues) or email alex@serial-studio.com.

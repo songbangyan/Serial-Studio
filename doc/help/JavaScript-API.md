@@ -33,8 +33,6 @@ flowchart LR
 
 > **Legend:** 1 second timeout per call &bull; One engine per source
 
----
-
 ## The `parse()` Function
 
 ### Signature
@@ -151,8 +149,6 @@ end
 --   {100.0, 7, 3.3}
 ```
 
----
-
 ## Available APIs
 
 ### Lua Standard Libraries
@@ -214,8 +210,6 @@ function parse(frame) {
 ```
 
 Globals are reset when: the project is reloaded, parser code is edited and reapplied, or Serial Studio is restarted.
-
----
 
 ## Practical Examples
 
@@ -364,8 +358,6 @@ function parse(frame)
 end
 ```
 
----
-
 ## Output Widget Transmit Helpers
 
 Output controls (Pro feature) use a separate JavaScript engine with built-in protocol helper functions. They're available in every `transmit(value)` function. You don't need to import or declare them.
@@ -388,8 +380,6 @@ For full documentation on output controls, see [Output Controls](Output-Controls
 | `canSendValue(id, value, bytes)` | Send a numeric value packed big-endian (1--8 bytes, default 2) |
 
 > **Note:** Output widget transmit functions always use JavaScript. The Lua/JavaScript language selection applies only to the frame parser `parse()` function.
-
----
 
 ## Built-in Template Scripts
 
@@ -428,15 +418,11 @@ Serial Studio includes 28 ready-to-use parser templates, available in both Lua a
 
 When you switch between Lua and JavaScript, Serial Studio automatically loads the same template in the new language.
 
----
-
 ## Per-Source Parsers
 
 In multi-device projects, each Source can have its own independent parser. Configure the parser in the Source's "Frame Parser" tab in the Project Editor.
 
 Each source runs in an isolated engine instance. Global variables in one source do not affect another. If a source has no parser code, it falls back to the global parser (source 0).
-
----
 
 ## Rules and Limitations
 
@@ -449,8 +435,6 @@ Each source runs in an isolated engine instance. Global variables in one source 
 7. **No file system access**, no network access, no module imports.
 8. Lua: `io`, `os`, `debug`, `package` libraries are not available. JavaScript: No DOM, `window`, `require`.
 9. Global tables/arrays that grow without bound will leak memory. Always cap history buffers.
-
----
 
 ## Migrating from JavaScript to Lua
 
@@ -475,8 +459,6 @@ If you have an existing JavaScript parser and want to switch to Lua for better p
 | `console.log(x)` | `print(x)` |
 
 > **Key difference:** Lua tables are 1-indexed. Binary frame byte tables start at index 1, not 0. The `#` operator returns the table length.
-
----
 
 ## Debugging
 
@@ -505,8 +487,6 @@ function parse(frame) {
 
 Output appears in Serial Studio's console/terminal panel.
 
----
-
 ## Performance Tips
 
 - **Use Lua for high-frequency data** (>1 kHz). Lua's stack-based API avoids the QJSValue boxing overhead.
@@ -514,8 +494,6 @@ Output appears in Serial Studio's console/terminal panel.
 - Cap global history buffers with a fixed maximum size.
 - Reuse a global result table when possible to minimize allocations.
 - In Lua, use `string.find` with `plain=true` (3rd argument) for literal string searches instead of pattern matching.
-
----
 
 ## See Also
 

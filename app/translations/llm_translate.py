@@ -350,7 +350,7 @@ def run_qt_translation_tool(mode):
     Valid modes: '--lupdate' or '--lrelease'.
     """
     subprocess.run(
-        ["python3", "translation_manager.py", mode],
+        [sys.executable, "translation_manager.py", mode],
         cwd=SCRIPT_DIR,
         check=True
     )
@@ -1893,7 +1893,7 @@ def _format_bar(done: int, total: int, width: int = 24) -> str:
         return "[" + " " * width + "]"
     ratio = max(0.0, min(1.0, done / total))
     filled = int(ratio * width)
-    return "[" + "█" * filled + "·" * (width - filled) + "]"
+    return "[" + "▰" * filled + "▱" * (width - filled) + "]"
 
 
 def _format_duration(seconds: float) -> str:

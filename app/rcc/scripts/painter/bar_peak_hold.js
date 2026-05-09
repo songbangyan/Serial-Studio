@@ -79,9 +79,6 @@ function draw_vbar(ctx, x, y, w, h, level, peak) {
 function paint(ctx, w, h) {
   ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = theme.widget_border;
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 

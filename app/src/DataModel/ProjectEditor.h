@@ -32,6 +32,7 @@
 
 namespace DataModel {
 class CustomModel;
+class ProjectModel;
 
 /**
  * @brief Editor controller for the Project Editor window (tree, forms, selection).
@@ -209,6 +210,8 @@ public:
     TreeItemKind     = Qt::UserRole + 17,
     TreeItemId       = Qt::UserRole + 18,
     TreeItemParentId = Qt::UserRole + 19,
+
+    TreeViewWorkspaceStale = Qt::UserRole + 20,
   };
   Q_ENUM(CustomRoles)
 
@@ -259,6 +262,9 @@ public:
   Q_INVOKABLE [[nodiscard]] QVariantList workspacesSummary() const;
   Q_INVOKABLE [[nodiscard]] QVariantList widgetsForWorkspace(int workspaceId) const;
   Q_INVOKABLE [[nodiscard]] QVariantList allWidgetsSummary() const;
+  Q_INVOKABLE [[nodiscard]] bool workspaceHasUnresolvedRefs(int workspaceId) const;
+  Q_INVOKABLE [[nodiscard]] int unresolvedWorkspaceWidgetCount() const;
+  Q_INVOKABLE int cleanupUnresolvedWorkspaceWidgets();
   [[nodiscard]] int selectedWorkspaceId() const noexcept;
 
   [[nodiscard]] const QString& treeSearchQuery() const noexcept;
@@ -267,6 +273,7 @@ public slots:
   void selectUserTable(const QString& tableName);
   void selectWorkspace(int workspaceId);
   void setTreeSearchQuery(const QString& query);
+  void confirmCleanupUnresolvedWorkspaceWidgets();
 
   void buildTreeModel();
   void buildProjectModel();
@@ -387,6 +394,18 @@ private:
   void buildOutputWidgetValueRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetTransmitRow(const DataModel::OutputWidget& widget);
 
+  /**
+   * @brief Resolved (groupTitle, datasetTitle) pair for a workspace widget reference.
+   */
+  struct ResolvedWidget {
+    QString groupTitle;
+    QString datasetTitle;
+  };
+
+  [[nodiscard]] static qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx);
+  [[nodiscard]] static QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
+    const DataModel::ProjectModel& pm);
+
 private:
   CurrentView m_currentView;
 
@@ -495,6 +514,7 @@ public:
     names.insert(ProjectEditor::TreeItemKind,         BAL("treeItemKind"));
     names.insert(ProjectEditor::TreeItemId,           BAL("treeItemId"));
     names.insert(ProjectEditor::TreeItemParentId,     BAL("treeItemParentId"));
+    names.insert(ProjectEditor::TreeViewWorkspaceStale, BAL("treeViewWorkspaceStale"));
 #undef BAL
     // clang-format on
 

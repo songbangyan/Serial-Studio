@@ -1,13 +1,18 @@
 # Painter Widget
 
 The Painter widget (Pro) gives you a Canvas-2D drawing surface. One per
-group with `widgetType: 8`. Bind code via
-`project.painter.setCode{groupId, code}`.
+group with `widgetType: 8` (GroupWidget enum at create time). Bind code
+via `project.painter.setCode{groupId, code}`.
 
 **Painter scripts are JavaScript-only** — the Lua-first guidance in
 the `frame_parsers` and `transforms` skills does NOT apply here. The
-canvas API and the QJSEngine integration are both JS-bound. Don't try
-to author painter code in Lua; it will not compile.
+reason is concrete: painters draw via Canvas2D, which only exists as a
+QJSEngine API surface. There is no Lua canvas API to expose; porting
+one would be a large effort for marginal benefit. Don't try to author
+painter code in Lua; it will not compile.
+
+To pin a painter to a workspace, use `widgetType: "painter"` (or the
+integer enum `18`) on `addWidget`.
 
 ## Decision: when to use a painter
 

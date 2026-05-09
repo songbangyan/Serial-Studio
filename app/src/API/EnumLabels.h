@@ -81,5 +81,35 @@ namespace EnumLabels {
  */
 [[nodiscard]] QString datasetOptionsLabel(int value);
 
+/**
+ * @brief Returns a stable string slug for a DashboardWidget enum value (e.g. "plot").
+ */
+[[nodiscard]] QString dashboardWidgetSlug(int value);
+
+/**
+ * @brief Resolves a DashboardWidget slug back to its enum integer; returns -1 on miss.
+ */
+[[nodiscard]] int dashboardWidgetFromSlug(const QString& slug);
+
+/**
+ * @brief Returns a stable string slug for a single DatasetOption bit (e.g. "fft").
+ */
+[[nodiscard]] QString datasetOptionSlug(int singleBitValue);
+
+/**
+ * @brief Resolves a DatasetOption slug back to its bit value; returns 0 on miss.
+ */
+[[nodiscard]] int datasetOptionFromSlug(const QString& slug);
+
+/**
+ * @brief Splits a DatasetOption bitflag value into the array of individual slug strings.
+ */
+[[nodiscard]] QStringList datasetOptionsBitsToSlugs(int value);
+
+/**
+ * @brief Combines an array of DatasetOption slugs into a single bitflag value.
+ */
+[[nodiscard]] int datasetOptionsSlugsToBits(const QStringList& slugs);
+
 }  // namespace EnumLabels
 }  // namespace API

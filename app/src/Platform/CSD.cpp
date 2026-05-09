@@ -35,6 +35,13 @@
 #include <QTimer>
 #include <QtMath>
 
+#if defined(Q_OS_WIN)
+#  include <dwmapi.h>
+#  include <windowsx.h>
+
+#  include <QGuiApplication>
+#endif
+
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 
@@ -89,6 +96,105 @@ static bool isFixedSizeWindow(const QWindow* window)
 
   return minSize == maxSize;
 }
+
+#if defined(Q_OS_WIN)
+/**
+ * @brief Handles WM_NCCALCSIZE; clips client to monitor work area when maximized.
+ */
+static bool handleNCCalcSize(HWND ownHwnd, MSG* msg, qintptr* result)
+{
+  if (msg->wParam == FALSE)
+    return false;
+
+  auto* params = reinterpret_cast<NCCALCSIZE_PARAMS*>(msg->lParam);
+  if (IsZoomed(ownHwnd)) {
+    HMONITOR mon = MonitorFromWindow(ownHwnd, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    if (GetMonitorInfoW(mon, &mi))
+      params->rgrc[0] = mi.rcWork;
+  }
+
+  *result = 0;
+  return true;
+}
+
+/**
+ * @brief Maps a client-relative point to a Win32 resize-edge HT* code, or 0 if none.
+ */
+static LRESULT resizeEdgeHitCode(int x, int y, int w, int h, int border)
+{
+  const bool top    = y < border;
+  const bool bottom = y >= h - border;
+  const bool left   = x < border;
+  const bool right  = x >= w - border;
+
+  if (top && left)
+    return HTTOPLEFT;
+
+  if (top && right)
+    return HTTOPRIGHT;
+
+  if (bottom && left)
+    return HTBOTTOMLEFT;
+
+  if (bottom && right)
+    return HTBOTTOMRIGHT;
+
+  if (top)
+    return HTTOP;
+
+  if (bottom)
+    return HTBOTTOM;
+
+  if (left)
+    return HTLEFT;
+
+  if (right)
+    return HTRIGHT;
+
+  return 0;
+}
+
+/**
+ * @brief Handles WM_NCHITTEST; returns the appropriate HT* code via @a result.
+ */
+static bool handleNCHitTest(
+  HWND ownHwnd, MSG* msg, QWindow* qtWindow, int titleBarHeight, qintptr* result)
+{
+  const POINT pt = {GET_X_LPARAM(msg->lParam), GET_Y_LPARAM(msg->lParam)};
+  RECT wndRect;
+  if (!GetWindowRect(ownHwnd, &wndRect))
+    return false;
+
+  const int x = pt.x - wndRect.left;
+  const int y = pt.y - wndRect.top;
+  const int w = wndRect.right - wndRect.left;
+  const int h = wndRect.bottom - wndRect.top;
+
+  const bool maximized = IsZoomed(ownHwnd) || (qtWindow->windowStates() & Qt::WindowFullScreen);
+  const bool fixed     = isFixedSizeWindow(qtWindow);
+
+  if (!maximized && !fixed) {
+    if (const LRESULT edge = resizeEdgeHitCode(x, y, w, h, CSD::ResizeMargin); edge != 0) {
+      *result = edge;
+      return true;
+    }
+  }
+
+  // Titlebar drag: top strip; right-side button band stays HTCLIENT so QML owns Min/Max/Close.
+  if (y < titleBarHeight) {
+    const int buttonAreaWidth = 3 * CSD::ButtonWidth;
+    if (x < w - buttonAreaWidth) {
+      *result = HTCAPTION;
+      return true;
+    }
+  }
+
+  *result = HTCLIENT;
+  return true;
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------
 // Titlebar
@@ -926,6 +1032,25 @@ Window::Window(QWindow* window, const QString& color, QObject* parent)
     &Misc::ThemeManager::instance(), &Misc::ThemeManager::themeChanged, this, &Window::updateTheme);
   updateTheme();
   updateMinimumSize();
+
+#if defined(Q_OS_WIN)
+  // WS_THICKFRAME hands resize/snap/animations to DWM; NC handlers below keep client edge-to-edge.
+  if (auto* qw = qobject_cast<QQuickWindow*>(m_window.data())) {
+    if (HWND hwnd = reinterpret_cast<HWND>(qw->winId())) {
+      const LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+      SetWindowLongPtrW(hwnd, GWL_STYLE, style | WS_THICKFRAME);
+      SetWindowPos(hwnd,
+                   nullptr,
+                   0,
+                   0,
+                   0,
+                   0,
+                   SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+  }
+
+  qApp->installNativeEventFilter(this);
+#endif
 }
 
 /**
@@ -933,6 +1058,10 @@ Window::Window(QWindow* window, const QString& color, QObject* parent)
  */
 Window::~Window()
 {
+#if defined(Q_OS_WIN)
+  qApp->removeNativeEventFilter(this);
+#endif
+
   // Remove event filters
   QQuickWindow* quickWindow = nullptr;
   QQuickItem* root          = nullptr;
@@ -1007,11 +1136,16 @@ int Window::shadowMargin() const
   if (!m_window)
     return 0;
 
+#if defined(Q_OS_WIN)
+  // Opaque CSD on Windows: no outer shadow ring around the content area.
+  return 0;
+#else
   const auto state = m_window->windowStates();
   if (state & (Qt::WindowMaximized | Qt::WindowFullScreen))
     return 0;
 
   return CSD::ShadowRadius;
+#endif
 }
 
 /**
@@ -1053,15 +1187,32 @@ void Window::setupFrame()
   if (!quickWindow)
     return;
 
+#if defined(Q_OS_WIN)
+  // Opaque on Windows: alpha forces WS_EX_LAYERED on Win8 compat (CPU per-frame readback).
+  const auto& theme = Misc::ThemeManager::instance();
+  quickWindow->setColor(theme.getColor(QStringLiteral("toolbar_top")));
+
+  // Ask DWM for its native drop shadow on this frameless window.
+  if (HWND hwnd = reinterpret_cast<HWND>(quickWindow->winId())) {
+    const MARGINS margins = {1, 1, 1, 1};
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
+  }
+#else
   QSurfaceFormat format = quickWindow->format();
   if (format.alphaBufferSize() < 8) {
     format.setAlphaBufferSize(8);
     quickWindow->setFormat(format);
   }
-
   quickWindow->setColor(Qt::transparent);
+#endif
+
   m_frame = new Frame(quickWindow->contentItem());
   m_frame->setZ(-1);
+
+#if defined(Q_OS_WIN)
+  // No alpha -> no soft shadow; shadowMargin() returns 0 so content runs edge-to-edge.
+  m_frame->setShadowEnabled(false);
+#endif
 
   connect(quickWindow, &QQuickWindow::widthChanged, this, &Window::updateFrameGeometry);
   connect(quickWindow, &QQuickWindow::heightChanged, this, &Window::updateFrameGeometry);
@@ -1327,6 +1478,12 @@ void Window::updateTheme()
       m_color.isEmpty() ? theme.getColor(QStringLiteral("toolbar_top")).name() : m_color;
     m_titleBar->setBackgroundColor(QColor(color));
   }
+
+#if defined(Q_OS_WIN)
+  // Keep the opaque back-buffer clear color in sync with the titlebar tint.
+  if (auto* quickWindow = qobject_cast<QQuickWindow*>(m_window.data()))
+    quickWindow->setColor(theme.getColor(QStringLiteral("toolbar_top")));
+#endif
 }
 
 /**
@@ -1489,5 +1646,44 @@ bool Window::eventFilter(QObject* watched, QEvent* event)
   }
 
   return false;
+}
+
+/**
+ * @brief Win32 NC-area handling so DWM owns resize/drag/snap on Windows.
+ */
+bool Window::nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result)
+{
+#if defined(Q_OS_WIN)
+  if (!m_window || !message || !result)
+    return false;
+
+  if (eventType != "windows_generic_MSG" && eventType != "windows_dispatcher_MSG")
+    return false;
+
+  auto* msg          = static_cast<MSG*>(message);
+  const HWND ownHwnd = reinterpret_cast<HWND>(m_window->winId());
+  if (msg->hwnd != ownHwnd)
+    return false;
+
+  switch (msg->message) {
+    case WM_NCCALCSIZE:
+      return handleNCCalcSize(ownHwnd, msg, result);
+
+    case WM_NCHITTEST:
+      return handleNCHitTest(ownHwnd, msg, m_window, titleBarHeight(), result);
+
+    case WM_NCACTIVATE:
+      // Suppress NC-redraw flash on focus change; lParam=-1 means do not invalidate any region.
+      *result = DefWindowProcW(ownHwnd, WM_NCACTIVATE, msg->wParam, -1);
+      return true;
+  }
+
+  return false;
+#else
+  Q_UNUSED(eventType)
+  Q_UNUSED(message)
+  Q_UNUSED(result)
+  return false;
+#endif
 }
 }  // namespace CSD

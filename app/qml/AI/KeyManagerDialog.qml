@@ -18,10 +18,27 @@ Widgets.SmartDialog {
   //
   // Window options
   //
+  fixedSize: false
   minimumWidth: 680
+  preferredWidth: 680
   title: qsTr("API Keys")
-  preferredWidth: column.implicitWidth
-  preferredHeight: column.implicitHeight
+  preferredHeight: Math.min(column.implicitHeight, 560)
+
+  //
+  // Provider currently shown in the dialog -- tracks the active assistant provider
+  //
+  readonly property int providerIdx: Cpp_AI_Assistant.currentProvider
+
+  //
+  // Mirrored Q_INVOKABLE hasKey(); refreshed via keysChanged
+  //
+  property bool hasKey: Cpp_AI_Assistant.hasKey(providerIdx)
+
+  Connections {
+    target: Cpp_AI_Assistant
+    function onKeysChanged() { root.hasKey = Cpp_AI_Assistant.hasKey(root.providerIdx) }
+    function onCurrentProviderChanged() { root.hasKey = Cpp_AI_Assistant.hasKey(root.providerIdx) }
+  }
 
   //
   // Per-provider tagline (visible under the provider name)
@@ -46,6 +63,19 @@ Widgets.SmartDialog {
               + "deepseek-chat (V3). deepseek-reasoner (R1) is also "
               + "available. Often the cheapest cloud option for tool use.")
     } else if (idx === 4) {
+      return qsTr("OpenRouter. One key, ~200 models from Anthropic, OpenAI, "
+              + "Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier "
+              + "models (suffixed :free) are rate-limited but require no "
+              + "additional billing. Pay-as-you-go for the rest.")
+    } else if (idx === 5) {
+      return qsTr("Groq. Hardware-accelerated inference (LPUs) for very "
+              + "fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen "
+              + "models. Generous free tier with daily token limits.")
+    } else if (idx === 6) {
+      return qsTr("Mistral. The default is Mistral Large. Codestral targets "
+              + "code completion, Pixtral handles vision, and the Ministral "
+              + "models are tuned for edge / low-latency use.")
+    } else if (idx === 7) {
       return qsTr("Local model server. Works with any OpenAI-compatible "
               + "endpoint -- Ollama, llama.cpp's llama-server, LM Studio, "
               + "or vLLM. Nothing leaves your machine. The model list is "
@@ -61,11 +91,10 @@ Widgets.SmartDialog {
     id: column
 
     spacing: 14
-    anchors.centerIn: parent
+    anchors.fill: parent
 
     Label {
       Layout.fillWidth: true
-      Layout.preferredWidth: 640
       wrapMode: Text.WordWrap
       font: Cpp_Misc_CommonFonts.uiFont
       color: Cpp_ThemeManager.colors["text"]
@@ -74,33 +103,29 @@ Widgets.SmartDialog {
               + "communicate with the provider you select.")
     }
 
-    Repeater {
-      model: Cpp_AI_Assistant.providerNames
+    //
+    // Scrollable card area -- shows only the active provider's settings
+    //
+    ScrollView {
+      id: cardScroll
 
-      delegate: Rectangle {
+      clip: true
+      Layout.fillWidth: true
+      Layout.fillHeight: true
+      ScrollBar.vertical.policy: ScrollBar.AsNeeded
+      ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+      Rectangle {
         id: providerCard
 
         radius: 4
         border.width: 1
-        Layout.fillWidth: true
+        width: cardScroll.availableWidth
         implicitHeight: providerColumn.implicitHeight + 24
         color: Cpp_ThemeManager.colors["groupbox_background"]
         border.color: Cpp_ThemeManager.colors["groupbox_border"]
 
         property bool revealed: false
-        property int providerIdx: index
-
-        //
-        // Mirrored Q_INVOKABLE hasKey(); refreshed via keysChanged
-        //
-        property bool hasKey: Cpp_AI_Assistant.hasKey(providerIdx)
-
-        Connections {
-          target: Cpp_AI_Assistant
-          function onKeysChanged() {
-            providerCard.hasKey = Cpp_AI_Assistant.hasKey(providerCard.providerIdx)
-          }
-        }
 
         ColumnLayout {
           id: providerColumn
@@ -117,7 +142,7 @@ Widgets.SmartDialog {
             Layout.fillWidth: true
 
             Label {
-              text: modelData
+              text: Cpp_AI_Assistant.providerNames[root.providerIdx] || ""
               font: Cpp_Misc_CommonFonts.customUiFont(1.1, true)
               color: Cpp_ThemeManager.colors["text"]
             }
@@ -126,11 +151,11 @@ Widgets.SmartDialog {
               radius: 9
               implicitWidth: statusPill.implicitWidth + 14
               implicitHeight: statusPill.implicitHeight + 4
-              color: providerCard.hasKey
+              color: root.hasKey
                      ? Qt.darker(Cpp_ThemeManager.colors["highlight"], 1.1)
                      : Qt.darker(Cpp_ThemeManager.colors["mid"], 1.05)
               border.width: 1
-              border.color: providerCard.hasKey
+              border.color: root.hasKey
                            ? Cpp_ThemeManager.colors["highlight"]
                            : Cpp_ThemeManager.colors["mid"]
 
@@ -138,7 +163,7 @@ Widgets.SmartDialog {
                 id: statusPill
 
                 anchors.centerIn: parent
-                text: providerCard.hasKey
+                text: root.hasKey
                       ? qsTr("Key set")
                       : qsTr("No key")
                 font: Cpp_Misc_CommonFonts.customUiFont(0.75, true)
@@ -159,24 +184,24 @@ Widgets.SmartDialog {
             opacity: 0.75
             font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
             color: Cpp_ThemeManager.colors["text"]
-            text: root.providerTagline(providerIdx)
+            text: root.providerTagline(root.providerIdx)
           }
 
           //
-          // Key field row -- only shown for cloud providers that need an API key
+          // Key field row -- shown for cloud providers that need an API key
           //
           RowLayout {
             spacing: 6
             Layout.fillWidth: true
-            visible: Cpp_AI_Assistant.requiresApiKey(providerIdx)
+            visible: Cpp_AI_Assistant.requiresApiKey(root.providerIdx)
 
             TextField {
               id: keyField
 
               Layout.fillWidth: true
               font: Cpp_Misc_CommonFonts.monoFont
-              echoMode: revealed ? TextInput.Normal : TextInput.Password
-              placeholderText: providerCard.hasKey
+              echoMode: providerCard.revealed ? TextInput.Normal : TextInput.Password
+              placeholderText: root.hasKey
                                ? qsTr("A key is on file -- paste a new one to replace it")
                                : qsTr("Paste your API key here")
             }
@@ -184,14 +209,16 @@ Widgets.SmartDialog {
             ToolButton {
               text: ""
               display: AbstractButton.IconOnly
-              ToolTip.text: revealed ? qsTr("Hide key") : qsTr("Show key while typing")
+              ToolTip.text: providerCard.revealed
+                            ? qsTr("Hide key")
+                            : qsTr("Show key while typing")
               ToolTip.visible: hovered
               ToolTip.delay: 400
               icon.color: Cpp_ThemeManager.colors["text"]
-              icon.source: revealed
+              icon.source: providerCard.revealed
                            ? "qrc:/icons/buttons/invisible.svg"
                            : "qrc:/icons/buttons/visible.svg"
-              onClicked: revealed = !revealed
+              onClicked: providerCard.revealed = !providerCard.revealed
             }
 
             ToolButton {
@@ -203,7 +230,7 @@ Widgets.SmartDialog {
               font: Cpp_Misc_CommonFonts.uiFont
               icon.color: Cpp_ThemeManager.colors["text"]
               icon.source: "qrc:/icons/buttons/website.svg"
-              onClicked: Qt.openUrlExternally(Cpp_AI_Assistant.keyVendorUrl(providerIdx))
+              onClicked: Qt.openUrlExternally(Cpp_AI_Assistant.keyVendorUrl(root.providerIdx))
             }
 
             ToolButton {
@@ -214,14 +241,9 @@ Widgets.SmartDialog {
               icon.color: Cpp_ThemeManager.colors["text"]
               icon.source: "qrc:/icons/buttons/save.svg"
               onClicked: {
-                Cpp_AI_Assistant.setKey(providerIdx, keyField.text)
+                Cpp_AI_Assistant.setKey(root.providerIdx, keyField.text)
                 keyField.clear()
-                revealed = false
-
-                // Activate the just-saved provider and dismiss the dialog
-                if (Cpp_AI_Assistant.currentProvider !== providerIdx)
-                  Cpp_AI_Assistant.selectProvider(providerIdx)
-
+                providerCard.revealed = false
                 root.close()
               }
             }
@@ -229,13 +251,14 @@ Widgets.SmartDialog {
             ToolButton {
               text: ""
               display: AbstractButton.IconOnly
-              enabled: providerCard.hasKey
-              ToolTip.text: qsTr("Remove the stored key for %1").arg(modelData)
+              enabled: root.hasKey
+              ToolTip.text: qsTr("Remove the stored key for %1").arg(
+                              Cpp_AI_Assistant.providerNames[root.providerIdx] || "")
               ToolTip.visible: hovered
               ToolTip.delay: 400
               icon.color: Cpp_ThemeManager.colors["alarm"]
               icon.source: "qrc:/icons/buttons/trash.svg"
-              onClicked: Cpp_AI_Assistant.clearKey(providerIdx)
+              onClicked: Cpp_AI_Assistant.clearKey(root.providerIdx)
             }
           }
 
@@ -245,7 +268,7 @@ Widgets.SmartDialog {
           RowLayout {
             spacing: 6
             Layout.fillWidth: true
-            visible: !Cpp_AI_Assistant.requiresApiKey(providerIdx)
+            visible: !Cpp_AI_Assistant.requiresApiKey(root.providerIdx)
 
             TextField {
               id: urlField
@@ -265,7 +288,7 @@ Widgets.SmartDialog {
               font: Cpp_Misc_CommonFonts.uiFont
               icon.color: Cpp_ThemeManager.colors["text"]
               icon.source: "qrc:/icons/buttons/website.svg"
-              onClicked: Qt.openUrlExternally(Cpp_AI_Assistant.keyVendorUrl(providerIdx))
+              onClicked: Qt.openUrlExternally(Cpp_AI_Assistant.keyVendorUrl(root.providerIdx))
             }
 
             ToolButton {
@@ -277,9 +300,6 @@ Widgets.SmartDialog {
               icon.source: "qrc:/icons/buttons/save.svg"
               onClicked: {
                 Cpp_AI_Assistant.setLocalBaseUrl(urlField.text)
-                if (Cpp_AI_Assistant.currentProvider !== providerIdx)
-                  Cpp_AI_Assistant.selectProvider(providerIdx)
-
                 root.close()
               }
             }
@@ -312,6 +332,7 @@ Widgets.SmartDialog {
 
         Layout.fillWidth: true
         opacity: 0.6
+        wrapMode: Text.WordWrap
         font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
         color: Cpp_ThemeManager.colors["text"]
 
@@ -334,7 +355,7 @@ Widgets.SmartDialog {
 
         text: {
           if (keysReady === 0)
-            return qsTr("No API keys configured yet. Add at least one above to get started.")
+            return qsTr("No API keys configured yet. Add a key to get started.")
 
           if (keysReady === 1)
             return qsTr("One provider is ready.")

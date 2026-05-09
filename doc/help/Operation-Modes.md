@@ -37,8 +37,6 @@ flowchart LR
 >
 > **Frame detection options (Project File mode only):** End Only, Start+End, Start Only, No Delimiters.
 
----
-
 ## Console Only mode
 
 ### Selection
@@ -62,8 +60,6 @@ Console Only is not a parsing mode. No widgets render, no CSV export, no frame p
 - Interactively driving a device with a simple text protocol (AT commands, CLI, and so on).
 
 Once you've confirmed the data looks sane, switch to Quick Plot or Project File to visualize it.
-
----
 
 ## Quick Plot mode
 
@@ -109,8 +105,6 @@ The first line sets channel labels. Later lines are plotted in real time.
 ### When to use it
 
 Quick Plot is the fastest way to visualize data. Use it when you want to check that a device is transmitting correctly, prototype a new sensor, or demonstrate real-time plotting in a classroom.
-
----
 
 ## Project File mode
 
@@ -215,8 +209,6 @@ Multi-source is a Pro feature. The free (GPL) edition is limited to a single sou
 
 Project File mode is the right choice for any application that needs custom widgets, alarm thresholds, FFT analysis, per-channel configuration, multi-device monitoring, or a carefully designed dashboard layout. It's the most common mode for production telemetry systems, competition dashboards (CanSat, rocketry), and industrial monitoring.
 
----
-
 ## Picking the right mode
 
 | Scenario                                                     | Recommended mode |
@@ -247,8 +239,6 @@ Project File mode is the right choice for any application that needs custom widg
 | Multi-source                | No                  | No               | Yes (Pro)                     |
 | CSV / MDF4 export           | No                  | Yes              | Yes                           |
 | Saved configuration         | No                  | No               | Yes (.ssproj file)            |
-
----
 
 ## Getting started recommendations
 

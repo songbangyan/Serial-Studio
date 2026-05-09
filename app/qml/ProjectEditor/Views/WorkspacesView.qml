@@ -34,9 +34,11 @@ Widgets.Pane {
   icon: "qrc:/icons/project-editor/treeview/datagrid.svg"
 
   property var summary: []
+  property int unresolvedCount: 0
 
   function refresh() {
     summary = Cpp_JSON_ProjectEditor.workspacesSummary()
+    unresolvedCount = Cpp_JSON_ProjectEditor.unresolvedWorkspaceWidgetCount()
   }
 
   onVisibleChanged: if (visible) Qt.callLater(refresh)
@@ -45,6 +47,7 @@ Widgets.Pane {
   Connections {
     target: Cpp_JSON_ProjectModel
     function onEditorWorkspacesChanged() { Qt.callLater(root.refresh) }
+    function onGroupsChanged()           { Qt.callLater(root.refresh) }
   }
 
   Page {
@@ -169,6 +172,22 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspace()
             icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+          }
+
+          Widgets.ToolbarButton {
+            iconSize: 24
+            toolbarButton: false
+            text: qsTr("Cleanup")
+            Layout.alignment: Qt.AlignVCenter
+            ToolTip.text: root.unresolvedCount > 0
+                          ? qsTr("Remove %1 widget reference(s) whose target "
+                                 + "group or dataset no longer exists")
+                            .arg(root.unresolvedCount)
+                          : qsTr("No stale widget references in any workspace")
+            enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
+                     && root.unresolvedCount > 0
+            onClicked: Cpp_JSON_ProjectEditor.confirmCleanupUnresolvedWorkspaceWidgets()
+            icon.source: "qrc:/icons/project-editor/actions/clear.svg"
           }
         }
       }

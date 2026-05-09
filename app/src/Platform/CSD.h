@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <QAbstractNativeEventFilter>
 #include <QHash>
 #include <QImage>
 #include <QObject>
@@ -168,7 +169,9 @@ private:
 /**
  * @brief Manages client-side decorations for a QQuickWindow.
  */
-class Window : public QObject {
+class Window
+  : public QObject
+  , public QAbstractNativeEventFilter {
   Q_OBJECT
 
 public:
@@ -181,6 +184,8 @@ public:
 
   [[nodiscard]] int shadowMargin() const;
   [[nodiscard]] int titleBarHeight() const;
+
+  bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 
 public slots:
   void updateTheme();

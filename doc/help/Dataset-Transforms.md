@@ -25,8 +25,6 @@ Transforms are optional. Datasets without one display the raw parsed value uncha
 
 A transform can also read and write **shared data tables**: constants defined at project time, and computed registers shared across all transforms in a single frame. That's how you pass a calibration value into several channels, or have one transform compute a value that another transform consumes. See [Data Tables](Data-Tables.md) for the full reference.
 
----
-
 ## The `transform()` function
 
 ### Signature
@@ -58,8 +56,6 @@ Non-numeric dataset values (strings) skip the transform entirely: the raw string
 The function has to return a number. The returned value replaces the raw value everywhere: dashboard widgets, plots, CSV export, MDF4 export, and the API.
 
 If the function returns `nil` (Lua), `undefined`/`NaN`/`Infinity` (JS), or if an error happens, the raw value is kept unchanged and no error is shown, so the data stream isn't interrupted.
-
----
 
 ## Persistent state
 
@@ -172,8 +168,6 @@ Persistent state is cleared when:
 
 So filters and accumulators start from scratch on each new connection session, which is usually what you want.
 
----
-
 ## Data Table API
 
 Every transform has access to four built-in functions for reading and writing the project's data tables. Tables are covered in full in [Data Tables](Data-Tables.md). This section documents the API surface from the transform's point of view.
@@ -233,8 +227,6 @@ Transforms are applied in order: groups in frame order, datasets in group order.
 
 If you need dataset B to consume dataset A's final value, make sure A comes before B in the Project Editor tree.
 
----
-
 ## Using the Transform Editor
 
 1. Select a dataset in the Project Editor tree.
@@ -252,8 +244,6 @@ When you open the editor on a dataset with no transform yet, it's pre-filled wit
 ### Switching languages
 
 When you switch the language dropdown, the editor loads the equivalent template in the new language automatically (if the current code matches a known template). Custom code is left unchanged. Only the syntax highlighter switches.
-
----
 
 ## Built-in templates
 
@@ -332,8 +322,6 @@ The Transform Editor includes 33 ready-to-use templates. Pick one from the Templ
 |-----------------------------|-------------|
 | Steinhart-Hart Thermistor   | NTC resistance to temperature (°C). |
 
----
-
 ## How transforms fit into the data pipeline
 
 Serial Studio processes data in a clear pipeline. Knowing where transforms sit helps you decide what belongs in `parse()` vs `transform()`.
@@ -350,8 +338,6 @@ Serial Studio processes data in a clear pipeline. Knowing where transforms sit h
 - The dataset transform handles value conditioning: calibration, unit conversion, filtering, derived calculations. It deals with physical meaning.
 
 That separation keeps parsers focused on protocol logic and transforms focused on sensor characteristics. You can reuse the same parser across different projects with different calibrations by changing only the per-dataset transforms.
-
----
 
 ## Practical examples
 
@@ -418,8 +404,6 @@ function transform(value)
 end
 ```
 
----
-
 ## Rules and limitations
 
 1. The function has to be named `transform` (case-sensitive).
@@ -430,8 +414,6 @@ end
 6. Datasets on the same source share one underlying scripting engine, but each dataset's top-level state is isolated. Declare stateful variables with `local` in Lua or `var` in JavaScript and they won't collide with other datasets. Bare globals in Lua (and `function foo() end` at chunk top level) DO leak across datasets. Always use `local`.
 7. The engine is sandboxed: no file I/O, no network, no OS commands.
 8. Transforms run on every incoming frame, so keep them fast. Avoid unbounded loops or heavy computation.
-
----
 
 ## See also
 

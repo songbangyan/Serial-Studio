@@ -339,7 +339,8 @@ QStringList UI::TaskbarSettings::canonicalAvailableButtons()
           QStringLiteral("console"),
           QStringLiteral("notifications"),
           QStringLiteral("pause"),
-          QStringLiteral("file_transmission")};
+          QStringLiteral("file_transmission"),
+          QStringLiteral("ai_assistant")};
 }
 
 /**

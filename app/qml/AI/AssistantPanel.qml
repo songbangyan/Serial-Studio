@@ -93,7 +93,7 @@ Widgets.SmartDialog {
 
           radius: 12
           visible: root.conversationEmpty
-          width: Math.min(parent.width - 32, 540)
+          width: Math.min(parent.width - 32, 680)
           implicitHeight: welcomeColumn.implicitHeight + 36
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
@@ -269,12 +269,14 @@ Widgets.SmartDialog {
             }
 
             //
-            // Has-key path: suggestion chips
+            // Has-key path: suggestion chips arranged as a 2x2 grid so the
+            // layout stays balanced regardless of prompt length.
             //
-            Flow {
-              spacing: 8
+            GridLayout {
+              columns: 2
+              rowSpacing: 8
+              columnSpacing: 8
               Layout.topMargin: 4
-              Layout.fillWidth: true
               Layout.alignment: Qt.AlignHCenter
               visible: welcomeCard.hasActiveKey
 
@@ -286,10 +288,10 @@ Widgets.SmartDialog {
 
                   padding: 0
                   contentItem: Item {}
+                  Layout.fillWidth: true
+                  Layout.preferredHeight: chipText.implicitHeight + 12
                   background: Rectangle {
                     radius: 14
-                    implicitWidth: chipText.implicitWidth + 22
-                    implicitHeight: chipText.implicitHeight + 12
                     color: chip.hovered
                            ? Cpp_ThemeManager.colors["alternate_base"]
                            : Cpp_ThemeManager.colors["base"]
@@ -299,7 +301,12 @@ Widgets.SmartDialog {
                     Label {
                       id: chipText
 
-                      anchors.centerIn: parent
+                      anchors.fill: parent
+                      anchors.leftMargin: 11
+                      anchors.rightMargin: 11
+                      horizontalAlignment: Text.AlignHCenter
+                      verticalAlignment: Text.AlignVCenter
+                      elide: Text.ElideRight
                       text: modelData
                       font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
                       color: Cpp_ThemeManager.colors["text"]

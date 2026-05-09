@@ -779,18 +779,22 @@ Widgets.SmartDialog {
                 "console": qsTr("Console"),
                 "notifications": qsTr("Notifications"),
                 "pause": qsTr("Pause / Resume"),
-                "file_transmission": qsTr("File Transmission")
+                "file_transmission": qsTr("File Transmission"),
+                "ai_assistant": qsTr("AI Assistant")
               }
               const icons = {
                 "settings": "qrc:/icons/taskbar/settings.svg",
                 "console": "qrc:/icons/taskbar/console.svg",
                 "notifications": "qrc:/icons/taskbar/notifications.svg",
                 "pause": "qrc:/icons/taskbar/pause.svg",
-                "file_transmission": "qrc:/icons/taskbar/file-transmission.svg"
+                "file_transmission": "qrc:/icons/taskbar/file-transmission.svg",
+                "ai_assistant": "qrc:/icons/taskbar/ai.svg"
               }
 
               function shouldShow(id) {
-                if (id === "notifications" || id === "file_transmission")
+                if (id === "notifications"
+                    || id === "file_transmission"
+                    || id === "ai_assistant")
                   return Cpp_CommercialBuild
 
                 return true

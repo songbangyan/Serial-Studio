@@ -82,13 +82,15 @@ function transmit(text) {
 
 ## Pinning to a workspace
 
-Output widgets render in the OutputPanel (DashboardWidget enum 15). To
-pin a panel to a workspace:
+Output widgets render in the OutputPanel widget. To pin a panel to a
+workspace:
 
 ```
 project.workspace.setCustomizeMode{enabled: true}
-project.workspace.addWidget{workspaceId, widgetType: 15,
-                            groupId, relativeIndex: 0}
+project.workspace.addWidget{workspaceId, widgetType: "output-panel",
+                            groupId}
+// integer form (back-compat): widgetType: 15
+// relativeIndex defaults to next free slot when omitted
 ```
 
 The OutputPanel shows ALL output widgets in that group on one tile.
@@ -96,9 +98,28 @@ Don't add one tile per output widget — that's not how it's structured.
 
 ## Hardware writes go through the user, not you
 
-You cannot transmit bytes yourself. `console.send` and `io.writeData`
-are Blocked at the dispatcher. The whole point of an output widget is
-that the *user* presses the button and the JS transmit function you
-generated runs on their behalf. Frame your help around that: write a
-clean transmit() that produces the right bytes, and let the user be
-the one who fires it.
+You cannot transmit bytes yourself. `console.send`, `io.writeData`,
+`io.connect`, and `io.disconnect` are Blocked at the dispatcher.
+Tools that hit those paths return `category: "hardware_write_blocked"`
+(distinct from `permission_denied`, which is OS-level only).
+
+The whole point of an output widget is that the *user* presses the
+button and the JS transmit function you generated runs on their
+behalf. Frame your help around that: write a clean transmit() that
+produces the right bytes, and let the user be the one who fires it.
+
+## Why JavaScript-only
+
+Output widget transmit functions and Painter scripts are
+JavaScript-only on purpose:
+
+- Output widgets ship a JS-specific helper bundle (CRC variants,
+  NMEA, Modbus framing, SLCAN encoding, GRBL, GCode, SCPI, binary
+  packet helpers). Porting that to Lua is a large effort for marginal
+  benefit.
+- Painters draw via Canvas2D, which is bound to QJSEngine; there is
+  no Lua canvas API.
+
+Frame parsers and per-dataset transforms support BOTH Lua (preferred
+for hotpath performance) and JavaScript. The Lua nudge does NOT
+extend to output widgets or painters.

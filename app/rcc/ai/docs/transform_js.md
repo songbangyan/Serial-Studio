@@ -65,11 +65,16 @@ datasetGetRaw(uniqueId)                        // raw value of any dataset
 datasetGetFinal(uniqueId)                      // final value of an EARLIER dataset (this frame)
 ```
 
-`uniqueId` is a stable INTEGER that uniquely identifies a dataset across
-the project. It comes back from `project.dataset.list` (under
-`uniqueId`) and from `project.group.list` (under `datasetSummary[].uniqueId`).
-Compute manually as `sourceId * 1_000_000 + groupId * 10_000 + datasetId`
-if needed, but prefer reading it from the API.
+`uniqueId` is an OPAQUE integer that uniquely identifies a dataset
+within the project. It comes back from `project.dataset.list` (under
+`uniqueId`), from `project.snapshot`, and from the resolvers
+`project.dataset.getByPath { path: "Group/Dataset" }` /
+`getByTitle` / `getByUniqueId`.
+
+**Treat the value as opaque.** It happens to be derived from
+`(sourceId, groupId, datasetId)`, but reordering changes those
+numbers. Resolve once via the API and pass the resulting integer into
+`datasetGetRaw / datasetGetFinal` -- never recompute it.
 
 ## Processing order
 
@@ -79,8 +84,10 @@ can read:
 - raw values of **all** datasets in this frame (parser already ran)
 - final values of **earlier** datasets only
 
-Trying to read `datasetGetFinal` of a dataset processed later returns `0`
-without error.
+Trying to read `datasetGetFinal` of a dataset processed later returns
+nil/empty AND logs a one-shot warning to the runtime console. Use
+`project.dataset.getExecutionOrder` to confirm the order of execution
+when peer reads return stale or empty values.
 
 ## When to use a table vs a transform local
 

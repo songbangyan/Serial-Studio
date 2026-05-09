@@ -18,8 +18,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 - Commercial use rights.
 - Email support.
 
----
-
 ## Complete Feature Comparison
 
 | Category | Feature | Free (GPLv3) | Pro |
@@ -95,8 +93,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 | | Email Support | ❌ | ✅ |
 | | Priority Bug Fixes | ❌ | ✅ |
 
----
-
 ## Pro-Only Feature Details
 
 ### MQTT Integration
@@ -117,8 +113,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 
 **Learn more:** [MQTT Integration](MQTT-Integration.md) | [Protocol Setup Guide](Protocol-Setup-Guides.md#mqtt-setup-pro)
 
----
-
 ### Modbus Protocol (RTU & TCP)
 
 **What it is:** Industrial communication protocol for PLCs and SCADA systems.
@@ -136,8 +130,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 - Industrial equipment diagnostics
 
 **Learn more:** [Protocol Setup Guide](Protocol-Setup-Guides.md#modbus-rtu-setup-pro)
-
----
 
 ### CAN Bus Support
 
@@ -158,8 +150,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 
 **Learn more:** [Protocol Setup Guide](Protocol-Setup-Guides.md#can-bus-setup-pro)
 
----
-
 ### Audio Input
 
 **What it is:** Capture and visualize audio signals from microphone or line-in.
@@ -178,8 +168,6 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 - Analog signal debugging
 
 **Learn more:** [Protocol Setup Guide](Protocol-Setup-Guides.md#audio-input-setup-pro)
-
----
 
 ### Binary (Direct) Mode
 
@@ -211,8 +199,6 @@ function parse(frame) {
 
 **Free alternative:** Use Hexadecimal or Base64 decoder (with string conversion overhead)
 
----
-
 ### 3D Plot Widget
 
 **What it is:** Real-time 3D scatter or line plot for visualizing X, Y, Z coordinates in 3D space.
@@ -233,8 +219,6 @@ function parse(frame) {
 
 **Learn more:** [Widget Reference - 3D Plot](Widget-Reference.md#3d-plot-pro)
 
----
-
 ### XY Plot Widget
 
 **What it is:** 2D scatter plot displaying Y values against X values (instead of time).
@@ -252,8 +236,6 @@ function parse(frame) {
 - Pressure-volume diagrams
 
 **Learn more:** [Widget Reference - 3D Plot](Widget-Reference.md#3d-plot-pro)
-
----
 
 ### Waterfall Widget
 
@@ -274,8 +256,6 @@ function parse(frame) {
 
 **Learn more:** [Widget Reference - Waterfall](Widget-Reference.md#waterfall-pro)
 
----
-
 ### Painter Widget
 
 **What it is:** A user-scripted dashboard widget. The script defines a JavaScript `paint(ctx, w, h)` callback that renders directly into the widget's bitmap on every dashboard tick. Use it when no built-in widget covers the required visualization.
@@ -295,8 +275,6 @@ function parse(frame) {
 
 **Learn more:** [Painter Widget](Painter-Widget.md)
 
----
-
 ### Raw USB
 
 **What it is:** Direct bulk, control, and isochronous USB access via libusb, bypassing OS serial/HID abstraction layers.
@@ -314,8 +292,6 @@ function parse(frame) {
 
 **Learn more:** [Data Sources - Raw USB](Data-Sources.md#raw-usb)
 
----
-
 ### HID Devices
 
 **What it is:** Cross-platform Human Interface Device access via hidapi (gamepads, custom USB HIDs, sensors).
@@ -332,8 +308,6 @@ function parse(frame) {
 
 **Learn more:** [Data Sources - HID Devices](Data-Sources.md#hid-device)
 
----
-
 ### Process I/O
 
 **What it is:** Spawn a child process and read its stdout as a data source, or connect to a named pipe/FIFO from an external process.
@@ -349,8 +323,6 @@ function parse(frame) {
 - Named pipe bridges from long-running data acquisition software
 
 **Learn more:** [Data Sources - Process I/O](Data-Sources.md#process-io)
-
----
 
 ### Image View Widget
 
@@ -373,8 +345,6 @@ function parse(frame) {
 - Camera Telemetry example (Python JPEG stream over UDP)
 
 **Learn more:** [Widget Reference - Image View](Widget-Reference.md#image-view-pro) | [Camera Telemetry Example](https://github.com/Serial-Studio/Serial-Studio/tree/master/examples/Camera%20Telemetry)
-
----
 
 ### MDF4 File Support
 
@@ -399,8 +369,6 @@ function parse(frame) {
 
 **Learn more:** [Protocol Setup Guide](Protocol-Setup-Guides.md#can-bus-setup-pro)
 
----
-
 ### Commercial Use Rights
 
 **Free (GPLv3):**
@@ -417,8 +385,6 @@ function parse(frame) {
 - ✅ Revenue-generating applications
 
 **Important:** Even if you compile from source (GPL modules only), commercial use requires a Pro license per the license agreement.
-
----
 
 ## Which version do I need?
 
@@ -437,8 +403,6 @@ function parse(frame) {
 - Learning embedded systems.
 - University research (non-commercial).
 - Home automation.
-
----
 
 ### Choose Pro if:
 
@@ -459,8 +423,6 @@ function parse(frame) {
 - Commercial products.
 - Enterprise deployments.
 
----
-
 ## Pricing
 
 **Serial Studio Pro**
@@ -474,8 +436,6 @@ function parse(frame) {
 - Full Pro features unlocked during trial
 - One-time per hardware (cannot reset by reinstalling)
 - No credit card required
-
----
 
 ## Upgrading from Free to Pro
 
@@ -501,8 +461,6 @@ function parse(frame) {
 - After activation, works fully offline
 - License tied to hardware ID
 
----
-
 ## Educational Discounts
 
 Students and educators can get discounted Pro licenses:
@@ -517,8 +475,6 @@ Students and educators can get discounted Pro licenses:
 - Include: .edu email, institution name, use case
 - Response within 2 business days
 
----
-
 ## Can't Afford Pro? Earn a License!
 
 Contribute to the Serial Studio project and earn a free Pro license:
@@ -532,8 +488,6 @@ Contribute to the Serial Studio project and earn a free Pro license:
 - Share protocol samples
 
 **Learn more:** [Earn a Pro License by Contributing](Earn-Pro-License.md)
-
----
 
 ## Frequently Asked Questions
 
@@ -591,8 +545,6 @@ Yes, within 14 days of purchase if the software doesn't meet your needs. Contact
 
 Yes, for Pro customers. Contact alex@serial-studio.com for rates and availability.
 
----
-
 ## Side-by-Side Comparison
 
 ### Arduino Sensor Project
@@ -607,8 +559,6 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 | Use Binary Direct mode | ❌ | ✅ |
 | **Result** | **Fully supported** | **Fully supported + performance options** |
 
----
-
 ### Industrial PLC Monitoring
 
 | Task | Free | Pro |
@@ -619,8 +569,6 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 | Visualize PLC data | Partial | ✅ |
 | Export to CSV | ✅ | ✅ + MDF4 |
 | **Result** | **Limited** | **Fully supported** |
-
----
 
 ### Automotive CAN Bus
 
@@ -633,8 +581,6 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 | OBD-II diagnostics | ❌ | ✅ |
 | **Result** | **Not supported** | **Fully supported** |
 
----
-
 ### IoT Cloud Monitoring
 
 | Task | Free | Pro |
@@ -645,8 +591,6 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 | Subscribe to topics | ❌ | ✅ |
 | Distributed sensors | Difficult | ✅ |
 | **Result** | **Limited** | **Fully supported** |
-
----
 
 ## Summary
 
@@ -661,16 +605,12 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 | **Support** | Community | Email + Community |
 | **Cost** | Free | One-time purchase |
 
----
-
 ## Still Have Questions?
 
 - **Compare features:** See [Feature Comparison Table](#complete-feature-comparison) above
 - **Try before buying:** [Download official binary](https://serial-studio.com) for 14-day trial
 - **Earn free license:** [Contribute to the project](Earn-Pro-License.md)
 - **Contact sales:** alex@serial-studio.com
-
----
 
 ## See Also
 
@@ -679,7 +619,5 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 - [Widget Reference](Widget-Reference.md) - All available widgets
 - [Getting Started](Getting-Started.md) - First-time setup
 - [Earn a Pro License](Earn-Pro-License.md) - Contribute for free access
-
----
 
 **Ready to go Pro?** [Purchase Now](https://serial-studio.com) | [Try Free Trial](https://serial-studio.com)

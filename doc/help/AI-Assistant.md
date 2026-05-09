@@ -2,7 +2,7 @@
 
 A chat-based assistant that lives inside Serial Studio and edits the project for you. Open it from the main toolbar (the **Assistant** button next to *Extensions*) or from the **Project Editor** toolbar, describe what you want to build, and the assistant configures sources, groups, datasets, frame parsers, transforms, output widgets, painters, and workspaces by calling the same in-process API your scripts and the MCP server already use.
 
-It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, Google Gemini, DeepSeek, or a local model server) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected. The local-server option lets you run everything offline against Ollama, llama.cpp, LM Studio, or vLLM.
+It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, Google Gemini, DeepSeek, Groq, Mistral, OpenRouter, or a local model server) and paste an API key once. The key is encrypted on this machine and never leaves your computer except to talk to the provider you selected. The local-server option lets you run everything offline against Ollama, llama.cpp, LM Studio, or vLLM.
 
 > **Pro feature.** The Assistant button is only present in Pro builds; GPL builds hide it entirely. Operator deployments (`--runtime`) also hide it. The Assistant is a build-time author tool, not something you ship to operators.
 
@@ -25,11 +25,9 @@ Typical things people ask it to do:
 
 The four chips on the empty-conversation card are starter prompts. Click one to drop it into the input box and edit before sending.
 
----
-
 ## Picking a provider
 
-Five providers are wired in. They all do roughly the same job; the trade-offs are price, speed, how generous the free tier is, and whether the data ever leaves your machine.
+Eight providers are wired in. They all do roughly the same job; the trade-offs are price, speed, how generous the free tier is, and whether the data ever leaves your machine.
 
 | Provider | Default model | What it costs | What it does well |
 |---|---|---|---|
@@ -37,11 +35,14 @@ Five providers are wired in. They all do roughly the same job; the trade-offs ar
 | **OpenAI** | GPT-5 mini | Pay-per-token; mini tier is cheap | Default. Streaming, parallel tool calls, native function-calling. GPT-5.2 and GPT-5.2 Chat are the strongest options for hard tasks. GPT-4.1, GPT-4.1 mini, GPT-4o, and GPT-4o mini remain available. Reasoning-capable models run at `reasoning_effort: none` -- right for fast, interactive tool-calling. |
 | **Google Gemini** | 2.5 Flash | Generous free tier (rate-limited via AI Studio) | 2.5 Flash and 2.0 Flash run on the free tier. 2.5 Pro is paid. |
 | **DeepSeek** | deepseek-chat (V3) | Often the cheapest cloud option for tool use | OpenAI-compatible API. `deepseek-reasoner` (R1) is also selectable. |
+| **Groq** | llama-3.3-70b-versatile | Free tier with daily limits; very low paid pricing | OpenAI-compatible API on Groq's LPU hardware (extremely fast token output). `llama-3.1-8b-instant` for cheapest/fastest, plus the OpenAI gpt-oss-120b / 20b open-weights builds. |
+| **Mistral** | mistral-large-latest | Pay-per-token; small / Ministral / Nemo tiers are cheap | OpenAI-compatible API. Selectable: `mistral-medium-latest`, `mistral-small-latest`, `ministral-8b-latest`, `ministral-3b-latest`, `codestral-latest` (code-tuned), `pixtral-large-latest` (vision), `open-mistral-nemo`. |
+| **OpenRouter** | anthropic/claude-haiku-4.5 | Aggregator pricing per upstream model; some `:free` routes | OpenAI-compatible aggregator. Single key fans out to Anthropic, OpenAI, Google, Meta Llama, DeepSeek, Mistral, Qwen routes. Useful when you want to try several backends without juggling keys. |
 | **Local model** | (whatever your server has loaded) | Free | OpenAI-compatible local endpoint. Works with Ollama (default `http://localhost:11434/v1`), llama.cpp's `llama-server`, LM Studio, or vLLM. The model list is queried live from `/v1/models`. Nothing leaves your machine. |
 
 You switch providers from the footer combo box. Each provider keeps its own model selection. Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
 
-> **Anthropic and OpenAI have the most complete integrations today.** Anthropic surfaces cache read/write counts and adaptive extended thinking back to the UI; the OpenAI path uses server-side prompt caching (silent), parallel tool calls, and the GPT-5 / o-series developer-role conventions, with `reasoning_effort: none` so tool-calling stays responsive. Gemini, DeepSeek, and Local work but don't have cache reporting or thinking integration.
+> **Anthropic and OpenAI have the most complete integrations today.** Anthropic surfaces cache read/write counts and adaptive extended thinking back to the UI; the OpenAI path uses server-side prompt caching (silent), parallel tool calls, and the GPT-5 / o-series developer-role conventions, with `reasoning_effort: none` so tool-calling stays responsive. Gemini, DeepSeek, Groq, Mistral, OpenRouter, and Local all work for streaming chat and tool calls (Groq, Mistral, OpenRouter and DeepSeek run on the same OpenAI-compatible code path) but don't have cache reporting or thinking integration.
 
 ### Local models
 
@@ -58,8 +59,6 @@ Whatever models are installed on the server show up in the model picker. Click t
 The empty-conversation card has a **Get a key from <provider>** link that opens the right signup page. Once you have the key, click **Open API Key Setup** (or the wrench icon in the footer), paste the key, and save. The key is checked, redacted in the UI (you only ever see the last few characters), and persisted under your local app settings encrypted with a per-machine key.
 
 You can change provider, change model, or revoke a key at any time from the same dialog. Revoking a key clears it from disk; revoking the active provider's key drops you back to the welcome screen until you paste a new one.
-
----
 
 ## How a turn works
 
@@ -93,8 +92,6 @@ You can approve a single call (**Approve**) or, when the assistant queues severa
 
 The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers. There is also an **Auto-approve edits** toggle in the panel footer: when on, **Confirm**-tier project edits run without asking. **Blocked** and **Safe** are unaffected.
 
----
-
 ## The composer
 
 The bar at the bottom is the input. It has three controls:
@@ -104,8 +101,6 @@ The bar at the bottom is the input. It has three controls:
 - **Send / Cancel**. Round button on the far right. While the model is generating, the icon flips to **Cancel** and clicking it stops the stream. Anything already produced stays in the chat.
 
 While the assistant is working you'll see a thin animated stripe under the message list. The footer **Status** pill shows *Working* or *Ready* and, when prompt caching is in use, how many cached tokens the current turn read from or wrote to the cache.
-
----
 
 ## Privacy and what gets sent
 
@@ -117,8 +112,6 @@ Read this before pasting anything sensitive. Every message you send goes to the 
 
 If your project file contains commercial firmware code or proprietary protocol notes inside frame parsers or transforms, that text will travel to the provider with each turn. Treat the provider's data-handling policy as the relevant constraint, not Serial Studio's.
 
----
-
 ## Documentation lookup
 
 The assistant can pull `doc/help/*.md` pages directly off the Serial Studio GitHub repo when it needs them. You'll see this as a tool call named `meta.fetchHelp` with a path like `Painter-Widget` or `JavaScript-API`. It is read-only and Safe. The first call usually grabs `help.json` (the page index), the second pulls the relevant page.
@@ -127,21 +120,17 @@ For scripting, there's a parallel surface called `meta.fetchScriptingDocs` that 
 
 There's also `meta.searchDocs` (a small built-in BM25 index over the bundled help and scripting docs, used to find the right page when a path isn't obvious) and `meta.loadSkill` (loads one of a handful of focused skill briefs: `painter`, `frame_parsers`, `transforms`, `output_widgets`, `dashboard_layout`, `mqtt`, `can_modbus`, `debugging`, `project_basics`, `tool_discovery`, `behavioral`) when the assistant needs deeper guidance for a specific task.
 
----
-
 ## Project templates
 
 When you're starting from a blank project, you can ask the assistant to "use a template" and it will call `project.template.list` (Safe) followed by `project.template.apply` (Confirm) with one of the bundled starters: blank, IMU over UART, GPS over UART (NMEA), multi-channel UART scope, MQTT subscriber, or telemetry over UDP. Templates load instantly into an empty project and give you a working scaffold to edit from.
 
----
-
 ## Frequently asked
 
 **Does the assistant work offline?**
-Yes, with the **Local model** provider. Point it at Ollama, llama.cpp, LM Studio, or vLLM running on your machine and the Assistant works fully offline. The cloud providers (Anthropic, OpenAI, Gemini, DeepSeek) need a network connection. The rest of Serial Studio works offline regardless.
+Yes, with the **Local model** provider. Point it at Ollama, llama.cpp, LM Studio, or vLLM running on your machine and the Assistant works fully offline. The cloud providers (Anthropic, OpenAI, Gemini, DeepSeek, Groq, Mistral, OpenRouter) need a network connection. The rest of Serial Studio works offline regardless.
 
 **Can I use a self-hosted model (Ollama, LM Studio, llama.cpp, vLLM)?**
-Five providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, and a Local provider that talks to any OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM). The Local provider's base URL is user-configurable, so any other compatible endpoint works without a code change.
+Eight providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, Groq, Mistral, OpenRouter, and a Local provider that talks to any OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM). The Local provider's base URL is user-configurable, so any other compatible endpoint works without a code change.
 
 **Can I see what the assistant is about to do before it does it?**
 Yes. That's exactly what the **Confirm** tier is for. The card shows the command name and the full arguments object before you approve.
@@ -160,8 +149,6 @@ Tell it; it will usually call `meta.listCommands` or `meta.describeCommand` to r
 
 **Where do I report a bug or a wrong answer?**
 File an issue on the Serial Studio GitHub repo. Include the prompt, the reply, and ideally the project file (or a stripped-down repro). Provider name and model help too.
-
----
 
 ## See also
 

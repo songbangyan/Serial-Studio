@@ -151,7 +151,7 @@ void Widgets::Output::Base::sendValue(const QVariant& value)
   // Validate license tier
   m_rateLimiter.restart();
   const auto& tk = Licensing::CommercialToken::current();
-  if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Pro)
+  if (!tk.isValid() || !SS_LICENSE_GUARD() || tk.featureTier() < Licensing::FeatureTier::Trial)
     return;
 
   // Evaluate JS function and transmit result

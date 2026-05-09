@@ -127,6 +127,8 @@ void DataModel::DataTableStore::clear()
   m_computedDefaults.clear();
   m_isComputed.clear();
   m_tableRegNames.clear();
+  m_warnedMissing.clear();
+  m_warnedMissingDatasets.clear();
   m_initialized = false;
 }
 
@@ -151,8 +153,10 @@ const DataModel::RegisterValue* DataModel::DataTableStore::get(const QString& ta
   Q_ASSERT(m_initialized);
 
   const int idx = indexOf(table, reg);
-  if (idx < 0) [[unlikely]]
+  if (idx < 0) [[unlikely]] {
+    noteMissingLookup(table, reg);
     return nullptr;
+  }
 
   return &m_storage[static_cast<size_t>(idx)];
 }
@@ -233,8 +237,10 @@ const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetRaw(int uni
   Q_ASSERT(m_initialized);
 
   const auto it = m_datasetIndex.constFind(uniqueId);
-  if (it == m_datasetIndex.constEnd()) [[unlikely]]
+  if (it == m_datasetIndex.constEnd()) [[unlikely]] {
+    noteMissingDataset(uniqueId, "raw");
     return nullptr;
+  }
 
   return &m_storage[static_cast<size_t>(it->first)];
 }
@@ -247,8 +253,10 @@ const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetFinal(int u
   Q_ASSERT(m_initialized);
 
   const auto it = m_datasetIndex.constFind(uniqueId);
-  if (it == m_datasetIndex.constEnd()) [[unlikely]]
+  if (it == m_datasetIndex.constEnd()) [[unlikely]] {
+    noteMissingDataset(uniqueId, "final");
     return nullptr;
+  }
 
   return &m_storage[static_cast<size_t>(it->second)];
 }
@@ -331,6 +339,33 @@ int DataModel::DataTableStore::indexOf(const QString& table, const QString& reg)
     return -1;
 
   return it.value();
+}
+
+/**
+ * @brief Logs a one-shot warning for an unknown (table, register) lookup.
+ */
+void DataModel::DataTableStore::noteMissingLookup(const QString& table, const QString& reg) const
+{
+  const auto key = qMakePair(table, reg);
+  if (m_warnedMissing.contains(key))
+    return;
+
+  m_warnedMissing.insert(key);
+  qWarning().noquote() << "[DataTableStore] Missing register" << QString(table + "/" + reg)
+                       << "-- check spelling; tableGet returns nil/empty for this register";
+}
+
+/**
+ * @brief Logs a one-shot warning for an unknown dataset uniqueId lookup.
+ */
+void DataModel::DataTableStore::noteMissingDataset(int uniqueId, const char* kind) const
+{
+  if (m_warnedMissingDatasets.contains(uniqueId))
+    return;
+
+  m_warnedMissingDatasets.insert(uniqueId);
+  qWarning().noquote() << "[DataTableStore] datasetGet" << kind << "called with unknown uniqueId"
+                       << uniqueId << "-- returns nil/empty";
 }
 
 //--------------------------------------------------------------------------------------------------

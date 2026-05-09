@@ -150,6 +150,9 @@ private:
   std::unique_ptr<Provider> m_openai;
   std::unique_ptr<Provider> m_gemini;
   std::unique_ptr<Provider> m_deepseek;
+  std::unique_ptr<Provider> m_openrouter;
+  std::unique_ptr<Provider> m_groq;
+  std::unique_ptr<Provider> m_mistral;
   std::unique_ptr<Provider> m_local;
   std::unique_ptr<ToolDispatcher> m_dispatcher;
   std::unique_ptr<Conversation> m_conversation;

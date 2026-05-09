@@ -23,6 +23,32 @@
 import os
 import subprocess
 import argparse
+import tempfile
+from contextlib import contextmanager
+
+
+@contextmanager
+def _sources_response_file(sources):
+    """
+    Write a list of source paths to a temp file and yield its path.
+
+    Used to feed lupdate via its '@list-file' syntax, which is necessary on
+    Windows where CreateProcess caps the command line at ~32K characters.
+    Linux/macOS handle the long arg list directly but the response file
+    works there too, so we use it unconditionally.
+    """
+    fd, path = tempfile.mkstemp(prefix='lupdate_sources_', suffix='.txt', text=True)
+    try:
+        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+            for src in sources:
+                f.write(src.replace('\\', '/') + '\n')
+        yield path
+    finally:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
 
 def run_lupdate(ts_dir, app_sources, lib_sources):
     """
@@ -35,16 +61,17 @@ def run_lupdate(ts_dir, app_sources, lib_sources):
         return
 
     all_sources = app_sources + lib_sources
-    command = ['lupdate'] + all_sources + ['-ts'] + ts_files
 
-    print("Running lupdate command:", ' '.join(command))
+    with _sources_response_file(all_sources) as list_path:
+        command = ['lupdate', '@' + list_path, '-ts'] + ts_files
+        print(f"Running lupdate on {len(all_sources)} source files (via response file {list_path})")
 
-    try:
-        subprocess.run(command, check=True)
-        print("lupdate completed successfully, obsolete entries removed.")
-    except subprocess.CalledProcessError as e:
-        print(f"lupdate failed with error code: {e.returncode}")
-        print(e.output)
+        try:
+            subprocess.run(command, check=True)
+            print("lupdate completed successfully, obsolete entries removed.")
+        except subprocess.CalledProcessError as e:
+            print(f"lupdate failed with error code: {e.returncode}")
+            print(e.output)
 
 
 def run_lrelease(ts_dir, qm_dir):
@@ -85,14 +112,17 @@ def create_ts(language, ts_dir, app_sources, lib_sources):
     
     print(f"Creating new .ts file: {new_ts_file}")
     all_sources = app_sources + lib_sources
-    command = ['lupdate', '-source-language', 'en_US', '-target-language', language] + all_sources + ['-ts', new_ts_file]
 
-    try:
-        subprocess.run(command, check=True)
-        print(f"New .ts file {new_ts_file} created successfully.")
-    except subprocess.CalledProcessError as e:
-        print(f"lupdate failed with error code: {e.returncode}")
-        print(e.output)
+    with _sources_response_file(all_sources) as list_path:
+        command = ['lupdate', '-source-language', 'en_US', '-target-language', language,
+                   '@' + list_path, '-ts', new_ts_file]
+
+        try:
+            subprocess.run(command, check=True)
+            print(f"New .ts file {new_ts_file} created successfully.")
+        except subprocess.CalledProcessError as e:
+            print(f"lupdate failed with error code: {e.returncode}")
+            print(e.output)
 
 
 def collect_sources(app_dir, lib_dir):

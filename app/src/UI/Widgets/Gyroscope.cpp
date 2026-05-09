@@ -88,32 +88,32 @@ void Widgets::Gyroscope::readAxisInputs(const DataModel::Group& gyro,
                                         bool& hasRoll,
                                         bool& hasPitch) const
 {
-  auto isYaw = [](const QString& w) {
-    return w == QStringLiteral("z") || w == QStringLiteral("yaw");
+  auto isYaw = [](const QString& widget) {
+    return widget == QStringLiteral("z") || widget == QStringLiteral("yaw");
   };
-  auto isRoll = [](const QString& w) {
-    return w == QStringLiteral("y") || w == QStringLiteral("roll");
+  auto isRoll = [](const QString& widget) {
+    return widget == QStringLiteral("y") || widget == QStringLiteral("roll");
   };
-  auto isPitch = [](const QString& w) {
-    return w == QStringLiteral("x") || w == QStringLiteral("pitch");
+  auto isPitch = [](const QString& widget) {
+    return widget == QStringLiteral("x") || widget == QStringLiteral("pitch");
   };
 
   for (int i = 0; i < 3; ++i) {
-    const auto& d = gyro.datasets[i];
-    const auto w  = d.widget.trimmed().toLower();
-    const auto v  = d.numericValue;
-    if (isYaw(w)) {
-      yawInput = v;
+    const auto& dataset = gyro.datasets[i];
+    const auto widget   = dataset.widget.trimmed().toLower();
+    const auto value    = dataset.numericValue;
+    if (isYaw(widget)) {
+      yawInput = value;
       hasYaw   = true;
       continue;
     }
-    if (isRoll(w)) {
-      rollInput = v;
+    if (isRoll(widget)) {
+      rollInput = value;
       hasRoll   = true;
       continue;
     }
-    if (isPitch(w)) {
-      pitchInput = v;
+    if (isPitch(widget)) {
+      pitchInput = value;
       hasPitch   = true;
     }
   }

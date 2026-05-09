@@ -164,6 +164,12 @@ QString AI::KeyVault::settingsKey(ProviderId provider)
       return QStringLiteral("gemini");
     case ProviderId::DeepSeek:
       return QStringLiteral("deepseek");
+    case ProviderId::OpenRouter:
+      return QStringLiteral("openrouter");
+    case ProviderId::Groq:
+      return QStringLiteral("groq");
+    case ProviderId::Mistral:
+      return QStringLiteral("mistral");
     case ProviderId::Local:
       return QStringLiteral("local");
   }

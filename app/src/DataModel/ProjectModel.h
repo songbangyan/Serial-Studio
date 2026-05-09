@@ -314,6 +314,7 @@ public slots:
     int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon);
   void addWidgetToWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
   void removeWidgetFromWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
+  int cleanupWorkspaceWidgetRefs(const QSet<qint64>& validKeys);
 
   void promptAddWorkspace();
   void promptRenameWorkspace(int workspaceId);
@@ -338,6 +339,7 @@ public slots:
 
 public:
   void flushAutoSave();
+  void setAutoSaveSuspended(bool suspend);
 
 private:
   int nextDatasetIndex();
@@ -354,6 +356,7 @@ private:
   void seedDefaultSourceFromUi(const QString& legacyParserCode);
   void enforceGplSingleSource();
   void resolveDatasetTransformLanguages();
+  void resolveDatasetVirtualFlags();
   void loadWidgetSettingsAndWorkspaces(const QJsonObject& json);
   void loadPointCount(const QJsonObject& json);
   void migrateLegacyLayoutKeys();

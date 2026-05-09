@@ -35,13 +35,13 @@
 - [Advanced Topics](#advanced-topics)
 - [Additional Resources](#additional-resources)
 
----
-
 ## Overview
 
 ### What is the API Server?
 
 The Serial Studio API Server is a **TCP server** that listens on **port 7777** (default) and accepts JSON-formatted commands to control Serial Studio programmatically. It provides programmatic control over Serial Studio through a TCP socket connection.
+
+> **Identifier conventions.** Most API commands address objects through some combination of `sourceId`, `groupId`, `datasetId`, `index`, and `uniqueId`. They look interchangeable but are not. See the [Dataset Identity Model](Identity-Model.md) for the rules of thumb (mutate by `(groupId, datasetId)`, read by `uniqueId`, position by `index`).
 
 ### Key Capabilities
 
@@ -76,8 +76,6 @@ The API Server is available in both **Serial Studio GPL** and **Serial Studio Pr
 - 🟢 = GPL/Pro (available in all builds)
 - 🔵 = Pro only (requires commercial license)
 
----
-
 ## Getting Started
 
 ### Prerequisites
@@ -104,8 +102,6 @@ The API Server is available in both **Serial Studio GPL** and **Serial Studio Pr
 4. **Download the Python test client** (optional):
    - Navigate to `examples/API Test/` in the Serial Studio repository
    - Run: `python test_api.py send io.getStatus`
-
----
 
 ## Enabling the API Server
 
@@ -150,8 +146,6 @@ Currently, the API Server uses **port 7777** by default. This port is:
 - **No authentication**: Anyone with local access can connect
 
 > **Note**: Future versions may support custom ports and authentication.
-
----
 
 ## Security Considerations
 
@@ -248,8 +242,6 @@ Planned security features (not yet implemented):
 - Rate limiting
 - TLS/SSL encryption
 - Configurable bind address
-
----
 
 ## Automation Use Cases
 
@@ -412,8 +404,6 @@ echo "Data saved to CSV file"
 # Analyze the data with your own tools (e.g., Python, Excel, MATLAB, etc.)
 ```
 
----
-
 ## Connection Details
 
 ### Network Protocol
@@ -469,11 +459,7 @@ status = client1.send("io.getStatus")
 4. Client can keep connection open or close after each command
 5. Server automatically cleans up on client disconnect
 
----
-
 > **gRPC**: The entire API is also available via gRPC on port 8888, with high-performance binary streaming. See the [gRPC Server](gRPC-Server.md) documentation.
-
----
 
 ## Protocol Specification
 
@@ -607,8 +593,6 @@ The API supports two message types:
 - Commands execute sequentially in order
 - All commands execute even if one fails (no short-circuit)
 
----
-
 ## Complete Command Reference
 
 The API provides **165 total commands** across multiple modules:
@@ -658,8 +642,6 @@ python test_api.py send api.getCommands
 > Over MCP, the equivalent is the standard `tools/list` JSON-RPC
 > method, which returns the same surface plus per-command input
 > schemas.
-
----
 
 ### I/O Manager Commands (7)
 
@@ -790,8 +772,6 @@ python test_api.py send io.writeData -p data=SGVsbG8gV29ybGQ=
 > live runtime commands. They are per-source project settings configured
 > in the Project Editor (or via `project.source.update`) and persisted in
 > the `.ssproj` file.
-
----
 
 ### UART Driver Commands (12)
 
@@ -959,8 +939,6 @@ Set auto-reconnect behavior.
 python test_api.py send io.uart.setAutoReconnect -p autoReconnect=true
 ```
 
----
-
 ### Network Driver Commands (10)
 
 TCP/UDP configuration:
@@ -994,9 +972,8 @@ Get list of available socket types.
 ```json
 {
   "socketTypes": [
-    {"index": 0, "name": "TCP Client"},
-    {"index": 1, "name": "TCP Server"},
-    {"index": 2, "name": "UDP"}
+    {"index": 0, "name": "TCP"},
+    {"index": 1, "name": "UDP"}
   ]
 }
 ```
@@ -1049,7 +1026,7 @@ python test_api.py send io.network.setUdpRemotePort -p port=9001
 Set socket type.
 
 **Parameters:**
-- `socketTypeIndex` (int): 0=TCP Client, 1=TCP Server, 2=UDP
+- `socketTypeIndex` (int): 0=TCP (client), 1=UDP. Serial Studio does not act as a TCP server.
 
 **Example:**
 ```bash
@@ -1085,8 +1062,6 @@ Perform DNS lookup for a hostname.
 ```bash
 python test_api.py send io.network.lookup -p host=google.com
 ```
-
----
 
 ### Bluetooth LE Driver Commands (9)
 
@@ -1225,8 +1200,6 @@ Select a BLE characteristic.
 python test_api.py send io.ble.setCharacteristicIndex -p characteristicIndex=0
 ```
 
----
-
 ### CSV Export Commands (3)
 
 CSV file export control:
@@ -1265,8 +1238,6 @@ Close current CSV file.
 ```bash
 python test_api.py send csvExport.close
 ```
-
----
 
 ### CSV Player Commands (9)
 
@@ -1341,8 +1312,6 @@ Get player status.
   "filename": "data.csv"
 }
 ```
-
----
 
 ### Console Commands (11)
 
@@ -1425,8 +1394,6 @@ Get console configuration.
   "checksumMethod": 0
 }
 ```
-
----
 
 ### Dashboard Configuration Commands (7)
 
@@ -1574,8 +1541,6 @@ Get the current number of data points per plot.
 python test_api.py send dashboard.getPoints
 ```
 
----
-
 ### Project Management Commands (19)
 
 Project file and configuration management:
@@ -1722,8 +1687,6 @@ List all actions.
 }
 ```
 
----
-
 ### Modbus Driver Commands - Pro (21)
 
 **Note:** These commands require a Serial Studio Pro license.
@@ -1839,8 +1802,6 @@ Clear all register groups.
 - `io.modbus.listRegisterTypes`
 - `io.modbus.listRegisterGroups`
 
----
-
 ### CAN Bus Driver Commands - Pro (9)
 
 **Note:** These commands require a Serial Studio Pro license.
@@ -1914,8 +1875,6 @@ Enable or disable CAN FD.
 
 **Parameters:**
 - `enabled` (bool): true to enable CAN FD, false for standard CAN
-
----
 
 ### MQTT Client Commands - Pro (27)
 
@@ -2085,8 +2044,6 @@ Generate a new random client ID.
 - `mqtt.listSslProtocols`
 - `mqtt.listPeerVerifyModes`
 
----
-
 ### MDF4 Export Commands - Pro (3)
 
 **Note:** These commands require a Serial Studio Pro license.
@@ -2114,8 +2071,6 @@ Enable or disable MDF4 export.
 Close current MDF4 file.
 
 **Parameters:** None
-
----
 
 ### MDF4 Player Commands - Pro (9)
 
@@ -2188,8 +2143,6 @@ Get player status.
   "filename": "data.mf4"
 }
 ```
-
----
 
 ### Audio Driver Commands - Pro (13)
 
@@ -2307,8 +2260,6 @@ Get complete audio configuration.
   "selectedOutputChannelConfig": 0
 }
 ```
-
----
 
 ## Usage Examples
 
@@ -2491,8 +2442,6 @@ python test_api.py send dashboard.setFps -p fps=60
 python test_api.py send dashboard.setPoints -p points=1000
 python test_api.py send dashboard.getStatus
 ```
-
----
 
 ## Client Tools and Libraries
 
@@ -2715,8 +2664,6 @@ Console.WriteLine(response);
 client.Close();
 ```
 
----
-
 ## Best Practices
 
 ### 1. Connection Management
@@ -2875,8 +2822,6 @@ while monitoring:
     time.sleep(1)
 ```
 
----
-
 ## Troubleshooting
 
 ### Cannot Connect to API Server
@@ -2958,8 +2903,6 @@ while monitoring:
 1. Check preconditions (e.g., must be disconnected before changing bus type)
 2. Verify device configuration is valid
 3. Check hardware is available (e.g., serial port exists)
-
----
 
 ## Advanced Topics
 
@@ -3052,8 +2995,6 @@ ss.uart().set_baud_rate(115200)
 ports = ss.uart().get_ports()
 ```
 
----
-
 ## MCP (Model Context Protocol) Integration
 
 Serial Studio includes a built-in **MCP (Model Context Protocol) server** that exposes the API Server functionality to AI models like Claude and ChatGPT. AI assistants can control Serial Studio directly (connecting to devices, reading sensor data, sending commands, and managing exports) through natural language instructions.
@@ -3082,8 +3023,6 @@ See the **[MCP Client example](https://github.com/Serial-Studio/Serial-Studio/tr
 - [API Test example](https://github.com/Serial-Studio/Serial-Studio/tree/master/examples/API%20Test): Python test suite covering all API commands.
 - [Automation Use Cases](#automation-use-cases): non-AI automation patterns.
 
----
-
 ## Additional Resources
 
 - **Example Code**: `examples/API Test/` directory
@@ -3094,8 +3033,6 @@ See the **[MCP Client example](https://github.com/Serial-Studio/Serial-Studio/tr
 - **Help Center**: [Getting Started](Getting-Started.md)
 - **FAQ**: FAQ.md
 - **Issue Tracker**: https://github.com/Serial-Studio/Serial-Studio/issues
-
----
 
 ## Changelog
 
@@ -3130,8 +3067,6 @@ See the **[MCP Client example](https://github.com/Serial-Studio/Serial-Studio/tr
 - **Added**: Batch command support
 - **Added**: Python test client
 
----
-
 ## License
 
 The Serial Studio API Server is dual-licensed:
@@ -3142,8 +3077,6 @@ The Serial Studio API Server is dual-licensed:
 - **LicenseRef-SerialStudio-Commercial**: For commercial Pro features
 
 See the main LICENSE file for details.
-
----
 
 ## Contributing
 
@@ -3158,8 +3091,6 @@ Found a bug or have a suggestion?
 7. Create a new issue with details about your use case
 
 For security issues, please contact privately rather than creating a public issue.
-
----
 
 **Total Commands: 165**
 - GPL/Pro: 93 commands

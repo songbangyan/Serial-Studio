@@ -26,6 +26,7 @@
 #include <QMap>
 #include <QObject>
 #include <QSettings>
+#include <QTimer>
 #include <unordered_map>
 
 #include "IO/DeviceManager.h"
@@ -212,6 +213,7 @@ private:
   QString m_checksumAlgorithm;
 
   QSettings m_settings;
+  QTimer m_uiDriverSaveTimer;
 
   std::unordered_map<int, std::unique_ptr<DeviceManager>> m_devices;
 

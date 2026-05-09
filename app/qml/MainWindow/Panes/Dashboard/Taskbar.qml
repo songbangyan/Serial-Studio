@@ -428,6 +428,7 @@ Item {
         case "file_transmission": return Cpp_CommercialBuild
                                          && (!app.runtimeMode
                                              || Cpp_IO_FileTransmission.runtimeAccessAllowed)
+        case "ai_assistant":      return Cpp_CommercialBuild && !app.runtimeMode
         }
         return false
       }
@@ -486,8 +487,9 @@ Item {
             case "settings":          return qsTr("Settings")
             case "console":           return qsTr("Console")
             case "notifications":     return qsTr("Notifications")
-            case "pause":             return Cpp_IO_Manager.paused ? qsTr("Resume") : qsTr("Pause")
             case "file_transmission": return qsTr("File Transmission")
+            case "ai_assistant":      return qsTr("AI Assistant")
+            case "pause":             return Cpp_IO_Manager.paused ? qsTr("Resume") : qsTr("Pause")
             }
             return ""
           }
@@ -497,10 +499,11 @@ Item {
             case "settings":          return "qrc:/icons/taskbar/settings.svg"
             case "console":           return "qrc:/icons/taskbar/console.svg"
             case "notifications":     return "qrc:/icons/taskbar/notifications.svg"
+            case "file_transmission": return "qrc:/icons/taskbar/file-transmission.svg"
+            case "ai_assistant":      return "qrc:/icons/taskbar/ai.svg"
             case "pause":             return Cpp_IO_Manager.paused
                                              ? "qrc:/icons/taskbar/resume.svg"
                                              : "qrc:/icons/taskbar/pause.svg"
-            case "file_transmission": return "qrc:/icons/taskbar/file-transmission.svg"
             }
             return ""
           }
@@ -538,6 +541,10 @@ Item {
             case "file_transmission":
               taskBar.activeWindow = null
               app.showFileTransmission()
+              break
+            case "ai_assistant":
+              taskBar.activeWindow = null
+              app.showAIAssistant()
               break
             }
           }

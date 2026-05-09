@@ -4,6 +4,8 @@
 
 Serial Studio connects to hardware and software data sources through nine driver types. Three ship in the free GPL edition; six more need a Pro license. Each driver feeds raw bytes into the frame-parsing pipeline. You pick the active driver in the Setup panel, or (for multi-device projects) in the Project Editor.
 
+For protocol theory, wire framing, and educational primers on each driver, see the dedicated **Drivers** section: [UART](Drivers-UART.md), [Network](Drivers-Network.md), [Bluetooth LE](Drivers-Bluetooth-LE.md), [Modbus](Drivers-Modbus.md), [CAN Bus](Drivers-CAN-Bus.md), [Audio](Drivers-Audio.md), [Raw USB](Drivers-USB.md), [HID](Drivers-HID.md), and [Process I/O](Drivers-Process-IO.md). MQTT is documented under **Connectivity** as [MQTT Integration](MQTT-Integration.md) — it sits on top of TCP and a broker, not a hardware bus.
+
 The diagram below shows how each driver type feeds into the data pipeline.
 
 ```mermaid
@@ -19,8 +21,6 @@ flowchart TD
     FR --> FB["Frame Builder"]
     FB --> DASH["Dashboard"]
 ```
-
----
 
 ## Free drivers
 
@@ -50,8 +50,6 @@ Talks to physical or virtual serial ports. A good fit for Arduino, ESP32, STM32,
 3. Adjust data bits, parity, stop bits, and flow control if your device needs non-default values.
 4. Turn on DTR if your board needs it for reset (common on some Arduino variants).
 5. Click **Connect**.
-
----
 
 ### Network socket (TCP/UDP)
 
@@ -86,8 +84,6 @@ Talks over TCP or UDP sockets. Use this for WiFi-enabled microcontrollers (ESP32
 4. Turn on multicast if you're receiving from a multicast group.
 5. Click **Connect**.
 
----
-
 ### Bluetooth Low Energy (BLE)
 
 Connects to BLE peripherals using GATT service/characteristic subscriptions. A good fit for BLE sensors, fitness devices, and custom BLE firmware.
@@ -116,8 +112,6 @@ Connects to BLE peripherals using GATT service/characteristic subscriptions. A g
 4. Pick the characteristic that carries your data.
 5. Click **Connect**.
 
----
-
 ## Pro drivers
 
 The next six drivers need a Serial Studio Pro license.
@@ -144,8 +138,6 @@ Captures audio samples from system input devices through the miniaudio library. 
 4. Click **Connect**. Audio samples flow into the frame pipeline as CSV rows.
 
 **Tips.** Use line-in instead of mic-in to avoid automatic gain control. Turn off OS-level noise cancellation and audio effects for clean signals. Grant microphone permissions if your OS asks for them.
-
----
 
 ### Modbus (RTU and TCP)
 
@@ -180,8 +172,6 @@ Polls registers from Modbus-compatible PLCs, sensors, and industrial controllers
 2. Set the slave address (unit ID) and register groups.
 3. Click **Connect**.
 
----
-
 ### CAN Bus
 
 Receives and transmits CAN frames through platform-specific CAN interface plugins. Used for automotive ECU diagnostics, industrial control networks, and vehicle telemetry.
@@ -211,8 +201,6 @@ Receives and transmits CAN frames through platform-specific CAN interface plugin
 4. Set the bitrate to match your CAN network exactly. Mismatched bitrates cause bus errors.
 5. Turn on CAN FD if your network uses it.
 6. Click **Connect**.
-
----
 
 ### Raw USB
 
@@ -251,8 +239,6 @@ Direct USB access via libusb, bypassing OS serial and HID abstractions. Supports
 - **macOS:** The kernel HID or serial driver may have to be detached before libusb can claim the device.
 - **Windows:** A WinUSB or libusb-compatible driver must be installed (for example via Zadig).
 
----
-
 ### HID device
 
 Connects to Human Interface Devices (gamepads, joysticks, custom HID sensors) through hidapi. Works on Windows, macOS, and Linux without extra drivers for most devices.
@@ -280,8 +266,6 @@ Connects to Human Interface Devices (gamepads, joysticks, custom HID sensors) th
 
 - **Linux:** Add a `udev` rule for `hidraw` access (for example `SUBSYSTEM=="hidraw", GROUP="plugdev", MODE="0664"`).
 - **macOS and Windows:** most HID devices work without extra configuration.
-
----
 
 ### Process I/O
 
@@ -330,8 +314,6 @@ Reads data from a child process's stdout or from a named pipe/FIFO. Any script o
 - If the child process crashes, Serial Studio prints a warning and disconnects.
 - Use Named Pipe mode when you want to connect to a long-running external process without Serial Studio managing its lifecycle.
 
----
-
 ## Multi-device mode
 
 When a project file defines multiple sources, Serial Studio runs in multi-device mode. Each source sets its own bus type, connection settings, frame delimiters, and (optionally) JavaScript parser.
@@ -345,15 +327,11 @@ When a project file defines multiple sources, Serial Studio runs in multi-device
 - Driver toolbar buttons are disabled while a multi-device project is active.
 - Multi-device mode needs a Pro license.
 
----
-
 ## Picking a data source
 
 **Single-device mode.** Use the Setup panel's "I/O Interface" dropdown or the driver buttons in the toolbar to pick a data source type.
 
 **Multi-device mode.** Each source is configured individually in the Project Editor. The Setup panel shows the active project but doesn't allow per-source driver selection.
-
----
 
 ## Troubleshooting
 

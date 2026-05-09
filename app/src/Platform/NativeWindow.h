@@ -39,6 +39,8 @@ public:
 
   void installMacOSQuitInterceptor();
   [[nodiscard]] Q_INVOKABLE int titlebarHeight(QObject* window);
+  [[nodiscard]] Q_INVOKABLE int frameMargin(QObject* window);
+  [[nodiscard]] Q_INVOKABLE int frameTopInset(QObject* window);
 
 public slots:
   void removeWindow(QObject* window);

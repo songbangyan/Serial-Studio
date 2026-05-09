@@ -88,10 +88,22 @@ private:
     None
   };
 
+  /**
+   * @brief Multiplexing role of a CAN signal as classified during DBC import.
+   */
+  enum class MuxRole {
+    Plain,
+    Selector,
+    SimpleMuxed,
+    ExtendedMuxed
+  };
+
   std::vector<Group> generateGroups(const QList<QCanMessageDescription>& messages);
   Dataset buildDatasetFromSignal(const QCanSignalDescription& signal,
                                  const QString& groupWidget,
-                                 int datasetIndex);
+                                 int datasetIndex,
+                                 MuxRole role,
+                                 qint64 muxValue);
   QJsonObject generateProject(const QList<QCanMessageDescription>& messages);
   QString generateFrameParser(const QList<QCanMessageDescription>& messages);
 
@@ -105,6 +117,23 @@ private:
   QString selectWidgetForSignal(const QCanSignalDescription& signal);
   QString generateSignalExtraction(const QCanSignalDescription& signal);
   QString generateMessageDecoder(const QCanMessageDescription& message, int& datasetIndex);
+  QString generateDecoderHeader(const QCanMessageDescription& message,
+                                const QCanSignalDescription* selector,
+                                int startIndex);
+  QString emitSelectorExtraction(const QCanSignalDescription& selector, int& datasetIndex);
+  QString emitPlainExtractions(const QCanMessageDescription& message,
+                               int& datasetIndex,
+                               bool& firstEmit);
+  QString emitMuxedExtractions(const QCanMessageDescription& message,
+                               const QCanSignalDescription* selector,
+                               int& datasetIndex,
+                               bool& firstEmit);
+
+  [[nodiscard]] MuxRole classifyMux(const QCanSignalDescription& signal,
+                                    const QCanMessageDescription& message,
+                                    qint64& outMuxValue) const;
+  [[nodiscard]] int findSelectorIndex(const QCanMessageDescription& message) const;
+  [[nodiscard]] bool hasImportableSignals(const QCanMessageDescription& message) const;
 
   [[nodiscard]] QString detectGpsWidget(
     const QList<QCanSignalDescription>& signalDescriptions) const;
@@ -134,6 +163,7 @@ private:
 private:
   QString m_dbcFilePath;
   QList<QCanMessageDescription> m_messages;
+  int m_skippedExtendedMuxSignals;
 };
 
 }  // namespace DataModel
