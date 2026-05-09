@@ -629,12 +629,21 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
 void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
 {
   m_pendingGeometries.clear();
+  m_manualGeometries.clear();
+  m_manualMargins.clear();
   if (layout.isEmpty() || !layout.contains("geometries"))
     return;
 
   // Only preload manual-mode layouts; auto-layout recomputes geometries
   if (layout["autoLayout"].toBool(true))
     return;
+
+  const int savedCanvasW = layout["canvasWidth"].toInt(0);
+  const int savedCanvasH = layout["canvasHeight"].toInt(0);
+  const int canvasW      = static_cast<int>(width());
+  const int canvasH      = static_cast<int>(height());
+  const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
+  const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
 
   const QJsonArray geometries = layout["geometries"].toArray();
   for (const auto& val : std::as_const(geometries)) {
@@ -647,7 +656,13 @@ void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
     const int y = static_cast<int>(winGeom["y"].toDouble(0));
     const int w = static_cast<int>(winGeom["width"].toDouble(200));
     const int h = static_cast<int>(winGeom["height"].toDouble(150));
-    m_pendingGeometries.insert(id, QRect(x, y, w, h));
+    const QRect geom(x, y, w, h);
+    const QMargins margins = manualMarginsForGeometry(geom, marginCanvasW, marginCanvasH);
+    const QRect anchored   = anchoredGeometry(geom, margins, canvasW, canvasH);
+
+    m_manualGeometries.insert(id, geom);
+    m_manualMargins.insert(id, margins);
+    m_pendingGeometries.insert(id, anchored);
   }
 }
 
