@@ -23,6 +23,7 @@
 
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QMargins>
 #include <QMap>
 #include <QObject>
 #include <QQuickItem>
@@ -119,15 +120,20 @@ private:
   [[nodiscard]] QQuickItem* findOverlapTarget(const QRect& dragRect) const;
 
   [[nodiscard]] QRect extractGeometry(QQuickItem* item) const;
-  [[nodiscard]] ResizeEdge detectResizeEdge(QQuickItem* target) const;
+  [[nodiscard]] ResizeEdge detectResizeEdge(QQuickItem* target, const QPointF& pos) const;
   QQuickItem* getWindow(const int x, const int y) const;
 
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);
+  void applyManualAnchors(int newWidth, int newHeight);
+  void applyManualSnap();
+  void storeManualGeometry(int id, QQuickItem* item, int canvasWidth = -1, int canvasHeight = -1);
   void updateManualSnapIndicator(int newX, int newY, int w, int h, int canvasW, int canvasH);
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
 protected:
+  void hoverLeaveEvent(QHoverEvent* event) override;
+  void hoverMoveEvent(QHoverEvent* event) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
@@ -138,11 +144,18 @@ private:
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;
   bool m_userReordered;
+  bool m_suppressGeometrySignal;
+  int m_manualCanvasWidth;
+  int m_manualCanvasHeight;
+  int m_lastCanvasWidth;
+  int m_lastCanvasHeight;
   QString m_backgroundImage;
 
   QVector<int> m_windowOrder;
   QMap<int, QQuickItem*> m_windows;
   QMap<QQuickItem*, int> m_windowZ;
+  QMap<int, QRect> m_manualGeometries;
+  QMap<int, QMargins> m_manualMargins;
   QMap<int, QRect> m_pendingGeometries;
 
   ResizeEdge m_resizeEdge;
