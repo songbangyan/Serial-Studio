@@ -99,18 +99,18 @@ static QMargins manualMarginsForGeometry(const QRect& geom, const int canvasW, c
 /**
  * @brief Returns the anchored geometry for a preferred size within a canvas.
  */
-static QRect anchoredGeometry(
-  const QRect& preferred, const QMargins& margins, const int canvasW, const int canvasH)
+static QRect anchoredGeometry(const QRect& preferred,
+                              const QMargins& margins,
+                              const int canvasW,
+                              const int canvasH)
 {
   if (canvasW <= 0 || canvasH <= 0)
     return preferred;
 
   const bool anchorLeft = margins.left() <= margins.right();
   const bool anchorTop  = margins.top() <= margins.bottom();
-  const int x           = anchorLeft ? margins.left() :
-                                      canvasW - (margins.right() + preferred.width());
-  const int y           = anchorTop ? margins.top() :
-                                     canvasH - (margins.bottom() + preferred.height());
+  const int x = anchorLeft ? margins.left() : canvasW - (margins.right() + preferred.width());
+  const int y = anchorTop ? margins.top() : canvasH - (margins.bottom() + preferred.height());
   return QRect(x, y, preferred.width(), preferred.height());
 }
 
@@ -515,7 +515,7 @@ QJsonObject UI::WindowManager::serializeLayout() const
   layout["geometries"] = geometries;
 
   // Canvas snapshot (Pro notice/actions panel can change available space)
-  layout["canvasWidth"] = static_cast<int>(width());
+  layout["canvasWidth"]  = static_cast<int>(width());
   layout["canvasHeight"] = static_cast<int>(height());
 
   // Save window order and layout mode
@@ -539,10 +539,10 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
   if (layout.isEmpty())
     return false;
 
-  bool autoLayout = layout["autoLayout"].toBool(true);
+  bool autoLayout        = layout["autoLayout"].toBool(true);
   const int savedCanvasW = layout["canvasWidth"].toInt(0);
   const int savedCanvasH = layout["canvasHeight"].toInt(0);
-  m_userReordered = layout["userReordered"].toBool(false);
+  m_userReordered        = layout["userReordered"].toBool(false);
 
   // Restore window order, appending any unsaved windows at the end
   if (layout.contains("windowOrder")) {
@@ -567,12 +567,12 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
   m_manualMargins.clear();
   m_pendingGeometries.clear();
   if (!autoLayout && layout.contains("geometries")) {
-    const int canvasW      = static_cast<int>(width());
-    const int canvasH      = static_cast<int>(height());
+    const int canvasW       = static_cast<int>(width());
+    const int canvasH       = static_cast<int>(height());
     const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
     const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
-    m_manualCanvasWidth    = marginCanvasW;
-    m_manualCanvasHeight   = marginCanvasH;
+    m_manualCanvasWidth     = marginCanvasW;
+    m_manualCanvasHeight    = marginCanvasH;
 
     QJsonArray geometries = layout["geometries"].toArray();
     for (const auto& val : std::as_const(geometries)) {
@@ -644,14 +644,14 @@ void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
   if (layout["autoLayout"].toBool(true))
     return;
 
-  const int savedCanvasW = layout["canvasWidth"].toInt(0);
-  const int savedCanvasH = layout["canvasHeight"].toInt(0);
-  const int canvasW      = static_cast<int>(width());
-  const int canvasH      = static_cast<int>(height());
+  const int savedCanvasW  = layout["canvasWidth"].toInt(0);
+  const int savedCanvasH  = layout["canvasHeight"].toInt(0);
+  const int canvasW       = static_cast<int>(width());
+  const int canvasH       = static_cast<int>(height());
   const int marginCanvasW = savedCanvasW > 0 ? savedCanvasW : canvasW;
   const int marginCanvasH = savedCanvasH > 0 ? savedCanvasH : canvasH;
-  m_manualCanvasWidth    = marginCanvasW;
-  m_manualCanvasHeight   = marginCanvasH;
+  m_manualCanvasWidth     = marginCanvasW;
+  m_manualCanvasHeight    = marginCanvasH;
 
   const QJsonArray geometries = layout["geometries"].toArray();
   for (const auto& val : std::as_const(geometries)) {
@@ -728,18 +728,18 @@ void UI::WindowManager::clear()
   m_windowZ.clear();
   m_windows.clear();
   m_windowOrder.clear();
-  m_dragWindow           = nullptr;
-  m_targetWindow         = nullptr;
-  m_resizeWindow         = nullptr;
-  m_focusedWindow        = nullptr;
-  m_layoutRestored       = false;
-  m_userReordered        = false;
+  m_dragWindow             = nullptr;
+  m_targetWindow           = nullptr;
+  m_resizeWindow           = nullptr;
+  m_focusedWindow          = nullptr;
+  m_layoutRestored         = false;
+  m_userReordered          = false;
   m_suppressGeometrySignal = false;
-  m_manualCanvasWidth    = 0;
-  m_manualCanvasHeight   = 0;
-  m_lastCanvasWidth      = 0;
-  m_lastCanvasHeight     = 0;
-  m_snapIndicatorVisible = false;
+  m_manualCanvasWidth      = 0;
+  m_manualCanvasHeight     = 0;
+  m_lastCanvasWidth        = 0;
+  m_lastCanvasHeight       = 0;
+  m_snapIndicatorVisible   = false;
   m_manualGeometries.clear();
   m_manualMargins.clear();
   m_pendingGeometries.clear();
@@ -1052,10 +1052,9 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 
     loadLayout();
 
-    if (!m_autoLayoutEnabled) {
+    if (!m_autoLayoutEnabled)
       for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it)
         storeManualGeometry(it.key(), it.value());
-    }
 
     Q_EMIT autoLayoutEnabledChanged();
   }
@@ -1064,8 +1063,10 @@ void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
 /**
  * @brief Stores the preferred manual geometry and anchor margins for a window.
  */
-void UI::WindowManager::storeManualGeometry(
-  const int id, QQuickItem* item, const int canvasWidth, const int canvasHeight)
+void UI::WindowManager::storeManualGeometry(const int id,
+                                            QQuickItem* item,
+                                            const int canvasWidth,
+                                            const int canvasHeight)
 {
   if (!item)
     return;
@@ -1107,14 +1108,14 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 
     const QRect prefGeom   = m_manualGeometries.value(id, extractGeometry(win));
     const QMargins margins = m_manualMargins.value(id, QMargins());
-    const int scaledW = qMax(1, qRound(prefGeom.width() * scaleX));
-    const int scaledH = qMax(1, qRound(prefGeom.height() * scaleY));
+    const int scaledW      = qMax(1, qRound(prefGeom.width() * scaleX));
+    const int scaledH      = qMax(1, qRound(prefGeom.height() * scaleY));
     const QMargins scaledMargins(qRound(margins.left() * scaleX),
                                  qRound(margins.top() * scaleY),
                                  qRound(margins.right() * scaleX),
                                  qRound(margins.bottom() * scaleY));
     const QRect scaledPref(0, 0, scaledW, scaledH);
-    const QRect anchored   = anchoredGeometry(scaledPref, scaledMargins, newWidth, newHeight);
+    const QRect anchored = anchoredGeometry(scaledPref, scaledMargins, newWidth, newHeight);
 
     win->setX(anchored.x());
     win->setY(anchored.y());
@@ -1249,11 +1250,11 @@ void UI::WindowManager::constrainWindows()
  */
 void UI::WindowManager::triggerLayoutUpdate()
 {
-  const int canvasW      = static_cast<int>(width());
-  const int canvasH      = static_cast<int>(height());
-  const bool sizeValid   = canvasW > 0 && canvasH > 0;
-  const bool sizeChanged = sizeValid
-                         && (canvasW != m_lastCanvasWidth || canvasH != m_lastCanvasHeight);
+  const int canvasW    = static_cast<int>(width());
+  const int canvasH    = static_cast<int>(height());
+  const bool sizeValid = canvasW > 0 && canvasH > 0;
+  const bool sizeChanged =
+    sizeValid && (canvasW != m_lastCanvasWidth || canvasH != m_lastCanvasHeight);
 
   // Auto-layout mode: re-tile all windows
   if (autoLayoutEnabled())
@@ -1348,8 +1349,8 @@ QRect UI::WindowManager::extractGeometry(QQuickItem* item) const
 /**
  * @brief Determines which edge or corner of a window is being hovered for resizing.
  */
-UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(
-  QQuickItem* target, const QPointF& pos) const
+UI::WindowManager::ResizeEdge UI::WindowManager::detectResizeEdge(QQuickItem* target,
+                                                                  const QPointF& pos) const
 {
   // Only normal-state windows can be resized
   if (target->state() != "normal")
@@ -1409,7 +1410,7 @@ void UI::WindowManager::hoverMoveEvent(QHoverEvent* event)
   }
 
   const QPointF pos = event->position();
-  auto* target = getWindow(static_cast<int>(pos.x()), static_cast<int>(pos.y()));
+  auto* target      = getWindow(static_cast<int>(pos.x()), static_cast<int>(pos.y()));
   if (!target || target->state() != "normal") {
     unsetCursor();
     QQuickItem::hoverMoveEvent(event);
@@ -1776,26 +1777,49 @@ void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 }
 
 /**
+ * @brief Swaps the dragged window with the snap target in m_windowOrder.
+ */
+bool UI::WindowManager::tryReorderDraggedWindow()
+{
+  if (!m_dragWindow || !m_targetWindow || !m_snapIndicatorVisible)
+    return false;
+
+  const int draggedId    = getIdForWindow(m_dragWindow);
+  const int targetId     = getIdForWindow(m_targetWindow);
+  const int newIndex     = m_windowOrder.indexOf(targetId);
+  const int currentIndex = m_windowOrder.indexOf(draggedId);
+  if (draggedId < 0 || targetId < 0 || currentIndex < 0 || newIndex < 0
+      || newIndex == currentIndex)
+    return false;
+
+  std::swap(m_windowOrder[currentIndex], m_windowOrder[newIndex]);
+  m_userReordered = true;
+  return true;
+}
+
+/**
+ * @brief Persists window geometry under its id and emits geometryChanged.
+ */
+void UI::WindowManager::commitManualGeometry(QQuickItem* window)
+{
+  if (!window)
+    return;
+
+  const int id = getIdForWindow(window);
+  if (id >= 0)
+    storeManualGeometry(id, window);
+
+  Q_EMIT geometryChanged(window);
+}
+
+/**
  * @brief Handles mouse release to finalize window drag or resize operations.
  */
 void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
 {
   // Finalize drag/resize: apply snap, swap order, or commit geometry
   if (autoLayoutEnabled()) {
-    bool reordered = false;
-    if (m_dragWindow && m_targetWindow && m_snapIndicatorVisible) {
-      const int draggedId    = getIdForWindow(m_dragWindow);
-      const int targetId     = getIdForWindow(m_targetWindow);
-      const int newIndex     = m_windowOrder.indexOf(targetId);
-      const int currentIndex = m_windowOrder.indexOf(draggedId);
-      if (draggedId >= 0 && targetId >= 0 && currentIndex >= 0 && newIndex >= 0
-          && newIndex != currentIndex) {
-        std::swap(m_windowOrder[currentIndex], m_windowOrder[newIndex]);
-        m_userReordered = true;
-        reordered       = true;
-      }
-    }
-
+    const bool reordered = tryReorderDraggedWindow();
     loadLayout();
 
     // Persist reordered windowOrder via Taskbar's geometryChanged hook
@@ -1806,22 +1830,10 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
   // Manual layout: snap window to indicator region or emit geometry change
   else {
     applyManualSnap();
-
-    if (m_dragWindow) {
-      const int id = getIdForWindow(m_dragWindow);
-      if (id >= 0)
-        storeManualGeometry(id, m_dragWindow);
-
-      Q_EMIT geometryChanged(m_dragWindow);
-    }
-
-    else if (m_resizeWindow) {
-      const int id = getIdForWindow(m_resizeWindow);
-      if (id >= 0)
-        storeManualGeometry(id, m_resizeWindow);
-
-      Q_EMIT geometryChanged(m_resizeWindow);
-    }
+    if (m_dragWindow)
+      commitManualGeometry(m_dragWindow);
+    else if (m_resizeWindow)
+      commitManualGeometry(m_resizeWindow);
   }
 
   // Release mouse and reset cursor
