@@ -46,13 +46,6 @@ SmartDialog {
   minimumHeight: 480
   maximumWidth: 10000
   maximumHeight: 10000
-  Component.onCompleted: {
-    root.flags = Qt.Dialog
-               | Qt.CustomizeWindowHint
-               | Qt.WindowTitleHint
-               | Qt.WindowCloseButtonHint
-               | Qt.WindowMinMaxButtonsHint
-  }
 
   //
   // Fetch manifest when dialog opens

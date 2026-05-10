@@ -57,22 +57,18 @@ Window {
   maximumHeight: fixedSize ? preferredHeight + contentPadding * 1.50 + titlebarHeight + frameTopInset + frameMargin : 16777215
 
   //
-  // Configure window flags; seed CSD chrome insets before first show so fixed-size dialogs
-  // don't latch maximumHeight at the small initial value (native fallback covers pre-show).
+  // Configure window flags and seed CSD chrome insets before first show
   //
   Component.onCompleted: {
-    if (root.staysOnTop) {
-      root.flags = Qt.Dialog |
-          Qt.CustomizeWindowHint |
-          Qt.WindowTitleHint |
-          Qt.WindowStaysOnTopHint |
-          Qt.WindowCloseButtonHint
-    } else {
-      root.flags = Qt.Dialog |
-          Qt.CustomizeWindowHint |
-          Qt.WindowTitleHint |
-          Qt.WindowCloseButtonHint
-    }
+    var baseType = root.fixedSize ? Qt.Dialog : Qt.Window
+    var sizeButtons = root.fixedSize ? 0 : Qt.WindowMinMaxButtonsHint
+    var staysOnTopFlag = root.staysOnTop ? Qt.WindowStaysOnTopHint : 0
+    root.flags = baseType
+        | Qt.CustomizeWindowHint
+        | Qt.WindowTitleHint
+        | Qt.WindowCloseButtonHint
+        | sizeButtons
+        | staysOnTopFlag
 
     if (root.nativeWindow) {
       root.titlebarHeight = Cpp_NativeWindow.titlebarHeight(root)

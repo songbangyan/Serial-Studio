@@ -1029,11 +1029,15 @@ Window::Window(QWindow* window, const QString& color, QObject* parent)
   updateMinimumSize();
 
 #if defined(Q_OS_WIN)
-  // WS_THICKFRAME hands resize/snap/animations to DWM; NC handlers below keep client edge-to-edge.
+  // WS_THICKFRAME hands resize/snap/animations to DWM; WS_MAXIMIZEBOX/MINIMIZEBOX gate SW_MAXIMIZE.
   if (auto* qw = qobject_cast<QQuickWindow*>(m_window.data())) {
     if (HWND hwnd = reinterpret_cast<HWND>(qw->winId())) {
-      const LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
-      SetWindowLongPtrW(hwnd, GWL_STYLE, style | WS_THICKFRAME);
+      LONG_PTR style = GetWindowLongPtrW(hwnd, GWL_STYLE);
+      style |= WS_THICKFRAME;
+      if (!isFixedSizeWindow(m_window))
+        style |= WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_SYSMENU;
+
+      SetWindowLongPtrW(hwnd, GWL_STYLE, style);
       SetWindowPos(hwnd,
                    nullptr,
                    0,

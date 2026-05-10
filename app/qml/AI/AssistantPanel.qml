@@ -45,13 +45,6 @@ Widgets.SmartDialog {
   minimumHeight: 560
   maximumWidth: 10000
   maximumHeight: 10000
-  Component.onCompleted: {
-    root.flags = Qt.Dialog
-               | Qt.CustomizeWindowHint
-               | Qt.WindowTitleHint
-               | Qt.WindowCloseButtonHint
-               | Qt.WindowMinMaxButtonsHint
-  }
 
   //
   // Wire Cpp_AI_Assistant requestKeyManager to the dialog
