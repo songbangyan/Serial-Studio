@@ -862,8 +862,9 @@ Popup {
     Widgets.MenuButton {
       expandable: false
       Layout.fillWidth: true
-      text: qsTr("Disconnect")
-      icon.source: "qrc:/icons/start/disconnect.svg"
+      text: app.runtimeMode ? qsTr("Quit") : qsTr("Disconnect")
+      icon.source: app.runtimeMode ? "qrc:/icons/start/quit.svg"
+                                   : "qrc:/icons/start/disconnect.svg"
       onClicked: {
         root.close()
         if (typeof mainWindow !== "undefined" && mainWindow.userDisconnect)

@@ -437,6 +437,7 @@
         <file>icons/start/normal-screen.svg</file>
         <file>icons/start/notifications.svg</file>
         <file>icons/start/pause.svg</file>
+        <file>icons/start/quit.svg</file>
         <file>icons/start/reset.svg</file>
         <file>icons/start/resume.svg</file>
         <file>icons/start/sessions.svg</file>
