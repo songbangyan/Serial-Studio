@@ -1195,6 +1195,11 @@ void Window::setupFrame()
   if (HWND hwnd = reinterpret_cast<HWND>(quickWindow->winId())) {
     const MARGINS margins = {1, 1, 1, 1};
     DwmExtendFrameIntoClientArea(hwnd, &margins);
+
+    // Force square corners so DWM matches the 1px square Border (Win-11 would otherwise round).
+    constexpr DWORD attrCornerPreference = 33;  // DWMWA_WINDOW_CORNER_PREFERENCE
+    constexpr DWORD valueDoNotRound      = 1;   // DWMWCP_DONOTROUND
+    DwmSetWindowAttribute(hwnd, attrCornerPreference, &valueDoNotRound, sizeof(valueDoNotRound));
   }
 #else
   QSurfaceFormat format = quickWindow->format();
@@ -1670,11 +1675,6 @@ bool Window::nativeEventFilter(const QByteArray& eventType, void* message, qintp
 
     case WM_NCHITTEST:
       return handleNCHitTest(ownHwnd, msg, m_window, titleBarHeight(), result);
-
-    case WM_NCACTIVATE:
-      // Suppress NC-redraw flash on focus change; lParam=-1 means do not invalidate any region.
-      *result = DefWindowProcW(ownHwnd, WM_NCACTIVATE, msg->wParam, -1);
-      return true;
   }
 
   return false;
