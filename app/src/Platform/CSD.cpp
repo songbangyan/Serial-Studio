@@ -142,9 +142,15 @@ void Titlebar::paint(QPainter* painter)
   else
     painter->setPen(foregroundColor().darker(130));
 
-  // Draw title text
+  // Draw title text (left-aligned on Windows, centered elsewhere)
+#if defined(Q_OS_WIN)
+  rect.setX(CSD::IconSize + CSD::IconMargin * 2);
+  painter->setFont(Misc::CommonFonts::instance().uiFont());
+  painter->drawText(rect, Qt::AlignVCenter | Qt::AlignLeft, title());
+#else
   painter->setFont(Misc::CommonFonts::instance().boldUiFont());
   painter->drawText(rect, Qt::AlignCenter, title());
+#endif
 
   // clang-format off
   const QString closeSvg = QStringLiteral(":/icons/csd/close.svg");
@@ -169,9 +175,13 @@ void Titlebar::paint(QPainter* painter)
  */
 QString Titlebar::title() const
 {
+#if defined(Q_OS_WIN)
+  return m_title + " - Serial Studio";
+#else
   // code-verify off
   return m_title + " — Serial Studio";
   // code-verify on
+#endif
 }
 
 /**
@@ -368,6 +378,18 @@ QRectF Titlebar::buttonBackgroundRect(Button button) const
  */
 QColor Titlebar::buttonIconColor(Button button, bool hovered, bool pressed) const
 {
+#if defined(Q_OS_WIN)
+  if (button == Button::Close && (hovered || pressed))
+    return Qt::white;
+
+  if (!m_windowActive) {
+    QColor c = foregroundColor();
+    c.setAlpha(128);
+    return c;
+  }
+
+  return foregroundColor();
+#else
   Q_UNUSED(button)
   const auto& theme = Misc::ThemeManager::instance();
 
@@ -384,6 +406,7 @@ QColor Titlebar::buttonIconColor(Button button, bool hovered, bool pressed) cons
   }
 
   return foregroundColor();
+#endif
 }
 
 /**
@@ -394,10 +417,29 @@ void Titlebar::drawButtonHoverBackground(QPainter* painter,
                                          bool hovered,
                                          bool pressed)
 {
+#if defined(Q_OS_WIN)
+  if (!hovered && !pressed)
+    return;
+
+  const auto bg          = m_backgroundColor;
+  const auto fg          = foregroundColor();
+  const bool isDarkTheme = fg.lightness() > bg.lightness();
+
+  QColor bgColor;
+  if (button == Button::Close)
+    bgColor = pressed ? QColor(0xB4, 0x27, 0x1A) : QColor(0xC4, 0x2B, 0x1C);
+  else if (isDarkTheme)
+    bgColor = QColor(255, 255, 255, pressed ? 11 : 20);
+  else
+    bgColor = QColor(0, 0, 0, pressed ? 6 : 10);
+
+  painter->fillRect(buttonBackgroundRect(button), bgColor);
+#else
   Q_UNUSED(painter)
   Q_UNUSED(button)
   Q_UNUSED(hovered)
   Q_UNUSED(pressed)
+#endif
 }
 
 /**
@@ -1011,8 +1053,8 @@ void Window::setupFrame()
     format.setAlphaBufferSize(8);
     quickWindow->setFormat(format);
   }
-  quickWindow->setColor(Qt::transparent);
 
+  quickWindow->setColor(Qt::transparent);
   m_frame = new Frame(quickWindow->contentItem());
   m_frame->setZ(-1);
 
@@ -1441,17 +1483,6 @@ bool Window::eventFilter(QObject* watched, QEvent* event)
       break;
   }
 
-  return false;
-}
-
-/**
- * @brief Win32 NC-area handling so DWM owns resize/drag/snap on Windows.
- */
-bool Window::nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result)
-{
-  Q_UNUSED(eventType)
-  Q_UNUSED(message)
-  Q_UNUSED(result)
   return false;
 }
 }  // namespace CSD
