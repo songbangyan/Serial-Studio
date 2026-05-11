@@ -194,6 +194,7 @@ IO::FrameConfig AppState::deriveFrameConfig() const
     return cfg;
   }
 
+  // Console: disable frame extraction
   if (m_operationMode == SerialStudio::ConsoleOnly) {
     cfg.startSequences    = {};
     cfg.finishSequences   = {};
@@ -215,11 +216,13 @@ IO::FrameConfig AppState::deriveFrameConfig() const
   // Read delimiters and checksum from source[0]
   cfg.frameDetection = static_cast<SerialStudio::FrameDetection>(sources[0].frameDetection);
 
+  // Read IO configuration
   QByteArray startSeq;
   QByteArray finishSeq;
   DataModel::read_io_settings(
     startSeq, finishSeq, cfg.checksumAlgorithm, DataModel::serialize(sources[0]));
 
+  // Apply start/end delimiters
   cfg.startSequences  = startSeq.isEmpty() ? QList<QByteArray>{} : QList<QByteArray>{startSeq};
   cfg.finishSequences = finishSeq.isEmpty() ? QList<QByteArray>{} : QList<QByteArray>{finishSeq};
 
@@ -230,9 +233,11 @@ IO::FrameConfig AppState::deriveFrameConfig() const
     cfg.frameDetection =
       cfg.finishSequences.isEmpty() ? SerialStudio::NoDelimiters : SerialStudio::EndDelimiterOnly;
 
+  // Downgrade to no delimiters in case end delimiter is empty
   if (cfg.frameDetection == SerialStudio::EndDelimiterOnly && cfg.finishSequences.isEmpty())
     [[unlikely]]
     cfg.frameDetection = SerialStudio::NoDelimiters;
 
+  // Return the generated configuration structure
   return cfg;
 }

@@ -952,10 +952,9 @@ void UI::WindowManager::bringToFront(QQuickItem* item)
   if (!item)
     return;
 
-  // Promote window and keep manager Z above all windows
+  // Promote window above its peers; manager Z stays 0 so hover descends past _wm
   m_windowZ[item] = ++m_zCounter;
   item->setZ(m_windowZ[item]);
-  setZ(m_zCounter + 2);
 
   Q_EMIT zCounterChanged();
   Q_EMIT zOrderChanged(item);
@@ -982,7 +981,6 @@ void UI::WindowManager::registerWindow(const int id, QQuickItem* item)
   m_windowOrder.append(id);
   m_windowZ[item] = ++m_zCounter;
   item->setZ(m_windowZ[item]);
-  setZ(m_zCounter + 1);
 
   // Apply pending saved geometry before first paint to avoid minimumSize flash
   auto pending = m_pendingGeometries.find(id);
