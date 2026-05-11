@@ -1106,6 +1106,7 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 
   if (m_manualCanvasHeight <= 0 && refHeight > 0)
     m_manualCanvasHeight = refHeight;
+    
   const double scaleX = refWidth > 0 ? double(newWidth) / double(refWidth) : 1.0;
   const double scaleY = refHeight > 0 ? double(newHeight) / double(refHeight) : 1.0;
 
