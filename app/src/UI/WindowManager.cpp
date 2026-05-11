@@ -1120,12 +1120,16 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 
     const QRect prefGeom   = m_manualGeometries.value(id, extractGeometry(win));
     const QMargins margins = m_manualMargins.value(id, QMargins());
-    const int scaledW      = qRound(prefGeom.width() * scaleX);
-    const int scaledH      = qRound(prefGeom.height() * scaleY);
+    int scaledW            = qRound(prefGeom.width() * scaleX);
+    int scaledH            = qRound(prefGeom.height() * scaleY);
     const QMargins scaledMargins(qRound(margins.left() * scaleX),
-                                 qRound(margins.top() * scaleY),
-                                 qRound(margins.right() * scaleX),
-                                 qRound(margins.bottom() * scaleY));
+                   qRound(margins.top() * scaleY),
+                   qRound(margins.right() * scaleX),
+                   qRound(margins.bottom() * scaleY));
+    const int maxW = qMax(0, newWidth - scaledMargins.left() - scaledMargins.right());
+    const int maxH = qMax(0, newHeight - scaledMargins.top() - scaledMargins.bottom());
+    scaledW = qMin(scaledW, maxW);
+    scaledH = qMin(scaledH, maxH);
     const QRect scaledPref(0, 0, scaledW, scaledH);
     const QRect anchored = anchoredGeometry(scaledPref, scaledMargins, newWidth, newHeight);
 
@@ -1279,17 +1283,6 @@ void UI::WindowManager::triggerLayoutUpdate()
       if (win && !win->isVisible() && (win->state() == "normal" || win->state() == "maximized")) {
         hasUninitializedWindows = true;
         break;
-      }
-    }
-
-    if (sizeChanged && m_lastCanvasWidth > 0 && m_lastCanvasHeight > 0) {
-      for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it) {
-        const int id = it.key();
-        auto* win    = it.value();
-        if (!win || win->state() != "normal")
-          continue;
-
-        storeManualGeometry(id, win, m_lastCanvasWidth, m_lastCanvasHeight);
       }
     }
 
