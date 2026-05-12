@@ -36,7 +36,7 @@ Widgets.Pane {
 
   title: qsTr("Dashboard")
   icon: "qrc:/icons/panes/dashboard.svg"
-  headerVisible: mainWindow.toolbarVisible && !isExternalWindow
+  headerVisible: mainWindow.toolbarVisible && !isExternalWindow && !app.runtimeMode
 
   //
   // Required data inputs
