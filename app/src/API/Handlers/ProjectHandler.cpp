@@ -3532,7 +3532,6 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
        QStringLiteral("Painter source. Must define paint(ctx, w, h)")}
   }),
     &painterDryRun);
-
 }
 
 /**
@@ -3559,7 +3558,7 @@ void API::Handlers::ProjectHandler::registerEndToEndDryRunCommand()
       {QStringLiteral("sampleFrames"),
        QStringLiteral("array"),
        QStringLiteral("Array of frame bodies; runs sequentially in one parser engine instance.")  },
-      {    QString(Keys::SourceId),
+      {       QString(Keys::SourceId),
        QStringLiteral("integer"),
        QStringLiteral("Source index to use for parser code + dataset transforms (default 0)")     },
       {        QStringLiteral("code"),
@@ -5026,13 +5025,8 @@ static QJsonObject buildDryRunRow(
       if (dataset.sourceId != sourceId)
         continue;
 
-      datasetResults.append(buildDryRunDatasetEntry(dataset,
-                                                   group.groupId,
-                                                   row,
-                                                   language,
-                                                   verbose,
-                                                   transformEngines,
-                                                   transformEngineOk));
+      datasetResults.append(buildDryRunDatasetEntry(
+        dataset, group.groupId, row, language, verbose, transformEngines, transformEngineOk));
     }
   }
 

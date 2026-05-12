@@ -1104,7 +1104,7 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 
   if (m_manualCanvasHeight <= 0 && refHeight > 0)
     m_manualCanvasHeight = refHeight;
-    
+
   const double scaleX = refWidth > 0 ? double(newWidth) / double(refWidth) : 1.0;
   const double scaleY = refHeight > 0 ? double(newHeight) / double(refHeight) : 1.0;
 
@@ -1122,13 +1122,13 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
     int scaledW            = qRound(prefGeom.width() * scaleX);
     int scaledH            = qRound(prefGeom.height() * scaleY);
     const QMargins scaledMargins(qRound(margins.left() * scaleX),
-                   qRound(margins.top() * scaleY),
-                   qRound(margins.right() * scaleX),
-                   qRound(margins.bottom() * scaleY));
+                                 qRound(margins.top() * scaleY),
+                                 qRound(margins.right() * scaleX),
+                                 qRound(margins.bottom() * scaleY));
     const int maxW = qMax(0, newWidth - scaledMargins.left() - scaledMargins.right());
     const int maxH = qMax(0, newHeight - scaledMargins.top() - scaledMargins.bottom());
-    scaledW = qMin(scaledW, maxW);
-    scaledH = qMin(scaledH, maxH);
+    scaledW        = qMin(scaledW, maxW);
+    scaledH        = qMin(scaledH, maxH);
     const QRect scaledPref(0, 0, scaledW, scaledH);
     const QRect anchored = anchoredGeometry(scaledPref, scaledMargins, newWidth, newHeight);
 
@@ -1803,8 +1803,7 @@ bool UI::WindowManager::tryReorderDraggedWindow()
   const int targetId     = getIdForWindow(m_targetWindow);
   const int newIndex     = m_windowOrder.indexOf(targetId);
   const int currentIndex = m_windowOrder.indexOf(draggedId);
-  if (draggedId < 0 || targetId < 0 || currentIndex < 0 || newIndex < 0
-      || newIndex == currentIndex)
+  if (draggedId < 0 || targetId < 0 || currentIndex < 0 || newIndex < 0 || newIndex == currentIndex)
     return false;
 
   std::swap(m_windowOrder[currentIndex], m_windowOrder[newIndex]);

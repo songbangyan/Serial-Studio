@@ -48,8 +48,8 @@ Widgets.SmartWindow {
   //
   property int appLaunchCount: 0
   property bool windowShown: false
-  property bool toolbarVisible: true
   property string documentTitle: ""
+  property bool toolbarVisible: true
   property bool sawConnection: false
   property bool firstValidFrame: false
   property bool userInitiatedDisconnect: false
