@@ -107,6 +107,11 @@ Item {
   //
   onWidthChanged: updateWidgetOptions()
   onHeightChanged: updateWidgetOptions()
+  onInterpolationModeChanged: {
+    const count = plot.graph.seriesList.length
+    for (let i = 0; i < count; ++i)
+      plot.graph.seriesList[i].clear()
+  }
   function updateWidgetOptions() {
     root.showLegends = root.userShowLegends && (root.width >= 320)
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)

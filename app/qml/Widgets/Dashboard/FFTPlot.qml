@@ -99,6 +99,11 @@ Item {
   //
   onWidthChanged: updateWidgetOptions()
   onHeightChanged: updateWidgetOptions()
+  onInterpolationModeChanged: {
+    scatterSeries.clear()
+    upperSeries.clear()
+    lowerSeries.clear()
+  }
   function updateWidgetOptions() {
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
