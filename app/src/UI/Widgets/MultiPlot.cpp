@@ -61,6 +61,7 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   , m_maxX(0)
   , m_minY(0)
   , m_maxY(0)
+  , m_interpolationMode(InterpolationMode::Linear)
 {
   // Validate dashboard configuration
   if (!VALIDATE_WIDGET(SerialStudio::DashboardMultiPlot, m_index))
@@ -181,6 +182,14 @@ bool Widgets::MultiPlot::running() const noexcept
   return UI::Dashboard::instance().multiplotRunning(m_index);
 }
 
+/**
+ * @brief Returns the current interpolation mode.
+ */
+int Widgets::MultiPlot::interpolationMode() const noexcept
+{
+  return m_interpolationMode;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Metadata getters
 //--------------------------------------------------------------------------------------------------
@@ -226,10 +235,44 @@ const QList<bool>& Widgets::MultiPlot::visibleCurves() const noexcept
  */
 void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
 {
-  if (series && index >= 0 && index < count() && m_visibleCurves[index]) {
-    series->replace(m_data[index]);
-    Q_EMIT series->update();
+  if (!series || index < 0 || index >= count() || !m_visibleCurves[index])
+    return;
+
+  const auto& source = m_data[index];
+  const QList<QPointF>* data = &source;
+
+  if (m_interpolationMode == InterpolationMode::Zoh) {
+    if (source.size() < 2) {
+      data = &source;
+    } else {
+      m_renderData.clear();
+      m_renderData.reserve(source.size() * 2);
+      m_renderData.append(source.first());
+      for (int i = 1; i < source.size(); ++i) {
+        const auto& prev = source[i - 1];
+        const auto& cur  = source[i];
+        m_renderData.append(QPointF(cur.x(), prev.y()));
+        m_renderData.append(cur);
+      }
+      data = &m_renderData;
+    }
   }
+
+  else if (m_interpolationMode == InterpolationMode::Stem) {
+    constexpr double stemBaseline = 0.0;
+    const double nan               = std::numeric_limits<double>::quiet_NaN();
+    m_renderData.clear();
+    m_renderData.reserve(source.size() * 3);
+    for (const auto& p : source) {
+      m_renderData.append(QPointF(p.x(), p.y()));
+      m_renderData.append(QPointF(p.x(), stemBaseline));
+      m_renderData.append(QPointF(nan, nan));
+    }
+    data = &m_renderData;
+  }
+
+  series->replace(*data);
+  Q_EMIT series->update();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -269,6 +312,21 @@ void Widgets::MultiPlot::setRunning(const bool enabled)
 {
   UI::Dashboard::instance().setMultiplotRunning(m_index, enabled);
   Q_EMIT runningChanged();
+}
+
+/**
+ * @brief Updates the interpolation mode used by the multiplot.
+ */
+void Widgets::MultiPlot::setInterpolationMode(const int mode)
+{
+  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
+                             mode,
+                             static_cast<int>(InterpolationMode::Stem));
+  if (m_interpolationMode == clamped)
+    return;
+
+  m_interpolationMode = clamped;
+  Q_EMIT interpolationModeChanged();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -357,6 +415,11 @@ void Widgets::MultiPlot::calculateAutoScaleRange()
   else if (!computeRangeFromDatasets()) {
     scanCurvesForRange();
     padDerivedRange();
+  }
+
+  if (m_interpolationMode == InterpolationMode::Stem) {
+    m_minY = qMin(m_minY, 0.0);
+    m_maxY = qMax(m_maxY, 0.0);
   }
 
   if (DSP::notEqual(prevMinY, m_minY) || DSP::notEqual(prevMaxY, m_maxY))

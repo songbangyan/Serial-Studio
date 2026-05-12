@@ -23,8 +23,8 @@
 
 #include <kiss_fft.h>
 
-#include <QLineSeries>
 #include <QQuickItem>
+#include <QXYSeries>
 #include <QVector>
 
 #include "DSP.h"
@@ -48,6 +48,10 @@ class FFTPlot : public QQuickItem {
              READ dataH
              WRITE setDataH
              NOTIFY dataSizeChanged)
+  Q_PROPERTY(int interpolationMode
+             READ interpolationMode
+             WRITE setInterpolationMode
+             NOTIFY interpolationModeChanged)
   Q_PROPERTY(double minX
              READ minX
              CONSTANT)
@@ -65,8 +69,17 @@ class FFTPlot : public QQuickItem {
 signals:
   void runningChanged();
   void dataSizeChanged();
+  void interpolationModeChanged();
 
 public:
+  enum InterpolationMode {
+    None = 0,
+    Linear = 1,
+    Zoh = 2,
+    Stem = 3
+  };
+  Q_ENUM(InterpolationMode)
+
   explicit FFTPlot(const int index = -1, QQuickItem* parent = nullptr);
 
   ~FFTPlot()
@@ -84,15 +97,18 @@ public:
   [[nodiscard]] double minY() const noexcept;
   [[nodiscard]] double maxY() const noexcept;
   [[nodiscard]] bool running() const noexcept;
+  [[nodiscard]] int interpolationMode() const noexcept;
 
 public slots:
-  void draw(QLineSeries* series);
+  void draw(QXYSeries* series);
   void setDataW(const int width);
   void setDataH(const int height);
   void setRunning(const bool enabled);
+  void setInterpolationMode(const int mode);
 
 private slots:
   void updateData();
+  void updateInterpolatedData();
 
 private:
   bool rebuildFftPlan(int newSize);
@@ -115,9 +131,12 @@ private:
   bool m_scaleIsValid;
 
   QList<QPointF> m_data;
+  QList<QPointF> m_renderData;
   DSP::AxisData m_xData;
   DSP::AxisData m_yData;
   std::vector<float> m_window;
+
+  int m_interpolationMode;
 
   kiss_fft_cfg m_plan;
   std::vector<kiss_fft_cpx> m_samples;

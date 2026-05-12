@@ -45,6 +45,7 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
   , m_minY(0)
   , m_maxY(0)
   , m_monotonicData(true)
+  , m_interpolationMode(InterpolationMode::Linear)
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardPlot, m_index)) {
     const auto& yDataset = GET_DATASET(SerialStudio::DashboardPlot, m_index);
@@ -153,6 +154,14 @@ bool Widgets::Plot::running() const noexcept
   return UI::Dashboard::instance().plotRunning(m_index);
 }
 
+/**
+ * @brief Returns the current interpolation mode.
+ */
+int Widgets::Plot::interpolationMode() const noexcept
+{
+  return m_interpolationMode;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Label getters
 //--------------------------------------------------------------------------------------------------
@@ -184,8 +193,16 @@ void Widgets::Plot::draw(QXYSeries* series)
 {
   if (series) {
     updateData();
-    series->replace(m_data);
     calculateAutoScaleRange();
+
+    const auto* data = &m_data;
+    if (m_interpolationMode == InterpolationMode::Zoh
+        || m_interpolationMode == InterpolationMode::Stem) {
+      updateInterpolatedData();
+      data = &m_renderData;
+    }
+
+    series->replace(*data);
     Q_EMIT series->update();
   }
 }
@@ -227,6 +244,21 @@ void Widgets::Plot::setRunning(const bool enabled)
 {
   UI::Dashboard::instance().setPlotRunning(m_index, enabled);
   Q_EMIT runningChanged();
+}
+
+/**
+ * @brief Updates the interpolation mode used by the plot.
+ */
+void Widgets::Plot::setInterpolationMode(const int mode)
+{
+  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
+                             mode,
+                             static_cast<int>(InterpolationMode::Stem));
+  if (m_interpolationMode == clamped)
+    return;
+
+  m_interpolationMode = clamped;
+  Q_EMIT interpolationModeChanged();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -288,6 +320,50 @@ void Widgets::Plot::updateData()
 }
 
 /**
+ * @brief Rebuilds the render data for ZOH or stem interpolation modes.
+ */
+void Widgets::Plot::updateInterpolatedData()
+{
+  m_renderData.clear();
+
+  if (!m_monotonicData) {
+    m_renderData = m_data;
+    return;
+  }
+
+  if (m_data.isEmpty())
+    return;
+
+  if (m_interpolationMode == InterpolationMode::Zoh) {
+    if (m_data.size() < 2) {
+      m_renderData = m_data;
+      return;
+    }
+
+    m_renderData.reserve(m_data.size() * 2);
+    m_renderData.append(m_data.first());
+    for (int i = 1; i < m_data.size(); ++i) {
+      const auto& prev = m_data[i - 1];
+      const auto& cur  = m_data[i];
+      m_renderData.append(QPointF(cur.x(), prev.y()));
+      m_renderData.append(cur);
+    }
+    return;
+  }
+
+  if (m_interpolationMode == InterpolationMode::Stem) {
+    constexpr double stemBaseline = 0.0;
+    const double nan               = std::numeric_limits<double>::quiet_NaN();
+    m_renderData.reserve(m_data.size() * 3);
+    for (const auto& p : m_data) {
+      m_renderData.append(QPointF(p.x(), p.y()));
+      m_renderData.append(QPointF(p.x(), stemBaseline));
+      m_renderData.append(QPointF(nan, nan));
+    }
+  }
+}
+
+/**
  * @brief Updates the range of the X-axis values.
  */
 void Widgets::Plot::updateRange()
@@ -328,6 +404,15 @@ void Widgets::Plot::calculateAutoScaleRange()
   // Obtain scale range for Y-axis
   const auto& dy = GET_DATASET(SerialStudio::DashboardPlot, m_index);
   yChanged = computeMinMaxValues(m_minY, m_maxY, dy, true, [](const QPointF& p) { return p.y(); });
+
+  if (m_interpolationMode == InterpolationMode::Stem) {
+    const auto prevMin = m_minY;
+    const auto prevMax = m_maxY;
+    m_minY             = qMin(m_minY, 0.0);
+    m_maxY             = qMax(m_maxY, 0.0);
+    yChanged           = yChanged || DSP::notEqual(prevMin, m_minY)
+               || DSP::notEqual(prevMax, m_maxY);
+  }
 
   // Obtain range scale for X-axis
 #ifdef BUILD_COMMERCIAL

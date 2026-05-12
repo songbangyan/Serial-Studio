@@ -48,6 +48,7 @@ Item {
   //
   // Custom properties
   //
+  property int interpolationMode: 1
   property bool showAreaUnderPlot: true
 
   //
@@ -77,6 +78,15 @@ Item {
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
 
+    if (s["interpolationMode"] !== undefined)
+      root.interpolationMode = s["interpolationMode"]
+
+    if (root.interpolationMode === 0 || root.interpolationMode === 3)
+      root.showAreaUnderPlot = false
+
+    if (root.model)
+      root.model.interpolationMode = root.interpolationMode
+
     if (s["userShowXLabel"] !== undefined)
       root.userShowXLabel = s["userShowXLabel"]
 
@@ -95,6 +105,16 @@ Item {
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
+  function modeLabel() {
+    if (root.interpolationMode === 0)
+      return qsTr("None")
+    if (root.interpolationMode === 2)
+      return qsTr("ZOH")
+    if (root.interpolationMode === 3)
+      return qsTr("Stem")
+    return qsTr("Linear")
+  }
+
   //
   // Axis range configuration dialog
   //
@@ -110,10 +130,16 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        root.model.draw(upperSeries)
-        lowerSeries.clear()
-        lowerSeries.append(root.model.minX, root.model.minY)
-        lowerSeries.append(root.model.maxX, root.model.minY)
+        if (root.interpolationMode === 0) {
+          root.model.draw(scatterSeries)
+        } else {
+          root.model.draw(upperSeries)
+          if (root.showAreaUnderPlot) {
+            lowerSeries.clear()
+            lowerSeries.append(root.model.minX, root.model.minY)
+            lowerSeries.append(root.model.maxX, root.model.minY)
+          }
+        }
       }
     }
   }
@@ -136,6 +162,33 @@ Item {
     }
 
     DashboardToolButton {
+      checked: root.interpolationMode !== 0
+      ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
+      onClicked: {
+        root.interpolationMode = (root.interpolationMode + 1) % 4
+        if (root.model)
+          root.model.interpolationMode = root.interpolationMode
+
+        if (root.interpolationMode === 0 || root.interpolationMode === 3)
+          root.showAreaUnderPlot = false
+
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "interpolationMode",
+                                                root.interpolationMode)
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
+      }
+      icon.source: root.interpolationMode === 0
+                     ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+                     : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    DashboardToolButton {
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
@@ -145,6 +198,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
+      enabled: root.interpolationMode !== 0 && root.interpolationMode !== 3
     }
 
     Rectangle {
@@ -260,12 +314,26 @@ Item {
       graph.addSeries(areaSeries)
       graph.addSeries(upperSeries)
       graph.addSeries(lowerSeries)
+      graph.addSeries(scatterSeries)
+    }
+
+    ScatterSeries {
+      id: scatterSeries
+
+      visible: root.interpolationMode === 0
+      pointDelegate: Rectangle {
+        width: 2
+        height: 2
+        radius: 1
+        color: root.color
+      }
     }
 
     LineSeries {
       id: upperSeries
 
       width: 2
+      visible: root.interpolationMode !== 0
     }
 
     LineSeries {
@@ -282,6 +350,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
+               && root.interpolationMode !== 0
+               && root.interpolationMode !== 3
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }

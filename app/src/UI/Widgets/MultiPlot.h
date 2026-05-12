@@ -48,6 +48,10 @@ class MultiPlot : public QQuickItem {
              READ dataH
              WRITE setDataH
              NOTIFY dataSizeChanged)
+  Q_PROPERTY(int interpolationMode
+             READ interpolationMode
+             WRITE setInterpolationMode
+             NOTIFY interpolationModeChanged)
   Q_PROPERTY(double minX
              READ minX
              NOTIFY rangeChanged)
@@ -80,8 +84,17 @@ signals:
   void curvesChanged();
   void runningChanged();
   void dataSizeChanged();
+  void interpolationModeChanged();
 
 public:
+  enum InterpolationMode {
+    None = 0,
+    Linear = 1,
+    Zoh = 2,
+    Stem = 3
+  };
+  Q_ENUM(InterpolationMode)
+
   explicit MultiPlot(const int index = -1, QQuickItem* parent = nullptr);
 
   ~MultiPlot()
@@ -103,6 +116,7 @@ public:
   [[nodiscard]] double minY() const noexcept;
   [[nodiscard]] double maxY() const noexcept;
   [[nodiscard]] bool running() const noexcept;
+  [[nodiscard]] int interpolationMode() const noexcept;
   [[nodiscard]] const QString& yLabel() const noexcept;
   [[nodiscard]] const QStringList& colors() const noexcept;
   [[nodiscard]] const QStringList& labels() const noexcept;
@@ -114,6 +128,7 @@ public slots:
   void setDataW(const int width);
   void setDataH(const int height);
   void setRunning(const bool enabled);
+  void setInterpolationMode(const int mode);
 
   void updateData();
   void updateRange();
@@ -143,5 +158,7 @@ private:
   QList<int> m_drawOrders;
   QList<bool> m_visibleCurves;
   QList<QList<QPointF>> m_data;
+  QList<QPointF> m_renderData;
+  int m_interpolationMode;
 };
 }  // namespace Widgets

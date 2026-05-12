@@ -48,7 +48,7 @@ Item {
   //
   // Custom properties
   //
-  property bool interpolate: true
+  property int interpolationMode: 1
   property bool showLegends: true
 
   //
@@ -76,8 +76,13 @@ Item {
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
-    if (s["interpolate"] !== undefined)
-      root.interpolate = s["interpolate"]
+    if (s["interpolationMode"] !== undefined)
+      root.interpolationMode = s["interpolationMode"]
+    else if (s["interpolate"] !== undefined)
+      root.interpolationMode = s["interpolate"] ? 1 : 0
+
+    if (root.model)
+      root.model.interpolationMode = root.interpolationMode
 
     if (s["userShowLegends"] !== undefined)
       root.userShowLegends = s["userShowLegends"]
@@ -107,6 +112,16 @@ Item {
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
+  }
+
+  function modeLabel() {
+    if (root.interpolationMode === 0)
+      return qsTr("None")
+    if (root.interpolationMode === 2)
+      return qsTr("ZOH")
+    if (root.interpolationMode === 3)
+      return qsTr("Stem")
+    return qsTr("Linear")
   }
 
   //
@@ -166,15 +181,20 @@ Item {
     }
 
     DashboardToolButton {
-      checked: root.interpolate
-      ToolTip.text: qsTr("Interpolate")
+      checked: root.interpolationMode !== 0
+      ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
       onClicked: {
-        root.interpolate = !root.interpolate
-        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "interpolate", root.interpolate)
+        root.interpolationMode = (root.interpolationMode + 1) % 4
+        if (root.model)
+          root.model.interpolationMode = root.interpolationMode
+
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "interpolationMode",
+                                                root.interpolationMode)
       }
-      icon.source: root.interpolate?
-                     "qrc:/icons/dashboard-buttons/interpolate-on.svg" :
-                     "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+      icon.source: root.interpolationMode === 0
+                     ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+                     : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
 
     DashboardToolButton {
@@ -310,7 +330,7 @@ Item {
         model: root.model.count
         delegate: LineSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolate
+          property bool curveVisible: root.interpolationMode !== 0
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
         }
@@ -323,7 +343,7 @@ Item {
         model: root.model.count
         delegate: ScatterSeries {
           property int curveIndex: index
-          property bool curveVisible: !root.interpolate
+          property bool curveVisible: root.interpolationMode === 0
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
           pointDelegate: Rectangle {

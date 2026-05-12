@@ -68,6 +68,7 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   , m_center(0)
   , m_halfRange(1)
   , m_scaleIsValid(false)
+  , m_interpolationMode(InterpolationMode::Linear)
   , m_plan(nullptr)
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index)) {
@@ -181,6 +182,14 @@ bool Widgets::FFTPlot::running() const noexcept
   return UI::Dashboard::instance().fftPlotRunning(m_index);
 }
 
+/**
+ * @brief Returns the current interpolation mode.
+ */
+int Widgets::FFTPlot::interpolationMode() const noexcept
+{
+  return m_interpolationMode;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Rendering
 //--------------------------------------------------------------------------------------------------
@@ -188,11 +197,18 @@ bool Widgets::FFTPlot::running() const noexcept
 /**
  * @brief Draws the FFT data on the given QLineSeries.
  */
-void Widgets::FFTPlot::draw(QLineSeries* series)
+void Widgets::FFTPlot::draw(QXYSeries* series)
 {
   if (series) {
     updateData();
-    series->replace(m_data);
+    const auto* data = &m_data;
+    if (m_interpolationMode == InterpolationMode::Zoh
+        || m_interpolationMode == InterpolationMode::Stem) {
+      updateInterpolatedData();
+      data = &m_renderData;
+    }
+
+    series->replace(*data);
     Q_EMIT series->update();
   }
 }
@@ -234,6 +250,21 @@ void Widgets::FFTPlot::setRunning(const bool enabled)
 {
   UI::Dashboard::instance().setFFTPlotRunning(m_index, enabled);
   Q_EMIT runningChanged();
+}
+
+/**
+ * @brief Updates the interpolation mode used by the FFT plot.
+ */
+void Widgets::FFTPlot::setInterpolationMode(const int mode)
+{
+  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
+                             mode,
+                             static_cast<int>(InterpolationMode::Stem));
+  if (m_interpolationMode == clamped)
+    return;
+
+  m_interpolationMode = clamped;
+  Q_EMIT interpolationModeChanged();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -359,4 +390,43 @@ void Widgets::FFTPlot::updateData()
   const int spectrumSize = static_cast<size_t>(m_size) / 2;
   computeSmoothedSpectrum(spectrumSize);
   DSP::downsampleMonotonic(m_xData, m_yData, m_dataW, m_dataH, m_data, &ws);
+}
+
+/**
+ * @brief Rebuilds the render data for ZOH or stem interpolation modes.
+ */
+void Widgets::FFTPlot::updateInterpolatedData()
+{
+  m_renderData.clear();
+
+  if (m_data.isEmpty())
+    return;
+
+  if (m_interpolationMode == InterpolationMode::Zoh) {
+    if (m_data.size() < 2) {
+      m_renderData = m_data;
+      return;
+    }
+
+    m_renderData.reserve(m_data.size() * 2);
+    m_renderData.append(m_data.first());
+    for (int i = 1; i < m_data.size(); ++i) {
+      const auto& prev = m_data[i - 1];
+      const auto& cur  = m_data[i];
+      m_renderData.append(QPointF(cur.x(), prev.y()));
+      m_renderData.append(cur);
+    }
+    return;
+  }
+
+  if (m_interpolationMode == InterpolationMode::Stem) {
+    const double stemBaseline = m_minY;
+    const double nan               = std::numeric_limits<double>::quiet_NaN();
+    m_renderData.reserve(m_data.size() * 3);
+    for (const auto& p : m_data) {
+      m_renderData.append(QPointF(p.x(), p.y()));
+      m_renderData.append(QPointF(p.x(), stemBaseline));
+      m_renderData.append(QPointF(nan, nan));
+    }
+  }
 }
