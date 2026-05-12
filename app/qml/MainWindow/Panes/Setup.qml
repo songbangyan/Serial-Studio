@@ -39,33 +39,12 @@ Widgets.Pane {
   //
   // Custom properties
   //
-  property int setupMargin: 0
   property int userPaneWidth: 340
   readonly property int kMinPaneWidth: 280
   readonly property int maxItemWidth: layout.width - 8
   readonly property int displayedWidth: Math.max(kMinPaneWidth, userPaneWidth)
   readonly property bool dataExportAllowed:
     Cpp_AppState.operationMode !== SerialStudio.ConsoleOnly
-
-  //
-  // Displays the setup panel
-  //
-  function show() {
-    setupMargin = 0
-  }
-
-  //
-  // Hides the setup panel
-  //
-  function hide() {
-    setupMargin = -1 * displayedWidth
-  }
-
-  //
-  // Animations
-  //
-  visible: setupMargin > -1 * displayedWidth
-  Behavior on setupMargin {NumberAnimation{}}
 
   //
   // Save settings
@@ -425,109 +404,116 @@ Widgets.Pane {
         }
 
         //
-        // Multi-source redirect panel
+        // Multi-source redirect panel (loaded only when needed)
         //
-        ColumnLayout {
-          spacing: 0
+        Loader {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          active: Cpp_AppState.operationMode === SerialStudio.ProjectFile
+                  && Cpp_JSON_ProjectModel.sourceCount > 1
 
-          Item {
-            implicitHeight: 8
-          }
+          sourceComponent: ColumnLayout {
+            spacing: 0
 
-          Item {
-            Layout.fillWidth: true
-            implicitHeight: _panelLayout.implicitHeight + 24
-
-            Rectangle {
-              radius: 2
-              border.width: 1
-              anchors.fill: parent
-              border.color: Cpp_ThemeManager.colors["groupbox_border"]
-              color: Cpp_ThemeManager.colors["groupbox_background"]
+            Item {
+              implicitHeight: 8
             }
 
-            ColumnLayout {
-              id: _panelLayout
-
-              spacing: 0
-              anchors {
-                margins: 12
-                fill: parent
-              }
-
-              Image {
-                fillMode: Image.PreserveAspectFit
-                Layout.alignment: Qt.AlignHCenter
-                source: "qrc:/images/multi-device.svg"
-              }
-
-              Item {
-                implicitHeight: 12
-              }
-
-              Label {
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                color: Cpp_ThemeManager.colors["text"]
-                font: Cpp_Misc_CommonFonts.customUiFont(1.15, true)
-                text: qsTr("Multi-Device Project")
-              }
-
-              Item {
-                implicitHeight: 6
-              }
-
-              Label {
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                color: Cpp_ThemeManager.colors["text"]
-                font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
-                text: qsTr("This project streams data from %1 independent devices.").arg(Cpp_JSON_ProjectModel.sourceCount)
-              }
-
-              Item {
-                implicitHeight: 4
-              }
-
-              Label {
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                horizontalAlignment: Text.AlignHCenter
-                color: Cpp_ThemeManager.colors["pane_section_label"]
-                font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
-                text: qsTr("Each device has its own connection settings. Configure them in the Project Editor under the Sources tab.")
-              }
-
-              Item {
-                implicitHeight: 16
-              }
+            Item {
+              Layout.fillWidth: true
+              implicitHeight: _panelLayout.implicitHeight + 24
 
               Rectangle {
-                implicitHeight: 1
-                Layout.fillWidth: true
-                color: Cpp_ThemeManager.colors["groupbox_border"]
+                radius: 2
+                border.width: 1
+                anchors.fill: parent
+                border.color: Cpp_ThemeManager.colors["groupbox_border"]
+                color: Cpp_ThemeManager.colors["groupbox_background"]
               }
 
-              Item {
-                implicitHeight: 12
-              }
+              ColumnLayout {
+                id: _panelLayout
 
-              Button {
-                icon.width: 18
-                icon.height: 18
-                Layout.alignment: Qt.AlignHCenter
-                text: qsTr("Open Project Editor")
-                onClicked: app.showProjectEditor()
-                icon.source: "qrc:/icons/buttons/wrench.svg"
-                icon.color: Cpp_ThemeManager.colors["button_text"]
+                spacing: 0
+                anchors {
+                  margins: 12
+                  fill: parent
+                }
+
+                Image {
+                  fillMode: Image.PreserveAspectFit
+                  Layout.alignment: Qt.AlignHCenter
+                  source: "qrc:/images/multi-device.svg"
+                }
+
+                Item {
+                  implicitHeight: 12
+                }
+
+                Label {
+                  Layout.fillWidth: true
+                  wrapMode: Text.WordWrap
+                  horizontalAlignment: Text.AlignHCenter
+                  color: Cpp_ThemeManager.colors["text"]
+                  font: Cpp_Misc_CommonFonts.customUiFont(1.15, true)
+                  text: qsTr("Multi-Device Project")
+                }
+
+                Item {
+                  implicitHeight: 6
+                }
+
+                Label {
+                  Layout.fillWidth: true
+                  wrapMode: Text.WordWrap
+                  horizontalAlignment: Text.AlignHCenter
+                  color: Cpp_ThemeManager.colors["text"]
+                  font: Cpp_Misc_CommonFonts.customUiFont(0.9, false)
+                  text: qsTr("This project streams data from %1 independent devices.").arg(Cpp_JSON_ProjectModel.sourceCount)
+                }
+
+                Item {
+                  implicitHeight: 4
+                }
+
+                Label {
+                  Layout.fillWidth: true
+                  wrapMode: Text.WordWrap
+                  horizontalAlignment: Text.AlignHCenter
+                  color: Cpp_ThemeManager.colors["pane_section_label"]
+                  font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
+                  text: qsTr("Each device has its own connection settings. Configure them in the Project Editor under the Sources tab.")
+                }
+
+                Item {
+                  implicitHeight: 16
+                }
+
+                Rectangle {
+                  implicitHeight: 1
+                  Layout.fillWidth: true
+                  color: Cpp_ThemeManager.colors["groupbox_border"]
+                }
+
+                Item {
+                  implicitHeight: 12
+                }
+
+                Button {
+                  icon.width: 18
+                  icon.height: 18
+                  Layout.alignment: Qt.AlignHCenter
+                  text: qsTr("Open Project Editor")
+                  onClicked: app.showProjectEditor()
+                  icon.source: "qrc:/icons/buttons/wrench.svg"
+                  icon.color: Cpp_ThemeManager.colors["button_text"]
+                }
               }
             }
-          }
 
-          Item {
-            Layout.fillHeight: true
+            Item {
+              Layout.fillHeight: true
+            }
           }
         }
       }
