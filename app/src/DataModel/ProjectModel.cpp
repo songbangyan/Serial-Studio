@@ -242,11 +242,24 @@ DataModel::ProjectModel::ProjectModel()
   , m_locked(false)
   , m_autoSaveTimer(new QTimer(this))
   , m_autoSaveSuspended(false)
+  , m_mutationEpoch(0)
 {
   // Debounce widgetSettings autosave
   m_autoSaveTimer->setSingleShot(true);
   m_autoSaveTimer->setInterval(1500);
   connect(m_autoSaveTimer, &QTimer::timeout, this, &ProjectModel::autoSave);
+
+  // Bump mutationEpoch on every structural change so API callers can detect
+  // stale uniqueIds (group/dataset reorder shifts uniqueId mappings).
+  const auto bumpEpoch = [this] { ++m_mutationEpoch; };
+  connect(this, &ProjectModel::groupAdded, this, bumpEpoch);
+  connect(this, &ProjectModel::groupDeleted, this, bumpEpoch);
+  connect(this, &ProjectModel::datasetAdded, this, bumpEpoch);
+  connect(this, &ProjectModel::datasetDeleted, this, bumpEpoch);
+  connect(this, &ProjectModel::sourceAdded, this, bumpEpoch);
+  connect(this, &ProjectModel::sourceDeleted, this, bumpEpoch);
+  connect(this, &ProjectModel::sourceStructureChanged, this, bumpEpoch);
+  connect(this, &ProjectModel::groupsChanged, this, bumpEpoch);
 
   connect(this, &ProjectModel::widgetSettingsChanged, this, [this] {
     if (m_autoSaveSuspended || m_filePath.isEmpty() || m_locked)
@@ -371,6 +384,14 @@ bool DataModel::ProjectModel::validateProject(const bool silent)
 bool DataModel::ProjectModel::locked() const noexcept
 {
   return m_locked;
+}
+
+/**
+ * @brief Monotonic counter bumped on every structural project mutation.
+ */
+qint64 DataModel::ProjectModel::mutationEpoch() const noexcept
+{
+  return m_mutationEpoch;
 }
 
 /**

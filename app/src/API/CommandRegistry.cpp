@@ -220,8 +220,18 @@ void API::CommandRegistry::attachErrorMetadata(const QString& name, CommandRespo
     return;
 
   auto data                        = response.errorData;
-  data[QStringLiteral("category")] = classifyErrorCategory(name, response);
-  response.errorData               = data;
+  const auto category              = classifyErrorCategory(name, response);
+  data[QStringLiteral("category")] = category;
+
+  // Steer scripting compile failures at the matching dryRun endpoint
+  if (category == QStringLiteral("script_compile_failed")
+      && !data.contains(QStringLiteral("dryRunHint"))) {
+    const auto hint = dryRunHintForScriptCommand(name);
+    if (!hint.isEmpty())
+      data[QStringLiteral("dryRunHint")] = hint;
+  }
+
+  response.errorData = data;
 }
 
 /**
@@ -286,6 +296,44 @@ QString API::CommandRegistry::classifyErrorCategory(const QString& commandName,
     return QStringLiteral("permission_denied");
 
   return QStringLiteral("execution_error");
+}
+
+/**
+ * @brief Maps a failing script-setter command name to the matching dryRun hint.
+ */
+QString API::CommandRegistry::dryRunHintForScriptCommand(const QString& commandName)
+{
+  if (commandName == QStringLiteral("project.painter.setCode"))
+    return QStringLiteral("Re-validate with project.painter.dryRun{code} before setCode. "
+                          "Painter scripts are JavaScript-only. Fetch the API surface "
+                          "with meta.fetchScriptingDocs{kind:'painter_js'}.");
+
+  if (commandName == QStringLiteral("project.frameParser.setCode"))
+    return QStringLiteral("Re-validate with project.frameParser.dryRun{code, language, "
+                          "sampleFrame} -- or project.frameParser.dryCompile for a "
+                          "syntax-only check -- before setCode. Mismatched language is the "
+                          "most common silent compile failure. Fetch the API surface with "
+                          "meta.fetchScriptingDocs{kind:'frame_parser_lua'} or "
+                          "{kind:'frame_parser_js'}.");
+
+  if (commandName == QStringLiteral("project.dataset.setTransformCode")
+      || commandName == QStringLiteral("project.dataset.update"))
+    return QStringLiteral("Re-validate with project.dataset.transform.dryRun{code, "
+                          "language, values:[...]} before setting. Common mismatch: code "
+                          "is Lua but transformLanguage is 0 (JavaScript), or vice versa. "
+                          "Fetch the API surface with "
+                          "meta.fetchScriptingDocs{kind:'transform_lua'} or "
+                          "{kind:'transform_js'}.");
+
+  if (commandName == QStringLiteral("project.outputWidget.update"))
+    return QStringLiteral("Output widget transmitFunction is JavaScript-only. Fetch the "
+                          "API surface and protocol helpers with "
+                          "meta.fetchScriptingDocs{kind:'output_widget_js'} -- there is no "
+                          "dedicated dryRun for transmitFunction yet; iterate the code in "
+                          "the Transmit Test dialog or temporarily project.outputWidget."
+                          "duplicate the widget to test in isolation.");
+
+  return QString();
 }
 
 //--------------------------------------------------------------------------------------------------

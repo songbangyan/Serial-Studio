@@ -106,6 +106,7 @@ private:
   static CommandResponse frameParserDryCompile(const QString& id, const QJsonObject& params);
   static CommandResponse transformDryRun(const QString& id, const QJsonObject& params);
   static CommandResponse painterDryRun(const QString& id, const QJsonObject& params);
+  static CommandResponse endToEndDryRun(const QString& id, const QJsonObject& params);
 
   static CommandResponse groupUpdate(const QString& id, const QJsonObject& params);
   static CommandResponse datasetUpdate(const QString& id, const QJsonObject& params);

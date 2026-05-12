@@ -1827,26 +1827,31 @@ static void appendCommandMetaTools(QJsonArray& out)
   {
     auto schema = objectSchemaWithProperty(
       QStringLiteral("path"),
-      stringProp(QStringLiteral("Either \"help.json\" (the index -- pass this FIRST "
-                                "if you don't already know the exact page name), or "
-                                "a bare page name from the index's `file` field "
-                                "without the .md extension (e.g. \"Painter-Widget\", "
-                                "\"Frame-Parser\", \"Project-Editor\", "
-                                "\"API-Reference\"). Multi-word names use hyphens. "
-                                "Full URLs on github.com / raw.githubusercontent.com "
-                                "/ serial-studio.com are also accepted. A 404 on a "
-                                "guessed page auto-redirects to help.json so you "
-                                "can correct the name on the next call.")),
+      stringProp(QStringLiteral("A bare page name without the .md extension (e.g. "
+                                "\"About\", \"FAQ\", \"Getting-Started\", "
+                                "\"API-Reference\", \"Painter-Widget\", "
+                                "\"Drivers-UART\"), or \"help.json\" to fetch the "
+                                "index (a JSON array of {id, title, section, file}). "
+                                "Multi-word names use hyphens. Full URLs on "
+                                "github.com / raw.githubusercontent.com / "
+                                "serial-studio.com are also accepted. **A 404 "
+                                "auto-redirects to help.json**, so if you can name "
+                                "the page in plain English with high confidence "
+                                "(About, FAQ, Troubleshooting, Pro-vs-Free, etc.) "
+                                "just try it directly -- the index fallback catches "
+                                "you for free. Fetch help.json first only when the "
+                                "page name isn't obvious from the user's question.")),
       true);
     out.append(makeMetaTool(QStringLiteral("meta.fetchHelp"),
                             QStringLiteral("Fetch a Serial Studio documentation page from "
-                                           "the canonical doc/help markdown source. Pass "
-                                           "\"help.json\" first to discover available pages "
-                                           "(returns a JSON array of {id, title, section, "
-                                           "file}), then pass the chosen file name to fetch "
-                                           "the markdown body. Use whenever the user asks "
-                                           "about features, concepts, or workflows -- never "
-                                           "guess from training data."),
+                                           "the canonical doc/help markdown source. Use "
+                                           "whenever the user asks about features, "
+                                           "concepts, or workflows -- always cite from the "
+                                           "fetched page, never synthesize content from "
+                                           "training data. If the response indicates a 404 "
+                                           "redirect to help.json, pick the correct file "
+                                           "from the index instead of answering from a "
+                                           "near-miss page."),
                             schema));
   }
 }

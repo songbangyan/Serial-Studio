@@ -170,6 +170,8 @@ public:
   [[nodiscard]] bool customizeWorkspaces() const noexcept;
   [[nodiscard]] const std::vector<TableDef>& tables() const noexcept;
 
+  [[nodiscard]] qint64 mutationEpoch() const noexcept;
+
   [[nodiscard]] bool locked() const noexcept;
   [[nodiscard]] bool validateProject(const bool silent);
 
@@ -418,6 +420,7 @@ private:
 
   QTimer* m_autoSaveTimer;
   bool m_autoSaveSuspended;
+  qint64 m_mutationEpoch;
 
   std::vector<DataModel::Workspace> m_sessionWorkspaces;
 

@@ -192,6 +192,44 @@ QString API::EnumLabels::operationModeLabel(int value)
 }
 
 //--------------------------------------------------------------------------------------------------
+// ScriptLanguage
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns a short slug for a ScriptLanguage value (-1 = inherit).
+ */
+QString API::EnumLabels::scriptLanguageSlug(int value)
+{
+  if (value == -1)
+    return QStringLiteral("inherit");
+
+  switch (static_cast<SerialStudio::ScriptLanguage>(value)) {
+    case SerialStudio::JavaScript:
+      return QStringLiteral("javascript");
+    case SerialStudio::Lua:
+      return QStringLiteral("lua");
+  }
+  return QStringLiteral("unknown");
+}
+
+/**
+ * @brief Returns a human-friendly label for a ScriptLanguage value (handles -1 = inherit).
+ */
+QString API::EnumLabels::scriptLanguageLabel(int value)
+{
+  if (value == -1)
+    return QStringLiteral("Inherit from source");
+
+  switch (static_cast<SerialStudio::ScriptLanguage>(value)) {
+    case SerialStudio::JavaScript:
+      return QStringLiteral("JavaScript (QJSEngine)");
+    case SerialStudio::Lua:
+      return QStringLiteral("Lua 5.4");
+  }
+  return QStringLiteral("Unknown");
+}
+
+//--------------------------------------------------------------------------------------------------
 // GroupWidget
 //--------------------------------------------------------------------------------------------------
 

@@ -505,6 +505,7 @@ Widgets.SmartWindow {
 
           Layout.fillWidth: true
           Layout.fillHeight: true
+          Layout.rightMargin: setup.visible ? 0 : -1
           Layout.minimumWidth: terminal.implicitWidth
           initialItem: app.runtimeMode ? dashboard : terminal
           Layout.minimumHeight: Math.max(terminal.implicitHeight, setup.implicitHeight)

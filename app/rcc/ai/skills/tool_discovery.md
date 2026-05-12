@@ -27,17 +27,32 @@ name when the tool is already on your essentials list.
 ## Help center documentation
 
 `meta.fetchHelp{path}` pulls authoritative Serial Studio documentation
-from GitHub. Two rules:
+from GitHub. Pass the page name bare without `.md` (e.g. `"Frame-Parser"`,
+`"API-Reference"`). Multi-word names use hyphens. **A 404 auto-redirects
+to `help.json`** — that's the safety net that makes a wrong path
+self-correcting at zero extra cost.
 
-- When you don't know what page exists: pass `"help.json"` first. Returns
-  a JSON array of `{id, title, section, file}`. Pick the right `file`,
-  then call again with that bare name.
-- When you know the page name from prior listing: pass it bare without
-  `.md` (e.g. `"Frame-Parser"`, `"API-Reference"`). Multi-word names use
-  hyphens. A 404 auto-redirects to `help.json` so you can correct it.
+How to pick `path`:
 
-NEVER guess a page name — the cost of one extra index fetch is far
-smaller than producing wrong information.
+- **Confident plain-English name → fetch direct.** Standard doc names
+  are safe to try as paths: `About`, `FAQ`, `Getting-Started`,
+  `Troubleshooting`, `API-Reference`, `Pro-vs-Free`, `License-Agreement`,
+  `Operation-Modes`, `Data-Flow`, `Data-Sources`, `Widget-Reference`,
+  `Project-Editor`, `Use-Cases`, `Comparison`, `Notifications`,
+  `Extensions`. If you can name the page in plain English with high
+  confidence, just try it — the 404 redirect catches you if you're wrong.
+- **Exploratory or unsure → fetch `"help.json"` first.** Returns a JSON
+  array of `{id, title, section, file}`. Pick the right `file`, then
+  call again with that bare name. Use this when the user's question
+  doesn't map cleanly to a known doc name, or when you want to confirm
+  a page exists before citing it.
+- **Driver-specific docs** follow the pattern `Drivers-<Name>` (e.g.
+  `Drivers-UART`, `Drivers-Modbus`, `Drivers-CAN-Bus`).
+
+What the rule actually protects against is **fabricating content from a
+wrong page**, not trying a sensible name. If the page you fetch doesn't
+look right (e.g. you got redirected to `help.json`), pick from the index
+— do NOT synthesize an answer from a near-miss page.
 
 ## Semantic doc search (RAG)
 
@@ -91,3 +106,75 @@ functions. `scripts.get{kind, id}` returns the full source.
 
 Adapt a real reference instead of writing from scratch. The ones already
 in the codebase have been tested against real edge cases.
+
+## Batch mutations — use `project.batch`, don't loop
+
+The most common discovery-skill mistake is iterating individual
+`project.dataset.update` / `project.dataset.setOption` calls when patching
+many datasets at once. Don't. Use `project.batch{ops: [...]}` for **any
+loop of ≥3 project mutations**.
+
+Why it matters:
+
+- Each individual call round-trips through autosave + tree-model rebuild.
+  At 40 datasets, that's 40× the latency and 40× the QML model thrash.
+- `project.batch` suspends autosave for the whole batch, applies every
+  op sequentially under one save-flush, and returns per-op results in
+  order — same self-correction signal as N round-trips, fraction of the
+  cost.
+- Max 1024 ops per batch. Caller decides `stopOnError` (default false,
+  best-effort).
+
+Pre-flight self-check: **before authoring a loop, ask "am I about to
+issue ≥3 project.* mutations?" If yes, switch to `project.batch`.**
+Specialized bulk endpoints (`project.dataset.addMany`,
+`project.dataTable.setRegisters`) win where they exist, but `project.batch`
+is the universal escape hatch.
+
+Example — renumber + rename 40 datasets in one call:
+
+```
+project.batch{
+  ops: [
+    {command: "project.dataset.update",
+     params: {groupId: 0, datasetId: 0, title: "LED 1", index: 1}},
+    {command: "project.dataset.update",
+     params: {groupId: 0, datasetId: 1, title: "LED 2", index: 2}},
+    ...
+  ]
+}
+```
+
+Caveat: NOT a database transaction. Already-applied ops are not rolled
+back on later failures; use `stopOnError: true` if partial application
+would be worse than abort.
+
+## Detecting stale `uniqueId` references
+
+`uniqueId` is **opaque and order-derived** — reordering groups or
+datasets shifts every uniqueId that lived past the move point. If you
+cached a uniqueId, made an unrelated tool call, and then went to mutate
+"the same" dataset, you may now be addressing a different one.
+
+The protection mechanism is `projectEpoch` — a monotonic counter that
+bumps on every structural mutation (group/dataset add, delete, move,
+source add/delete).
+
+How to use it:
+
+1. Every read response (`project.snapshot`, `project.dataset.getByUniqueId`,
+   `project.dataset.getExecutionOrder`, dataset/group list calls, and
+   the response of every mutating command) carries `projectEpoch: N`.
+2. **Cache that epoch alongside any uniqueId you pull from the response.**
+3. On the next mutating call (`project.dataset.update`, `dataset.move`,
+   `dataset.delete`, `group.move`, `group.delete`), pass
+   `expectedProjectEpoch: N` matching what you cached.
+4. If the project mutated between your cache and the call, the response
+   will carry a `warnings: [{code: "stale_project", expectedProjectEpoch,
+   currentProjectEpoch, message}]` entry. The mutation still happens —
+   but on a stale_project warning you should `project.snapshot` again
+   before issuing the next uniqueId-keyed call.
+
+For long-running scripts: prefer `project.dataset.getByPath` (title
+path-based addressing). It survives reorders entirely and doesn't need
+the epoch dance.
