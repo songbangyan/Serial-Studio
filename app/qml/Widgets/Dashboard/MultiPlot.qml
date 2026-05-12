@@ -48,7 +48,11 @@ Item {
   //
   // Custom properties
   //
-  property int interpolationMode: 1
+  readonly property var interpolationModes: [MultiPlotModel.None,
+                                             MultiPlotModel.Linear,
+                                             MultiPlotModel.Zoh,
+                                             MultiPlotModel.Stem]
+  property int interpolationMode: MultiPlotModel.Linear
   property bool showLegends: true
 
   //
@@ -77,9 +81,9 @@ Item {
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
     if (s["interpolationMode"] !== undefined)
-      root.interpolationMode = s["interpolationMode"]
+      root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
     else if (s["interpolate"] !== undefined)
-      root.interpolationMode = s["interpolate"] ? 1 : 0
+      root.interpolationMode = s["interpolate"] ? MultiPlotModel.Linear : MultiPlotModel.None
 
     if (root.model)
       root.model.interpolationMode = root.interpolationMode
@@ -119,12 +123,22 @@ Item {
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
+  function normalizeInterpolationMode(value) {
+    const idx = root.interpolationModes.indexOf(value)
+    return idx >= 0 ? value : MultiPlotModel.Linear
+  }
+
+  function nextInterpolationMode() {
+    const idx = root.interpolationModes.indexOf(root.interpolationMode)
+    return root.interpolationModes[(idx + 1) % root.interpolationModes.length]
+  }
+
   function modeLabel() {
-    if (root.interpolationMode === 0)
+    if (root.interpolationMode === MultiPlotModel.None)
       return qsTr("None")
-    if (root.interpolationMode === 2)
+    if (root.interpolationMode === MultiPlotModel.Zoh)
       return qsTr("ZOH")
-    if (root.interpolationMode === 3)
+    if (root.interpolationMode === MultiPlotModel.Stem)
       return qsTr("Stem")
     return qsTr("Linear")
   }
@@ -186,10 +200,10 @@ Item {
     }
 
     DashboardToolButton {
-      checked: root.interpolationMode !== 0
+      checked: root.interpolationMode !== MultiPlotModel.None
       ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
       onClicked: {
-        root.interpolationMode = (root.interpolationMode + 1) % 4
+        root.interpolationMode = root.nextInterpolationMode()
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
@@ -197,7 +211,7 @@ Item {
                                                 "interpolationMode",
                                                 root.interpolationMode)
       }
-      icon.source: root.interpolationMode === 0
+      icon.source: root.interpolationMode === MultiPlotModel.None
                      ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
                      : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
@@ -335,7 +349,7 @@ Item {
         model: root.model.count
         delegate: LineSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolationMode !== 0
+          property bool curveVisible: root.interpolationMode !== MultiPlotModel.None
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
         }
@@ -348,7 +362,7 @@ Item {
         model: root.model.count
         delegate: ScatterSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolationMode === 0
+          property bool curveVisible: root.interpolationMode === MultiPlotModel.None
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
           pointDelegate: Rectangle {

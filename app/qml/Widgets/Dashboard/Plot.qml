@@ -50,7 +50,11 @@ Item {
   //
   // Custom properties
   //
-  property int interpolationMode: 1
+  readonly property var interpolationModes: [PlotModel.None,
+                                             PlotModel.Linear,
+                                             PlotModel.Zoh,
+                                             PlotModel.Stem]
+  property int interpolationMode: PlotModel.Linear
   property bool showAreaUnderPlot: false
 
   //
@@ -78,9 +82,9 @@ Item {
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
     if (s["interpolationMode"] !== undefined)
-      root.interpolationMode = s["interpolationMode"]
+      root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
     else if (s["interpolate"] !== undefined)
-      root.interpolationMode = s["interpolate"] ? 1 : 0
+      root.interpolationMode = s["interpolate"] ? PlotModel.Linear : PlotModel.None
 
     if (root.model)
       root.model.interpolationMode = root.interpolationMode
@@ -88,7 +92,8 @@ Item {
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
 
-    if (root.interpolationMode === 0 || root.interpolationMode === 3)
+    if (root.interpolationMode === PlotModel.None
+      || root.interpolationMode === PlotModel.Stem)
       root.showAreaUnderPlot = false
 
     if (s["userShowXLabel"] !== undefined)
@@ -114,12 +119,22 @@ Item {
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
+  function normalizeInterpolationMode(value) {
+    const idx = root.interpolationModes.indexOf(value)
+    return idx >= 0 ? value : PlotModel.Linear
+  }
+
+  function nextInterpolationMode() {
+    const idx = root.interpolationModes.indexOf(root.interpolationMode)
+    return root.interpolationModes[(idx + 1) % root.interpolationModes.length]
+  }
+
   function modeLabel() {
-    if (root.interpolationMode === 0)
+    if (root.interpolationMode === PlotModel.None)
       return qsTr("None")
-    if (root.interpolationMode === 2)
+    if (root.interpolationMode === PlotModel.Zoh)
       return qsTr("ZOH")
-    if (root.interpolationMode === 3)
+    if (root.interpolationMode === PlotModel.Stem)
       return qsTr("Stem")
     return qsTr("Linear")
   }
@@ -139,7 +154,7 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        if (root.interpolationMode === 0) {
+        if (root.interpolationMode === PlotModel.None) {
           root.model.draw(scatterSeries)
         } else {
           root.model.draw(upperSeries)
@@ -173,11 +188,12 @@ Item {
 
     DashboardToolButton {
       onClicked: {
-        root.interpolationMode = (root.interpolationMode + 1) % 4
+        root.interpolationMode = root.nextInterpolationMode()
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
-        if (root.interpolationMode === 0 || root.interpolationMode === 3)
+        if (root.interpolationMode === PlotModel.None
+            || root.interpolationMode === PlotModel.Stem)
           root.showAreaUnderPlot = false
 
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
@@ -185,9 +201,9 @@ Item {
                                                 root.interpolationMode)
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      checked: root.interpolationMode !== 0
+      checked: root.interpolationMode !== PlotModel.None
       ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
-      icon.source: root.interpolationMode === 0
+      icon.source: root.interpolationMode === PlotModel.None
              ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
              : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
@@ -197,7 +213,8 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      enabled: root.interpolationMode !== 0 && root.interpolationMode !== 3
+      enabled: root.interpolationMode !== PlotModel.None
+           && root.interpolationMode !== PlotModel.Stem
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
@@ -328,7 +345,7 @@ Item {
     ScatterSeries {
       id: scatterSeries
 
-      visible: root.interpolationMode === 0
+      visible: root.interpolationMode === PlotModel.None
       pointDelegate: Rectangle {
         width: 2
         height: 2
@@ -341,7 +358,7 @@ Item {
       id: upperSeries
 
       width: 2
-      visible: root.interpolationMode !== 0
+      visible: root.interpolationMode !== PlotModel.None
     }
 
     LineSeries {
@@ -358,8 +375,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
-               && root.interpolationMode !== 0
-               && root.interpolationMode !== 3
+          && root.interpolationMode !== PlotModel.None
+          && root.interpolationMode !== PlotModel.Stem
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }
