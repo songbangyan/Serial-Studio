@@ -64,7 +64,8 @@ NativeWindow::NativeWindow(QObject *parent)
 }
 
 /**
- * @brief Installs a macOS quit interceptor that prevents NSApp terminate from killing the process, emitting quitRequested() instead.
+ * @brief Installs a macOS quit interceptor that prevents NSApp terminate from killing the process,
+ *        emitting quitRequested() instead.
  */
 void NativeWindow::installMacOSQuitInterceptor()
 {
