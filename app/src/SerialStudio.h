@@ -94,6 +94,17 @@ public:
   Q_ENUM(OperationMode)
 
   /**
+   * @brief Interpolation modes for line-based plot widgets.
+   */
+  enum InterpolationMode {
+    InterpolationNone,
+    InterpolationLinear,
+    InterpolationZoh,
+    InterpolationStem,
+  };
+  Q_ENUM(InterpolationMode)
+
+  /**
    * @brief Available data-source bus types.
    */
   enum class BusType {

@@ -68,7 +68,7 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   , m_center(0)
   , m_halfRange(1)
   , m_scaleIsValid(false)
-  , m_interpolationMode(InterpolationMode::Linear)
+  , m_interpolationMode(SerialStudio::InterpolationLinear)
   , m_plan(nullptr)
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index)) {
@@ -185,7 +185,7 @@ bool Widgets::FFTPlot::running() const noexcept
 /**
  * @brief Returns the current interpolation mode.
  */
-int Widgets::FFTPlot::interpolationMode() const noexcept
+SerialStudio::InterpolationMode Widgets::FFTPlot::interpolationMode() const noexcept
 {
   return m_interpolationMode;
 }
@@ -202,8 +202,8 @@ void Widgets::FFTPlot::draw(QXYSeries* series)
   if (series) {
     updateData();
     const auto* data = &m_data;
-    if (m_interpolationMode == InterpolationMode::Zoh
-        || m_interpolationMode == InterpolationMode::Stem) {
+    if (m_interpolationMode == SerialStudio::InterpolationZoh
+        || m_interpolationMode == SerialStudio::InterpolationStem) {
       updateInterpolatedData();
       data = &m_renderData;
     }
@@ -255,15 +255,16 @@ void Widgets::FFTPlot::setRunning(const bool enabled)
 /**
  * @brief Updates the interpolation mode used by the FFT plot.
  */
-void Widgets::FFTPlot::setInterpolationMode(const int mode)
+void Widgets::FFTPlot::setInterpolationMode(SerialStudio::InterpolationMode mode)
 {
-  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
-                             mode,
-                             static_cast<int>(InterpolationMode::Stem));
-  if (m_interpolationMode == clamped)
+  const int clamped = qBound(static_cast<int>(SerialStudio::InterpolationNone),
+                             static_cast<int>(mode),
+                             static_cast<int>(SerialStudio::InterpolationStem));
+  const auto resolved = static_cast<SerialStudio::InterpolationMode>(clamped);
+  if (m_interpolationMode == resolved)
     return;
 
-  m_interpolationMode = clamped;
+  m_interpolationMode = resolved;
   Q_EMIT interpolationModeChanged();
 }
 
@@ -402,7 +403,7 @@ void Widgets::FFTPlot::updateInterpolatedData()
   if (m_data.isEmpty())
     return;
 
-  if (m_interpolationMode == InterpolationMode::Zoh) {
+  if (m_interpolationMode == SerialStudio::InterpolationZoh) {
     if (m_data.size() < 2) {
       m_renderData = m_data;
       return;
@@ -419,7 +420,7 @@ void Widgets::FFTPlot::updateInterpolatedData()
     return;
   }
 
-  if (m_interpolationMode == InterpolationMode::Stem) {
+  if (m_interpolationMode == SerialStudio::InterpolationStem) {
     const double stemBaseline = m_minY;
     const double nan               = std::numeric_limits<double>::quiet_NaN();
     m_renderData.reserve(m_data.size() * 3);

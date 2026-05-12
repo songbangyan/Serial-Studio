@@ -45,7 +45,7 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
   , m_minY(0)
   , m_maxY(0)
   , m_monotonicData(true)
-  , m_interpolationMode(InterpolationMode::Linear)
+  , m_interpolationMode(SerialStudio::InterpolationLinear)
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardPlot, m_index)) {
     const auto& yDataset = GET_DATASET(SerialStudio::DashboardPlot, m_index);
@@ -157,7 +157,7 @@ bool Widgets::Plot::running() const noexcept
 /**
  * @brief Returns the current interpolation mode.
  */
-int Widgets::Plot::interpolationMode() const noexcept
+SerialStudio::InterpolationMode Widgets::Plot::interpolationMode() const noexcept
 {
   return m_interpolationMode;
 }
@@ -196,8 +196,8 @@ void Widgets::Plot::draw(QXYSeries* series)
     calculateAutoScaleRange();
 
     const auto* data = &m_data;
-    if (m_interpolationMode == InterpolationMode::Zoh
-        || m_interpolationMode == InterpolationMode::Stem) {
+    if (m_interpolationMode == SerialStudio::InterpolationZoh
+        || m_interpolationMode == SerialStudio::InterpolationStem) {
       updateInterpolatedData();
       data = &m_renderData;
     }
@@ -249,15 +249,16 @@ void Widgets::Plot::setRunning(const bool enabled)
 /**
  * @brief Updates the interpolation mode used by the plot.
  */
-void Widgets::Plot::setInterpolationMode(const int mode)
+void Widgets::Plot::setInterpolationMode(SerialStudio::InterpolationMode mode)
 {
-  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
-                             mode,
-                             static_cast<int>(InterpolationMode::Stem));
-  if (m_interpolationMode == clamped)
+  const int clamped = qBound(static_cast<int>(SerialStudio::InterpolationNone),
+                             static_cast<int>(mode),
+                             static_cast<int>(SerialStudio::InterpolationStem));
+  const auto resolved = static_cast<SerialStudio::InterpolationMode>(clamped);
+  if (m_interpolationMode == resolved)
     return;
 
-  m_interpolationMode = clamped;
+  m_interpolationMode = resolved;
   Q_EMIT interpolationModeChanged();
 }
 
@@ -334,7 +335,7 @@ void Widgets::Plot::updateInterpolatedData()
   if (m_data.isEmpty())
     return;
 
-  if (m_interpolationMode == InterpolationMode::Zoh) {
+  if (m_interpolationMode == SerialStudio::InterpolationZoh) {
     if (m_data.size() < 2) {
       m_renderData = m_data;
       return;
@@ -351,7 +352,7 @@ void Widgets::Plot::updateInterpolatedData()
     return;
   }
 
-  if (m_interpolationMode == InterpolationMode::Stem) {
+  if (m_interpolationMode == SerialStudio::InterpolationStem) {
     constexpr double stemBaseline = 0.0;
     const double nan               = std::numeric_limits<double>::quiet_NaN();
     m_renderData.reserve(m_data.size() * 3);
@@ -405,7 +406,7 @@ void Widgets::Plot::calculateAutoScaleRange()
   const auto& dy = GET_DATASET(SerialStudio::DashboardPlot, m_index);
   yChanged = computeMinMaxValues(m_minY, m_maxY, dy, true, [](const QPointF& p) { return p.y(); });
 
-  if (m_interpolationMode == InterpolationMode::Stem) {
+  if (m_interpolationMode == SerialStudio::InterpolationStem) {
     const auto prevMin = m_minY;
     const auto prevMax = m_maxY;
     m_minY             = qMin(m_minY, 0.0);

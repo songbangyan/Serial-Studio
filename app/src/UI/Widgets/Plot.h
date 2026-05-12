@@ -26,6 +26,7 @@
 #include <QXYSeries>
 
 #include "DataModel/Frame.h"
+#include "SerialStudio.h"
 
 namespace Widgets {
 /**
@@ -46,7 +47,7 @@ class Plot : public QQuickItem {
              READ dataH
              WRITE setDataH
              NOTIFY dataSizeChanged)
-  Q_PROPERTY(int interpolationMode
+  Q_PROPERTY(SerialStudio::InterpolationMode interpolationMode
              READ interpolationMode
              WRITE setInterpolationMode
              NOTIFY interpolationModeChanged)
@@ -77,14 +78,6 @@ signals:
   void interpolationModeChanged();
 
 public:
-  enum InterpolationMode {
-    None = 0,
-    Linear = 1,
-    Zoh = 2,
-    Stem = 3
-  };
-  Q_ENUM(InterpolationMode)
-
   explicit Plot(const int index = -1, QQuickItem* parent = nullptr);
 
   ~Plot()
@@ -100,7 +93,7 @@ public:
   [[nodiscard]] double minY() const noexcept;
   [[nodiscard]] double maxY() const noexcept;
   [[nodiscard]] bool running() const noexcept;
-  [[nodiscard]] int interpolationMode() const noexcept;
+  [[nodiscard]] SerialStudio::InterpolationMode interpolationMode() const noexcept;
   [[nodiscard]] const QString& yLabel() const noexcept;
   [[nodiscard]] const QString& xLabel() const noexcept;
 
@@ -109,7 +102,7 @@ public slots:
   void setDataW(const int width);
   void setDataH(const int height);
   void setRunning(const bool enabled);
-  void setInterpolationMode(const int mode);
+  void setInterpolationMode(SerialStudio::InterpolationMode mode);
 
 private slots:
   void updateData();
@@ -143,6 +136,6 @@ private:
   bool m_monotonicData;
   QList<QPointF> m_data;
   QList<QPointF> m_renderData;
-  int m_interpolationMode;
+  SerialStudio::InterpolationMode m_interpolationMode;
 };
 }  // namespace Widgets

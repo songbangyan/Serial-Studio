@@ -61,7 +61,7 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   , m_maxX(0)
   , m_minY(0)
   , m_maxY(0)
-  , m_interpolationMode(InterpolationMode::Linear)
+  , m_interpolationMode(SerialStudio::InterpolationLinear)
 {
   // Validate dashboard configuration
   if (!VALIDATE_WIDGET(SerialStudio::DashboardMultiPlot, m_index))
@@ -185,7 +185,7 @@ bool Widgets::MultiPlot::running() const noexcept
 /**
  * @brief Returns the current interpolation mode.
  */
-int Widgets::MultiPlot::interpolationMode() const noexcept
+SerialStudio::InterpolationMode Widgets::MultiPlot::interpolationMode() const noexcept
 {
   return m_interpolationMode;
 }
@@ -241,7 +241,7 @@ void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
   const auto& source = m_data[index];
   const QList<QPointF>* data = &source;
 
-  if (m_interpolationMode == InterpolationMode::Zoh) {
+  if (m_interpolationMode == SerialStudio::InterpolationZoh) {
     if (source.size() < 2) {
       data = &source;
     } else {
@@ -258,7 +258,7 @@ void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
     }
   }
 
-  else if (m_interpolationMode == InterpolationMode::Stem) {
+  else if (m_interpolationMode == SerialStudio::InterpolationStem) {
     constexpr double stemBaseline = 0.0;
     const double nan               = std::numeric_limits<double>::quiet_NaN();
     m_renderData.clear();
@@ -317,15 +317,16 @@ void Widgets::MultiPlot::setRunning(const bool enabled)
 /**
  * @brief Updates the interpolation mode used by the multiplot.
  */
-void Widgets::MultiPlot::setInterpolationMode(const int mode)
+void Widgets::MultiPlot::setInterpolationMode(SerialStudio::InterpolationMode mode)
 {
-  const int clamped = qBound(static_cast<int>(InterpolationMode::None),
-                             mode,
-                             static_cast<int>(InterpolationMode::Stem));
-  if (m_interpolationMode == clamped)
+  const int clamped = qBound(static_cast<int>(SerialStudio::InterpolationNone),
+                             static_cast<int>(mode),
+                             static_cast<int>(SerialStudio::InterpolationStem));
+  const auto resolved = static_cast<SerialStudio::InterpolationMode>(clamped);
+  if (m_interpolationMode == resolved)
     return;
 
-  m_interpolationMode = clamped;
+  m_interpolationMode = resolved;
   Q_EMIT interpolationModeChanged();
 }
 
@@ -417,7 +418,7 @@ void Widgets::MultiPlot::calculateAutoScaleRange()
     padDerivedRange();
   }
 
-  if (m_interpolationMode == InterpolationMode::Stem) {
+  if (m_interpolationMode == SerialStudio::InterpolationStem) {
     m_minY = qMin(m_minY, 0.0);
     m_maxY = qMax(m_maxY, 0.0);
   }
