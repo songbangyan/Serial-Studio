@@ -57,6 +57,16 @@ namespace EnumLabels {
 [[nodiscard]] QString operationModeLabel(int value);
 
 /**
+ * @brief Returns a short slug for a ScriptLanguage value (e.g. "lua"). -1 means "inherit".
+ */
+[[nodiscard]] QString scriptLanguageSlug(int value);
+
+/**
+ * @brief Returns a human-friendly label for a ScriptLanguage value (handles -1 = inherit).
+ */
+[[nodiscard]] QString scriptLanguageLabel(int value);
+
+/**
  * @brief Returns a short slug for a SerialStudio::GroupWidget value.
  */
 [[nodiscard]] QString groupWidgetSlug(int value);

@@ -22,6 +22,8 @@
 #include "API/Handlers/ProjectHandler.h"
 
 #include <algorithm>
+#include <map>
+#include <memory>
 #include <QFile>
 #include <QJSEngine>
 #include <QJsonArray>
@@ -122,7 +124,81 @@ static QJsonObject buildDatasetObject(const DataModel::Dataset& dataset,
   dataset_obj[QStringLiteral("hasTransform")] = !dataset.transformCode.isEmpty();
   dataset_obj[QStringLiteral("isVirtual")]    = dataset.virtual_;
 
+  // Prose explanations block -- saves the caller from translating raw enums and bitflags
+  QJsonObject explanations;
+  explanations[QStringLiteral("enabledOptions")] =
+    QStringLiteral("%1 (bitflag %2)")
+      .arg(API::EnumLabels::datasetOptionsLabel(optionsBits))
+      .arg(optionsBits);
+
+  if (!dataset.transformCode.isEmpty())
+    explanations[QStringLiteral("transformLanguage")] =
+      QStringLiteral("Transform script in %1 (%2 bytes)")
+        .arg(API::EnumLabels::scriptLanguageLabel(dataset.transformLanguage))
+        .arg(dataset.transformCode.size());
+
+  if (dataset.virtual_)
+    explanations[QStringLiteral("virtual")] =
+      QStringLiteral("Virtual dataset: value comes from transform(), not a parser-output slot");
+
+  if (dataset.index == 0 && !dataset.virtual_)
+    explanations[QStringLiteral("index")] =
+      QStringLiteral("index=0 means the dataset is unassigned -- it will read nothing unless "
+                     "you set index>=1 (parser-output slot) or virtual=true");
+
+  dataset_obj[QStringLiteral("_explanations")] = explanations;
   return dataset_obj;
+}
+
+/**
+ * @brief Adds projectEpoch (monotonic mutation counter) to @p result.
+ */
+static void attachProjectEpoch(QJsonObject& result)
+{
+  result[QStringLiteral("projectEpoch")] =
+    static_cast<qint64>(DataModel::ProjectModel::instance().mutationEpoch());
+}
+
+/**
+ * @brief Snapshot of the project epoch before a mutating handler runs.
+ */
+[[nodiscard]] static qint64 captureProjectEpoch()
+{
+  return DataModel::ProjectModel::instance().mutationEpoch();
+}
+
+/**
+ * @brief Append a stale_project warning when the caller's expectedProjectEpoch is stale.
+ */
+static void appendStaleProjectWarning(QJsonObject& result,
+                                      const QJsonObject& params,
+                                      qint64 preMutationEpoch)
+{
+  if (!params.contains(QStringLiteral("expectedProjectEpoch")))
+    return;
+
+  const qint64 expected =
+    params.value(QStringLiteral("expectedProjectEpoch")).toVariant().toLongLong();
+  if (preMutationEpoch == expected)
+    return;
+
+  QJsonArray warnings;
+  if (result.contains(QStringLiteral("warnings")))
+    warnings = result.value(QStringLiteral("warnings")).toArray();
+
+  QJsonObject w;
+  w[QStringLiteral("code")]                 = QStringLiteral("stale_project");
+  w[QStringLiteral("expectedProjectEpoch")] = expected;
+  w[QStringLiteral("currentProjectEpoch")]  = preMutationEpoch;
+  w[QStringLiteral("message")] =
+    QStringLiteral("Project was mutated %1 time(s) between the epoch you supplied and "
+                   "this call. uniqueIds derived from the older snapshot may now point "
+                   "at a different group/dataset -- refetch via project.snapshot or "
+                   "resolve by path with project.dataset.getByPath before mutating "
+                   "further. The current call still executed as requested.")
+      .arg(preMutationEpoch - expected);
+  warnings.append(w);
+  result[QStringLiteral("warnings")] = warnings;
 }
 
 /**
@@ -640,7 +716,14 @@ void API::Handlers::ProjectHandler::registerDatasetFieldCommands()
                    "the recommended default; it's measurably faster than JavaScript "
                    "on hot transforms. If this dataset is compute-only (no slot in "
                    "the parser output array), also set virtual=true via "
-                   "project.dataset.setVirtual or project.dataset.update."),
+                   "project.dataset.setVirtual or project.dataset.update. Validate with "
+                   "project.dataset.transform.dryRun before setting. **Call "
+                   "meta.fetchScriptingDocs{kind: 'transform_lua' | 'transform_js'} "
+                   "first** for the transform(value) signature, table API "
+                   "(tableGet/tableSet/datasetGetRaw/datasetGetFinal), and "
+                   "execution-order rules -- a transform may read RAW values from any "
+                   "dataset but only FINAL values of datasets earlier in "
+                   "project.dataset.getExecutionOrder."),
     makeSchema(
       {
         {  QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Owning group id")                           },
@@ -796,7 +879,13 @@ void API::Handlers::ProjectHandler::registerParserCodeCommands()
                                           "recommended default; it's faster than "
                                           "JavaScript on the hotpath at typical "
                                           "telemetry rates. Use JavaScript only when "
-                                          "you need a JS-specific library or feature."),
+                                          "you need a JS-specific library or feature. "
+                                          "Validate with project.frameParser.dryRun (or "
+                                          "dryCompile for a syntax-only check) before "
+                                          "setCode. **Call meta.fetchScriptingDocs{kind: "
+                                          "'frame_parser_lua' | 'frame_parser_js'} first** "
+                                          "for the parse() signature, return-shape rules, "
+                                          "and the tableGet/tableSet API."),
                            setCodeSchema,
                            &parserSetCode);
 
@@ -978,7 +1067,20 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
     QStringLiteral("Composite read of the active project: title, sources, groups + "
                    "datasets, workspaces summary, and data tables summary -- in one "
                    "round trip. Pass verbose=true for source-level frame settings and "
-                   "frame parser source. Prefer this over chaining list/get calls."),
+                   "frame parser source. Prefer this over chaining list/get calls.\n"
+                   "Every level (top, source, group, dataset) carries an `_explanations` "
+                   "object with prose translations of enum/bitflag fields "
+                   "(operationMode, busType, frameDetection, decoderMethod, "
+                   "frameParserLanguage, enabledOptions, transformLanguage) and a one-line "
+                   "summary of the project's operating shape -- read those first; the "
+                   "raw int fields stay alongside for machine processing.\n"
+                   "Response includes `projectEpoch`, a monotonic counter that bumps on "
+                   "every structural mutation (group/dataset add, delete, move, source "
+                   "add/delete). Cache this value alongside any uniqueIds you pull from "
+                   "the snapshot, then pass `expectedProjectEpoch` to any later mutating "
+                   "command (dataset.update/move/delete, group.move/delete) -- the response "
+                   "will carry a stale_project warning if the project changed under you, "
+                   "so you can refetch before acting on now-shifted uniqueIds."),
     makeSchema(
       {
   },
@@ -1230,11 +1332,14 @@ API::CommandResponse API::Handlers::ProjectHandler::groupDelete(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
+  const auto preEpoch = captureProjectEpoch();
   project.deleteGroup(groupId);
 
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
   result[QStringLiteral("deleted")] = true;
+  appendStaleProjectWarning(result, params, preEpoch);
+  attachProjectEpoch(result);
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1512,12 +1617,15 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString&
       ErrorCode::InvalidParam,
       QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
 
+  const auto preEpoch = captureProjectEpoch();
   project.deleteDataset(groupId, datasetId);
 
   QJsonObject result;
   result[QStringLiteral("groupId")] = groupId;
   result[Keys::DatasetId]           = datasetId;
   result[QStringLiteral("deleted")] = true;
+  appendStaleProjectWarning(result, params, preEpoch);
+  attachProjectEpoch(result);
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2568,6 +2676,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& i
       if (uid != uniqueId)
         continue;
 
+      const auto preEpoch   = captureProjectEpoch();
       const int oldPosition = dataset.datasetId;
       pm.moveDataset(group.groupId, oldPosition, newPosition);
 
@@ -2582,6 +2691,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& i
                        "changes uniqueId. Workspace refs are re-anchored automatically; "
                        "scripts that hard-coded the old uniqueId must be updated. Prefer "
                        "datasetGetByPath for stable script references.");
+      appendStaleProjectWarning(result, params, preEpoch);
+      attachProjectEpoch(result);
       return CommandResponse::makeSuccess(id, result);
     }
   }
@@ -2613,6 +2724,7 @@ API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id out of range: %1").arg(groupId));
 
+  const auto preEpoch = captureProjectEpoch();
   pm.moveGroup(groupId, newPosition);
 
   QJsonObject result;
@@ -2624,12 +2736,37 @@ API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
     QStringLiteral("Group reorder renumbers groupId, which changes uniqueIds for all "
                    "datasets in the moved-past groups. Workspace refs are re-anchored "
                    "automatically; scripts that hard-coded a uniqueId must be updated.");
+  appendStaleProjectWarning(result, params, preEpoch);
+  attachProjectEpoch(result);
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
  * @brief Returns a composite read of the entire project state.
  */
+/**
+ * @brief Builds the prose _explanations block for a single Source.
+ */
+static QJsonObject buildSourceExplanations(const DataModel::Source& src, bool verbose)
+{
+  QJsonObject ex;
+  ex[Keys::BusType]             = API::EnumLabels::busTypeLabel(src.busType);
+  ex[Keys::FrameParserLanguage] = API::EnumLabels::scriptLanguageLabel(src.frameParserLanguage);
+
+  if (verbose) {
+    ex[Keys::FrameDetection] = API::EnumLabels::frameDetectionLabel(src.frameDetection);
+    ex[Keys::DecoderMethod]  = API::EnumLabels::decoderMethodLabel(src.decoderMethod);
+  }
+
+  const QString summary =
+    QStringLiteral("%1 source running a %2 parser; frames split by %3.")
+      .arg(API::EnumLabels::busTypeLabel(src.busType),
+           API::EnumLabels::scriptLanguageLabel(src.frameParserLanguage),
+           API::EnumLabels::frameDetectionLabel(src.frameDetection).toLower());
+  ex[QStringLiteral("summary")] = summary;
+  return ex;
+}
+
 /**
  * @brief Builds the per-source array used by project.snapshot.
  */
@@ -2652,9 +2789,29 @@ static QJsonArray buildSnapshotSources(const DataModel::ProjectModel& pm, bool v
       s[Keys::FrameParserCode]   = src.frameParserCode;
     }
 
+    s[QStringLiteral("_explanations")] = buildSourceExplanations(src, verbose);
     sources.append(s);
   }
   return sources;
+}
+
+/**
+ * @brief Builds the prose _explanations block for a single Group.
+ */
+static QJsonObject buildGroupExplanations(const DataModel::Group& group)
+{
+  QJsonObject ex;
+  const QString widgetSlug     = group.widget.simplified().toLower();
+  ex[QStringLiteral("widget")] = widgetSlug.isEmpty()
+                                 ? QStringLiteral("No group widget (datasets render independently)")
+                                 : QStringLiteral("Group widget: %1").arg(widgetSlug);
+
+  if (!group.painterCode.isEmpty())
+    ex[QStringLiteral("painterCode")] =
+      QStringLiteral("Group has %1 bytes of painter JS (paint(ctx) entry point).")
+        .arg(group.painterCode.size());
+
+  return ex;
 }
 
 /**
@@ -2676,7 +2833,8 @@ static QJsonArray buildSnapshotGroups(const DataModel::ProjectModel& pm, int& to
       ds.append(buildDatasetObject(dataset, group));
       ++totalDatasets;
     }
-    g[QStringLiteral("datasets")] = ds;
+    g[QStringLiteral("datasets")]      = ds;
+    g[QStringLiteral("_explanations")] = buildGroupExplanations(group);
     groups.append(g);
   }
   return groups;
@@ -2742,6 +2900,49 @@ static QString buildSnapshotHint(int totalDatasets)
 }
 
 /**
+ * @brief Builds the top-level _explanations object summarizing the project's operating shape.
+ */
+static QJsonObject buildSnapshotExplanations(const DataModel::ProjectModel& pm,
+                                             int operationMode,
+                                             int totalDatasets)
+{
+  QJsonObject ex;
+  ex[QStringLiteral("operationMode")] = API::EnumLabels::operationModeLabel(operationMode);
+
+  const int sourceCount    = static_cast<int>(pm.sources().size());
+  const int groupCount     = static_cast<int>(pm.groups().size());
+  const int workspaceCount = static_cast<int>(pm.editorWorkspaces().size());
+  const int tableCount     = static_cast<int>(pm.tables().size());
+
+  QString summary;
+  if (operationMode == SerialStudio::ConsoleOnly) {
+    summary = QStringLiteral("Console-only mode: raw bytes go to the terminal, no parsing, "
+                             "no dashboard. Dataset/group config is inert until you switch to "
+                             "ProjectFile or QuickPlot via project.frameParser.update.");
+  } else if (operationMode == SerialStudio::QuickPlot) {
+    summary = QStringLiteral("Quick Plot mode: auto CSV plotting on CR/LF/CRLF delimiters. "
+                             "Frame parser code and most project config are bypassed -- "
+                             "Quick Plot generates datasets from comma-separated fields on "
+                             "each line.");
+  } else {
+    summary =
+      QStringLiteral("Project File mode: %1 source(s), %2 group(s), %3 dataset(s), "
+                     "%4 workspace(s), %5 data table(s). Frame parser code is authoritative.")
+        .arg(sourceCount)
+        .arg(groupCount)
+        .arg(totalDatasets)
+        .arg(workspaceCount)
+        .arg(tableCount);
+  }
+
+  if (totalDatasets >= 3)
+    summary += QStringLiteral(" Loops touching multiple datasets should use project.batch.");
+
+  ex[QStringLiteral("summary")] = summary;
+  return ex;
+}
+
+/**
  * @brief Returns a structured snapshot of the active project (sources, groups, tables, hint).
  */
 API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
@@ -2764,12 +2965,16 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
   snapshot[QStringLiteral("datasetCount")] = totalDatasets;
   snapshot[QStringLiteral("workspaces")]   = buildSnapshotWorkspaces(pm);
   snapshot[QStringLiteral("dataTables")]   = buildSnapshotTables(pm);
-  snapshot[QStringLiteral("operationMode")] =
-    static_cast<int>(AppState::instance().operationMode());
+
+  const int operationMode = static_cast<int>(AppState::instance().operationMode());
+  snapshot[QStringLiteral("operationMode")] = operationMode;
+  snapshot[QStringLiteral("_explanations")] =
+    buildSnapshotExplanations(pm, operationMode, totalDatasets);
 
   QJsonObject result;
   result[QStringLiteral("snapshot")] = snapshot;
   result[QStringLiteral("hint")]     = buildSnapshotHint(totalDatasets);
+  attachProjectEpoch(result);
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -2805,10 +3010,14 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetExecutionOrder(
   QJsonObject result;
   result[QStringLiteral("order")] = order;
   result[QStringLiteral("count")] = order.size();
-  result[QStringLiteral("_explanation")] =
+
+  QJsonObject ex;
+  ex[QStringLiteral("summary")] =
     QStringLiteral("Datasets execute in (group-array, dataset-array) order. A transform "
                    "may read raw values of ALL datasets via datasetGetRaw(uid), but only "
                    "final values of datasets EARLIER in this list via datasetGetFinal(uid).");
+  result[QStringLiteral("_explanations")] = ex;
+  attachProjectEpoch(result);
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -3071,6 +3280,7 @@ void API::Handlers::ProjectHandler::registerPainterCommands()
   registerPainterCodeCommands();
   registerUpdateCommands();
   registerDryRunCommands();
+  registerEndToEndDryRunCommand();
 }
 
 /**
@@ -3082,7 +3292,15 @@ void API::Handlers::ProjectHandler::registerPainterCodeCommands()
 
   registry.registerCommand(
     QStringLiteral("project.painter.setCode"),
-    QStringLiteral("Set the painter widget JS for a group (params: groupId, code)"),
+    QStringLiteral("Set the painter widget code for a group (params: groupId, code). "
+                   "**JavaScript only** -- painter scripts run in QJSEngine, not Lua. "
+                   "Available globals: ctx (2D canvas context, QPainter-like), w, h "
+                   "(canvas dimensions), datasetGetFinal(uid)/datasetGetRaw(uid). The "
+                   "entry point is paint(ctx) and an optional onFrame(value) callback. "
+                   "Validate with project.painter.dryRun before setCode. **Always call "
+                   "meta.fetchScriptingDocs{kind:'painter_js'} first** for the full API "
+                   "surface and worked examples -- don't invent canvas methods from JS "
+                   "DOM Canvas, the surface is QPainter-shaped."),
     makeSchema({
       {QStringLiteral("groupId"),
        QStringLiteral("integer"),
@@ -3174,7 +3392,13 @@ void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
     QStringLiteral("project.outputWidget.update"),
     QStringLiteral("Patch output-widget fields by id (params: groupId, widgetId, plus any "
                    "of title, icon, transmitFunction, sourceId, txEncoding, monoIcon, "
-                   "minValue, maxValue, stepSize, initialValue)"),
+                   "minValue, maxValue, stepSize, initialValue). The transmitFunction is "
+                   "**JavaScript only** -- runs in QJSEngine to convert UI state into "
+                   "device bytes. **Call meta.fetchScriptingDocs{kind:'output_widget_js'} "
+                   "before authoring** for the function signature (transmit(value) "
+                   "returning a Uint8Array / string), available globals, and the protocol "
+                   "helper APIs (CRC, NMEA, Modbus, SLCAN, GRBL, GCode, SCPI, binary "
+                   "packet)."),
     makeSchema({
       { QStringLiteral("groupId"),QStringLiteral("integer"),QStringLiteral("Target group id")                           },
       {QStringLiteral("widgetId"),
@@ -3308,6 +3532,48 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
        QStringLiteral("Painter source. Must define paint(ctx, w, h)")}
   }),
     &painterDryRun);
+}
+
+/**
+ * @brief Register the end-to-end dryRun endpoint (parser + transforms in throwaway engines).
+ */
+void API::Handlers::ProjectHandler::registerEndToEndDryRunCommand()
+{
+  auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.dryRun.endToEnd"),
+    QStringLiteral("End-to-end dry run: takes a sample frame body, runs the project's "
+                   "frame parser, then applies every dataset's transform in execution "
+                   "order, and returns the final per-dataset values WITHOUT touching "
+                   "live state. Use this to verify the full parse->transform pipeline "
+                   "before issuing setCode/setTransformCode. Note: the table API "
+                   "(tableGet/tableSet/datasetGetRaw/datasetGetFinal) is NOT injected; "
+                   "transforms that depend on it should be tested with "
+                   "project.dataset.transform.dryRun individually."),
+    makeSchema({
+      { QStringLiteral("sampleFrame"),
+       QStringLiteral("string"),
+       QStringLiteral("Single frame body (without delimiters). Use sampleFrames for an array.")   },
+      {QStringLiteral("sampleFrames"),
+       QStringLiteral("array"),
+       QStringLiteral("Array of frame bodies; runs sequentially in one parser engine instance.")  },
+      {       QString(Keys::SourceId),
+       QStringLiteral("integer"),
+       QStringLiteral("Source index to use for parser code + dataset transforms (default 0)")     },
+      {        QStringLiteral("code"),
+       QStringLiteral("string"),
+       QStringLiteral("Optional override for the frame parser source (default: use live project)")},
+      {    QStringLiteral("language"),
+       QStringLiteral("integer"),
+       QStringLiteral(
+       "Optional override: 0 = JavaScript, 1 = Lua (default: live source language)")              },
+      {     QStringLiteral("verbose"),
+       QStringLiteral("boolean"),
+       QStringLiteral(
+       "Include raw cell values alongside final transformed values (default false)")              }
+  }),
+    &endToEndDryRun);
 }
 
 /**
@@ -3632,11 +3898,13 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
 
   DataModel::Dataset d = datasets[datasetId];
   bool rebuildTree     = false;
-  QSet<QString> consumed{QStringLiteral("groupId"), Keys::DatasetId};
+  QSet<QString> consumed{
+    QStringLiteral("groupId"), Keys::DatasetId, QStringLiteral("expectedProjectEpoch")};
   const QString err = applyDatasetUpdateParams(d, params, rebuildTree, consumed);
   if (!err.isEmpty())
     return CommandResponse::makeError(id, ErrorCode::InvalidParam, err);
 
+  const auto preEpoch = captureProjectEpoch();
   project.updateDataset(groupId, datasetId, d, rebuildTree);
 
   QJsonObject result;
@@ -3645,6 +3913,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
   result[QStringLiteral("updated")] = true;
 
   appendUnknownFieldsWarning(result, params, consumed, QStringLiteral("project.dataset.update"));
+  appendStaleProjectWarning(result, params, preEpoch);
+  attachProjectEpoch(result);
 
   if (!d.transformCode.isEmpty() && d.transformLanguage != -1) {
     const auto warning = detectLanguageMismatch(d.transformCode, d.transformLanguage);
@@ -4627,5 +4897,246 @@ API::CommandResponse API::Handlers::ProjectHandler::painterDryRun(const QString&
     QStringLiteral("Compile + paint() lookup succeeded. Note: dry-run does NOT actually "
                    "render -- runtime errors inside paint() (out-of-bounds reads, missing "
                    "moveTo before arc, etc.) only surface when the live widget mounts.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Wraps a transform() script so it can be driven via IScriptEngine::parseString.
+ */
+static QString wrapTransformForParser(const QString& code, int language)
+{
+  if (language == 1)
+    return code
+         + QStringLiteral("\n\nfunction parse(frame)\n"
+                          "  local v = tonumber(frame)\n"
+                          "  if v == nil then v = frame end\n"
+                          "  local out = transform(v)\n"
+                          "  return { tostring(out) }\n"
+                          "end\n");
+
+  return code
+       + QStringLiteral("\n\nfunction parse(frame) {\n"
+                        "  var v = parseFloat(frame);\n"
+                        "  if (isNaN(v)) v = frame;\n"
+                        "  return [String(transform(v))];\n"
+                        "}\n");
+}
+
+/**
+ * @brief Applies a single dataset's transform to a raw cell value via a cached engine.
+ */
+static QJsonValue applyTransformForDryRun(
+  const DataModel::Dataset& dataset,
+  int defaultLanguage,
+  const QString& rawCell,
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& engines,
+  std::map<int, bool>& engineOk)
+{
+  const int datasetKey =
+    DataModel::dataset_unique_id(dataset.sourceId, dataset.groupId, dataset.datasetId);
+  const int language =
+    (dataset.transformLanguage == -1) ? defaultLanguage : dataset.transformLanguage;
+
+  auto it = engines.find(datasetKey);
+  if (it == engines.end()) {
+    auto engine    = makeScriptEngine(language);
+    const auto src = wrapTransformForParser(dataset.transformCode, language);
+    const bool ok  = engine->loadScript(src, dataset.sourceId, /*showMessageBoxes=*/false);
+
+    engineOk[datasetKey] = ok;
+    engines[datasetKey]  = std::move(engine);
+    it                   = engines.find(datasetKey);
+  }
+
+  if (!engineOk[datasetKey])
+    return QJsonValue::Null;
+
+  const auto rows = it->second->parseString(rawCell);
+  if (rows.isEmpty() || rows.first().isEmpty())
+    return QJsonValue::Null;
+
+  const auto cell = rows.first().first();
+  bool isNum      = false;
+  const auto num  = cell.toDouble(&isNum);
+  if (isNum)
+    return num;
+
+  return cell;
+}
+
+/**
+ * @brief Build a single dataset entry for an endToEndDryRun row.
+ */
+static QJsonObject buildDryRunDatasetEntry(
+  const DataModel::Dataset& dataset,
+  int groupId,
+  const QStringList& row,
+  int language,
+  bool verbose,
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& transformEngines,
+  std::map<int, bool>& transformEngineOk)
+{
+  const int idx = dataset.index;
+  QString rawCell;
+  if (idx >= 1 && idx <= row.size())
+    rawCell = row.at(idx - 1);
+
+  QJsonObject entry;
+  entry[Keys::UniqueId] =
+    DataModel::dataset_unique_id(dataset.sourceId, groupId, dataset.datasetId);
+  entry[Keys::Title]                 = dataset.title;
+  entry[Keys::GroupId]               = groupId;
+  entry[Keys::DatasetId]             = dataset.datasetId;
+  entry[Keys::Index]                 = idx;
+  entry[QStringLiteral("isVirtual")] = dataset.virtual_;
+
+  if (verbose)
+    entry[QStringLiteral("raw")] = rawCell;
+
+  if (!dataset.transformCode.isEmpty()) {
+    entry[QStringLiteral("final")] =
+      applyTransformForDryRun(dataset, language, rawCell, transformEngines, transformEngineOk);
+    entry[QStringLiteral("transformApplied")] = true;
+    return entry;
+  }
+
+  bool isNum                                = false;
+  const auto num                            = rawCell.toDouble(&isNum);
+  entry[QStringLiteral("final")]            = isNum ? QJsonValue(num) : QJsonValue(rawCell);
+  entry[QStringLiteral("transformApplied")] = false;
+  return entry;
+}
+
+/**
+ * @brief Build a single parsed-row payload for an endToEndDryRun frame.
+ */
+static QJsonObject buildDryRunRow(
+  const QStringList& row,
+  int sourceId,
+  const std::vector<DataModel::Group>& groups,
+  int language,
+  bool verbose,
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& transformEngines,
+  std::map<int, bool>& transformEngineOk)
+{
+  QJsonArray datasetResults;
+  for (const auto& group : groups) {
+    for (const auto& dataset : group.datasets) {
+      if (dataset.sourceId != sourceId)
+        continue;
+
+      datasetResults.append(buildDryRunDatasetEntry(
+        dataset, group.groupId, row, language, verbose, transformEngines, transformEngineOk));
+    }
+  }
+
+  QJsonArray rawCells;
+  for (const auto& cell : row)
+    rawCells.append(cell);
+
+  QJsonObject rowOut;
+  rowOut[QStringLiteral("rawCells")] = rawCells;
+  rowOut[QStringLiteral("datasets")] = datasetResults;
+  return rowOut;
+}
+
+/**
+ * @brief End-to-end dry-run: parser + all dataset transforms applied to a sample frame.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString& id,
+                                                                   const QJsonObject& params)
+{
+  // Resolve source + parser code (override or live project)
+  auto& pm           = DataModel::ProjectModel::instance();
+  const auto sources = pm.sources();
+  const int sourceId = params.value(Keys::SourceId).toInt(0);
+  if (sources.empty())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Project has no sources to dry-run against"));
+
+  if (sourceId < 0 || sourceId >= static_cast<int>(sources.size()))
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Source id out of range: %1").arg(sourceId));
+
+  const auto& source = sources[sourceId];
+
+  // Collect sample frames
+  const bool hasFrame  = params.contains(QStringLiteral("sampleFrame"));
+  const bool hasFrames = params.contains(QStringLiteral("sampleFrames"));
+  if (!hasFrame && !hasFrames)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::MissingParam,
+      QStringLiteral("Missing required parameter: sampleFrame (string) or sampleFrames (array)"));
+
+  QStringList frames;
+  if (hasFrames)
+    for (const auto& v : params.value(QStringLiteral("sampleFrames")).toArray())
+      frames.append(v.toString());
+  else
+    frames.append(params.value(QStringLiteral("sampleFrame")).toString());
+
+  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
+  const QString code = params.contains(QStringLiteral("code"))
+                       ? params.value(QStringLiteral("code")).toString()
+                       : source.frameParserCode;
+  const int language = params.contains(QStringLiteral("language"))
+                       ? params.value(QStringLiteral("language")).toInt()
+                       : source.frameParserLanguage;
+
+  // Compile parser
+  auto parser = makeScriptEngine(language);
+  if (!parser->loadScript(code, sourceId, /*showMessageBoxes=*/false))
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::ExecutionError,
+      QStringLiteral("Frame parser failed to compile or define parse(frame)"));
+
+  // Cache transform engines across frames so stateful transforms reveal behavior
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>> transformEngines;
+  std::map<int, bool> transformEngineOk;
+  const auto& groups = pm.groups();
+
+  QJsonArray frameResults;
+  for (const auto& sample : frames) {
+    const auto parsed = parser->parseString(sample);
+
+    QJsonArray rowResults;
+    for (const auto& row : parsed)
+      rowResults.append(buildDryRunRow(
+        row, sourceId, groups, language, verbose, transformEngines, transformEngineOk));
+
+    QJsonObject perFrame;
+    perFrame[QStringLiteral("rows")]     = rowResults;
+    perFrame[QStringLiteral("rowCount")] = rowResults.size();
+    frameResults.append(perFrame);
+  }
+
+  // Surface which transforms failed to compile so the caller can fix them
+  QJsonArray failedTransforms;
+  for (const auto& [uid, ok] : transformEngineOk)
+    if (!ok)
+      failedTransforms.append(uid);
+
+  QJsonObject result;
+  result[QStringLiteral("ok")]         = true;
+  result[Keys::SourceId]               = sourceId;
+  result[QStringLiteral("frames")]     = frameResults;
+  result[QStringLiteral("frameCount")] = frameResults.size();
+
+  if (!failedTransforms.isEmpty()) {
+    result[QStringLiteral("transformCompileFailures")] = failedTransforms;
+    result[QStringLiteral("warning")] =
+      QStringLiteral("One or more dataset transforms failed to compile. Their `final` "
+                     "values are null. Iterate the failing transforms via "
+                     "project.dataset.transform.dryRun, then setTransformCode.");
+  }
+
+  result[QStringLiteral("hint")] =
+    QStringLiteral("rawCells[i] maps to dataset.index = i+1. The table API "
+                   "(tableGet/tableSet/datasetGetRaw/datasetGetFinal) is NOT injected in "
+                   "this dry-run -- transforms that read other datasets will see 0/null. "
+                   "Virtual datasets show their transform applied to the raw cell at "
+                   "their index (which is normally 0/unset for virtual entries).");
   return CommandResponse::makeSuccess(id, result);
 }

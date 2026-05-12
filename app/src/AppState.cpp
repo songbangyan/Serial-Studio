@@ -114,10 +114,17 @@ void AppState::restoreLastProject()
 {
   auto& pm                 = DataModel::ProjectModel::instance();
   const QString saved_path = m_settings.value("project_file_path", "").toString();
+
+  // openJsonFile forces ProjectFile mode; snapshot the persisted mode and restore it after
+  const auto persistedMode = m_operationMode;
+
   if (!saved_path.isEmpty() && QFileInfo::exists(saved_path))
     pm.openJsonFile(saved_path);
   else
     pm.newJsonFile();
+
+  if (m_operationMode != persistedMode)
+    setOperationMode(persistedMode);
 }
 
 /**
@@ -238,6 +245,5 @@ IO::FrameConfig AppState::deriveFrameConfig() const
     [[unlikely]]
     cfg.frameDetection = SerialStudio::NoDelimiters;
 
-  // Return the generated configuration structure
   return cfg;
 }

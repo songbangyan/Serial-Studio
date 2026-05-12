@@ -77,6 +77,7 @@ private:
   CommandResponse buildUnknownCommandResponse(const QString& name, const QString& id) const;
   void attachErrorMetadata(const QString& name, CommandResponse& response) const;
   static QString classifyErrorCategory(const QString& commandName, const CommandResponse& response);
+  static QString dryRunHintForScriptCommand(const QString& commandName);
 
   QMap<QString, CommandDefinition> m_commands;
 };

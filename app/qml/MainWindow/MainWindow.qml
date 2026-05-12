@@ -34,8 +34,8 @@ Widgets.SmartWindow {
 
   title: documentTitle
   category: "MainWindow"
-  minimumWidth: layout.implicitWidth
-  minimumHeight: layout.implicitHeight
+  minimumWidth: app.runtimeMode ? 640 : layout.implicitWidth
+  minimumHeight: app.runtimeMode ? 480 : layout.implicitHeight
 
   //
   // Aliases for tracking minimum content size on native/CSD windows
@@ -49,10 +49,10 @@ Widgets.SmartWindow {
   property int appLaunchCount: 0
   property bool windowShown: false
   property string documentTitle: ""
+  property bool toolbarVisible: true
   property bool sawConnection: false
   property bool firstValidFrame: false
   property bool userInitiatedDisconnect: false
-  property alias toolbarVisible: toolbar.toolbarEnabled
 
   //
   // Toolbar full-screen restore state
@@ -130,8 +130,10 @@ Widgets.SmartWindow {
 
     windowShown = true
 
-    if (app.runtimeMode)
+    if (app.runtimeMode) {
+      dashboardLoader.active = true
       dashboard.loadLayout()
+    }
 
     if (typeof CLI_START_FULLSCREEN !== "undefined" && CLI_START_FULLSCREEN)
       root.showFullScreen()
@@ -149,19 +151,19 @@ Widgets.SmartWindow {
   //
   // Global properties
   //
-  readonly property bool setupVisible: setup.visible
-  readonly property bool consoleVisible: terminal.visible
-  readonly property bool dashboardVisible: dashboard.visible
+  readonly property Item dashboard: dashboardLoader.item
+  readonly property bool dashboardVisible: dashboardLoader.item
+                                            && stack.currentItem === dashboardLoader
 
   //
   // Toolbar functions aliases
   //
-  function showSetup()     { toolbar.setupClicked() }
-  function showConsole()   { stack.pop()            }
+  function showConsole() { stack.pop() }
 
   function showDashboardNow() {
-    if (stack.currentItem !== dashboard) {
-      stack.push(dashboard)
+    dashboardLoader.active = true
+    if (stack.currentItem !== dashboardLoader) {
+      stack.push(dashboardLoader)
       dashboard.loadLayout()
 
       if (!app.runtimeMode
@@ -172,14 +174,6 @@ Widgets.SmartWindow {
       if (typeof CLI_START_FULLSCREEN !== "undefined" && CLI_START_FULLSCREEN)
         mainWindow.showFullScreen()
     }
-  }
-
-  Timer {
-    id: dashboardDelayTimer
-
-    interval: 270
-    repeat: false
-    onTriggered: root.showDashboardNow()
   }
 
   //
@@ -260,7 +254,6 @@ Widgets.SmartWindow {
       if (app.runtimeMode)
         return
 
-      setup.show()
       root.showConsole()
       root.firstValidFrame = false
 
@@ -282,16 +275,10 @@ Widgets.SmartWindow {
 
       if (Cpp_UI_Dashboard.available) {
         root.firstValidFrame = true
-        if (setup.visible) {
-          setup.hide()
-          dashboardDelayTimer.start()
-        } else {
-          root.showDashboardNow()
-        }
+        root.showDashboardNow()
       }
 
       else if (!app.runtimeMode) {
-        setup.show()
         root.showConsole()
         root.toolbarVisible = true
         root.firstValidFrame = false
@@ -314,7 +301,7 @@ Widgets.SmartWindow {
       Cpp_NativeWindow.removeWindow(root)
 
     // Auto-hide the toolbar in full-screen with the dashboard active
-    if (root.visibility === Window.FullScreen && dashboard.visible) {
+    if (root.visibility === Window.FullScreen && root.dashboardVisible) {
       if (!root._toolbarAutoHidden) {
         root._toolbarVisibleBeforeFullScreen = root.toolbarVisible
         root._toolbarAutoHidden              = true
@@ -363,80 +350,80 @@ Widgets.SmartWindow {
     onActivated: Cpp_CSV_Player.openFile()
   } Shortcut {
     sequence: "Ctrl+F"
-    enabled: dashboard.visible && Cpp_UI_TaskbarSettings.searchEnabled
+    enabled: root.dashboardVisible && Cpp_UI_TaskbarSettings.searchEnabled
     onActivated: dashboard.focusTaskbarSearch()
   } Shortcut {
     sequence: "Ctrl+M"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     context: Qt.ApplicationShortcut
     onActivated: dashboard.toggleStartMenu()
   } Shortcut {
     sequence: "PgDown"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.cycleWorkspace(+1)
   } Shortcut {
     sequence: "PgUp"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.cycleWorkspace(-1)
   } Shortcut {
-    enabled: dashboard.visible && !root._focusOwnsTab()
+    enabled: root.dashboardVisible && !root._focusOwnsTab()
     sequences: ["Tab"]
     onActivated: dashboard.cycleWindow(-1)
   } Shortcut {
-    enabled: dashboard.visible && !root._focusOwnsTab()
+    enabled: root.dashboardVisible && !root._focusOwnsTab()
     sequences: ["Backtab", "Shift+Tab"]
     onActivated: dashboard.cycleWindow(+1)
   } Shortcut {
     sequence: "Ctrl+Shift+W"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.closeActiveWindow()
   } Shortcut {
     sequence: "Ctrl+Shift+M"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.minimizeActiveWindow()
   } Shortcut {
     sequence: "Ctrl+Shift+L"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.toggleAutoLayout()
   } Shortcut {
     sequence: "Ctrl+Home"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.clearActiveWindow()
   } Shortcut {
     sequence: "Ctrl+1"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(0)
   } Shortcut {
     sequence: "Ctrl+2"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(1)
   } Shortcut {
     sequence: "Ctrl+3"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(2)
   } Shortcut {
     sequence: "Ctrl+4"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(3)
   } Shortcut {
     sequence: "Ctrl+5"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(4)
   } Shortcut {
     sequence: "Ctrl+6"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(5)
   } Shortcut {
     sequence: "Ctrl+7"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(6)
   } Shortcut {
     sequence: "Ctrl+8"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(7)
   } Shortcut {
     sequence: "Ctrl+9"
-    enabled: dashboard.visible
+    enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(8)
   }
 
@@ -477,117 +464,150 @@ Widgets.SmartWindow {
       //
       // Toolbar
       //
-      Panes.Toolbar {
-        id: toolbar
+      Loader {
+        id: toolbarLoader
 
         z: 2
         Layout.fillWidth: true
-        toolbarEnabled: !app.runtimeMode
-        dashboardVisible: root.dashboardVisible
-        autoHide: Cpp_UI_Dashboard.autoHideToolbar
+        active: !app.runtimeMode
+
+        property int titlebarHeight: Cpp_NativeWindow.titlebarHeight(root)
+        property int slotHeight: active
+                                 ? titlebarHeight
+                                   + (root.toolbarVisible
+                                      && !(Cpp_UI_Dashboard.autoHideToolbar
+                                           && root.dashboardVisible)
+                                      ? 64 + 16 : 0)
+                                 : 0
+
+        Layout.minimumHeight: slotHeight
+        Layout.maximumHeight: slotHeight
+
+        Behavior on slotHeight {
+          NumberAnimation {
+            duration: 250
+            easing.type: Easing.OutCubic
+          }
+        }
+
+        Connections {
+          target: root
+          function onVisibilityChanged() {
+            toolbarLoader.titlebarHeight = Cpp_NativeWindow.titlebarHeight(root)
+          }
+        }
+
+        sourceComponent: Panes.Toolbar {
+          toolbarEnabled: root.toolbarVisible
+          dashboardVisible: root.dashboardVisible
+          autoHide: Cpp_UI_Dashboard.autoHideToolbar
+        }
       }
 
       //
-      // User interface
+      // Main layout
       //
-      RowLayout {
-        id: mainLayout
+      StackView {
+        id: stack
 
         z: 1
-        spacing: 0
         Layout.topMargin: -1
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        initialItem: app.runtimeMode ? dashboardLoader : consoleSetupLoader
+        Layout.minimumWidth: consoleSetupLoader.item ? consoleSetupLoader.item.contentMinWidth : 0
+        Layout.minimumHeight: consoleSetupLoader.item ? consoleSetupLoader.item.contentMinHeight : 0
 
-        //
-        // Dashboard + Console view
-        //
-        StackView {
-          id: stack
+        data: [
+          Loader {
+            id: consoleSetupLoader
 
-          Layout.fillWidth: true
-          Layout.fillHeight: true
-          Layout.minimumWidth: terminal.implicitWidth
-          initialItem: app.runtimeMode ? dashboard : terminal
-          Layout.minimumHeight: Math.max(terminal.implicitHeight, setup.implicitHeight)
+            active: !app.runtimeMode
+            width: parent ? parent.width : 0
+            height: parent ? parent.height : 0
 
-          data: [
-            Panes.Console {
-              id: terminal
+            sourceComponent: RowLayout {
+              id: consoleSetupPage
 
-              width: parent.width
-              height: parent.height
-            },
+              spacing: 0
 
-            Panes.Dashboard {
-              id: dashboard
+              readonly property int contentMinWidth: terminal.implicitWidth + 1 + setup.displayedWidth
+              readonly property int contentMinHeight: Math.max(terminal.implicitHeight, setup.implicitHeight)
 
-              visible: false
-              width: parent.width
-              height: parent.height
+              Panes.Console {
+                id: terminal
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.minimumWidth: terminal.implicitWidth
+              }
+
+              Rectangle {
+                z: 2
+                implicitWidth: 1
+                Layout.fillHeight: true
+                color: Cpp_ThemeManager.colors["setup_border"]
+
+                Rectangle {
+                  width: 1
+                  height: 32
+                  anchors.top: parent.top
+                  anchors.left: parent.left
+                  color: Cpp_ThemeManager.colors["pane_caption_border"]
+                }
+
+                MouseArea {
+                  width: 16
+                  height: parent.height
+                  anchors.leftMargin: -4
+                  anchors.left: parent.left
+                  cursorShape: Qt.SplitHCursor
+
+                  property int _startX: 0
+                  property int _startWidth: 0
+
+                  onPressed: (mouse) => {
+                               _startX = mouse.x
+                               _startWidth = setup.width
+                             }
+
+                  onPositionChanged: (mouse) => {
+                                       if (!pressed)
+                                       return
+
+                                       const delta = _startX - mouse.x
+                                       const maxW = consoleSetupPage.width
+                                                    - terminal.Layout.minimumWidth - 1
+                                       const newW = Math.max(setup.kMinPaneWidth,
+                                                             Math.min(_startWidth + delta, maxW))
+                                       setup.userPaneWidth = newW
+                                     }
+                }
+              }
+
+              Panes.Setup {
+                id: setup
+
+                readonly property int kMaxPaneWidth: 720
+
+                Layout.fillHeight: true
+                Layout.minimumWidth: setup.kMinPaneWidth
+                Layout.maximumWidth: setup.kMaxPaneWidth
+                Layout.preferredWidth: setup.displayedWidth
+              }
             }
-          ]
-        }
+          },
 
-        //
-        // Panel border rectangle
-        //
-        Rectangle {
-          z: 2
-          implicitWidth: 1
-          visible: setup.visible
-          Layout.fillHeight: true
-          color: Cpp_ThemeManager.colors["setup_border"]
+          Loader {
+            id: dashboardLoader
 
-          Rectangle {
-            width: 1
-            height: 32
-            anchors.top: parent.top
-            anchors.left: parent.left
-            color: Cpp_ThemeManager.colors["pane_caption_border"]
+            active: false
+            width: parent ? parent.width : 0
+            height: parent ? parent.height : 0
+
+            sourceComponent: Panes.Dashboard {}
           }
-
-          MouseArea {
-            width: 16
-            height: parent.height
-            anchors.leftMargin: -4
-            anchors.left: parent.left
-            cursorShape: Qt.SplitHCursor
-
-            property int _startX: 0
-            property int _startWidth: 0
-
-            onPressed: (mouse) => {
-                         _startX = mouse.x
-                         _startWidth = setup.width
-                       }
-
-            onPositionChanged: (mouse) => {
-                                 if (!pressed)
-                                 return
-
-                                 const delta = _startX - mouse.x
-                                 const maxW = mainLayout.width - stack.Layout.minimumWidth - 1
-                                 const newW = Math.max(setup.kMinPaneWidth,
-                                                       Math.min(_startWidth + delta, maxW))
-                                 setup.userPaneWidth = newW
-                               }
-          }
-        }
-
-        //
-        // Setup panel
-        //
-        Panes.Setup {
-          id: setup
-
-          readonly property int kMaxPaneWidth: 720
-
-          Layout.fillHeight: true
-          visible: !app.runtimeMode
-          Layout.rightMargin: setupMargin
-          Layout.minimumWidth: app.runtimeMode ? 0 : setup.kMinPaneWidth
-          Layout.maximumWidth: app.runtimeMode ? 0 : setup.kMaxPaneWidth
-          Layout.preferredWidth: app.runtimeMode ? 0 : setup.displayedWidth
-        }
+        ]
       }
     }
 

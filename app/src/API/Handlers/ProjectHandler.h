@@ -61,6 +61,7 @@ private:
   static void registerEntityUpdateCommands();
   static void registerBatchCommand();
   static void registerDryRunCommands();
+  static void registerEndToEndDryRunCommand();
   static void registerListCommands();
   static void registerResolverCommands();
   static void registerSnapshotAndMoveCommands();
@@ -106,6 +107,7 @@ private:
   static CommandResponse frameParserDryCompile(const QString& id, const QJsonObject& params);
   static CommandResponse transformDryRun(const QString& id, const QJsonObject& params);
   static CommandResponse painterDryRun(const QString& id, const QJsonObject& params);
+  static CommandResponse endToEndDryRun(const QString& id, const QJsonObject& params);
 
   static CommandResponse groupUpdate(const QString& id, const QJsonObject& params);
   static CommandResponse datasetUpdate(const QString& id, const QJsonObject& params);
