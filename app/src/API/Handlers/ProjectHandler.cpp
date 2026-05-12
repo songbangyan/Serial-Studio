@@ -160,10 +160,7 @@ static void attachProjectEpoch(QJsonObject& result)
 }
 
 /**
- * @brief Snapshot of the project epoch before a mutating handler does its work.
- *
- * Captured at handler entry so we can compare with the caller's expectedProjectEpoch
- * even though the mutation we are about to perform will bump the live epoch.
+ * @brief Snapshot of the project epoch before a mutating handler runs.
  */
 [[nodiscard]] static qint64 captureProjectEpoch()
 {
@@ -171,9 +168,7 @@ static void attachProjectEpoch(QJsonObject& result)
 }
 
 /**
- * @brief Appends a stale_project warning to @p result when caller's expectedProjectEpoch is stale.
- *
- * @p preMutationEpoch is the epoch captured at handler entry (see captureProjectEpoch).
+ * @brief Append a stale_project warning when the caller's expectedProjectEpoch is stale.
  */
 static void appendStaleProjectWarning(QJsonObject& result,
                                       const QJsonObject& params,
@@ -2806,10 +2801,10 @@ static QJsonArray buildSnapshotSources(const DataModel::ProjectModel& pm, bool v
 static QJsonObject buildGroupExplanations(const DataModel::Group& group)
 {
   QJsonObject ex;
-  const QString widgetSlug = group.widget.simplified().toLower();
-  ex[QStringLiteral("widget")] =
-    widgetSlug.isEmpty() ? QStringLiteral("No group widget (datasets render independently)")
-                         : QStringLiteral("Group widget: %1").arg(widgetSlug);
+  const QString widgetSlug     = group.widget.simplified().toLower();
+  ex[QStringLiteral("widget")] = widgetSlug.isEmpty()
+                                 ? QStringLiteral("No group widget (datasets render independently)")
+                                 : QStringLiteral("Group widget: %1").arg(widgetSlug);
 
   if (!group.painterCode.isEmpty())
     ex[QStringLiteral("painterCode")] =
@@ -2914,10 +2909,10 @@ static QJsonObject buildSnapshotExplanations(const DataModel::ProjectModel& pm,
   QJsonObject ex;
   ex[QStringLiteral("operationMode")] = API::EnumLabels::operationModeLabel(operationMode);
 
-  const int sourceCount      = static_cast<int>(pm.sources().size());
-  const int groupCount       = static_cast<int>(pm.groups().size());
-  const int workspaceCount   = static_cast<int>(pm.editorWorkspaces().size());
-  const int tableCount       = static_cast<int>(pm.tables().size());
+  const int sourceCount    = static_cast<int>(pm.sources().size());
+  const int groupCount     = static_cast<int>(pm.groups().size());
+  const int workspaceCount = static_cast<int>(pm.editorWorkspaces().size());
+  const int tableCount     = static_cast<int>(pm.tables().size());
 
   QString summary;
   if (operationMode == SerialStudio::ConsoleOnly) {
@@ -3285,6 +3280,7 @@ void API::Handlers::ProjectHandler::registerPainterCommands()
   registerPainterCodeCommands();
   registerUpdateCommands();
   registerDryRunCommands();
+  registerEndToEndDryRunCommand();
 }
 
 /**
@@ -3537,6 +3533,15 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
   }),
     &painterDryRun);
 
+}
+
+/**
+ * @brief Register the end-to-end dryRun endpoint (parser + transforms in throwaway engines).
+ */
+void API::Handlers::ProjectHandler::registerEndToEndDryRunCommand()
+{
+  auto& registry = CommandRegistry::instance();
+
   registry.registerCommand(
     QStringLiteral("project.dryRun.endToEnd"),
     QStringLiteral("End-to-end dry run: takes a sample frame body, runs the project's "
@@ -3550,22 +3555,24 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
     makeSchema({
       { QStringLiteral("sampleFrame"),
        QStringLiteral("string"),
-       QStringLiteral("Single frame body (without delimiters). Use sampleFrames for an array.")},
+       QStringLiteral("Single frame body (without delimiters). Use sampleFrames for an array.")   },
       {QStringLiteral("sampleFrames"),
        QStringLiteral("array"),
-       QStringLiteral("Array of frame bodies; runs sequentially in one parser engine instance.")},
-      {    QStringLiteral("sourceId"),
+       QStringLiteral("Array of frame bodies; runs sequentially in one parser engine instance.")  },
+      {    QString(Keys::SourceId),
        QStringLiteral("integer"),
-       QStringLiteral("Source index to use for parser code + dataset transforms (default 0)")    },
+       QStringLiteral("Source index to use for parser code + dataset transforms (default 0)")     },
       {        QStringLiteral("code"),
        QStringLiteral("string"),
        QStringLiteral("Optional override for the frame parser source (default: use live project)")},
       {    QStringLiteral("language"),
        QStringLiteral("integer"),
-       QStringLiteral("Optional override: 0 = JavaScript, 1 = Lua (default: live source language)")},
+       QStringLiteral(
+       "Optional override: 0 = JavaScript, 1 = Lua (default: live source language)")              },
       {     QStringLiteral("verbose"),
        QStringLiteral("boolean"),
-       QStringLiteral("Include raw cell values alongside final transformed values (default false)")}
+       QStringLiteral(
+       "Include raw cell values alongside final transformed values (default false)")              }
   }),
     &endToEndDryRun);
 }
@@ -3892,9 +3899,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
 
   DataModel::Dataset d = datasets[datasetId];
   bool rebuildTree     = false;
-  QSet<QString> consumed{QStringLiteral("groupId"),
-                         Keys::DatasetId,
-                         QStringLiteral("expectedProjectEpoch")};
+  QSet<QString> consumed{
+    QStringLiteral("groupId"), Keys::DatasetId, QStringLiteral("expectedProjectEpoch")};
   const QString err = applyDatasetUpdateParams(d, params, rebuildTree, consumed);
   if (!err.isEmpty())
     return CommandResponse::makeError(id, ErrorCode::InvalidParam, err);
@@ -4927,9 +4933,10 @@ static QJsonValue applyTransformForDryRun(
   std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& engines,
   std::map<int, bool>& engineOk)
 {
-  const int datasetKey = DataModel::dataset_unique_id(dataset.sourceId, dataset.groupId, dataset.datasetId);
-  const int language   = (dataset.transformLanguage == -1) ? defaultLanguage
-                                                           : dataset.transformLanguage;
+  const int datasetKey =
+    DataModel::dataset_unique_id(dataset.sourceId, dataset.groupId, dataset.datasetId);
+  const int language =
+    (dataset.transformLanguage == -1) ? defaultLanguage : dataset.transformLanguage;
 
   auto it = engines.find(datasetKey);
   if (it == engines.end()) {
@@ -4959,15 +4966,96 @@ static QJsonValue applyTransformForDryRun(
 }
 
 /**
+ * @brief Build a single dataset entry for an endToEndDryRun row.
+ */
+static QJsonObject buildDryRunDatasetEntry(
+  const DataModel::Dataset& dataset,
+  int groupId,
+  const QStringList& row,
+  int language,
+  bool verbose,
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& transformEngines,
+  std::map<int, bool>& transformEngineOk)
+{
+  const int idx = dataset.index;
+  QString rawCell;
+  if (idx >= 1 && idx <= row.size())
+    rawCell = row.at(idx - 1);
+
+  QJsonObject entry;
+  entry[Keys::UniqueId] =
+    DataModel::dataset_unique_id(dataset.sourceId, groupId, dataset.datasetId);
+  entry[Keys::Title]                 = dataset.title;
+  entry[Keys::GroupId]               = groupId;
+  entry[Keys::DatasetId]             = dataset.datasetId;
+  entry[Keys::Index]                 = idx;
+  entry[QStringLiteral("isVirtual")] = dataset.virtual_;
+
+  if (verbose)
+    entry[QStringLiteral("raw")] = rawCell;
+
+  if (!dataset.transformCode.isEmpty()) {
+    entry[QStringLiteral("final")] =
+      applyTransformForDryRun(dataset, language, rawCell, transformEngines, transformEngineOk);
+    entry[QStringLiteral("transformApplied")] = true;
+    return entry;
+  }
+
+  bool isNum                                = false;
+  const auto num                            = rawCell.toDouble(&isNum);
+  entry[QStringLiteral("final")]            = isNum ? QJsonValue(num) : QJsonValue(rawCell);
+  entry[QStringLiteral("transformApplied")] = false;
+  return entry;
+}
+
+/**
+ * @brief Build a single parsed-row payload for an endToEndDryRun frame.
+ */
+static QJsonObject buildDryRunRow(
+  const QStringList& row,
+  int sourceId,
+  const std::vector<DataModel::Group>& groups,
+  int language,
+  bool verbose,
+  std::map<int, std::unique_ptr<DataModel::IScriptEngine>>& transformEngines,
+  std::map<int, bool>& transformEngineOk)
+{
+  QJsonArray datasetResults;
+  for (const auto& group : groups) {
+    for (const auto& dataset : group.datasets) {
+      if (dataset.sourceId != sourceId)
+        continue;
+
+      datasetResults.append(buildDryRunDatasetEntry(dataset,
+                                                   group.groupId,
+                                                   row,
+                                                   language,
+                                                   verbose,
+                                                   transformEngines,
+                                                   transformEngineOk));
+    }
+  }
+
+  QJsonArray rawCells;
+  for (const auto& cell : row)
+    rawCells.append(cell);
+
+  QJsonObject rowOut;
+  rowOut[QStringLiteral("rawCells")] = rawCells;
+  rowOut[QStringLiteral("datasets")] = datasetResults;
+  return rowOut;
+}
+
+/**
  * @brief End-to-end dry-run: parser + all dataset transforms applied to a sample frame.
  */
 API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString& id,
-                                                                    const QJsonObject& params)
+                                                                   const QJsonObject& params)
 {
   // Resolve source + parser code (override or live project)
   auto& pm           = DataModel::ProjectModel::instance();
   const auto sources = pm.sources();
-  const int sourceId = params.value(QStringLiteral("sourceId")).toInt(0);
+  const int sourceId = params.value(Keys::SourceId).toInt(0);
   if (sources.empty())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Project has no sources to dry-run against"));
@@ -4994,13 +5082,13 @@ API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString
   else
     frames.append(params.value(QStringLiteral("sampleFrame")).toString());
 
-  const bool verbose  = params.value(QStringLiteral("verbose")).toBool(false);
-  const QString code  = params.contains(QStringLiteral("code"))
-                          ? params.value(QStringLiteral("code")).toString()
-                          : source.frameParserCode;
-  const int language  = params.contains(QStringLiteral("language"))
-                          ? params.value(QStringLiteral("language")).toInt()
-                          : source.frameParserLanguage;
+  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
+  const QString code = params.contains(QStringLiteral("code"))
+                       ? params.value(QStringLiteral("code")).toString()
+                       : source.frameParserCode;
+  const int language = params.contains(QStringLiteral("language"))
+                       ? params.value(QStringLiteral("language")).toInt()
+                       : source.frameParserLanguage;
 
   // Compile parser
   auto parser = makeScriptEngine(language);
@@ -5013,62 +5101,16 @@ API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString
   // Cache transform engines across frames so stateful transforms reveal behavior
   std::map<int, std::unique_ptr<DataModel::IScriptEngine>> transformEngines;
   std::map<int, bool> transformEngineOk;
+  const auto& groups = pm.groups();
 
   QJsonArray frameResults;
   for (const auto& sample : frames) {
     const auto parsed = parser->parseString(sample);
 
     QJsonArray rowResults;
-    for (const auto& row : parsed) {
-      QJsonArray datasetResults;
-      for (const auto& group : pm.groups()) {
-        for (const auto& dataset : group.datasets) {
-          if (dataset.sourceId != sourceId)
-            continue;
-
-          const int idx = dataset.index;
-          QString rawCell;
-          if (idx >= 1 && idx <= row.size())
-            rawCell = row.at(idx - 1);
-
-          QJsonObject entry;
-          entry[Keys::UniqueId]   = DataModel::dataset_unique_id(dataset.sourceId,
-                                                               group.groupId,
-                                                               dataset.datasetId);
-          entry[Keys::Title]      = dataset.title;
-          entry[Keys::GroupId]    = group.groupId;
-          entry[Keys::DatasetId]  = dataset.datasetId;
-          entry[Keys::Index]      = idx;
-          entry[QStringLiteral("isVirtual")] = dataset.virtual_;
-
-          if (verbose)
-            entry[QStringLiteral("raw")] = rawCell;
-
-          if (!dataset.transformCode.isEmpty()) {
-            entry[QStringLiteral("final")] = applyTransformForDryRun(
-              dataset, language, rawCell, transformEngines, transformEngineOk);
-            entry[QStringLiteral("transformApplied")] = true;
-          } else {
-            bool isNum     = false;
-            const auto num = rawCell.toDouble(&isNum);
-            entry[QStringLiteral("final")] =
-              isNum ? QJsonValue(num) : QJsonValue(rawCell);
-            entry[QStringLiteral("transformApplied")] = false;
-          }
-
-          datasetResults.append(entry);
-        }
-      }
-
-      QJsonObject rowOut;
-      QJsonArray rawCells;
-      for (const auto& cell : row)
-        rawCells.append(cell);
-
-      rowOut[QStringLiteral("rawCells")] = rawCells;
-      rowOut[QStringLiteral("datasets")] = datasetResults;
-      rowResults.append(rowOut);
-    }
+    for (const auto& row : parsed)
+      rowResults.append(buildDryRunRow(
+        row, sourceId, groups, language, verbose, transformEngines, transformEngineOk));
 
     QJsonObject perFrame;
     perFrame[QStringLiteral("rows")]     = rowResults;
@@ -5084,7 +5126,7 @@ API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString
 
   QJsonObject result;
   result[QStringLiteral("ok")]         = true;
-  result[QStringLiteral("sourceId")]   = sourceId;
+  result[Keys::SourceId]               = sourceId;
   result[QStringLiteral("frames")]     = frameResults;
   result[QStringLiteral("frameCount")] = frameResults.size();
 

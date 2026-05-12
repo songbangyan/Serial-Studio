@@ -245,6 +245,5 @@ IO::FrameConfig AppState::deriveFrameConfig() const
     [[unlikely]]
     cfg.frameDetection = SerialStudio::NoDelimiters;
 
-  // Return the generated configuration structure
   return cfg;
 }

@@ -249,9 +249,10 @@ DataModel::ProjectModel::ProjectModel()
   m_autoSaveTimer->setInterval(1500);
   connect(m_autoSaveTimer, &QTimer::timeout, this, &ProjectModel::autoSave);
 
-  // Bump mutationEpoch on every structural change so API callers can detect
-  // stale uniqueIds (group/dataset reorder shifts uniqueId mappings).
-  const auto bumpEpoch = [this] { ++m_mutationEpoch; };
+  // Bump mutationEpoch on every structural change
+  const auto bumpEpoch = [this] {
+    ++m_mutationEpoch;
+  };
   connect(this, &ProjectModel::groupAdded, this, bumpEpoch);
   connect(this, &ProjectModel::groupDeleted, this, bumpEpoch);
   connect(this, &ProjectModel::datasetAdded, this, bumpEpoch);
