@@ -342,8 +342,7 @@ void DataModel::FrameBuilder::onConnectedChanged()
   // Reset quick-plot channel count
   m_quickPlotChannels = -1;
 
-  // Fresh connection or disconnect -> re-arm the parser-load circuit breaker
-  // so a previously-tripped warning can fire again next time the load spikes.
+  // Re-arm the parser-load circuit breaker
   parseBudgetReset();
 
   // Clear per-source frames and transform engines on disconnect
@@ -515,7 +514,7 @@ void DataModel::FrameBuilder::parseBudgetAccount(BudgetClock::time_point started
   if (m_parseBudgetUsedNs <= limitNs)
     return;
 
-  // We've burned more than 80% of the wall-clock window on parsing
+  // Over 80% of wall-clock window spent in parsing
   m_parseBudgetSkipping = true;
   qWarning() << "[FrameBuilder] Parser load exceeded budget ("
              << m_parseBudgetUsedNs / 1'000'000LL << "ms /"

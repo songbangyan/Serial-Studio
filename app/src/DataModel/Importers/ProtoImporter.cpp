@@ -43,7 +43,7 @@
 // Internal: proto3 lexer + parser implementation
 //--------------------------------------------------------------------------------------------------
 
-namespace {
+namespace detail {
 
 /**
  * @brief Token kinds produced by the proto3 lexer.
@@ -93,17 +93,25 @@ struct ParseError {
  */
 class Lexer {
 public:
-  explicit Lexer(const QString& src) : m_src(src), m_pos(0), m_line(1) {}
+  explicit Lexer(const QString& src);
 
   Token next();
 
 private:
   void skipWsAndComments();
+  void skipLineComment();
+  void skipBlockComment();
+  Token lexStringLiteral(QChar quote, int line);
 
   QString m_src;
   int m_pos;
   int m_line;
 };
+
+/**
+ * @brief Wraps a proto3 source buffer for streaming tokenization.
+ */
+Lexer::Lexer(const QString& src) : m_src(src), m_pos(0), m_line(1) {}
 
 /**
  * @brief Skips whitespace, `//` line comments, and `/* ... *\/` block comments.
@@ -132,31 +140,46 @@ void Lexer::skipWsAndComments()
       const QChar c2 = m_src[m_pos + 1];
       if (c2 == QLatin1Char('/'))
       {
-        while (m_pos < m_src.size() && m_src[m_pos] != QLatin1Char('\n'))
-          ++m_pos;
-
+        skipLineComment();
         continue;
       }
       if (c2 == QLatin1Char('*'))
       {
-        m_pos += 2;
-        while (m_pos + 1 < m_src.size())
-        {
-          if (m_src[m_pos] == QLatin1Char('*') && m_src[m_pos + 1] == QLatin1Char('/'))
-          {
-            m_pos += 2;
-            break;
-          }
-          if (m_src[m_pos] == QLatin1Char('\n'))
-            ++m_line;
-
-          ++m_pos;
-        }
+        skipBlockComment();
         continue;
       }
     }
 
     break;
+  }
+}
+
+/**
+ * @brief Skips a `// ...\n` line comment, leaving position at the trailing newline.
+ */
+void Lexer::skipLineComment()
+{
+  while (m_pos < m_src.size() && m_src[m_pos] != QLatin1Char('\n'))
+    ++m_pos;
+}
+
+/**
+ * @brief Skips a `/* ... *\/` block comment, tracking line numbers across newlines.
+ */
+void Lexer::skipBlockComment()
+{
+  m_pos += 2;
+  while (m_pos + 1 < m_src.size())
+  {
+    if (m_src[m_pos] == QLatin1Char('*') && m_src[m_pos + 1] == QLatin1Char('/'))
+    {
+      m_pos += 2;
+      return;
+    }
+    if (m_src[m_pos] == QLatin1Char('\n'))
+      ++m_line;
+
+    ++m_pos;
   }
 }
 
@@ -193,41 +216,8 @@ Token Lexer::next()
     return {Tok::IntLit, m_src.mid(start, m_pos - start), line};
   }
 
-  // String literal with simple escapes
   if (c == QLatin1Char('"') || c == QLatin1Char('\''))
-  {
-    const QChar quote = c;
-    ++m_pos;
-    QString s;
-    while (m_pos < m_src.size() && m_src[m_pos] != quote)
-    {
-      if (m_src[m_pos] == QLatin1Char('\\') && m_pos + 1 < m_src.size())
-      {
-        const QChar esc = m_src[m_pos + 1];
-        switch (esc.unicode())
-        {
-          case 'n': s.append(QLatin1Char('\n')); break;
-          case 'r': s.append(QLatin1Char('\r')); break;
-          case 't': s.append(QLatin1Char('\t')); break;
-          case '\\': s.append(QLatin1Char('\\')); break;
-          case '\'': s.append(QLatin1Char('\'')); break;
-          case '"': s.append(QLatin1Char('"')); break;
-          default: s.append(esc);
-        }
-        m_pos += 2;
-        continue;
-      }
-      if (m_src[m_pos] == QLatin1Char('\n'))
-        ++m_line;
-
-      s.append(m_src[m_pos]);
-      ++m_pos;
-    }
-    if (m_pos < m_src.size())
-      ++m_pos;
-
-    return {Tok::StrLit, s, line};
-  }
+    return lexStringLiteral(c, line);
 
   ++m_pos;
   switch (c.unicode())
@@ -249,6 +239,44 @@ Token Lexer::next()
     case '+': return {Tok::Plus,     QStringLiteral("+"), line};
   }
   return {Tok::Error, QString(c), line};
+}
+
+/**
+ * @brief Returns a StrLit token for a `"..."` or `'...'` body, honoring simple backslash escapes.
+ */
+Token Lexer::lexStringLiteral(QChar quote, int line)
+{
+  ++m_pos;
+  QString s;
+  while (m_pos < m_src.size() && m_src[m_pos] != quote)
+  {
+    const bool hasEscape = (m_src[m_pos] == QLatin1Char('\\') && m_pos + 1 < m_src.size());
+    if (hasEscape)
+    {
+      const QChar esc = m_src[m_pos + 1];
+      switch (esc.unicode())
+      {
+        case 'n':  s.append(QLatin1Char('\n')); break;
+        case 'r':  s.append(QLatin1Char('\r')); break;
+        case 't':  s.append(QLatin1Char('\t')); break;
+        case '\\': s.append(QLatin1Char('\\')); break;
+        case '\'': s.append(QLatin1Char('\'')); break;
+        case '"':  s.append(QLatin1Char('"')); break;
+        default:   s.append(esc);
+      }
+      m_pos += 2;
+      continue;
+    }
+    if (m_src[m_pos] == QLatin1Char('\n'))
+      ++m_line;
+
+    s.append(m_src[m_pos]);
+    ++m_pos;
+  }
+  if (m_pos < m_src.size())
+    ++m_pos;
+
+  return {Tok::StrLit, s, line};
 }
 
 /**
@@ -282,13 +310,7 @@ DataModel::ProtoScalar classifyScalar(const QString& type)
  */
 class Parser {
 public:
-  Parser(const QString& src, QString& packageOut, QVector<DataModel::ProtoMessage>& outMessages)
-    : m_lexer(src)
-    , m_packageOut(packageOut)
-    , m_messages(outMessages)
-  {
-    m_cur = m_lexer.next();
-  }
+  Parser(const QString& src, QString& packageOut, QVector<DataModel::ProtoMessage>& outMessages);
 
   bool parseFile(ParseError& err);
 
@@ -298,6 +320,7 @@ private:
   void advance();
   void skipToSemicolon();
   void skipBlock();
+  void skipOptionList();
 
   bool parseMessage(const QString& parentQualified,
                     DataModel::ProtoMessage& out,
@@ -306,12 +329,25 @@ private:
   bool parseOneof(DataModel::ProtoMessage& msg, ParseError& err);
   bool parseMap(DataModel::ProtoMessage& msg, ParseError& err);
   bool parseEnumBody(ParseError& err);
+  int tryParseMessageBodyKeyword(DataModel::ProtoMessage& out, ParseError& err);
 
   Lexer m_lexer;
   Token m_cur;
   QString& m_packageOut;
   QVector<DataModel::ProtoMessage>& m_messages;
 };
+
+/**
+ * @brief Constructs the parser over a proto3 source buffer; primes the lookahead token.
+ */
+Parser::Parser(const QString& src, QString& packageOut,
+               QVector<DataModel::ProtoMessage>& outMessages)
+  : m_lexer(src)
+  , m_packageOut(packageOut)
+  , m_messages(outMessages)
+{
+  m_cur = m_lexer.next();
+}
 
 /**
  * @brief Returns true and advances if the current token matches kind t.
@@ -536,27 +572,34 @@ bool Parser::parseField(DataModel::ProtoMessage& msg, ParseError& err)
   f.tag = m_cur.text.toInt();
   advance();
 
-  // Optional `[ option = value, ... ]`
-  if (m_cur.type == Tok::LBracket)
-  {
-    int depth = 1;
-    advance();
-    while (m_cur.type != Tok::Eof && depth > 0)
-    {
-      if (m_cur.type == Tok::LBracket)
-        ++depth;
-      else if (m_cur.type == Tok::RBracket)
-        --depth;
-
-      advance();
-    }
-  }
+  skipOptionList();
 
   if (!expect(Tok::Semi, QStringLiteral("';'"), err))
     return false;
 
   msg.fields.append(f);
   return true;
+}
+
+/**
+ * @brief Skips an optional `[ option = value, ... ]` clause, including nested brackets.
+ */
+void Parser::skipOptionList()
+{
+  if (m_cur.type != Tok::LBracket)
+    return;
+
+  int depth = 1;
+  advance();
+  while (m_cur.type != Tok::Eof && depth > 0)
+  {
+    if (m_cur.type == Tok::LBracket)
+      ++depth;
+    else if (m_cur.type == Tok::RBracket)
+      --depth;
+
+    advance();
+  }
 }
 
 /**
@@ -588,56 +631,61 @@ bool Parser::parseMessage(const QString& parentQualified,
       continue;
     }
 
-    if (m_cur.type == Tok::Ident)
-    {
-      const QString& kw = m_cur.text;
-      if (kw == QLatin1String("option") || kw == QLatin1String("reserved")
-          || kw == QLatin1String("extensions"))
-      {
-        skipToSemicolon();
-        continue;
-      }
-      if (kw == QLatin1String("enum"))
-      {
-        advance();
-        if (!parseEnumBody(err))
-          return false;
+    const int kw = tryParseMessageBodyKeyword(out, err);
+    if (kw < 0)
+      return false;
 
-        continue;
-      }
-      if (kw == QLatin1String("oneof"))
-      {
-        advance();
-        if (!parseOneof(out, err))
-          return false;
-
-        continue;
-      }
-      if (kw == QLatin1String("map"))
-      {
-        advance();
-        if (!parseMap(out, err))
-          return false;
-
-        continue;
-      }
-      if (kw == QLatin1String("message"))
-      {
-        advance();
-        DataModel::ProtoMessage nested;
-        if (!parseMessage(out.qualifiedName, nested, err))
-          return false;
-
-        out.nested.append(nested);
-        continue;
-      }
-    }
+    if (kw > 0)
+      continue;
 
     if (!parseField(out, err))
       return false;
   }
 
   return expect(Tok::RBrace, QStringLiteral("'}'"), err);
+}
+
+/**
+ * @brief Returns 1 if the current token started a known body keyword, -1 on parse error, 0 otherwise.
+ */
+int Parser::tryParseMessageBodyKeyword(DataModel::ProtoMessage& out, ParseError& err)
+{
+  if (m_cur.type != Tok::Ident)
+    return 0;
+
+  const QString kw = m_cur.text;
+  if (kw == QLatin1String("option") || kw == QLatin1String("reserved")
+      || kw == QLatin1String("extensions"))
+  {
+    skipToSemicolon();
+    return 1;
+  }
+  if (kw == QLatin1String("enum"))
+  {
+    advance();
+    return parseEnumBody(err) ? 1 : -1;
+  }
+  if (kw == QLatin1String("oneof"))
+  {
+    advance();
+    return parseOneof(out, err) ? 1 : -1;
+  }
+  if (kw == QLatin1String("map"))
+  {
+    advance();
+    return parseMap(out, err) ? 1 : -1;
+  }
+  if (kw == QLatin1String("message"))
+  {
+    advance();
+    DataModel::ProtoMessage nested;
+    if (!parseMessage(out.qualifiedName, nested, err))
+      return -1;
+
+    out.nested.append(nested);
+    return 1;
+  }
+  return 0;
 }
 
 /**
@@ -748,7 +796,9 @@ QPair<double, double> defaultRangeFor(DataModel::ProtoScalar s)
   return {0.0, 100.0};
 }
 
-}  // namespace
+}  // namespace detail
+
+using namespace detail;
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
@@ -989,8 +1039,7 @@ QJsonObject DataModel::ProtoImporter::generateProject() const
   project[Keys::Title]   = projectTitle;
   project[Keys::Actions] = QJsonArray();
 
-  // Walk every top-level message; build groups + collect dispatch records along
-  // the way so the Lua parser can emit one dispatch table per message occurrence.
+  // Build groups + per-occurrence dispatch records for every top-level message
   QJsonArray groups;
   QVector<DispatchRecord> dispatchRecords;
   int groupIdCounter = 0;
@@ -1074,8 +1123,7 @@ void DataModel::ProtoImporter::buildGroups(const ProtoMessage& message,
     const bool isText
       = (field.scalar == ProtoScalar::String || field.scalar == ProtoScalar::Bytes);
 
-    // Booleans flip an LED. Text fields just log. Everything numeric joins the
-    // plot history so individual plots and MultiPlots have something to draw.
+    // Bool -> LED, text -> log only, numeric -> plot history
     if (field.scalar == ProtoScalar::Bool)
     {
       d.led     = true;
@@ -1104,8 +1152,7 @@ void DataModel::ProtoImporter::buildGroups(const ProtoMessage& message,
 
   groupsOut.append(serialize(group));
 
-  // Recurse for each MessageRef field, tracking child dispatch indices so the
-  // parent's dispatch table can resolve sub-message lookups by name.
+  // Recurse for each MessageRef field, recording child indices for parent dispatch
   for (const auto& field : message.fields)
   {
     if (field.scalar != ProtoScalar::MessageRef)
@@ -1151,8 +1198,7 @@ QString DataModel::ProtoImporter::selectGroupWidget(const ProtoMessage& message)
   if (n <= 1)
     return SerialStudio::groupWidgetId(SerialStudio::NoGroupWidget);
 
-  // MultiPlot when every scalar is a numeric non-bool of the same wire type and
-  // there are 2..8 of them -- looks like a uniform channel block.
+  // MultiPlot when 2-8 numeric non-bool scalars share the same wire type
   bool uniformNumeric     = (n >= 2 && n <= 8);
   ProtoScalar firstScalar = ProtoScalar::Int32;
   bool firstSet           = false;
@@ -1245,12 +1291,28 @@ QString DataModel::ProtoImporter::generateFrameParser(
   int totalDatasets, const QVector<DispatchRecord>& records) const
 {
   QString code;
+  emitParserBanner(code, QFileInfo(m_protoFilePath).fileName(), totalDatasets);
+  code += QStringLiteral("local N_DATASETS = %1\n").arg(totalDatasets);
+  code += QStringLiteral("local values = {}\n");
+  code += QStringLiteral("for i = 1, N_DATASETS do values[i] = 0 end\n\n");
+  code += frameParserDecoder();
+  emitDispatchTables(code, records);
+  emitTopLevelDispatchers(code, records);
+  emitScoreDispatcher(code);
+  emitParseEntry(code);
+  return code;
+}
 
-  // Banner
+/**
+ * @brief Appends the auto-generated banner identifying the .proto source and dataset count.
+ */
+void DataModel::ProtoImporter::emitParserBanner(QString& code, const QString& sourceFile,
+                                                int totalDatasets)
+{
   code += QStringLiteral("--\n");
   code += QStringLiteral("-- Protobuf Frame Parser\n");
   code += QStringLiteral("--\n");
-  code += QStringLiteral("-- Auto-generated from: %1\n").arg(QFileInfo(m_protoFilePath).fileName());
+  code += QStringLiteral("-- Auto-generated from: %1\n").arg(sourceFile);
   code += QStringLiteral("-- Total fields:        %1\n").arg(totalDatasets);
   code += QStringLiteral("--\n");
   code += QStringLiteral("-- The parser auto-detects which top-level message each incoming frame\n");
@@ -1259,16 +1321,14 @@ QString DataModel::ProtoImporter::generateFrameParser(
   code += QStringLiteral("-- other messages keep their previous values (protobuf's default).\n");
   code += QStringLiteral("-- Re-import the .proto file to regenerate this script.\n");
   code += QStringLiteral("--\n\n");
+}
 
-  code += QStringLiteral("local N_DATASETS = %1\n").arg(totalDatasets);
-  code += QStringLiteral("local values = {}\n");
-  code += QStringLiteral("for i = 1, N_DATASETS do values[i] = 0 end\n\n");
-
-  // Decoder helpers + parseMsg (parseMsg verifies e.wire == wt before decoding).
-  code += frameParserDecoder();
-
-  // Dispatch tables -- emit in reverse so each var is defined before any
-  // parent table references it via the 'message' entry.
+/**
+ * @brief Emits dispatch tables in reverse so each var is defined before any parent references it.
+ */
+void DataModel::ProtoImporter::emitDispatchTables(QString& code,
+                                                  const QVector<DispatchRecord>& records)
+{
   for (int i = records.size() - 1; i >= 0; --i)
   {
     const auto& rec = records.at(i);
@@ -1280,41 +1340,9 @@ QString DataModel::ProtoImporter::generateFrameParser(
 
     for (const auto& f : rec.msg->fields)
     {
-      QString entry;
-      if (f.scalar == ProtoScalar::MessageRef)
-      {
-        const int childRecIdx = (childCursor < rec.childRecordIndex.size())
-                                  ? rec.childRecordIndex.at(childCursor)
-                                  : -1;
-        ++childCursor;
-        if (childRecIdx < 0)
-        {
-          entry = QStringLiteral("[%1] = { type = 'bytes', wire = 2, out = %2 }")
-                    .arg(f.tag)
-                    .arg(idx);
-          ++idx;
-        }
-        else
-        {
-          entry = QStringLiteral("[%1] = { type = 'message', wire = 2, table = %2 }")
-                    .arg(f.tag)
-                    .arg(records.at(childRecIdx).varName);
-        }
-      }
-      else if (isNumericScalar(f.scalar) || f.scalar == ProtoScalar::String
-               || f.scalar == ProtoScalar::Bytes || f.scalar == ProtoScalar::EnumRef)
-      {
-        entry = QStringLiteral("[%1] = { type = '%2', wire = %3, out = %4 }")
-                  .arg(f.tag)
-                  .arg(luaTypeTagForScalar(f.scalar))
-                  .arg(wireTypeFor(f.scalar))
-                  .arg(idx);
-        ++idx;
-      }
-      else
-      {
+      const QString entry = formatDispatchEntry(f, rec, records, idx, childCursor);
+      if (entry.isEmpty())
         continue;
-      }
 
       if (!first)
         body += QStringLiteral(", ");
@@ -1330,10 +1358,56 @@ QString DataModel::ProtoImporter::generateFrameParser(
     code += QStringLiteral("-- Dispatch table for %1\n").arg(rec.msg->qualifiedName);
     code += QStringLiteral("local %1 = %2\n\n").arg(rec.varName, body);
   }
+}
 
-  // Top-level dispatchers, ordered by declaration. Each frame is scored against
-  // every entry; the highest score wins. Submessage tables are NOT considered
-  // top-level -- they only run when called recursively from a parent.
+/**
+ * @brief Formats one `[tag] = { ... }` Lua dispatch entry; returns empty when the field is skipped.
+ */
+QString DataModel::ProtoImporter::formatDispatchEntry(const ProtoField& field,
+                                                     const DispatchRecord& rec,
+                                                     const QVector<DispatchRecord>& records,
+                                                     int& datasetIdx, int& childCursor)
+{
+  if (field.scalar == ProtoScalar::MessageRef)
+  {
+    const int childRecIdx = (childCursor < rec.childRecordIndex.size())
+                              ? rec.childRecordIndex.at(childCursor)
+                              : -1;
+    ++childCursor;
+    if (childRecIdx < 0)
+    {
+      const QString entry = QStringLiteral("[%1] = { type = 'bytes', wire = 2, out = %2 }")
+                              .arg(field.tag)
+                              .arg(datasetIdx);
+      ++datasetIdx;
+      return entry;
+    }
+    return QStringLiteral("[%1] = { type = 'message', wire = 2, table = %2 }")
+      .arg(field.tag)
+      .arg(records.at(childRecIdx).varName);
+  }
+
+  const bool emittable = isNumericScalar(field.scalar) || field.scalar == ProtoScalar::String
+                         || field.scalar == ProtoScalar::Bytes
+                         || field.scalar == ProtoScalar::EnumRef;
+  if (!emittable)
+    return QString();
+
+  const QString entry = QStringLiteral("[%1] = { type = '%2', wire = %3, out = %4 }")
+                          .arg(field.tag)
+                          .arg(luaTypeTagForScalar(field.scalar))
+                          .arg(wireTypeFor(field.scalar))
+                          .arg(datasetIdx);
+  ++datasetIdx;
+  return entry;
+}
+
+/**
+ * @brief Emits the topDispatchers array (only records with isTopLevel == true).
+ */
+void DataModel::ProtoImporter::emitTopLevelDispatchers(QString& code,
+                                                      const QVector<DispatchRecord>& records)
+{
   code += QStringLiteral("local topDispatchers = {\n");
   for (const auto& rec : records)
   {
@@ -1343,10 +1417,13 @@ QString DataModel::ProtoImporter::generateFrameParser(
     code += QStringLiteral("  { name = \"%1\", tbl = %2 },\n").arg(rec.msg->name, rec.varName);
   }
   code += QStringLiteral("}\n\n");
+}
 
-  // Score function: walks every tag in the frame and tallies (matched - mismatched)
-  // wire types against the dispatcher. Unknown tags are ignored, so subset
-  // messages don't auto-lose to supersets.
+/**
+ * @brief Emits scoreDispatcher: tallies matched/mismatched wire types per dispatch table.
+ */
+void DataModel::ProtoImporter::emitScoreDispatcher(QString& code)
+{
   code += QStringLiteral("local function scoreDispatcher(buf, tbl)\n");
   code += QStringLiteral("  local p = 1\n");
   code += QStringLiteral("  local endP = #buf + 1\n");
@@ -1368,11 +1445,13 @@ QString DataModel::ProtoImporter::generateFrameParser(
   code += QStringLiteral("  end\n");
   code += QStringLiteral("  return good - bad\n");
   code += QStringLiteral("end\n\n");
+}
 
-  // parse(): score every top-level dispatcher, decode with the winner. Values
-  // are NOT reset -- each dispatcher only writes to its own slot range, and
-  // omitted fields keep the previous reading (which is what protobuf semantics
-  // imply for missing fields).
+/**
+ * @brief Emits parse(): scores all top-level dispatchers and decodes with the winner.
+ */
+void DataModel::ProtoImporter::emitParseEntry(QString& code)
+{
   code += QStringLiteral("function parse(frame)\n");
   code += QStringLiteral("  if #frame == 0 then return values end\n");
   code += QStringLiteral("  local best = nil\n");
@@ -1389,8 +1468,6 @@ QString DataModel::ProtoImporter::generateFrameParser(
   code += QStringLiteral("  end\n");
   code += QStringLiteral("  return values\n");
   code += QStringLiteral("end\n");
-
-  return code;
 }
 
 /**
@@ -1399,13 +1476,20 @@ QString DataModel::ProtoImporter::generateFrameParser(
 QString DataModel::ProtoImporter::frameParserDecoder() const
 {
   QString code;
-
   code += QStringLiteral("-- Wire-format decoder helpers.\n");
   code += QStringLiteral("-- `frame` arrives as a 1-indexed table of bytes (each 0..255).\n");
   code += QStringLiteral("-- Positions below are also 1-indexed; sub-ranges use [start, end)\n");
   code += QStringLiteral("-- where end is one past the last byte.\n\n");
+  emitDecoderReaders(code);
+  emitDecoderParseMsg(code);
+  return code;
+}
 
-  // Varint
+/**
+ * @brief Emits varint/zigzag/signed/fixed-width readers and skipWire helper.
+ */
+void DataModel::ProtoImporter::emitDecoderReaders(QString& code)
+{
   code += QStringLiteral("local function readVarint(buf, p)\n");
   code += QStringLiteral("  local v = 0\n");
   code += QStringLiteral("  local mul = 1\n");
@@ -1435,7 +1519,6 @@ QString DataModel::ProtoImporter::frameParserDecoder() const
   code += QStringLiteral("  return n\n");
   code += QStringLiteral("end\n\n");
 
-  // Fixed-width byte readers via string.unpack.
   code += QStringLiteral("local function bytesToString(buf, p, n)\n");
   code += QStringLiteral("  local t = {}\n");
   code += QStringLiteral("  for i = 1, n do t[i] = string.char(buf[p + i - 1] & 0xff) end\n");
@@ -1481,18 +1564,13 @@ QString DataModel::ProtoImporter::frameParserDecoder() const
   code += QStringLiteral("  end\n");
   code += QStringLiteral("  return #buf + 1\n");
   code += QStringLiteral("end\n\n");
+}
 
-  // parseMsg walks [startPos, endPos) and dispatches by tag. If a tag's wire
-  // type doesn't match what the schema expects, the field is skipped -- safer
-  // than decoding garbage when the wrong dispatcher is fed by mistake.
-  //
-  // Termination guards (critical -- without these the parser can hang on a
-  // truncated frame or a submessage with a bogus length prefix):
-  //   1. Clamp endPos to #buf + 1 so a malformed length can't trick us into
-  //      iterating past the buffer.
-  //   2. Break if readVarint fails to advance (it returns np == p when p is
-  //      already past the buffer, and skipWire(buf, p, 0) would then return
-  //      the same p -- infinite loop).
+/**
+ * @brief Emits parseMsg(): tag-dispatch loop with bogus-length and infinite-loop guards.
+ */
+void DataModel::ProtoImporter::emitDecoderParseMsg(QString& code)
+{
   code += QStringLiteral("function parseMsg(buf, startPos, endPos, tbl)\n");
   code += QStringLiteral("  local maxEnd = #buf + 1\n");
   code += QStringLiteral("  if endPos > maxEnd then endPos = maxEnd end\n");
@@ -1541,8 +1619,6 @@ QString DataModel::ProtoImporter::frameParserDecoder() const
   code += QStringLiteral("    end\n");
   code += QStringLiteral("  end\n");
   code += QStringLiteral("end\n\n");
-
-  return code;
 }
 
 //--------------------------------------------------------------------------------------------------

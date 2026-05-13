@@ -116,12 +116,6 @@ private:
   static constexpr int kTransformWatchdogMs     = 100;
   static constexpr int kTransformHookInstrCount = 10000;
 
-  // Parser-load circuit breaker. Tracks wall-clock time spent in the user
-  // script across a rolling 1-second window; if the parser consumes more
-  // than kParseBudgetWarnLimitMs (80% of the window), incoming frames are
-  // dropped until the window resets. Protects the GUI thread from being
-  // starved by very high-rate sources (e.g. audio at 48 kHz fanning out
-  // one parse() call per sample).
   static constexpr int kParseBudgetWindowMs    = 1000;
   static constexpr int kParseBudgetWarnLimitMs = 800;
 

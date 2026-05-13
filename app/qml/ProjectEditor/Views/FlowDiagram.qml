@@ -102,9 +102,7 @@ Item {
     const fallback = [{ sourceId: 0, busType: SerialStudio.UART, title: "" }]
     const srcList = sources.length > 0 ? sources : fallback
 
-    // first pass: measure total height per source. Output groups don't
-    // contribute -- their widgets are TX-direction nodes that render in the
-    // frame-parser column alongside actions, not as groups in colGrp.
+    // First pass: measure total height per source (skipping Output groups)
     for (const src of srcList)
       srcTotalH[src.sourceId] = 0
 
@@ -189,9 +187,7 @@ Item {
 
     }
 
-    // -- place group + dataset nodes ---------------------------------
-    // Output groups are skipped here -- their widgets are TX-direction and
-    // render as standalone cards in the frame-parser column below.
+    // Place group + dataset nodes (Output groups render below as TX cards)
     for (const grp of groups) {
       if (grp.groupType === SerialStudio.GroupOutput) continue
 
@@ -236,9 +232,7 @@ Item {
       })
 
       //
-      // Dataset pills -- datasets with a transform get an intermediate
-      // "transform" block in the colTrans column, so the data-flow shown
-      // matches reality: group -> transform -> dataset.
+      // Dataset pills (datasets with a transform get an intermediate block)
       //
       if (pillCount > 0) {
         const blockH   = pillCount * chipH + (pillCount - 1) * vGap
@@ -269,18 +263,15 @@ Item {
               badge:     ""
             })
 
-            // group -> transform
             newArrows.push({
               x1: colGrp + nodeW, y1: cardY + nodeH / 2,
               x2: colTrans,       y2: chipY + chipH / 2
             })
-            // transform -> dataset (short hop)
             newArrows.push({
               x1: colTrans + transW, y1: chipY + chipH / 2,
               x2: colChip,           y2: chipY + chipH / 2
             })
           } else {
-            // No transform -> single long arrow group -> dataset
             newArrows.push({
               x1: colGrp + nodeW, y1: cardY + nodeH / 2,
               x2: colChip,        y2: chipY + chipH / 2
@@ -360,10 +351,7 @@ Item {
     }
 
     //
-    // Output panels (TX direction): each panel renders as a card in the
-    // frame-parser column with one arrow back to its target device, then its
-    // controls stack underneath it as pills in the dataset column -- the
-    // mirror image of the RX flow (parser -> group -> dataset).
+    // Output panels (TX direction): mirror image of the RX flow
     //
     const outputGroups = groups.filter(g => g.groupType === SerialStudio.GroupOutput)
 
@@ -451,9 +439,7 @@ Item {
     }
 
     //
-    // Data tables stack below the actions in the frame-parser column. Tables
-    // aren't part of the per-frame flow, so they get no arrows -- they're
-    // shared scratch space scripts can read/write.
+    // Data tables (shared scratch space, no per-frame arrows)
     //
     if (tables.length > 0) {
       const tblBlockTop = blockCursor + vGap * 2
@@ -635,21 +621,14 @@ Item {
     }
 
     //
-    // -- Scaled content item ----------------------------------------------
-    //
-    // The Item is sized to the LARGER of the diagram's natural extent and the
-    // Flickable viewport so the background MouseArea below always covers the
-    // full visible area -- right-click on an empty viewport must still reach
-    // the "Add ..." menu, even when the diagram itself is tiny.
+    // Scaled content item (sized to max(content, viewport) for the bg MouseArea)
     //
     Item {
       width:  Math.max(root.contentW * root.zoom, flickable.width)
       height: Math.max(root.contentH * root.zoom, flickable.height)
 
       //
-      // Right-click anywhere on empty canvas -> "Add ..." menu.
-      // Accepts only RightButton so left-clicks and middle-button drag
-      // continue to fall through to other handlers / the Flickable.
+      // Background right-click -> "Add ..." menu
       //
       MouseArea {
         anchors.fill: parent
@@ -680,12 +659,6 @@ Item {
             ctx.lineWidth   = 1.5 * z
             ctx.setLineDash([])
 
-            //
-            // Arrowhead geometry. Horizontal-tangent arrows (the default)
-            // approach the destination from left/right; "verticalEnd" arrows
-            // approach from above/below so the apex sits flush against the
-            // top/bottom edge of the destination card.
-            //
             const hl  = 7 * z
             const sin = Math.sin(Math.PI / 6)
             ctx.setLineDash([])
@@ -696,11 +669,6 @@ Item {
               const hly  = hl * dirY
               const y2a  = y2 - hly
 
-              //
-              // Guarantee >= 30px of horizontal travel before the curve bends
-              // downward, so the arrow visibly "leaves" the source card before
-              // diving into the device.
-              //
               const exitDx = Math.max(30 * z, Math.abs(x2 - x1) * 0.3) * dirX
               const c1x    = x1 + exitDx
               const c1y    = y1
@@ -774,8 +742,6 @@ Item {
           property bool isFP:          modelData.type === "frameparser"
           property bool isOutputPanel: modelData.type === "output-panel"
 
-          // Stable identifier used to pin the highlight while the context
-          // menu is open (and to gate the per-type menu used).
           readonly property string nodeKey: menuController.keyOf(modelData)
           readonly property bool isPinned: menuController.pinnedKey === nodeKey
                                            && nodeKey !== ""
@@ -825,11 +791,7 @@ Item {
           }
 
           //
-          // -- Transform block (its own node, not a badge) --------------
-          //
-          // Sits between the group and its dataset to mirror the data flow:
-          // raw value -> transform -> displayed value. Left-click opens the
-          // transform editor directly without changing the editor's view.
+          // Transform block (its own node, left-click opens editor)
           //
           Rectangle {
             visible: nd.isTransform
@@ -934,15 +896,11 @@ Item {
             onEntered: nd.hovered = true
             onExited:  nd.hovered = false
 
-            // Right-click -> context menu (no selection change).
             onClicked: (mouse) => {
               if (mouse.button === Qt.RightButton)
                 menuController.openForNode(modelData)
             }
 
-            // Double-click -> open the editor for that node. Single click is
-            // intentionally a no-op so accidental clicks while panning the
-            // diagram don't yank the user out of the Project view.
             onDoubleClicked: (mouse) => {
               if (mouse.button !== Qt.LeftButton)
                 return
@@ -973,8 +931,6 @@ Item {
                   Cpp_JSON_ProjectEditor.selectUserTable(modelData.tableName)
                   break
                 case "transform":
-                  // Open the transform code editor without changing the
-                  // selected pane on the right.
                   Cpp_JSON_ProjectEditor.openTransformEditorFor(
                     modelData.groupId, modelData.datasetId)
                   break
@@ -988,8 +944,7 @@ Item {
 
 
   //
-  // Painter Code Dialog -- Loader so the (commercial-only) QML file is
-  // only resolved when first opened. Mirrors the pattern in GroupView.qml.
+  // Painter Code Dialog (commercial; resolved on first open)
   //
   Loader {
     id: painterCodeDialog
@@ -1008,15 +963,7 @@ Item {
   }
 
   //
-  // Menu controller -- shared state for the per-context Menus. Each Menu
-  // instance below is opened via menuController.openForXxx(), which:
-  //   1. Stamps the controller's current* properties from the click target.
-  //   2. Sets pinnedKey so the corresponding node delegate stays highlighted
-  //      while the menu is open (Menu.onClosed clears it).
-  //   3. Calls popup() on the right per-type Menu.
-  //
-  // No conditional visibility on items -- avoids the empty-slot rendering
-  // glitches that come from MenuItem { visible: false } in Qt 6 Menus.
+  // Menu controller (shared state for per-context Menus, no visible: false items)
   //
   QtObject {
     id: menuController
@@ -1034,8 +981,6 @@ Item {
     property int    currentWidgetId:     -1
     property int    currentActionId:     -1
 
-    // Move-up enabled when not already first; move-down enabled when not
-    // already last. Both require at least two siblings to make sense.
     readonly property bool canMoveUp:
       currentSiblingCount > 1 && currentMoveIndex() > 0
     readonly property bool canMoveDown:
@@ -1111,19 +1056,12 @@ Item {
 
     function unpin() { pinnedKey = "" }
 
-    // Select the target group when adding a dataset/output from a group's
-    // own context menu; in any other context, leave selection untouched and
-    // let the model pick the currently-selected group.
     function selectTargetGroup() {
       if ((currentType === "group" || currentType === "output-panel")
           && currentGroupId >= 0)
         Cpp_JSON_ProjectEditor.selectGroup(currentGroupId)
     }
 
-    // When the user right-clicks a source or frame-parser node, propagate
-    // that source to addGroup/addDataset/addOutput so the new entity is
-    // tagged with that sourceId. In any other context return -1 (the model
-    // treats this as "caller didn't specify -- use legacy behavior").
     function targetSourceId() {
       if ((currentType === "source" || currentType === "frameparser")
           && currentSourceId >= 0)
@@ -1131,13 +1069,6 @@ Item {
       return -1
     }
 
-    // Run an operation without letting the editor's right-pane view drift.
-    // The model fires several signals (groupsChanged, outputWidgetDeleted...)
-    // with Qt::QueuedConnection into the editor's selection-bookkeeping
-    // lambdas. Those lambdas land in the event queue and run AFTER fn()
-    // returns -- if we release the latch synchronously here, the editor
-    // wakes up unsuppressed and yanks the right pane to the parent group.
-    // Qt.callLater defers the release until after the queued handlers drain.
     function locked(fn) {
       Cpp_JSON_ProjectEditor.setSuppressViewChange(true)
       try { fn() } finally {
@@ -1148,15 +1079,14 @@ Item {
   }
 
   //
-  // Reusable Actions for "Add ..." items so the same icon + handler are
-  // shared between the background menu and the per-group menus without
-  // copy-paste. Per-target ops (Move/Duplicate/Delete/Rename) need context
-  // from menuController, so they stay as inline MenuItems.
+  // Reusable Actions for "Add ..." (shared between background and per-group menus)
   //
   Item {
     visible: false
 
-    // -- Group variants -----------------------------------------------
+    //
+    // Group variants
+    //
     Action {
       id: actAddGroupGeneric
 
@@ -1264,11 +1194,9 @@ Item {
                                        menuController.targetSourceId()))
     }
 
-    // -- Dataset variants ---------------------------------------------
-    // The function that selects the target group when adding from a group's
-    // context menu lives on menuController (Action.parent inside this Item
-    // doesn't resolve to the Item -- it falls back to a layout further up).
-
+    //
+    // Dataset variants (target-group selection lives on menuController)
+    //
     Action {
       id: actAddDsGeneric
 
@@ -1361,7 +1289,9 @@ Item {
       })
     }
 
-    // -- Output variants (Pro) ----------------------------------------
+    //
+    // Output variants (Pro)
+    //
     Action {
       id: actAddOutPanel
 

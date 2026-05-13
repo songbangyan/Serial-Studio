@@ -168,9 +168,7 @@ void DataModel::LuaScriptEngine::createState()
   // Install instruction-count watchdog hook
   lua_sethook(m_state, watchdogHook, LUA_MASKCOUNT, kHookInstructionCount);
 
-  // Deadline starts "never" -- set per-call before entering Lua. Fresh state
-  // also re-arms the circuit breaker so a previously-disabled script can run
-  // again once the user reloads.
+  // Deadline armed per-call; fresh state re-arms the circuit breaker
   m_deadline             = QDeadlineTimer(QDeadlineTimer::Forever);
   m_loaded               = false;
   m_disabled             = false;

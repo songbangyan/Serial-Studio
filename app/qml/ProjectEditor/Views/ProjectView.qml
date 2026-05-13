@@ -306,9 +306,7 @@ Widgets.Pane {
         }
 
         //
-        // Always-visible discovery hint on the LEFT side so newcomers find
-        // the diagram's context menu without guessing. Apple HIG style:
-        // sentence case, instructive, no exclamation marks.
+        // Always-visible discovery hint (LEFT side, Apple HIG sentence case)
         //
         Label {
           opacity: 0.65

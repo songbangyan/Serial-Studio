@@ -560,8 +560,7 @@ bool DataModel::JsScriptEngine::loadScript(const QString& script,
                                    "a[j]=parseInt(h.substr(i,2),16);return a;}"));
   m_hexToArray = m_engine.globalObject().property(QStringLiteral("__ss_internal_hex_to_array__"));
 
-  // Fresh script -> re-arm the circuit breaker so a previously-disabled
-  // engine accepts work again after the user fixes their code.
+  // Re-arm the circuit breaker on fresh script
   m_disabled            = false;
   m_consecutiveTimeouts = 0;
 

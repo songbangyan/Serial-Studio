@@ -262,9 +262,7 @@ DataModel::ProjectModel::ProjectModel()
   connect(this, &ProjectModel::sourceStructureChanged, this, bumpEpoch);
   connect(this, &ProjectModel::groupsChanged, this, bumpEpoch);
 
-  // canSave / saveBlockerTitle / saveBlockerDetail re-evaluate whenever the
-  // project title or group/dataset structure changes -- the only inputs the
-  // save validator looks at.
+  // Re-evaluate save validity on title/structure changes
   connect(this, &ProjectModel::titleChanged, this, &ProjectModel::saveStatusChanged);
   connect(this, &ProjectModel::groupsChanged, this, &ProjectModel::saveStatusChanged);
 
@@ -3189,8 +3187,7 @@ void DataModel::ProjectModel::setOutputWidgetIcon(const QString& icon)
  */
 void DataModel::ProjectModel::addOutputPanel(int sourceId)
 {
-  // Force a fresh panel even when an existing one would match -- the
-  // user explicitly asked for a new panel, so don't append to an old one.
+  // Force a fresh panel rather than appending to an existing match
   addGroup(tr("Output Controls"), SerialStudio::NoGroupWidget, sourceId);
   auto& group     = m_groups.back();
   group.groupType = DataModel::GroupType::Output;
@@ -3400,11 +3397,7 @@ void DataModel::ProjectModel::duplicateCurrentDataset()
 }
 
 /**
- * @brief Ensures a compatible group is selected before adding a dataset.
- *
- * When sourceId >= 0, only groups belonging to that source qualify, and any
- * fallback creation tags the new group with that source. When sourceId < 0,
- * the legacy behavior applies: any compatible group is acceptable.
+ * @brief Ensures a compatible group is selected before adding a dataset; honors sourceId scoping.
  */
 void DataModel::ProjectModel::ensureValidGroup(int sourceId)
 {
@@ -5668,8 +5661,7 @@ QVariantList DataModel::ProjectModel::groupsForDiagram() const
       dsMap[Keys::Title]     = ds.title;
       dsMap[Keys::Units]     = ds.units;
       dsMap[Keys::Widget]    = ds.widget;
-      // Internal diagram hint -- not part of the .ssproj schema, so a literal
-      // key is fine. The QML side flips a "fx" badge on the dataset pill.
+      // Diagram-only hint (not part of the .ssproj schema)
       dsMap[QStringLiteral("hasTransform")] = !ds.transformCode.trimmed().isEmpty();
       datasets.append(dsMap);
     }

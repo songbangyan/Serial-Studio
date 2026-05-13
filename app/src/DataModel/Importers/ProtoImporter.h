@@ -134,6 +134,18 @@ private:
   [[nodiscard]] QString generateFrameParser(int totalDatasets,
                                             const QVector<DispatchRecord>& records) const;
   [[nodiscard]] QString frameParserDecoder() const;
+
+  static void emitParserBanner(QString& code, const QString& sourceFile, int totalDatasets);
+  static void emitDispatchTables(QString& code, const QVector<DispatchRecord>& records);
+  static QString formatDispatchEntry(const ProtoField& field, const DispatchRecord& rec,
+                                     const QVector<DispatchRecord>& records, int& datasetIdx,
+                                     int& childCursor);
+  static void emitTopLevelDispatchers(QString& code, const QVector<DispatchRecord>& records);
+  static void emitScoreDispatcher(QString& code);
+  static void emitParseEntry(QString& code);
+  static void emitDecoderReaders(QString& code);
+  static void emitDecoderParseMsg(QString& code);
+
   [[nodiscard]] const ProtoMessage* findMessage(const QString& typeRef) const;
   [[nodiscard]] const ProtoMessage* messageAt(int index) const;
   [[nodiscard]] int countScalarFields(const ProtoMessage& message) const;
