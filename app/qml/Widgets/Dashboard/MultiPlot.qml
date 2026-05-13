@@ -48,11 +48,11 @@ Item {
   //
   // Custom properties
   //
-  readonly property var interpolationModes: [MultiPlotModel.None,
-                                             MultiPlotModel.Linear,
-                                             MultiPlotModel.Zoh,
-                                             MultiPlotModel.Stem]
-  property int interpolationMode: MultiPlotModel.Linear
+  readonly property var interpolationModes: [SerialStudio.InterpolationNone,
+                                             SerialStudio.InterpolationLinear,
+                                             SerialStudio.InterpolationZoh,
+                                             SerialStudio.InterpolationStem]
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showLegends: true
 
   //
@@ -83,7 +83,9 @@ Item {
     if (s["interpolationMode"] !== undefined)
       root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
     else if (s["interpolate"] !== undefined)
-      root.interpolationMode = s["interpolate"] ? MultiPlotModel.Linear : MultiPlotModel.None
+      root.interpolationMode = s["interpolate"]
+        ? SerialStudio.InterpolationLinear
+        : SerialStudio.InterpolationNone
 
     if (root.model)
       root.model.interpolationMode = root.interpolationMode
@@ -125,7 +127,7 @@ Item {
 
   function normalizeInterpolationMode(value) {
     const idx = root.interpolationModes.indexOf(value)
-    return idx >= 0 ? value : MultiPlotModel.Linear
+    return idx >= 0 ? value : SerialStudio.InterpolationLinear
   }
 
   function nextInterpolationMode() {
@@ -134,11 +136,11 @@ Item {
   }
 
   function modeLabel() {
-    if (root.interpolationMode === MultiPlotModel.None)
+    if (root.interpolationMode === SerialStudio.InterpolationNone)
       return qsTr("None")
-    if (root.interpolationMode === MultiPlotModel.Zoh)
+    if (root.interpolationMode === SerialStudio.InterpolationZoh)
       return qsTr("ZOH")
-    if (root.interpolationMode === MultiPlotModel.Stem)
+    if (root.interpolationMode === SerialStudio.InterpolationStem)
       return qsTr("Stem")
     return qsTr("Linear")
   }
@@ -200,7 +202,7 @@ Item {
     }
 
     DashboardToolButton {
-      checked: root.interpolationMode !== MultiPlotModel.None
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
       ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
       onClicked: {
         root.interpolationMode = root.nextInterpolationMode()
@@ -211,7 +213,7 @@ Item {
                                                 "interpolationMode",
                                                 root.interpolationMode)
       }
-      icon.source: root.interpolationMode === MultiPlotModel.None
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
                      ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
                      : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
@@ -349,7 +351,7 @@ Item {
         model: root.model.count
         delegate: LineSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolationMode !== MultiPlotModel.None
+          property bool curveVisible: root.interpolationMode !== SerialStudio.InterpolationNone
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
         }
@@ -362,7 +364,7 @@ Item {
         model: root.model.count
         delegate: ScatterSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolationMode === MultiPlotModel.None
+          property bool curveVisible: root.interpolationMode === SerialStudio.InterpolationNone
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
           pointDelegate: Rectangle {

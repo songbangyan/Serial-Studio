@@ -50,11 +50,11 @@ Item {
   //
   // Custom properties
   //
-  readonly property var interpolationModes: [PlotModel.None,
-                                             PlotModel.Linear,
-                                             PlotModel.Zoh,
-                                             PlotModel.Stem]
-  property int interpolationMode: PlotModel.Linear
+  readonly property var interpolationModes: [SerialStudio.InterpolationNone,
+                                             SerialStudio.InterpolationLinear,
+                                             SerialStudio.InterpolationZoh,
+                                             SerialStudio.InterpolationStem]
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: false
 
   //
@@ -84,7 +84,9 @@ Item {
     if (s["interpolationMode"] !== undefined)
       root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
     else if (s["interpolate"] !== undefined)
-      root.interpolationMode = s["interpolate"] ? PlotModel.Linear : PlotModel.None
+      root.interpolationMode = s["interpolate"]
+        ? SerialStudio.InterpolationLinear
+        : SerialStudio.InterpolationNone
 
     if (root.model)
       root.model.interpolationMode = root.interpolationMode
@@ -92,8 +94,8 @@ Item {
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
 
-    if (root.interpolationMode === PlotModel.None
-      || root.interpolationMode === PlotModel.Stem)
+    if (root.interpolationMode === SerialStudio.InterpolationNone
+      || root.interpolationMode === SerialStudio.InterpolationStem)
       root.showAreaUnderPlot = false
 
     if (s["userShowXLabel"] !== undefined)
@@ -121,7 +123,7 @@ Item {
 
   function normalizeInterpolationMode(value) {
     const idx = root.interpolationModes.indexOf(value)
-    return idx >= 0 ? value : PlotModel.Linear
+    return idx >= 0 ? value : SerialStudio.InterpolationLinear
   }
 
   function nextInterpolationMode() {
@@ -130,11 +132,11 @@ Item {
   }
 
   function modeLabel() {
-    if (root.interpolationMode === PlotModel.None)
+    if (root.interpolationMode === SerialStudio.InterpolationNone)
       return qsTr("None")
-    if (root.interpolationMode === PlotModel.Zoh)
+    if (root.interpolationMode === SerialStudio.InterpolationZoh)
       return qsTr("ZOH")
-    if (root.interpolationMode === PlotModel.Stem)
+    if (root.interpolationMode === SerialStudio.InterpolationStem)
       return qsTr("Stem")
     return qsTr("Linear")
   }
@@ -154,7 +156,7 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        if (root.interpolationMode === PlotModel.None) {
+        if (root.interpolationMode === SerialStudio.InterpolationNone) {
           root.model.draw(scatterSeries)
         } else {
           root.model.draw(upperSeries)
@@ -192,8 +194,8 @@ Item {
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
-        if (root.interpolationMode === PlotModel.None
-            || root.interpolationMode === PlotModel.Stem)
+        if (root.interpolationMode === SerialStudio.InterpolationNone
+          || root.interpolationMode === SerialStudio.InterpolationStem)
           root.showAreaUnderPlot = false
 
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
@@ -201,9 +203,9 @@ Item {
                                                 root.interpolationMode)
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      checked: root.interpolationMode !== PlotModel.None
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
       ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
-      icon.source: root.interpolationMode === PlotModel.None
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
              ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
              : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
@@ -213,8 +215,8 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      enabled: root.interpolationMode !== PlotModel.None
-           && root.interpolationMode !== PlotModel.Stem
+       enabled: root.interpolationMode !== SerialStudio.InterpolationNone
+         && root.interpolationMode !== SerialStudio.InterpolationStem
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
@@ -345,7 +347,7 @@ Item {
     ScatterSeries {
       id: scatterSeries
 
-      visible: root.interpolationMode === PlotModel.None
+      visible: root.interpolationMode === SerialStudio.InterpolationNone
       pointDelegate: Rectangle {
         width: 2
         height: 2
@@ -358,7 +360,7 @@ Item {
       id: upperSeries
 
       width: 2
-      visible: root.interpolationMode !== PlotModel.None
+      visible: root.interpolationMode !== SerialStudio.InterpolationNone
     }
 
     LineSeries {
@@ -375,8 +377,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
-          && root.interpolationMode !== PlotModel.None
-          && root.interpolationMode !== PlotModel.Stem
+           && root.interpolationMode !== SerialStudio.InterpolationNone
+           && root.interpolationMode !== SerialStudio.InterpolationStem
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }

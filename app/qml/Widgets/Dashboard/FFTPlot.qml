@@ -48,11 +48,11 @@ Item {
   //
   // Custom properties
   //
-  readonly property var interpolationModes: [FFTPlotModel.None,
-                                             FFTPlotModel.Linear,
-                                             FFTPlotModel.Zoh,
-                                             FFTPlotModel.Stem]
-  property int interpolationMode: FFTPlotModel.Linear
+  readonly property var interpolationModes: [SerialStudio.InterpolationNone,
+                                             SerialStudio.InterpolationLinear,
+                                             SerialStudio.InterpolationZoh,
+                                             SerialStudio.InterpolationStem]
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: true
 
   //
@@ -85,8 +85,8 @@ Item {
     if (s["interpolationMode"] !== undefined)
       root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
 
-    if (root.interpolationMode === FFTPlotModel.None
-        || root.interpolationMode === FFTPlotModel.Stem)
+    if (root.interpolationMode === SerialStudio.InterpolationNone
+      || root.interpolationMode === SerialStudio.InterpolationStem)
       root.showAreaUnderPlot = false
 
     if (root.model)
@@ -117,7 +117,7 @@ Item {
 
   function normalizeInterpolationMode(value) {
     const idx = root.interpolationModes.indexOf(value)
-    return idx >= 0 ? value : FFTPlotModel.Linear
+    return idx >= 0 ? value : SerialStudio.InterpolationLinear
   }
 
   function nextInterpolationMode() {
@@ -126,11 +126,11 @@ Item {
   }
 
   function modeLabel() {
-    if (root.interpolationMode === FFTPlotModel.None)
+    if (root.interpolationMode === SerialStudio.InterpolationNone)
       return qsTr("None")
-    if (root.interpolationMode === FFTPlotModel.Zoh)
+    if (root.interpolationMode === SerialStudio.InterpolationZoh)
       return qsTr("ZOH")
-    if (root.interpolationMode === FFTPlotModel.Stem)
+    if (root.interpolationMode === SerialStudio.InterpolationStem)
       return qsTr("Stem")
     return qsTr("Linear")
   }
@@ -150,7 +150,7 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        if (root.interpolationMode === FFTPlotModel.None) {
+        if (root.interpolationMode === SerialStudio.InterpolationNone) {
           root.model.draw(scatterSeries)
         } else {
           root.model.draw(upperSeries)
@@ -182,15 +182,15 @@ Item {
     }
 
     DashboardToolButton {
-      checked: root.interpolationMode !== FFTPlotModel.None
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
       ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
       onClicked: {
         root.interpolationMode = root.nextInterpolationMode()
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
-        if (root.interpolationMode === FFTPlotModel.None
-            || root.interpolationMode === FFTPlotModel.Stem)
+        if (root.interpolationMode === SerialStudio.InterpolationNone
+          || root.interpolationMode === SerialStudio.InterpolationStem)
           root.showAreaUnderPlot = false
 
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
@@ -198,7 +198,7 @@ Item {
                                                 root.interpolationMode)
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      icon.source: root.interpolationMode === FFTPlotModel.None
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
                      ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
                      : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
@@ -219,8 +219,8 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      enabled: root.interpolationMode !== FFTPlotModel.None
-           && root.interpolationMode !== FFTPlotModel.Stem
+       enabled: root.interpolationMode !== SerialStudio.InterpolationNone
+         && root.interpolationMode !== SerialStudio.InterpolationStem
     }
 
     Rectangle {
@@ -342,7 +342,7 @@ Item {
     ScatterSeries {
       id: scatterSeries
 
-      visible: root.interpolationMode === FFTPlotModel.None
+      visible: root.interpolationMode === SerialStudio.InterpolationNone
       pointDelegate: Rectangle {
         width: 2
         height: 2
@@ -355,7 +355,7 @@ Item {
       id: upperSeries
 
       width: 2
-      visible: root.interpolationMode !== FFTPlotModel.None
+      visible: root.interpolationMode !== SerialStudio.InterpolationNone
     }
 
     LineSeries {
@@ -372,8 +372,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
-          && root.interpolationMode !== FFTPlotModel.None
-          && root.interpolationMode !== FFTPlotModel.Stem
+           && root.interpolationMode !== SerialStudio.InterpolationNone
+           && root.interpolationMode !== SerialStudio.InterpolationStem
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }
