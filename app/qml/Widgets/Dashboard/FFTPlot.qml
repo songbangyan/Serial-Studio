@@ -75,8 +75,7 @@ Item {
     if (s["interpolationMode"] !== undefined)
       root.interpolationMode = plotCommon.normalizeInterpolationMode(s["interpolationMode"])
 
-    if (root.interpolationMode === SerialStudio.InterpolationNone
-      || root.interpolationMode === SerialStudio.InterpolationStem)
+    if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
       root.showAreaUnderPlot = false
 
     if (root.model)
@@ -160,8 +159,7 @@ Item {
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
-        if (root.interpolationMode === SerialStudio.InterpolationNone
-          || root.interpolationMode === SerialStudio.InterpolationStem)
+        if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
           root.showAreaUnderPlot = false
 
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
@@ -190,8 +188,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-       enabled: root.interpolationMode !== SerialStudio.InterpolationNone
-         && root.interpolationMode !== SerialStudio.InterpolationStem
+       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
     }
 
     Rectangle {

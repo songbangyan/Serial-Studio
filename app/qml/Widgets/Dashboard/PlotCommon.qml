@@ -63,4 +63,10 @@ QtObject {
       return qsTr("Stem")
     return qsTr("Linear")
   }
+
+  function canShowAreaUnderPlot(mode)
+  {
+    return mode !== SerialStudio.InterpolationNone
+      && mode !== SerialStudio.InterpolationStem
+  }
 }

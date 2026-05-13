@@ -84,8 +84,7 @@ Item {
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
 
-    if (root.interpolationMode === SerialStudio.InterpolationNone
-      || root.interpolationMode === SerialStudio.InterpolationStem)
+    if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
       root.showAreaUnderPlot = false
 
     if (s["userShowXLabel"] !== undefined)
@@ -165,8 +164,7 @@ Item {
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
-        if (root.interpolationMode === SerialStudio.InterpolationNone
-          || root.interpolationMode === SerialStudio.InterpolationStem)
+        if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
           root.showAreaUnderPlot = false
 
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
@@ -186,8 +184,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-       enabled: root.interpolationMode !== SerialStudio.InterpolationNone
-         && root.interpolationMode !== SerialStudio.InterpolationStem
+       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
