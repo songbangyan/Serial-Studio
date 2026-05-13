@@ -48,10 +48,6 @@ Item {
   //
   // Custom properties
   //
-  readonly property var interpolationModes: [SerialStudio.InterpolationNone,
-                                             SerialStudio.InterpolationLinear,
-                                             SerialStudio.InterpolationZoh,
-                                             SerialStudio.InterpolationStem]
   property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showLegends: true
 
@@ -62,26 +58,20 @@ Item {
   property bool userShowYLabel: true
   property bool userShowLegends: true
 
-  //
-  // Set downsample size based on widget size & zoom factor
-  //
-  function setDownsampleFactor()
-  {
-    const z = plot.zoom
-    model.dataW = plot.plotArea.width * z
-    model.dataH = plot.plotArea.height * z
+  PlotCommon {
+    id: plotCommon
   }
 
   //
   // Sync model width/height with widget, then restore persisted settings
   //
   Component.onCompleted: {
-    root.setDownsampleFactor()
+    plotCommon.setDownsampleFactor(plot, model)
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
     if (s["interpolationMode"] !== undefined)
-      root.interpolationMode = root.normalizeInterpolationMode(s["interpolationMode"])
+      root.interpolationMode = plotCommon.normalizeInterpolationMode(s["interpolationMode"])
     else if (s["interpolate"] !== undefined)
       root.interpolationMode = s["interpolate"]
         ? SerialStudio.InterpolationLinear
@@ -125,25 +115,6 @@ Item {
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
-  function normalizeInterpolationMode(value) {
-    const idx = root.interpolationModes.indexOf(value)
-    return idx >= 0 ? value : SerialStudio.InterpolationLinear
-  }
-
-  function nextInterpolationMode() {
-    const idx = root.interpolationModes.indexOf(root.interpolationMode)
-    return root.interpolationModes[(idx + 1) % root.interpolationModes.length]
-  }
-
-  function modeLabel() {
-    if (root.interpolationMode === SerialStudio.InterpolationNone)
-      return qsTr("None")
-    if (root.interpolationMode === SerialStudio.InterpolationZoh)
-      return qsTr("ZOH")
-    if (root.interpolationMode === SerialStudio.InterpolationStem)
-      return qsTr("Stem")
-    return qsTr("Linear")
-  }
 
   //
   // Axis range configuration dialog
@@ -203,9 +174,9 @@ Item {
 
     DashboardToolButton {
       checked: root.interpolationMode !== SerialStudio.InterpolationNone
-      ToolTip.text: qsTr("Interpolation: %1").arg(root.modeLabel())
+      ToolTip.text: qsTr("Interpolation: %1").arg(plotCommon.modeLabel(root.interpolationMode))
       onClicked: {
-        root.interpolationMode = root.nextInterpolationMode()
+        root.interpolationMode = plotCommon.nextInterpolationMode(root.interpolationMode)
         if (root.model)
           root.model.interpolationMode = root.interpolationMode
 
@@ -340,9 +311,9 @@ Item {
       xAxis.tickInterval: plot.xTickInterval
       yAxis.tickInterval: plot.yTickInterval
 
-      onZoomChanged: root.setDownsampleFactor()
-      onWidthChanged: root.setDownsampleFactor()
-      onHeightChanged: root.setDownsampleFactor()
+      onZoomChanged: plotCommon.setDownsampleFactor(plot, model)
+      onWidthChanged: plotCommon.setDownsampleFactor(plot, model)
+      onHeightChanged: plotCommon.setDownsampleFactor(plot, model)
 
       //
       // Register line series

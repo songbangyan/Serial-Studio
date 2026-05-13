@@ -491,6 +491,7 @@ set(QML_SOURCES
   qml/Widgets/Dashboard/LEDPanel.qml
   qml/Widgets/Dashboard/MultiPlot.qml
   qml/Widgets/Dashboard/Plot.qml
+  qml/Widgets/Dashboard/PlotCommon.qml
   qml/Widgets/Dashboard/Terminal.qml
   qml/Widgets/BigButton.qml
   qml/Widgets/InfoBullet.qml
