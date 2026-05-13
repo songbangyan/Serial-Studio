@@ -20,7 +20,7 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/DBCImporter.h"
+#include "DataModel/Importers/DBCImporter.h"
 
 #include <QApplication>
 #include <QFile>
@@ -31,6 +31,7 @@
 #include <QRegularExpression>
 #include <QStandardPaths>
 
+#include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/ProjectModel.h"
 #include "Misc/Utilities.h"
@@ -191,30 +192,21 @@ void DataModel::DBCImporter::confirmImport()
   if (m_messages.isEmpty())
     return;
 
-  const auto project     = generateProject(m_messages);
-  const auto dbcInfo     = QFileInfo(m_dbcFilePath);
-  const auto projectName = dbcInfo.baseName();
-  const auto tempDir     = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-  const auto tempPath    = tempDir + "/" + projectName + "_temp.ssproj";
+  const auto project = generateProject(m_messages);
 
-  QFile file(tempPath);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+  auto& pm = ProjectModel::instance();
+  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  if (!pm.loadFromJsonDocument(QJsonDocument(project), QString())) {
     Misc::Utilities::showMessageBox(
-      tr("Failed to create temporary project file"),
-      tr("Check if the application has write permissions to the temporary directory."),
+      tr("Failed to load imported project"),
+      tr("The generated project JSON could not be loaded."),
       QMessageBox::Critical,
       tr("DBC Import Error"));
     return;
   }
 
-  QJsonDocument doc(project);
-  file.write(doc.toJson(QJsonDocument::Indented));
-  file.close();
+  pm.setModified(true);
 
-  auto& pm = ProjectModel::instance();
-  pm.openJsonFile(tempPath);
-
-  // Single-shot listener fires for both accept and reject; cleanup runs in both
   const int messageCount  = m_messages.count();
   const int signalCount   = countTotalSignals(m_messages);
   const int skippedExtMux = m_skippedExtendedMuxSignals;
@@ -222,8 +214,7 @@ void DataModel::DBCImporter::confirmImport()
     &pm,
     &ProjectModel::saveDialogCompleted,
     this,
-    [tempPath, messageCount, signalCount, skippedExtMux](bool accepted) {
-      QFile::remove(tempPath);
+    [messageCount, signalCount, skippedExtMux](bool accepted) {
       if (!accepted)
         return;
 
@@ -686,7 +677,7 @@ QString DataModel::DBCImporter::emitSelectorExtraction(const QCanSignalDescripti
   code += generateSignalExtraction(selector);
   code += QString("  values[%1] = value_%2\n")
             .arg(datasetIndex)
-            .arg(sanitizeJavaScriptString(selector.name()));
+            .arg(sanitizeString(selector.name()));
   ++datasetIndex;
   return code;
 }
@@ -720,7 +711,7 @@ QString DataModel::DBCImporter::emitPlainExtractions(const QCanMessageDescriptio
     code += generateSignalExtraction(signal);
     code += QString("  values[%1] = value_%2\n")
               .arg(datasetIndex)
-              .arg(sanitizeJavaScriptString(signal.name()));
+              .arg(sanitizeString(signal.name()));
     ++datasetIndex;
   }
 
@@ -740,7 +731,7 @@ QString DataModel::DBCImporter::emitMuxedExtractions(const QCanMessageDescriptio
     return code;
 
   const auto signalList = message.signalDescriptions();
-  const auto selectorId = sanitizeJavaScriptString(selector->name());
+  const auto selectorId = sanitizeString(selector->name());
   for (const auto& signal : signalList) {
     qint64 mv       = 0;
     const auto role = classifyMux(signal, message, mv);
@@ -768,7 +759,7 @@ QString DataModel::DBCImporter::emitMuxedExtractions(const QCanMessageDescriptio
     code += extraction;
     code += QString("    values[%1] = value_%2\n")
               .arg(datasetIndex)
-              .arg(sanitizeJavaScriptString(signal.name()));
+              .arg(sanitizeString(signal.name()));
     code += "  end\n";
     ++datasetIndex;
   }
@@ -825,16 +816,13 @@ DataModel::DBCImporter::MuxRole DataModel::DBCImporter::classifyMux(
   if (state == QtCanBus::MultiplexState::MultiplexorSwitch)
     return MuxRole::Selector;
 
-  // SwitchAndSignal is an intermediate node in extended multiplexing -- not supported
   if (state == QtCanBus::MultiplexState::SwitchAndSignal)
     return MuxRole::ExtendedMuxed;
 
-  // MultiplexedSignal: must reference a parent
   const auto parents = signal.multiplexSignals();
   if (parents.isEmpty())
     return MuxRole::Plain;
 
-  // Extended mux: more than one parent OR parent is itself a muxed signal
   if (parents.size() > 1)
     return MuxRole::ExtendedMuxed;
 
@@ -847,7 +835,6 @@ DataModel::DBCImporter::MuxRole DataModel::DBCImporter::classifyMux(
   if (signalList.at(selectorIndex).name() != parentName)
     return MuxRole::ExtendedMuxed;
 
-  // Simple mux: single value range with min == max
   const auto ranges = parents.value(parentName);
   if (ranges.size() != 1)
     return MuxRole::ExtendedMuxed;
@@ -880,15 +867,15 @@ QString DataModel::DBCImporter::generateSignalExtraction(const QCanSignalDescrip
 
   // clang-format off
   code += QString("  local raw_%1 = extractSignal(data, %2, %3, %4, %5)\n")
-              .arg(sanitizeJavaScriptString(signal.name()))
+              .arg(sanitizeString(signal.name()))
               .arg(signal.startBit())
               .arg(signal.bitLength())
               .arg(isBigEndian ? "true" : "false")
               .arg(isSigned ? "true" : "false");
 
   code += QString("  local value_%1 = (raw_%2 * %3) + %4\n")
-              .arg(sanitizeJavaScriptString(signal.name()))
-              .arg(sanitizeJavaScriptString(signal.name()))
+              .arg(sanitizeString(signal.name()))
+              .arg(sanitizeString(signal.name()))
               .arg(signal.factor(), 0, 'g', 10)
               .arg(signal.offset(), 0, 'g', 10);
   // clang-format on
@@ -1055,7 +1042,7 @@ QString DataModel::DBCImporter::detectMotionWidget(
 /**
  * @brief Replaces non-alphanumeric characters so the string is a valid ident.
  */
-QString DataModel::DBCImporter::sanitizeJavaScriptString(const QString& str)
+QString DataModel::DBCImporter::sanitizeString(const QString& str)
 {
   QString result = str;
   result.replace(QRegularExpression("[^a-zA-Z0-9_]"), "_");

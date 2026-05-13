@@ -26,7 +26,7 @@
 #include <QObject>
 #include <QStringList>
 
-#include "DataModel/IScriptEngine.h"
+#include "DataModel/Scripting/IScriptEngine.h"
 
 namespace DataModel {
 

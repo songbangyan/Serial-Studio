@@ -25,7 +25,7 @@
 
 #include <QDeadlineTimer>
 
-#include "DataModel/IScriptEngine.h"
+#include "DataModel/Scripting/IScriptEngine.h"
 
 namespace DataModel {
 
@@ -69,13 +69,19 @@ private:
   static void watchdogHook(lua_State* L, lua_Debug* ar);
 
 private:
-  static constexpr int kHookInstructionCount = 10000;
-  static constexpr int kMaxElements          = 10000;
-  static constexpr int kMaxVecLen            = 10000;
-  static constexpr int kRuntimeWatchdogMs    = 1000;
+  static constexpr int kHookInstructionCount  = 10000;
+  static constexpr int kMaxElements           = 10000;
+  static constexpr int kMaxVecLen             = 10000;
+  static constexpr int kRuntimeWatchdogMs      = 500;
+  static constexpr int kMaxConsecutiveTimeouts = 3;
+
+  [[nodiscard]] bool noteTimeoutAndCheckDisabled(int sourceId);
+  void resetTimeoutCounter() noexcept;
 
   lua_State* m_state;
   bool m_loaded;
+  bool m_disabled;
+  int m_consecutiveTimeouts;
   QDeadlineTimer m_deadline;
 };
 

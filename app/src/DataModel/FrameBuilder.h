@@ -23,6 +23,7 @@
 
 #include <lua.h>
 
+#include <chrono>
 #include <map>
 #include <QDeadlineTimer>
 #include <QJSEngine>
@@ -115,6 +116,20 @@ private:
   static constexpr int kTransformWatchdogMs     = 100;
   static constexpr int kTransformHookInstrCount = 10000;
 
+  // Parser-load circuit breaker. Tracks wall-clock time spent in the user
+  // script across a rolling 1-second window; if the parser consumes more
+  // than kParseBudgetWarnLimitMs (80% of the window), incoming frames are
+  // dropped until the window resets. Protects the GUI thread from being
+  // starved by very high-rate sources (e.g. audio at 48 kHz fanning out
+  // one parse() call per sample).
+  static constexpr int kParseBudgetWindowMs    = 1000;
+  static constexpr int kParseBudgetWarnLimitMs = 800;
+
+  using BudgetClock = std::chrono::steady_clock;
+  [[nodiscard]] bool parseBudgetSkipFrame();
+  void parseBudgetAccount(BudgetClock::time_point startedAt);
+  void parseBudgetReset() noexcept;
+
   static void transformLuaWatchdogHook(lua_State* L, lua_Debug* ar);
 
   struct TransformEntry {
@@ -162,6 +177,11 @@ private:
   bool m_quickPlotHasHeader;
   QStringList m_quickPlotChannelNames;
   QStringList m_channelScratch;
+
+  BudgetClock::time_point m_parseBudgetWindowStart;
+  qint64 m_parseBudgetUsedNs;
+  bool m_parseBudgetSkipping;
+  bool m_parseBudgetWarned;
 };
 
 }  // namespace DataModel

@@ -27,7 +27,7 @@
 #include <QQuickPaintedItem>
 #include <QSyntaxStyle>
 
-#include "DataModel/FrameParserTestDialog.h"
+#include "DataModel/Dialogs/FrameParserTestDialog.h"
 
 namespace DataModel {
 

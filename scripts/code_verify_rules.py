@@ -80,6 +80,457 @@ _HOTPATH_BANNED_CALLS = [
 
 
 # ---------------------------------------------------------------------------
+# CPU-microarchitecture / performance rules
+# ---------------------------------------------------------------------------
+#
+# These rules apply knowledge of how compiled C++ behaves at the assembly /
+# register / branch-predictor / cache level. The cycle counts in the rule
+# messages are representative for current Intel (Skylake-derived) and ARM
+# (Cortex-A7x/A78) microarchitectures; exact numbers vary with the target.
+# All rules ship as advisory -- the goal is a checklist for a follow-up
+# human / LLM pass, not a CI gate.
+
+# Heavy types -- known to be expensive to copy by value. Even implicitly
+# shared Qt containers (QString/QByteArray/QList/...) pay an atomic refcount
+# bump on the COW pointer, which is a `lock`-prefix instruction on x86 or an
+# `ldxr/stxr` loop on ARM without LSE. std:: containers do a full deep copy.
+_HEAVY_TYPES = frozenset({
+    "QString", "QByteArray", "QStringList",
+    "QVariant", "QVariantMap", "QVariantList", "QVariantHash",
+    "QList", "QVector", "QMap", "QHash", "QSet", "QQueue", "QStack",
+    "QJsonObject", "QJsonArray", "QJsonDocument", "QJsonValue",
+    "QImage", "QPixmap", "QPolygon", "QPolygonF", "QPainterPath",
+    "QBitArray", "QDateTime",
+    "std::string", "std::wstring", "std::vector", "std::map",
+    "std::unordered_map", "std::list", "std::deque", "std::set",
+    "std::unordered_set", "std::multimap", "std::unordered_multimap",
+})
+
+_REFCOUNTED_TYPES = frozenset({
+    "std::shared_ptr", "QSharedPointer", "QSharedDataPointer",
+    "QExplicitlySharedDataPointer", "boost::shared_ptr",
+})
+
+
+# File-wide perf patterns: scanned inside every function body, not just
+# hotpath methods. Cost matters everywhere these appear; the user can
+# wrap a region in `// code-verify off` when the slow path is intentional
+# (init code that builds a regex once, error path that throws, etc.).
+_PERF_BODY_PATTERNS = [
+    # Integer / float division by a non-literal divisor. `idiv`/`udiv` is
+    # the slowest ALU op on x86 (20-40 cyc on Skylake/Zen, not pipelined)
+    # and ARM (12-40 cyc on Cortex-A78). When the divisor is constexpr,
+    # the compiler emits a multiply-by-magic-number; when it's a variable,
+    # you get the real divide.
+    (re.compile(r"(?<![*/=<>!&|^])/\s*(?!/)[A-Za-z_]\w*"),
+     "perf-divide-runtime-divisor",
+     "`/` with a non-literal divisor -- division is the slowest ALU op "
+     "(divsd ~11-22 cyc Skylake, fdiv ~10-40 cyc Cortex-A78; idiv 20-40 cyc, "
+     "not pipelined). Cache the reciprocal once (`r = 1.0 / d`) and multiply "
+     "in the loop, or use a bit-shift for power-of-two integer cases."),
+
+    # Modulo by a non-literal divisor. Same idiv cost as integer divide;
+    # power-of-two N can be replaced with `& (N - 1)` to emit a single
+    # `and` instruction instead.
+    (re.compile(r"(?<![%=*/+\-<>!&|^])%\s*[A-Za-z_]\w*"),
+     "perf-modulo-runtime-divisor",
+     "`%` with a non-literal divisor -- emits `idiv`/`udiv` (20-40 cyc x86, "
+     "12-40 cyc ARM). For power-of-two N use `& (N - 1)` (single-cycle "
+     "`and`); for runtime divisors hoist out of the loop or use a "
+     "libdivide-style precomputed magic-number multiply."),
+
+    # `/ <floating-literal>` -- compilers do NOT fold `a / 2.5` to
+    # `a * 0.4` without `-ffast-math` (would lose 1 ULP for non-exact
+    # reciprocals). Multiplying by a precomputed reciprocal is ~3 cyc
+    # vs ~12-22 cyc for divsd.
+    (re.compile(r"(?<![*/=<>!&|^])/\s*(?:\d+\.\d*|\.\d+|\d+\.\d*[eE][+-]?\d+)"
+                r"[fFlL]?"),
+     "perf-divide-by-float-literal",
+     "`/` with a floating-point literal -- compilers don't fold to "
+     "reciprocal multiply (would lose IEEE accuracy without -ffast-math). "
+     "Precompute `constexpr double kInvX = 1.0 / X;` and multiply (~3 cyc "
+     "mulsd vs ~12-22 cyc divsd)."),
+
+    # `pow(x, N)` -- libm transcendental, goes through `exp(log(x) * y)`.
+    # 40+ cyc on Intel, similar on ARM. Caller-saved FPU/SIMD state gets
+    # clobbered too.
+    (re.compile(r"\b(?:std::)?pow\s*\("),
+     "perf-pow-call",
+     "`pow(...)` -- libm transcendental via `exp(log(x) * y)` (40+ cyc on "
+     "Intel/ARM) and clobbers caller-saved FPU/SIMD state. For small "
+     "integer exponents write the multiply (`x*x`, `x*x*x`); for "
+     "`pow(x, 0.5)` use `std::sqrt(x)`; for `pow(2.0, n)` use "
+     "`std::ldexp(1.0, n)` (single mantissa-shift insn)."),
+
+    # `dynamic_cast<T>` -- walks the inheritance graph via RTTI typeinfo
+    # string comparisons; 50-200+ cyc worst case and a function call.
+    (re.compile(r"\bdynamic_cast\s*<"),
+     "perf-dynamic-cast",
+     "`dynamic_cast<...>` -- walks the inheritance graph via RTTI typeinfo "
+     "string compares (50-200+ cyc worst case, runtime call). Use a "
+     "discriminating enum + `static_cast`, or pre-resolve the cast once "
+     "(store the typed pointer at object init)."),
+
+    # malloc / free family -- same arena-mutex cost as `new`/`delete`,
+    # just less visible. Both Linux glibc and Windows HeapAlloc serialize
+    # on a per-arena mutex; on contended workloads this is a real cost.
+    (re.compile(r"\b(?:malloc|calloc|realloc|free|aligned_alloc|posix_memalign)"
+                r"\s*\("),
+     "perf-malloc-family",
+     "C heap call -- malloc/free contend on a per-arena mutex (glibc, "
+     "RtlHeap) and aren't pipelineable. In a hot loop, reuse a "
+     "pre-reserved buffer or a small-object pool."),
+
+    # `QRegularExpression(...)` constructor -- compiles the regex to a
+    # state machine, heap-allocates capture tables. If invoked in a loop,
+    # the regex gets recompiled every iteration.
+    (re.compile(r"\bQRegularExpression\s*\([^)]"),
+     "perf-regex-construct",
+     "`QRegularExpression(...)` constructor -- compiles a DFA/NFA state "
+     "machine and heap-allocates capture state. Build the regex once "
+     "(file-scope `static const`, or a class member init) and reuse the "
+     "`.match(...)` path each iteration."),
+
+    # `.arg(...).arg(...)` chains -- each call returns a new QString
+    # (heap alloc + copy). Two .arg()s = two allocs. Pass all args in
+    # one call (`s.arg(a, b, c)`) or use QStringBuilder (`%` operator
+    # with `<QStringBuilder>` included).
+    (re.compile(r"\.arg\s*\([^()]*\)\s*\.arg\s*\("),
+     "perf-arg-chain",
+     "`.arg(...).arg(...)` chain -- each call allocates a fresh QString "
+     "(heap + memcpy). Combine into one call (`.arg(a, b, c)`) or include "
+     "`<QStringBuilder>` and use the `%` operator (single allocation, "
+     "sized exactly)."),
+
+    # Mutex / lock-guard acquisition -- even uncontended, the `lock`-
+    # prefixed RMW on x86 takes ~20 cyc and serializes the store buffer.
+    # On ARM, `ldaxr/stxr` with DMB barriers cost similar. Contended
+    # bouncing thrashes the L1 cache line (50-200x slowdown vs
+    # uncontended).
+    (re.compile(
+        r"\b(?:QMutexLocker|QReadLocker|QWriteLocker|QRecursiveMutex"
+        r"|std::lock_guard|std::unique_lock|std::scoped_lock"
+        r"|std::shared_lock)\b"),
+     "perf-lock-acquire",
+     "lock acquisition -- atomic RMW with full memory barrier (~20 cyc "
+     "x86 `lock`-prefix, ldaxr+stxr+DMB on ARM), serializes the store "
+     "buffer; contended bouncing thrashes the L1 line across cores. "
+     "Prefer thread-local / SPSC / per-core state, or a relaxed "
+     "`std::atomic` when the invariant fits a single word."),
+
+    # Bare mutex.lock() / lockForRead() calls -- same physical cost.
+    (re.compile(
+        r"\b\w+\.(?:lock|try_lock|lockForRead|lockForWrite|tryLock)\s*\("),
+     "perf-lock-acquire",
+     "explicit `.lock()`/`.try_lock()`/`.lockForRead()` call -- same "
+     "`lock`-prefix RMW cost as the locker types. See `perf-lock-acquire` "
+     "above."),
+]
+
+
+# Hotpath-only perf patterns: too noisy to flag file-wide in this codebase
+# (qDebug and QString allocation are pervasive in setup/teardown/error
+# paths and aren't wrong there). The hotpath methods listed in
+# `_HOTPATH_METHODS` run at kHz+ rates -- THAT'S where the cost bites.
+_HOTPATH_PERF_PATTERNS = [
+    # QString / QByteArray construction with a literal -- each call hits
+    # the heap allocator (malloc on Linux, RtlAllocateHeap on Windows),
+    # contended on the arena mutex, not pipelineable. Cache the result
+    # at init or hoist into a file-scope `static const`.
+    (re.compile(
+        r"\bQString\s*\(\s*[\"R]"
+        r"|\bQByteArray\s*\(\s*[\"R]"
+        r"|\bQStringLiteral\s*\(\s*[^)]*\)\s*[^.]"
+        r"|\.toUtf8\s*\(\s*\)"
+        r"|\.toStdString\s*\(\s*\)"
+        r"|\.toLatin1\s*\(\s*\)"
+        r"|\.toLocal8Bit\s*\(\s*\)"
+        r"|\bQString::fromUtf8\s*\("
+        r"|\bQString::fromLatin1\s*\("),
+     "perf-string-alloc-hotpath",
+     "string construction/conversion on the hotpath -- heap allocation + "
+     "memcpy. malloc contends on a per-arena mutex; the new buffer "
+     "pollutes L1 (32-48 KB). Cache the QString at init, or use a "
+     "fixed stack buffer for transient formatting."),
+
+    # qDebug / qWarning -- builds a QDebug stream object, takes the global
+    # message-handler mutex, formats and writes. Even filtered-out
+    # categories pay the format cost because `<<` is eager. Hundreds of
+    # cycles minimum per call; thousands when the handler dispatches to
+    # a Console widget that re-enters the event loop.
+    (re.compile(r"\bq(?:Debug|Info|Warning|Critical|Fatal)\s*\("),
+     "perf-log-on-hotpath",
+     "Qt logging call on the hotpath -- builds a QDebug stream, takes "
+     "the global message-handler mutex, formats and writes. `<<` is "
+     "eager: even filtered-out categories pay the format cost. Gate "
+     "behind `#ifdef SERIAL_STUDIO_DEBUG` or move to a sampled counter."),
+
+    # `throw` on the hotpath -- exception throw runs the personality "
+    # routine, walks DWARF / SEH unwind tables (1000s of cycles per
+    # frame), mispredicts every catch on the way out, trashes the
+    # return-address stack. `noexcept` callers crash hard.
+    (re.compile(r"\bthrow\s+\w"),
+     "perf-throw-on-hotpath",
+     "`throw` on the hotpath -- stack unwinding via DWARF/SEH personality "
+     "routines (1000s of cycles), mispredicts every catch frame, trashes "
+     "the return-address stack predictor. Return an error code, an "
+     "`std::expected`-style variant, or a sentinel value instead."),
+]
+
+
+# Header line-pattern: a hotpath method declared `virtual`. Every call
+# site emits an indirect branch through the vtable; the predictor learns
+# monomorphic sites but can't inline, and polymorphic sites mispredict
+# (15-20 cycle bubble on x86, similar on ARM). `final` partially helps
+# when the dynamic type is known.
+_VIRTUAL_HOTPATH_RE = re.compile(
+    r"\bvirtual\b[^;{]*\b("
+    + "|".join(sorted(re.escape(n) for n in _HOTPATH_METHODS))
+    + r")\s*\("
+)
+
+# Generic atomic-type detector used by the false-sharing rule. Catches
+# `std::atomic<T>`, `std::atomic_int`, `std::atomic_flag`, and the Qt
+# `QAtomicInt`/`QAtomicPointer<T>`/`QAtomicInteger<T>` family.
+_ATOMIC_DECL_RE = re.compile(
+    r"\b(?:std::atomic(?:_[a-z0-9_]+)?\s*(?:<|\s+m?_?\w)"
+    r"|std::atomic_flag\b"
+    r"|QAtomic(?:Int|Pointer|Integer)\b)"
+)
+
+# Local fixed-size array declaration with a numeric size, e.g.
+# `char buf[8192];`, `double samples[2048] = {};`.
+_STACK_ARRAY_RE = re.compile(
+    r"\b(?:char|signed\s+char|unsigned\s+char|int8_t|uint8_t|int|short|long"
+    r"|size_t|ptrdiff_t|int16_t|int32_t|int64_t|uint16_t|uint32_t|uint64_t"
+    r"|float|double|wchar_t|qint8|qint16|qint32|qint64|quint8|quint16"
+    r"|quint32|quint64|qreal)\s+"
+    r"(?:const\s+)?"
+    r"\w+\s*\[\s*(\d+)\s*\]\s*[;={,]"
+)
+
+
+def _walk_to_function_declarator(decl):
+    """Drill through pointer/reference declarators to the innermost
+    function_declarator. Returns None when the chain doesn't lead to one."""
+    seen = 0
+    while decl is not None and seen < 16:
+        if decl.type == "function_declarator":
+            return decl
+        nested = decl.child_by_field_name("declarator")
+        if nested is None:
+            return None
+        decl = nested
+        seen += 1
+    return None
+
+
+def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
+    """Flag heavy types or refcounted smart pointers passed by value.
+    Applies universally -- by-value copies are wasteful regardless of
+    whether the function is in the hotpath list."""
+    findings: list = []
+    decl = func_node.child_by_field_name("declarator")
+    fdecl = _walk_to_function_declarator(decl)
+    if fdecl is None:
+        return findings
+    params = fdecl.child_by_field_name("parameters")
+    if params is None:
+        return findings
+    for param in params.children:
+        if param.type != "parameter_declaration":
+            continue
+        param_type = param.child_by_field_name("type")
+        param_decl = param.child_by_field_name("declarator")
+        if param_type is None:
+            continue
+        if param_decl is not None and param_decl.type in (
+            "pointer_declarator", "reference_declarator",
+            "abstract_pointer_declarator", "abstract_reference_declarator",
+            "rvalue_reference_declarator",
+            "abstract_rvalue_reference_declarator",
+        ):
+            continue
+        type_text = _node_text(param_type, src).strip()
+        base = type_text
+        for q in ("const ", "constexpr ", "volatile ", "mutable ", "register "):
+            while base.startswith(q):
+                base = base[len(q):].lstrip()
+        cuts = [i for i in (base.find("<"), base.find(" ")) if i >= 0]
+        if cuts:
+            base = base[:min(cuts)]
+        line = _line_of(param)
+        if fenced(line):
+            continue
+        if base in _HEAVY_TYPES:
+            findings.append(Finding(
+                line, "perf-large-by-value-param",
+                f"`{type_text}` passed by value -- forces a copy in the "
+                f"prologue (atomic ref-bump for Qt COW types: `lock`-prefix "
+                f"on x86, ldxr+stxr on ARM without LSE; full deep memcpy "
+                f"for std:: containers). Pass `const {base}&` and copy "
+                f"only when you genuinely keep a local copy."))
+        elif base in _REFCOUNTED_TYPES:
+            findings.append(Finding(
+                line, "perf-shared-ptr-by-value",
+                f"`{type_text}` by value -- two atomic refcount ops per "
+                f"call (`lock add`/`lock sub` on x86, ~20 cyc each; "
+                f"ldxr/stxr loop on ARM without LSE/v8.1 atomics). "
+                f"Pass `const {base}<...>&` and copy only when you "
+                f"actually store the pointer."))
+    return findings
+
+
+def _scan_body_lines(body, src: bytes, fname: str, fenced, patterns) -> list:
+    """Run a list of `(regex, kind, message)` triples over each line of a
+    function body. First-match wins per line so a single problematic
+    expression doesn't fire every pattern."""
+    if body is None:
+        return []
+    findings: list = []
+    body_text = _node_text(body, src)
+    body_start = body.start_point[0] + 1
+    for j, line in enumerate(body_text.split("\n")):
+        abs_line = body_start + j
+        if fenced(abs_line):
+            continue
+        scrubbed = _strip_strings_and_line_comments(line)
+        for pat, kind, msg in patterns:
+            if pat.search(scrubbed):
+                findings.append(Finding(abs_line, kind, msg))
+                break
+    return findings
+
+
+def _recursion_findings(func_node, fname: str, body, src: bytes, fenced) -> list:
+    """Flag direct self-recursion in a hotpath method. Recursion at kHz
+    rates blows the i-cache (200+ cyc for an L2 miss), trashes the RAS
+    predictor (mispredict on every return), and prevents inlining."""
+    if body is None or not fname or fname not in _HOTPATH_METHODS:
+        return []
+    findings: list = []
+    body_text = _node_text(body, src)
+    body_start = body.start_point[0] + 1
+    pat = re.compile(rf"\b{re.escape(fname)}\s*\(")
+    for j, line in enumerate(body_text.split("\n")):
+        abs_line = body_start + j
+        if fenced(abs_line):
+            continue
+        scrubbed = _strip_strings_and_line_comments(line)
+        if pat.search(scrubbed):
+            findings.append(Finding(
+                abs_line, "perf-recursive-hotpath",
+                f"hotpath `{fname}` calls itself -- recursion on a kHz "
+                f"frame loop blows the i-cache (200+ cyc per L2 miss), "
+                f"mispredicts the RAS on every return, and prevents the "
+                f"compiler from inlining. Rewrite iteratively (explicit "
+                f"work-list / std::stack)."))
+    return findings
+
+
+def _large_stack_buffer_findings(body, src: bytes, fenced) -> list:
+    """Flag local fixed-size arrays > ~4 KB. Stack-frame setup cost,
+    pollutes L1 (32-48 KB) when the function recurses or is called in a
+    hot loop with other state already on the stack, and on deep call
+    paths risks overflow. The 1024-element threshold catches `double[512]`
+    (4 KB), `int[1024]` (4 KB), `char[4096]` (4 KB) and similar."""
+    if body is None:
+        return []
+    findings: list = []
+    body_text = _node_text(body, src)
+    body_start = body.start_point[0] + 1
+    for j, line in enumerate(body_text.split("\n")):
+        abs_line = body_start + j
+        if fenced(abs_line):
+            continue
+        scrubbed = _strip_strings_and_line_comments(line)
+        m = _STACK_ARRAY_RE.search(scrubbed)
+        if m is None:
+            continue
+        try:
+            n = int(m.group(1))
+        except ValueError:
+            continue
+        if n < 1024:
+            continue
+        findings.append(Finding(
+            abs_line, "perf-large-stack-buffer",
+            f"local array of {n} elements on the stack -- frame-setup "
+            f"cost, pollutes L1 (32-48 KB) when called in a hot loop, "
+            f"risks overflow on deep call paths (Windows default 1 MB, "
+            f"Linux 8 MB). Promote to a member, thread_local, or a "
+            f"pre-reserved buffer."))
+    return findings
+
+
+def _adjacent_atomic_findings(class_node, src: bytes, fenced) -> list:
+    """Two `std::atomic<>` (or QAtomic*) members within a few lines of
+    each other almost certainly share a 64-byte cache line. When two
+    cores write to atomics that share a line, MESI/MOESI invalidations
+    bounce the line across cores -- a 50-200x slowdown vs the uncontended
+    case (false sharing). The fix is `alignas(64)` (or
+    `std::hardware_destructive_interference_size`) on each, or explicit
+    `char _pad[64];` padding."""
+    findings: list = []
+    body = class_node.child_by_field_name("body")
+    if body is None:
+        return findings
+    prev_line = -100
+    for child in body.children:
+        if child.type != "field_declaration":
+            continue
+        text = _node_text(child, src)
+        if not _ATOMIC_DECL_RE.search(text):
+            prev_line = -100
+            continue
+        if "alignas" in text:
+            prev_line = _line_of(child)
+            continue
+        line = _line_of(child)
+        if not fenced(line) and 0 < line - prev_line <= 4:
+            findings.append(Finding(
+                line, "perf-false-sharing-risk",
+                "adjacent atomic members will share a cache line "
+                "(64 B Intel/AArch64, up to 128 B on Apple Silicon "
+                "M-series via the 128 B speculative line). Cross-core "
+                "writes thrash MESI/MOESI invalidations (50-200x slowdown "
+                "vs uncontended). Add `alignas(64)` / "
+                "`alignas(std::hardware_destructive_interference_size)` "
+                "or insert `char _pad[64 - sizeof(prev)];` between them."))
+        prev_line = line
+    return findings
+
+
+def _virtual_hotpath_findings(src_text: str, fenced) -> list:
+    """Header line-scan: a hotpath method declared `virtual`. Every call
+    site emits a vtable load + indirect branch (5-10 cyc best case, 15-20
+    cyc misprediction penalty on polymorphic sites) and the compiler
+    can't inline through it. If there's only one implementation, mark
+    `final` (devirtualizes when the dynamic type is statically known)
+    or drop `virtual` entirely."""
+    findings: list = []
+    for i, raw in enumerate(src_text.split("\n"), start=1):
+        if fenced(i):
+            continue
+        scrubbed = _strip_strings_and_line_comments(raw)
+        if "virtual" not in scrubbed:
+            continue
+        m = _VIRTUAL_HOTPATH_RE.search(scrubbed)
+        if m is None:
+            continue
+        name = m.group(1)
+        findings.append(Finding(
+            i, "perf-virtual-hotpath",
+            f"hotpath method `{name}` declared `virtual` -- every call "
+            f"site emits a vtable load + indirect branch (5-10 cyc best "
+            f"case, 15-20 cyc misprediction on polymorphic sites). The "
+            f"compiler can't inline through the indirect call. If only "
+            f"one implementation exists, drop `virtual` or mark `final` "
+            f"so the compiler can devirtualize."))
+    return findings
+
+
+# ---------------------------------------------------------------------------
 # Hardcoded JSON keys (CLAUDE.md: use Keys::* namespace)
 # ---------------------------------------------------------------------------
 
@@ -519,6 +970,22 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                                 f"{msg} (in `{fname}`)"))
                             break
 
+            # CPU-microarchitecture / perf rules. _PERF_BODY_PATTERNS runs on
+            # every function body (file-wide); _HOTPATH_PERF_PATTERNS adds
+            # hotpath-only checks for patterns that would be too noisy across
+            # the whole codebase (qDebug, QString allocation).
+            out.extend(_scan_body_lines(body, src, fname, fenced,
+                                        _PERF_BODY_PATTERNS))
+            if fname in _HOTPATH_METHODS:
+                out.extend(_scan_body_lines(body, src, fname, fenced,
+                                            _HOTPATH_PERF_PATTERNS))
+                out.extend(_recursion_findings(n, fname, body, src, fenced))
+
+            # Universal: function-signature scan for heavy/refcounted types
+            # passed by value, and body scan for oversized stack arrays.
+            out.extend(_parameter_perf_findings(n, src, fenced))
+            out.extend(_large_stack_buffer_findings(body, src, fenced))
+
     # ---- Anonymous-namespace helpers (.cpp only). Anonymous namespaces hide
     # symbols from the linker but also from grep, doxygen, IDE call hierarchies,
     # and any reader trying to trace where a helper lives. CLAUDE.md prefers
@@ -780,6 +1247,25 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                             f"hardcoded JSON key `\"{m.group(1)}\"` -- "
                             f"use `Keys::{_camel(m.group(1))}` from Frame.h"))
                         break  # one finding per line is plenty
+
+    # ---- False-sharing risk: adjacent std::atomic / QAtomic members in a
+    # class body. Applies to both headers and inline class definitions in
+    # .cpp files.
+    for n in _walk(root):
+        if n.type not in ("class_specifier", "struct_specifier"):
+            continue
+        cls_line = _line_of(n)
+        if fenced(cls_line):
+            continue
+        out.extend(_adjacent_atomic_findings(n, src, fenced))
+
+    # ---- Hotpath methods declared virtual. Header-only; the declaration
+    # site is where `virtual` is written. Inline-defined methods inside a
+    # class body in a .cpp would also match if this pattern ever appears
+    # there, which is rare.
+    if is_header:
+        out.extend(_virtual_hotpath_findings(src_text, fenced))
+
     return out
 
 

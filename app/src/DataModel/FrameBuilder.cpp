@@ -32,15 +32,18 @@
 #include <QDebug>
 #include <stdexcept>
 
+#include <QMessageBox>
+
 #include "API/Server.h"
 #include "AppState.h"
 #include "CSV/Export.h"
-#include "DataModel/FrameParser.h"
-#include "DataModel/LuaCompat.h"
+#include "DataModel/Scripting/FrameParser.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
 #include "DataModel/ProjectModel.h"
 #include "IO/ConnectionManager.h"
 #include "MDF4/Export.h"
+#include "Misc/Utilities.h"
 #include "UI/Dashboard.h"
 
 #ifdef BUILD_COMMERCIAL
@@ -109,7 +112,13 @@ void parseCsvValues(const QByteArray& data, QStringList& out, const int reserveH
 /**
  * @brief Constructs the FrameBuilder singleton and wires its watchdog/license hooks.
  */
-DataModel::FrameBuilder::FrameBuilder() : m_quickPlotChannels(-1), m_quickPlotHasHeader(false)
+DataModel::FrameBuilder::FrameBuilder()
+  : m_quickPlotChannels(-1)
+  , m_quickPlotHasHeader(false)
+  , m_parseBudgetWindowStart(BudgetClock::time_point{})
+  , m_parseBudgetUsedNs(0)
+  , m_parseBudgetSkipping(false)
+  , m_parseBudgetWarned(false)
 {
   // JS transform watchdog -- flips interrupt flag to unwind runaway scripts.
   m_jsTransformWatchdog.setSingleShot(true);
@@ -217,6 +226,7 @@ void DataModel::FrameBuilder::syncFromProjectModel()
   finalize_frame(m_frame);
   compileTransforms();
   initializeTableStore();
+  parseBudgetReset();
 
   Q_ASSERT(!m_frame.title.isEmpty());
 
@@ -332,6 +342,10 @@ void DataModel::FrameBuilder::onConnectedChanged()
   // Reset quick-plot channel count
   m_quickPlotChannels = -1;
 
+  // Fresh connection or disconnect -> re-arm the parser-load circuit breaker
+  // so a previously-tripped warning can fire again next time the load spikes.
+  parseBudgetReset();
+
   // Clear per-source frames and transform engines on disconnect
   if (!IO::ConnectionManager::instance().isConnected()) {
     m_sourceFrames.clear();
@@ -391,6 +405,11 @@ void DataModel::FrameBuilder::parseProjectFrame(const IO::CapturedDataPtr& data)
   Q_ASSERT(!data->data->isEmpty());
   Q_ASSERT(!m_frame.groups.empty());
 
+  if (parseBudgetSkipFrame()) [[unlikely]]
+    return;
+
+  const auto t0 = BudgetClock::now();
+
   QList<QStringList> multiChannels;
   decodeProjectChannels(0, /*applyPerSourceOverride=*/false, data, multiChannels);
 
@@ -407,6 +426,8 @@ void DataModel::FrameBuilder::parseProjectFrame(const IO::CapturedDataPtr& data)
       std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i));
     // code-verify on
   }
+
+  parseBudgetAccount(t0);
 }
 
 /**
@@ -418,6 +439,11 @@ void DataModel::FrameBuilder::parseProjectFrame(int sourceId, const IO::Captured
   Q_ASSERT(data);
   Q_ASSERT(data->data);
   Q_ASSERT(!data->data->isEmpty());
+
+  if (parseBudgetSkipFrame()) [[unlikely]]
+    return;
+
+  const auto t0 = BudgetClock::now();
 
   QList<QStringList> multiChannels;
   decodeProjectChannels(sourceId, /*applyPerSourceOverride=*/true, data, multiChannels);
@@ -436,6 +462,87 @@ void DataModel::FrameBuilder::parseProjectFrame(int sourceId, const IO::Captured
       std::make_shared<DataModel::TimestampedFrame>(srcFrame, data->timestamp + step * i));
     // code-verify on
   }
+
+  parseBudgetAccount(t0);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Parser-load budget guard
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns true if the parser should skip this frame to keep the GUI responsive.
+ */
+bool DataModel::FrameBuilder::parseBudgetSkipFrame()
+{
+  const auto now = BudgetClock::now();
+
+  // Lazily start the window on the first call.
+  if (m_parseBudgetWindowStart == BudgetClock::time_point{}) [[unlikely]] {
+    m_parseBudgetWindowStart = now;
+    m_parseBudgetUsedNs      = 0;
+    m_parseBudgetSkipping    = false;
+    return false;
+  }
+
+  // Roll the window forward once kParseBudgetWindowMs elapses.
+  const auto windowNs = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                          now - m_parseBudgetWindowStart)
+                          .count();
+  if (windowNs >= static_cast<qint64>(kParseBudgetWindowMs) * 1'000'000LL) {
+    m_parseBudgetWindowStart = now;
+    m_parseBudgetUsedNs      = 0;
+    m_parseBudgetSkipping    = false;
+  }
+
+  return m_parseBudgetSkipping;
+}
+
+/**
+ * @brief Updates the parse-time accumulator and trips the breaker past the warn limit.
+ */
+void DataModel::FrameBuilder::parseBudgetAccount(BudgetClock::time_point startedAt)
+{
+  const auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                         BudgetClock::now() - startedAt)
+                         .count();
+  m_parseBudgetUsedNs += elapsed;
+
+  if (m_parseBudgetSkipping)
+    return;
+
+  const auto limitNs = static_cast<qint64>(kParseBudgetWarnLimitMs) * 1'000'000LL;
+  if (m_parseBudgetUsedNs <= limitNs)
+    return;
+
+  // We've burned more than 80% of the wall-clock window on parsing
+  m_parseBudgetSkipping = true;
+  qWarning() << "[FrameBuilder] Parser load exceeded budget ("
+             << m_parseBudgetUsedNs / 1'000'000LL << "ms /"
+             << kParseBudgetWindowMs << "ms)"
+             << "...dropping frames until the next window rolls.";
+
+  // Warn the user
+  if (!m_parseBudgetWarned) {
+    m_parseBudgetWarned = true;
+    Misc::Utilities::showMessageBox(
+      QObject::tr("The frame parser is using more than %1% of CPU time.")
+        .arg(100 * kParseBudgetWarnLimitMs / kParseBudgetWindowMs),
+      QObject::tr("Serial Studio is dropping frames to keep the application responsive. "
+                  "Please simplify or optimize the frame parser script to reduce its workload."),
+      QMessageBox::Warning);
+  }
+}
+
+/**
+ * @brief Clears the parser-budget state -- called when the active project changes.
+ */
+void DataModel::FrameBuilder::parseBudgetReset() noexcept
+{
+  m_parseBudgetWindowStart = BudgetClock::time_point{};
+  m_parseBudgetUsedNs      = 0;
+  m_parseBudgetSkipping    = false;
+  m_parseBudgetWarned      = false;
 }
 
 /**

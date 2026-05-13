@@ -37,12 +37,13 @@
 #include "CSV/Export.h"
 #include "CSV/Player.h"
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/FrameParser.h"
-#include "DataModel/JsCodeEditor.h"
+#include "DataModel/Scripting/FrameParser.h"
+#include "DataModel/Editors/JsCodeEditor.h"
 #include "DataModel/NotificationCenter.h"
-#include "DataModel/OutputCodeEditor.h"
+#include "DataModel/Editors/OutputCodeEditor.h"
 #include "DataModel/ProjectEditor.h"
 #include "DataModel/ProjectModel.h"
+#include "DataModel/Importers/ProtoImporter.h"
 #include "IO/ConnectionManager.h"
 #include "IO/FileTransmission.h"
 #include "MDF4/Export.h"
@@ -78,9 +79,9 @@
 
 #ifdef BUILD_COMMERCIAL
 #  include "AI/Assistant.h"
-#  include "DataModel/DBCImporter.h"
-#  include "DataModel/ModbusMapImporter.h"
-#  include "DataModel/PainterCodeEditor.h"
+#  include "DataModel/Importers/DBCImporter.h"
+#  include "DataModel/Importers/ModbusMapImporter.h"
+#  include "DataModel/Editors/PainterCodeEditor.h"
 #  include "Licensing/LemonSqueezy.h"
 #  include "Licensing/Trial.h"
 #  include "Misc/ShortcutGenerator.h"
@@ -489,6 +490,7 @@ void Misc::ModuleManager::registerCoreContextProperties(QQmlContext* ctx)
   ctx->setContextProperty("Cpp_Misc_Translator", &Misc::Translator::instance());
   ctx->setContextProperty("Cpp_JSON_ProjectModel", &DataModel::ProjectModel::instance());
   ctx->setContextProperty("Cpp_JSON_ProjectEditor", &DataModel::ProjectEditor::instance());
+  ctx->setContextProperty("Cpp_JSON_ProtoImporter", &DataModel::ProtoImporter::instance());
   ctx->setContextProperty("Cpp_JSON_FrameBuilder", &DataModel::FrameBuilder::instance());
   ctx->setContextProperty("Cpp_Notifications", &DataModel::NotificationCenter::instance());
   ctx->setContextProperty("Cpp_Misc_TimerEvents", &Misc::TimerEvents::instance());

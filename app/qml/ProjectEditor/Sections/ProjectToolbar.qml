@@ -27,6 +27,7 @@ import QtQuick.Controls
 import SerialStudio
 
 import "../../Widgets" as Widgets
+import "../Dialogs" as Dialogs
 
 Rectangle {
   id: root
@@ -167,10 +168,12 @@ Rectangle {
           text: qsTr("Save")
           horizontalLayout: true
           Layout.alignment: Qt.AlignLeft
-          enabled: Cpp_JSON_ProjectModel.modified
-          ToolTip.text: qsTr("Save the current project")
+          enabled: Cpp_JSON_ProjectModel.modified && Cpp_JSON_ProjectModel.canSave
           onClicked: Cpp_JSON_ProjectModel.saveJsonFile(false)
           icon.source: "qrc:/icons/project-editor/toolbar/save.svg"
+          ToolTip.text: Cpp_JSON_ProjectModel.canSave
+                        ? qsTr("Save the current project")
+                        : Cpp_JSON_ProjectModel.saveBlockerTitle
         }
 
         Widgets.ToolbarButton {
@@ -178,10 +181,31 @@ Rectangle {
           text: qsTr("Save As")
           horizontalLayout: true
           Layout.alignment: Qt.AlignLeft
+          enabled: Cpp_JSON_ProjectModel.canSave
           onClicked: Cpp_JSON_ProjectModel.saveJsonFile(true)
           icon.source: "qrc:/icons/project-editor/toolbar/save-as.svg"
-          ToolTip.text: qsTr("Save the current project under a new name")
+          ToolTip.text: Cpp_JSON_ProjectModel.canSave
+                        ? qsTr("Save the current project under a new name")
+                        : Cpp_JSON_ProjectModel.saveBlockerTitle
         }
+      }
+    }
+
+    //
+    // Import section (collapsible)
+    //
+    Widgets.RibbonSection {
+      collapsible: true
+      collapsePriority: 40
+      collapsedText: qsTr("Import")
+      collapsedIcon: "qrc:/icons/project-editor/toolbar/protobuf.svg"
+
+      Widgets.ToolbarButton {
+        text: qsTr("Protobuf")
+        Layout.alignment: Qt.AlignVCenter
+        onClicked: Cpp_JSON_ProtoImporter.importProto()
+        icon.source: "qrc:/icons/project-editor/toolbar/protobuf.svg"
+        ToolTip.text: qsTr("Generate a project from a Protocol Buffers (.proto) schema")
       }
     }
 
@@ -521,5 +545,12 @@ Rectangle {
         ToolTip.text: qsTr("Open the Project Editor documentation")
       }
     }
+  }
+
+  //
+  // Protobuf preview dialog (shown when Cpp_JSON_ProtoImporter emits previewReady)
+  //
+  Dialogs.ProtoPreviewDialog {
+    id: protoPreviewDialog
   }
 }

@@ -20,7 +20,7 @@
 #  include <QVariantList>
 
 #  include "DataModel/Frame.h"
-#  include "DataModel/JsWatchdog.h"
+#  include "DataModel/Scripting/JsWatchdog.h"
 #  include "UI/QuickPaintedItemCompat.h"
 
 namespace Widgets {

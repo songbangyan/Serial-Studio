@@ -24,8 +24,8 @@
 #include <QJSEngine>
 #include <QJSValue>
 
-#include "DataModel/IScriptEngine.h"
-#include "DataModel/JsWatchdog.h"
+#include "DataModel/Scripting/IScriptEngine.h"
+#include "DataModel/Scripting/JsWatchdog.h"
 
 namespace DataModel {
 
@@ -50,9 +50,12 @@ public:
   void reset() override;
 
 private:
-  static constexpr int kRuntimeWatchdogMs = 1000;
+  static constexpr int kRuntimeWatchdogMs      = 500;
+  static constexpr int kMaxConsecutiveTimeouts = 3;
 
   [[nodiscard]] QJSValue guardedCall(QJSValueList& args);
+  [[nodiscard]] bool noteTimeoutAndCheckDisabled(int sourceId);
+  void resetTimeoutCounter() noexcept;
 
   [[nodiscard]] bool validateScriptSyntax(const QString& script,
                                           int sourceId,
@@ -68,6 +71,8 @@ private:
   QJSValue m_parseFunction;
   QJSValue m_hexToArray;
   JsWatchdog m_watchdog;
+  bool m_disabled;
+  int m_consecutiveTimeouts;
 };
 
 }  // namespace DataModel

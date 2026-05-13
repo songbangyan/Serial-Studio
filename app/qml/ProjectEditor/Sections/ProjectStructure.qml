@@ -508,5 +508,60 @@ Widgets.Pane {
         }
       }
     }
+
+    //
+    // Save-status banner
+    //
+    Rectangle {
+      id: saveBlockerBanner
+
+      Layout.fillWidth: true
+      visible: !Cpp_JSON_ProjectModel.canSave
+      implicitHeight: bannerLayout.implicitHeight + 24
+      color: Cpp_ThemeManager.colors["groupbox_background"]
+
+      Rectangle {
+        height: 1
+        width: parent.width
+        anchors.top: parent.top
+        color: Cpp_ThemeManager.colors["groupbox_border"]
+      }
+
+      ColumnLayout {
+        id: bannerLayout
+
+        spacing: 4
+        anchors.fill: parent
+        anchors.margins: 12
+
+        RowLayout {
+          spacing: 10
+          Layout.fillWidth: true
+
+          Image {
+            sourceSize: Qt.size(24, 24)
+            Layout.alignment: Qt.AlignTop
+            source: "qrc:/icons/project-editor/treeview/save-warning.svg"
+          }
+
+          Label {
+            Layout.fillWidth: true
+            wrapMode: Label.WordWrap
+            Layout.alignment: Qt.AlignVCenter
+            color: Cpp_ThemeManager.colors["text"]
+            text: Cpp_JSON_ProjectModel.saveBlockerTitle
+            font: Cpp_Misc_CommonFonts.customUiFont(1.2, true)
+          }   
+        }
+
+        Label {
+          opacity: 0.85
+          Layout.fillWidth: true
+          wrapMode: Label.WordWrap
+          color: Cpp_ThemeManager.colors["text"]
+          text: Cpp_JSON_ProjectModel.saveBlockerDetail
+        }
+      }
+    }
   }
 }

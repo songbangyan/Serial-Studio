@@ -277,25 +277,26 @@ set(SOURCES
   src/IO/FileTransmission/YMODEM.cpp
   src/IO/FileTransmission/ZMODEM.cpp
   src/IO/FrameReader.cpp
-  src/DataModel/FrameParser.cpp
-  src/DataModel/JsScriptEngine.cpp
-  src/DataModel/JsWatchdog.cpp
-  src/DataModel/LuaScriptEngine.cpp
-  src/DataModel/LuaCompat.cpp
-  src/DataModel/ScriptTemplates.cpp
-  src/DataModel/JsCodeEditor.cpp
-  src/DataModel/CodeFormatter.cpp
-  src/DataModel/OutputCodeEditor.cpp
+  src/DataModel/Scripting/FrameParser.cpp
+  src/DataModel/Scripting/JsScriptEngine.cpp
+  src/DataModel/Scripting/JsWatchdog.cpp
+  src/DataModel/Scripting/LuaScriptEngine.cpp
+  src/DataModel/Scripting/LuaCompat.cpp
+  src/DataModel/Scripting/ScriptTemplates.cpp
+  src/DataModel/Editors/JsCodeEditor.cpp
+  src/DataModel/Editors/CodeFormatter.cpp
+  src/DataModel/Editors/OutputCodeEditor.cpp
   src/DataModel/ProjectModel.cpp
   src/DataModel/ProjectEditor.cpp
+  src/DataModel/Importers/ProtoImporter.cpp
   src/DataModel/FrameBuilder.cpp
   src/DataModel/Frame.cpp
   src/DataModel/FrameConsumer.cpp
   src/DataModel/DataTable.cpp
-  src/DataModel/DatasetTransformEditor.cpp
+  src/DataModel/Editors/DatasetTransformEditor.cpp
   src/DataModel/NotificationCenter.cpp
-  src/DataModel/FrameParserTestDialog.cpp
-  src/DataModel/TransmitTestDialog.cpp
+  src/DataModel/Dialogs/FrameParserTestDialog.cpp
+  src/DataModel/Dialogs/TransmitTestDialog.cpp
   src/CSV/Player.cpp
   src/CSV/Export.cpp
   src/MDF4/Player.cpp
@@ -385,27 +386,28 @@ set(HEADERS
   src/IO/FileTransmission/YMODEM.h
   src/IO/FileTransmission/ZMODEM.h
   src/IO/FrameReader.h
-  src/DataModel/FrameParser.h
-  src/DataModel/IScriptEngine.h
-  src/DataModel/JsScriptEngine.h
-  src/DataModel/JsWatchdog.h
-  src/DataModel/LuaScriptEngine.h
-  src/DataModel/LuaCompat.h
-  src/DataModel/ScriptTemplates.h
-  src/DataModel/JsCodeEditor.h
-  src/DataModel/CodeFormatter.h
-  src/DataModel/OutputCodeEditor.h
+  src/DataModel/Scripting/FrameParser.h
+  src/DataModel/Scripting/IScriptEngine.h
+  src/DataModel/Scripting/JsScriptEngine.h
+  src/DataModel/Scripting/JsWatchdog.h
+  src/DataModel/Scripting/LuaScriptEngine.h
+  src/DataModel/Scripting/LuaCompat.h
+  src/DataModel/Scripting/ScriptTemplates.h
+  src/DataModel/Editors/JsCodeEditor.h
+  src/DataModel/Editors/CodeFormatter.h
+  src/DataModel/Editors/OutputCodeEditor.h
   src/DataModel/ProjectModel.h
   src/DataModel/ProjectEditor.h
+  src/DataModel/Importers/ProtoImporter.h
   src/DataModel/Frame.h
   src/DataModel/FrameBuilder.h
   src/DataModel/FrameConsumer.h
   src/DataModel/DataTable.h
   src/DataModel/ExportSchema.h
-  src/DataModel/DatasetTransformEditor.h
+  src/DataModel/Editors/DatasetTransformEditor.h
   src/DataModel/NotificationCenter.h
-  src/DataModel/FrameParserTestDialog.h
-  src/DataModel/TransmitTestDialog.h
+  src/DataModel/Dialogs/FrameParserTestDialog.h
+  src/DataModel/Dialogs/TransmitTestDialog.h
   src/CSV/Export.h
   src/CSV/Player.h
   src/MDF4/Player.h
@@ -478,6 +480,7 @@ set(QML_SOURCES
   qml/ProjectEditor/Views/SourceView.qml
   qml/ProjectEditor/Views/SourceFrameParserView.qml
   qml/ProjectEditor/Views/TableDelegate.qml
+  qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml
   qml/ProjectEditor/ProjectEditor.qml
   qml/Widgets/Dashboard/Accelerometer.qml
   qml/Widgets/Dashboard/Bar.qml
@@ -553,10 +556,10 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Painter.h
     src/UI/Widgets/PainterContext.h
     src/UI/Widgets/PainterDataBridge.h
-    src/DataModel/PainterCodeEditor.h
+    src/DataModel/Editors/PainterCodeEditor.h
     src/UI/ImageProvider.h
-    src/DataModel/DBCImporter.h
-    src/DataModel/ModbusMapImporter.h
+    src/DataModel/Importers/DBCImporter.h
+    src/DataModel/Importers/ModbusMapImporter.h
     src/Licensing/Trial.h
     src/Licensing/MachineID.h
     src/Licensing/SimpleCrypt.h
@@ -629,10 +632,10 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Painter.cpp
     src/UI/Widgets/PainterContext.cpp
     src/UI/Widgets/PainterDataBridge.cpp
-    src/DataModel/PainterCodeEditor.cpp
+    src/DataModel/Editors/PainterCodeEditor.cpp
     src/UI/ImageProvider.cpp
-    src/DataModel/DBCImporter.cpp
-    src/DataModel/ModbusMapImporter.cpp
+    src/DataModel/Importers/DBCImporter.cpp
+    src/DataModel/Importers/ModbusMapImporter.cpp
     src/Licensing/Trial.cpp
     src/Licensing/CommercialToken.cpp
     src/Sessions/DatabaseManager.cpp

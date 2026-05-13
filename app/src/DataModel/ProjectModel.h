@@ -83,10 +83,20 @@ class ProjectModel : public QObject {
   Q_PROPERTY(bool locked
              READ locked
              NOTIFY lockedChanged)
+  Q_PROPERTY(bool canSave
+             READ canSave
+             NOTIFY saveStatusChanged)
+  Q_PROPERTY(QString saveBlockerTitle
+             READ saveBlockerTitle
+             NOTIFY saveStatusChanged)
+  Q_PROPERTY(QString saveBlockerDetail
+             READ saveBlockerDetail
+             NOTIFY saveStatusChanged)
   // clang-format on
 
 signals:
   void titleChanged();
+  void saveStatusChanged();
   void pointCountChanged();
   void jsonFileChanged();
   void modifiedChanged();
@@ -121,6 +131,18 @@ signals:
   void outputWidgetDeleted(int groupId);
 
 private:
+  /**
+   * @brief Reason the current project state cannot be saved (or None when valid).
+   */
+  enum class SaveBlocker {
+    None = 0,
+    MissingTitle,
+    MissingGroup,
+    MissingDataset,
+  };
+
+  [[nodiscard]] SaveBlocker saveBlockerCode() const;
+
   explicit ProjectModel();
   ProjectModel(ProjectModel&&)                 = delete;
   ProjectModel(const ProjectModel&)            = delete;
@@ -175,10 +197,15 @@ public:
   [[nodiscard]] bool locked() const noexcept;
   [[nodiscard]] bool validateProject(const bool silent);
 
+  [[nodiscard]] bool canSave() const;
+  [[nodiscard]] QString saveBlockerTitle() const;
+  [[nodiscard]] QString saveBlockerDetail() const;
+
   Q_INVOKABLE [[nodiscard]] bool askSave();
   Q_INVOKABLE [[nodiscard]] QVariantList sourcesForDiagram() const;
   Q_INVOKABLE [[nodiscard]] QVariantList groupsForDiagram() const;
   Q_INVOKABLE [[nodiscard]] QVariantList actionsForDiagram() const;
+  Q_INVOKABLE [[nodiscard]] QVariantList tablesForDiagram() const;
   Q_INVOKABLE [[nodiscard]] QJsonObject serializeToJson() const;
   Q_INVOKABLE [[nodiscard]] bool saveJsonFile(const bool askPath = false);
   Q_INVOKABLE [[nodiscard]] bool apiSaveJsonFile(const QString& path);
@@ -223,6 +250,11 @@ public slots:
 
   void promptAddTable();
   void promptRenameTable(const QString& oldName);
+
+  Q_INVOKABLE void promptRenameGroup(int groupId);
+  Q_INVOKABLE void promptRenameDataset(int groupId, int datasetId);
+  Q_INVOKABLE void promptRenameSource(int sourceId);
+  Q_INVOKABLE void promptRenameAction(int actionId);
   void promptAddRegister(const QString& table);
   void promptRenameRegister(const QString& table, const QString& registerName);
   void confirmDeleteTable(const QString& name);
@@ -243,11 +275,11 @@ public slots:
   void duplicateCurrentAction();
   void duplicateCurrentDataset();
 
-  void deleteGroup(int groupId);
+  void deleteGroup(int groupId, bool confirm = false);
   void duplicateGroup(int groupId);
-  void deleteDataset(int groupId, int datasetId);
+  void deleteDataset(int groupId, int datasetId, bool confirm = false);
   void duplicateDataset(int groupId, int datasetId);
-  void deleteAction(int actionId);
+  void deleteAction(int actionId, bool confirm = false);
   void duplicateAction(int actionId);
 
   void moveGroup(int fromGroupId, int toGroupId);
@@ -256,14 +288,14 @@ public slots:
   void moveAction(int fromActionId, int toActionId);
   void moveOutputWidget(int groupId, int fromWidgetId, int toWidgetId);
 
-  void ensureValidGroup();
-  void addDataset(const SerialStudio::DatasetOption options);
+  void ensureValidGroup(int sourceId = -1);
+  void addDataset(const SerialStudio::DatasetOption options, int sourceId = -1);
   void ensurePainterDatasets(int groupId, const QVariantList& specs);
   void changeDatasetOption(const SerialStudio::DatasetOption option, const bool checked);
 
-  void addAction();
+  void addAction(int sourceId = -1);
   void addSource();
-  void deleteSource(int sourceId);
+  void deleteSource(int sourceId, bool confirm = false);
   void duplicateSource(int sourceId);
   void updateSource(int sourceId, const DataModel::Source& source);
   void updateSourceTitle(int sourceId, const QString& title);
@@ -273,7 +305,8 @@ public slots:
   void restoreSourceSettings(int sourceId);
   void setSource0BusType(int busType);
   void setSource0ConnectionSettings(const QJsonObject& settings);
-  void addGroup(const QString& title, const SerialStudio::GroupWidget widget);
+  void addGroup(const QString& title, const SerialStudio::GroupWidget widget,
+                int sourceId = -1);
   bool setGroupWidget(const int group, const SerialStudio::GroupWidget widget);
 
   void setModified(const bool modified);
@@ -326,13 +359,13 @@ public slots:
   void hideGroup(int groupId);
   void showGroup(int groupId);
 
-  void addOutputControl(const SerialStudio::OutputWidgetType type);
-  void addOutputPanel();
+  void addOutputControl(const SerialStudio::OutputWidgetType type, int sourceId = -1);
+  void addOutputPanel(int sourceId = -1);
   void setOutputWidgetType(int type);
   void setOutputWidgetIcon(const QString& icon);
   void deleteCurrentOutputWidget();
   void duplicateCurrentOutputWidget();
-  void deleteOutputWidget(int groupId, int widgetId);
+  void deleteOutputWidget(int groupId, int widgetId, bool confirm = false);
   void duplicateOutputWidget(int groupId, int widgetId);
   void updateOutputWidget(int groupId,
                           int widgetId,

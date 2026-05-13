@@ -19,14 +19,14 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/FrameParserTestDialog.h"
+#include "DataModel/Dialogs/FrameParserTestDialog.h"
 
 #include <QGroupBox>
 #include <QHeaderView>
 #include <QMessageBox>
 
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/FrameParser.h"
+#include "DataModel/Scripting/FrameParser.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/Translator.h"

@@ -39,8 +39,8 @@
 #include "AppInfo.h"
 #include "AppState.h"
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/FrameParser.h"
-#include "DataModel/OutputCodeEditor.h"
+#include "DataModel/Scripting/FrameParser.h"
+#include "DataModel/Editors/OutputCodeEditor.h"
 #include "DataModel/ProjectEditor.h"
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
@@ -262,6 +262,12 @@ DataModel::ProjectModel::ProjectModel()
   connect(this, &ProjectModel::sourceStructureChanged, this, bumpEpoch);
   connect(this, &ProjectModel::groupsChanged, this, bumpEpoch);
 
+  // canSave / saveBlockerTitle / saveBlockerDetail re-evaluate whenever the
+  // project title or group/dataset structure changes -- the only inputs the
+  // save validator looks at.
+  connect(this, &ProjectModel::titleChanged, this, &ProjectModel::saveStatusChanged);
+  connect(this, &ProjectModel::groupsChanged, this, &ProjectModel::saveStatusChanged);
+
   connect(this, &ProjectModel::widgetSettingsChanged, this, [this] {
     if (m_autoSaveSuspended || m_filePath.isEmpty() || m_locked)
       return;
@@ -373,6 +379,76 @@ bool DataModel::ProjectModel::validateProject(const bool silent)
 
   // Everything ok
   return true;
+}
+
+/**
+ * @brief Identifies which (if any) save prerequisite is currently missing.
+ */
+DataModel::ProjectModel::SaveBlocker DataModel::ProjectModel::saveBlockerCode() const
+{
+  if (m_title.isEmpty())
+    return SaveBlocker::MissingTitle;
+
+  if (groupCount() <= 0)
+    return SaveBlocker::MissingGroup;
+
+  const bool hasImageGroup = std::any_of(m_groups.begin(), m_groups.end(), [](const Group& g) {
+    return g.widget == QLatin1String("image");
+  });
+
+  if (datasetCount() <= 0 && !hasImageGroup)
+    return SaveBlocker::MissingDataset;
+
+  return SaveBlocker::None;
+}
+
+/**
+ * @brief Returns true when the project has everything saveJsonFile() needs.
+ */
+bool DataModel::ProjectModel::canSave() const
+{
+  return saveBlockerCode() == SaveBlocker::None;
+}
+
+/**
+ * @brief Returns a short, HIG-style heading describing the current save blocker.
+ */
+QString DataModel::ProjectModel::saveBlockerTitle() const
+{
+  switch (saveBlockerCode()) {
+    case SaveBlocker::None:
+      return QString();
+    case SaveBlocker::MissingTitle:
+      return tr("Your project needs a title");
+    case SaveBlocker::MissingGroup:
+      return tr("Add a group to get started");
+    case SaveBlocker::MissingDataset:
+      return tr("Add a dataset to a group");
+  }
+  return QString();
+}
+
+/**
+ * @brief Returns one or two sentences of HIG-style guidance on how to fix the blocker.
+ */
+QString DataModel::ProjectModel::saveBlockerDetail() const
+{
+  switch (saveBlockerCode()) {
+    case SaveBlocker::None:
+      return QString();
+    case SaveBlocker::MissingTitle:
+      return tr("Open the Project view at the top of the tree and enter "
+                "a name. You can rename the project at any time.");
+    case SaveBlocker::MissingGroup:
+      return tr("Groups organize datasets into dashboard widgets. Use the "
+                "Group button in the toolbar above to create one, then add "
+                "datasets to it.");
+    case SaveBlocker::MissingDataset:
+      return tr("Datasets are the values that appear on the dashboard. "
+                "Select a group in the tree and use the Dataset button in "
+                "the toolbar to add one.");
+  }
+  return QString();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -869,15 +945,29 @@ void DataModel::ProjectModel::addSource()
 /**
  * @brief Deletes the source and reassigns dependent groups to source 0.
  */
-void DataModel::ProjectModel::deleteSource(int sourceId)
+void DataModel::ProjectModel::deleteSource(int sourceId, bool confirm)
 {
 #ifndef BUILD_COMMERCIAL
   (void)sourceId;
+  (void)confirm;
   return;
 #else
   // Cannot delete the default source (id 0)
   if (sourceId <= 0 || sourceId >= static_cast<int>(m_sources.size()))
     return;
+
+  // Confirm with the user when requested -- mirrors deleteCurrentGroup's UX.
+  if (confirm && !m_suppressMessageBoxes) {
+    const auto ret = Misc::Utilities::showMessageBox(
+      tr("Do you want to delete data source \"%1\"?").arg(m_sources[sourceId].title),
+      tr("Groups using this source will move to the default source. "
+         "This action cannot be undone."),
+      QMessageBox::Question,
+      APP_NAME,
+      QMessageBox::Yes | QMessageBox::No);
+    if (ret != QMessageBox::Yes)
+      return;
+  }
 
   // Remove the source entry
   m_sources.erase(m_sources.begin() + sourceId);
@@ -3097,29 +3187,50 @@ void DataModel::ProjectModel::setOutputWidgetIcon(const QString& icon)
 /**
  * @brief Creates a new output group with a default button control.
  */
-void DataModel::ProjectModel::addOutputPanel()
+void DataModel::ProjectModel::addOutputPanel(int sourceId)
 {
-  const auto saved = m_selectedGroup;
-  m_selectedGroup  = DataModel::Group();
-  addOutputControl(SerialStudio::OutputButton);
-  m_selectedGroup = saved;
+  // Force a fresh panel even when an existing one would match -- the
+  // user explicitly asked for a new panel, so don't append to an old one.
+  addGroup(tr("Output Controls"), SerialStudio::NoGroupWidget, sourceId);
+  auto& group     = m_groups.back();
+  group.groupType = DataModel::GroupType::Output;
+  m_selectedGroup = group;
+
+  addOutputControl(SerialStudio::OutputButton, sourceId);
 }
 
 /**
  * @brief Adds an output control, creating a new output group if needed.
  */
-void DataModel::ProjectModel::addOutputControl(const SerialStudio::OutputWidgetType type)
+void DataModel::ProjectModel::addOutputControl(const SerialStudio::OutputWidgetType type,
+                                               int sourceId)
 {
-  // Use selected group if it's an output group, otherwise create a new one
+  // Use selected group if it's an output group on the requested source
   int groupId    = -1;
   const auto sel = m_selectedGroup.groupId;
   if (sel >= 0 && static_cast<size_t>(sel) < m_groups.size()
-      && m_groups[sel].groupType == DataModel::GroupType::Output)
+      && m_groups[sel].groupType == DataModel::GroupType::Output
+      && (sourceId < 0 || m_groups[sel].sourceId == sourceId))
     groupId = sel;
+
+  // Fall back to any existing output group (matching source when requested)
+  if (groupId < 0) {
+    for (const auto& g : std::as_const(m_groups)) {
+      if (g.groupType != DataModel::GroupType::Output)
+        continue;
+
+      if (sourceId >= 0 && g.sourceId != sourceId)
+        continue;
+
+      groupId         = g.groupId;
+      m_selectedGroup = g;
+      break;
+    }
+  }
 
   // Create new group if needed
   if (groupId < 0) {
-    addGroup(tr("Output Controls"), SerialStudio::NoGroupWidget);
+    addGroup(tr("Output Controls"), SerialStudio::NoGroupWidget, sourceId);
     auto& group     = m_groups.back();
     group.groupType = DataModel::GroupType::Output;
     groupId         = group.groupId;
@@ -3290,12 +3401,19 @@ void DataModel::ProjectModel::duplicateCurrentDataset()
 
 /**
  * @brief Ensures a compatible group is selected before adding a dataset.
+ *
+ * When sourceId >= 0, only groups belonging to that source qualify, and any
+ * fallback creation tags the new group with that source. When sourceId < 0,
+ * the legacy behavior applies: any compatible group is acceptable.
  */
-void DataModel::ProjectModel::ensureValidGroup()
+void DataModel::ProjectModel::ensureValidGroup(int sourceId)
 {
   // A compatible group accepts user-added datasets
-  const auto isValidGroup = [](const DataModel::Group& g) -> bool {
+  const auto isValidGroup = [sourceId](const DataModel::Group& g) -> bool {
     if (g.groupType == DataModel::GroupType::Output)
+      return false;
+
+    if (sourceId >= 0 && g.sourceId != sourceId)
       return false;
 
     switch (SerialStudio::groupWidgetFromId(g.widget)) {
@@ -3326,17 +3444,17 @@ void DataModel::ProjectModel::ensureValidGroup()
     return;
   }
 
-  // No compatible group exists, create one
-  addGroup(tr("Group"), SerialStudio::NoGroupWidget);
+  // No compatible group exists, create one (tagged with the requested source)
+  addGroup(tr("Group"), SerialStudio::NoGroupWidget, sourceId);
   m_selectedGroup = m_groups.back();
 }
 
 /**
  * @brief Adds a new dataset of the given type to the selected group.
  */
-void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption option)
+void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption option, int sourceId)
 {
-  ensureValidGroup();
+  ensureValidGroup(sourceId);
 
   // Initialize dataset with type-specific defaults
   const auto groupId = m_selectedGroup.groupId;
@@ -3511,7 +3629,7 @@ void DataModel::ProjectModel::changeDatasetOption(const SerialStudio::DatasetOpt
 /**
  * @brief Adds a new action with a unique title to the project.
  */
-void DataModel::ProjectModel::addAction()
+void DataModel::ProjectModel::addAction(int sourceId)
 {
   // Generate a unique title
   int count     = 1;
@@ -3542,6 +3660,8 @@ void DataModel::ProjectModel::addAction()
   DataModel::Action action;
   action.title    = title;
   action.actionId = m_actions.size();
+  if (sourceId >= 0)
+    action.sourceId = sourceId;
 
   m_actions.push_back(action);
   m_selectedAction = action;
@@ -3554,7 +3674,8 @@ void DataModel::ProjectModel::addAction()
 /**
  * @brief Adds a new group with a unique title and the given widget type.
  */
-void DataModel::ProjectModel::addGroup(const QString& title, const SerialStudio::GroupWidget widget)
+void DataModel::ProjectModel::addGroup(const QString& title,
+                                       const SerialStudio::GroupWidget widget, int sourceId)
 {
   // Generate a unique title
   int count        = 1;
@@ -3585,6 +3706,10 @@ void DataModel::ProjectModel::addGroup(const QString& title, const SerialStudio:
   DataModel::Group group;
   group.title   = newTitle;
   group.groupId = m_groups.size();
+
+  // Explicit caller-supplied source wins; otherwise default (0) sticks
+  if (sourceId >= 0)
+    group.sourceId = sourceId;
 
   m_groups.push_back(group);
   setGroupWidget(static_cast<int>(m_groups.size()) - 1, widget);
@@ -4298,6 +4423,116 @@ void DataModel::ProjectModel::promptRenameTable(const QString& oldName)
     return;
 
   renameTable(oldName, name.trimmed());
+}
+
+/**
+ * @brief Prompts for a new title and applies it to the group at @p groupId.
+ */
+void DataModel::ProjectModel::promptRenameGroup(int groupId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+
+  bool ok        = false;
+  const auto old = m_groups[groupId].title;
+  const auto fresh
+    = QInputDialog::getText(nullptr,
+                            tr("Rename Group"),
+                            tr("Name:"),
+                            QLineEdit::Normal,
+                            old,
+                            &ok)
+        .trimmed();
+  if (!ok || fresh.isEmpty() || fresh == old)
+    return;
+
+  auto group  = m_groups[groupId];
+  group.title = fresh;
+  updateGroup(groupId, group, true);
+}
+
+/**
+ * @brief Prompts for a new title and applies it to the dataset at (groupId, datasetId).
+ */
+void DataModel::ProjectModel::promptRenameDataset(int groupId, int datasetId)
+{
+  if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
+    return;
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= m_groups[groupId].datasets.size())
+    return;
+
+  bool ok        = false;
+  const auto old = m_groups[groupId].datasets[datasetId].title;
+  const auto fresh
+    = QInputDialog::getText(nullptr,
+                            tr("Rename Dataset"),
+                            tr("Name:"),
+                            QLineEdit::Normal,
+                            old,
+                            &ok)
+        .trimmed();
+  if (!ok || fresh.isEmpty() || fresh == old)
+    return;
+
+  auto dataset  = m_groups[groupId].datasets[datasetId];
+  dataset.title = fresh;
+  updateDataset(groupId, datasetId, dataset, true);
+}
+
+/**
+ * @brief Prompts for a new title and applies it to the source at @p sourceId.
+ */
+void DataModel::ProjectModel::promptRenameSource(int sourceId)
+{
+  const Source* src = nullptr;
+  for (const auto& s : m_sources)
+    if (s.sourceId == sourceId) {
+      src = &s;
+      break;
+    }
+  if (!src)
+    return;
+
+  bool ok        = false;
+  const auto old = src->title;
+  const auto fresh
+    = QInputDialog::getText(nullptr,
+                            tr("Rename Data Source"),
+                            tr("Name:"),
+                            QLineEdit::Normal,
+                            old,
+                            &ok)
+        .trimmed();
+  if (!ok || fresh.isEmpty() || fresh == old)
+    return;
+
+  updateSourceTitle(sourceId, fresh);
+}
+
+/**
+ * @brief Prompts for a new title and applies it to the action at @p actionId.
+ */
+void DataModel::ProjectModel::promptRenameAction(int actionId)
+{
+  if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
+    return;
+
+  bool ok        = false;
+  const auto old = m_actions[actionId].title;
+  const auto fresh
+    = QInputDialog::getText(nullptr,
+                            tr("Rename Action"),
+                            tr("Name:"),
+                            QLineEdit::Normal,
+                            old,
+                            &ok)
+        .trimmed();
+  if (!ok || fresh.isEmpty() || fresh == old)
+    return;
+
+  auto action  = m_actions[actionId];
+  action.title = fresh;
+  updateAction(actionId, action);
 }
 
 /**
@@ -5432,6 +5667,9 @@ QVariantList DataModel::ProjectModel::groupsForDiagram() const
       dsMap[Keys::Title]     = ds.title;
       dsMap[Keys::Units]     = ds.units;
       dsMap[Keys::Widget]    = ds.widget;
+      // Internal diagram hint -- not part of the .ssproj schema, so a literal
+      // key is fine. The QML side flips a "fx" badge on the dataset pill.
+      dsMap[QStringLiteral("hasTransform")] = !ds.transformCode.trimmed().isEmpty();
       datasets.append(dsMap);
     }
 
@@ -5474,6 +5712,24 @@ QVariantList DataModel::ProjectModel::actionsForDiagram() const
     map[Keys::SourceId] = act.sourceId;
     map[Keys::Title]    = act.title;
     map[Keys::Icon]     = Misc::IconEngine::resolveActionIconSource(act.icon);
+    result.append(map);
+  }
+
+  return result;
+}
+
+/**
+ * @brief Returns a snapshot of project data tables (name + register count) for the diagram.
+ */
+QVariantList DataModel::ProjectModel::tablesForDiagram() const
+{
+  QVariantList result;
+  result.reserve(static_cast<qsizetype>(m_tables.size()));
+
+  for (const auto& tbl : m_tables) {
+    QVariantMap map;
+    map[Keys::Name]                          = tbl.name;
+    map[QStringLiteral("registerCount")]     = static_cast<int>(tbl.registers.size());
     result.append(map);
   }
 
@@ -5570,9 +5826,9 @@ bool DataModel::ProjectModel::finalizeProjectSave()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Deletes the group at @p groupId via the existing selection-based path.
+ * @brief Deletes the group at @p groupId; opt-in confirmation reuses deleteCurrentGroup's dialog.
  */
-void DataModel::ProjectModel::deleteGroup(int groupId)
+void DataModel::ProjectModel::deleteGroup(int groupId, bool confirm)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
     return;
@@ -5581,7 +5837,7 @@ void DataModel::ProjectModel::deleteGroup(int groupId)
   setSelectedGroup(m_groups[groupId]);
 
   const bool previousSuppress = m_suppressMessageBoxes;
-  m_suppressMessageBoxes      = true;
+  m_suppressMessageBoxes      = !confirm;
   deleteCurrentGroup();
   m_suppressMessageBoxes = previousSuppress;
 
@@ -5612,7 +5868,7 @@ void DataModel::ProjectModel::duplicateGroup(int groupId)
 /**
  * @brief Deletes the dataset at @p groupId/@p datasetId.
  */
-void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId)
+void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId, bool confirm)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
     return;
@@ -5624,7 +5880,7 @@ void DataModel::ProjectModel::deleteDataset(int groupId, int datasetId)
   setSelectedDataset(m_groups[groupId].datasets[datasetId]);
 
   const bool previousSuppress = m_suppressMessageBoxes;
-  m_suppressMessageBoxes      = true;
+  m_suppressMessageBoxes      = !confirm;
   deleteCurrentDataset();
   m_suppressMessageBoxes = previousSuppress;
 
@@ -5663,7 +5919,7 @@ void DataModel::ProjectModel::duplicateDataset(int groupId, int datasetId)
 /**
  * @brief Deletes the action at @p actionId via the existing selection-based path.
  */
-void DataModel::ProjectModel::deleteAction(int actionId)
+void DataModel::ProjectModel::deleteAction(int actionId, bool confirm)
 {
   if (actionId < 0 || static_cast<size_t>(actionId) >= m_actions.size())
     return;
@@ -5672,7 +5928,7 @@ void DataModel::ProjectModel::deleteAction(int actionId)
   setSelectedAction(m_actions[actionId]);
 
   const bool previousSuppress = m_suppressMessageBoxes;
-  m_suppressMessageBoxes      = true;
+  m_suppressMessageBoxes      = !confirm;
   deleteCurrentAction();
   m_suppressMessageBoxes = previousSuppress;
 
@@ -5702,7 +5958,7 @@ void DataModel::ProjectModel::duplicateAction(int actionId)
 /**
  * @brief Deletes the output widget at @p groupId/@p widgetId.
  */
-void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId)
+void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId, bool confirm)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
     return;
@@ -5714,7 +5970,7 @@ void DataModel::ProjectModel::deleteOutputWidget(int groupId, int widgetId)
   setSelectedOutputWidget(m_groups[groupId].outputWidgets[widgetId]);
 
   const bool previousSuppress = m_suppressMessageBoxes;
-  m_suppressMessageBoxes      = true;
+  m_suppressMessageBoxes      = !confirm;
   deleteCurrentOutputWidget();
   m_suppressMessageBoxes = previousSuppress;
 

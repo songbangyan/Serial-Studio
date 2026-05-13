@@ -217,6 +217,24 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
       m_selectionModel->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
     }
   });
+  connect(&pm, &DataModel::ProjectModel::titleChanged, this, [this] {
+    if (!m_treeModel)
+      return;
+
+    const auto title = DataModel::ProjectModel::instance().title();
+    for (auto it = m_rootItems.constBegin(); it != m_rootItems.constEnd(); ++it) {
+      if (it.value() != kRootItem)
+        continue;
+
+      auto* root = it.key();
+      if (root->text() == title)
+        return;
+
+      root->setText(title);
+      root->setData(title, TreeViewText);
+      return;
+    }
+  });
 }
 
 /**
@@ -876,12 +894,29 @@ void DataModel::ProjectEditor::setSelectedOutputWidgetTransmitFunction(const QSt
  */
 void DataModel::ProjectEditor::openTransformEditor()
 {
+  openTransformEditorFor(m_selectedDataset.groupId, m_selectedDataset.datasetId);
+}
+
+/**
+ * @brief Opens the transform editor for an explicit (groupId, datasetId) -- no selection change.
+ */
+void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId)
+{
+  auto& pm           = DataModel::ProjectModel::instance();
+  const auto& groups = pm.groups();
+
+  if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
+    return;
+  if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
+    return;
+
+  const auto& dataset = groups[groupId].datasets[datasetId];
+
   // Prefer per-dataset transformLanguage; fall back to source parser language when unset
-  int lang = m_selectedDataset.transformLanguage;
-  if (lang < 0 || m_selectedDataset.transformCode.isEmpty()) {
-    const auto& sources = DataModel::ProjectModel::instance().sources();
-    for (const auto& src : sources)
-      if (src.sourceId == m_selectedDataset.sourceId) {
+  int lang = dataset.transformLanguage;
+  if (lang < 0 || dataset.transformCode.isEmpty()) {
+    for (const auto& src : pm.sources())
+      if (src.sourceId == dataset.sourceId) {
         lang = src.frameParserLanguage;
         break;
       }
@@ -928,11 +963,8 @@ void DataModel::ProjectEditor::openTransformEditor()
             });
   }
 
-  m_transformEditor->displayDialog(m_selectedDataset.title,
-                                   m_selectedDataset.transformCode,
-                                   lang,
-                                   m_selectedDataset.groupId,
-                                   m_selectedDataset.datasetId);
+  m_transformEditor->displayDialog(
+    dataset.title, dataset.transformCode, lang, groupId, datasetId);
 }
 
 /**
@@ -3054,12 +3086,23 @@ void DataModel::ProjectEditor::generateComboBoxModels()
  */
 void DataModel::ProjectEditor::setCurrentView(const DataModel::ProjectEditor::CurrentView view)
 {
+  if (m_suppressViewChange) [[unlikely]]
+    return;
+
   if (m_currentView == view)
     return;
 
   m_currentView = view;
   Q_EMIT currentViewChanged();
   Q_EMIT selectedTextChanged();
+}
+
+/**
+ * @brief Toggles the suppression latch used by the diagram's context-menu actions.
+ */
+void DataModel::ProjectEditor::setSuppressViewChange(bool suppress) noexcept
+{
+  m_suppressViewChange = suppress;
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -25,7 +25,7 @@
 #  include "AppState.h"
 #  include "CSV/Player.h"
 #  include "DataModel/FrameBuilder.h"
-#  include "DataModel/FrameParser.h"
+#  include "DataModel/Scripting/FrameParser.h"
 #  include "DataModel/ProjectModel.h"
 #  include "IO/ConnectionManager.h"
 #  include "Licensing/LemonSqueezy.h"

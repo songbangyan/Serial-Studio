@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/LuaScriptEngine.h"
+#include "DataModel/Scripting/LuaScriptEngine.h"
 
 #include <lauxlib.h>
 #include <lua.h>
@@ -30,7 +30,7 @@
 #include <stdexcept>
 
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/LuaCompat.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
 #include "Misc/Utilities.h"
 
@@ -116,7 +116,11 @@ static void openSafeLibs(lua_State* L)
  * @brief Constructs the Lua script engine and creates its sandboxed state.
  */
 DataModel::LuaScriptEngine::LuaScriptEngine()
-  : m_state(nullptr), m_loaded(false), m_deadline(QDeadlineTimer::Forever)
+  : m_state(nullptr)
+  , m_loaded(false)
+  , m_disabled(false)
+  , m_consecutiveTimeouts(0)
+  , m_deadline(QDeadlineTimer::Forever)
 {
   createState();
 }
@@ -164,9 +168,13 @@ void DataModel::LuaScriptEngine::createState()
   // Install instruction-count watchdog hook
   lua_sethook(m_state, watchdogHook, LUA_MASKCOUNT, kHookInstructionCount);
 
-  // Deadline starts "never" -- set per-call before entering Lua
-  m_deadline = QDeadlineTimer(QDeadlineTimer::Forever);
-  m_loaded   = false;
+  // Deadline starts "never" -- set per-call before entering Lua. Fresh state
+  // also re-arms the circuit breaker so a previously-disabled script can run
+  // again once the user reloads.
+  m_deadline             = QDeadlineTimer(QDeadlineTimer::Forever);
+  m_loaded               = false;
+  m_disabled             = false;
+  m_consecutiveTimeouts  = 0;
 }
 
 /**
@@ -232,6 +240,40 @@ void DataModel::LuaScriptEngine::watchdogHook(lua_State* L, lua_Debug* ar)
   // Deadline reached -> abort the current Lua call
   if (self->m_deadline.hasExpired()) [[unlikely]]
     luaL_error(L, "execution timed out after %d ms", kRuntimeWatchdogMs);
+}
+
+/**
+ * @brief Records a watchdog timeout and disables the parser after too many in a row.
+ */
+bool DataModel::LuaScriptEngine::noteTimeoutAndCheckDisabled(int sourceId)
+{
+  ++m_consecutiveTimeouts;
+  if (m_consecutiveTimeouts < kMaxConsecutiveTimeouts)
+    return false;
+
+  m_disabled = true;
+  qWarning() << "[LuaScriptEngine] Source" << sourceId
+             << "disabled after" << kMaxConsecutiveTimeouts
+             << "consecutive watchdog timeouts.";
+  Misc::Utilities::showMessageBox(
+    QObject::tr("Frame Parser Disabled"),
+    QObject::tr("The Lua frame parser for source %1 timed out %2 frames in a row "
+                "and has been disabled to keep Serial Studio responsive.\n\n"
+                "Most likely cause: an infinite loop or extremely slow operation "
+                "in the script body. Fix the script and reload the project to "
+                "re-enable parsing.")
+      .arg(sourceId)
+      .arg(kMaxConsecutiveTimeouts),
+    QMessageBox::Critical);
+  return true;
+}
+
+/**
+ * @brief Clears the consecutive-timeout counter after a successful parse.
+ */
+void DataModel::LuaScriptEngine::resetTimeoutCounter() noexcept
+{
+  m_consecutiveTimeouts = 0;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -407,7 +449,7 @@ QList<QStringList> DataModel::LuaScriptEngine::parseString(const QString& frame)
   Q_ASSERT(!frame.isEmpty());
   Q_ASSERT(m_state != nullptr);
 
-  if (!m_loaded)
+  if (!m_loaded || m_disabled)
     return {};
 
   // C++-boundary exception guard -- a thrown Lua error must not crash the host
@@ -424,9 +466,12 @@ QList<QStringList> DataModel::LuaScriptEngine::parseString(const QString& frame)
       const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
       lua_pop(m_state, 1);
       qWarning() << "[LuaScriptEngine] Parse error:" << err;
+      if (err.contains(QLatin1String("timed out")))
+        (void)noteTimeoutAndCheckDisabled(0);
       return {};
     }
 
+    resetTimeoutCounter();
     return convertResult();
   } catch (const std::exception& e) {
     qWarning() << "[LuaScriptEngine] parseString uncaught exception:" << e.what();
@@ -447,7 +492,7 @@ QList<QStringList> DataModel::LuaScriptEngine::parseBinary(const QByteArray& fra
   Q_ASSERT(!frame.isEmpty());
   Q_ASSERT(m_state != nullptr);
 
-  if (!m_loaded)
+  if (!m_loaded || m_disabled)
     return {};
 
   // C++-boundary exception guard -- a thrown Lua error must not crash the host
@@ -469,9 +514,12 @@ QList<QStringList> DataModel::LuaScriptEngine::parseBinary(const QByteArray& fra
       const QString err = QString::fromUtf8(lua_tostring(m_state, -1));
       lua_pop(m_state, 1);
       qWarning() << "[LuaScriptEngine] Parse error:" << err;
+      if (err.contains(QLatin1String("timed out")))
+        (void)noteTimeoutAndCheckDisabled(0);
       return {};
     }
 
+    resetTimeoutCounter();
     return convertResult();
   } catch (const std::exception& e) {
     qWarning() << "[LuaScriptEngine] parseBinary uncaught exception:" << e.what();

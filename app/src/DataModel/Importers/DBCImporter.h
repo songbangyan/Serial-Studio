@@ -29,7 +29,7 @@
 #include <QObject>
 #include <QString>
 
-#include "Frame.h"
+#include "DataModel/Frame.h"
 
 namespace DataModel {
 /**
@@ -112,7 +112,7 @@ private:
   [[nodiscard]] QString frameParserDispatchTable(
     const QList<QCanMessageDescription>& messages) const;
 
-  QString sanitizeJavaScriptString(const QString& str);
+  QString sanitizeString(const QString& str);
   QString selectGroupWidget(const QCanMessageDescription& message);
   QString selectWidgetForSignal(const QCanSignalDescription& signal);
   QString generateSignalExtraction(const QCanSignalDescription& signal);

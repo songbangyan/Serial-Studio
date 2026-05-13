@@ -8,7 +8,7 @@
 
 #ifdef BUILD_COMMERCIAL
 
-#  include "DataModel/PainterCodeEditor.h"
+#  include "DataModel/Editors/PainterCodeEditor.h"
 
 #  include <QCoreApplication>
 #  include <QDir>
@@ -29,10 +29,10 @@
 #  include <QVariantList>
 #  include <QVariantMap>
 
-#  include "DataModel/CodeFormatter.h"
+#  include "DataModel/Editors/CodeFormatter.h"
 #  include "DataModel/ProjectEditor.h"
 #  include "DataModel/ProjectModel.h"
-#  include "DataModel/ScriptTemplates.h"
+#  include "DataModel/Scripting/ScriptTemplates.h"
 #  include "Misc/CommonFonts.h"
 #  include "Misc/ThemeManager.h"
 #  include "Misc/TimerEvents.h"

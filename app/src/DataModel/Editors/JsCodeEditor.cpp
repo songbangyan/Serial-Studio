@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/JsCodeEditor.h"
+#include "DataModel/Editors/JsCodeEditor.h"
 
 #include <QApplication>
 #include <QCoreApplication>
@@ -36,8 +36,8 @@
 #include <QTextDocument>
 #include <QUrl>
 
-#include "DataModel/CodeFormatter.h"
-#include "DataModel/FrameParser.h"
+#include "DataModel/Editors/CodeFormatter.h"
+#include "DataModel/Scripting/FrameParser.h"
 #include "DataModel/ProjectEditor.h"
 #include "DataModel/ProjectModel.h"
 #include "Misc/CommonFonts.h"

@@ -30,13 +30,15 @@ Item {
   //
   // Layout metrics (logical pixels, unscaled)
   //
-  readonly property int nodeW: 160   // card width
-  readonly property int pad:   24    // outer margin
-  readonly property int chipW: 150   // dataset pill width
-  readonly property int chipH: 24    // dataset pill height
-  readonly property int vGap:  12    // vertical gap between rows
-  readonly property int hGap:  56    // horizontal gap between columns
-  readonly property int nodeH: 48    // card height (fixed for all cards)
+  readonly property int nodeW:    160  // card width
+  readonly property int pad:      24   // outer margin
+  readonly property int chipW:    150  // dataset pill width
+  readonly property int chipH:    24   // dataset pill height
+  readonly property int vGap:     12   // vertical gap between rows
+  readonly property int hGap:     56   // horizontal gap between columns
+  readonly property int nodeH:    48   // card height (fixed for all cards)
+  readonly property int transW:   32   // transform block width
+  readonly property int transGap: 16   // gap between transform block and dataset pill
 
   //
   // Zoom state
@@ -60,7 +62,8 @@ Item {
     layoutDiagram(
       Cpp_JSON_ProjectModel.sourcesForDiagram(),
       Cpp_JSON_ProjectModel.groupsForDiagram(),
-      Cpp_JSON_ProjectModel.actionsForDiagram()
+      Cpp_JSON_ProjectModel.actionsForDiagram(),
+      Cpp_JSON_ProjectModel.tablesForDiagram()
     )
   }
 
@@ -73,15 +76,17 @@ Item {
   //
   // Columns L->R: Device | Frame Parser/Actions | Groups | Dataset pills.
   //
-  function layoutDiagram(sources, groups, actions) {
+  function layoutDiagram(sources, groups, actions, tables) {
     const newNodes  = []
     const newArrows = []
+    tables = tables || []
 
     // -- column x positions ------------------------------------------------
-    const colDev  = pad                               // device column
-    const colFP   = pad + nodeW + hGap                // frame-parser / action column
-    const colGrp  = colFP  + nodeW + hGap            // group column
-    const colChip = colGrp + nodeW + hGap            // dataset column
+    const colDev   = pad                               // device column
+    const colFP    = pad + nodeW + hGap                // frame-parser / action column
+    const colGrp   = colFP  + nodeW + hGap             // group column
+    const colTrans = colGrp + nodeW + hGap             // transform block column
+    const colChip  = colTrans + transW + transGap      // dataset column
 
     // -- slot height helper -------------------------------------------------
     function slotH(dsCount) {
@@ -97,20 +102,19 @@ Item {
     const fallback = [{ sourceId: 0, busType: SerialStudio.UART, title: "" }]
     const srcList = sources.length > 0 ? sources : fallback
 
-    // first pass: measure total height per source
+    // first pass: measure total height per source. Output groups don't
+    // contribute -- their widgets are TX-direction nodes that render in the
+    // frame-parser column alongside actions, not as groups in colGrp.
     for (const src of srcList)
       srcTotalH[src.sourceId] = 0
 
     for (const grp of groups) {
+      if (grp.groupType === SerialStudio.GroupOutput) continue
+
       const sid = grp.sourceId || 0
       if (srcTotalH[sid] === undefined) srcTotalH[sid] = 0
 
-      let pillCount = 0
-      if (grp.groupType === SerialStudio.GroupOutput)
-        pillCount = (grp.outputWidgets || []).length
-      else
-        pillCount = (grp.datasets || []).length
-
+      const pillCount = (grp.datasets || []).length
       srcTotalH[sid] += slotH(pillCount) + vGap
     }
 
@@ -180,43 +184,21 @@ Item {
       //
       newArrows.push({
         x1: colDev + nodeW, y1: midY + nodeH / 2,
-        x2: colFP,          y2: midY + nodeH / 2,
-        dashed: false
+        x2: colFP,          y2: midY + nodeH / 2
       })
 
     }
 
-    // -- place group + dataset/output nodes ---------------------------------
+    // -- place group + dataset nodes ---------------------------------
+    // Output groups are skipped here -- their widgets are TX-direction and
+    // render as standalone cards in the frame-parser column below.
     for (const grp of groups) {
-      const sid       = grp.sourceId || 0
-      const isOutput  = grp.groupType === SerialStudio.GroupOutput
-      const dsList    = grp.datasets || []
+      if (grp.groupType === SerialStudio.GroupOutput) continue
 
-      //
-      // Build pills list: datasets for viz groups, output widget names for output groups
-      //
-      const pills = []
-      if (isOutput) {
-        const owList = grp.outputWidgets || []
-        for (let oi = 0; oi < owList.length; ++oi) {
-          pills.push({
-            label: owList[oi].title || qsTr("Control"),
-            icon:  outputWidgetIcon(owList[oi].type),
-            id:    oi
-          })
-        }
-      } else {
-        for (let di = 0; di < dsList.length; ++di) {
-          const ds = dsList[di]
-          pills.push({
-            label: ds.units ? (ds.title + " [" + ds.units + "]") : ds.title,
-            icon:  datasetIcon(),
-            id:    ds.datasetId
-          })
-        }
-      }
+      const sid    = grp.sourceId || 0
+      const dsList = grp.datasets || []
 
-      const pillCount = pills.length
+      const pillCount = dsList.length
       const sh = slotH(pillCount)
 
       const slotTop = groupY[sid] !== undefined ? groupY[sid] : pad
@@ -226,18 +208,20 @@ Item {
       // Group card
       //
       newNodes.push({
-        type:      "group",
-        sourceId:  sid,
-        groupId:   grp.groupId,
-        datasetId: -1,
-        actionId:  -1,
-        x:         colGrp,
-        y:         cardY,
-        w:         nodeW,
-        h:         nodeH,
-        label:     grp.title || qsTr("Group"),
-        icon:      groupIcon(grp),
-        badge:     ""
+        type:         "group",
+        sourceId:     sid,
+        groupId:      grp.groupId,
+        datasetId:    -1,
+        actionId:     -1,
+        widget:       grp.widget || "",
+        siblingCount: groups.length,
+        x:            colGrp,
+        y:            cardY,
+        w:            nodeW,
+        h:            nodeH,
+        label:        grp.title || qsTr("Group"),
+        icon:         groupIcon(grp),
+        badge:        ""
       })
 
       //
@@ -248,44 +232,77 @@ Item {
         : cardY + nodeH / 2
       newArrows.push({
         x1: colFP + nodeW, y1: fpMidY,
-        x2: colGrp,        y2: cardY + nodeH / 2,
-        dashed: false
+        x2: colGrp,        y2: cardY + nodeH / 2
       })
 
       //
-      // Pills (datasets or output widgets)
+      // Dataset pills -- datasets with a transform get an intermediate
+      // "transform" block in the colTrans column, so the data-flow shown
+      // matches reality: group -> transform -> dataset.
       //
       if (pillCount > 0) {
         const blockH   = pillCount * chipH + (pillCount - 1) * vGap
         const blockTop = slotTop + (sh - blockH) / 2
 
-        for (let pi = 0; pi < pillCount; ++pi) {
-          const pill  = pills[pi]
-          const chipY = blockTop + pi * (chipH + vGap)
+        for (let di = 0; di < pillCount; ++di) {
+          const ds    = dsList[di]
+          const chipY = blockTop + di * (chipH + vGap)
+          const hasTransform = ds.hasTransform === true
+
+          //
+          // Transform block (only for datasets with a non-empty transform).
+          //
+          if (hasTransform) {
+            newNodes.push({
+              type:      "transform",
+              sourceId:  sid,
+              groupId:   grp.groupId,
+              datasetId: ds.datasetId,
+              widgetId:  -1,
+              actionId:  -1,
+              x:         colTrans,
+              y:         chipY,
+              w:         transW,
+              h:         chipH,
+              label:     "",
+              icon:      "",
+              badge:     ""
+            })
+
+            // group -> transform
+            newArrows.push({
+              x1: colGrp + nodeW, y1: cardY + nodeH / 2,
+              x2: colTrans,       y2: chipY + chipH / 2
+            })
+            // transform -> dataset (short hop)
+            newArrows.push({
+              x1: colTrans + transW, y1: chipY + chipH / 2,
+              x2: colChip,           y2: chipY + chipH / 2
+            })
+          } else {
+            // No transform -> single long arrow group -> dataset
+            newArrows.push({
+              x1: colGrp + nodeW, y1: cardY + nodeH / 2,
+              x2: colChip,        y2: chipY + chipH / 2
+            })
+          }
 
           newNodes.push({
-            type:      isOutput ? "output" : "dataset",
-            sourceId:  sid,
-            groupId:   grp.groupId,
-            datasetId: isOutput ? -1 : pill.id,
-            widgetId:  isOutput ? pill.id : -1,
-            actionId:  -1,
-            x:         colChip,
-            y:         chipY,
-            w:         chipW,
-            h:         chipH,
-            label:     pill.label,
-            icon:      pill.icon || "",
-            badge:     ""
-          })
-
-          //
-          // Arrow: group -> pill
-          //
-          newArrows.push({
-            x1: colGrp + nodeW, y1: cardY + nodeH / 2,
-            x2: colChip,        y2: chipY + chipH / 2,
-            dashed: false
+            type:         "dataset",
+            sourceId:     sid,
+            groupId:      grp.groupId,
+            datasetId:    ds.datasetId,
+            widgetId:     -1,
+            actionId:     -1,
+            siblingCount: pillCount,
+            x:            colChip,
+            y:            chipY,
+            w:            chipW,
+            h:            chipH,
+            label:        ds.units ? (ds.title + " [" + ds.units + "]") : ds.title,
+            icon:         datasetIcon(),
+            badge:        "",
+            hasTransform: hasTransform
           })
         }
       }
@@ -298,17 +315,14 @@ Item {
     }
 
     //
-    // Action cards stack below the frame-parser column with dashed arrows to the device.
+    // Action cards stack below the frame-parser column with TX arrows back to the device.
     //
-    if (actions.length > 0) {
-      //
-      // Find the y start for actions: below all content so far
-      //
-      let maxGroupY = pad
-      for (const sid in groupY)
-        maxGroupY = Math.max(maxGroupY, groupY[sid])
+    let blockCursor = pad
+    for (const sid in groupY)
+      blockCursor = Math.max(blockCursor, groupY[sid])
 
-      const actBlockTop = maxGroupY + vGap * 2
+    if (actions.length > 0) {
+      const actBlockTop = blockCursor + vGap * 2
 
       for (let ai = 0; ai < actions.length; ++ai) {
         const act  = actions[ai]
@@ -316,30 +330,156 @@ Item {
         const actY = actBlockTop + ai * (nodeH + vGap)
 
         newNodes.push({
-          type:      "action",
-          sourceId:  sid,
-          groupId:   -1,
-          datasetId: -1,
-          actionId:  act.actionId,
-          x:         colFP,
-          y:         actY,
-          w:         nodeW,
-          h:         nodeH,
-          label:     act.title || qsTr("Action"),
-          icon:      act.icon  || "qrc:/icons/project-editor/treeview/action.svg",
-          badge:     ""
+          type:         "action",
+          sourceId:     sid,
+          groupId:      -1,
+          datasetId:    -1,
+          actionId:     act.actionId,
+          siblingCount: actions.length,
+          x:            colFP,
+          y:            actY,
+          w:            nodeW,
+          h:            nodeH,
+          label:        act.title || qsTr("Action"),
+          icon:         act.icon  || "qrc:/icons/project-editor/treeview/action.svg",
+          badge:        ""
         })
 
         //
-        // Dashed arrow from action to the target device (TX direction)
+        // Arrow from action up into the bottom-center of its target device.
         //
-        const devMidY = fpNodeY[sid] !== undefined
-          ? fpNodeY[sid] + nodeH / 2
-          : pad + nodeH / 2
+        const devTopY = fpNodeY[sid] !== undefined ? fpNodeY[sid] : pad
         newArrows.push({
-          x1: colFP,          y1: actY + nodeH / 2,
-          x2: colDev + nodeW, y2: devMidY,
-          dashed: true
+          x1: colFP,             y1: actY + nodeH / 2,
+          x2: colDev + nodeW / 2, y2: devTopY + nodeH,
+          verticalEnd: true
+        })
+      }
+
+      blockCursor = actBlockTop + actions.length * (nodeH + vGap)
+    }
+
+    //
+    // Output panels (TX direction): each panel renders as a card in the
+    // frame-parser column with one arrow back to its target device, then its
+    // controls stack underneath it as pills in the dataset column -- the
+    // mirror image of the RX flow (parser -> group -> dataset).
+    //
+    const outputGroups = groups.filter(g => g.groupType === SerialStudio.GroupOutput)
+
+    if (outputGroups.length > 0) {
+      let outCursor = blockCursor + vGap * 2
+
+      for (const grp of outputGroups) {
+        const sid     = grp.sourceId || 0
+        const owList  = grp.outputWidgets || []
+        const wCount  = owList.length
+        const wsh     = slotH(wCount)
+        const panelY  = outCursor + (wsh - nodeH) / 2
+
+        //
+        // Panel card (the parent group) in colFP
+        //
+        newNodes.push({
+          type:         "output-panel",
+          sourceId:     sid,
+          groupId:      grp.groupId,
+          datasetId:    -1,
+          widgetId:     -1,
+          actionId:     -1,
+          widget:       grp.widget || "",
+          siblingCount: outputGroups.length,
+          x:            colFP,
+          y:            panelY,
+          w:            nodeW,
+          h:            nodeH,
+          label:        grp.title || qsTr("Output Panel"),
+          icon:         "qrc:/icons/project-editor/treeview/output-panel.svg",
+          badge:        ""
+        })
+
+        //
+        // Arrow from panel up into the bottom-center of its target device.
+        //
+        const devTopY = fpNodeY[sid] !== undefined ? fpNodeY[sid] : pad
+        newArrows.push({
+          x1: colFP,             y1: panelY + nodeH / 2,
+          x2: colDev + nodeW / 2, y2: devTopY + nodeH,
+          verticalEnd: true
+        })
+
+        //
+        // Control pills stacked at colChip, one per widget, mirroring the
+        // group -> dataset layout. Each gets a single panel -> widget arrow.
+        //
+        if (wCount > 0) {
+          const blockH   = wCount * chipH + (wCount - 1) * vGap
+          const blockTop = outCursor + (wsh - blockH) / 2
+
+          for (let oi = 0; oi < wCount; ++oi) {
+            const ow    = owList[oi]
+            const chipY = blockTop + oi * (chipH + vGap)
+
+            newArrows.push({
+              x1: colFP + nodeW, y1: panelY + nodeH / 2,
+              x2: colChip,       y2: chipY + chipH / 2
+            })
+
+            newNodes.push({
+              type:         "output",
+              sourceId:     sid,
+              groupId:      grp.groupId,
+              datasetId:    -1,
+              widgetId:     oi,
+              actionId:     -1,
+              siblingCount: wCount,
+              x:            colChip,
+              y:            chipY,
+              w:            chipW,
+              h:            chipH,
+              label:        ow.title || qsTr("Control"),
+              icon:         outputWidgetIcon(ow.outputType),
+              badge:        ""
+            })
+          }
+        }
+
+        outCursor += wsh + vGap
+      }
+
+      blockCursor = outCursor
+    }
+
+    //
+    // Data tables stack below the actions in the frame-parser column. Tables
+    // aren't part of the per-frame flow, so they get no arrows -- they're
+    // shared scratch space scripts can read/write.
+    //
+    if (tables.length > 0) {
+      const tblBlockTop = blockCursor + vGap * 2
+
+      for (let ti = 0; ti < tables.length; ++ti) {
+        const tbl   = tables[ti]
+        const tblY  = tblBlockTop + ti * (nodeH + vGap)
+        const regs  = tbl.registerCount || 0
+        const label = tbl.name && tbl.name.length > 0 ? tbl.name : qsTr("Table")
+
+        newNodes.push({
+          type:      "table",
+          sourceId:  -1,
+          groupId:   -1,
+          datasetId: -1,
+          actionId:  -1,
+          tableName: tbl.name || "",
+          x:         colFP,
+          y:         tblY,
+          w:         nodeW,
+          h:         nodeH,
+          label:     label,
+          icon:      "qrc:/icons/project-editor/treeview/shared-table.svg",
+          badge:     regs > 0
+                       ? qsTr("%1 regs").arg(regs)
+                       : qsTr("empty")
         })
       }
     }
@@ -421,6 +561,7 @@ Item {
     function onGroupDataChanged()  { root.reloadDiagram() }
     function onActionsChanged()    { root.reloadDiagram() }
     function onSourcesChanged()    { root.reloadDiagram() }
+    function onTablesChanged()     { root.reloadDiagram() }
     function onTitleChanged()      { root.reloadDiagram() }
   }
 
@@ -433,8 +574,8 @@ Item {
   Flickable {
     id: flickable
 
-    anchors.fill: parent
     clip: true
+    anchors.fill: parent
     contentWidth:  Math.max(root.contentW * root.zoom, width)
     contentHeight: Math.max(root.contentH * root.zoom, height)
     boundsBehavior: Flickable.StopAtBounds
@@ -496,9 +637,25 @@ Item {
     //
     // -- Scaled content item ----------------------------------------------
     //
+    // The Item is sized to the LARGER of the diagram's natural extent and the
+    // Flickable viewport so the background MouseArea below always covers the
+    // full visible area -- right-click on an empty viewport must still reach
+    // the "Add ..." menu, even when the diagram itself is tiny.
+    //
     Item {
-      width:  root.contentW * root.zoom
-      height: root.contentH * root.zoom
+      width:  Math.max(root.contentW * root.zoom, flickable.width)
+      height: Math.max(root.contentH * root.zoom, flickable.height)
+
+      //
+      // Right-click anywhere on empty canvas -> "Add ..." menu.
+      // Accepts only RightButton so left-clicks and middle-button drag
+      // continue to fall through to other handlers / the Flickable.
+      //
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: menuController.openForBackground()
+      }
 
       //
       // Arrow canvas
@@ -521,42 +678,64 @@ Item {
             ctx.strokeStyle = Cpp_ThemeManager.colors["mid"]
             ctx.fillStyle   = Cpp_ThemeManager.colors["mid"]
             ctx.lineWidth   = 1.5 * z
-
-            if (a.dashed) {
-              ctx.setLineDash([4 * z, 4 * z])
-              ctx.strokeStyle = Cpp_ThemeManager.colors["highlight"]
-              ctx.fillStyle   = Cpp_ThemeManager.colors["highlight"]
-            } else {
-              ctx.setLineDash([])
-            }
+            ctx.setLineDash([])
 
             //
-            // Arrowhead length
+            // Arrowhead geometry. Horizontal-tangent arrows (the default)
+            // approach the destination from left/right; "verticalEnd" arrows
+            // approach from above/below so the apex sits flush against the
+            // top/bottom edge of the destination card.
             //
             const hl  = 7 * z
-
-            //
-            // End curve at the arrowhead's back so the tip touches the target cleanly.
-            //
-            const x2a = x2 - hl
-            const mx  = (x1 + x2a) / 2
-
-            ctx.beginPath()
-            ctx.moveTo(x1, y1)
-            ctx.bezierCurveTo(mx, y1, mx, y2, x2a, y2)
-            ctx.stroke()
-
-            //
-            // Arrowhead -- tangent is always horizontal
-            //
             const sin = Math.sin(Math.PI / 6)
             ctx.setLineDash([])
-            ctx.beginPath()
-            ctx.moveTo(x2, y2)
-            ctx.lineTo(x2 - hl, y2 - hl * sin)
-            ctx.lineTo(x2 - hl, y2 + hl * sin)
-            ctx.closePath()
-            ctx.fill()
+
+            if (a.verticalEnd) {
+              const dirY = (y2 >= y1) ? 1 : -1
+              const dirX = (x2 >= x1) ? 1 : -1
+              const hly  = hl * dirY
+              const y2a  = y2 - hly
+
+              //
+              // Guarantee >= 30px of horizontal travel before the curve bends
+              // downward, so the arrow visibly "leaves" the source card before
+              // diving into the device.
+              //
+              const exitDx = Math.max(30 * z, Math.abs(x2 - x1) * 0.3) * dirX
+              const c1x    = x1 + exitDx
+              const c1y    = y1
+              const c2x    = x2
+              const c2y    = (y1 + y2a) / 2
+
+              ctx.beginPath()
+              ctx.moveTo(x1, y1)
+              ctx.bezierCurveTo(c1x, c1y, c2x, c2y, x2, y2a)
+              ctx.stroke()
+
+              ctx.beginPath()
+              ctx.moveTo(x2, y2)
+              ctx.lineTo(x2 - hl * sin, y2 - hly)
+              ctx.lineTo(x2 + hl * sin, y2 - hly)
+              ctx.closePath()
+              ctx.fill()
+            } else {
+              const dirX = (x2 >= x1) ? 1 : -1
+              const hlx  = hl * dirX
+              const x2a  = x2 - hlx
+              const mx   = (x1 + x2a) / 2
+
+              ctx.beginPath()
+              ctx.moveTo(x1, y1)
+              ctx.bezierCurveTo(mx, y1, mx, y2, x2a, y2)
+              ctx.stroke()
+
+              ctx.beginPath()
+              ctx.moveTo(x2, y2)
+              ctx.lineTo(x2 - hlx, y2 - hl * sin)
+              ctx.lineTo(x2 - hlx, y2 + hl * sin)
+              ctx.closePath()
+              ctx.fill()
+            }
           }
         }
 
@@ -584,13 +763,23 @@ Item {
           width:  modelData.w * root.zoom
           height: modelData.h * root.zoom
 
-          property bool hovered:   false
-          property bool isPill:    isDataset || isOutput
-          property bool isOutput:  modelData.type === "output"
-          property bool isAction:  modelData.type === "action"
-          property bool isSource:  modelData.type === "source"
-          property bool isDataset: modelData.type === "dataset"
-          property bool isFP:      modelData.type === "frameparser"
+          property bool hovered:       false
+          property bool isPill:        isDataset || isOutput
+          property bool isOutput:      modelData.type === "output"
+          property bool isOutputPanel: modelData.type === "output-panel"
+          property bool isAction:      modelData.type === "action"
+          property bool isSource:      modelData.type === "source"
+          property bool isDataset:     modelData.type === "dataset"
+          property bool isFP:          modelData.type === "frameparser"
+          property bool isTable:       modelData.type === "table"
+          property bool isTransform:   modelData.type === "transform"
+
+          // Stable identifier used to pin the highlight while the context
+          // menu is open (and to gate the per-type menu used).
+          readonly property string nodeKey: menuController.keyOf(modelData)
+          readonly property bool isPinned: menuController.pinnedKey === nodeKey
+                                           && nodeKey !== ""
+          readonly property bool active: hovered || isPinned
 
           //
           // -- Pill (dataset / output widget) ---------------------------
@@ -599,11 +788,11 @@ Item {
             visible: nd.isPill
             anchors.fill: parent
             radius: height / 2
-            color: nd.hovered
+            color: nd.active
               ? Cpp_ThemeManager.colors["highlight"]
               : Cpp_ThemeManager.colors["groupbox_background"]
             border.width: 1
-            border.color: nd.hovered
+            border.color: nd.active
               ? Cpp_ThemeManager.colors["highlight"]
               : Cpp_ThemeManager.colors["groupbox_border"]
 
@@ -628,7 +817,7 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: modelData.label
                 font.pixelSize: Math.max(8, 11 * root.zoom)
-                color: nd.hovered
+                color: nd.active
                   ? Cpp_ThemeManager.colors["highlighted_text"]
                   : Cpp_ThemeManager.colors["text"]
               }
@@ -636,23 +825,53 @@ Item {
           }
 
           //
-          // -- Card (source / group / frame-parser) ---------------------
+          // -- Transform block (its own node, not a badge) --------------
+          //
+          // Sits between the group and its dataset to mirror the data flow:
+          // raw value -> transform -> displayed value. Left-click opens the
+          // transform editor directly without changing the editor's view.
           //
           Rectangle {
-            visible: !nd.isPill
+            visible: nd.isTransform
             anchors.fill: parent
-            radius: 6 * root.zoom
-            color: nd.hovered
+            radius: 4 * root.zoom
+            color: nd.active
               ? Cpp_ThemeManager.colors["highlight"]
               : Cpp_ThemeManager.colors["groupbox_background"]
-            border.width: nd.isFP ? 1 : 1
-            border.color: nd.isFP
-              ? (nd.hovered
-                  ? Cpp_ThemeManager.colors["highlight"]
-                  : Cpp_ThemeManager.colors["groupbox_border"])
-              : (nd.hovered
-                  ? Cpp_ThemeManager.colors["highlight"]
-                  : Cpp_ThemeManager.colors["groupbox_border"])
+            border.width: 1
+            border.color: nd.active
+              ? Cpp_ThemeManager.colors["highlight"]
+              : Cpp_ThemeManager.colors["groupbox_border"]
+
+            Image {
+              smooth: true
+              anchors.centerIn: parent
+              width: 14 * root.zoom
+              height: 14 * root.zoom
+              sourceSize: Qt.size(14, 14)
+              source: "qrc:/icons/project-editor/treeview/transform.svg"
+              opacity: nd.active ? 1.0 : 0.85
+            }
+
+            ToolTip.visible: nd.hovered && nd.isTransform
+            ToolTip.delay: 400
+            ToolTip.text: qsTr("Open the transform code editor for this dataset.")
+          }
+
+          //
+          // -- Card (source / group / frame-parser / action / table) ----
+          //
+          Rectangle {
+            visible: !nd.isPill && !nd.isTransform
+            anchors.fill: parent
+            radius: 6 * root.zoom
+            color: nd.active
+              ? Cpp_ThemeManager.colors["highlight"]
+              : Cpp_ThemeManager.colors["groupbox_background"]
+            border.width: 1
+            border.color: nd.active
+              ? Cpp_ThemeManager.colors["highlight"]
+              : Cpp_ThemeManager.colors["groupbox_border"]
 
             Row {
               anchors {
@@ -671,7 +890,7 @@ Item {
                 source: modelData.icon
                 sourceSize: Qt.size(20, 20)
                 anchors.verticalCenter: parent.verticalCenter
-                opacity: nd.isFP ? 0.7 : (nd.hovered ? 1.0 : 0.85)
+                opacity: nd.isFP ? 0.7 : (nd.active ? 1.0 : 0.85)
               }
 
               Text {
@@ -682,7 +901,7 @@ Item {
                 font.pixelSize: Math.max(8, 12 * root.zoom)
                 font.bold: nd.isSource
                 font.italic: nd.isFP
-                color: nd.hovered
+                color: nd.active
                   ? Cpp_ThemeManager.colors["highlighted_text"]
                   : (nd.isFP
                       ? Qt.lighter(Cpp_ThemeManager.colors["text"], 1.3)
@@ -691,16 +910,17 @@ Item {
             }
 
             //
-            // Badge [A] [B] on source cards
+            // Badge in the corner -- "[A]"/"[B]" on source cards,
+            // "N regs"/"empty" on table cards.
             //
             Text {
-              visible: nd.isSource && (modelData.badge || "") !== ""
+              visible: (nd.isSource || nd.isTable) && (modelData.badge || "") !== ""
               anchors { right: parent.right; bottom: parent.bottom; margins: 4 * root.zoom }
               text: modelData.badge || ""
               font.family: Cpp_Misc_CommonFonts.monoFont.family
               font.pixelSize: Math.max(7, 9 * root.zoom)
               opacity: 0.6
-              color: nd.hovered
+              color: nd.active
                 ? Cpp_ThemeManager.colors["highlighted_text"]
                 : Cpp_ThemeManager.colors["text"]
             }
@@ -710,9 +930,23 @@ Item {
             hoverEnabled: true
             anchors.fill: parent
             cursorShape:  Qt.PointingHandCursor
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
             onEntered: nd.hovered = true
             onExited:  nd.hovered = false
-            onClicked: {
+
+            // Right-click -> context menu (no selection change).
+            onClicked: (mouse) => {
+              if (mouse.button === Qt.RightButton)
+                menuController.openForNode(modelData)
+            }
+
+            // Double-click -> open the editor for that node. Single click is
+            // intentionally a no-op so accidental clicks while panning the
+            // diagram don't yank the user out of the Project view.
+            onDoubleClicked: (mouse) => {
+              if (mouse.button !== Qt.LeftButton)
+                return
+
               switch (modelData.type) {
                 case "source":
                   Cpp_JSON_ProjectEditor.selectSource(modelData.sourceId)
@@ -729,8 +963,20 @@ Item {
                 case "output":
                   Cpp_JSON_ProjectEditor.selectOutputWidget(modelData.groupId, modelData.widgetId)
                   break
+                case "output-panel":
+                  Cpp_JSON_ProjectEditor.selectGroup(modelData.groupId)
+                  break
                 case "action":
                   Cpp_JSON_ProjectEditor.selectAction(modelData.actionId)
+                  break
+                case "table":
+                  Cpp_JSON_ProjectEditor.selectUserTable(modelData.tableName)
+                  break
+                case "transform":
+                  // Open the transform code editor without changing the
+                  // selected pane on the right.
+                  Cpp_JSON_ProjectEditor.openTransformEditorFor(
+                    modelData.groupId, modelData.datasetId)
                   break
               }
             }
@@ -740,26 +986,1018 @@ Item {
     }
   }
 
-  //
-  // Empty-state placeholder.
-  //
-  Column {
-    spacing: 8
-    anchors.centerIn: parent
-    visible: root.nodes.length === 0
 
-    Image {
-      opacity: 0.25
-      sourceSize: Qt.size(48, 48)
-      anchors.horizontalCenter: parent.horizontalCenter
-      source: "qrc:/icons/project-editor/treeview/group.svg"
-    }
+  //
+  // Painter Code Dialog -- Loader so the (commercial-only) QML file is
+  // only resolved when first opened. Mirrors the pattern in GroupView.qml.
+  //
+  Loader {
+    id: painterCodeDialog
 
-    Text {
-      anchors.horizontalCenter: parent.horizontalCenter
-      text: qsTr("No groups defined yet")
-      font: Cpp_Misc_CommonFonts.uiFont
-      color: Cpp_ThemeManager.colors["mid"]
+    active: false
+    asynchronous: false
+    source: "qrc:/serial-studio.com/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml"
+
+    function showDialog() {
+      painterCodeDialog.active = true
+      if (painterCodeDialog.item) {
+        painterCodeDialog.item.closing.connect(() => painterCodeDialog.active = false)
+        painterCodeDialog.item.showDialog()
+      }
     }
   }
+
+  //
+  // Menu controller -- shared state for the per-context Menus. Each Menu
+  // instance below is opened via menuController.openForXxx(), which:
+  //   1. Stamps the controller's current* properties from the click target.
+  //   2. Sets pinnedKey so the corresponding node delegate stays highlighted
+  //      while the menu is open (Menu.onClosed clears it).
+  //   3. Calls popup() on the right per-type Menu.
+  //
+  // No conditional visibility on items -- avoids the empty-slot rendering
+  // glitches that come from MenuItem { visible: false } in Qt 6 Menus.
+  //
+  QtObject {
+    id: menuController
+
+    property string pinnedKey: ""
+
+    property string currentType: ""
+    property string currentWidget: ""
+    property string currentLabel: ""
+    property string currentTableName: ""
+    property int    currentSourceId:     -1
+    property int    currentGroupId:      -1
+    property int    currentDatasetId:    -1
+    property int    currentWidgetId:     -1
+    property int    currentActionId:     -1
+    property int    currentSiblingCount: 0
+
+    // Move-up enabled when not already first; move-down enabled when not
+    // already last. Both require at least two siblings to make sense.
+    readonly property bool canMoveUp:
+      currentSiblingCount > 1 && currentMoveIndex() > 0
+    readonly property bool canMoveDown:
+      currentSiblingCount > 1 && currentMoveIndex() < currentSiblingCount - 1
+
+    function currentMoveIndex() {
+      switch (currentType) {
+        case "group":   return currentGroupId
+        case "dataset": return currentDatasetId
+        case "output":  return currentWidgetId
+        case "action":  return currentActionId
+      }
+      return -1
+    }
+
+    function keyOf(node) {
+      if (!node || !node.type) return ""
+      switch (node.type) {
+        case "source":       return "src:"   + node.sourceId
+        case "frameparser":  return "fp:"    + node.sourceId
+        case "group":        return "grp:"   + node.groupId
+        case "dataset":      return "ds:"    + node.groupId + ":" + node.datasetId
+        case "output":       return "out:"   + node.groupId + ":" + node.widgetId
+        case "output-panel": return "opnl:"  + node.groupId
+        case "transform":    return "tx:"    + node.groupId + ":" + node.datasetId
+        case "action":       return "act:"   + node.actionId
+        case "table":        return "tbl:"   + (node.tableName || "")
+      }
+      return ""
+    }
+
+    function openForBackground() {
+      pinnedKey           = "background"
+      currentType         = "background"
+      currentWidget       = ""
+      currentLabel        = ""
+      currentTableName    = ""
+      currentSourceId     = -1
+      currentGroupId      = -1
+      currentDatasetId    = -1
+      currentWidgetId     = -1
+      currentActionId     = -1
+      currentSiblingCount = 0
+      backgroundMenu.popup()
+    }
+
+    function openForNode(node) {
+      pinnedKey           = keyOf(node)
+      currentType         = node.type
+      currentWidget       = node.widget       !== undefined ? node.widget       : ""
+      currentLabel        = node.label        !== undefined ? node.label        : ""
+      currentTableName    = node.tableName    !== undefined ? node.tableName    : ""
+      currentSourceId     = node.sourceId     !== undefined ? node.sourceId     : -1
+      currentGroupId      = node.groupId      !== undefined ? node.groupId      : -1
+      currentDatasetId    = node.datasetId    !== undefined ? node.datasetId    : -1
+      currentWidgetId     = node.widgetId     !== undefined ? node.widgetId     : -1
+      currentActionId     = node.actionId     !== undefined ? node.actionId     : -1
+      currentSiblingCount = node.siblingCount !== undefined ? node.siblingCount : 0
+
+      switch (currentType) {
+        case "source":       sourceMenu.popup();      break
+        case "frameparser":  frameparserMenu.popup(); break
+        case "group":        groupMenu.popup();       break
+        case "dataset":      datasetMenu.popup();     break
+        case "output":       outputMenu.popup();      break
+        case "output-panel": outputPanelMenu.popup(); break
+        case "action":       actionMenu.popup();      break
+        case "table":        tableMenu.popup();       break
+        case "transform":    transformMenu.popup();   break
+        default:             pinnedKey = ""
+      }
+    }
+
+    function unpin() { pinnedKey = "" }
+
+    // Select the target group when adding a dataset/output from a group's
+    // own context menu; in any other context, leave selection untouched and
+    // let the model pick the currently-selected group.
+    function selectTargetGroup() {
+      if ((currentType === "group" || currentType === "output-panel")
+          && currentGroupId >= 0)
+        Cpp_JSON_ProjectEditor.selectGroup(currentGroupId)
+    }
+
+    // When the user right-clicks a source or frame-parser node, propagate
+    // that source to addGroup/addDataset/addOutput so the new entity is
+    // tagged with that sourceId. In any other context return -1 (the model
+    // treats this as "caller didn't specify -- use legacy behavior").
+    function targetSourceId() {
+      if ((currentType === "source" || currentType === "frameparser")
+          && currentSourceId >= 0)
+        return currentSourceId
+      return -1
+    }
+
+    // Run an operation without letting the editor's right-pane view drift.
+    // The model fires several signals (groupsChanged, outputWidgetDeleted…)
+    // with Qt::QueuedConnection into the editor's selection-bookkeeping
+    // lambdas. Those lambdas land in the event queue and run AFTER fn()
+    // returns -- if we release the latch synchronously here, the editor
+    // wakes up unsuppressed and yanks the right pane to the parent group.
+    // Qt.callLater defers the release until after the queued handlers drain.
+    function locked(fn) {
+      Cpp_JSON_ProjectEditor.setSuppressViewChange(true)
+      try { fn() } finally {
+        Qt.callLater(() => Cpp_JSON_ProjectEditor.setSuppressViewChange(false))
+      }
+    }
+
+  }
+
+  //
+  // Reusable Actions for "Add ..." items so the same icon + handler are
+  // shared between the background menu and the per-group menus without
+  // copy-paste. Per-target ops (Move/Duplicate/Delete/Rename) need context
+  // from menuController, so they stay as inline MenuItems.
+  //
+  Item {
+    visible: false
+
+    // -- Group variants -----------------------------------------------
+    Action {
+      id: actAddGroupGeneric
+      text: qsTr("Dataset Container")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Dataset Container"),
+                                       SerialStudio.NoGroupWidget,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupMultiPlot
+      text: qsTr("Multi-Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-multiplot.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Multiple Plot"),
+                                       SerialStudio.MultiPlot,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupAccel
+      text: qsTr("Accelerometer")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-accelerometer.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Accelerometer"),
+                                       SerialStudio.Accelerometer,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupGyro
+      text: qsTr("Gyroscope")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gyroscope.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Gyroscope"),
+                                       SerialStudio.Gyroscope,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupGps
+      text: qsTr("GPS Map")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gps.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("GPS Map"), SerialStudio.GPS,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupPlot3D
+      text: qsTr("3D Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-plot3d.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("3D Plot"), SerialStudio.Plot3D,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupImage
+      text: qsTr("Image View")
+      icon.source: "qrc:/icons/project-editor/toolbar/image.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Image View"),
+                                       SerialStudio.ImageView,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupPainter
+      text: qsTr("Painter Widget")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-painter.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Painter Widget"),
+                                       SerialStudio.Painter,
+                                       menuController.targetSourceId()))
+    }
+    Action {
+      id: actAddGroupDataGrid
+      text: qsTr("Data Grid")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-datagrid.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addGroup(qsTr("Data Grid"),
+                                       SerialStudio.DataGrid,
+                                       menuController.targetSourceId()))
+    }
+
+    // -- Dataset variants ---------------------------------------------
+    // The function that selects the target group when adding from a group's
+    // context menu lives on menuController (Action.parent inside this Item
+    // doesn't resolve to the Item -- it falls back to a layout further up).
+
+    Action {
+      id: actAddDsGeneric
+      text: qsTr("Generic")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-dataset.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetGeneric,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsPlot
+      text: qsTr("Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-plot.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetPlot,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsFFT
+      text: qsTr("FFT Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-fft.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetFFT,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsGauge
+      text: qsTr("Gauge")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gauge.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetGauge,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsBar
+      text: qsTr("Level Indicator")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-bar.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetBar,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsCompass
+      text: qsTr("Compass")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-compass.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetCompass,
+                                         menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddDsLED
+      text: qsTr("LED Indicator")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-led.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetLED,
+                                         menuController.targetSourceId())
+      })
+    }
+
+    // -- Output variants (Pro) ----------------------------------------
+    Action {
+      id: actAddOutPanel
+      text: qsTr("Output Panel")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputPanel(menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddOutSlider
+      text: qsTr("Slider")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-slider.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputSlider,
+                                               menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddOutToggle
+      text: qsTr("Toggle")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-toggle.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputToggle,
+                                               menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddOutKnob
+      text: qsTr("Knob")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-knob.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputKnob,
+                                               menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddOutText
+      text: qsTr("Text Field")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-textfield.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputTextField,
+                                               menuController.targetSourceId())
+      })
+    }
+    Action {
+      id: actAddOutButton
+      text: qsTr("Button")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-button.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        menuController.selectTargetGroup()
+        Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputButton,
+                                               menuController.targetSourceId())
+      })
+    }
+  }
+
+  //
+  // -- Per-context Menus --------------------------------------------------
+  //
+  // Each Menu is a fixed list of items relevant to one node type. No
+  // conditional visibility on individual items (avoids empty-slot bugs).
+  //
+  Menu {
+    id: backgroundMenu
+    onClosed: menuController.unpin()
+
+    Menu {
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddGroupGeneric }
+      MenuItem { action: actAddGroupMultiPlot }
+      MenuItem { action: actAddGroupAccel }
+      MenuItem { action: actAddGroupGyro }
+      MenuItem { action: actAddGroupGps }
+      MenuItem { action: actAddGroupPlot3D }
+      MenuItem { action: actAddGroupImage }
+      MenuItem { action: actAddGroupPainter }
+      MenuItem { action: actAddGroupDataGrid }
+    }
+    Menu {
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddDsGeneric }
+      MenuItem { action: actAddDsPlot }
+      MenuItem { action: actAddDsFFT }
+      MenuItem { action: actAddDsGauge }
+      MenuItem { action: actAddDsBar }
+      MenuItem { action: actAddDsCompass }
+      MenuItem { action: actAddDsLED }
+    }
+    Menu {
+      title: qsTr("Add Output")
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: Cpp_CommercialBuild
+      MenuItem { action: actAddOutPanel }
+      MenuItem { action: actAddOutSlider }
+      MenuItem { action: actAddOutToggle }
+      MenuItem { action: actAddOutKnob }
+      MenuItem { action: actAddOutText }
+      MenuItem { action: actAddOutButton }
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Add Action")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
+    }
+    MenuItem {
+      enabled: Cpp_CommercialBuild
+      text: qsTr("Add Data Source")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-device.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => Cpp_JSON_ProjectModel.addSource())
+    }
+    MenuItem {
+      text: qsTr("Add Data Table")
+      icon.source: "qrc:/icons/project-editor/treeview/shared-table.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => Cpp_JSON_ProjectModel.promptAddTable())
+    }
+  }
+
+  Menu {
+    id: sourceMenu
+    onClosed: menuController.unpin()
+
+    Menu {
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddGroupGeneric }
+      MenuItem { action: actAddGroupMultiPlot }
+      MenuItem { action: actAddGroupAccel }
+      MenuItem { action: actAddGroupGyro }
+      MenuItem { action: actAddGroupGps }
+      MenuItem { action: actAddGroupPlot3D }
+      MenuItem { action: actAddGroupImage }
+      MenuItem { action: actAddGroupPainter }
+      MenuItem { action: actAddGroupDataGrid }
+    }
+    Menu {
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddDsGeneric }
+      MenuItem { action: actAddDsPlot }
+      MenuItem { action: actAddDsFFT }
+      MenuItem { action: actAddDsGauge }
+      MenuItem { action: actAddDsBar }
+      MenuItem { action: actAddDsCompass }
+      MenuItem { action: actAddDsLED }
+    }
+    Menu {
+      title: qsTr("Add Output")
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: Cpp_CommercialBuild
+      MenuItem { action: actAddOutPanel }
+      MenuItem { action: actAddOutSlider }
+      MenuItem { action: actAddOutToggle }
+      MenuItem { action: actAddOutKnob }
+      MenuItem { action: actAddOutText }
+      MenuItem { action: actAddOutButton }
+    }
+    MenuItem {
+      text: qsTr("Add Action")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameSource(menuController.currentSourceId))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateSource(menuController.currentSourceId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteSource(menuController.currentSourceId, true))
+    }
+  }
+
+  Menu {
+    id: frameparserMenu
+    onClosed: menuController.unpin()
+
+    Menu {
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddGroupGeneric }
+      MenuItem { action: actAddGroupMultiPlot }
+      MenuItem { action: actAddGroupAccel }
+      MenuItem { action: actAddGroupGyro }
+      MenuItem { action: actAddGroupGps }
+      MenuItem { action: actAddGroupPlot3D }
+      MenuItem { action: actAddGroupImage }
+      MenuItem { action: actAddGroupPainter }
+      MenuItem { action: actAddGroupDataGrid }
+    }
+    Menu {
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddDsGeneric }
+      MenuItem { action: actAddDsPlot }
+      MenuItem { action: actAddDsFFT }
+      MenuItem { action: actAddDsGauge }
+      MenuItem { action: actAddDsBar }
+      MenuItem { action: actAddDsCompass }
+      MenuItem { action: actAddDsLED }
+    }
+    Menu {
+      title: qsTr("Add Output")
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: Cpp_CommercialBuild
+      MenuItem { action: actAddOutPanel }
+      MenuItem { action: actAddOutSlider }
+      MenuItem { action: actAddOutToggle }
+      MenuItem { action: actAddOutKnob }
+      MenuItem { action: actAddOutText }
+      MenuItem { action: actAddOutButton }
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Edit Frame Parser…")
+      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectEditor.selectFrameParser(menuController.currentSourceId))
+    }
+  }
+
+  Menu {
+    id: groupMenu
+    onClosed: menuController.unpin()
+
+    Menu {
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
+      icon.width: 16
+      icon.height: 16
+      MenuItem { action: actAddDsGeneric }
+      MenuItem { action: actAddDsPlot }
+      MenuItem { action: actAddDsFFT }
+      MenuItem { action: actAddDsGauge }
+      MenuItem { action: actAddDsBar }
+      MenuItem { action: actAddDsCompass }
+      MenuItem { action: actAddDsLED }
+    }
+    Menu {
+      title: qsTr("Add Output")
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: Cpp_CommercialBuild
+      MenuItem { action: actAddOutPanel }
+      MenuItem { action: actAddOutSlider }
+      MenuItem { action: actAddOutToggle }
+      MenuItem { action: actAddOutKnob }
+      MenuItem { action: actAddOutText }
+      MenuItem { action: actAddOutButton }
+    }
+    MenuItem {
+      enabled: menuController.currentWidget === "painter" && Cpp_CommercialBuild
+      text: qsTr("Edit Painter Code…")
+      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() => {
+        Cpp_JSON_ProjectEditor.selectGroup(menuController.currentGroupId)
+        painterCodeDialog.showDialog()
+      })
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameGroup(menuController.currentGroupId))
+    }
+    MenuItem {
+      text: qsTr("Move Up")
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveUp
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveGroup(menuController.currentGroupId,
+                                        menuController.currentGroupId - 1))
+    }
+    MenuItem {
+      text: qsTr("Move Down")
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveDown
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveGroup(menuController.currentGroupId,
+                                        menuController.currentGroupId + 1))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
+    }
+  }
+
+  Menu {
+    id: datasetMenu
+    onClosed: menuController.unpin()
+
+    MenuItem {
+      text: qsTr("Edit Transform Code…")
+      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
+        menuController.currentGroupId, menuController.currentDatasetId)
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameDataset(menuController.currentGroupId,
+                                                  menuController.currentDatasetId))
+    }
+    MenuItem {
+      text: qsTr("Move Up")
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveUp
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveDataset(menuController.currentGroupId,
+                                          menuController.currentDatasetId,
+                                          menuController.currentDatasetId - 1))
+    }
+    MenuItem {
+      text: qsTr("Move Down")
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveDown
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveDataset(menuController.currentGroupId,
+                                          menuController.currentDatasetId,
+                                          menuController.currentDatasetId + 1))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateDataset(menuController.currentGroupId,
+                                               menuController.currentDatasetId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteDataset(menuController.currentGroupId,
+                                            menuController.currentDatasetId, true))
+    }
+  }
+
+  Menu {
+    id: outputMenu
+    onClosed: menuController.unpin()
+
+    MenuItem {
+      text: qsTr("Move Up")
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveUp
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveOutputWidget(menuController.currentGroupId,
+                                               menuController.currentWidgetId,
+                                               menuController.currentWidgetId - 1))
+    }
+    MenuItem {
+      text: qsTr("Move Down")
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveDown
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveOutputWidget(menuController.currentGroupId,
+                                               menuController.currentWidgetId,
+                                               menuController.currentWidgetId + 1))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateOutputWidget(menuController.currentGroupId,
+                                                    menuController.currentWidgetId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteOutputWidget(menuController.currentGroupId,
+                                                 menuController.currentWidgetId, true))
+    }
+  }
+
+  Menu {
+    id: outputPanelMenu
+    onClosed: menuController.unpin()
+
+    Menu {
+      title: qsTr("Add Output")
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: Cpp_CommercialBuild
+      MenuItem { action: actAddOutSlider }
+      MenuItem { action: actAddOutToggle }
+      MenuItem { action: actAddOutKnob }
+      MenuItem { action: actAddOutText }
+      MenuItem { action: actAddOutButton }
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameGroup(menuController.currentGroupId))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
+    }
+  }
+
+  Menu {
+    id: actionMenu
+    onClosed: menuController.unpin()
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameAction(menuController.currentActionId))
+    }
+    MenuItem {
+      text: qsTr("Move Up")
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveUp
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveAction(menuController.currentActionId,
+                                         menuController.currentActionId - 1))
+    }
+    MenuItem {
+      text: qsTr("Move Down")
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+      icon.width: 16
+      icon.height: 16
+      enabled: menuController.canMoveDown
+      opacity: enabled ? 1 : 0.5
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.moveAction(menuController.currentActionId,
+                                         menuController.currentActionId + 1))
+    }
+    MenuItem {
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.duplicateAction(menuController.currentActionId))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.deleteAction(menuController.currentActionId, true))
+    }
+  }
+
+  Menu {
+    id: tableMenu
+    onClosed: menuController.unpin()
+
+    MenuItem {
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.promptRenameTable(menuController.currentTableName))
+    }
+
+    MenuSeparator {}
+
+    MenuItem {
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: menuController.locked(() =>
+        Cpp_JSON_ProjectModel.confirmDeleteTable(menuController.currentTableName))
+    }
+  }
+
+  Menu {
+    id: transformMenu
+    onClosed: menuController.unpin()
+
+    MenuItem {
+      text: qsTr("Edit Code…")
+      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
+      icon.width: 16
+      icon.height: 16
+      onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
+        menuController.currentGroupId, menuController.currentDatasetId)
+    }
+  }
+
 }

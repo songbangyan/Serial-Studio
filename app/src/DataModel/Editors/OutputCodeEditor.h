@@ -14,7 +14,7 @@
 #include <QSyntaxStyle>
 
 #include "DataModel/Frame.h"
-#include "DataModel/TransmitTestDialog.h"
+#include "DataModel/Dialogs/TransmitTestDialog.h"
 
 namespace DataModel {
 

@@ -159,6 +159,10 @@ UI::Dashboard::Dashboard()
       resetData(true);
   }, Qt::QueuedConnection);
   connect(&AppState::instance(), &AppState::projectFileChanged, this, [=, this] { resetData(); }, Qt::QueuedConnection);
+  connect(&DataModel::FrameBuilder::instance(), &DataModel::FrameBuilder::jsonFileMapChanged, this, [this] {
+    m_sourceRawFrames.clear();
+    m_datasetReferences.clear();
+  }, Qt::QueuedConnection);
   connect(&AppState::instance(), &AppState::operationModeChanged, this, [=, this] {
     const auto mode = AppState::instance().operationMode();
     if (mode == SerialStudio::ProjectFile) {

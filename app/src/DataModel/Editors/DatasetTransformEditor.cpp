@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/DatasetTransformEditor.h"
+#include "DataModel/Editors/DatasetTransformEditor.h"
 
 #include <lauxlib.h>
 #include <lua.h>
@@ -35,11 +35,11 @@
 #include <QShortcut>
 #include <QTextCursor>
 
-#include "DataModel/CodeFormatter.h"
+#include "DataModel/Editors/CodeFormatter.h"
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/LuaCompat.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
-#include "DataModel/ScriptTemplates.h"
+#include "DataModel/Scripting/ScriptTemplates.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/Translator.h"

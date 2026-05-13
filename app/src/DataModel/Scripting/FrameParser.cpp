@@ -19,17 +19,17 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/FrameParser.h"
+#include "DataModel/Scripting/FrameParser.h"
 
 #include <QCoreApplication>
 #include <QFile>
 #include <QThread>
 
-#include "DataModel/IScriptEngine.h"
-#include "DataModel/JsScriptEngine.h"
-#include "DataModel/LuaScriptEngine.h"
+#include "DataModel/Scripting/IScriptEngine.h"
+#include "DataModel/Scripting/JsScriptEngine.h"
+#include "DataModel/Scripting/LuaScriptEngine.h"
 #include "DataModel/ProjectModel.h"
-#include "DataModel/ScriptTemplates.h"
+#include "DataModel/Scripting/ScriptTemplates.h"
 #include "Misc/TimerEvents.h"
 #include "Misc/Translator.h"
 #include "SerialStudio.h"

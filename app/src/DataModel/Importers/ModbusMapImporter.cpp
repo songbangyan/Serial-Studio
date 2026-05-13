@@ -20,7 +20,7 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/ModbusMapImporter.h"
+#include "DataModel/Importers/ModbusMapImporter.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -32,6 +32,7 @@
 #include <QStandardPaths>
 #include <QXmlStreamReader>
 
+#include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/ProjectModel.h"
 #include "IO/ConnectionManager.h"
@@ -351,31 +352,22 @@ void DataModel::ModbusMapImporter::confirmImport()
   if (m_registers.isEmpty())
     return;
 
-  const auto blocks    = computeBlocks();
-  const auto project   = buildProject();
-  const auto file_info = QFileInfo(m_filePath);
-  const auto temp_dir  = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-  const auto temp_path = temp_dir + "/" + file_info.baseName() + "_temp.ssproj";
+  const auto blocks  = computeBlocks();
+  const auto project = buildProject();
 
-  // Write temporary project file
-  QFile file(temp_path);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    Misc::Utilities::showMessageBox(tr("Failed to create temporary project file"),
-                                    tr("Check write permissions to the temporary directory."),
+  loadRegisterGroups(blocks);
+
+  auto& pm = ProjectModel::instance();
+  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  if (!pm.loadFromJsonDocument(QJsonDocument(project), QString())) {
+    Misc::Utilities::showMessageBox(tr("Failed to load imported project"),
+                                    tr("The generated project JSON could not be loaded."),
                                     QMessageBox::Critical,
                                     tr("Modbus Import"));
     return;
   }
 
-  QJsonDocument doc(project);
-  file.write(doc.toJson(QJsonDocument::Indented));
-  file.close();
-
-  loadRegisterGroups(blocks);
-
-  // Open project and prompt save; single-shot listener cleans up either way
-  auto& pm = ProjectModel::instance();
-  pm.openJsonFile(temp_path);
+  pm.setModified(true);
 
   const int registerCount = m_registers.count();
   const int blockCount    = blocks.count();
@@ -383,8 +375,7 @@ void DataModel::ModbusMapImporter::confirmImport()
     &pm,
     &ProjectModel::saveDialogCompleted,
     this,
-    [temp_path, registerCount, blockCount](bool accepted) {
-      QFile::remove(temp_path);
+    [registerCount, blockCount](bool accepted) {
       if (!accepted)
         return;
 

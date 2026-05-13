@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/JsScriptEngine.h"
+#include "DataModel/Scripting/JsScriptEngine.h"
 
 #include <QMessageBox>
 #include <QRegularExpression>
@@ -211,6 +211,8 @@ static QList<QStringList> convertJsResult(const QJSValue& jsResult)
  */
 DataModel::JsScriptEngine::JsScriptEngine()
   : m_watchdog(&m_engine, kRuntimeWatchdogMs, QStringLiteral("JsScriptEngine"))
+  , m_disabled(false)
+  , m_consecutiveTimeouts(0)
 {
   m_engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
 
@@ -219,6 +221,40 @@ DataModel::JsScriptEngine::JsScriptEngine()
 
   // Expose tableGet / tableSet / datasetGetRaw / datasetGetFinal
   DataModel::FrameBuilder::instance().injectTableApiJS(&m_engine);
+}
+
+/**
+ * @brief Records a watchdog timeout and disables the parser after too many in a row.
+ */
+bool DataModel::JsScriptEngine::noteTimeoutAndCheckDisabled(int sourceId)
+{
+  ++m_consecutiveTimeouts;
+  if (m_consecutiveTimeouts < kMaxConsecutiveTimeouts)
+    return false;
+
+  m_disabled = true;
+  qWarning() << "[JsScriptEngine] Source" << sourceId
+             << "disabled after" << kMaxConsecutiveTimeouts
+             << "consecutive watchdog timeouts.";
+  Misc::Utilities::showMessageBox(
+    QObject::tr("Frame Parser Disabled"),
+    QObject::tr("The JavaScript frame parser for source %1 timed out %2 frames "
+                "in a row and has been disabled to keep Serial Studio responsive.\n\n"
+                "Most likely cause: an infinite loop or extremely slow operation "
+                "in the script body. Fix the script and reload the project to "
+                "re-enable parsing.")
+      .arg(sourceId)
+      .arg(kMaxConsecutiveTimeouts),
+    QMessageBox::Critical);
+  return true;
+}
+
+/**
+ * @brief Clears the consecutive-timeout counter after a successful parse.
+ */
+void DataModel::JsScriptEngine::resetTimeoutCounter() noexcept
+{
+  m_consecutiveTimeouts = 0;
 }
 
 /**
@@ -242,8 +278,10 @@ void DataModel::JsScriptEngine::collectGarbage()
  */
 void DataModel::JsScriptEngine::reset()
 {
-  m_parseFunction = QJSValue();
-  m_hexToArray    = QJSValue();
+  m_parseFunction       = QJSValue();
+  m_hexToArray          = QJSValue();
+  m_disabled            = false;
+  m_consecutiveTimeouts = 0;
 }
 
 /**
@@ -264,18 +302,26 @@ QList<QStringList> DataModel::JsScriptEngine::parseString(const QString& frame)
 {
   Q_ASSERT(!frame.isEmpty());
 
-  if (!m_parseFunction.isCallable())
+  if (!m_parseFunction.isCallable() || m_disabled)
     return {};
 
   QJSValueList args;
   args << frame;
   const auto jsResult = guardedCall(args);
 
+  if (m_watchdog.lastCallTimedOut()) [[unlikely]] {
+    qWarning() << "[JsScriptEngine] parse() timed out after"
+               << kRuntimeWatchdogMs << "ms";
+    (void)noteTimeoutAndCheckDisabled(0);
+    return {};
+  }
+
   if (jsResult.isError()) [[unlikely]] {
     qWarning() << "[JsScriptEngine] JS error:" << jsResult.property("message").toString();
     return {};
   }
 
+  resetTimeoutCounter();
   return convertJsResult(jsResult);
 }
 
@@ -286,7 +332,7 @@ QList<QStringList> DataModel::JsScriptEngine::parseBinary(const QByteArray& fram
 {
   Q_ASSERT(!frame.isEmpty());
 
-  if (!m_parseFunction.isCallable())
+  if (!m_parseFunction.isCallable() || m_disabled)
     return {};
 
   // Convert binary data to JS array via hex helper or manual loop
@@ -314,11 +360,19 @@ QList<QStringList> DataModel::JsScriptEngine::parseBinary(const QByteArray& fram
   args << jsArray;
   const auto jsResult = guardedCall(args);
 
+  if (m_watchdog.lastCallTimedOut()) [[unlikely]] {
+    qWarning() << "[JsScriptEngine] parse() timed out after"
+               << kRuntimeWatchdogMs << "ms";
+    (void)noteTimeoutAndCheckDisabled(0);
+    return {};
+  }
+
   if (jsResult.isError()) [[unlikely]] {
     qWarning() << "[JsScriptEngine] JS error:" << jsResult.property("message").toString();
     return {};
   }
 
+  resetTimeoutCounter();
   return convertJsResult(jsResult);
 }
 
@@ -505,6 +559,11 @@ bool DataModel::JsScriptEngine::loadScript(const QString& script,
                                    "for(var i=0,j=0;i<h.length;i+=2,j++)"
                                    "a[j]=parseInt(h.substr(i,2),16);return a;}"));
   m_hexToArray = m_engine.globalObject().property(QStringLiteral("__ss_internal_hex_to_array__"));
+
+  // Fresh script -> re-arm the circuit breaker so a previously-disabled
+  // engine accepts work again after the user fixes their code.
+  m_disabled            = false;
+  m_consecutiveTimeouts = 0;
 
   return true;
 }

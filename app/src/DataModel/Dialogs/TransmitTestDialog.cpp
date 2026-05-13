@@ -9,7 +9,7 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/TransmitTestDialog.h"
+#include "DataModel/Dialogs/TransmitTestDialog.h"
 
 #include <QGroupBox>
 #include <QHeaderView>

@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/ScriptTemplates.h"
+#include "DataModel/Scripting/ScriptTemplates.h"
 
 #include <QCoreApplication>
 #include <QFile>

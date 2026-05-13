@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/JsWatchdog.h"
+#include "DataModel/Scripting/JsWatchdog.h"
 
 #include <QDebug>
 

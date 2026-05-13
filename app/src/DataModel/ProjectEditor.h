@@ -26,7 +26,7 @@
 #include <QStandardItemModel>
 #include <QTimer>
 
-#include "DataModel/DatasetTransformEditor.h"
+#include "DataModel/Editors/DatasetTransformEditor.h"
 #include "DataModel/Frame.h"
 #include "SerialStudio.h"
 
@@ -293,6 +293,7 @@ public slots:
   void setSelectedOutputWidgetTransmitFunction(const QString& code);
   void setCurrentGroupPainterCode(const QString& code);
   void openTransformEditor();
+  Q_INVOKABLE void openTransformEditorFor(int groupId, int datasetId);
 
   Q_INVOKABLE [[nodiscard]] bool moveCurrentGroup(int direction);
   Q_INVOKABLE [[nodiscard]] bool moveCurrentDataset(int direction);
@@ -406,8 +407,16 @@ private:
   [[nodiscard]] static QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
     const DataModel::ProjectModel& pm);
 
+public:
+  // Boolean latch that makes setCurrentView() a no-op while true. The diagram
+  // pane sets this around mutations triggered from its context menu so that
+  // delete / duplicate / rename operations don't drag the user off the
+  // Project view (the side effect of selectGroup / selectDataset / ...).
+  Q_INVOKABLE void setSuppressViewChange(bool suppress) noexcept;
+
 private:
   CurrentView m_currentView;
+  bool m_suppressViewChange = false;
 
   QMap<QStandardItem*, int> m_rootItems;
   QMap<QStandardItem*, DataModel::Group> m_groupItems;

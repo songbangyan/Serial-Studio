@@ -19,7 +19,7 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include "DataModel/LuaCompat.h"
+#include "DataModel/Scripting/LuaCompat.h"
 
 #include <lauxlib.h>
 #include <lua.h>

@@ -42,10 +42,14 @@ app/src/
 ├── IO/          ConnectionManager, DeviceManager, CircularBuffer, FrameReader, FrameConfig
 │   ├── Drivers/ UART, Network, BluetoothLE, Audio, CANBus, HID, Modbus, Process, USB
 │   └── FileTransmission/ Protocol base, XMODEM, YMODEM, ZMODEM, CRC utilities
-├── DataModel/   FrameBuilder, Frame, FrameConsumer, IScriptEngine (JS + Lua),
-│                 ProjectModel, ProjectEditor, DataTable(Store), ExportSchema,
-│                 ModbusMapImporter, DBCImporter, DatasetTransformEditor,
-│                 TransmitTestDialog, OutputCodeEditor, ScriptTemplates
+├── DataModel/   Frame, FrameBuilder, FrameConsumer, DataTable(Store), ExportSchema,
+│   │             ProjectModel, ProjectEditor, NotificationCenter
+│   ├── Scripting/ IScriptEngine, FrameParser, JsScriptEngine, JsWatchdog,
+│   │             LuaScriptEngine, LuaCompat, ScriptTemplates
+│   ├── Editors/   JsCodeEditor, OutputCodeEditor, PainterCodeEditor,
+│   │             DatasetTransformEditor, CodeFormatter
+│   ├── Importers/ DBCImporter, ModbusMapImporter, ProtoImporter
+│   └── Dialogs/   FrameParserTestDialog, TransmitTestDialog
 ├── UI/          Dashboard, Taskbar (workspaces), visualization + output widget types
 │   └── Widgets/Output/  Button, Toggle, Slider, TextField, Panel (+ PanelLayout), Base
 ├── API/         TCP server port 7777 (MCP + legacy JSON-RPC)

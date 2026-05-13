@@ -1686,6 +1686,29 @@ _ADVISORY_KINDS = frozenset({
     # `std::endl` flushes the stream every line -- `'\n'` is faster and
     # more idiomatic for Qt streams. `Qt::endl` is the explicit-flush form.
     "qt-prefer-newline",
+    # CPU-microarchitecture / perf rules. These reason about the compiled
+    # assembly (idiv/udiv cost, lock-prefix RMW, false sharing, indirect
+    # branches, vtable loads) and how the cost lands on Intel x86-64 and
+    # ARM AArch64 hardware. Every one ships as advisory -- the existing
+    # codebase has baseline debt and the report is the cleanup checklist.
+    "perf-divide-runtime-divisor",
+    "perf-modulo-runtime-divisor",
+    "perf-divide-by-float-literal",
+    "perf-pow-call",
+    "perf-dynamic-cast",
+    "perf-malloc-family",
+    "perf-regex-construct",
+    "perf-arg-chain",
+    "perf-lock-acquire",
+    "perf-string-alloc-hotpath",
+    "perf-log-on-hotpath",
+    "perf-throw-on-hotpath",
+    "perf-large-by-value-param",
+    "perf-shared-ptr-by-value",
+    "perf-large-stack-buffer",
+    "perf-recursive-hotpath",
+    "perf-false-sharing-risk",
+    "perf-virtual-hotpath",
 })
 
 
@@ -1828,6 +1851,137 @@ the kinds below are short labels.
 - `qt-prefer-newline` — `std::endl` flushes the underlying buffer on every
   emission. Use `'\n'` (or `Qt::endl` when explicit flushing is the point).
 
+## Performance / CPU-microarchitecture rules
+
+These rules reason about how the compiled C++ behaves at the assembly /
+register / branch-predictor / cache level. The cycle counts below are
+representative numbers for current Intel x86-64 (Skylake-derived) and
+ARM AArch64 (Cortex-A7x/A78); the exact figures vary with the target.
+All `perf-*` rules ship as advisory — they populate `.code-report` for
+a follow-up cleanup pass, they do not fail `--check`.
+
+**File-wide (any function body):**
+
+- `perf-divide-runtime-divisor` — `/` with a non-literal divisor. Division
+  is the slowest ALU op: `divsd` is 11-22 cyc on Skylake (not pipelined,
+  blocks the whole divide unit), `fdiv` is 10-40 cyc on Cortex-A78,
+  `idiv` is 20-40 cyc on x86. Cache the reciprocal once (`r = 1.0/d`)
+  and multiply in the loop, or use a bit-shift when the divisor is a
+  power-of-two integer.
+- `perf-modulo-runtime-divisor` — `%` with a non-literal divisor. Same
+  `idiv`/`udiv` cost as integer divide; for power-of-two N substitute
+  `& (N - 1)` (single-cycle `and`). For runtime divisors hoist out of
+  the loop or use a libdivide-style precomputed magic-number multiply.
+- `perf-divide-by-float-literal` — `/` with a floating-point literal like
+  `/ 2.5` or `/ 1024.0`. The compiler **does not** fold these into a
+  reciprocal multiply without `-ffast-math` (the result would lose 1 ULP
+  for non-exact reciprocals). Precompute `constexpr double kInvX = 1.0/X;`
+  and multiply (~3 cyc `mulsd` vs ~12-22 cyc `divsd`).
+- `perf-pow-call` — `pow(x, y)` / `std::pow(x, y)`. Goes through libm as
+  `exp(log(x) * y)` (40+ cyc on Intel/ARM) and clobbers caller-saved
+  FPU/SIMD state. For small integer exponents write the multiply
+  (`x*x`, `x*x*x`). For `pow(x, 0.5)` use `std::sqrt`. For `pow(2.0, n)`
+  use `std::ldexp(1.0, n)` (single mantissa-shift instruction).
+- `perf-dynamic-cast` — `dynamic_cast<T>(...)`. Walks the inheritance
+  graph via RTTI typeinfo string compares; 50-200+ cyc worst case and
+  a runtime call. Use a discriminating enum + `static_cast`, or
+  pre-resolve the cast once and store the typed pointer.
+- `perf-malloc-family` — `malloc` / `calloc` / `realloc` / `free` /
+  `aligned_alloc` / `posix_memalign`. Same arena-mutex cost as
+  `new`/`delete` (glibc `malloc` and Windows `RtlAllocateHeap` both
+  serialize on a per-arena mutex), not pipelineable. Use a pre-reserved
+  buffer or a small-object pool.
+- `perf-regex-construct` — `QRegularExpression(...)` constructor. Compiles
+  the regex to a DFA/NFA state machine and heap-allocates capture
+  tables; if invoked in a loop the regex gets recompiled every
+  iteration. Build once as a file-scope `static const` or class member,
+  reuse `.match(...)` per call.
+- `perf-arg-chain` — `.arg(...).arg(...)` chains. Each `.arg()` returns
+  a fresh QString (heap allocation + memcpy). Combine into one call
+  (`.arg(a, b, c)`) or include `<QStringBuilder>` and use the `%`
+  operator (single allocation sized exactly for the final string).
+- `perf-lock-acquire` — `QMutexLocker` / `QReadLocker` / `QWriteLocker` /
+  `std::lock_guard` / `std::unique_lock` / `std::scoped_lock` /
+  `std::shared_lock` constructors, and bare `.lock()` / `.try_lock()` /
+  `.lockForRead()` calls. Even uncontended, the `lock`-prefixed RMW on
+  x86 takes ~20 cyc and serializes the store buffer; on ARM the
+  `ldaxr/stxr` + DMB barrier pair costs similar. Contended bouncing
+  thrashes the L1 cache line across cores (50-200x slowdown vs
+  uncontended). Prefer thread-local / SPSC / per-core state, or a
+  relaxed `std::atomic` when the invariant fits a single word.
+
+**Hotpath-only (only flagged inside `hotpathRxFrame` / `processData` / …):**
+
+- `perf-string-alloc-hotpath` — `QString("...")`, `QByteArray("...")`,
+  `.toUtf8()`, `.toStdString()`, `.toLatin1()`, `.toLocal8Bit()`,
+  `QString::fromUtf8`, `QString::fromLatin1`. Heap allocation + copy on
+  every call, contended on the per-arena malloc mutex. Cache at init
+  or use a fixed-size stack buffer for transient formatting.
+- `perf-log-on-hotpath` — `qDebug` / `qInfo` / `qWarning` / `qCritical` /
+  `qFatal` calls. Builds a `QDebug` stream, takes the global message
+  handler mutex, formats and writes. `<<` is eager: even filtered-out
+  categories pay the format cost. Gate behind a compile-time flag or
+  move to a sampled counter.
+- `perf-throw-on-hotpath` — `throw expr` statement. Stack unwinding via
+  DWARF (Itanium ABI on Linux/macOS) or SEH (Windows) costs 1000s of
+  cycles per frame, mispredicts every catch on the way out, and trashes
+  the return-address stack predictor. Return an error code or an
+  `std::expected`-style variant instead.
+
+**Function-signature (any function):**
+
+- `perf-large-by-value-param` — heavy types (`QString`, `QByteArray`,
+  `QStringList`, `QList`, `QVector`, `QMap`, `QHash`, `QJsonObject`,
+  `std::string`, `std::vector`, `std::map`, …) passed by value. Even
+  Qt's COW containers pay an atomic refcount bump (`lock`-prefix on
+  x86, `ldxr/stxr` on ARM without v8.1 LSE atomics) on every call.
+  std:: containers do a full deep copy. Pass `const T&`.
+- `perf-shared-ptr-by-value` — `std::shared_ptr<T>` / `QSharedPointer<T>` /
+  `QSharedDataPointer<T>` parameters passed by value. Two atomic
+  refcount ops per call (`lock add` on entry, `lock sub` on exit on
+  x86, ~20 cyc each; `ldxr/stxr` loop on ARM without LSE). Pass
+  `const std::shared_ptr<T>&` and copy only when you genuinely store
+  the pointer.
+
+**Function-body (any function):**
+
+- `perf-large-stack-buffer` — local fixed-size array > 1024 elements.
+  Stack-frame setup cost, pollutes L1 (32-48 KB) when called in a hot
+  loop with other state already on the stack, and on deep call paths
+  risks overflow (Windows default 1 MB, Linux default 8 MB). Promote
+  to a class member, `thread_local`, or a pre-reserved buffer.
+
+**Class-body (any class/struct):**
+
+- `perf-false-sharing-risk` — two or more `std::atomic<>` / `QAtomicInt` /
+  `QAtomicPointer<>` / `QAtomicInteger<>` members within four source
+  lines of each other, neither carrying `alignas`. They will share a
+  cache line (64 B on Intel/AArch64; up to 128 B on Apple Silicon
+  M-series via the speculative line) and writes from different threads
+  will thrash MESI/MOESI invalidations across cores — a 50-200x
+  slowdown vs the uncontended case. Add `alignas(64)` / `alignas(`
+  `std::hardware_destructive_interference_size)` on each, or insert a
+  `char _pad[64 - sizeof(prev)];` buffer between them.
+
+**Header-only line scan:**
+
+- `perf-virtual-hotpath` — a hotpath method (`hotpathRxFrame`,
+  `processData`, `applyTransform`, `onFrameReady`, …) declared
+  `virtual`. Every call site emits a vtable load + indirect branch
+  (5-10 cyc best case, 15-20 cyc misprediction penalty on polymorphic
+  sites). The compiler can't inline through the indirect call. If
+  there's only one implementation drop `virtual`, or mark `final` so
+  the compiler can devirtualize when the dynamic type is statically
+  known.
+
+**Hotpath-body (only flagged inside hotpath methods):**
+
+- `perf-recursive-hotpath` — a hotpath function calls itself by name.
+  Recursion on a kHz frame loop blows the i-cache (200+ cyc per L2
+  miss), mispredicts the return-address stack on every return, and
+  prevents inlining. Rewrite iteratively (explicit work-list or
+  `std::stack`-driven).
+
 ## Anonymous-namespace helpers (`cxx-anonymous-namespace`)
 
 An anonymous namespace (`namespace { ... }` in a `.cpp`) gives every
@@ -1952,6 +2106,14 @@ sparingly and explain why in a one-line comment above the fence.
 """
 
 
+def _write_lf(path: Path, text: str) -> None:
+    """Write text to path as UTF-8 with LF line endings on every platform.
+    Strips any stray \\r before encoding and writes via write_bytes so
+    Python's text-mode translation on Windows can't sneak CRLF in."""
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    path.write_bytes(normalized.encode("utf-8"))
+
+
 def _write_report(report_path: Path, flag_only: list[Violation]) -> None:
     """Write `.code-report` at the repo root grouping flag-only violations
     by severity, then by kind, then by file. Errors are listed first
@@ -2002,7 +2164,7 @@ def _write_report(report_path: Path, flag_only: list[Violation]) -> None:
                 out.append(f"- `{v.path}:{v.line}` — {v.message}\n")
 
     out.append(f"\n---\n\n_Total flagged: {len(flag_only)}_\n")
-    report_path.write_text("".join(out), encoding="utf-8", newline="\n")
+    _write_lf(report_path, "".join(out))
 
 
 def main(argv: list[str]) -> int:
@@ -2071,7 +2233,7 @@ def main(argv: list[str]) -> int:
                     difflib.unified_diff(before, after, str(path), str(path))
                 )
             if args.fix:
-                path.write_text(new_text, encoding="utf-8", newline="\n")
+                _write_lf(path, new_text)
                 total_changed += 1
                 print(f"{path}: rewrote", file=sys.stderr)
 

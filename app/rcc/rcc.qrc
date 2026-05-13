@@ -326,6 +326,7 @@
         <file>icons/project-editor/actions/output-toggle.svg</file>
         <file>icons/project-editor/actions/plot.svg</file>
         <file>icons/project-editor/actions/rename-table.svg</file>
+        <file>icons/project-editor/actions/rename.svg</file>
         <file>icons/project-editor/actions/transform.svg</file>
         <file>icons/project-editor/actions/waterfall.svg</file>
         <file>icons/project-editor/model/action-behavior.svg</file>
@@ -393,6 +394,7 @@
         <file>icons/project-editor/treeview/datagrid.svg</file>
         <file>icons/project-editor/treeview/dataset-values.svg</file>
         <file>icons/project-editor/treeview/dataset.svg</file>
+        <file>icons/project-editor/treeview/transform.svg</file>
         <file>icons/project-editor/treeview/encoding.svg</file>
         <file>icons/project-editor/treeview/frame-end.svg</file>
         <file>icons/project-editor/treeview/frame-start.svg</file>
@@ -759,5 +761,7 @@
         <file>ai/skills/api_semantics.md</file>
         <file>ai/search_index.json</file>
         <file>icons/taskbar/ai.svg</file>
+        <file>icons/project-editor/toolbar/protobuf.svg</file>
+        <file>icons/project-editor/treeview/save-warning.svg</file>
     </qresource>
 </RCC>

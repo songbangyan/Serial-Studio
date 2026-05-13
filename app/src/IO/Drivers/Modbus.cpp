@@ -22,7 +22,6 @@
 
 #include "IO/Drivers/Modbus.h"
 
-#include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -31,9 +30,9 @@
 #include <QModbusTcpClient>
 #include <QSerialPort>
 #include <QSerialPortInfo>
-#include <QStandardPaths>
 #include <QTimer>
 
+#include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/ProjectModel.h"
 #include "Misc/TimerEvents.h"
@@ -814,28 +813,20 @@ void IO::Drivers::Modbus::generateProject()
     return;
   }
 
-  // Build the project JSON
-  const auto project   = buildProject();
-  const auto temp_dir  = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-  const auto temp_path = temp_dir + "/modbus_project_temp.ssproj";
+  // Build the project JSON and hand it to ProjectModel in-memory
+  const auto project = buildProject();
 
-  // Write to temporary file
-  QFile file(temp_path);
-  if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-    Misc::Utilities::showMessageBox(tr("Failed to create temporary project file"),
-                                    tr("Check write permissions to the temporary directory."),
+  auto& pm = DataModel::ProjectModel::instance();
+  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  if (!pm.loadFromJsonDocument(QJsonDocument(project), QString())) {
+    Misc::Utilities::showMessageBox(tr("Failed to load generated project"),
+                                    tr("The generated project JSON could not be loaded."),
                                     QMessageBox::Critical,
                                     tr("Modbus Project Generator"));
     return;
   }
 
-  QJsonDocument doc(project);
-  file.write(doc.toJson(QJsonDocument::Indented));
-  file.close();
-
-  // Load and prompt save; single-shot listener cleans up either way
-  auto& pm = DataModel::ProjectModel::instance();
-  pm.openJsonFile(temp_path);
+  pm.setModified(true);
 
   int total_datasets = 0;
   for (const auto& g : m_registerGroups)
@@ -846,8 +837,7 @@ void IO::Drivers::Modbus::generateProject()
     &pm,
     &DataModel::ProjectModel::saveDialogCompleted,
     this,
-    [temp_path, groupCount, total_datasets](bool accepted) {
-      QFile::remove(temp_path);
+    [groupCount, total_datasets](bool accepted) {
       if (!accepted)
         return;
 

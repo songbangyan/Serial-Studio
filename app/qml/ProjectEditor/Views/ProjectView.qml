@@ -31,8 +31,8 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
+  title: qsTr("Project Summary")
   icon: Cpp_JSON_ProjectEditor.selectedIcon
-  title: Cpp_JSON_ProjectEditor.selectedText
   Component.onCompleted: Cpp_JSON_ProjectEditor.buildProjectModel()
 
   //
@@ -305,7 +305,30 @@ Widgets.Pane {
           color: Cpp_ThemeManager.colors["groupbox_border"]
         }
 
+        //
+        // Always-visible discovery hint on the LEFT side so newcomers find
+        // the diagram's context menu without guessing. Apple HIG style:
+        // sentence case, instructive, no exclamation marks.
+        //
+        Label {
+          opacity: 0.65
+          elide: Label.ElideRight
+          color: Cpp_ThemeManager.colors["text"]
+          font: Cpp_Misc_CommonFonts.uiFont
+          text: qsTr("Double-click a block to edit it. Right-click anywhere "
+                     + "to add a group, dataset, action, data table, or device.")
+
+          anchors {
+            left: parent.left
+            right: zoomRow.left
+            leftMargin: 12
+            rightMargin: 12
+            verticalCenter: parent.verticalCenter
+          }
+        }
+
         Row {
+          id: zoomRow
           spacing: 2
           anchors {
             rightMargin: 8
