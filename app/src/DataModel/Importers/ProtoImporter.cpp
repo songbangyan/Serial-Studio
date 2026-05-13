@@ -134,6 +134,7 @@ void Lexer::skipWsAndComments()
       {
         while (m_pos < m_src.size() && m_src[m_pos] != QLatin1Char('\n'))
           ++m_pos;
+
         continue;
       }
       if (c2 == QLatin1Char('*'))
@@ -148,6 +149,7 @@ void Lexer::skipWsAndComments()
           }
           if (m_src[m_pos] == QLatin1Char('\n'))
             ++m_line;
+
           ++m_pos;
         }
         continue;
@@ -217,11 +219,13 @@ Token Lexer::next()
       }
       if (m_src[m_pos] == QLatin1Char('\n'))
         ++m_line;
+
       s.append(m_src[m_pos]);
       ++m_pos;
     }
     if (m_pos < m_src.size())
       ++m_pos;
+
     return {Tok::StrLit, s, line};
   }
 
@@ -351,6 +355,7 @@ void Parser::skipToSemicolon()
 {
   while (m_cur.type != Tok::Eof && m_cur.type != Tok::Semi)
     advance();
+
   if (m_cur.type == Tok::Semi)
     advance();
 }
@@ -362,6 +367,7 @@ void Parser::skipBlock()
 {
   if (!accept(Tok::LBrace))
     return;
+
   int depth = 1;
   while (m_cur.type != Tok::Eof && depth > 0)
   {
@@ -369,6 +375,7 @@ void Parser::skipBlock()
       ++depth;
     else if (m_cur.type == Tok::RBrace)
       --depth;
+
     advance();
   }
 }
@@ -422,6 +429,7 @@ bool Parser::parseMap(DataModel::ProtoMessage& msg, ParseError& err)
 {
   if (!expect(Tok::LAngle, QStringLiteral("'<'"), err))
     return false;
+
   if (m_cur.type != Tok::Ident)
   {
     err = {m_cur.line, QObject::tr("Expected key type in map<>")};
@@ -430,6 +438,7 @@ bool Parser::parseMap(DataModel::ProtoMessage& msg, ParseError& err)
   advance();
   if (!expect(Tok::Comma, QStringLiteral("','"), err))
     return false;
+
   if (m_cur.type != Tok::Ident)
   {
     err = {m_cur.line, QObject::tr("Expected value type in map<>")};
@@ -451,6 +460,7 @@ bool Parser::parseMap(DataModel::ProtoMessage& msg, ParseError& err)
   advance();
   if (!expect(Tok::Eq, QStringLiteral("'='"), err))
     return false;
+
   if (m_cur.type != Tok::IntLit)
   {
     err = {m_cur.line, QObject::tr("Expected map field tag")};
@@ -460,6 +470,7 @@ bool Parser::parseMap(DataModel::ProtoMessage& msg, ParseError& err)
   advance();
   if (m_cur.type == Tok::LBracket)
     skipBlock();
+
   if (!expect(Tok::Semi, QStringLiteral("';'"), err))
     return false;
 
@@ -536,6 +547,7 @@ bool Parser::parseField(DataModel::ProtoMessage& msg, ParseError& err)
         ++depth;
       else if (m_cur.type == Tok::RBracket)
         --depth;
+
       advance();
     }
   }
@@ -590,6 +602,7 @@ bool Parser::parseMessage(const QString& parentQualified,
         advance();
         if (!parseEnumBody(err))
           return false;
+
         continue;
       }
       if (kw == QLatin1String("oneof"))
@@ -597,6 +610,7 @@ bool Parser::parseMessage(const QString& parentQualified,
         advance();
         if (!parseOneof(out, err))
           return false;
+
         continue;
       }
       if (kw == QLatin1String("map"))
@@ -604,6 +618,7 @@ bool Parser::parseMessage(const QString& parentQualified,
         advance();
         if (!parseMap(out, err))
           return false;
+
         continue;
       }
       if (kw == QLatin1String("message"))
@@ -612,6 +627,7 @@ bool Parser::parseMessage(const QString& parentQualified,
         DataModel::ProtoMessage nested;
         if (!parseMessage(out.qualifiedName, nested, err))
           return false;
+
         out.nested.append(nested);
         continue;
       }
@@ -668,6 +684,7 @@ bool Parser::parseFile(ParseError& err)
       advance();
       if (!parseEnumBody(err))
         return false;
+
       continue;
     }
     if (kw == QLatin1String("service"))
@@ -675,6 +692,7 @@ bool Parser::parseFile(ParseError& err)
       advance();
       if (m_cur.type == Tok::Ident)
         advance();
+
       skipBlock();
       continue;
     }
@@ -684,6 +702,7 @@ bool Parser::parseFile(ParseError& err)
       DataModel::ProtoMessage msg;
       if (!parseMessage(m_packageOut, msg, err))
         return false;
+
       m_messages.append(msg);
       continue;
     }
@@ -761,6 +780,7 @@ int DataModel::ProtoImporter::fieldCount() const noexcept
   int n = 0;
   for (const auto& m : m_messages)
     n += countFieldsRecursive(m);
+
   return n;
 }
 
@@ -788,6 +808,7 @@ QString DataModel::ProtoImporter::messageInfo(int index) const
   const ProtoMessage* m = messageAt(index);
   if (!m)
     return QString();
+
   return QStringLiteral("%1: %2 (%3 fields)")
     .arg(index + 1)
     .arg(m->qualifiedName)
@@ -976,6 +997,7 @@ QJsonObject DataModel::ProtoImporter::generateProject() const
   int datasetIndex   = 1;
   for (const auto& m : m_messages)
     buildGroups(m, QString(), 0, groupIdCounter, datasetIndex, groups, dispatchRecords);
+
   const int totalDatasets = datasetIndex - 1;
 
   QJsonObject source;
@@ -1033,6 +1055,7 @@ void DataModel::ProtoImporter::buildGroups(const ProtoMessage& message,
   {
     if (field.scalar == ProtoScalar::MessageRef)
       continue;
+
     if (!isNumericScalar(field.scalar) && field.scalar != ProtoScalar::String
         && field.scalar != ProtoScalar::Bytes && field.scalar != ProtoScalar::EnumRef)
       continue;
@@ -1087,6 +1110,7 @@ void DataModel::ProtoImporter::buildGroups(const ProtoMessage& message,
   {
     if (field.scalar != ProtoScalar::MessageRef)
       continue;
+
     const auto* sub = findMessage(field.typeRef);
     if (sub)
     {
@@ -1116,6 +1140,7 @@ QString DataModel::ProtoImporter::selectGroupWidget(const ProtoMessage& message)
   {
     if (f.scalar == ProtoScalar::MessageRef)
       continue;
+
     if (!isNumericScalar(f.scalar) && f.scalar != ProtoScalar::String
         && f.scalar != ProtoScalar::Bytes && f.scalar != ProtoScalar::EnumRef)
       continue;
@@ -1293,6 +1318,7 @@ QString DataModel::ProtoImporter::generateFrameParser(
 
       if (!first)
         body += QStringLiteral(", ");
+
       body += entry;
       first = false;
     }
@@ -1313,6 +1339,7 @@ QString DataModel::ProtoImporter::generateFrameParser(
   {
     if (!rec.isTopLevel)
       continue;
+
     code += QStringLiteral("  { name = \"%1\", tbl = %2 },\n").arg(rec.msg->name, rec.varName);
   }
   code += QStringLiteral("}\n\n");
@@ -1539,6 +1566,7 @@ const DataModel::ProtoMessage* DataModel::ProtoImporter::findMessage(const QStri
     [&](const ProtoMessage& m) -> const ProtoMessage* {
     if (m.qualifiedName == needle || m.name == needle)
       return &m;
+
     for (const auto& sub : m.nested)
     {
       if (const auto* r = walk(sub))
@@ -1562,6 +1590,7 @@ const DataModel::ProtoMessage* DataModel::ProtoImporter::messageAt(int index) co
 {
   if (index < 0 || index >= m_messages.size())
     return nullptr;
+
   return &m_messages.at(index);
 }
 
@@ -1575,6 +1604,7 @@ int DataModel::ProtoImporter::countScalarFields(const ProtoMessage& message) con
   {
     if (f.scalar == ProtoScalar::MessageRef)
       continue;
+
     ++n;
   }
   return n;
@@ -1590,6 +1620,7 @@ int DataModel::ProtoImporter::countFieldsRecursive(const ProtoMessage& message) 
   {
     if (f.scalar != ProtoScalar::MessageRef)
       continue;
+
     if (const auto* sub = findMessage(f.typeRef))
       n += countFieldsRecursive(*sub);
   }

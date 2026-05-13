@@ -33,8 +33,8 @@ Window {
   width: 720
   height: 540
   minimumWidth: 620
-  title: qsTr("Protocol Buffers File Preview")
   minimumHeight: 440 + titlebarHeight
+  title: qsTr("Protocol Buffers File Preview")
 
   Component.onCompleted: {
     root.flags = Qt.Dialog |
@@ -226,8 +226,8 @@ Window {
 
           Rectangle {
             height: 32
-            color: palette.alternateBase
             Layout.fillWidth: true
+            color: palette.alternateBase
 
             RowLayout {
               spacing: 8
@@ -251,8 +251,8 @@ Window {
               }
 
               Label {
-                color: palette.text
                 text: qsTr("Type")
+                color: palette.text
                 Layout.preferredWidth: 200
                 font: Cpp_Misc_CommonFonts.boldUiFont
               }
@@ -280,6 +280,7 @@ Window {
               let n = 0
               while (Cpp_JSON_ProtoImporter.fieldInfo(_picker.currentIndex, n) !== "")
                 n++
+
               return n
             }
 
@@ -308,8 +309,8 @@ Window {
                 Label {
                   color: palette.text
                   Layout.fillWidth: true
-                  Layout.minimumWidth: 150
                   elide: Text.ElideRight
+                  Layout.minimumWidth: 150
                   text: {
                     const info = Cpp_JSON_ProtoImporter.fieldInfo(_picker.currentIndex, index)
                     const parts = info.split(" ")
@@ -319,8 +320,8 @@ Window {
 
                 Label {
                   color: palette.text
-                  Layout.preferredWidth: 200
                   elide: Text.ElideRight
+                  Layout.preferredWidth: 200
                   font: Cpp_Misc_CommonFonts.monoFont
                   text: {
                     const info = Cpp_JSON_ProtoImporter.fieldInfo(_picker.currentIndex, index)

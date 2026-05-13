@@ -34,10 +34,10 @@ Item {
   readonly property int pad:      24   // outer margin
   readonly property int chipW:    150  // dataset pill width
   readonly property int chipH:    24   // dataset pill height
+  readonly property int transW:   32   // transform block width
   readonly property int vGap:     12   // vertical gap between rows
   readonly property int hGap:     56   // horizontal gap between columns
   readonly property int nodeH:    48   // card height (fixed for all cards)
-  readonly property int transW:   32   // transform block width
   readonly property int transGap: 16   // gap between transform block and dataset pill
 
   //
@@ -765,14 +765,14 @@ Item {
 
           property bool hovered:       false
           property bool isPill:        isDataset || isOutput
+          property bool isTable:       modelData.type === "table"
           property bool isOutput:      modelData.type === "output"
-          property bool isOutputPanel: modelData.type === "output-panel"
           property bool isAction:      modelData.type === "action"
           property bool isSource:      modelData.type === "source"
           property bool isDataset:     modelData.type === "dataset"
-          property bool isFP:          modelData.type === "frameparser"
-          property bool isTable:       modelData.type === "table"
           property bool isTransform:   modelData.type === "transform"
+          property bool isFP:          modelData.type === "frameparser"
+          property bool isOutputPanel: modelData.type === "output-panel"
 
           // Stable identifier used to pin the highlight while the context
           // menu is open (and to gate the per-type menu used).
@@ -845,16 +845,16 @@ Item {
 
             Image {
               smooth: true
-              anchors.centerIn: parent
               width: 14 * root.zoom
               height: 14 * root.zoom
+              anchors.centerIn: parent
               sourceSize: Qt.size(14, 14)
-              source: "qrc:/icons/project-editor/treeview/transform.svg"
               opacity: nd.active ? 1.0 : 0.85
+              source: "qrc:/icons/project-editor/treeview/transform.svg"
             }
 
-            ToolTip.visible: nd.hovered && nd.isTransform
             ToolTip.delay: 400
+            ToolTip.visible: nd.hovered && nd.isTransform
             ToolTip.text: qsTr("Open the transform code editor for this dataset.")
           }
 
@@ -1024,15 +1024,15 @@ Item {
     property string pinnedKey: ""
 
     property string currentType: ""
-    property string currentWidget: ""
     property string currentLabel: ""
+    property string currentWidget: ""
     property string currentTableName: ""
+    property int    currentSiblingCount: 0
     property int    currentSourceId:     -1
     property int    currentGroupId:      -1
     property int    currentDatasetId:    -1
     property int    currentWidgetId:     -1
     property int    currentActionId:     -1
-    property int    currentSiblingCount: 0
 
     // Move-up enabled when not already first; move-down enabled when not
     // already last. Both require at least two siblings to make sense.
@@ -1159,10 +1159,11 @@ Item {
     // -- Group variants -----------------------------------------------
     Action {
       id: actAddGroupGeneric
-      text: qsTr("Dataset Container")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Dataset Container")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Dataset Container"),
                                        SerialStudio.NoGroupWidget,
@@ -1170,10 +1171,11 @@ Item {
     }
     Action {
       id: actAddGroupMultiPlot
-      text: qsTr("Multi-Plot")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-multiplot.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Multi-Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-multiplot.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Multiple Plot"),
                                        SerialStudio.MultiPlot,
@@ -1181,10 +1183,11 @@ Item {
     }
     Action {
       id: actAddGroupAccel
-      text: qsTr("Accelerometer")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-accelerometer.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Accelerometer")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-accelerometer.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Accelerometer"),
                                        SerialStudio.Accelerometer,
@@ -1192,10 +1195,11 @@ Item {
     }
     Action {
       id: actAddGroupGyro
-      text: qsTr("Gyroscope")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-gyroscope.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Gyroscope")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gyroscope.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Gyroscope"),
                                        SerialStudio.Gyroscope,
@@ -1203,30 +1207,33 @@ Item {
     }
     Action {
       id: actAddGroupGps
-      text: qsTr("GPS Map")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-gps.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("GPS Map")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gps.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("GPS Map"), SerialStudio.GPS,
                                        menuController.targetSourceId()))
     }
     Action {
       id: actAddGroupPlot3D
-      text: qsTr("3D Plot")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-plot3d.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("3D Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-plot3d.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("3D Plot"), SerialStudio.Plot3D,
                                        menuController.targetSourceId()))
     }
     Action {
       id: actAddGroupImage
-      text: qsTr("Image View")
-      icon.source: "qrc:/icons/project-editor/toolbar/image.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Image View")
+      icon.source: "qrc:/icons/project-editor/toolbar/image.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Image View"),
                                        SerialStudio.ImageView,
@@ -1234,10 +1241,11 @@ Item {
     }
     Action {
       id: actAddGroupPainter
-      text: qsTr("Painter Widget")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-painter.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Painter Widget")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-painter.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Painter Widget"),
                                        SerialStudio.Painter,
@@ -1245,10 +1253,11 @@ Item {
     }
     Action {
       id: actAddGroupDataGrid
-      text: qsTr("Data Grid")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-datagrid.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Data Grid")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-datagrid.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Data Grid"),
                                        SerialStudio.DataGrid,
@@ -1262,10 +1271,11 @@ Item {
 
     Action {
       id: actAddDsGeneric
-      text: qsTr("Generic")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-dataset.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Generic")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-dataset.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetGeneric,
@@ -1274,10 +1284,11 @@ Item {
     }
     Action {
       id: actAddDsPlot
-      text: qsTr("Plot")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-plot.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-plot.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetPlot,
@@ -1286,10 +1297,11 @@ Item {
     }
     Action {
       id: actAddDsFFT
-      text: qsTr("FFT Plot")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-fft.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("FFT Plot")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-fft.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetFFT,
@@ -1298,10 +1310,11 @@ Item {
     }
     Action {
       id: actAddDsGauge
-      text: qsTr("Gauge")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-gauge.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Gauge")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-gauge.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetGauge,
@@ -1310,10 +1323,11 @@ Item {
     }
     Action {
       id: actAddDsBar
-      text: qsTr("Level Indicator")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-bar.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Level Indicator")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-bar.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetBar,
@@ -1322,10 +1336,11 @@ Item {
     }
     Action {
       id: actAddDsCompass
-      text: qsTr("Compass")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-compass.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Compass")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-compass.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetCompass,
@@ -1334,10 +1349,11 @@ Item {
     }
     Action {
       id: actAddDsLED
-      text: qsTr("LED Indicator")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-led.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("LED Indicator")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-led.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetLED,
@@ -1348,10 +1364,11 @@ Item {
     // -- Output variants (Pro) ----------------------------------------
     Action {
       id: actAddOutPanel
-      text: qsTr("Output Panel")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-panel.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Output Panel")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-panel.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputPanel(menuController.targetSourceId())
@@ -1359,10 +1376,11 @@ Item {
     }
     Action {
       id: actAddOutSlider
-      text: qsTr("Slider")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-slider.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Slider")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-slider.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputSlider,
@@ -1371,10 +1389,11 @@ Item {
     }
     Action {
       id: actAddOutToggle
-      text: qsTr("Toggle")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-toggle.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Toggle")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-toggle.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputToggle,
@@ -1383,10 +1402,11 @@ Item {
     }
     Action {
       id: actAddOutKnob
-      text: qsTr("Knob")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-knob.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Knob")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-knob.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputKnob,
@@ -1395,10 +1415,11 @@ Item {
     }
     Action {
       id: actAddOutText
-      text: qsTr("Text Field")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-textfield.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Text Field")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-textfield.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputTextField,
@@ -1407,10 +1428,11 @@ Item {
     }
     Action {
       id: actAddOutButton
-      text: qsTr("Button")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-output-button.svg"
+
       icon.width: 16
       icon.height: 16
+      text: qsTr("Button")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-output-button.svg"
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputButton,
@@ -1427,13 +1449,14 @@ Item {
   //
   Menu {
     id: backgroundMenu
+
     onClosed: menuController.unpin()
 
     Menu {
-      title: qsTr("Add Group")
-      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       MenuItem { action: actAddGroupGeneric }
       MenuItem { action: actAddGroupMultiPlot }
       MenuItem { action: actAddGroupAccel }
@@ -1445,10 +1468,10 @@ Item {
       MenuItem { action: actAddGroupDataGrid }
     }
     Menu {
-      title: qsTr("Add Dataset")
-      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       MenuItem { action: actAddDsGeneric }
       MenuItem { action: actAddDsPlot }
       MenuItem { action: actAddDsFFT }
@@ -1458,11 +1481,11 @@ Item {
       MenuItem { action: actAddDsLED }
     }
     Menu {
-      title: qsTr("Add Output")
-      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Output")
       enabled: Cpp_CommercialBuild
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       MenuItem { action: actAddOutPanel }
       MenuItem { action: actAddOutSlider }
       MenuItem { action: actAddOutToggle }
@@ -1474,39 +1497,40 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Add Action")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Add Action")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
     }
     MenuItem {
+      icon.width: 16
+      icon.height: 16
       enabled: Cpp_CommercialBuild
       text: qsTr("Add Data Source")
       icon.source: "qrc:/icons/project-editor/toolbar/add-device.svg"
-      icon.width: 16
-      icon.height: 16
       onTriggered: menuController.locked(() => Cpp_JSON_ProjectModel.addSource())
     }
     MenuItem {
-      text: qsTr("Add Data Table")
-      icon.source: "qrc:/icons/project-editor/treeview/shared-table.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Add Data Table")
+      icon.source: "qrc:/icons/project-editor/treeview/shared-table.svg"
       onTriggered: menuController.locked(() => Cpp_JSON_ProjectModel.promptAddTable())
     }
   }
 
   Menu {
     id: sourceMenu
+
     onClosed: menuController.unpin()
 
     Menu {
-      title: qsTr("Add Group")
-      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       MenuItem { action: actAddGroupGeneric }
       MenuItem { action: actAddGroupMultiPlot }
       MenuItem { action: actAddGroupAccel }
@@ -1518,10 +1542,10 @@ Item {
       MenuItem { action: actAddGroupDataGrid }
     }
     Menu {
-      title: qsTr("Add Dataset")
-      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       MenuItem { action: actAddDsGeneric }
       MenuItem { action: actAddDsPlot }
       MenuItem { action: actAddDsFFT }
@@ -1531,11 +1555,11 @@ Item {
       MenuItem { action: actAddDsLED }
     }
     Menu {
-      title: qsTr("Add Output")
-      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Output")
       enabled: Cpp_CommercialBuild
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       MenuItem { action: actAddOutPanel }
       MenuItem { action: actAddOutSlider }
       MenuItem { action: actAddOutToggle }
@@ -1544,10 +1568,10 @@ Item {
       MenuItem { action: actAddOutButton }
     }
     MenuItem {
-      text: qsTr("Add Action")
-      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Add Action")
+      icon.source: "qrc:/icons/project-editor/toolbar/add-action.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
     }
@@ -1555,18 +1579,18 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameSource(menuController.currentSourceId))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateSource(menuController.currentSourceId))
     }
@@ -1574,10 +1598,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteSource(menuController.currentSourceId, true))
     }
@@ -1585,13 +1609,14 @@ Item {
 
   Menu {
     id: frameparserMenu
+
     onClosed: menuController.unpin()
 
     Menu {
-      title: qsTr("Add Group")
-      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Group")
+      icon.source: "qrc:/icons/project-editor/treeview/group.svg"
       MenuItem { action: actAddGroupGeneric }
       MenuItem { action: actAddGroupMultiPlot }
       MenuItem { action: actAddGroupAccel }
@@ -1603,10 +1628,10 @@ Item {
       MenuItem { action: actAddGroupDataGrid }
     }
     Menu {
-      title: qsTr("Add Dataset")
-      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       MenuItem { action: actAddDsGeneric }
       MenuItem { action: actAddDsPlot }
       MenuItem { action: actAddDsFFT }
@@ -1616,11 +1641,11 @@ Item {
       MenuItem { action: actAddDsLED }
     }
     Menu {
-      title: qsTr("Add Output")
-      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Output")
       enabled: Cpp_CommercialBuild
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       MenuItem { action: actAddOutPanel }
       MenuItem { action: actAddOutSlider }
       MenuItem { action: actAddOutToggle }
@@ -1632,10 +1657,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Edit Frame Parser…")
-      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Edit Frame Parser…")
+      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectEditor.selectFrameParser(menuController.currentSourceId))
     }
@@ -1643,13 +1668,14 @@ Item {
 
   Menu {
     id: groupMenu
+
     onClosed: menuController.unpin()
 
     Menu {
-      title: qsTr("Add Dataset")
-      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Dataset")
+      icon.source: "qrc:/icons/project-editor/treeview/dataset.svg"
       MenuItem { action: actAddDsGeneric }
       MenuItem { action: actAddDsPlot }
       MenuItem { action: actAddDsFFT }
@@ -1659,11 +1685,11 @@ Item {
       MenuItem { action: actAddDsLED }
     }
     Menu {
-      title: qsTr("Add Output")
-      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Output")
       enabled: Cpp_CommercialBuild
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       MenuItem { action: actAddOutPanel }
       MenuItem { action: actAddOutSlider }
       MenuItem { action: actAddOutToggle }
@@ -1672,11 +1698,11 @@ Item {
       MenuItem { action: actAddOutButton }
     }
     MenuItem {
-      enabled: menuController.currentWidget === "painter" && Cpp_CommercialBuild
-      text: qsTr("Edit Painter Code…")
-      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Edit Painter Code…")
+      icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+      enabled: menuController.currentWidget === "painter" && Cpp_CommercialBuild
       onTriggered: menuController.locked(() => {
         Cpp_JSON_ProjectEditor.selectGroup(menuController.currentGroupId)
         painterCodeDialog.showDialog()
@@ -1686,40 +1712,40 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameGroup(menuController.currentGroupId))
     }
     MenuItem {
-      text: qsTr("Move Up")
-      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveUp
+      text: qsTr("Move Up")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveUp
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveGroup(menuController.currentGroupId,
                                         menuController.currentGroupId - 1))
     }
     MenuItem {
-      text: qsTr("Move Down")
-      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveDown
+      text: qsTr("Move Down")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveDown
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveGroup(menuController.currentGroupId,
                                         menuController.currentGroupId + 1))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
     }
@@ -1727,10 +1753,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
     }
@@ -1738,13 +1764,14 @@ Item {
 
   Menu {
     id: datasetMenu
+
     onClosed: menuController.unpin()
 
     MenuItem {
-      text: qsTr("Edit Transform Code…")
-      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Edit Transform Code…")
+      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
       onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
         menuController.currentGroupId, menuController.currentDatasetId)
     }
@@ -1752,43 +1779,43 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameDataset(menuController.currentGroupId,
                                                   menuController.currentDatasetId))
     }
     MenuItem {
-      text: qsTr("Move Up")
-      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveUp
+      text: qsTr("Move Up")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveUp
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveDataset(menuController.currentGroupId,
                                           menuController.currentDatasetId,
                                           menuController.currentDatasetId - 1))
     }
     MenuItem {
-      text: qsTr("Move Down")
-      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveDown
+      text: qsTr("Move Down")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveDown
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveDataset(menuController.currentGroupId,
                                           menuController.currentDatasetId,
                                           menuController.currentDatasetId + 1))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateDataset(menuController.currentGroupId,
                                                menuController.currentDatasetId))
@@ -1797,10 +1824,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteDataset(menuController.currentGroupId,
                                             menuController.currentDatasetId, true))
@@ -1809,37 +1836,38 @@ Item {
 
   Menu {
     id: outputMenu
+
     onClosed: menuController.unpin()
 
     MenuItem {
-      text: qsTr("Move Up")
-      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveUp
+      text: qsTr("Move Up")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveUp
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveOutputWidget(menuController.currentGroupId,
                                                menuController.currentWidgetId,
                                                menuController.currentWidgetId - 1))
     }
     MenuItem {
-      text: qsTr("Move Down")
-      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveDown
+      text: qsTr("Move Down")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveDown
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveOutputWidget(menuController.currentGroupId,
                                                menuController.currentWidgetId,
                                                menuController.currentWidgetId + 1))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateOutputWidget(menuController.currentGroupId,
                                                     menuController.currentWidgetId))
@@ -1848,10 +1876,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteOutputWidget(menuController.currentGroupId,
                                                  menuController.currentWidgetId, true))
@@ -1860,14 +1888,15 @@ Item {
 
   Menu {
     id: outputPanelMenu
+
     onClosed: menuController.unpin()
 
     Menu {
-      title: qsTr("Add Output")
-      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       icon.width: 16
       icon.height: 16
+      title: qsTr("Add Output")
       enabled: Cpp_CommercialBuild
+      icon.source: "qrc:/icons/project-editor/treeview/output-panel.svg"
       MenuItem { action: actAddOutSlider }
       MenuItem { action: actAddOutToggle }
       MenuItem { action: actAddOutKnob }
@@ -1878,18 +1907,18 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameGroup(menuController.currentGroupId))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
     }
@@ -1897,10 +1926,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
     }
@@ -1908,43 +1937,44 @@ Item {
 
   Menu {
     id: actionMenu
+
     onClosed: menuController.unpin()
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameAction(menuController.currentActionId))
     }
     MenuItem {
-      text: qsTr("Move Up")
-      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveUp
+      text: qsTr("Move Up")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveUp
+      icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveAction(menuController.currentActionId,
                                          menuController.currentActionId - 1))
     }
     MenuItem {
-      text: qsTr("Move Down")
-      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       icon.width: 16
       icon.height: 16
-      enabled: menuController.canMoveDown
+      text: qsTr("Move Down")
       opacity: enabled ? 1 : 0.5
+      enabled: menuController.canMoveDown
+      icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.moveAction(menuController.currentActionId,
                                          menuController.currentActionId + 1))
     }
     MenuItem {
-      text: qsTr("Duplicate")
-      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Duplicate")
+      icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateAction(menuController.currentActionId))
     }
@@ -1952,10 +1982,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteAction(menuController.currentActionId, true))
     }
@@ -1963,13 +1993,14 @@ Item {
 
   Menu {
     id: tableMenu
+
     onClosed: menuController.unpin()
 
     MenuItem {
-      text: qsTr("Rename…")
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Rename…")
+      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.promptRenameTable(menuController.currentTableName))
     }
@@ -1977,10 +2008,10 @@ Item {
     MenuSeparator {}
 
     MenuItem {
-      text: qsTr("Delete…")
-      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Delete…")
+      icon.source: "qrc:/icons/project-editor/actions/delete.svg"
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.confirmDeleteTable(menuController.currentTableName))
     }
@@ -1988,13 +2019,14 @@ Item {
 
   Menu {
     id: transformMenu
+
     onClosed: menuController.unpin()
 
     MenuItem {
-      text: qsTr("Edit Code…")
-      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
       icon.width: 16
       icon.height: 16
+      text: qsTr("Edit Code…")
+      icon.source: "qrc:/icons/project-editor/actions/transform.svg"
       onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
         menuController.currentGroupId, menuController.currentDatasetId)
     }

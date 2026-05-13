@@ -4458,6 +4458,7 @@ void DataModel::ProjectModel::promptRenameDataset(int groupId, int datasetId)
 {
   if (groupId < 0 || static_cast<size_t>(groupId) >= m_groups.size())
     return;
+
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= m_groups[groupId].datasets.size())
     return;
 

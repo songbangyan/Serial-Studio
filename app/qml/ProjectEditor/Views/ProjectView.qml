@@ -319,16 +319,17 @@ Widgets.Pane {
                      + "to add a group, dataset, action, data table, or device.")
 
           anchors {
-            left: parent.left
-            right: zoomRow.left
             leftMargin: 12
             rightMargin: 12
+            left: parent.left
+            right: zoomRow.left
             verticalCenter: parent.verticalCenter
           }
         }
 
         Row {
           id: zoomRow
+
           spacing: 2
           anchors {
             rightMargin: 8

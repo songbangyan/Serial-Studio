@@ -907,6 +907,7 @@ void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId
 
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return;
+
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
     return;
 

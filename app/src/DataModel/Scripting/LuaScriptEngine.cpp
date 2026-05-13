@@ -468,6 +468,7 @@ QList<QStringList> DataModel::LuaScriptEngine::parseString(const QString& frame)
       qWarning() << "[LuaScriptEngine] Parse error:" << err;
       if (err.contains(QLatin1String("timed out")))
         (void)noteTimeoutAndCheckDisabled(0);
+
       return {};
     }
 
@@ -516,6 +517,7 @@ QList<QStringList> DataModel::LuaScriptEngine::parseBinary(const QByteArray& fra
       qWarning() << "[LuaScriptEngine] Parse error:" << err;
       if (err.contains(QLatin1String("timed out")))
         (void)noteTimeoutAndCheckDisabled(0);
+
       return {};
     }
 

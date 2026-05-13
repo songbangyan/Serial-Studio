@@ -531,8 +531,8 @@ Widgets.Pane {
         id: bannerLayout
 
         spacing: 4
-        anchors.fill: parent
         anchors.margins: 12
+        anchors.fill: parent
 
         RowLayout {
           spacing: 10
