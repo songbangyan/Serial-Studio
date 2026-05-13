@@ -1132,7 +1132,7 @@ Item {
     }
 
     // Run an operation without letting the editor's right-pane view drift.
-    // The model fires several signals (groupsChanged, outputWidgetDeleted…)
+    // The model fires several signals (groupsChanged, outputWidgetDeleted...)
     // with Qt::QueuedConnection into the editor's selection-bookkeeping
     // lambdas. Those lambdas land in the event queue and run AFTER fn()
     // returns -- if we release the latch synchronously here, the editor

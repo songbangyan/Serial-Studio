@@ -550,6 +550,7 @@ void DataModel::ProjectEditor::wireExternalSignals()
  */
 DataModel::ProjectEditor::ProjectEditor()
   : m_currentView(ProjectView)
+  , m_suppressViewChange(false)
   , m_groupsRootItem(nullptr)
   , m_tablesRootItem(nullptr)
   , m_systemDatasetsItem(nullptr)

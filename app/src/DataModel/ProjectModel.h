@@ -251,10 +251,10 @@ public slots:
   void promptAddTable();
   void promptRenameTable(const QString& oldName);
 
-  Q_INVOKABLE void promptRenameGroup(int groupId);
-  Q_INVOKABLE void promptRenameDataset(int groupId, int datasetId);
-  Q_INVOKABLE void promptRenameSource(int sourceId);
-  Q_INVOKABLE void promptRenameAction(int actionId);
+  void promptRenameGroup(int groupId);
+  void promptRenameDataset(int groupId, int datasetId);
+  void promptRenameSource(int sourceId);
+  void promptRenameAction(int actionId);
   void promptAddRegister(const QString& table);
   void promptRenameRegister(const QString& table, const QString& registerName);
   void confirmDeleteTable(const QString& name);
