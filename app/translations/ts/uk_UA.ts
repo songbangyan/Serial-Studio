@@ -4793,52 +4793,57 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="141"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="155"/>
+        <source>Interpolation: %1</source>
+        <translation>Інтерполяція: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="183"/>
         <source>Show Area Under Plot</source>
         <translation>Показати Область Під Графіком</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="158"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="201"/>
         <source>Show X Axis Label</source>
         <translation>Показати Підпис Осі X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="170"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
         <source>Show Y Axis Label</source>
         <translation>Показати Підпис Осі Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="188"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="231"/>
         <source>Show Crosshair</source>
         <translation>Показати Перехрестя</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Resume</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="214"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="257"/>
         <source>Reset View</source>
         <translation>Скинути Вигляд</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="263"/>
         <source>Axis Range Settings</source>
         <translation>Налаштування Діапазону Осей</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="292"/>
         <source>Magnitude (dB)</source>
         <translation>Амплітуда (дБ)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="293"/>
         <source>Frequency (Hz)</source>
         <translation>Частота (Гц)</translation>
     </message>
@@ -8706,8 +8711,8 @@ Would you like to open the download page?</source>
         <translation>Не вдалося записати Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="141"/>
+        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Засіб створення ярликів Windows недоступний на цій платформі.</translation>
     </message>
@@ -8738,8 +8743,8 @@ Would you like to open the download page?</source>
         <translation>Збереження файлу .lnk завершилося невдало (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="155"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>Засіб створення ярликів macOS недоступний на цій платформі.</translation>
     </message>
@@ -8783,87 +8788,87 @@ Would you like to open the download page?</source>
         <translation>Гаразд</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="172"/>
         <source>Save</source>
         <translation>Зберегти</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="174"/>
         <source>Save all</source>
         <translation>Зберегти все</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
         <source>Open</source>
         <translation>Відкрити</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="178"/>
         <source>Yes</source>
         <translation>Так</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="180"/>
         <source>Yes to all</source>
         <translation>Так для всіх</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
         <source>No</source>
         <translation>Ні</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="184"/>
         <source>No to all</source>
         <translation>Ні для всіх</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="186"/>
         <source>Abort</source>
         <translation>Перервати</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="197"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
         <source>Retry</source>
         <translation>Повторити</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="190"/>
         <source>Ignore</source>
         <translation>Ігнорувати</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="203"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="209"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Discard</source>
         <translation>Відхилити</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Help</source>
         <translation>Довідка</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="215"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Apply</source>
         <translation>Застосувати</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Reset</source>
         <translation>Скинути</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="221"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>Restore defaults</source>
         <translation>Відновити Типові</translation>
     </message>
@@ -8871,7 +8876,7 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="120"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="117"/>
         <source>Select Workspace Location</source>
         <translation>Вибрати Розташування Робочої Області</translation>
     </message>
@@ -9155,52 +9160,56 @@ Add groups above to poll multiple register types.</source>
 <context>
     <name>MultiPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="170"/>
         <source>Interpolate</source>
-        <translation>Інтерполювати</translation>
+        <translation type="vanished">Інтерполювати</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="176"/>
+        <source>Interpolation: %1</source>
+        <translation>Інтерполяція: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="198"/>
         <source>Show Legends</source>
         <translation>Показати Легенди</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="204"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
         <source>Show X Axis Label</source>
         <translation>Показати Підпис Осі X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="226"/>
         <source>Show Y Axis Label</source>
         <translation>Показати Підпис Осі Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Показати Перехрестя</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="253"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Скинути Вигляд</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Налаштування Діапазону Осей</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
         <source>Samples</source>
         <translation>Зразки</translation>
     </message>
@@ -9620,47 +9629,51 @@ Add groups above to poll multiple register types.</source>
 <context>
     <name>Plot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="163"/>
         <source>Interpolate</source>
-        <translation>Інтерполювати</translation>
+        <translation type="vanished">Інтерполювати</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="175"/>
+        <source>Interpolation: %1</source>
+        <translation>Інтерполяція: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="188"/>
         <source>Show Area Under Plot</source>
         <translation>Показати Область Під Графіком</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="194"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="206"/>
         <source>Show X Axis Label</source>
         <translation>Показати Підпис Осі X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="205"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
         <source>Show Y Axis Label</source>
         <translation>Показати Підпис Осі Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="229"/>
         <source>Show Crosshair</source>
         <translation>Показати Перехрестя</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Resume</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="255"/>
         <source>Reset View</source>
         <translation>Скинути Вигляд</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="261"/>
         <source>Axis Range Settings</source>
         <translation>Налаштування Діапазону Осей</translation>
     </message>
@@ -9716,6 +9729,29 @@ Add groups above to poll multiple register types.</source>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="305"/>
         <source>Invert Eye Positions</source>
         <translation>Інвертувати Позиції Очей</translation>
+    </message>
+</context>
+<context>
+    <name>PlotCommon</name>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="59"/>
+        <source>None</source>
+        <translation>Немає</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="62"/>
+        <source>ZOH</source>
+        <translation>ZOH</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="65"/>
+        <source>Stem</source>
+        <translation>Стовпчикова</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="67"/>
+        <source>Linear</source>
+        <translation>Лінійна</translation>
     </message>
 </context>
 <context>
@@ -10592,8 +10628,8 @@ Click Refresh to update the list.</source>
         <translation>Загальна помилка введення/виведення</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="239"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <source>Frame Parser Disabled</source>
         <translation>Парсер Фреймів Вимкнено</translation>
     </message>
@@ -10635,8 +10671,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="442"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <source>Missing Parse Function</source>
         <translation>Відсутня Функція Parse</translation>
     </message>
@@ -10652,8 +10688,8 @@ function parse(frame) ... end</source>
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="496"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <source>Parse Function Runtime Error</source>
         <translation>Помилка Виконання Функції Parse</translation>
     </message>
@@ -14412,7 +14448,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Plot</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="74"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="75"/>
         <source>Samples</source>
         <translation>Зразки</translation>
     </message>

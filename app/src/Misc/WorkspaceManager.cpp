@@ -35,7 +35,6 @@
  */
 Misc::WorkspaceManager::WorkspaceManager()
 {
-  // Load saved workspace path or default to Documents/Serial Studio
   auto def =
     QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
                          QStringLiteral("Serial Studio"));
@@ -103,7 +102,6 @@ QString Misc::WorkspaceManager::path(const QString& subdirectory) const
  */
 void Misc::WorkspaceManager::reset()
 {
-  // Restore the default workspace directory
   m_path = QString("%1/%2").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
                                 QStringLiteral("Serial Studio"));
   m_settings.setValue(QStringLiteral("Workspace"), m_path);
@@ -116,7 +114,6 @@ void Misc::WorkspaceManager::reset()
  */
 void Misc::WorkspaceManager::selectPath()
 {
-  // Show a directory picker for the new workspace location
   auto* dialog = new QFileDialog(qApp->activeWindow(), tr("Select Workspace Location"), m_path);
 
   dialog->setFileMode(QFileDialog::Directory);

@@ -93,38 +93,49 @@ QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix) const
 QJsonObject AI::ToolDispatcher::listCategories() const
 {
   // Curated scope descriptions (only emitted when scope has non-Blocked commands)
+  // clang-format off
   static const QHash<QString, QString> kDescriptions = {
-    {      QStringLiteral("project"),
+    {QStringLiteral("project"),
      QStringLiteral("Project document operations: open/save, groups, datasets, "
-     "actions, sources, parsers, painter scripts, output widgets, "
-     "data tables, workspaces.")                                                                             },
-    {           QStringLiteral("io"),
+                    "actions, sources, parsers, painter scripts, output widgets, "
+                    "data tables, workspaces.")},
+    {QStringLiteral("io"),
      QStringLiteral("Hardware I/O: connect/disconnect, bus selection, plus "
-     "per-driver configuration (uart, network, ble, audio, canbus, "
-     "modbus, hid, usb, process).")                                                                          },
-    {      QStringLiteral("console"),
-     QStringLiteral("Terminal display, send raw frames, console export.")                                    },
-    {QStringLiteral("consoleExport"),                       QStringLiteral("Console capture export to file.")},
-    {          QStringLiteral("csv"),                        QStringLiteral("CSV export status and control.")},
-    {    QStringLiteral("csvExport"),                                   QStringLiteral("CSV export to file.")},
-    {    QStringLiteral("csvPlayer"),
-     QStringLiteral("CSV file replay: open/close, paused state, step, seek.")                                },
-    {   QStringLiteral("mdf4Export"),                            QStringLiteral("MDF4 export to file (Pro).")},
-    {   QStringLiteral("mdf4Player"),                               QStringLiteral("MDF4 file replay (Pro).")},
-    {         QStringLiteral("mqtt"),
-     QStringLiteral("MQTT broker connectivity, authentication, SSL, topics (Pro).")                          },
-    {    QStringLiteral("dashboard"),
-     QStringLiteral("Live dashboard data, FPS, point limits, operation mode.")                               },
-    {           QStringLiteral("ui"), QStringLiteral("Window state, layouts, widget settings, active group.")},
-    {     QStringLiteral("sessions"),                        QStringLiteral("Session database export (Pro).")},
-    {    QStringLiteral("licensing"),           QStringLiteral("License activation, validation, trial mode.")},
+                    "per-driver configuration (uart, network, ble, audio, canbus, "
+                    "modbus, hid, usb, process).")},
+    {QStringLiteral("console"),
+     QStringLiteral("Terminal display, send raw frames, console export.")},
+    {QStringLiteral("consoleExport"),
+     QStringLiteral("Console capture export to file.")},
+    {QStringLiteral("csv"),
+     QStringLiteral("CSV export status and control.")},
+    {QStringLiteral("csvExport"),
+     QStringLiteral("CSV export to file.")},
+    {QStringLiteral("csvPlayer"),
+     QStringLiteral("CSV file replay: open/close, paused state, step, seek.")},
+    {QStringLiteral("mdf4Export"),
+     QStringLiteral("MDF4 export to file (Pro).")},
+    {QStringLiteral("mdf4Player"),
+     QStringLiteral("MDF4 file replay (Pro).")},
+    {QStringLiteral("mqtt"),
+     QStringLiteral("MQTT broker connectivity, authentication, SSL, topics (Pro).")},
+    {QStringLiteral("dashboard"),
+     QStringLiteral("Live dashboard data, FPS, point limits, operation mode.")},
+    {QStringLiteral("ui"),
+     QStringLiteral("Window state, layouts, widget settings, active group.")},
+    {QStringLiteral("sessions"),
+     QStringLiteral("Session database export (Pro).")},
+    {QStringLiteral("licensing"),
+     QStringLiteral("License activation, validation, trial mode.")},
     {QStringLiteral("notifications"),
-     QStringLiteral("In-app notification center: post, list, channels, mark read.")                          },
-    {   QStringLiteral("extensions"),                           QStringLiteral("Plugin/extension lifecycle.")},
-    {         QStringLiteral("meta"),
+     QStringLiteral("In-app notification center: post, list, channels, mark read.")},
+    {QStringLiteral("extensions"),
+     QStringLiteral("Plugin/extension lifecycle.")},
+    {QStringLiteral("meta"),
      QStringLiteral("Discovery: list categories, list commands by prefix, describe one "
-     "command, fetch help/scripting docs/recipes, execute by name.")                                         },
+                    "command, fetch help/scripting docs/recipes, execute by name.")},
   };
+  // clang-format on
 
   const auto& commands = API::CommandRegistry::instance().commands();
   const auto& aiReg    = AI::CommandRegistry::instance();

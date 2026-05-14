@@ -4793,52 +4793,57 @@ Platný formát: 01 A2 FF 3C</translation>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="141"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="155"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolace: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="183"/>
         <source>Show Area Under Plot</source>
         <translation>Zobrazit Plochu Pod Grafem</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="158"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="201"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="170"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="188"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="231"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="214"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="257"/>
         <source>Reset View</source>
         <translation>Resetovat Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="263"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="292"/>
         <source>Magnitude (dB)</source>
         <translation>Magnituda (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="293"/>
         <source>Frequency (Hz)</source>
         <translation>Frekvence (Hz)</translation>
     </message>
@@ -8706,8 +8711,8 @@ Chcete otevřít stránku pro stažení?</translation>
         <translation>Nelze zapsat Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="141"/>
+        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Zapisovač zástupců Windows není na této platformě dostupný.</translation>
     </message>
@@ -8738,8 +8743,8 @@ Chcete otevřít stránku pro stažení?</translation>
         <translation>Uložení souboru .lnk selhalo (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="155"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>Zapisovač zástupců macOS není na této platformě dostupný.</translation>
     </message>
@@ -8783,87 +8788,87 @@ Chcete otevřít stránku pro stažení?</translation>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="172"/>
         <source>Save</source>
         <translation>Uložit</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="174"/>
         <source>Save all</source>
         <translation>Uložit vše</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
         <source>Open</source>
         <translation>Otevřít</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="178"/>
         <source>Yes</source>
         <translation>Ano</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="180"/>
         <source>Yes to all</source>
         <translation>Ano pro vše</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
         <source>No</source>
         <translation>Ne</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="184"/>
         <source>No to all</source>
         <translation>Ne všem</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="186"/>
         <source>Abort</source>
         <translation>Přerušit</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="197"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
         <source>Retry</source>
         <translation>Opakovat</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="190"/>
         <source>Ignore</source>
         <translation>Ignorovat</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="203"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Close</source>
         <translation>Zavřít</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="209"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Discard</source>
         <translation>Zahodit</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Help</source>
         <translation>Nápověda</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="215"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Apply</source>
         <translation>Použít</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Reset</source>
         <translation>Resetovat</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="221"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>Restore defaults</source>
         <translation>Obnovit výchozí</translation>
     </message>
@@ -8871,7 +8876,7 @@ Chcete otevřít stránku pro stažení?</translation>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="120"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="117"/>
         <source>Select Workspace Location</source>
         <translation>Vybrat Umístění Pracovního Prostoru</translation>
     </message>
@@ -9155,52 +9160,56 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
 <context>
     <name>MultiPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="170"/>
         <source>Interpolate</source>
-        <translation>Interpolovat</translation>
+        <translation type="vanished">Interpolovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="176"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolace: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="198"/>
         <source>Show Legends</source>
         <translation>Zobrazit Legendy</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="204"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="226"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="253"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Resetovat Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
         <source>Samples</source>
         <translation>Vzorky</translation>
     </message>
@@ -9620,47 +9629,51 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
 <context>
     <name>Plot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="163"/>
         <source>Interpolate</source>
-        <translation>Interpolovat</translation>
+        <translation type="vanished">Interpolovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="175"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolace: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="188"/>
         <source>Show Area Under Plot</source>
         <translation>Zobrazit Plochu Pod Grafem</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="194"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="206"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="205"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="229"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="255"/>
         <source>Reset View</source>
         <translation>Obnovit Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="261"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
@@ -9716,6 +9729,29 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="305"/>
         <source>Invert Eye Positions</source>
         <translation>Invertovat Pozice Očí</translation>
+    </message>
+</context>
+<context>
+    <name>PlotCommon</name>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="59"/>
+        <source>None</source>
+        <translation>Žádná</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="62"/>
+        <source>ZOH</source>
+        <translation>ZOH</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="65"/>
+        <source>Stem</source>
+        <translation>Stem</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="67"/>
+        <source>Linear</source>
+        <translation>Lineární</translation>
     </message>
 </context>
 <context>
@@ -10592,8 +10628,8 @@ Klikněte na Obnovit pro aktualizaci seznamu.</translation>
         <translation>Obecná chyba I/O</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="239"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <source>Frame Parser Disabled</source>
         <translation>Analyzátor Rámců Zakázán</translation>
     </message>
@@ -10635,8 +10671,8 @@ Nejpravděpodobnější příčina: nekonečná smyčka nebo extrémně pomalá 
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="442"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <source>Missing Parse Function</source>
         <translation>Chybějící Funkce Parse</translation>
     </message>
@@ -10652,8 +10688,8 @@ Ujistěte se, že váš kód obsahuje:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="496"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <source>Parse Function Runtime Error</source>
         <translation>Chyba Běhu Funkce Parse</translation>
     </message>
@@ -14412,7 +14448,7 @@ Chápu, že po jejím skončení budu muset zakoupit licenci nebo sestavit verzi
 <context>
     <name>Widgets::Plot</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="74"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="75"/>
         <source>Samples</source>
         <translation>Vzorky</translation>
     </message>

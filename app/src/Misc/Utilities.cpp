@@ -108,7 +108,6 @@ QPixmap Misc::Utilities::getHiDpiPixmap(const QString& path)
  */
 QString Misc::Utilities::hdpiImagePath(const QString& path)
 {
-  // Compute the DPI-appropriate image path suffix (@1x or @2x)
   const auto dpr  = qApp->devicePixelRatio();
   const int ratio = qMin<int>(2, static_cast<int>(ceil(dpr)));
 
@@ -166,71 +165,55 @@ int Misc::Utilities::showMessageBox(const QString& text,
     box.setIcon(icon);
 
   // Add button translations
+  // code-verify off
   if (bt & QMessageBox::Ok)
     box.button(QMessageBox::Ok)->setText(tr("Ok"));
-
   if (bt & QMessageBox::Save)
     box.button(QMessageBox::Save)->setText(tr("Save"));
-
   if (bt & QMessageBox::SaveAll)
     box.button(QMessageBox::SaveAll)->setText(tr("Save all"));
-
   if (bt & QMessageBox::Open)
     box.button(QMessageBox::Open)->setText(tr("Open"));
-
   if (bt & QMessageBox::Yes)
     box.button(QMessageBox::Yes)->setText(tr("Yes"));
-
   if (bt & QMessageBox::YesToAll)
     box.button(QMessageBox::YesToAll)->setText(tr("Yes to all"));
-
   if (bt & QMessageBox::No)
     box.button(QMessageBox::No)->setText(tr("No"));
-
   if (bt & QMessageBox::NoToAll)
     box.button(QMessageBox::NoToAll)->setText(tr("No to all"));
-
   if (bt & QMessageBox::Abort)
     box.button(QMessageBox::Abort)->setText(tr("Abort"));
-
   if (bt & QMessageBox::Retry)
     box.button(QMessageBox::Retry)->setText(tr("Retry"));
-
   if (bt & QMessageBox::Ignore)
     box.button(QMessageBox::Ignore)->setText(tr("Ignore"));
-
   if (bt & QMessageBox::Close)
     box.button(QMessageBox::Close)->setText(tr("Close"));
-
   if (bt & QMessageBox::Cancel)
     box.button(QMessageBox::Cancel)->setText(tr("Cancel"));
-
   if (bt & QMessageBox::Discard)
     box.button(QMessageBox::Discard)->setText(tr("Discard"));
-
   if (bt & QMessageBox::Help)
     box.button(QMessageBox::Help)->setText(tr("Help"));
-
   if (bt & QMessageBox::Apply)
     box.button(QMessageBox::Apply)->setText(tr("Apply"));
-
   if (bt & QMessageBox::Reset)
     box.button(QMessageBox::Reset)->setText(tr("Reset"));
-
   if (bt & QMessageBox::RestoreDefaults)
     box.button(QMessageBox::RestoreDefaults)->setText(tr("Restore defaults"));
+  // code-verify on
 
   // Apply caller-provided button text overrides
   for (auto it = buttonTexts.constBegin(); it != buttonTexts.constEnd(); ++it)
     box.button(it.key())->setText(" " + it.value() + " ");
 
   // Resize message box
-  // clang-format off
   auto *spacer = new QSpacerItem(320, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
   auto *layout = qobject_cast<QGridLayout *>(box.layout());
   layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
-  // clang-format on
 
+  // Execute the message box
   return box.exec();
 }
 

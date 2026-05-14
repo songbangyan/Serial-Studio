@@ -103,9 +103,7 @@ void Misc::TimerEvents::timerEvent(QTimerEvent* event)
  */
 void Misc::TimerEvents::startTimers()
 {
-  // Start UI timer at configured frequency and fixed-rate timers
   m_uiTimer.start(1000 / m_uiTimerHz, Qt::PreciseTimer, this);
-
   m_timer1Hz.start(1000, Qt::PreciseTimer, this);
   m_timer20Hz.start(1000 / 20, Qt::PreciseTimer, this);
   m_timer10Hz.start(1000 / 10, Qt::PreciseTimer, this);

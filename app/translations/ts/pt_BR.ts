@@ -4793,52 +4793,57 @@ Formato válido: 01 A2 FF 3C</translation>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="141"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="155"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolação: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="183"/>
         <source>Show Area Under Plot</source>
         <translation>Mostrar Área sob o Gráfico</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="158"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="201"/>
         <source>Show X Axis Label</source>
         <translation>Mostrar Rótulo do Eixo X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="170"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
         <source>Show Y Axis Label</source>
         <translation>Mostrar Rótulo do Eixo Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="188"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="231"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Mira</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Resume</source>
         <translation>Retomar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="214"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="257"/>
         <source>Reset View</source>
         <translation>Redefinir Visualização</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="263"/>
         <source>Axis Range Settings</source>
         <translation>Configurações de Intervalo do Eixo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="292"/>
         <source>Magnitude (dB)</source>
         <translation>Magnitude (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="293"/>
         <source>Frequency (Hz)</source>
         <translation>Frequência (Hz)</translation>
     </message>
@@ -8706,8 +8711,8 @@ Deseja abrir a página de download?</translation>
         <translation>Não foi possível gravar Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="141"/>
+        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="272"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>O gravador de atalhos do Windows não está disponível nesta plataforma.</translation>
     </message>
@@ -8738,8 +8743,8 @@ Deseja abrir a página de download?</translation>
         <translation>Falha ao salvar o arquivo .lnk (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="155"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="186"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>O gravador de atalhos do macOS não está disponível nesta plataforma.</translation>
     </message>
@@ -8783,87 +8788,87 @@ Deseja abrir a página de download?</translation>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="172"/>
         <source>Save</source>
         <translation>Salvar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="174"/>
         <source>Save all</source>
         <translation>Salvar tudo</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="176"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="178"/>
         <source>Yes</source>
         <translation>Sim</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="180"/>
         <source>Yes to all</source>
         <translation>Sim para tudo</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="182"/>
         <source>No</source>
         <translation>Não</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="184"/>
         <source>No to all</source>
         <translation>Não para Todos</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="186"/>
         <source>Abort</source>
         <translation>Abortar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="197"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="188"/>
         <source>Retry</source>
         <translation>Tentar Novamente</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="190"/>
         <source>Ignore</source>
         <translation>Ignorar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="203"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Close</source>
         <translation>Fechar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="209"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Discard</source>
         <translation>Descartar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Help</source>
         <translation>Ajuda</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="215"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Apply</source>
         <translation>Aplicar</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Reset</source>
         <translation>Redefinir</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="221"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>Restore defaults</source>
         <translation>Restaurar Padrões</translation>
     </message>
@@ -8871,7 +8876,7 @@ Deseja abrir a página de download?</translation>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="120"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="117"/>
         <source>Select Workspace Location</source>
         <translation>Selecionar Local do Espaço de Trabalho</translation>
     </message>
@@ -9155,52 +9160,56 @@ Adicione grupos acima para consultar múltiplos tipos de registradores.</transla
 <context>
     <name>MultiPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="170"/>
         <source>Interpolate</source>
-        <translation>Interpolar</translation>
+        <translation type="vanished">Interpolar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="176"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolação: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="198"/>
         <source>Show Legends</source>
         <translation>Mostrar Legendas</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="204"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
         <source>Show X Axis Label</source>
         <translation>Mostrar Rótulo do Eixo X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="226"/>
         <source>Show Y Axis Label</source>
         <translation>Mostrar Rótulo do Eixo Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Mira</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Retomar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="253"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Redefinir Visualização</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Configurações de Intervalo do Eixo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
         <source>Samples</source>
         <translation>Amostras</translation>
     </message>
@@ -9620,47 +9629,51 @@ Adicione grupos acima para consultar múltiplos tipos de registradores.</transla
 <context>
     <name>Plot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="163"/>
         <source>Interpolate</source>
-        <translation>Interpolar</translation>
+        <translation type="vanished">Interpolar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="175"/>
+        <source>Interpolation: %1</source>
+        <translation>Interpolação: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="188"/>
         <source>Show Area Under Plot</source>
         <translation>Mostrar Área sob o Gráfico</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="194"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="206"/>
         <source>Show X Axis Label</source>
         <translation>Mostrar Rótulo do Eixo X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="205"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
         <source>Show Y Axis Label</source>
         <translation>Mostrar Rótulo do Eixo Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="217"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="229"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Mira</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="224"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="236"/>
         <source>Resume</source>
         <translation>Retomar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="255"/>
         <source>Reset View</source>
         <translation>Redefinir Visualização</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="249"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="261"/>
         <source>Axis Range Settings</source>
         <translation>Configurações de Intervalo do Eixo</translation>
     </message>
@@ -9716,6 +9729,29 @@ Adicione grupos acima para consultar múltiplos tipos de registradores.</transla
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="305"/>
         <source>Invert Eye Positions</source>
         <translation>Inverter Posições dos Olhos</translation>
+    </message>
+</context>
+<context>
+    <name>PlotCommon</name>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="59"/>
+        <source>None</source>
+        <translation>Nenhum</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="62"/>
+        <source>ZOH</source>
+        <translation>ZOH</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="65"/>
+        <source>Stem</source>
+        <translation>Stem</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="67"/>
+        <source>Linear</source>
+        <translation>Linear</translation>
     </message>
 </context>
 <context>
@@ -10592,8 +10628,8 @@ Clique em Atualizar para atualizar a lista.</translation>
         <translation>Erro geral de E/S</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="239"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="256"/>
         <source>Frame Parser Disabled</source>
         <translation>Analisador de Frames Desabilitado</translation>
     </message>
@@ -10635,8 +10671,8 @@ Causa mais provável: um loop infinito ou operação extremamente lenta no corpo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="442"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="360"/>
         <source>Missing Parse Function</source>
         <translation>Função Parse Ausente</translation>
     </message>
@@ -10652,8 +10688,8 @@ Certifique-se de que seu código inclui:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="496"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="423"/>
         <source>Parse Function Runtime Error</source>
         <translation>Erro de Execução da Função de Análise</translation>
     </message>
@@ -14412,7 +14448,7 @@ Entendo que quando terminar, precisarei comprar uma licença ou compilar a vers�
 <context>
     <name>Widgets::Plot</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="74"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="75"/>
         <source>Samples</source>
         <translation>Amostras</translation>
     </message>
