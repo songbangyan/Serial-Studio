@@ -81,6 +81,7 @@ private:
   lua_State* m_state;
   bool m_loaded;
   bool m_disabled;
+  int m_sourceId;
   int m_consecutiveTimeouts;
   QDeadlineTimer m_deadline;
 };

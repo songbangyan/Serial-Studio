@@ -44,7 +44,6 @@
 #  include "Licensing/LemonSqueezy.h"
 #  include "MDF4/Player.h"
 #  include "Misc/WorkspaceManager.h"
-#  include "MQTT/Client.h"
 #endif
 
 //--------------------------------------------------------------------------------------------------

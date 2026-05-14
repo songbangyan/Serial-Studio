@@ -92,6 +92,10 @@ class ProjectModel : public QObject {
   Q_PROPERTY(QString saveBlockerDetail
              READ saveBlockerDetail
              NOTIFY saveStatusChanged)
+  Q_PROPERTY(QJsonObject mqttPublisher
+             READ mqttPublisher
+             WRITE setMqttPublisher
+             NOTIFY mqttPublisherChanged)
   // clang-format on
 
 signals:
@@ -117,6 +121,7 @@ signals:
   void tablesChanged();
   void customizeWorkspacesChanged();
   void lockedChanged();
+  void mqttPublisherChanged();
   void saveDialogCompleted(bool accepted);
 
   void groupAdded(int groupId);
@@ -191,6 +196,7 @@ public:
   [[nodiscard]] int tableCount() const noexcept;
   [[nodiscard]] bool customizeWorkspaces() const noexcept;
   [[nodiscard]] const std::vector<TableDef>& tables() const noexcept;
+  [[nodiscard]] const QJsonObject& mqttPublisher() const noexcept;
 
   [[nodiscard]] qint64 mutationEpoch() const noexcept;
 
@@ -333,6 +339,7 @@ public slots:
   void setSelectedOutputWidget(const DataModel::OutputWidget& widget);
 
   void setCustomizeWorkspaces(const bool enabled);
+  void setMqttPublisher(const QJsonObject& config);
 
   Q_INVOKABLE int addWorkspace(const QString& title);
   Q_INVOKABLE int autoGenerateWorkspaces();
@@ -462,5 +469,6 @@ private:
   DataModel::OutputWidget m_selectedOutputWidget;
 
   QJsonObject m_widgetSettings;
+  QJsonObject m_mqttPublisher;
 };
 }  // namespace DataModel

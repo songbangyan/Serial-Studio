@@ -72,6 +72,7 @@ private:
   QJSValue m_hexToArray;
   JsWatchdog m_watchdog;
   bool m_disabled;
+  int m_sourceId;
   int m_consecutiveTimeouts;
 };
 

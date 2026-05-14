@@ -107,6 +107,68 @@ Lua is fast at the call boundary. Avoid `string.format` in the hot path,
 avoid `pcall` unless you actually expect failures, and prefer arithmetic
 to table lookups when you can.
 
+## Frame metadata — second `info` argument
+
+```lua
+function transform(value, info)
+  -- info.frameNumber : integer, per-source counter (1-based, monotonic)
+  -- info.sourceId    : integer
+  -- info.timestampMs : integer, monotonic ms (steady clock, NOT wall clock)
+end
+```
+
+Existing one-arg transforms keep working unchanged (Lua ignores extra args).
+`timestampMs` is a monotonic counter — use it for deltas, not absolute time.
+
+```lua
+local lastTs = 0
+function transform(v, info)
+  if info.timestampMs - lastTs >= 100 then
+    lastTs = info.timestampMs
+    deviceWrite("PING\n")
+  end
+  return v
+end
+```
+
+## Firing project actions — `actionFire()`
+
+```lua
+actionFire(actionId) -> { ok = true } | { ok = false, error = "..." }
+```
+
+Triggers an existing project Action by its stable `actionId` (NOT its
+index). Reuses the action's prebuilt payload, encoding, and timer mode.
+Calls are logged `[actionFire] id=N index=M ok`.
+
+## Device output — `deviceWrite()`
+
+```lua
+deviceWrite(data, sourceId?) -> { ok = true } | { ok = false, error = "..." }
+```
+
+- `data` is a Lua string (8-bit clean).
+- `sourceId` is optional; default is the source the dataset belongs to.
+- Synchronous, fire-and-forget. Does not throw. Calls are logged as
+  `[deviceWrite] source=N bytes=M written=K`.
+
+Use for **closed-loop control**: compute a setpoint from a sensor value and
+push it back to the device on the same frame.
+
+```lua
+local kp = 4.0
+function transform(temperature)
+  local sp = tableGet("Control", "setpoint") or 25.0
+  local pwm = math.max(0, math.min(255, kp * (sp - temperature) + 128))
+  deviceWrite(string.format("PWM=%d\n", math.floor(pwm + 0.5)))
+  return temperature
+end
+```
+
+Transforms run on every frame, so be conservative — latch repeated actions
+with a local flag, or rate-limit with a counter, to avoid saturating the
+link.
+
 ## Errors
 
 A Lua error logs a watchdog warning and the raw value is used. Returning a

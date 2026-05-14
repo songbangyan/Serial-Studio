@@ -130,7 +130,13 @@ theme            // ThemeManager palette; widget_base, widget_border,
                  // theme.widget_colors is an array of per-channel colors.
 console          // log/warn/error to the editor status pane
 tableGet, tableSet, datasetGetRaw, datasetGetFinal
+deviceWrite(data, sourceId?)  // -> {ok, error?}  -- defaults to group.sourceId
+actionFire(actionId)          // -> {ok, error?}  -- triggers a project Action
 ```
+
+`deviceWrite` and `actionFire`: call from `onFrame()`, NOT `paint()`.
+`paint` runs every UI tick (~24 Hz); writing on every tick saturates the
+link. Use `onFrame()` (once per parsed frame) or guard with state.
 
 ## Color from theme
 

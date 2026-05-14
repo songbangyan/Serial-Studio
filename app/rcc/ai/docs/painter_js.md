@@ -93,7 +93,19 @@ tableGet(tableName, registerName)              // -> number | string
 tableSet(tableName, registerName, value)       // user-table writes only
 datasetGetRaw(uniqueId)                        // raw value of any dataset
 datasetGetFinal(uniqueId)                      // final value of any dataset
+
+// Closed-loop control APIs (shared with parsers and transforms)
+deviceWrite(data, sourceId?)                   // -> { ok, error? }
+actionFire(actionId)                           // -> { ok, error? }
 ```
+
+`deviceWrite`'s default `sourceId` follows the painter's group sourceId
+(updated automatically when the host group changes). `actionFire` fires a
+project Action by its stable `actionId`.
+
+**Call these from `onFrame()`, NOT `paint()`.** `paint` runs on every
+dashboard tick (24 Hz); a write per paint will saturate the link. Use
+`onFrame()` (one call per parsed frame) or guard with a state machine.
 
 ## Top-level state
 

@@ -38,6 +38,7 @@
 #include "CSV/Export.h"
 #include "DataModel/NotificationCenter.h"
 #include "DataModel/ProjectModel.h"
+#include "DataModel/Scripting/DeviceWriteApi.h"
 #include "DataModel/Scripting/FrameParser.h"
 #include "DataModel/Scripting/LuaCompat.h"
 #include "IO/ConnectionManager.h"
@@ -49,6 +50,7 @@
 #  include "IO/Drivers/Audio.h"
 #  include "Licensing/CommercialToken.h"
 #  include "Licensing/LemonSqueezy.h"
+#  include "MQTT/Publisher.h"
 #  include "Sessions/Export.h"
 #  include "Sessions/Player.h"
 #endif
@@ -114,10 +116,10 @@ void parseCsvValues(const QByteArray& data, QStringList& out, const int reserveH
 DataModel::FrameBuilder::FrameBuilder()
   : m_quickPlotChannels(-1)
   , m_quickPlotHasHeader(false)
-  , m_parseBudgetWindowStart(BudgetClock::time_point{})
-  , m_parseBudgetUsedNs(0)
   , m_parseBudgetSkipping(false)
   , m_parseBudgetWarned(false)
+  , m_parseBudgetUsedNs(0)
+  , m_parseBudgetWindowStart(BudgetClock::time_point{})
 {
   // JS transform watchdog -- flips interrupt flag to unwind runaway scripts.
   m_jsTransformWatchdog.setSingleShot(true);
@@ -216,6 +218,7 @@ void DataModel::FrameBuilder::syncFromProjectModel()
 
   clear_frame(m_frame);
   m_sourceFrames.clear();
+  m_sourceFrameCounters.clear();
 
   m_frame.title   = pm.title();
   m_frame.groups  = pm.groups();
@@ -347,6 +350,7 @@ void DataModel::FrameBuilder::onConnectedChanged()
   // Clear per-source frames and transform engines on disconnect
   if (!IO::ConnectionManager::instance().isConnected()) {
     m_sourceFrames.clear();
+    m_sourceFrameCounters.clear();
     destroyTransformEngines();
     m_tableStore.clear();
     return;
@@ -417,11 +421,16 @@ void DataModel::FrameBuilder::parseProjectFrame(const IO::CapturedDataPtr& data)
     if (channels.isEmpty()) [[unlikely]]
       continue;
 
-    applyDatasetValues(m_frame, channels, 0);
+    const auto frameTs = data->timestamp + step * i;
+    TransformFrameInfo info;
+    info.sourceId    = 0;
+    info.frameNumber = ++m_sourceFrameCounters[0];
+    info.timestampMs =
+      std::chrono::duration_cast<std::chrono::milliseconds>(frameTs.time_since_epoch()).count();
+    applyDatasetValues(m_frame, channels, info);
     // documented fan-out: one TimestampedFramePtr per parsed frame
     // code-verify off
-    hotpathTxFrame(
-      std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i));
+    hotpathTxFrame(std::make_shared<DataModel::TimestampedFrame>(m_frame, frameTs));
     // code-verify on
   }
 
@@ -453,11 +462,16 @@ void DataModel::FrameBuilder::parseProjectFrame(int sourceId, const IO::Captured
       continue;
 
     DataModel::Frame& srcFrame = ensureSourceFrame(sourceId);
-    applyDatasetValues(srcFrame, channels, sourceId);
+    const auto frameTs         = data->timestamp + step * i;
+    TransformFrameInfo info;
+    info.sourceId    = sourceId;
+    info.frameNumber = ++m_sourceFrameCounters[sourceId];
+    info.timestampMs =
+      std::chrono::duration_cast<std::chrono::milliseconds>(frameTs.time_since_epoch()).count();
+    applyDatasetValues(srcFrame, channels, info);
     // documented fan-out: one TimestampedFramePtr per parsed frame
     // code-verify off
-    hotpathTxFrame(
-      std::make_shared<DataModel::TimestampedFrame>(srcFrame, data->timestamp + step * i));
+    hotpathTxFrame(std::make_shared<DataModel::TimestampedFrame>(srcFrame, frameTs));
     // code-verify on
   }
 
@@ -620,7 +634,7 @@ DataModel::Frame& DataModel::FrameBuilder::ensureSourceFrame(int sourceId)
 void DataModel::FrameBuilder::applyDatasetValue(Dataset& dataset,
                                                 const QString* channelData,
                                                 int channelCount,
-                                                int sourceId)
+                                                const TransformFrameInfo& info)
 {
   if (dataset.virtual_) {
     dataset.numericValue = 0.0;
@@ -644,8 +658,7 @@ void DataModel::FrameBuilder::applyDatasetValue(Dataset& dataset,
 
   if (!dataset.transformCode.isEmpty() && !SerialStudio::isFinalValuePlayerOpen()) [[unlikely]] {
     const auto input = dataset.isNumeric ? QVariant(dataset.numericValue) : QVariant(dataset.value);
-    const auto result =
-      applyTransform(sourceId, dataset.transformLanguage, dataset.uniqueId, input);
+    const auto result = applyTransform(dataset.transformLanguage, dataset.uniqueId, input, info);
 
     if (result.typeId() == QMetaType::Double) {
       dataset.numericValue = result.toDouble();
@@ -667,7 +680,7 @@ void DataModel::FrameBuilder::applyDatasetValue(Dataset& dataset,
  */
 void DataModel::FrameBuilder::applyDatasetValues(DataModel::Frame& frame,
                                                  const QStringList& channels,
-                                                 int sourceId)
+                                                 const TransformFrameInfo& info)
 {
   const auto* channelData = channels.data();
   const int channelCount  = channels.size();
@@ -677,7 +690,7 @@ void DataModel::FrameBuilder::applyDatasetValues(DataModel::Frame& frame,
 
   for (auto& group : frame.groups)
     for (auto& dataset : group.datasets)
-      applyDatasetValue(dataset, channelData, channelCount, sourceId);
+      applyDatasetValue(dataset, channelData, channelCount, info);
 }
 
 /**
@@ -747,6 +760,19 @@ void DataModel::FrameBuilder::parseQuickPlotFrame(const IO::CapturedDataPtr& dat
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Builds the synthetic source row that anchors a QuickPlot frame. Always returns a
+ *        non-null title so downstream exporters bound to NOT NULL columns don't reject the row.
+ */
+DataModel::Source DataModel::FrameBuilder::makeQuickPlotSource() const
+{
+  DataModel::Source src;
+  src.sourceId = 0;
+  src.title    = tr("Device A");
+  src.busType  = static_cast<int>(IO::ConnectionManager::instance().busType());
+  return src;
+}
+
+/**
  * @brief Rebuilds the Quick Plot frame structure when the channel count changes.
  */
 void DataModel::FrameBuilder::buildQuickPlotFrame(const QStringList& channels)
@@ -787,6 +813,7 @@ void DataModel::FrameBuilder::buildQuickPlotFrame(const QStringList& channels)
 
   clear_frame(m_quickPlotFrame);
   m_quickPlotFrame.title = tr("Quick Plot");
+  m_quickPlotFrame.sources.push_back(makeQuickPlotSource());
 
   DataModel::Group datagrid;
   datagrid.groupId  = 0;
@@ -904,6 +931,7 @@ void DataModel::FrameBuilder::buildQuickPlotAudioFrame(const QStringList& channe
 
   clear_frame(m_quickPlotFrame);
   m_quickPlotFrame.title = tr("Quick Plot");
+  m_quickPlotFrame.sources.push_back(makeQuickPlotSource());
   m_quickPlotFrame.groups.push_back(group);
   finalize_frame(m_quickPlotFrame);
 #else
@@ -937,6 +965,9 @@ void DataModel::FrameBuilder::hotpathTxFrame(const DataModel::TimestampedFramePt
 #ifdef BUILD_COMMERCIAL
   static auto& sqliteExport = Sessions::Export::instance();
   sqliteExport.hotpathTxFrame(frame);
+
+  static auto& mqttPublisher = MQTT::Publisher::instance();
+  mqttPublisher.hotpathTxFrame(frame);
 #endif
 
 #ifdef ENABLE_GRPC
@@ -996,11 +1027,9 @@ void DataModel::FrameBuilder::transformLuaWatchdogHook(lua_State* L, lua_Debug* 
   auto* engine = static_cast<TransformEngine*>(lua_touserdata(L, -1));
   lua_pop(L, 1);
 
-  // Defensive -- registry entry should always be present for our states
   if (!engine) [[unlikely]]
     return;
 
-  // Abort the current Lua call if the per-call deadline has expired
   if (engine->luaDeadline.hasExpired()) [[unlikely]]
     luaL_error(L, "transform timed out after %d ms", kTransformWatchdogMs);
 }
@@ -1036,9 +1065,9 @@ void DataModel::FrameBuilder::compileTransforms()
     TransformEngine& engine = it->second;
 
     if (key.language == SerialStudio::Lua)
-      compileTransformsLua(engine, entries);
+      compileTransformsLua(engine, key.sourceId, entries);
     else
-      compileTransformsJS(engine, entries);
+      compileTransformsJS(engine, key.sourceId, entries);
 
     // Drop empty entries when compilation produced nothing usable
     if (!engine.luaState && !engine.jsEngine)
@@ -1051,6 +1080,7 @@ void DataModel::FrameBuilder::compileTransforms()
  * lookup.
  */
 void DataModel::FrameBuilder::compileTransformsLua(TransformEngine& engine,
+                                                   int sourceId,
                                                    const std::vector<TransformEntry>& entries)
 {
   lua_State* L = luaL_newstate();
@@ -1072,6 +1102,12 @@ void DataModel::FrameBuilder::compileTransformsLua(TransformEngine& engine,
 
   // Inject table/dataset/variant API before any user code runs
   injectTableApiLua(L);
+
+  // Expose deviceWrite(data, sourceId?) for closed-loop control from transforms
+  DataModel::DeviceWriteApi::installLua(L, sourceId);
+
+  // Expose actionFire(actionId) for firing dashboard actions from transforms
+  DataModel::ActionFireApi::installLua(L);
 
   // Notification API -- gated internally on the active license tier
   DataModel::NotificationCenter::installScriptApi(L);
@@ -1146,12 +1182,19 @@ void DataModel::FrameBuilder::compileTransformsLua(TransformEngine& engine,
  * for isolation.
  */
 void DataModel::FrameBuilder::compileTransformsJS(TransformEngine& engine,
+                                                  int sourceId,
                                                   const std::vector<TransformEntry>& entries)
 {
   auto* js = new QJSEngine();
 
   // Inject table/dataset/variant API before any user code runs
   injectTableApiJS(js);
+
+  // Expose deviceWrite(data, sourceId?) for closed-loop control from transforms
+  DataModel::DeviceWriteApi::installJS(js, sourceId);
+
+  // Expose actionFire(actionId) for firing dashboard actions from transforms
+  DataModel::ActionFireApi::installJS(js);
 
   // Notification API -- gated internally on the active license tier
   DataModel::NotificationCenter::installScriptApi(js);
@@ -1222,24 +1265,24 @@ void DataModel::FrameBuilder::destroyTransformEngines()
  * @brief Applies the pre-compiled transform for a dataset; returns @p rawValue on error or missing
  * transform.
  */
-QVariant DataModel::FrameBuilder::applyTransform(int sourceId,
-                                                 int language,
+QVariant DataModel::FrameBuilder::applyTransform(int language,
                                                  int uniqueId,
-                                                 const QVariant& rawValue)
+                                                 const QVariant& rawValue,
+                                                 const TransformFrameInfo& info)
 {
-  Q_ASSERT(sourceId >= 0);
+  Q_ASSERT(info.sourceId >= 0);
   Q_ASSERT(uniqueId >= 0);
 
-  auto engineIt = m_transformEngines.find({sourceId, language});
+  auto engineIt = m_transformEngines.find({info.sourceId, language});
   if (engineIt == m_transformEngines.end())
     return rawValue;
 
   auto& engine = engineIt->second;
   if (engine.luaState)
-    return applyTransformLua(engine, uniqueId, rawValue);
+    return applyTransformLua(engine, uniqueId, rawValue, info);
 
   if (engine.jsEngine)
-    return applyTransformJs(engine, uniqueId, rawValue);
+    return applyTransformJs(engine, uniqueId, rawValue, info);
 
   return rawValue;
 }
@@ -1249,7 +1292,8 @@ QVariant DataModel::FrameBuilder::applyTransform(int sourceId,
  */
 QVariant DataModel::FrameBuilder::applyTransformLua(TransformEngine& engine,
                                                     int uniqueId,
-                                                    const QVariant& rawValue)
+                                                    const QVariant& rawValue,
+                                                    const TransformFrameInfo& info)
 {
   auto refIt = engine.luaRefs.find(uniqueId);
   if (refIt == engine.luaRefs.end())
@@ -1268,9 +1312,18 @@ QVariant DataModel::FrameBuilder::applyTransformLua(TransformEngine& engine,
       lua_pushlstring(L, utf8.constData(), static_cast<size_t>(utf8.size()));
     }
 
+    // 2nd arg: { frameNumber, sourceId, timestampMs } -- ignored by 1-arg transforms.
+    lua_createtable(L, 0, 3);
+    lua_pushinteger(L, static_cast<lua_Integer>(info.frameNumber));
+    lua_setfield(L, -2, "frameNumber");
+    lua_pushinteger(L, info.sourceId);
+    lua_setfield(L, -2, "sourceId");
+    lua_pushinteger(L, static_cast<lua_Integer>(info.timestampMs));
+    lua_setfield(L, -2, "timestampMs");
+
     int pcallStatus = LUA_ERRRUN;
     try {
-      pcallStatus = lua_pcall(L, 1, 1, 0);
+      pcallStatus = lua_pcall(L, 2, 1, 0);
     } catch (...) {
       qWarning() << "[FrameBuilder] Uncaught exception escaped lua_pcall in transform for"
                  << uniqueId;
@@ -1324,7 +1377,8 @@ QVariant DataModel::FrameBuilder::applyTransformLua(TransformEngine& engine,
  */
 QVariant DataModel::FrameBuilder::applyTransformJs(TransformEngine& engine,
                                                    int uniqueId,
-                                                   const QVariant& rawValue)
+                                                   const QVariant& rawValue,
+                                                   const TransformFrameInfo& info)
 {
   auto refIt = engine.jsRefs.find(uniqueId);
   if (refIt == engine.jsRefs.end())
@@ -1338,6 +1392,15 @@ QVariant DataModel::FrameBuilder::applyTransformJs(TransformEngine& engine,
     args << QJSValue(rawValue.toDouble());
   else
     args << QJSValue(rawValue.toString());
+
+  // 2nd arg: { frameNumber, sourceId, timestampMs } -- ignored by 1-arg transforms.
+  QJSValue jsInfo = engine.jsEngine->newObject();
+  jsInfo.setProperty(QStringLiteral("frameNumber"),
+                     QJSValue(static_cast<double>(info.frameNumber)));
+  jsInfo.setProperty(QStringLiteral("sourceId"), QJSValue(info.sourceId));
+  jsInfo.setProperty(QStringLiteral("timestampMs"),
+                     QJSValue(static_cast<double>(info.timestampMs)));
+  args << jsInfo;
 
   auto result = refIt->second.call(args);
   m_jsTransformWatchdog.stop();
@@ -1493,6 +1556,33 @@ static int luaDatasetGetFinal(lua_State* L)
   return 1;
 }
 
+#ifdef BUILD_COMMERCIAL
+/**
+ * @brief Lua C function for mqttPublish(topic, payload, qos?, retain?).
+ */
+static int luaMqttPublish(lua_State* L)
+{
+  const char* topic = luaL_checkstring(L, 1);
+
+  size_t len            = 0;
+  const char* payload_d = luaL_checklstring(L, 2, &len);
+
+  int qos = 0;
+  if (lua_gettop(L) >= 3 && !lua_isnil(L, 3))
+    qos = static_cast<int>(luaL_checkinteger(L, 3));
+
+  bool retain = false;
+  if (lua_gettop(L) >= 4 && !lua_isnil(L, 4))
+    retain = lua_toboolean(L, 4) != 0;
+
+  const auto id = MQTT::Publisher::instance().mqttPublish(
+    QString::fromUtf8(topic), QByteArray(payload_d, static_cast<qsizetype>(len)), qos, retain);
+
+  lua_pushinteger(L, static_cast<lua_Integer>(id));
+  return 1;
+}
+#endif
+
 /**
  * @brief Injects tableGet / tableSet / datasetGetRaw / datasetGetFinal into the Lua state as C
  * closures.
@@ -1501,7 +1591,6 @@ void DataModel::FrameBuilder::injectTableApiLua(lua_State* L)
 {
   Q_ASSERT(L);
 
-  // Identical camelCase globals across Lua and JS for cross-language portability.
   lua_pushlightuserdata(L, &m_tableStore);
   lua_pushcclosure(L, luaTableGet, 1);
   lua_setglobal(L, "tableGet");
@@ -1517,6 +1606,11 @@ void DataModel::FrameBuilder::injectTableApiLua(lua_State* L)
   lua_pushlightuserdata(L, &m_tableStore);
   lua_pushcclosure(L, luaDatasetGetFinal, 1);
   lua_setglobal(L, "datasetGetFinal");
+
+#ifdef BUILD_COMMERCIAL
+  lua_pushcfunction(L, luaMqttPublish);
+  lua_setglobal(L, "mqttPublish");
+#endif
 }
 
 /**
@@ -1536,9 +1630,15 @@ void DataModel::FrameBuilder::injectTableApiJS(QJSEngine* js)
   global.setProperty(QStringLiteral("__ss"), bridgeVal);
 
   // Thin JS wrappers so user code calls clean function names
-  js->evaluate(
+  QString jsApi =
     QStringLiteral("function tableGet(t, r)       { return __ss.tableGet(t, r); }\n"
                    "function tableSet(t, r, v)    { __ss.tableSet(t, r, v); }\n"
                    "function datasetGetRaw(uid)   { return __ss.datasetGetRaw(uid); }\n"
-                   "function datasetGetFinal(uid) { return __ss.datasetGetFinal(uid); }\n"));
+                   "function datasetGetFinal(uid) { return __ss.datasetGetFinal(uid); }\n");
+#ifdef BUILD_COMMERCIAL
+  jsApi +=
+    QStringLiteral("function mqttPublish(t, p, q, r) { return __ss.mqttPublish(t, p, q, r); }\n");
+#endif
+
+  js->evaluate(jsApi);
 }

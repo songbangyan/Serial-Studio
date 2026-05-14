@@ -71,10 +71,11 @@ struct ExportSchema {
 
     for (const auto& dataset : group.datasets) {
       ExportColumn col;
-      col.uniqueId    = dataset.uniqueId;
-      col.groupId     = group.groupId;
-      col.sourceId    = dataset.sourceId;
-      col.sourceTitle = sourceTitles.value(dataset.sourceId);
+      col.uniqueId = dataset.uniqueId;
+      col.groupId  = group.groupId;
+      col.sourceId = dataset.sourceId;
+      // SQLite source_title is NOT NULL; bind "" rather than a null QString
+      col.sourceTitle = sourceTitles.value(dataset.sourceId, QStringLiteral(""));
       col.groupTitle  = group.title;
       col.title       = dataset.title;
       col.units       = dataset.units;

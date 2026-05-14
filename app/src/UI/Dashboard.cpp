@@ -33,7 +33,6 @@
 
 #ifdef BUILD_COMMERCIAL
 #  include "Licensing/CommercialToken.h"
-#  include "MQTT/Client.h"
 #  include "Sessions/Player.h"
 #endif
 
@@ -185,21 +184,7 @@ UI::Dashboard::Dashboard()
   }, Qt::QueuedConnection);
   // clang-format on
 
-  // Reset dashboard data if MQTT client is subscribed
 #ifdef BUILD_COMMERCIAL
-  connect(
-    &MQTT::Client::instance(),
-    &MQTT::Client::connectedChanged,
-    this,
-    [=, this] {
-      const bool subscribed = MQTT::Client::instance().isSubscriber();
-      const bool wasSubscribed =
-        !MQTT::Client::instance().isConnected() && MQTT::Client::instance().isSubscriber();
-
-      if (subscribed || wasSubscribed)
-        resetData(true);
-    },
-    Qt::QueuedConnection);
   connect(
     &Sessions::Player::instance(),
     &Sessions::Player::openChanged,
@@ -290,11 +275,9 @@ bool UI::Dashboard::streamAvailable() const
   const bool devOpen = manager.isConnected();
 
 #ifdef BUILD_COMMERCIAL
-  static auto& mqtt        = MQTT::Client::instance();
-  static auto& sessPlayer  = Sessions::Player::instance();
-  const bool mqttConnected = mqtt.isConnected() && mqtt.isSubscriber();
-  const bool sessOpen      = sessPlayer.isOpen();
-  return devOpen || csvOpen || mqttConnected || mf4Open || sessOpen;
+  static auto& sessPlayer = Sessions::Player::instance();
+  const bool sessOpen     = sessPlayer.isOpen();
+  return devOpen || csvOpen || mf4Open || sessOpen;
 #else
   return devOpen || csvOpen || mf4Open;
 #endif
@@ -465,6 +448,18 @@ QVariantList UI::Dashboard::actions() const
   }
 
   return actions;
+}
+
+/**
+ * @brief Returns the runtime index of the action with the given public @p actionId, or -1.
+ */
+int UI::Dashboard::actionIndexForId(int actionId) const noexcept
+{
+  for (int i = 0; i < m_actions.count(); ++i)
+    if (m_actions.at(i).actionId == actionId)
+      return i;
+
+  return -1;
 }
 
 /**
@@ -1229,11 +1224,6 @@ void UI::Dashboard::handleMissingDataset(const DataModel::Frame& frame)
     }
 
 #ifdef BUILD_COMMERCIAL
-    if (MQTT::Client::instance().isConnected()) {
-      MQTT::Client::instance().closeConnection();
-      return;
-    }
-
     if (Sessions::Player::instance().isOpen()) {
       Sessions::Player::instance().closeFile();
       return;

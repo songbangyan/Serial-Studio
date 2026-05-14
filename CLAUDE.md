@@ -75,7 +75,7 @@ app/src/
 ├── Console/         Terminal + export
 ├── CSV/ MDF4/       File playback & export
 ├── Sessions/  (Pro) DatabaseManager + SQLite::Export + SQLite::Player
-├── MQTT/            MQTT client
+├── MQTT/            Publisher (FrameConsumer-based, threaded, rate-limited 1-30 Hz)
 ├── Licensing/       LemonSqueezy, Trial, MachineID, CommercialToken (FeatureTier)
 ├── Platform/        CSD, NativeWindow
 ├── Misc/            JsonValidator, ThemeManager, ModuleManager

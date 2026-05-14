@@ -85,7 +85,7 @@
 #  include "Licensing/LemonSqueezy.h"
 #  include "Licensing/Trial.h"
 #  include "Misc/ShortcutGenerator.h"
-#  include "MQTT/Client.h"
+#  include "MQTT/Publisher.h"
 #  include "Sessions/DatabaseManager.h"
 #  include "Sessions/Export.h"
 #  include "Sessions/Player.h"
@@ -427,6 +427,7 @@ void Misc::ModuleManager::setupCrossModuleConnections()
 #ifdef BUILD_COMMERCIAL
   Sessions::Export::instance().setupExternalConnections();
   Sessions::DatabaseManager::instance().setupExternalConnections();
+  MQTT::Publisher::instance().setupExternalConnections();
 #endif
 
   connect(miscExtensionManager,
@@ -517,10 +518,11 @@ void Misc::ModuleManager::registerCommercialContextProperties(QQmlContext* ctx)
   ctx->setContextProperty("Cpp_IO_USB", ioManager->usb());
   ctx->setContextProperty("Cpp_IO_HID", ioManager->hid());
   ctx->setContextProperty("Cpp_IO_Process", ioManager->process());
+  ctx->setContextProperty("Cpp_IO_Mqtt", ioManager->mqtt());
+  ctx->setContextProperty("Cpp_MQTT_Publisher", &MQTT::Publisher::instance());
   ctx->setContextProperty("Cpp_JSON_DBCImporter", &DataModel::DBCImporter::instance());
   ctx->setContextProperty("Cpp_JSON_ModbusMapImporter", &DataModel::ModbusMapImporter::instance());
   ctx->setContextProperty("Cpp_Licensing_Trial", &Licensing::Trial::instance());
-  ctx->setContextProperty("Cpp_MQTT_Client", &MQTT::Client::instance());
   ctx->setContextProperty("Cpp_Licensing_LemonSqueezy", &Licensing::LemonSqueezy::instance());
   ctx->setContextProperty("Cpp_Sessions_Export", &Sessions::Export::instance());
   ctx->setContextProperty("Cpp_Sessions_Player", &Sessions::Player::instance());

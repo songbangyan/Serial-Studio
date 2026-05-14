@@ -122,6 +122,7 @@ public:
 
   [[nodiscard]] const QString& title() const;
   [[nodiscard]] QVariantList actions() const;
+  [[nodiscard]] int actionIndexForId(int actionId) const noexcept;
   [[nodiscard]] const SerialStudio::WidgetMap& widgetMap() const;
 
   // clang-format off

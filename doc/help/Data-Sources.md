@@ -2,9 +2,9 @@
 
 ## Overview
 
-Serial Studio connects to hardware and software data sources through nine driver types. Three ship in the free GPL edition; six more need a Pro license. Each driver feeds raw bytes into the frame-parsing pipeline. You pick the active driver in the Setup panel, or (for multi-device projects) in the Project Editor.
+Serial Studio connects to hardware and software data sources through ten driver types. Three ship in the free GPL edition; seven more need a Pro license. Each driver feeds raw bytes into the frame-parsing pipeline. You pick the active driver in the Setup panel, or (for multi-device projects) in the Project Editor.
 
-For protocol theory, wire framing, and educational primers on each driver, see the dedicated **Drivers** section: [UART](Drivers-UART.md), [Network](Drivers-Network.md), [Bluetooth LE](Drivers-Bluetooth-LE.md), [Modbus](Drivers-Modbus.md), [CAN Bus](Drivers-CAN-Bus.md), [Audio](Drivers-Audio.md), [Raw USB](Drivers-USB.md), [HID](Drivers-HID.md), and [Process I/O](Drivers-Process-IO.md). MQTT is documented under **Connectivity** as [MQTT Integration](MQTT-Integration.md) — it sits on top of TCP and a broker, not a hardware bus.
+For protocol theory, wire framing, and educational primers on each driver, see the dedicated **Drivers** section: [UART](Drivers-UART.md), [Network](Drivers-Network.md), [Bluetooth LE](Drivers-Bluetooth-LE.md), [Modbus](Drivers-Modbus.md), [CAN Bus](Drivers-CAN-Bus.md), [Audio](Drivers-Audio.md), [Raw USB](Drivers-USB.md), [HID](Drivers-HID.md), [Process I/O](Drivers-Process-IO.md), and [MQTT Subscriber](Drivers-MQTT.md). The protocol vocabulary that the MQTT driver assumes (topics, wildcards, QoS, retained messages) lives in [MQTT Topics & Semantics](MQTT-Topics.md) under **Connectivity**; the outbound side is the per-project [MQTT Publisher](MQTT-Publisher.md).
 
 The diagram below shows how each driver type feeds into the data pipeline.
 
@@ -14,7 +14,7 @@ flowchart TD
         F1["UART · TCP/UDP · BLE"]
     end
     subgraph Pro["Pro"]
-        P1["Audio · Modbus · CAN<br/>USB · HID · Process"]
+        P1["Audio · Modbus · CAN<br/>USB · HID · Process · MQTT"]
     end
     F1 --> FR["Frame Reader"]
     P1 --> FR
@@ -114,7 +114,7 @@ Connects to BLE peripherals using GATT service/characteristic subscriptions. A g
 
 ## Pro drivers
 
-The next six drivers need a Serial Studio Pro license.
+The next seven drivers need a Serial Studio Pro license.
 
 ### Audio input
 
@@ -314,6 +314,38 @@ Reads data from a child process's stdout or from a named pipe/FIFO. Any script o
 - If the child process crashes, Serial Studio prints a warning and disconnects.
 - Use Named Pipe mode when you want to connect to a long-running external process without Serial Studio managing its lifecycle.
 
+### MQTT subscriber
+
+Subscribes to a broker topic filter and feeds each received payload into the frame pipeline as if the bytes had arrived over UART or TCP. The right transport when the telemetry is already on a broker, or when several Serial Studio instances need to consume the same data without each one talking to the device directly.
+
+**Configuration:**
+
+| Parameter         | Description                                                              |
+|-------------------|--------------------------------------------------------------------------|
+| Hostname          | Broker address (IP or hostname). Default `127.0.0.1`.                    |
+| Port              | Broker port. `1883` plaintext, `8883` TLS.                               |
+| Client ID         | Identifier sent on CONNECT. Auto-generated; **Regenerate** picks a new one.|
+| Username/Password | Optional broker authentication.                                          |
+| Topic filter      | Topic to subscribe to. Supports `+` (one level) and `#` (rest) wildcards. |
+| MQTT version      | 3.1, 3.1.1, or 5.0.                                                      |
+| Clean session     | Discard persistent session state on CONNECT. Default on.                 |
+| Keep alive        | Seconds between PING packets when idle.                                  |
+| SSL / TLS         | Master toggle, protocol family, peer-verify mode, peer-verify depth.     |
+| CA certificates   | Load extra PEM certificates for self-signed brokers.                     |
+
+**Quick start:**
+
+1. Select MQTT Subscriber as the bus type for a source.
+2. Enter broker hostname, port, and credentials.
+3. Set the topic filter to the topic the device publishes on (or a wildcard pattern that covers it).
+4. Click **Connect**. Incoming messages are routed to the project's frame parser.
+
+**Tips:**
+
+- One MQTT message is one chunk of bytes. The broker preserves payload boundaries, so each publish usually becomes one frame and **No Delimiters** is a common choice.
+- A wildcard filter like `sensors/+/temp` multiplexes many publishers onto a single source. If you need to tell them apart, encode the publisher's identity in the payload or use one source per publisher.
+- See [MQTT Subscriber](Drivers-MQTT.md) for the full protocol primer and [MQTT Topics & Semantics](MQTT-Topics.md) for the topic / wildcard / QoS reference.
+
 ## Multi-device mode
 
 When a project file defines multiple sources, Serial Studio runs in multi-device mode. Each source sets its own bus type, connection settings, frame delimiters, and (optionally) JavaScript parser.
@@ -346,3 +378,4 @@ When a project file defines multiple sources, Serial Studio runs in multi-device
 | Raw USB       | Missing udev rules (Linux) or kernel driver conflict (macOS). Check endpoints. |
 | HID device    | Device claimed by another application. Add udev rules on Linux.                |
 | Process I/O   | Executable not found or stdout buffered. Use `-u` for Python; check the path.  |
+| MQTT          | Broker unreachable, wrong topic filter, or client-ID collision. Run **Test Connection** on the [MQTT Publisher](MQTT-Publisher.md) page to probe credentials. |

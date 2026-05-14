@@ -31,6 +31,7 @@
 
 #include "DataModel/FrameBuilder.h"
 #include "DataModel/NotificationCenter.h"
+#include "DataModel/Scripting/DeviceWriteApi.h"
 #include "DataModel/Scripting/LuaCompat.h"
 #include "Misc/Utilities.h"
 
@@ -119,6 +120,7 @@ DataModel::LuaScriptEngine::LuaScriptEngine()
   : m_state(nullptr)
   , m_loaded(false)
   , m_disabled(false)
+  , m_sourceId(0)
   , m_consecutiveTimeouts(0)
   , m_deadline(QDeadlineTimer::Forever)
 {
@@ -160,6 +162,12 @@ void DataModel::LuaScriptEngine::createState()
 
   // Expose tableGet / tableSet / datasetGetRaw / datasetGetFinal
   DataModel::FrameBuilder::instance().injectTableApiLua(m_state);
+
+  // Expose deviceWrite(data, sourceId?) bound to this engine's source by default
+  DataModel::DeviceWriteApi::installLua(m_state, m_sourceId);
+
+  // Expose actionFire(actionId) for firing dashboard actions from the parser
+  DataModel::ActionFireApi::installLua(m_state);
 
   // Store 'this' pointer in the Lua registry for the watchdog hook
   lua_pushlightuserdata(m_state, this);
@@ -288,6 +296,7 @@ bool DataModel::LuaScriptEngine::loadScript(const QString& script,
   Q_ASSERT(!script.isEmpty());
 
   destroyState();
+  m_sourceId = sourceId;
   createState();
 
   const QByteArray utf8 = script.toUtf8();

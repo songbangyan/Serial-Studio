@@ -15,6 +15,9 @@ pytest-cov>=4.1.0
 # Network testing
 requests>=2.31.0
 
+# MQTT broker client for publisher/scripting tests
+paho-mqtt>=2.0.0
+
 # Data generation and validation
 faker>=19.0.0
 

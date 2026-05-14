@@ -167,6 +167,67 @@ arithmetic, single `tableGet` calls, branchless math. Avoid:
 - Allocating arrays / objects per call
 - Try/catch in the hot path
 
+## Frame metadata — second `info` argument
+
+```js
+function transform(value, info) {
+  // info.frameNumber : number, per-source counter (1-based, monotonic)
+  // info.sourceId    : number
+  // info.timestampMs : number, monotonic ms (steady clock, NOT wall clock)
+}
+```
+
+One-arg transforms keep working (JS ignores extra args). `timestampMs` is
+a monotonic counter — use deltas, not absolute time. Per-dataset state
+goes in a top-level `let` (IIFE-private):
+
+```js
+let lastTs = 0;
+function transform(v, info) {
+  if (info.timestampMs - lastTs >= 100) {
+    lastTs = info.timestampMs;
+    deviceWrite("PING\n");
+  }
+  return v;
+}
+```
+
+## Firing project actions — `actionFire()`
+
+```js
+actionFire(actionId) -> { ok: true } | { ok: false, error: "..." }
+```
+
+Triggers an existing project Action by its stable `actionId` (NOT its
+index). Reuses the action's prebuilt payload, encoding, and timer mode.
+Calls are logged `[actionFire] id=N index=M ok`.
+
+## Device output — `deviceWrite()`
+
+```js
+deviceWrite(data, sourceId?) -> { ok: true } | { ok: false, error: "..." }
+```
+
+- `data` is a string (UTF-8 on the wire) or an array of byte values (0–255).
+- `sourceId` is optional; default is the source the dataset belongs to.
+- Synchronous, fire-and-forget. Never throws. Logged as
+  `[deviceWrite] source=N bytes=M written=K`.
+
+Use for **closed-loop control**: react to a sensor reading by pushing a
+setpoint, alarm, or request back to the device. Latch repeated actions in
+a top-level `let` (the IIFE wrap keeps it private per dataset).
+
+```js
+let triggered = false;
+function transform(value) {
+  if (!triggered && value > 100) {
+    const r = deviceWrite("ALARM=1\n");
+    if (r.ok) triggered = true;
+  }
+  return value;
+}
+```
+
 ## Errors
 
 Returning `NaN` or `Infinity` falls back to the raw value silently. Throwing

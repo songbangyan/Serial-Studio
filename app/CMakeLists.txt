@@ -282,6 +282,7 @@ set(SOURCES
   src/DataModel/Scripting/JsWatchdog.cpp
   src/DataModel/Scripting/LuaScriptEngine.cpp
   src/DataModel/Scripting/LuaCompat.cpp
+  src/DataModel/Scripting/DeviceWriteApi.cpp
   src/DataModel/Scripting/ScriptTemplates.cpp
   src/DataModel/Editors/JsCodeEditor.cpp
   src/DataModel/Editors/CodeFormatter.cpp
@@ -392,6 +393,7 @@ set(HEADERS
   src/DataModel/Scripting/JsWatchdog.h
   src/DataModel/Scripting/LuaScriptEngine.h
   src/DataModel/Scripting/LuaCompat.h
+  src/DataModel/Scripting/DeviceWriteApi.h
   src/DataModel/Scripting/ScriptTemplates.h
   src/DataModel/Editors/JsCodeEditor.h
   src/DataModel/Editors/CodeFormatter.h
@@ -534,7 +536,6 @@ if(BUILD_COMMERCIAL)
     ${HEADERS}
     src/API/Handlers/ModbusHandler.h
     src/API/Handlers/CANBusHandler.h
-    src/API/Handlers/MQTTHandler.h
     src/API/Handlers/MDF4ExportHandler.h
     src/API/Handlers/AudioHandler.h
     src/API/Handlers/MDF4PlayerHandler.h
@@ -543,13 +544,14 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/NotificationsHandler.h
     src/API/Handlers/ProcessHandler.h
     src/API/Handlers/SessionsHandler.h
-    src/MQTT/Client.h
+    src/MQTT/Publisher.h
     src/IO/Drivers/Audio.h
     src/IO/Drivers/CANBus.h
     src/IO/Drivers/Modbus.h
     src/IO/Drivers/HID.h
     src/IO/Drivers/USB.h
     src/IO/Drivers/Process.h
+    src/IO/Drivers/MQTT.h
     src/UI/Widgets/Plot3D.h
     src/UI/Widgets/ImageView.h
     src/UI/Widgets/ImageExport.h
@@ -609,7 +611,6 @@ if(BUILD_COMMERCIAL)
     ${SOURCES}
     src/API/Handlers/ModbusHandler.cpp
     src/API/Handlers/CANBusHandler.cpp
-    src/API/Handlers/MQTTHandler.cpp
     src/API/Handlers/MDF4ExportHandler.cpp
     src/API/Handlers/AudioHandler.cpp
     src/API/Handlers/MDF4PlayerHandler.cpp
@@ -619,13 +620,14 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/LicensingHandler.cpp
     src/API/Handlers/NotificationsHandler.cpp
     src/API/Handlers/SessionsHandler.cpp
-    src/MQTT/Client.cpp
+    src/MQTT/Publisher.cpp
     src/IO/Drivers/Audio.cpp
     src/IO/Drivers/CANBus.cpp
     src/IO/Drivers/Modbus.cpp
     src/IO/Drivers/HID.cpp
     src/IO/Drivers/USB.cpp
     src/IO/Drivers/Process.cpp
+    src/IO/Drivers/MQTT.cpp
     src/UI/Widgets/Plot3D.cpp
     src/UI/Widgets/ImageView.cpp
     src/UI/Widgets/ImageExport.cpp
@@ -691,7 +693,6 @@ if(BUILD_COMMERCIAL)
   set(QML_SOURCES
     ${QML_SOURCES}
     qml/Dialogs/LicenseManagement.qml
-    qml/Dialogs/MQTTConfiguration.qml
     qml/Dialogs/ShortcutGenerator.qml
     qml/Dialogs/RuntimeReconfigure.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml
@@ -701,6 +702,8 @@ if(BUILD_COMMERCIAL)
     qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml
+    qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml
+    qml/ProjectEditor/Views/MqttPublisherView.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml

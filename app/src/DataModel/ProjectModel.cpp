@@ -52,7 +52,6 @@
 #include "UI/Dashboard.h"
 
 #ifdef BUILD_COMMERCIAL
-#  include "MQTT/Client.h"
 #endif
 
 /**
@@ -860,6 +859,27 @@ const std::vector<DataModel::TableDef>& DataModel::ProjectModel::tables() const 
 }
 
 /**
+ * @brief Returns the project's MQTT publisher configuration (empty when unset).
+ */
+const QJsonObject& DataModel::ProjectModel::mqttPublisher() const noexcept
+{
+  return m_mqttPublisher;
+}
+
+/**
+ * @brief Replaces the MQTT publisher configuration and marks the project as modified.
+ */
+void DataModel::ProjectModel::setMqttPublisher(const QJsonObject& config)
+{
+  if (m_mqttPublisher == config)
+    return;
+
+  m_mqttPublisher = config;
+  setModified(true);
+  Q_EMIT mqttPublisherChanged();
+}
+
+/**
  * @brief Stages a single widget setting and marks the project dirty.
  */
 void DataModel::ProjectModel::saveWidgetSetting(const QString& widgetId,
@@ -1390,6 +1410,9 @@ QJsonObject DataModel::ProjectModel::serializeToJson() const
   if (!m_widgetSettings.isEmpty())
     json.insert(Keys::WidgetSettings, m_widgetSettings);
 
+  if (!m_mqttPublisher.isEmpty())
+    json.insert(Keys::MqttPublisher, m_mqttPublisher);
+
   return json;
 }
 
@@ -1449,13 +1472,6 @@ void DataModel::ProjectModel::setupExternalConnections()
       if (!IO::ConnectionManager::instance().isConnected())
         clearTransientState();
     });
-
-#ifdef BUILD_COMMERCIAL
-  connect(&MQTT::Client::instance(), &MQTT::Client::connectedChanged, this, [this] {
-    if (!MQTT::Client::instance().isConnected())
-      clearTransientState();
-  });
-#endif
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -2131,6 +2147,10 @@ void DataModel::ProjectModel::loadWidgetSettingsAndWorkspaces(const QJsonObject&
         m_tables.push_back(table);
     }
   }
+
+  // Deserialize MQTT publisher config (Pro)
+  m_mqttPublisher = json.value(Keys::MqttPublisher).toObject();
+  Q_EMIT mqttPublisherChanged();
 }
 
 /**
@@ -5584,6 +5604,11 @@ void DataModel::ProjectModel::clearTransientState()
   if (!m_widgetSettings.isEmpty()) {
     m_widgetSettings = QJsonObject();
     Q_EMIT widgetSettingsChanged();
+  }
+
+  if (!m_mqttPublisher.isEmpty()) {
+    m_mqttPublisher = QJsonObject();
+    Q_EMIT mqttPublisherChanged();
   }
 
   setModified(false);

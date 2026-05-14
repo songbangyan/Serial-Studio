@@ -40,13 +40,14 @@
 #  include "IO/Drivers/CANBus.h"
 #  include "IO/Drivers/HID.h"
 #  include "IO/Drivers/Modbus.h"
+#  include "IO/Drivers/MQTT.h"
 #  include "IO/Drivers/Process.h"
 #  include "IO/Drivers/USB.h"
 #  include "Licensing/CommercialToken.h"
 #  include "Licensing/LemonSqueezy.h"
 #  include "Licensing/Trial.h"
 #  include "Misc/Utilities.h"
-#  include "MQTT/Client.h"
+#  include "MQTT/Publisher.h"
 #  include "Sessions/Export.h"
 #endif
 
@@ -75,6 +76,7 @@ IO::ConnectionManager::ConnectionManager()
   , m_audioUi(std::make_unique<IO::Drivers::Audio>())
   , m_canBusUi(std::make_unique<IO::Drivers::CANBus>())
   , m_hidUi(std::make_unique<IO::Drivers::HID>())
+  , m_mqttUi(std::make_unique<IO::Drivers::MQTT>())
   , m_modbusUi(std::make_unique<IO::Drivers::Modbus>())
   , m_processUi(std::make_unique<IO::Drivers::Process>())
   , m_usbUi(std::make_unique<IO::Drivers::USB>())
@@ -124,6 +126,7 @@ IO::ConnectionManager::~ConnectionManager()
   for (auto* drv : {static_cast<QObject*>(m_audioUi.get()),
                     static_cast<QObject*>(m_canBusUi.get()),
                     static_cast<QObject*>(m_hidUi.get()),
+                    static_cast<QObject*>(m_mqttUi.get()),
                     static_cast<QObject*>(m_modbusUi.get()),
                     static_cast<QObject*>(m_processUi.get()),
                     static_cast<QObject*>(m_usbUi.get())}) {
@@ -274,6 +277,7 @@ QStringList IO::ConnectionManager::availableBuses() const
   list.append(tr("USB Device"));
   list.append(tr("HID Device"));
   list.append(tr("Process"));
+  list.append(tr("MQTT Subscriber"));
 #endif
   return list;
 }
@@ -406,6 +410,14 @@ IO::Drivers::USB* IO::ConnectionManager::usb() const noexcept
 {
   return m_usbUi.get();
 }
+
+/**
+ * @brief Returns the UI-config MQTT input driver instance.
+ */
+IO::Drivers::MQTT* IO::ConnectionManager::mqtt() const noexcept
+{
+  return m_mqttUi.get();
+}
 #endif
 
 /**
@@ -433,6 +445,8 @@ IO::HAL_Driver* IO::ConnectionManager::activeUiDriver() const noexcept
       return m_hidUi.get();
     case SerialStudio::BusType::Process:
       return m_processUi.get();
+    case SerialStudio::BusType::Mqtt:
+      return m_mqttUi.get();
 #endif
     default:
       return nullptr;
@@ -464,6 +478,8 @@ IO::HAL_Driver* IO::ConnectionManager::uiDriverForBusType(SerialStudio::BusType 
       return m_hidUi.get();
     case SerialStudio::BusType::Process:
       return m_processUi.get();
+    case SerialStudio::BusType::Mqtt:
+      return m_mqttUi.get();
 #endif
     default:
       return nullptr;
@@ -510,11 +526,6 @@ void IO::ConnectionManager::processPayload(const QByteArray& payload)
   console.hotpathRxData(captured->data);
   frameBuilder.hotpathRxFrame(captured);
 
-#ifdef BUILD_COMMERCIAL
-  static auto& mqtt = MQTT::Client::instance();
-  mqtt.hotpathTxFrame(payload);
-#endif
-
 #ifdef ENABLE_GRPC
   static auto& grpcServer = API::GRPC::GRPCServer::instance();
   grpcServer.hotpathTxData(captured->data);
@@ -546,11 +557,6 @@ void IO::ConnectionManager::processMultiSourcePayload(const QByteArray& fullPayl
   // Route each source's data through per-source frame building
   for (auto it = sourcePayloads.constBegin(); it != sourcePayloads.constEnd(); ++it)
     frameBuilder.hotpathRxSourceFrame(it.key(), makeCapturedData(it.value(), captured->timestamp));
-
-#ifdef BUILD_COMMERCIAL
-  static auto& mqtt = MQTT::Client::instance();
-  mqtt.hotpathTxFrame(fullPayload);
-#endif
 
 #ifdef ENABLE_GRPC
   static auto& grpcServer = API::GRPC::GRPCServer::instance();
@@ -753,6 +759,7 @@ void IO::ConnectionManager::setupExternalConnections()
   wireUiDriver(m_audioUi.get());
   wireUiDriver(m_canBusUi.get());
   wireUiDriver(m_hidUi.get());
+  wireUiDriver(m_mqttUi.get());
   wireUiDriver(m_modbusUi.get());
   wireUiDriver(m_processUi.get());
   wireUiDriver(m_usbUi.get());
@@ -1264,11 +1271,6 @@ void IO::ConnectionManager::onFrameReady(int deviceId, const IO::CapturedDataPtr
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
 
-#ifdef BUILD_COMMERCIAL
-  static auto& mqtt = MQTT::Client::instance();
-  mqtt.hotpathTxFrame(*frame->data);
-#endif
-
   if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
     frameBuilder.hotpathRxSourceFrame(deviceId, frame);
   else
@@ -1301,6 +1303,9 @@ void IO::ConnectionManager::onRawDataReceived(int deviceId, const IO::CapturedDa
 #ifdef BUILD_COMMERCIAL
   static auto& sqliteExport = Sessions::Export::instance();
   sqliteExport.hotpathTxRawBytes(deviceId, data);
+
+  static auto& mqttPublisher = MQTT::Publisher::instance();
+  mqttPublisher.hotpathTxRawBytes(deviceId, data);
 #endif
 
 #ifdef ENABLE_GRPC
@@ -1424,6 +1429,14 @@ std::unique_ptr<IO::HAL_Driver> IO::ConnectionManager::createDriver(
         return nullptr;
 
       return std::make_unique<IO::Drivers::Process>();
+    }
+    case SerialStudio::BusType::Mqtt: {
+      const auto& tk = Licensing::CommercialToken::current();
+      if (!tk.isValid() || !SS_LICENSE_GUARD()
+          || tk.featureTier() < Licensing::FeatureTier::Hobbyist)
+        return nullptr;
+
+      return std::make_unique<IO::Drivers::MQTT>();
     }
 #endif
     default:

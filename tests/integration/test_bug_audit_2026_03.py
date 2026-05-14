@@ -83,23 +83,27 @@ class TestMCPSessionLeak:
 
 
 # ---------------------------------------------------------------------------
-# Bug #3: MQTT string format (%.  instead of %1)
+# Bug #3 (historical): legacy MQTT::Client singleton removed in 2026-05.
+# The MQTT pipeline now lives in the project tree -- see
+# tests/integration/test_mqtt_singleton_removed.py for the full contract.
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.integration
+@pytest.mark.mqtt
 class TestMQTTConfiguration:
-    """Verify MQTT client API returns valid configuration."""
+    """Pin the legacy singleton API as gone (was Bug #3 follow-up)."""
 
-    def test_mqtt_get_configuration(self, api_client, clean_state):
-        """MQTT configuration should be retrievable."""
+    def test_legacy_mqtt_get_config_is_gone(self, api_client, clean_state):
+        """mqtt.getConfig must no longer be a registered command."""
         try:
-            config = api_client.command("mqtt.getConfig")
-            assert isinstance(config, dict), "MQTT config should be a dict"
+            api_client.command("mqtt.getConfig")
         except APIError as e:
-            if "UNKNOWN_COMMAND" in str(e):
-                pytest.skip("MQTT commands not available")
-            raise
+            assert "UNKNOWN_COMMAND" in str(e) or "NOT_FOUND" in str(e)
+            return
+        pytest.fail(
+            "mqtt.getConfig still registered; the singleton was removed in Phase 4"
+        )
 
 
 # ---------------------------------------------------------------------------

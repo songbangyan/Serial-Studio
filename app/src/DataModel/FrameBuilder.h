@@ -83,27 +83,22 @@ private slots:
   void onConnectedChanged();
 
 private:
-  void parseProjectFrame(const IO::CapturedDataPtr& data);
-  void parseProjectFrame(int sourceId, const IO::CapturedDataPtr& data);
-  void parseQuickPlotFrame(const IO::CapturedDataPtr& data);
-  void buildQuickPlotFrame(const QStringList& channels);
-  void buildQuickPlotAudioFrame(const QStringList& channels);
+  using BudgetClock                             = std::chrono::steady_clock;
+  static constexpr int kTransformWatchdogMs     = 100;
+  static constexpr int kTransformHookInstrCount = 10000;
+  static constexpr int kParseBudgetWindowMs     = 1000;
+  static constexpr int kParseBudgetWarnLimitMs  = 800;
 
-  void decodeProjectChannels(int sourceId,
-                             bool applyPerSourceOverride,
-                             const IO::CapturedDataPtr& data,
-                             QList<QStringList>& outChannels);
-  [[nodiscard]] SerialStudio::DecoderMethod resolveDecoderMethod(int sourceId,
-                                                                 bool applyPerSourceOverride) const;
-  [[nodiscard]] DataModel::Frame& ensureSourceFrame(int sourceId);
-  void applyDatasetValues(DataModel::Frame& frame, const QStringList& channels, int sourceId);
-  void applyDatasetValue(Dataset& dataset,
-                         const QString* channelData,
-                         int channelCount,
-                         int sourceId);
+  struct TransformEntry {
+    int uniqueId;
+    QString code;
+  };
 
-  void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
-  void publishSourceTemplateFrame(const DataModel::Source& src);
+  struct TransformFrameInfo {
+    quint64 frameNumber = 0;
+    int sourceId        = 0;
+    qint64 timestampMs  = 0;
+  };
 
   struct TransformEngine {
     lua_State* luaState = nullptr;
@@ -112,40 +107,6 @@ private:
     std::map<int, QJSValue> jsRefs;
     QDeadlineTimer luaDeadline{QDeadlineTimer::Forever};
   };
-
-  static constexpr int kTransformWatchdogMs     = 100;
-  static constexpr int kTransformHookInstrCount = 10000;
-
-  static constexpr int kParseBudgetWindowMs    = 1000;
-  static constexpr int kParseBudgetWarnLimitMs = 800;
-
-  using BudgetClock = std::chrono::steady_clock;
-  [[nodiscard]] bool parseBudgetSkipFrame();
-  void parseBudgetAccount(BudgetClock::time_point startedAt);
-  void parseBudgetReset() noexcept;
-
-  static void transformLuaWatchdogHook(lua_State* L, lua_Debug* ar);
-
-  struct TransformEntry {
-    int uniqueId;
-    QString code;
-  };
-
-  void compileTransforms();
-  void compileTransformsLua(TransformEngine& engine, const std::vector<TransformEntry>& entries);
-  void compileTransformsJS(TransformEngine& engine, const std::vector<TransformEntry>& entries);
-  void destroyTransformEngines();
-  [[nodiscard]] QVariant applyTransform(int sourceId,
-                                        int language,
-                                        int uniqueId,
-                                        const QVariant& rawValue);
-  [[nodiscard]] QVariant applyTransformLua(TransformEngine& engine,
-                                           int uniqueId,
-                                           const QVariant& rawValue);
-  [[nodiscard]] QVariant applyTransformJs(TransformEngine& engine,
-                                          int uniqueId,
-                                          const QVariant& rawValue);
-  void initializeTableStore();
 
   struct EngineKey {
     int sourceId;
@@ -157,25 +118,81 @@ private:
     }
   };
 
-private:
-  std::map<EngineKey, TransformEngine> m_transformEngines;
+  int m_quickPlotChannels;
+  bool m_quickPlotHasHeader;
+  bool m_parseBudgetSkipping;
+  bool m_parseBudgetWarned;
+  qint64 m_parseBudgetUsedNs;
+  BudgetClock::time_point m_parseBudgetWindowStart;
+
   QTimer m_jsTransformWatchdog;
-  DataModel::DataTableStore m_tableStore;
+  QStringList m_channelScratch;
+  QStringList m_quickPlotChannelNames;
 
   DataModel::Frame m_frame;
   DataModel::Frame m_quickPlotFrame;
+  DataModel::DataTableStore m_tableStore;
 
   QMap<int, DataModel::Frame> m_sourceFrames;
+  std::map<int, quint64> m_sourceFrameCounters;
+  std::map<EngineKey, TransformEngine> m_transformEngines;
 
-  int m_quickPlotChannels;
-  bool m_quickPlotHasHeader;
-  QStringList m_quickPlotChannelNames;
-  QStringList m_channelScratch;
+private:
+  // code-verify off
+  // Parse pipeline
+  DataModel::Source makeQuickPlotSource() const;
+  DataModel::Frame& ensureSourceFrame(int sourceId);
+  SerialStudio::DecoderMethod resolveDecoderMethod(int sourceId, bool applyPerSourceOverride) const;
+  void parseProjectFrame(const IO::CapturedDataPtr& data);
+  void parseProjectFrame(int sourceId, const IO::CapturedDataPtr& data);
+  void parseQuickPlotFrame(const IO::CapturedDataPtr& data);
+  void buildQuickPlotFrame(const QStringList& channels);
+  void buildQuickPlotAudioFrame(const QStringList& channels);
+  void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
+  void publishSourceTemplateFrame(const DataModel::Source& src);
+  void decodeProjectChannels(int sourceId,
+                             bool applyPerSourceOverride,
+                             const IO::CapturedDataPtr& data,
+                             QList<QStringList>& outChannels);
+  void applyDatasetValues(DataModel::Frame& frame,
+                          const QStringList& channels,
+                          const TransformFrameInfo& info);
+  void applyDatasetValue(Dataset& dataset,
+                         const QString* channelData,
+                         int channelCount,
+                         const TransformFrameInfo& info);
 
-  BudgetClock::time_point m_parseBudgetWindowStart;
-  qint64 m_parseBudgetUsedNs;
-  bool m_parseBudgetSkipping;
-  bool m_parseBudgetWarned;
+  // Parser-load budget guard
+  bool parseBudgetSkipFrame();
+  void parseBudgetAccount(BudgetClock::time_point startedAt);
+  void parseBudgetReset() noexcept;
+
+  // Transform compile + dispatch
+  QVariant applyTransform(int language,
+                          int uniqueId,
+                          const QVariant& rawValue,
+                          const TransformFrameInfo& info);
+  QVariant applyTransformLua(TransformEngine& engine,
+                             int uniqueId,
+                             const QVariant& rawValue,
+                             const TransformFrameInfo& info);
+  QVariant applyTransformJs(TransformEngine& engine,
+                            int uniqueId,
+                            const QVariant& rawValue,
+                            const TransformFrameInfo& info);
+
+  void compileTransforms();
+  void destroyTransformEngines();
+  void initializeTableStore();
+  void compileTransformsLua(TransformEngine& engine,
+                            int sourceId,
+                            const std::vector<TransformEntry>& entries);
+  void compileTransformsJS(TransformEngine& engine,
+                           int sourceId,
+                           const std::vector<TransformEntry>& entries);
+
+  static void transformLuaWatchdogHook(lua_State* L, lua_Debug* ar);
+  // code-verify on
 };
 
 }  // namespace DataModel

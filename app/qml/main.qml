@@ -63,14 +63,6 @@ Item {
                                            : ""
 
   //
-  // True when an MQTT subscription is driving the dashboard
-  //
-  readonly property bool mqttSubscriber: Cpp_CommercialBuild
-                                         ? (Cpp_MQTT_Client.isConnected
-                                            && Cpp_MQTT_Client.isSubscriber)
-                                         : false
-
-  //
   // True while a recorded session is playing back
   //
   readonly property bool sessionPlayerOpen: Cpp_CommercialBuild
@@ -80,11 +72,10 @@ Item {
   //
   // True when setup-pane controls are allowed to mutate the connection
   //
-  readonly property bool ioEnabled: (!Cpp_IO_Manager.isConnected
-                                     && !Cpp_CSV_Player.isOpen
-                                     && !Cpp_MDF4_Player.isOpen
-                                     && !sessionPlayerOpen)
-                                    || mqttSubscriber
+  readonly property bool ioEnabled: !Cpp_IO_Manager.isConnected
+                                    && !Cpp_CSV_Player.isOpen
+                                    && !Cpp_MDF4_Player.isOpen
+                                    && !sessionPlayerOpen
 
   //
   // Cross-launch app flags -- shared store, NOT per-deployment
@@ -193,7 +184,6 @@ Item {
       settingsDialog.close()
       examplesBrowser.close()
       extensionManager.close()
-      mqttConfiguration.close()
       acknowledgementsDialog.close()
       shortcutGeneratorDialog.close()
       runtimeReconfigureDialog.close()
@@ -291,15 +281,6 @@ Item {
 
       asynchronous: false
       source: "qrc:/serial-studio.com/gui/qml/Dialogs/ExtensionManager.qml"
-    }
-
-    //
-    // MQTT broker configuration (Pro, gated to author mode)
-    //
-    DialogLoader {
-      id: mqttConfiguration
-
-      source: "qrc:/serial-studio.com/gui/qml/Dialogs/MQTTConfiguration.qml"
     }
 
     //
@@ -561,14 +542,6 @@ Item {
     }
 
     dbExplorerLoader.activate()
-  }
-
-  //
-  // MQTT configuration -- Pro, author-only
-  //
-  function showMqttConfiguration() {
-    if (Cpp_CommercialBuild && !app.runtimeMode)
-      mqttConfiguration.activate()
   }
 
   //

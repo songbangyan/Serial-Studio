@@ -312,7 +312,7 @@ Now that you've made your first connection, here are the recommended paths from 
 ### Advanced features
 
 - **[CSV Export and Playback](CSV-Export-Playback.md):** record sessions and replay them later.
-- **[MQTT Integration](MQTT-Integration.md):** subscribe to MQTT topics for IoT visualization.
+- **[MQTT Subscriber](Drivers-MQTT.md)** and **[MQTT Publisher](MQTT-Publisher.md):** ingest telemetry from a broker or republish parsed frames to one. The protocol vocabulary is in [MQTT Topics & Semantics](MQTT-Topics.md).
 - **[Protocol Setup Guides (Pro)](Protocol-Setup-Guides.md):** step-by-step guides for Modbus, CAN Bus, Audio, USB, HID, and Process I/O.
 - **[API Reference](API-Reference.md):** automate Serial Studio from external scripts, or connect AI models via MCP on TCP port 7777.
 

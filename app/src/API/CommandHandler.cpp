@@ -46,7 +46,6 @@
 #  include "API/Handlers/MDF4ExportHandler.h"
 #  include "API/Handlers/MDF4PlayerHandler.h"
 #  include "API/Handlers/ModbusHandler.h"
-#  include "API/Handlers/MQTTHandler.h"
 #  include "API/Handlers/NotificationsHandler.h"
 #  include "API/Handlers/ProcessHandler.h"
 #  include "API/Handlers/SessionsHandler.h"
@@ -240,7 +239,6 @@ void API::CommandHandler::initializeHandlers()
 #ifdef BUILD_COMMERCIAL
   Handlers::ModbusHandler::registerCommands();
   Handlers::CANBusHandler::registerCommands();
-  Handlers::MQTTHandler::registerCommands();
   Handlers::MDF4ExportHandler::registerCommands();
   Handlers::AudioHandler::registerCommands();
   Handlers::MDF4PlayerHandler::registerCommands();

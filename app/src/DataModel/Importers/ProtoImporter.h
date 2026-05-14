@@ -146,6 +146,9 @@ private:
   static void emitScoreDispatcher(QString& code);
   static void emitParseEntry(QString& code);
   static void emitDecoderReaders(QString& code);
+  static void emitVarintAndSignedReaders(QString& code);
+  static void emitFixedAndFloatReaders(QString& code);
+  static void emitStringAndSkipWireReaders(QString& code);
   static void emitDecoderParseMsg(QString& code);
 
   [[nodiscard]] const ProtoMessage* findMessage(const QString& typeRef) const;

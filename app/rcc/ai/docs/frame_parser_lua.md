@@ -93,6 +93,41 @@ function parse(frame)
 end
 ```
 
+## Device output — `deviceWrite()`
+
+```lua
+deviceWrite(data, sourceId?) -> { ok = true } | { ok = false, error = "..." }
+```
+
+- `data` is a Lua string (raw bytes are fine — Lua strings are 8-bit clean).
+- `sourceId` is optional; default is the source this parser belongs to.
+- Synchronous, fire-and-forget. Does not throw. Calls are logged as
+  `[deviceWrite] source=N bytes=M written=K`.
+
+Use for closed-loop control from inside `parse()`: ack a frame, raise an
+alarm, request a status push. NOT for user-triggered commands — those
+belong on an Output Widget.
+
+```lua
+function parse(frame)
+  local v = tonumber(frame)
+  if v and v > 80 then
+    deviceWrite("ALARM=1\n")
+  end
+  return { v }
+end
+```
+
+## Firing project actions — `actionFire()`
+
+```lua
+actionFire(actionId) -> { ok = true } | { ok = false, error = "..." }
+```
+
+Reuses an existing project Action (with its prebuilt payload + timer
+mode). `actionId` is the action's stable id, NOT its index in the list.
+Same shape as `deviceWrite`; never throws.
+
 ## Errors
 
 A Lua error logs a watchdog warning and skips the frame. The Lua state is

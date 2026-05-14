@@ -1392,13 +1392,17 @@ void DataModel::ProtoImporter::emitTopLevelDispatchers(QString& code,
  */
 void DataModel::ProtoImporter::emitScoreDispatcher(QString& code)
 {
-  code += QStringLiteral("local function scoreDispatcher(buf, tbl)\n");
+  code += QStringLiteral("local function scoreDispatcher(buf, tbl, bufLen)\n");
   code += QStringLiteral("  local p = 1\n");
-  code += QStringLiteral("  local endP = #buf + 1\n");
+  code += QStringLiteral("  local endP = bufLen + 1\n");
   code += QStringLiteral("  local good = 0\n");
   code += QStringLiteral("  local bad = 0\n");
+  code += QStringLiteral("  local iter = 0\n");
   code += QStringLiteral("  while p < endP do\n");
-  code += QStringLiteral("    local tag, np = readVarint(buf, p)\n");
+  code += QStringLiteral("    iter = iter + 1\n");
+  code += QStringLiteral("    if iter > 4096 then break end\n");
+  code += QStringLiteral("    local before = p\n");
+  code += QStringLiteral("    local tag, np = readVarint(buf, p, bufLen)\n");
   code += QStringLiteral("    if np == p then return -1 end\n");
   code += QStringLiteral("    p = np\n");
   code += QStringLiteral("    local fieldNum = tag >> 3\n");
@@ -1408,8 +1412,8 @@ void DataModel::ProtoImporter::emitScoreDispatcher(QString& code)
   code += QStringLiteral("      if e.wire == wt then good = good + 1\n");
   code += QStringLiteral("      else bad = bad + 1 end\n");
   code += QStringLiteral("    end\n");
-  code += QStringLiteral("    p = skipWire(buf, p, wt)\n");
-  code += QStringLiteral("    if p < 1 or p > endP then break end\n");
+  code += QStringLiteral("    p = skipWire(buf, p, wt, bufLen)\n");
+  code += QStringLiteral("    if p <= before or p > endP then break end\n");
   code += QStringLiteral("  end\n");
   code += QStringLiteral("  return good - bad\n");
   code += QStringLiteral("end\n\n");
@@ -1421,19 +1425,23 @@ void DataModel::ProtoImporter::emitScoreDispatcher(QString& code)
 void DataModel::ProtoImporter::emitParseEntry(QString& code)
 {
   code += QStringLiteral("function parse(frame)\n");
-  code += QStringLiteral("  if #frame == 0 then return values end\n");
-  code += QStringLiteral("  local best = nil\n");
-  code += QStringLiteral("  local bestScore = 0\n");
-  code += QStringLiteral("  for _, d in ipairs(topDispatchers) do\n");
-  code += QStringLiteral("    local s = scoreDispatcher(frame, d.tbl)\n");
-  code += QStringLiteral("    if s > bestScore then\n");
-  code += QStringLiteral("      bestScore = s\n");
-  code += QStringLiteral("      best = d.tbl\n");
+  code += QStringLiteral("  if type(frame) ~= 'table' then return values end\n");
+  code += QStringLiteral("  local bufLen = #frame\n");
+  code += QStringLiteral("  if bufLen <= 0 then return values end\n");
+  code += QStringLiteral("  pcall(function()\n");
+  code += QStringLiteral("    local best = nil\n");
+  code += QStringLiteral("    local bestScore = 0\n");
+  code += QStringLiteral("    for _, d in ipairs(topDispatchers) do\n");
+  code += QStringLiteral("      local s = scoreDispatcher(frame, d.tbl, bufLen)\n");
+  code += QStringLiteral("      if s > bestScore then\n");
+  code += QStringLiteral("        bestScore = s\n");
+  code += QStringLiteral("        best = d.tbl\n");
+  code += QStringLiteral("      end\n");
   code += QStringLiteral("    end\n");
-  code += QStringLiteral("  end\n");
-  code += QStringLiteral("  if best ~= nil then\n");
-  code += QStringLiteral("    parseMsg(frame, 1, #frame + 1, best)\n");
-  code += QStringLiteral("  end\n");
+  code += QStringLiteral("    if best ~= nil then\n");
+  code += QStringLiteral("      parseMsg(frame, 1, bufLen + 1, best, bufLen, 0)\n");
+  code += QStringLiteral("    end\n");
+  code += QStringLiteral("  end)\n");
   code += QStringLiteral("  return values\n");
   code += QStringLiteral("end\n");
 }
@@ -1454,16 +1462,27 @@ QString DataModel::ProtoImporter::frameParserDecoder() const
 }
 
 /**
- * @brief Emits varint/zigzag/signed/fixed-width readers and skipWire helper.
+ * @brief Emits the full decoder reader prelude: varints, fixed-width, strings, skipWire.
  */
 void DataModel::ProtoImporter::emitDecoderReaders(QString& code)
 {
-  code += QStringLiteral("local function readVarint(buf, p)\n");
+  emitVarintAndSignedReaders(code);
+  emitFixedAndFloatReaders(code);
+  emitStringAndSkipWireReaders(code);
+}
+
+/**
+ * @brief Emits readVarint, zigzag, signed32, signed64, and bytesToString helpers.
+ */
+void DataModel::ProtoImporter::emitVarintAndSignedReaders(QString& code)
+{
+  code += QStringLiteral("local function readVarint(buf, p, bufLen)\n");
   code += QStringLiteral("  local v = 0\n");
   code += QStringLiteral("  local mul = 1\n");
   code += QStringLiteral("  for _ = 1, 10 do\n");
-  code += QStringLiteral("    if p > #buf then return v, p end\n");
+  code += QStringLiteral("    if p > bufLen then return v, p end\n");
   code += QStringLiteral("    local b = buf[p]\n");
+  code += QStringLiteral("    if b == nil then return v, p end\n");
   code += QStringLiteral("    p = p + 1\n");
   code += QStringLiteral("    v = v + (b & 0x7f) * mul\n");
   code += QStringLiteral("    if (b & 0x80) == 0 then return v, p end\n");
@@ -1487,50 +1506,90 @@ void DataModel::ProtoImporter::emitDecoderReaders(QString& code)
   code += QStringLiteral("  return n\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function bytesToString(buf, p, n)\n");
+  code += QStringLiteral("local function bytesToString(buf, p, n, bufLen)\n");
+  code += QStringLiteral("  if n <= 0 or p < 1 then return \"\" end\n");
+  code += QStringLiteral("  local available = bufLen - p + 1\n");
+  code += QStringLiteral("  if available <= 0 then return \"\" end\n");
+  code += QStringLiteral("  if n > available then n = available end\n");
   code += QStringLiteral("  local t = {}\n");
-  code += QStringLiteral("  for i = 1, n do t[i] = string.char(buf[p + i - 1] & 0xff) end\n");
+  code += QStringLiteral("  for i = 1, n do\n");
+  code += QStringLiteral("    local b = buf[p + i - 1]\n");
+  code += QStringLiteral("    if b == nil then break end\n");
+  code += QStringLiteral("    t[i] = string.char(b & 0xff)\n");
+  code += QStringLiteral("  end\n");
   code += QStringLiteral("  return table.concat(t)\n");
   code += QStringLiteral("end\n\n");
+}
 
-  code += QStringLiteral("local function readFixed32(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<I4\", bytesToString(buf, p, 4)), p + 4\n");
+/**
+ * @brief Emits readFixed32/64, readSFixed32/64, readFloat32/64 little-endian helpers.
+ */
+void DataModel::ProtoImporter::emitFixedAndFloatReaders(QString& code)
+{
+  code += QStringLiteral("local function readFixed32(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 3 > bufLen then return 0, p + 4 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<I4\", bytesToString(buf, p, 4, bufLen)), p + 4\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readSFixed32(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<i4\", bytesToString(buf, p, 4)), p + 4\n");
+  code += QStringLiteral("local function readSFixed32(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 3 > bufLen then return 0, p + 4 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<i4\", bytesToString(buf, p, 4, bufLen)), p + 4\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readFloat32(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<f\", bytesToString(buf, p, 4)), p + 4\n");
+  code += QStringLiteral("local function readFloat32(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 3 > bufLen then return 0, p + 4 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<f\", bytesToString(buf, p, 4, bufLen)), p + 4\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readFixed64(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<I8\", bytesToString(buf, p, 8)), p + 8\n");
+  code += QStringLiteral("local function readFixed64(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 7 > bufLen then return 0, p + 8 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<I8\", bytesToString(buf, p, 8, bufLen)), p + 8\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readSFixed64(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<i8\", bytesToString(buf, p, 8)), p + 8\n");
+  code += QStringLiteral("local function readSFixed64(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 7 > bufLen then return 0, p + 8 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<i8\", bytesToString(buf, p, 8, bufLen)), p + 8\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readFloat64(buf, p)\n");
-  code += QStringLiteral("  return string.unpack(\"<d\", bytesToString(buf, p, 8)), p + 8\n");
+  code += QStringLiteral("local function readFloat64(buf, p, bufLen)\n");
+  code += QStringLiteral("  if p < 1 or p + 7 > bufLen then return 0, p + 8 end\n");
+  code +=
+    QStringLiteral("  return string.unpack(\"<d\", bytesToString(buf, p, 8, bufLen)), p + 8\n");
+  code += QStringLiteral("end\n\n");
+}
+
+/**
+ * @brief Emits readString and skipWire (length and offset clamped against bufLen).
+ */
+void DataModel::ProtoImporter::emitStringAndSkipWireReaders(QString& code)
+{
+  code += QStringLiteral("local function readString(buf, p, bufLen)\n");
+  code += QStringLiteral("  local len, np = readVarint(buf, p, bufLen)\n");
+  code += QStringLiteral("  if len < 0 then return \"\", np end\n");
+  code += QStringLiteral("  local available = bufLen - np + 1\n");
+  code += QStringLiteral("  if available < 0 then available = 0 end\n");
+  code += QStringLiteral("  if len > available then len = available end\n");
+  code += QStringLiteral("  return bytesToString(buf, np, len, bufLen), np + len\n");
   code += QStringLiteral("end\n\n");
 
-  code += QStringLiteral("local function readString(buf, p)\n");
-  code += QStringLiteral("  local len, np = readVarint(buf, p)\n");
-  code += QStringLiteral("  return bytesToString(buf, np, len), np + len\n");
-  code += QStringLiteral("end\n\n");
-
-  code += QStringLiteral("local function skipWire(buf, p, wt)\n");
+  code += QStringLiteral("local function skipWire(buf, p, wt, bufLen)\n");
   code += QStringLiteral("  if wt == 0 then\n");
-  code += QStringLiteral("    local _, np = readVarint(buf, p) return np\n");
+  code += QStringLiteral("    local _, np = readVarint(buf, p, bufLen) return np\n");
   code += QStringLiteral("  elseif wt == 1 then return p + 8\n");
   code += QStringLiteral("  elseif wt == 2 then\n");
-  code += QStringLiteral("    local len, np = readVarint(buf, p) return np + len\n");
+  code += QStringLiteral("    local len, np = readVarint(buf, p, bufLen)\n");
+  code += QStringLiteral("    if len < 0 then return bufLen + 1 end\n");
+  code += QStringLiteral("    local target = np + len\n");
+  code += QStringLiteral("    if target < np or target > bufLen + 1 then return bufLen + 1 end\n");
+  code += QStringLiteral("    return target\n");
   code += QStringLiteral("  elseif wt == 5 then return p + 4\n");
   code += QStringLiteral("  end\n");
-  code += QStringLiteral("  return #buf + 1\n");
+  code += QStringLiteral("  return bufLen + 1\n");
   code += QStringLiteral("end\n\n");
 }
 
@@ -1539,56 +1598,75 @@ void DataModel::ProtoImporter::emitDecoderReaders(QString& code)
  */
 void DataModel::ProtoImporter::emitDecoderParseMsg(QString& code)
 {
-  code += QStringLiteral("function parseMsg(buf, startPos, endPos, tbl)\n");
-  code += QStringLiteral("  local maxEnd = #buf + 1\n");
+  code += QStringLiteral("local parseMsg\n");
+  code += QStringLiteral("parseMsg = function(buf, startPos, endPos, tbl, bufLen, depth)\n");
+  code += QStringLiteral("  if depth > 8 then return end\n");
+  code += QStringLiteral("  if startPos < 1 then return end\n");
+  code += QStringLiteral("  local maxEnd = bufLen + 1\n");
   code += QStringLiteral("  if endPos > maxEnd then endPos = maxEnd end\n");
+  code += QStringLiteral("  if endPos <= startPos then return end\n");
   code += QStringLiteral("  local p = startPos\n");
+  code += QStringLiteral("  local iter = 0\n");
   code += QStringLiteral("  while p < endPos do\n");
-  code += QStringLiteral("    local tag, np = readVarint(buf, p)\n");
+  code += QStringLiteral("    iter = iter + 1\n");
+  code += QStringLiteral("    if iter > 8192 then break end\n");
+  code += QStringLiteral("    local before = p\n");
+  code += QStringLiteral("    local tag, np = readVarint(buf, p, bufLen)\n");
   code += QStringLiteral("    if np == p then break end\n");
   code += QStringLiteral("    p = np\n");
   code += QStringLiteral("    local fieldNum = tag >> 3\n");
   code += QStringLiteral("    local wt = tag & 7\n");
   code += QStringLiteral("    local e = tbl[fieldNum]\n");
   code += QStringLiteral("    if e == nil or e.wire ~= wt then\n");
-  code += QStringLiteral("      local before = p\n");
-  code += QStringLiteral("      p = skipWire(buf, p, wt)\n");
-  code += QStringLiteral("      if p == before then break end\n");
+  code += QStringLiteral("      p = skipWire(buf, p, wt, bufLen)\n");
   code += QStringLiteral("    else\n");
   code += QStringLiteral("      local t = e.type\n");
   code += QStringLiteral("      if t == 'message' then\n");
-  code += QStringLiteral("        local len, lp = readVarint(buf, p)\n");
-  code += QStringLiteral("        parseMsg(buf, lp, lp + len, e.table) p = lp + len\n");
+  code += QStringLiteral("        local len, lp = readVarint(buf, p, bufLen)\n");
+  code += QStringLiteral("        if len < 0 then break end\n");
+  code += QStringLiteral("        local target = lp + len\n");
+  code += QStringLiteral("        if target < lp or target > maxEnd then target = maxEnd end\n");
+  code +=
+    QStringLiteral("        parseMsg(buf, lp, target, e.table, bufLen, depth + 1) p = target\n");
   code += QStringLiteral("      elseif t == 'string' or t == 'bytes' then\n");
-  code += QStringLiteral("        local v, npp = readString(buf, p) p = npp values[e.out] = v\n");
+  code +=
+    QStringLiteral("        local v, npp = readString(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral(
     "      elseif t == 'bool' or t == 'enum' or t == 'varint_u32' or t == 'varint_u64' then\n");
-  code += QStringLiteral("        local v, npp = readVarint(buf, p) p = npp values[e.out] = v\n");
+  code +=
+    QStringLiteral("        local v, npp = readVarint(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'varint_s32' then\n");
   code += QStringLiteral(
-    "        local v, npp = readVarint(buf, p) p = npp values[e.out] = signed32(v)\n");
+    "        local v, npp = readVarint(buf, p, bufLen) p = npp values[e.out] = signed32(v)\n");
   code += QStringLiteral("      elseif t == 'varint_s64' then\n");
   code += QStringLiteral(
-    "        local v, npp = readVarint(buf, p) p = npp values[e.out] = signed64(v)\n");
+    "        local v, npp = readVarint(buf, p, bufLen) p = npp values[e.out] = signed64(v)\n");
   code += QStringLiteral("      elseif t == 'sint32' or t == 'sint64' then\n");
-  code +=
-    QStringLiteral("        local v, npp = readVarint(buf, p) p = npp values[e.out] = zigzag(v)\n");
+  code += QStringLiteral(
+    "        local v, npp = readVarint(buf, p, bufLen) p = npp values[e.out] = zigzag(v)\n");
   code += QStringLiteral("      elseif t == 'fixed32' then\n");
-  code += QStringLiteral("        local v, npp = readFixed32(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readFixed32(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'sfixed32' then\n");
-  code += QStringLiteral("        local v, npp = readSFixed32(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readSFixed32(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'float' then\n");
-  code += QStringLiteral("        local v, npp = readFloat32(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readFloat32(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'fixed64' then\n");
-  code += QStringLiteral("        local v, npp = readFixed64(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readFixed64(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'sfixed64' then\n");
-  code += QStringLiteral("        local v, npp = readSFixed64(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readSFixed64(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      elseif t == 'double' then\n");
-  code += QStringLiteral("        local v, npp = readFloat64(buf, p) p = npp values[e.out] = v\n");
+  code += QStringLiteral(
+    "        local v, npp = readFloat64(buf, p, bufLen) p = npp values[e.out] = v\n");
   code += QStringLiteral("      else\n");
-  code += QStringLiteral("        p = skipWire(buf, p, wt)\n");
+  code += QStringLiteral("        p = skipWire(buf, p, wt, bufLen)\n");
   code += QStringLiteral("      end\n");
   code += QStringLiteral("    end\n");
+  code += QStringLiteral("    if p <= before or p > endP then break end\n");
   code += QStringLiteral("  end\n");
   code += QStringLiteral("end\n\n");
 }

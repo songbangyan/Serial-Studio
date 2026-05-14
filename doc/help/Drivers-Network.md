@@ -141,7 +141,8 @@ For step-by-step setup, see the [Protocol Setup Guides, Network section](Protoco
 - [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step Network setup in the Setup Panel.
 - [Data Sources](Data-Sources.md): driver capability summary across all transports.
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
-- [MQTT Integration](MQTT-Integration.md): when you need pub/sub semantics on top of TCP.
+- [MQTT Subscriber](Drivers-MQTT.md): when you need pub/sub semantics on top of TCP.
+- [MQTT Topics & Semantics](MQTT-Topics.md): the protocol vocabulary that MQTT layers on top of TCP.
 - [Troubleshooting](Troubleshooting.md): firewall, port-conflict, and connectivity diagnostics.
 - [Drivers: UART](Drivers-UART.md): the physical-layer alternative when both ends are local.
 - [API Reference](API-Reference.md): Serial Studio's own JSON-RPC TCP API on port 7777.

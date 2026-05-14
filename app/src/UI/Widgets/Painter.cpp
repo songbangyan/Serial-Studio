@@ -24,6 +24,7 @@
 #  include "DataModel/Frame.h"
 #  include "DataModel/FrameBuilder.h"
 #  include "DataModel/NotificationCenter.h"
+#  include "DataModel/Scripting/DeviceWriteApi.h"
 #  include "Misc/ThemeManager.h"
 #  include "Misc/TimerEvents.h"
 #  include "SerialStudio.h"
@@ -139,6 +140,10 @@ Widgets::Painter::Painter(int index, QQuickItem* parent)
   m_engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
   DataModel::NotificationCenter::installScriptApi(&m_engine);
   DataModel::FrameBuilder::instance().injectTableApiJS(&m_engine);
+
+  // Closed-loop control APIs -- deviceWrite() default source is refreshed in updateData()
+  DataModel::DeviceWriteApi::installJS(&m_engine, /*defaultSourceId=*/0);
+  DataModel::ActionFireApi::installJS(&m_engine);
 
   const auto projectPath = AppState::instance().projectFilePath();
   if (!projectPath.isEmpty())
@@ -307,6 +312,9 @@ void Widgets::Painter::updateData()
   const auto& group = dashboard->getGroupWidget(SerialStudio::DashboardPainter, m_index);
   m_bridge->setGroup(&group);
   m_bridge->setFrame(++m_frameSeq, QDateTime::currentMSecsSinceEpoch());
+
+  // Default deviceWrite() sourceId follows the painter's group
+  DataModel::DeviceWriteApi::setJSDefaultSourceId(&m_engine, group.sourceId);
 
   // Lazy-compile when user code changed; failed compile leaves runtimeOk false
   if (m_compileDirty) {

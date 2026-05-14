@@ -137,12 +137,6 @@ Popup {
         run: function() { app.showHelpCenter() }
       },
       {
-        name: qsTr("MQTT"),
-        icon: "qrc:/icons/toolbar/mqtt.svg",
-        visible: Cpp_CommercialBuild && !app.runtimeMode,
-        run: function() { app.showMqttConfiguration() }
-      },
-      {
         name: qsTr("Sessions"),
         icon: "qrc:/icons/start/sessions.svg",
         visible: Cpp_CommercialBuild
@@ -658,7 +652,6 @@ Popup {
       icon.source: "qrc:/icons/start/tools.svg"
       visible: !app.runtimeMode || Cpp_CommercialBuild
 
-      readonly property string kMqtt: "mqtt"
       readonly property string kConsole: "console"
       readonly property string kSessions: "sessions"
       readonly property string kPreferences: "preferences"
@@ -680,9 +673,6 @@ Popup {
             } else if (value === _tools.kPreferences) {
               root.close()
               app.showSettingsDialog()
-            } else if (value === _tools.kMqtt && Cpp_CommercialBuild) {
-              root.close()
-              app.showMqttConfiguration()
             } else if (value === _tools.kSessions && Cpp_CommercialBuild) {
               root.close()
               app.showDatabaseExplorer()
@@ -724,18 +714,6 @@ Popup {
             "id": _tools.kPreferences,
             "text": qsTr("Preferences"),
             "icon": "qrc:/icons/start/settings.svg"
-          })
-        }
-
-        if (Cpp_CommercialBuild && !app.runtimeMode) {
-          model.push({
-            "id": _tools.kMqtt,
-            "text": qsTr("MQTT"),
-            "icon": Cpp_MQTT_Client.isConnected
-                    ? (Cpp_MQTT_Client.isSubscriber
-                       ? "qrc:/icons/toolbar/mqtt-subscriber.svg"
-                       : "qrc:/icons/toolbar/mqtt-publisher.svg")
-                    : "qrc:/icons/toolbar/mqtt.svg"
           })
         }
 

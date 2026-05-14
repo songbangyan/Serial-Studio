@@ -87,6 +87,10 @@ Item {
     const colGrp   = colFP  + nodeW + hGap             // group column
     const colTrans = colGrp + nodeW + hGap             // transform block column
     const colChip  = colTrans + transW + transGap      // dataset column
+    const colMqtt  = colChip + chipW + hGap            // mqtt publisher column
+
+    // Collected dataset pill centres -- fed into the MQTT Publisher node below
+    const datasetAnchors = []
 
     // -- slot height helper -------------------------------------------------
     function slotH(dsCount) {
@@ -295,6 +299,8 @@ Item {
             badge:        "",
             hasTransform: hasTransform
           })
+
+          datasetAnchors.push(chipY + chipH / 2)
         }
       }
 
@@ -471,6 +477,39 @@ Item {
     }
 
     //
+    // MQTT Publisher node -- collects every dataset pill (commercial, opt-in)
+    //
+    if (mqttPublisherEnabled() && datasetAnchors.length > 0) {
+      const minY     = datasetAnchors[0]
+      const maxYAnch = datasetAnchors[datasetAnchors.length - 1]
+      const midY     = (minY + maxYAnch) / 2
+      const mqttY    = midY - nodeH / 2
+
+      newNodes.push({
+        type:      "mqtt-publisher",
+        sourceId:  -1,
+        groupId:   -1,
+        datasetId: -1,
+        widgetId:  -1,
+        actionId:  -1,
+        x:         colMqtt,
+        y:         mqttY,
+        w:         nodeW,
+        h:         nodeH,
+        label:     qsTr("MQTT Publisher"),
+        icon:      "qrc:/icons/project-editor/treeview/mqtt-publisher.svg",
+        badge:     ""
+      })
+
+      for (const dy of datasetAnchors) {
+        newArrows.push({
+          x1: colChip + chipW, y1: dy,
+          x2: colMqtt,         y2: mqttY + nodeH / 2
+        })
+      }
+    }
+
+    //
     // -- content bounds -----------------------------------------------------
     //
     let maxX = 0, maxY = 0
@@ -500,6 +539,7 @@ Item {
       case 6:  return base + "usb.svg"
       case 7:  return base + "hid.svg"
       case 8:  return base + "process.svg"
+      case 9:  return base + "mqtt.svg"
       default: return base + "uart.svg"
     }
   }
@@ -540,6 +580,13 @@ Item {
     }
   }
 
+  // True when the project's MQTT Publisher is enabled (Pro-only context property).
+  function mqttPublisherEnabled() {
+    return Cpp_CommercialBuild
+        && typeof Cpp_MQTT_Publisher !== "undefined"
+        && Cpp_MQTT_Publisher.enabled === true
+  }
+
   // Reactive connections.
   Connections {
     target: Cpp_JSON_ProjectModel
@@ -549,6 +596,15 @@ Item {
     function onSourcesChanged()    { root.reloadDiagram() }
     function onTablesChanged()     { root.reloadDiagram() }
     function onTitleChanged()      { root.reloadDiagram() }
+  }
+
+  // Repaint when the publisher is toggled on/off so the node appears/disappears.
+  Loader {
+    active: Cpp_CommercialBuild
+    sourceComponent: Connections {
+      target: Cpp_MQTT_Publisher
+      function onConfigurationChanged() { root.reloadDiagram() }
+    }
   }
 
   Component.onCompleted: reloadDiagram()
@@ -934,6 +990,9 @@ Item {
                   Cpp_JSON_ProjectEditor.openTransformEditorFor(
                     modelData.groupId, modelData.datasetId)
                   break
+                case "mqtt-publisher":
+                  Cpp_JSON_ProjectEditor.selectMqttPublisher()
+                  break
               }
             }
           }
@@ -999,15 +1058,16 @@ Item {
     function keyOf(node) {
       if (!node || !node.type) return ""
       switch (node.type) {
-        case "source":       return "src:"   + node.sourceId
-        case "frameparser":  return "fp:"    + node.sourceId
-        case "group":        return "grp:"   + node.groupId
-        case "dataset":      return "ds:"    + node.groupId + ":" + node.datasetId
-        case "output":       return "out:"   + node.groupId + ":" + node.widgetId
-        case "output-panel": return "opnl:"  + node.groupId
-        case "transform":    return "tx:"    + node.groupId + ":" + node.datasetId
-        case "action":       return "act:"   + node.actionId
-        case "table":        return "tbl:"   + (node.tableName || "")
+        case "source":         return "src:"   + node.sourceId
+        case "frameparser":    return "fp:"    + node.sourceId
+        case "group":          return "grp:"   + node.groupId
+        case "dataset":        return "ds:"    + node.groupId + ":" + node.datasetId
+        case "output":         return "out:"   + node.groupId + ":" + node.widgetId
+        case "output-panel":   return "opnl:"  + node.groupId
+        case "transform":      return "tx:"    + node.groupId + ":" + node.datasetId
+        case "action":         return "act:"   + node.actionId
+        case "table":          return "tbl:"   + (node.tableName || "")
+        case "mqtt-publisher": return "mqtt-publisher"
       }
       return ""
     }

@@ -26,6 +26,7 @@
 
 #include "DataModel/FrameBuilder.h"
 #include "DataModel/NotificationCenter.h"
+#include "DataModel/Scripting/DeviceWriteApi.h"
 #include "Misc/Utilities.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -212,6 +213,7 @@ static QList<QStringList> convertJsResult(const QJSValue& jsResult)
 DataModel::JsScriptEngine::JsScriptEngine()
   : m_watchdog(&m_engine, kRuntimeWatchdogMs, QStringLiteral("JsScriptEngine"))
   , m_disabled(false)
+  , m_sourceId(0)
   , m_consecutiveTimeouts(0)
 {
   m_engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
@@ -221,6 +223,12 @@ DataModel::JsScriptEngine::JsScriptEngine()
 
   // Expose tableGet / tableSet / datasetGetRaw / datasetGetFinal
   DataModel::FrameBuilder::instance().injectTableApiJS(&m_engine);
+
+  // Expose deviceWrite(data, sourceId?) bound to source 0 until loadScript() updates it
+  DataModel::DeviceWriteApi::installJS(&m_engine, m_sourceId);
+
+  // Expose actionFire(actionId) for firing dashboard actions from the parser
+  DataModel::ActionFireApi::installJS(&m_engine);
 }
 
 /**
@@ -556,6 +564,10 @@ bool DataModel::JsScriptEngine::loadScript(const QString& script,
                                    "for(var i=0,j=0;i<h.length;i+=2,j++)"
                                    "a[j]=parseInt(h.substr(i,2),16);return a;}"));
   m_hexToArray = m_engine.globalObject().property(QStringLiteral("__ss_internal_hex_to_array__"));
+
+  // Re-bind deviceWrite() to this source so the optional sourceId argument defaults correctly
+  m_sourceId = sourceId;
+  DataModel::DeviceWriteApi::installJS(&m_engine, m_sourceId);
 
   // Re-arm the circuit breaker on fresh script
   m_disabled            = false;

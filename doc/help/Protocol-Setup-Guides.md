@@ -93,45 +93,54 @@ Serial Studio will resolve the hostname (if provided) and attempt a TCP connecti
 
 **License:** Pro
 
-**Prerequisites:** Access to an MQTT broker. Broker hostname, port, and credentials (if any).
+**Prerequisites:** Access to an MQTT broker. Broker hostname, port, and credentials (if any). Topic filter (subscriber) or base topic (publisher).
 
-### Steps
+MQTT now has two distinct surfaces in Serial Studio. Pick the one that matches what you want to do; both can run in the same project.
 
-1. Click the **MQTT** button in the toolbar to open the MQTT Configuration Dialog.
-2. Enter the **Broker Address** (hostname or IP). Default: `127.0.0.1`.
-3. Enter the **Port**. Default: `1883` for plaintext, `8883` for TLS.
-4. Enter **Username** and **Password** if the broker requires authentication.
-5. Select the **MQTT Version**: 3.1, 3.1.1, or 5.0.
-6. Select the **Mode**:
-   - **Subscriber**: Serial Studio receives messages from the broker and routes them through the data pipeline.
-   - **Publisher**: Serial Studio forwards incoming frame data from a connected device to the broker.
-7. Enter the **Topic Filter** (subscriber) or **Topic** (publisher). Examples: `sensors/#`, `device/+/telemetry`, `mydevice/data`.
-8. Click **Connect**.
+- **Subscriber (per-source driver).** Treats a broker topic as if it were a serial or network device. Configured under **Devices** in the project editor, exactly like UART or Network. Use this when the data already lives on a broker.
+- **Publisher (per-project).** Pushes parsed frames, raw bytes, or notifications out to a broker. Configured under the **MQTT Publisher** node in the project editor (directly below Devices). Use this when Serial Studio is the producer and downstream tools subscribe.
 
-### Optional: TLS/SSL Configuration
+### Subscriber: add an MQTT source
 
-1. Enable **SSL** in the MQTT dialog.
-2. Select the **SSL Protocol** (e.g., TLS 1.2, TLS 1.3).
-3. Set the **Peer Verify Mode**: None, Query, Verify, or Auto.
-4. Optionally load custom **CA Certificates** by clicking the certificate button and selecting a PEM file or directory.
+1. Open the project editor.
+2. Add a new source under **Devices** (or pick an existing one) and set its **Bus Type** to **MQTT Subscriber**.
+3. Under **Connection Settings**, enter:
+   - **Hostname** and **Port** (`1883` plaintext, `8883` TLS).
+   - **Username** / **Password** if the broker requires authentication.
+   - **Client ID** (auto-generated; click **Regenerate** to pick a new one).
+   - **Topic Filter**. Examples: `sensors/#`, `device/+/telemetry`, `mydevice/data`.
+   - **MQTT Version** (3.1, 3.1.1, or 5.0).
+   - **Clean Session** on (default) for interactive use.
+4. To use TLS, enable **SSL/TLS** and pick a protocol family and peer-verify mode. For a private CA, load the PEM certificates from a folder.
+5. Configure frame detection on the source. Each MQTT message preserves payload boundaries, so **No Delimiters** is usually the right choice — one publish becomes one frame.
+6. Save the project and click **Connect** in the Setup panel.
 
-### Optional: Will Message Configuration
+Repeat with another source set to **MQTT Subscriber** to add a second broker connection (or a second topic on the same broker). Each MQTT source has its own broker session, credentials, and TLS configuration.
 
-1. Set the **Will Topic** (the topic the broker publishes to if you disconnect unexpectedly).
-2. Set the **Will Message** (the payload).
-3. Set **Will QoS** (0, 1, or 2) and **Will Retain** flag.
+See [MQTT Subscriber](Drivers-MQTT.md) for the full protocol primer.
 
-### Optional: Keep Alive and Client ID
+### Publisher: configure the project-level publisher
 
-- **Keep Alive**: Interval in seconds for PING packets. Enable **Auto Keep Alive** for automatic management.
-- **Client ID**: Auto-generated. Click the regenerate button to create a new random ID.
-- **Clean Session**: When enabled, the broker discards any previous session state on connect.
+1. Open the project editor and select **MQTT Publisher** in the left tree (immediately below **Devices**).
+2. Under **Publishing**, turn on **Enable Publishing**.
+3. Pick **Payload**:
+   - **Dashboard Data** publishes each parsed frame as compact JSON.
+   - **Raw RX Data** republishes the bytes that arrived on any active driver, unmodified.
+4. Set **Topic Base**. The Publisher silently produces no traffic when this is empty.
+5. Turn on **Publish Notifications** to mirror dashboard events to MQTT; set **Notification Topic** if you want them on a separate topic from the frame stream.
+6. Under **Broker**, fill in hostname, port, credentials, protocol version, and keep-alive.
+7. For TLS, enable **Use SSL/TLS** and pick a protocol, peer-verify mode, and verify depth. Use **Load CA Certs** in the header bar to add PEM certificates for a private CA.
+8. Click **Test Connection** in the header bar to probe the broker without disturbing the live session. The result appears in a message box.
+9. Click **Connect** in the header bar to open the publishing session.
+
+See [MQTT Publisher](MQTT-Publisher.md) for the full reference, including the `mqttPublish()` script hook for frame parsers.
 
 ### Troubleshooting
 
-- **Connection fails:** Verify broker address and port. Test with a standalone MQTT client (e.g., MQTT Explorer, `mosquitto_sub`) to confirm the broker is reachable.
-- **No messages received:** Topic names are case-sensitive. Verify the topic filter matches what the device publishes to. Use `#` as the topic filter to receive all messages for debugging.
-- **TLS handshake failure:** Verify the CA certificate matches the broker's certificate chain. Check that the SSL protocol version is supported by the broker.
+- **Connection fails:** Verify broker address and port. Test with a standalone MQTT client (e.g., MQTT Explorer, `mosquitto_sub`) to confirm the broker is reachable. On the Publisher form, **Test Connection** does the same probe inside Serial Studio.
+- **Subscribed but no messages:** Topic names are case-sensitive. Verify the topic filter matches what the device publishes to. Use `#` as the topic filter to receive all messages for debugging.
+- **TLS handshake failure:** Verify the CA certificate matches the broker's certificate chain. After loading a new CA, disconnect and reconnect (or run **Test Connection**) to apply it.
+- **Publisher and a subscriber loop on the same topic:** Publishing to a topic the project also subscribes to creates an echo. Use different base topics, or disable one side.
 
 ## Modbus RTU Setup (Pro)
 
@@ -628,6 +637,8 @@ Serial Studio opens the named pipe for reading and streams data into the pipelin
 ## See Also
 
 - [Communication Protocols](Communication-Protocols.md): protocol overview and comparison.
-- [MQTT Integration](MQTT-Integration.md): in-depth MQTT documentation.
+- [MQTT Topics & Semantics](MQTT-Topics.md): protocol vocabulary used by both MQTT surfaces.
+- [MQTT Subscriber](Drivers-MQTT.md): in-depth subscriber-driver documentation.
+- [MQTT Publisher](MQTT-Publisher.md): project-level publisher documentation.
 - [Getting Started](Getting-Started.md): first-time setup tutorial.
 - [Troubleshooting](Troubleshooting.md): general troubleshooting guide.

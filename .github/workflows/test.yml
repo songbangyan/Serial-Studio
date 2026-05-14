@@ -132,6 +132,8 @@ jobs:
           libgstreamer-plugins-base1.0-0 \
           nodejs \
           npm \
+          mosquitto \
+          mosquitto-clients \
     - name: '⚙️ Download prebuilt gRPC'
       run: |
         gh release download v1.78.1 \
@@ -220,6 +222,30 @@ jobs:
       run: |
         ./build/app/${{env.UNIXNAME}} --activate "${{secrets.SERIAL_STUDIO_LICENSE_KEY}}"
 
+    - name: '🦟 Start Mosquitto MQTT broker'
+      run: |
+        # Run an allow-anonymous broker on 127.0.0.1:1883 in the background
+        # for the MQTT publisher / scripting tests. The systemd unit shipped
+        # with the package is disabled here so we have full control.
+        sudo systemctl stop mosquitto || true
+
+        cat > /tmp/mosquitto-ci.conf <<'EOF'
+        listener 1883 127.0.0.1
+        allow_anonymous true
+        persistence false
+        EOF
+
+        mosquitto -d -c /tmp/mosquitto-ci.conf
+
+        # Wait for the broker to accept connections
+        for i in $(seq 1 15); do
+          if nc -z 127.0.0.1 1883 2>/dev/null; then
+            echo "Mosquitto is ready (attempt $i)"
+            break
+          fi
+          sleep 1
+        done
+
     - name: '🚀 Start Serial Studio (headless)'
       env:
         QT_QPA_PLATFORM: offscreen
@@ -263,6 +289,11 @@ jobs:
         if [ -f ss_pid.txt ]; then
           kill $(cat ss_pid.txt) || true
         fi
+
+    - name: '🦟 Stop Mosquitto MQTT broker'
+      if: always()
+      run: |
+        sudo pkill -f "mosquitto -d -c /tmp/mosquitto-ci.conf" || true
 
     - name: '📤 Upload test results'
       if: always()

@@ -42,12 +42,14 @@ def _is_commercial_build(api_client) -> bool:
 
 
 def _is_pro_tier(api_client) -> bool:
-    """Check if current license is at least Pro tier."""
-    if not _is_commercial_build(api_client):
-        return False
+    """Treat any commercial build as Pro-capable for testing purposes.
 
-    status = api_client.command("licensing.getStatus")
-    return status.get("featureTierValue", 0) >= 3  # Pro = 3
+    Output widgets are compile-time gated by BUILD_COMMERCIAL; the runtime
+    tier check is belt-and-suspenders. CI licenses occasionally come back
+    with an empty Lemon Squeezy variant_name, which maps to FeatureTier::None
+    and would otherwise skip every dashboard test on a fully commercial build.
+    """
+    return _is_commercial_build(api_client)
 
 
 def _make_output_widget(

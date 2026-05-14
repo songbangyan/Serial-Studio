@@ -23,6 +23,10 @@
 
 #include <QDebug>
 
+#ifdef BUILD_COMMERCIAL
+#  include "MQTT/Publisher.h"
+#endif
+
 //--------------------------------------------------------------------------------------------------
 // Constants
 //--------------------------------------------------------------------------------------------------
@@ -435,3 +439,16 @@ QVariant DataModel::TableApiBridge::datasetGetFinal(int uid)
 
   return val->isNumeric ? QVariant(val->numericValue) : QVariant(val->stringValue);
 }
+
+#ifdef BUILD_COMMERCIAL
+/**
+ * @brief Publishes an arbitrary payload through the project's MQTT publisher.
+ */
+qint64 DataModel::TableApiBridge::mqttPublish(const QString& topic,
+                                              const QByteArray& payload,
+                                              int qos,
+                                              bool retain)
+{
+  return MQTT::Publisher::instance().mqttPublish(topic, payload, qos, retain);
+}
+#endif

@@ -111,6 +111,43 @@ function parse(frame /*, separator */) {
 }
 ```
 
+## Device output — `deviceWrite()`
+
+```js
+deviceWrite(data, sourceId?) -> { ok: true } | { ok: false, error: "..." }
+```
+
+- `data` is a string (UTF-8 encoded on the wire) or an array of byte values
+  (0–255).
+- `sourceId` is optional; default is the source this parser belongs to.
+- Synchronous, fire-and-forget. Never throws. Each call is logged as
+  `[deviceWrite] source=N bytes=M written=K`.
+
+Use for closed-loop control from inside `parse()`: ack a frame, raise an
+alarm, request a status push. Not for user-triggered actions — those
+belong on an Output Widget.
+
+```js
+function parse(frame) {
+  const values = frame.split(",");
+  if (parseFloat(values[0]) > 80) {
+    const r = deviceWrite("ALARM=1\n");
+    if (!r.ok) console.warn("alarm write failed:", r.error);
+  }
+  return values;
+}
+```
+
+## Firing project actions — `actionFire()`
+
+```js
+actionFire(actionId) -> { ok: true } | { ok: false, error: "..." }
+```
+
+Reuses an existing project Action (with its prebuilt payload + timer
+mode). `actionId` is the action's stable id, NOT its index in the list.
+Same shape as `deviceWrite`; never throws.
+
 ## Errors
 
 Throwing an exception logs a watchdog warning and skips the frame. Returning

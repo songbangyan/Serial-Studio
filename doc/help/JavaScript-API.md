@@ -381,6 +381,107 @@ For full documentation on output controls, see [Output Controls](Output-Controls
 
 > **Note:** Output widget transmit functions always use JavaScript. The Lua/JavaScript language selection applies only to the frame parser `parse()` function.
 
+## Writing back to the device — `deviceWrite()`
+
+Frame parsers (and dataset transforms) can send bytes back to the connected device from inside the script. This unblocks closed-loop control patterns: acknowledge a frame, raise an alarm setpoint, switch the device into a new mode, or pulse a request line — all decided by the script that just parsed the incoming frame.
+
+### Signature
+
+```text
+deviceWrite(data, sourceId?)
+  data:     string (Lua) or string / array of bytes (JavaScript)
+  sourceId: optional number; defaults to the source the parser belongs to
+  returns:  { ok = true }                  on success
+            { ok = false, error = "..." }  on failure
+```
+
+`deviceWrite` is **synchronous and fire-and-forget**: it pushes bytes to the driver and returns immediately. It does not wait for a reply, it does not retry, and it does not block parsing.
+
+Every call is logged to the application log as `[deviceWrite] source=<id> bytes=<n> written=<n>` for debugging.
+
+### Lua example
+
+```lua
+function parse(frame)
+  local values = {}
+  for field in frame:gmatch("([^,]+)") do
+    values[#values + 1] = tonumber(field) or field
+  end
+
+  -- Raise alarm if temperature exceeds threshold
+  if (tonumber(values[1]) or 0) > 80 then
+    local r = deviceWrite("ALARM=1\n")
+    if not r.ok then
+      print("alarm write failed:", r.error)
+    end
+  end
+
+  return values
+end
+```
+
+### JavaScript example
+
+```javascript
+function parse(frame) {
+  const values = frame.split(",");
+
+  // Acknowledge every frame we successfully parsed
+  if (values.length === 4) {
+    const r = deviceWrite("ACK\n");
+    if (!r.ok) console.warn("ack failed:", r.error);
+  }
+
+  return values;
+}
+```
+
+### Targeting a specific source
+
+In multi-source projects, omit `sourceId` to write back to the same source the parser owns. Pass an explicit `sourceId` to write to a different one — useful when one source is the command channel and another is the telemetry channel:
+
+```lua
+function parse(frame)
+  -- read telemetry on source 1, write commands to source 0
+  deviceWrite("STATUS?\n", 0)
+  return parseTelemetry(frame)
+end
+```
+
+### Failure modes
+
+`{ ok = false, error = ... }` covers all failure cases — `deviceWrite` never throws. The most common reasons:
+
+- `"device not connected or write failed"` — no live driver for that source, or the driver's `write()` returned 0/negative.
+- `"deviceWrite: data is empty"` — the payload was zero bytes.
+- `"deviceWrite: data must be a string"` (Lua) / `"... string or byte array"` (JS) — wrong argument type.
+- `"deviceWrite: sourceId must be a number"` — the optional second argument was non-numeric.
+
+### When NOT to use it
+
+- For one-shot user-triggered commands (button press, slider drag), use an **Output Widget** instead. Output widgets carry UI, validation, and protocol helpers (CRC, Modbus, NMEA, ...). `deviceWrite` is the right tool when the *parser itself* needs to react to incoming data.
+- Don't loop on `deviceWrite` inside a single `parse()` call — the parser hotpath runs on every frame, and runaway writes will saturate the link.
+- Don't use it to broadcast unrelated state. The 1-second parser watchdog will fire if your script spends too long in I/O.
+
+## Firing actions — `actionFire()`
+
+Parsers can also trigger an existing project [Action](Actions.md) by its integer `actionId`. Same return shape as `deviceWrite`: `{ ok = true }` on success, `{ ok = false, error = "..." }` on failure. Calls are logged `[actionFire] id=N index=M ok`.
+
+```lua
+function parse(frame)
+  local values = {}
+  for f in frame:gmatch("([^,]+)") do values[#values + 1] = f end
+  if tonumber(values[1]) and tonumber(values[1]) < 5 then
+    actionFire(3)   -- "Emergency Shutdown"
+  end
+  return values
+end
+```
+
+`actionId` is the action's stable identifier (from `project.action.list` or the Project Editor), NOT its position in the action list.
+
+`actionFire` is also available in dataset transforms and painter scripts.
+
 ## Built-in Template Scripts
 
 Serial Studio includes 28 ready-to-use parser templates, available in both Lua and JavaScript. Select a template from the dropdown in the frame parser editor:

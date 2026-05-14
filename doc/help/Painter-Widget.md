@@ -140,6 +140,27 @@ Metadata about the current dashboard tick.
 
 `console.log`, `console.info`, `console.debug`, `console.warn`, and `console.error` route to the Painter widget's console output, which is visible in the script editor. Each call has the same signature as the browser console.
 
+## Control APIs — `deviceWrite()` and `actionFire()`
+
+Painter scripts can write back to the device or fire any existing project [Action](Actions.md):
+
+```javascript
+deviceWrite(data, sourceId?)     // -> { ok: true } | { ok: false, error: "..." }
+actionFire(actionId)             // -> { ok: true } | { ok: false, error: "..." }
+```
+
+Both are synchronous, fire-and-forget, and never throw. `deviceWrite` defaults `sourceId` to the painter's group `sourceId`; pass an explicit one to target a different source.
+
+**Important:** `paint()` runs on every dashboard tick (24 Hz). Calling `deviceWrite` or `actionFire` from `paint()` will saturate the link. Use them from `onFrame()` (called once per parsed frame, before the next paint), or guard with mouse / state conditions:
+
+```javascript
+function onFrame() {
+  if (datasets[0].value > 100) actionFire(7);   // existing "Alarm" action
+}
+```
+
+See [Frame Parser Scripting](JavaScript-API.md) for full signatures and failure modes shared across parsers, transforms, and painters.
+
 ## Drawing API
 
 The context exposes a Canvas2D-style API backed by `QPainter`. The list below is the full set of supported methods and properties; calls outside this list will throw.

@@ -225,3 +225,50 @@ For ~20 more reference transforms (clamp, dead-zone, ADC-to-voltage,
 celsius/fahrenheit, accumulator, autozero, bit extract, ...), call
 `scripts.list{kind: "transform_lua"}` or
 `scripts.list{kind: "transform_js"}`.
+
+## Frame metadata — second `info` argument
+
+Transforms receive `{frameNumber, sourceId, timestampMs}` as a second arg.
+One-arg transforms keep working unchanged (both languages ignore extras).
+`timestampMs` is a **monotonic** ms counter (steady clock), not wall
+clock — use for deltas only.
+
+```lua
+local lastTs = 0
+function transform(v, info)
+  if info.timestampMs - lastTs >= 100 then
+    lastTs = info.timestampMs
+    deviceWrite("PING\n")
+  end
+  return v
+end
+```
+
+## Closed-loop control: `deviceWrite()` and `actionFire()`
+
+Transforms can drive output directly:
+
+- `deviceWrite(data, sourceId?)` — synchronous fire-and-forget byte
+  write. `{ ok, error? }`, never throws. `sourceId` defaults to the
+  source the dataset belongs to. Logged
+  `[deviceWrite] source=N bytes=M written=K`.
+- `actionFire(actionId)` — fires an existing project Action by its
+  stable `actionId` (NOT its index). Reuses the action's payload and
+  timer mode. Same shape. Logged `[actionFire] id=N index=M ok`.
+
+Transforms run on every frame. Always latch with a local flag or
+rate-limit via `info.timestampMs` so repeated triggers don't saturate
+the link:
+
+```lua
+local fired = false
+function transform(v, info)
+  if not fired and v > 100 then
+    if deviceWrite("ALARM=1\n").ok then fired = true end
+  end
+  return v
+end
+```
+
+Use for closed-loop control (setpoint write-back, alarm raise). For
+user-triggered actions, use an Output Widget instead.

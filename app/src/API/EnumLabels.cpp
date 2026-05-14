@@ -40,6 +40,8 @@ QString API::EnumLabels::busTypeSlug(int value)
       return QStringLiteral("hid");
     case SerialStudio::BusType::Process:
       return QStringLiteral("process");
+    case SerialStudio::BusType::Mqtt:
+      return QStringLiteral("mqtt");
 #endif
   }
   return QStringLiteral("unknown");
@@ -70,6 +72,8 @@ QString API::EnumLabels::busTypeLabel(int value)
       return QStringLiteral("HID");
     case SerialStudio::BusType::Process:
       return QStringLiteral("Process I/O");
+    case SerialStudio::BusType::Mqtt:
+      return QStringLiteral("MQTT subscriber");
 #endif
   }
   return QStringLiteral("Unknown");

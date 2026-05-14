@@ -97,3 +97,19 @@ reference parsers for these patterns. Adapt the closest match.
   still receives the decoded bytes as a string in JS.
 - Top-level `var` persists across calls — that's how you keep buffers,
   state, EMAs across frames.
+
+## Closed-loop control: `deviceWrite()` and `actionFire()`
+
+Parsers can drive output without going through a widget:
+
+- `deviceWrite(data, sourceId?)` — synchronous fire-and-forget byte write.
+  Returns `{ ok, error? }`, never throws. `data` is a Lua string or JS
+  string / byte array. `sourceId` defaults to the source this parser
+  belongs to. Logged `[deviceWrite] source=N bytes=M written=K`.
+- `actionFire(actionId)` — fires an existing project Action by its
+  stable `actionId` (NOT its index). Reuses the action's payload,
+  encoding, and timer mode. Same return shape. Logged
+  `[actionFire] id=N index=M ok`.
+
+Use for acks, alarms, or status requests decided by the incoming frame.
+For user-triggered commands, build an Output Widget instead.

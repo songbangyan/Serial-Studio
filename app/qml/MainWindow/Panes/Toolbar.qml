@@ -250,24 +250,18 @@ Rectangle {
     Widgets.RibbonSection {
       collapsePriority: 30
       collapsible: Cpp_CommercialBuild
-      collapsedText: qsTr("Extensions")
-      collapsedIcon: "qrc:/icons/toolbar/extensions.svg"
+      collapsedText: Cpp_CommercialBuild ? qsTr("Assistant") : qsTr("Extensions")
+      collapsedIcon: Cpp_CommercialBuild ? "qrc:/icons/toolbar/ai.svg" :
+                                           "qrc:/icons/toolbar/extensions.svg"
 
       Widgets.ToolbarButton {
-        text: qsTr("Extensions")
         Layout.alignment: Qt.AlignLeft
-        onClicked: app.showExtensionManager()
-        icon.source: "qrc:/icons/toolbar/extensions.svg"
-        ToolTip.text: qsTr("Browse and install extensions")
-      }
-
-      Widgets.ToolbarButton {
-        text: qsTr("Assistant")
-        visible: Cpp_CommercialBuild
-        Layout.alignment: Qt.AlignLeft
-        onClicked: app.showAIAssistant()
-        icon.source: "qrc:/icons/toolbar/ai.svg"
-        ToolTip.text: qsTr("Chat with an AI to build and edit your project")
+        text: Cpp_CommercialBuild ? qsTr("Assistant") : qsTr("Extensions")
+        onClicked: Cpp_CommercialBuild ? app.showAIAssistant() : app.showExtensionManager()
+        icon.source: Cpp_CommercialBuild ? "qrc:/icons/toolbar/ai.svg" :
+                                           "qrc:/icons/toolbar/extensions.svg"
+        ToolTip.text: Cpp_CommercialBuild ? qsTr("Chat with an AI to build and edit your project") :
+                                            qsTr("Browse and install extensions")
       }
 
       Loader {
@@ -280,20 +274,6 @@ Rectangle {
             columns: 1
             rowSpacing: 0
             columnSpacing: 4
-
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("MQTT")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              onClicked: app.showMqttConfiguration()
-              ToolTip.text: qsTr("Configure MQTT connection (publish or subscribe)")
-              icon.source: Cpp_MQTT_Client.isConnected ?
-                             (Cpp_MQTT_Client.isSubscriber ?
-                                "qrc:/icons/toolbar/mqtt-subscriber.svg" :
-                                "qrc:/icons/toolbar/mqtt-publisher.svg") :
-                             "qrc:/icons/toolbar/mqtt.svg"
-            }
 
             Widgets.ToolbarButton {
               iconSize: 16
@@ -313,6 +293,16 @@ Rectangle {
               onClicked: app.showDatabaseExplorer()
               icon.source: "qrc:/icons/toolbar/sessions.svg"
               ToolTip.text: qsTr("Browse, replay, and export recorded sessions")
+            }
+
+            Widgets.ToolbarButton {
+              iconSize: 16
+              horizontalLayout: true
+              text: qsTr("Extensions")
+              Layout.alignment: Qt.AlignLeft
+              onClicked: app.showExtensionManager()
+              ToolTip.text: qsTr("Browse and install extensions")
+              icon.source: "qrc:/icons/toolbar/extensions-small.svg"
             }
           }
         }
@@ -607,22 +597,19 @@ Rectangle {
       Layout.minimumWidth: metrics.width + 16
       Layout.maximumWidth: metrics.width + 16
       text: checked ? qsTr("Disconnect") : qsTr("Connect")
-      checked: Cpp_IO_Manager.isConnected || mqttSubscriber
-      ToolTip.text: qsTr("Connect or disconnect from device or MQTT broker")
+      checked: Cpp_IO_Manager.isConnected
+      ToolTip.text: qsTr("Connect or disconnect from the configured device")
       icon.source: checked ? "qrc:/icons/toolbar/connect.svg" :
                              "qrc:/icons/toolbar/disconnect.svg"
 
       visible: Cpp_CommercialBuild ? (Cpp_Licensing_Trial.trialExpired && !Cpp_Licensing_LemonSqueezy.isActivated ? false : true) : true
-      enabled: (Cpp_IO_Manager.configurationOk
-                && !Cpp_CSV_Player.isOpen
-                && !Cpp_MDF4_Player.isOpen
-                && !app.sessionPlayerOpen)
-               || app.mqttSubscriber
+      enabled: Cpp_IO_Manager.configurationOk
+               && !Cpp_CSV_Player.isOpen
+               && !Cpp_MDF4_Player.isOpen
+               && !app.sessionPlayerOpen
 
       onClicked: {
-        if (app.mqttSubscriber)
-          Cpp_MQTT_Client.toggleConnection()
-        else if (typeof mainWindow !== "undefined" && mainWindow.userToggleConnection)
+        if (typeof mainWindow !== "undefined" && mainWindow.userToggleConnection)
           mainWindow.userToggleConnection()
         else
           Cpp_IO_Manager.toggleConnection()

@@ -189,6 +189,7 @@ public:
     , m_consumerEnabled(true)
     , m_queueSize(0)
     , m_worker(nullptr)
+    , m_timer(nullptr)
   {}
 
   /**
@@ -203,15 +204,28 @@ public:
 
     m_workerThread.start();
 
-    auto* timer = new QTimer();
-    timer->setInterval(m_config.timerIntervalMs);
-    timer->setTimerType(Qt::PreciseTimer);
-    timer->moveToThread(&m_workerThread);
+    m_timer = new QTimer();
+    m_timer->setInterval(m_config.timerIntervalMs);
+    m_timer->setTimerType(Qt::PreciseTimer);
+    m_timer->moveToThread(&m_workerThread);
 
-    QObject::connect(timer, &QTimer::timeout, m_worker, &FrameConsumerWorkerBase::processData);
-    QObject::connect(&m_workerThread, &QThread::finished, timer, &QObject::deleteLater);
+    QObject::connect(m_timer, &QTimer::timeout, m_worker, &FrameConsumerWorkerBase::processData);
+    QObject::connect(&m_workerThread, &QThread::finished, m_timer, &QObject::deleteLater);
 
-    QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(m_timer, "start", Qt::QueuedConnection);
+  }
+
+  /**
+   * @brief Updates the worker timer interval at runtime; safe to call from the main thread.
+   */
+  void setTimerIntervalMs(int ms)
+  {
+    if (!m_timer || ms <= 0)
+      return;
+
+    QTimer* timer = m_timer;
+    QMetaObject::invokeMethod(
+      m_timer, [timer, ms] { timer->setInterval(ms); }, Qt::QueuedConnection);
   }
 
   /**
@@ -275,6 +289,7 @@ protected:
   alignas(kCacheLine) std::atomic<size_t> m_queueSize;
   QThread m_workerThread;
   FrameConsumerWorkerBase* m_worker;
+  QTimer* m_timer;
 };
 
 }  // namespace DataModel

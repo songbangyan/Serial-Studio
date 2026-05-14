@@ -117,6 +117,12 @@ public:
   Q_INVOKABLE [[nodiscard]] QVariant tableGet(const QString& t, const QString& r);
   Q_INVOKABLE [[nodiscard]] QVariant datasetGetRaw(int uid);
   Q_INVOKABLE [[nodiscard]] QVariant datasetGetFinal(int uid);
+#ifdef BUILD_COMMERCIAL
+  Q_INVOKABLE qint64 mqttPublish(const QString& topic,
+                                 const QByteArray& payload,
+                                 int qos     = 0,
+                                 bool retain = false);
+#endif
 public slots:
   void tableSet(const QString& t, const QString& r, const QVariant& v);
 };

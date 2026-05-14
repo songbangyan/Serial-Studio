@@ -111,7 +111,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 - Smart home integration
 - Cloud data logging
 
-**Learn more:** [MQTT Integration](MQTT-Integration.md) | [Protocol Setup Guide](Protocol-Setup-Guides.md#mqtt-setup-pro)
+**Learn more:** [MQTT Topics & Semantics](MQTT-Topics.md) | [MQTT Subscriber](Drivers-MQTT.md) | [MQTT Publisher](MQTT-Publisher.md) | [Protocol Setup Guide](Protocol-Setup-Guides.md#mqtt-setup-pro)
 
 ### Modbus Protocol (RTU & TCP)
 

@@ -30,6 +30,10 @@
 #include "DataModel/Frame.h"
 #include "SerialStudio.h"
 
+namespace MQTT {
+class Publisher;
+}
+
 namespace DataModel {
 class CustomModel;
 class ProjectModel;
@@ -58,6 +62,9 @@ class ProjectEditor : public QObject {
   Q_PROPERTY(QAbstractItemModel* outputWidgetModel
              READ outputWidgetModel
              NOTIFY outputWidgetModelChanged)
+  Q_PROPERTY(QAbstractItemModel* mqttPublisherModel
+             READ mqttPublisherModel
+             NOTIFY mqttPublisherModelChanged)
   Q_PROPERTY(int selectedSourceId
              READ selectedSourceId
              NOTIFY sourceModelChanged)
@@ -143,6 +150,7 @@ signals:
   void datasetOptionsChanged();
   void editableOptionsChanged();
   void outputWidgetModelChanged();
+  void mqttPublisherModelChanged();
   void treeRebuildFinished(const QModelIndex& revealIndex);
 
 private:
@@ -169,6 +177,7 @@ public:
     UserTableView,
     WorkspacesView,
     WorkspaceView,
+    MqttPublisherView,
   };
   Q_ENUM(CurrentView)
 
@@ -222,6 +231,7 @@ public:
     KindWorkspace,
     KindAction,
     KindOutputWidget,
+    KindMqttPublisher,
   };
   Q_ENUM(ItemKind)
 
@@ -253,6 +263,7 @@ public:
   [[nodiscard]] CustomModel* projectModel() const;
   [[nodiscard]] CustomModel* datasetModel() const;
   [[nodiscard]] CustomModel* outputWidgetModel() const;
+  [[nodiscard]] CustomModel* mqttPublisherModel() const;
   [[nodiscard]] const DataModel::OutputWidget& selectedOutputWidget() const noexcept;
 
   Q_INVOKABLE [[nodiscard]] QVariantList tablesSummary() const;
@@ -272,6 +283,7 @@ public:
 public slots:
   void selectUserTable(const QString& tableName);
   void selectWorkspace(int workspaceId);
+  void selectMqttPublisher();
   void setTreeSearchQuery(const QString& query);
   void confirmCleanupUnresolvedWorkspaceWidgets();
 
@@ -282,6 +294,12 @@ public slots:
   void buildActionModel(const DataModel::Action& action);
   void buildDatasetModel(const DataModel::Dataset& dataset);
   void buildOutputWidgetModel(const DataModel::OutputWidget& widget);
+  void buildMqttPublisherModel();
+#ifdef BUILD_COMMERCIAL
+  void buildMqttPublishingSection(const MQTT::Publisher& pub, bool enabled);
+  void buildMqttBrokerSection(const MQTT::Publisher& pub, bool enabled);
+  void buildMqttSslSection(const MQTT::Publisher& pub, bool enabled);
+#endif
   void displayFrameParserView(int sourceId);
   void selectSource(int sourceId);
   void selectGroup(int groupId);
@@ -311,6 +329,7 @@ private slots:
   void onProjectItemChanged(QStandardItem* item);
   void onDatasetItemChanged(QStandardItem* item);
   void onOutputWidgetItemChanged(QStandardItem* item);
+  void onMqttPublisherItemChanged(QStandardItem* item);
   void setCurrentView(const DataModel::ProjectEditor::CurrentView view);
   void onCurrentSelectionChanged(const QModelIndex& current, const QModelIndex& previous);
 
@@ -332,6 +351,7 @@ private:
   bool selectOutputWidgetItem(QStandardItem* item);
   bool selectDataTableItem(QStandardItem* item);
   bool selectWorkspaceTreeItem(QStandardItem* item);
+  bool selectMqttPublisherItem(QStandardItem* item);
   void syncDatasetItemCache(int groupId, int datasetId);
   void appendDriverPropertyRows(const DataModel::Source& source);
   void applyGroupSourceEdit(int srcIdx, int groupId);
@@ -361,6 +381,7 @@ private:
   void appendGroupTreeItems(QStandardItem* root, QHash<QString, bool>& expandedStates);
   void appendSharedMemoryTreeItems(QStandardItem* root, QHash<QString, bool>& expandedStates);
   void appendWorkspaceTreeItems(QStandardItem* root, QHash<QString, bool>& expandedStates);
+  void appendMqttPublisherTreeItem(QStandardItem* root);
   void appendDatasetChildren(QStandardItem* groupItem, const DataModel::Group& group);
   void appendOutputWidgetChildren(QStandardItem* groupItem, const DataModel::Group& group);
 
@@ -431,6 +452,8 @@ private:
   QMap<QStandardItem*, int> m_workspaceItems;
   int m_selectedWorkspaceId;
 
+  QStandardItem* m_mqttPublisherItem;
+
   QString m_treeSearchQuery;
 
   DataModel::Group m_selectedGroup;
@@ -448,6 +471,7 @@ private:
   CustomModel* m_projectModel;
   CustomModel* m_datasetModel;
   CustomModel* m_outputWidgetModel;
+  CustomModel* m_mqttPublisherModel;
 
   DatasetTransformEditor* m_transformEditor;
 

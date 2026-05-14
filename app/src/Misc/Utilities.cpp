@@ -209,8 +209,8 @@ int Misc::Utilities::showMessageBox(const QString& text,
     box.button(it.key())->setText(" " + it.value() + " ");
 
   // Resize message box
-  auto *spacer = new QSpacerItem(320, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-  auto *layout = qobject_cast<QGridLayout *>(box.layout());
+  auto* spacer = new QSpacerItem(320, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+  auto* layout = qobject_cast<QGridLayout*>(box.layout());
   layout->addItem(spacer, layout->rowCount(), 0, 1, layout->columnCount());
 
   // Execute the message box

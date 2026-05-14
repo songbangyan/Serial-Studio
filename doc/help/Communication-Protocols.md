@@ -157,7 +157,7 @@ MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe me
 - TLS connections need valid CA certificates. Load system certificates or point to a custom CA bundle.
 - MQTT 5.0 extended authentication is supported when the broker requires it.
 
-For detailed setup, see [MQTT Integration](MQTT-Integration.md).
+For the protocol vocabulary, see [MQTT Topics & Semantics](MQTT-Topics.md). The inbound side (per-source subscriber) is documented at [MQTT Subscriber](Drivers-MQTT.md); the outbound side (project-level publisher) at [MQTT Publisher](MQTT-Publisher.md).
 
 ### Modbus
 
@@ -389,7 +389,9 @@ The Process I/O driver captures data from child processes or named pipes, so Ser
 ## See also
 
 - [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step instructions for each protocol.
-- [MQTT Integration](MQTT-Integration.md): detailed MQTT configuration and usage.
+- [MQTT Topics & Semantics](MQTT-Topics.md): protocol vocabulary used by both the subscriber driver and the publisher.
+- [MQTT Subscriber](Drivers-MQTT.md): the inbound, per-source side of MQTT.
+- [MQTT Publisher](MQTT-Publisher.md): the outbound, project-level side of MQTT.
 - [Getting Started](Getting-Started.md): first-time setup tutorial.
 - [Troubleshooting](Troubleshooting.md): fixes for common connection problems.
 - [Pro vs Free Features](Pro-vs-Free.md): compare protocol availability across editions.

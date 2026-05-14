@@ -45,6 +45,7 @@ struct Source;
 #  include "IO/Drivers/CANBus.h"
 #  include "IO/Drivers/HID.h"
 #  include "IO/Drivers/Modbus.h"
+#  include "IO/Drivers/MQTT.h"
 #  include "IO/Drivers/Process.h"
 #  include "IO/Drivers/USB.h"
 #endif
@@ -151,6 +152,7 @@ public:
   [[nodiscard]] IO::Drivers::Audio* audio() const noexcept;
   [[nodiscard]] IO::Drivers::CANBus* canBus() const noexcept;
   [[nodiscard]] IO::Drivers::HID* hid() const noexcept;
+  [[nodiscard]] IO::Drivers::MQTT* mqtt() const noexcept;
   [[nodiscard]] IO::Drivers::Modbus* modbus() const noexcept;
   [[nodiscard]] IO::Drivers::Process* process() const noexcept;
   [[nodiscard]] IO::Drivers::USB* usb() const noexcept;
@@ -224,6 +226,7 @@ private:
   std::unique_ptr<IO::Drivers::Audio> m_audioUi;
   std::unique_ptr<IO::Drivers::CANBus> m_canBusUi;
   std::unique_ptr<IO::Drivers::HID> m_hidUi;
+  std::unique_ptr<IO::Drivers::MQTT> m_mqttUi;
   std::unique_ptr<IO::Drivers::Modbus> m_modbusUi;
   std::unique_ptr<IO::Drivers::Process> m_processUi;
   std::unique_ptr<IO::Drivers::USB> m_usbUi;

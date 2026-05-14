@@ -118,6 +118,7 @@ public:
     RawUsb,
     HidDevice,
     Process,
+    Mqtt,
 #endif
   };
   Q_ENUM(BusType)

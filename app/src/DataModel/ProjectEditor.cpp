@@ -36,6 +36,10 @@
 #include "Misc/Utilities.h"
 #include "SerialStudio.h"
 
+#ifdef BUILD_COMMERCIAL
+#  include "MQTT/Publisher.h"
+#endif
+
 //--------------------------------------------------------------------------------------------------
 // Private enums to track which item the user selected/modified
 //--------------------------------------------------------------------------------------------------
@@ -126,6 +130,27 @@ typedef enum {
   kOutputWidget_TxEncoding
 } OutputWidgetItem;
 
+typedef enum {
+  kMqttPublisher_Enabled,
+  kMqttPublisher_Mode,
+  kMqttPublisher_PublishFrequency,
+  kMqttPublisher_TopicBase,
+  kMqttPublisher_PublishNotifications,
+  kMqttPublisher_NotificationTopic,
+  kMqttPublisher_Hostname,
+  kMqttPublisher_Port,
+  kMqttPublisher_ClientId,
+  kMqttPublisher_Username,
+  kMqttPublisher_Password,
+  kMqttPublisher_MqttVersion,
+  kMqttPublisher_KeepAlive,
+  kMqttPublisher_CleanSession,
+  kMqttPublisher_SslEnabled,
+  kMqttPublisher_SslProtocol,
+  kMqttPublisher_PeerVerifyMode,
+  kMqttPublisher_PeerVerifyDepth,
+} MqttPublisherItem;
+
 // clang-format on
 
 /**
@@ -153,6 +178,8 @@ static QString busTypeIcon(int busType)
       return QStringLiteral("qrc:/icons/devices/drivers/hid.svg");
     case SerialStudio::BusType::Process:
       return QStringLiteral("qrc:/icons/devices/drivers/process.svg");
+    case SerialStudio::BusType::Mqtt:
+      return QStringLiteral("qrc:/icons/devices/drivers/mqtt.svg");
 #endif
     default:
       return QStringLiteral("qrc:/icons/devices/drivers/uart.svg");
@@ -523,6 +550,9 @@ void DataModel::ProjectEditor::wireExternalSignals()
       case SourceView:
         buildSourceModel(m_selectedSource);
         break;
+      case MqttPublisherView:
+        buildMqttPublisherModel();
+        break;
       default:
         break;
     }
@@ -556,6 +586,7 @@ DataModel::ProjectEditor::ProjectEditor()
   , m_systemDatasetsItem(nullptr)
   , m_workspacesRootItem(nullptr)
   , m_selectedWorkspaceId(-1)
+  , m_mqttPublisherItem(nullptr)
   , m_treeModel(nullptr)
   , m_selectionModel(nullptr)
   , m_groupModel(nullptr)
@@ -564,6 +595,7 @@ DataModel::ProjectEditor::ProjectEditor()
   , m_projectModel(nullptr)
   , m_datasetModel(nullptr)
   , m_outputWidgetModel(nullptr)
+  , m_mqttPublisherModel(nullptr)
   , m_transformEditor(nullptr)
   , m_pendingSelectionKind(PendingSelectionKind::None)
   , m_pendingSelectionGroupId(-1)
@@ -1020,6 +1052,14 @@ DataModel::CustomModel* DataModel::ProjectEditor::outputWidgetModel() const
 }
 
 /**
+ * @brief Returns the MQTT Publisher form model exposed to QML.
+ */
+DataModel::CustomModel* DataModel::ProjectEditor::mqttPublisherModel() const
+{
+  return m_mqttPublisherModel;
+}
+
+/**
  * @brief Returns the currently selected output widget descriptor.
  */
 const DataModel::OutputWidget& DataModel::ProjectEditor::selectedOutputWidget() const noexcept
@@ -1082,6 +1122,7 @@ void DataModel::ProjectEditor::buildTreeModel()
   m_tablesRootItem     = nullptr;
   m_systemDatasetsItem = nullptr;
   m_workspacesRootItem = nullptr;
+  m_mqttPublisherItem  = nullptr;
 
   // Save expanded state before destroying the old model
   QHash<QString, bool> expandedStates;
@@ -1529,6 +1570,381 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
 }
 
 /**
+ * @brief Appends the single-instance "MQTT Publisher" node (Pro) to the project tree.
+ */
+void DataModel::ProjectEditor::appendMqttPublisherTreeItem(QStandardItem* root)
+{
+  Q_ASSERT(root != nullptr);
+
+  const QString q         = m_treeSearchQuery.trimmed();
+  const bool filterActive = !q.isEmpty();
+  if (filterActive && !tr("MQTT Publisher").contains(q, Qt::CaseInsensitive))
+    return;
+
+  auto* item = new QStandardItem(tr("MQTT Publisher"));
+  item->setData(tr("MQTT Publisher"), TreeViewText);
+  item->setData("qrc:/icons/project-editor/treeview/mqtt-publisher.svg", TreeViewIcon);
+  item->setData(-1, TreeViewFrameIndex);
+  item->setData(KindMqttPublisher, TreeItemKind);
+  item->setData(-1, TreeItemId);
+  item->setData(-1, TreeItemParentId);
+
+  root->appendRow(item);
+  m_mqttPublisherItem = item;
+}
+
+/**
+ * @brief Rebuilds the MQTT Publisher form model from the live Publisher singleton.
+ */
+void DataModel::ProjectEditor::buildMqttPublisherModel()
+{
+  if (m_mqttPublisherModel) {
+    disconnect(m_mqttPublisherModel);
+    m_mqttPublisherModel->deleteLater();
+    m_mqttPublisherModel = nullptr;
+  }
+
+  m_mqttPublisherModel = new CustomModel(this);
+
+#ifdef BUILD_COMMERCIAL
+  const auto& pub    = MQTT::Publisher::instance();
+  const bool enabled = pub.enabled();
+
+  buildMqttPublishingSection(pub, enabled);
+  buildMqttBrokerSection(pub, enabled);
+  buildMqttSslSection(pub, enabled);
+#endif
+
+  connect(m_mqttPublisherModel,
+          &CustomModel::itemChanged,
+          this,
+          &DataModel::ProjectEditor::onMqttPublisherItemChanged);
+
+  Q_EMIT mqttPublisherModelChanged();
+}
+
+#ifdef BUILD_COMMERCIAL
+/**
+ * @brief Appends the Publishing section (master toggle, mode, rate, topic, notifications).
+ */
+void DataModel::ProjectEditor::buildMqttPublishingSection(const MQTT::Publisher& pub, bool enabled)
+{
+  auto* pubHdr = new QStandardItem();
+  pubHdr->setData(SectionHeader, WidgetType);
+  pubHdr->setData(tr("Publishing"), PlaceholderValue);
+  pubHdr->setData("qrc:/icons/project-editor/model/mqtt-publishing.svg", ParameterIcon);
+  m_mqttPublisherModel->appendRow(pubHdr);
+
+  // Master toggle stays editable so the user can flip it back on
+  auto* enabledItem = new QStandardItem();
+  enabledItem->setEditable(true);
+  enabledItem->setData(true, Active);
+  enabledItem->setData(CheckBox, WidgetType);
+  enabledItem->setData(enabled, EditableValue);
+  enabledItem->setData(kMqttPublisher_Enabled, ParameterType);
+  enabledItem->setData(tr("Enable Publishing"), ParameterName);
+  enabledItem->setData(tr("Broadcast frames, raw bytes and notifications to the broker"),
+                       ParameterDescription);
+  m_mqttPublisherModel->appendRow(enabledItem);
+
+  auto* modeItem = new QStandardItem();
+  modeItem->setEditable(true);
+  modeItem->setData(enabled, Active);
+  modeItem->setData(ComboBox, WidgetType);
+  modeItem->setData(pub.modes(), ComboBoxData);
+  modeItem->setData(pub.mode(), EditableValue);
+  modeItem->setData(kMqttPublisher_Mode, ParameterType);
+  modeItem->setData(tr("Payload"), ParameterName);
+  modeItem->setData(tr("Selects what gets published: parsed dashboard data or raw RX bytes"),
+                    ParameterDescription);
+  m_mqttPublisherModel->appendRow(modeItem);
+
+  auto* freqItem = new QStandardItem();
+  freqItem->setEditable(true);
+  freqItem->setData(enabled, Active);
+  freqItem->setData(IntField, WidgetType);
+  freqItem->setData(pub.publishFrequency(), EditableValue);
+  freqItem->setData(kMqttPublisher_PublishFrequency, ParameterType);
+  freqItem->setData(tr("Publish Rate (Hz)"), ParameterName);
+  freqItem->setData(tr("How many times per second to publish (1-30 Hz). Higher rates increase "
+                       "broker load; dashboard data is rate-limited so a slow broker never blocks "
+                       "frame parsing."),
+                    ParameterDescription);
+  m_mqttPublisherModel->appendRow(freqItem);
+
+  auto* topicItem = new QStandardItem();
+  topicItem->setEditable(true);
+  topicItem->setData(enabled, Active);
+  topicItem->setData(TextField, WidgetType);
+  topicItem->setData(pub.topicBase(), EditableValue);
+  topicItem->setData(kMqttPublisher_TopicBase, ParameterType);
+  topicItem->setData(tr("Topic Base"), ParameterName);
+  topicItem->setData(tr("serial-studio/device"), PlaceholderValue);
+  topicItem->setData(tr("Base topic used for frame and raw-byte publishing"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(topicItem);
+
+  auto* notifyItem = new QStandardItem();
+  notifyItem->setEditable(true);
+  notifyItem->setData(enabled, Active);
+  notifyItem->setData(CheckBox, WidgetType);
+  notifyItem->setData(pub.publishNotifications(), EditableValue);
+  notifyItem->setData(kMqttPublisher_PublishNotifications, ParameterType);
+  notifyItem->setData(tr("Publish Notifications"), ParameterName);
+  notifyItem->setData(tr("Mirror dashboard notifications to a dedicated topic"),
+                      ParameterDescription);
+  m_mqttPublisherModel->appendRow(notifyItem);
+
+  if (pub.publishNotifications()) {
+    auto* notifyTopicItem = new QStandardItem();
+    notifyTopicItem->setEditable(true);
+    notifyTopicItem->setData(enabled, Active);
+    notifyTopicItem->setData(TextField, WidgetType);
+    notifyTopicItem->setData(pub.notificationTopic(), EditableValue);
+    notifyTopicItem->setData(kMqttPublisher_NotificationTopic, ParameterType);
+    notifyTopicItem->setData(tr("Notification Topic"), ParameterName);
+    notifyTopicItem->setData(tr("Defaults to Topic Base when empty"), PlaceholderValue);
+    notifyTopicItem->setData(tr("Topic where dashboard notifications are mirrored"),
+                             ParameterDescription);
+    m_mqttPublisherModel->appendRow(notifyTopicItem);
+  }
+}
+
+/**
+ * @brief Appends the Broker section (host, port, credentials, protocol, keep-alive).
+ */
+void DataModel::ProjectEditor::buildMqttBrokerSection(const MQTT::Publisher& pub, bool enabled)
+{
+  auto* brokerHdr = new QStandardItem();
+  brokerHdr->setData(SectionHeader, WidgetType);
+  brokerHdr->setData(tr("Broker"), PlaceholderValue);
+  brokerHdr->setData("qrc:/icons/project-editor/model/mqtt-broker.svg", ParameterIcon);
+  m_mqttPublisherModel->appendRow(brokerHdr);
+
+  auto* hostItem = new QStandardItem();
+  hostItem->setEditable(true);
+  hostItem->setData(enabled, Active);
+  hostItem->setData(TextField, WidgetType);
+  hostItem->setData(pub.hostname(), EditableValue);
+  hostItem->setData(kMqttPublisher_Hostname, ParameterType);
+  hostItem->setData(tr("Hostname"), ParameterName);
+  hostItem->setData(tr("broker.hivemq.com"), PlaceholderValue);
+  hostItem->setData(tr("Hostname or IP address of the MQTT broker"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(hostItem);
+
+  auto* portItem = new QStandardItem();
+  portItem->setEditable(true);
+  portItem->setData(enabled, Active);
+  portItem->setData(IntField, WidgetType);
+  portItem->setData(static_cast<int>(pub.port()), EditableValue);
+  portItem->setData(kMqttPublisher_Port, ParameterType);
+  portItem->setData(tr("Port"), ParameterName);
+  portItem->setData(tr("TCP port exposed by the broker (1883 plain, 8883 TLS)"),
+                    ParameterDescription);
+  m_mqttPublisherModel->appendRow(portItem);
+
+  auto* clientIdItem = new QStandardItem();
+  clientIdItem->setEditable(true);
+  clientIdItem->setData(enabled, Active);
+  clientIdItem->setData(TextField, WidgetType);
+  clientIdItem->setData(pub.clientId(), EditableValue);
+  clientIdItem->setData(kMqttPublisher_ClientId, ParameterType);
+  clientIdItem->setData(tr("Client ID"), ParameterName);
+  clientIdItem->setData(tr("Identifier sent to the broker on CONNECT"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(clientIdItem);
+
+  auto* userItem = new QStandardItem();
+  userItem->setEditable(true);
+  userItem->setData(enabled, Active);
+  userItem->setData(TextField, WidgetType);
+  userItem->setData(pub.username(), EditableValue);
+  userItem->setData(kMqttPublisher_Username, ParameterType);
+  userItem->setData(tr("Username"), ParameterName);
+  userItem->setData(tr("Username for broker authentication (leave empty for anonymous)"),
+                    ParameterDescription);
+  m_mqttPublisherModel->appendRow(userItem);
+
+  auto* passItem = new QStandardItem();
+  passItem->setEditable(true);
+  passItem->setData(enabled, Active);
+  passItem->setData(TextField, WidgetType);
+  passItem->setData(pub.password(), EditableValue);
+  passItem->setData(kMqttPublisher_Password, ParameterType);
+  passItem->setData(tr("Password"), ParameterName);
+  passItem->setData(tr("Password for broker authentication"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(passItem);
+
+  auto* versionItem = new QStandardItem();
+  versionItem->setEditable(true);
+  versionItem->setData(enabled, Active);
+  versionItem->setData(ComboBox, WidgetType);
+  versionItem->setData(pub.mqttVersions(), ComboBoxData);
+  versionItem->setData(static_cast<int>(pub.mqttVersion()), EditableValue);
+  versionItem->setData(kMqttPublisher_MqttVersion, ParameterType);
+  versionItem->setData(tr("Protocol Version"), ParameterName);
+  versionItem->setData(tr("MQTT protocol revision used on CONNECT"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(versionItem);
+
+  auto* keepAliveItem = new QStandardItem();
+  keepAliveItem->setEditable(true);
+  keepAliveItem->setData(enabled, Active);
+  keepAliveItem->setData(IntField, WidgetType);
+  keepAliveItem->setData(static_cast<int>(pub.keepAlive()), EditableValue);
+  keepAliveItem->setData(kMqttPublisher_KeepAlive, ParameterType);
+  keepAliveItem->setData(tr("Keep Alive (s)"), ParameterName);
+  keepAliveItem->setData(tr("Seconds between PINGREQ packets when idle"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(keepAliveItem);
+
+  auto* cleanItem = new QStandardItem();
+  cleanItem->setEditable(true);
+  cleanItem->setData(enabled, Active);
+  cleanItem->setData(CheckBox, WidgetType);
+  cleanItem->setData(pub.cleanSession(), EditableValue);
+  cleanItem->setData(kMqttPublisher_CleanSession, ParameterType);
+  cleanItem->setData(tr("Clean Session"), ParameterName);
+  cleanItem->setData(tr("Discard any persistent session state on CONNECT"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(cleanItem);
+}
+
+/**
+ * @brief Appends the SSL/TLS section (toggle, protocol, peer verification, depth).
+ */
+void DataModel::ProjectEditor::buildMqttSslSection(const MQTT::Publisher& pub, bool enabled)
+{
+  auto* sslHdr = new QStandardItem();
+  sslHdr->setData(SectionHeader, WidgetType);
+  sslHdr->setData(tr("SSL / TLS"), PlaceholderValue);
+  sslHdr->setData("qrc:/icons/project-editor/model/mqtt-ssl.svg", ParameterIcon);
+  m_mqttPublisherModel->appendRow(sslHdr);
+
+  auto* sslItem = new QStandardItem();
+  sslItem->setEditable(true);
+  sslItem->setData(enabled, Active);
+  sslItem->setData(CheckBox, WidgetType);
+  sslItem->setData(pub.sslEnabled(), EditableValue);
+  sslItem->setData(kMqttPublisher_SslEnabled, ParameterType);
+  sslItem->setData(tr("Use SSL/TLS"), ParameterName);
+  sslItem->setData(tr("Tunnel the broker connection over TLS"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(sslItem);
+
+  if (!pub.sslEnabled())
+    return;
+
+  auto* sslProtoItem = new QStandardItem();
+  sslProtoItem->setEditable(true);
+  sslProtoItem->setData(enabled, Active);
+  sslProtoItem->setData(ComboBox, WidgetType);
+  sslProtoItem->setData(pub.sslProtocols(), ComboBoxData);
+  sslProtoItem->setData(static_cast<int>(pub.sslProtocol()), EditableValue);
+  sslProtoItem->setData(kMqttPublisher_SslProtocol, ParameterType);
+  sslProtoItem->setData(tr("Protocol"), ParameterName);
+  sslProtoItem->setData(tr("Negotiated TLS protocol family"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(sslProtoItem);
+
+  auto* peerModeItem = new QStandardItem();
+  peerModeItem->setEditable(true);
+  peerModeItem->setData(enabled, Active);
+  peerModeItem->setData(ComboBox, WidgetType);
+  peerModeItem->setData(pub.peerVerifyModes(), ComboBoxData);
+  peerModeItem->setData(static_cast<int>(pub.peerVerifyMode()), EditableValue);
+  peerModeItem->setData(kMqttPublisher_PeerVerifyMode, ParameterType);
+  peerModeItem->setData(tr("Peer Verify"), ParameterName);
+  peerModeItem->setData(tr("How strictly the broker's certificate chain is validated"),
+                        ParameterDescription);
+  m_mqttPublisherModel->appendRow(peerModeItem);
+
+  auto* peerDepthItem = new QStandardItem();
+  peerDepthItem->setEditable(true);
+  peerDepthItem->setData(enabled, Active);
+  peerDepthItem->setData(IntField, WidgetType);
+  peerDepthItem->setData(pub.peerVerifyDepth(), EditableValue);
+  peerDepthItem->setData(kMqttPublisher_PeerVerifyDepth, ParameterType);
+  peerDepthItem->setData(tr("Verify Depth"), ParameterName);
+  peerDepthItem->setData(tr("Maximum certificate chain length accepted (0 = unlimited)"),
+                         ParameterDescription);
+  m_mqttPublisherModel->appendRow(peerDepthItem);
+}
+#endif
+
+/**
+ * @brief Pushes MQTT Publisher form edits back into the live Publisher singleton.
+ */
+void DataModel::ProjectEditor::onMqttPublisherItemChanged(QStandardItem* item)
+{
+  if (!item)
+    return;
+
+#ifdef BUILD_COMMERCIAL
+  auto& pub        = MQTT::Publisher::instance();
+  const auto type  = item->data(ParameterType).toInt();
+  const auto value = item->data(EditableValue);
+
+  switch (type) {
+    case kMqttPublisher_Enabled:
+      pub.setEnabled(value.toBool());
+      buildMqttPublisherModel();
+      return;
+    case kMqttPublisher_Mode:
+      pub.setMode(value.toInt());
+      break;
+    case kMqttPublisher_PublishFrequency:
+      pub.setPublishFrequency(value.toInt());
+      break;
+    case kMqttPublisher_TopicBase:
+      pub.setTopicBase(value.toString());
+      break;
+    case kMqttPublisher_PublishNotifications:
+      pub.setPublishNotifications(value.toBool());
+      buildMqttPublisherModel();
+      return;
+    case kMqttPublisher_NotificationTopic:
+      pub.setNotificationTopic(value.toString());
+      break;
+    case kMqttPublisher_Hostname:
+      pub.setHostname(value.toString());
+      break;
+    case kMqttPublisher_Port:
+      pub.setPort(static_cast<quint16>(value.toInt()));
+      break;
+    case kMqttPublisher_ClientId:
+      pub.setClientId(value.toString());
+      break;
+    case kMqttPublisher_Username:
+      pub.setUsername(value.toString());
+      break;
+    case kMqttPublisher_Password:
+      pub.setPassword(value.toString());
+      break;
+    case kMqttPublisher_MqttVersion:
+      pub.setMqttVersion(static_cast<quint8>(value.toInt()));
+      break;
+    case kMqttPublisher_KeepAlive:
+      pub.setKeepAlive(static_cast<quint16>(value.toInt()));
+      break;
+    case kMqttPublisher_CleanSession:
+      pub.setCleanSession(value.toBool());
+      break;
+    case kMqttPublisher_SslEnabled:
+      pub.setSslEnabled(value.toBool());
+      buildMqttPublisherModel();
+      return;
+    case kMqttPublisher_SslProtocol:
+      pub.setSslProtocol(static_cast<quint8>(value.toInt()));
+      break;
+    case kMqttPublisher_PeerVerifyMode:
+      pub.setPeerVerifyMode(static_cast<quint8>(value.toInt()));
+      break;
+    case kMqttPublisher_PeerVerifyDepth:
+      pub.setPeerVerifyDepth(value.toInt());
+      break;
+    default:
+      break;
+  }
+#else
+  Q_UNUSED(item);
+#endif
+}
+
+/**
  * @brief Populates the tree under root with sources, actions, groups, datasets.
  */
 void DataModel::ProjectEditor::buildTreeItems(QStandardItem* root,
@@ -1537,6 +1953,9 @@ void DataModel::ProjectEditor::buildTreeItems(QStandardItem* root,
   Q_ASSERT(root != nullptr);
 
   appendSourceTreeItems(root);
+#ifdef BUILD_COMMERCIAL
+  appendMqttPublisherTreeItem(root);
+#endif
   appendActionTreeItems(root);
   appendGroupTreeItems(root, expandedStates);
   appendSharedMemoryTreeItems(root, expandedStates);
@@ -1841,7 +2260,7 @@ void DataModel::ProjectEditor::buildSourceCommonRows(const DataModel::Source& so
 {
   auto* identHdr = new QStandardItem();
   identHdr->setData(SectionHeader, WidgetType);
-  identHdr->setData(tr("Identity"), PlaceholderValue);
+  identHdr->setData(tr("Input Device"), PlaceholderValue);
   identHdr->setData("qrc:/icons/project-editor/model/project.svg", ParameterIcon);
   m_sourceModel->appendRow(identHdr);
 
@@ -1856,12 +2275,6 @@ void DataModel::ProjectEditor::buildSourceCommonRows(const DataModel::Source& so
   titleItem->setData(tr("Human-readable name for this input device"), ParameterDescription);
   m_sourceModel->appendRow(titleItem);
 
-  auto* hdr = new QStandardItem();
-  hdr->setData(SectionHeader, WidgetType);
-  hdr->setData(tr("Input Device"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/project.svg", ParameterIcon);
-  m_sourceModel->appendRow(hdr);
-
   auto* busItem = new QStandardItem();
   busItem->setEditable(true);
   busItem->setData(true, Active);
@@ -1874,7 +2287,7 @@ void DataModel::ProjectEditor::buildSourceCommonRows(const DataModel::Source& so
   QStringList busTypes = {tr("Serial Port"), tr("Network Socket"), tr("Bluetooth LE")};
 #ifdef BUILD_COMMERCIAL
   busTypes << tr("Audio Input") << tr("Modbus") << tr("CAN Bus") << tr("Raw USB")
-           << tr("HID Device") << tr("Process");
+           << tr("HID Device") << tr("Process") << tr("MQTT Subscriber");
 #endif
 
   busItem->setData(busTypes, ComboBoxData);
@@ -3887,6 +4300,19 @@ bool DataModel::ProjectEditor::selectWorkspaceTreeItem(QStandardItem* item)
 }
 
 /**
+ * @brief Routes selection of the single MQTT Publisher tree node.
+ */
+bool DataModel::ProjectEditor::selectMqttPublisherItem(QStandardItem* item)
+{
+  if (item != m_mqttPublisherItem || item == nullptr)
+    return false;
+
+  buildMqttPublisherModel();
+  setCurrentView(MqttPublisherView);
+  return true;
+}
+
+/**
  * @brief Switches the active editor view based on the newly selected tree item.
  */
 void DataModel::ProjectEditor::onCurrentSelectionChanged(const QModelIndex& current,
@@ -3924,6 +4350,9 @@ void DataModel::ProjectEditor::onCurrentSelectionChanged(const QModelIndex& curr
     return;
 
   if (selectWorkspaceTreeItem(item))
+    return;
+
+  if (selectMqttPublisherItem(item))
     return;
 
   if (m_rootItems.contains(item)) {
@@ -4367,6 +4796,18 @@ void DataModel::ProjectEditor::selectWorkspace(int workspaceId)
       return;
     }
   }
+}
+
+/**
+ * @brief Selects the MQTT Publisher tree item when available.
+ */
+void DataModel::ProjectEditor::selectMqttPublisher()
+{
+  if (!m_selectionModel || !m_mqttPublisherItem)
+    return;
+
+  m_selectionModel->setCurrentIndex(m_mqttPublisherItem->index(),
+                                    QItemSelectionModel::ClearAndSelect);
 }
 
 /**

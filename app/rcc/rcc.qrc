@@ -260,6 +260,7 @@
         <file>icons/devices/drivers/canbus.svg</file>
         <file>icons/devices/drivers/hid.svg</file>
         <file>icons/devices/drivers/modbus.svg</file>
+        <file>icons/devices/drivers/mqtt.svg</file>
         <file>icons/devices/drivers/network.svg</file>
         <file>icons/devices/drivers/process.svg</file>
         <file>icons/devices/drivers/uart.svg</file>
@@ -305,10 +306,12 @@
         <file>icons/project-editor/actions/change-group.svg</file>
         <file>icons/project-editor/actions/clear.svg</file>
         <file>icons/project-editor/actions/compass.svg</file>
+        <file>icons/project-editor/actions/connect.svg</file>
         <file>icons/project-editor/actions/customize.svg</file>
         <file>icons/project-editor/actions/delete-register.svg</file>
         <file>icons/project-editor/actions/delete-table.svg</file>
         <file>icons/project-editor/actions/delete.svg</file>
+        <file>icons/project-editor/actions/disconnect.svg</file>
         <file>icons/project-editor/actions/duplicate.svg</file>
         <file>icons/project-editor/actions/export-table.svg</file>
         <file>icons/project-editor/actions/fft.svg</file>
@@ -316,6 +319,7 @@
         <file>icons/project-editor/actions/import-table.svg</file>
         <file>icons/project-editor/actions/insert-constant.svg</file>
         <file>icons/project-editor/actions/led.svg</file>
+        <file>icons/project-editor/actions/load-ca-certs.svg</file>
         <file>icons/project-editor/actions/move-down.svg</file>
         <file>icons/project-editor/actions/move-up.svg</file>
         <file>icons/project-editor/actions/output-button.svg</file>
@@ -327,6 +331,7 @@
         <file>icons/project-editor/actions/plot.svg</file>
         <file>icons/project-editor/actions/rename-table.svg</file>
         <file>icons/project-editor/actions/rename.svg</file>
+        <file>icons/project-editor/actions/test-connection.svg</file>
         <file>icons/project-editor/actions/transform.svg</file>
         <file>icons/project-editor/actions/waterfall.svg</file>
         <file>icons/project-editor/model/action-behavior.svg</file>
@@ -339,6 +344,9 @@
         <file>icons/project-editor/model/group.svg</file>
         <file>icons/project-editor/model/image.svg</file>
         <file>icons/project-editor/model/led.svg</file>
+        <file>icons/project-editor/model/mqtt-broker.svg</file>
+        <file>icons/project-editor/model/mqtt-publishing.svg</file>
+        <file>icons/project-editor/model/mqtt-ssl.svg</file>
         <file>icons/project-editor/model/output-panel.svg</file>
         <file>icons/project-editor/model/output-range.svg</file>
         <file>icons/project-editor/model/output-widget.svg</file>
@@ -403,6 +411,7 @@
         <file>icons/project-editor/treeview/gyroscope.svg</file>
         <file>icons/project-editor/treeview/image.svg</file>
         <file>icons/project-editor/treeview/indicator.svg</file>
+        <file>icons/project-editor/treeview/mqtt-publisher.svg</file>
         <file>icons/project-editor/treeview/multiplot.svg</file>
         <file>icons/project-editor/treeview/output-button.svg</file>
         <file>icons/project-editor/treeview/output-knob.svg</file>
@@ -464,9 +473,6 @@
         <file>icons/toolbar/extensions.svg</file>
         <file>icons/toolbar/help.svg</file>
         <file>icons/toolbar/mf4.svg</file>
-        <file>icons/toolbar/mqtt-publisher.svg</file>
-        <file>icons/toolbar/mqtt-subscriber.svg</file>
-        <file>icons/toolbar/mqtt.svg</file>
         <file>icons/toolbar/open-project.svg</file>
         <file>icons/toolbar/project-setup.svg</file>
         <file>icons/toolbar/sessions.svg</file>
@@ -763,5 +769,6 @@
         <file>icons/taskbar/ai.svg</file>
         <file>icons/project-editor/toolbar/protobuf.svg</file>
         <file>icons/project-editor/treeview/save-warning.svg</file>
+        <file>icons/toolbar/extensions-small.svg</file>
     </qresource>
 </RCC>

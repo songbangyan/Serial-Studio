@@ -137,6 +137,92 @@ def device_simulator():
 
 
 @pytest.fixture
+def mosquitto_broker():
+    """
+    Skip the test unless an MQTT broker is reachable on 127.0.0.1:1883.
+
+    CI launches `mosquitto -d` before pytest; local developers can run
+    `mosquitto -p 1883` in another terminal. Returns a dict with the
+    broker connection parameters so the test doesn't hardcode them.
+    """
+    import socket
+
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(2.0)
+    try:
+        sock.connect(("127.0.0.1", 1883))
+    except (ConnectionRefusedError, OSError, socket.timeout):
+        pytest.skip("MQTT broker not reachable on 127.0.0.1:1883")
+    finally:
+        try:
+            sock.close()
+        except Exception:
+            pass
+
+    return {"host": "127.0.0.1", "port": 1883}
+
+
+@pytest.fixture
+def mqtt_subscriber(mosquitto_broker):
+    """
+    Provide a paho-mqtt subscriber connected to the local broker.
+
+    Returns a helper object exposing `subscribe(topic)` and a `messages` list
+    that is populated asynchronously as the broker delivers messages.
+    """
+    try:
+        import paho.mqtt.client as mqtt
+    except ImportError:
+        pytest.skip("paho-mqtt is not installed")
+
+    received: list = []
+
+    class _Subscriber:
+        def __init__(self):
+            try:
+                self.client = mqtt.Client(
+                    client_id=f"ss-test-{time.time_ns()}",
+                    callback_api_version=mqtt.CallbackAPIVersion.VERSION2,
+                )
+            except (AttributeError, TypeError):
+                # Older paho-mqtt without callback_api_version arg
+                self.client = mqtt.Client(client_id=f"ss-test-{time.time_ns()}")
+
+            def _on_message(_client, _userdata, msg):
+                received.append({"topic": msg.topic, "payload": bytes(msg.payload)})
+
+            self.client.on_message = _on_message
+            self.client.connect(mosquitto_broker["host"], mosquitto_broker["port"], 30)
+            self.client.loop_start()
+            self.messages = received
+
+        def subscribe(self, topic: str, qos: int = 0) -> None:
+            self.client.subscribe(topic, qos)
+            # Give the broker a moment to register the subscription so
+            # subsequent publishes are delivered.
+            time.sleep(0.2)
+
+        def wait_for_messages(self, count: int = 1, timeout: float = 5.0) -> bool:
+            end = time.time() + timeout
+            while time.time() < end:
+                if len(received) >= count:
+                    return True
+                time.sleep(0.05)
+            return False
+
+        def close(self) -> None:
+            try:
+                self.client.loop_stop()
+                self.client.disconnect()
+            except Exception:
+                pass
+
+    sub = _Subscriber()
+    yield sub
+    sub.close()
+
+
+@pytest.fixture
 def data_generator():
     """Provide a data generator instance."""
     return DataGenerator()

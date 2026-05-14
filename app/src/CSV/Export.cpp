@@ -21,19 +21,15 @@
 
 #include "Export.h"
 
+#include <QDateTime>
+#include <QDir>
+
 #include "AppState.h"
 #include "CSV/Player.h"
 #include "DataModel/FrameBuilder.h"
 #include "IO/ConnectionManager.h"
 #include "MDF4/Player.h"
 #include "Misc/WorkspaceManager.h"
-
-#ifdef BUILD_COMMERCIAL
-#  include "MQTT/Client.h"
-#endif
-
-#include <QDateTime>
-#include <QDir>
 
 /**
  * @brief Escapes a CSV field per RFC 4180, quoting only when special characters require it.

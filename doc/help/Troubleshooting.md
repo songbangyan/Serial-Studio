@@ -568,13 +568,14 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the complete reference
 
 ### MQTT connection fails
 
-**See:** [MQTT Integration - Troubleshooting](MQTT-Integration.md)
+**See:** [MQTT Subscriber](Drivers-MQTT.md) and [MQTT Publisher](MQTT-Publisher.md). Run **Test Connection** on the Publisher form to probe broker reachability without disturbing live publishing.
 
 Common issues:
 - Broker address/port incorrect
 - Authentication credentials wrong
 - Firewall blocking connection
 - TLS/SSL certificate issues
+- Client-ID collision between two instances or two sources
 
 ### Modbus connection fails
 

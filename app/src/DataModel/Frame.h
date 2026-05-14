@@ -174,6 +174,9 @@ inline constexpr KeyView WriterVersionAtCreation("writerVersionAtCreation");
 // Project lock -- MD5 of optional Project Editor password (UX gate, not crypto).
 inline constexpr KeyView PasswordHash("passwordHash");
 
+// Per-project MQTT publisher configuration (Pro).
+inline constexpr KeyView MqttPublisher("mqttPublisher");
+
 inline QString layoutKey(int groupId)
 {
   return QStringLiteral("layout:") + QString::number(groupId);
@@ -644,7 +647,7 @@ struct Workspace {
 /**
  * @brief Current Serial Studio project schema version.
  */
-inline constexpr int kSchemaVersion = 1;
+inline constexpr int kSchemaVersion = 2;
 
 /**
  * @brief Represents a full data frame, including groups and actions.

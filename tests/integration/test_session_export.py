@@ -201,13 +201,202 @@ def test_session_records_project_file_frames(
     assert "readings" in tables
     assert "columns" in tables
 
-    # And that at least one session + reading rows made it in
+    # And that at least one session + reading + column row made it in
     assert _row_count(db_path, "sessions") >= 1
     assert (
         _row_count(db_path, "readings") >= 5
     ), "fewer readings than expected — timer may not have drained the queue"
+    assert (
+        _row_count(db_path, "columns") >= 1
+    ), "columns table is empty — replay would fail with 'missing column definitions'"
 
     # Cleanup so we don't leak test artifacts
+    if db_path.exists():
+        db_path.unlink()
+    _enable_export(api_client, False)
+
+
+# ---------------------------------------------------------------------------
+# End-to-end: QuickPlot mode (regression — Issue: empty `columns` rows)
+# ---------------------------------------------------------------------------
+#
+# QuickPlot frames don't carry a project source list, so `buildExportSchema`
+# used to look up `sourceTitles[0]` and get a null QString back. Qt binds a
+# null QString as SQL NULL, which violates the NOT NULL constraint on
+# `columns.source_title`, every INSERT silently failed (logged via qWarning
+# only), and replay then aborted with "missing column definitions".
+#
+# The fixes:
+#   * `FrameBuilder::buildQuickPlotFrame` / `buildQuickPlotAudioFrame` push a
+#     synthetic Source row so every downstream exporter sees `frame.sources`.
+#   * `buildExportSchema` defaults missing source titles to "" (empty,
+#     non-null) instead of QString().
+#
+# These tests guard both fixes so the bug can't sneak back in.
+
+QUICK_PLOT_TITLE = "Quick Plot"
+
+
+@pytest.mark.project
+@pytest.mark.slow
+def test_quickplot_session_writes_column_rows(
+    api_client, device_simulator, clean_state, pro_only
+):
+    """
+    Regression: in QuickPlot mode the recorder must populate `columns`. If it
+    doesn't, replay later fails with "missing column definitions" and the
+    session is effectively unreadable.
+    """
+    api_client.set_operation_mode("quickplot")
+    time.sleep(0.2)
+
+    db_path = _db_path_for(api_client, QUICK_PLOT_TITLE)
+    if db_path.exists():
+        db_path.unlink()
+
+    _enable_export(api_client, True)
+
+    api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
+    api_client.connect_device()
+    assert device_simulator.wait_for_connection(timeout=5.0)
+
+    # Three CSV channels, line-terminated — the QuickPlot wire format
+    frames = [f"{i},{i * 2},{i * 3}\n".encode() for i in range(20)]
+    device_simulator.send_frames(frames, interval_seconds=0.05)
+    time.sleep(2.5)
+
+    api_client.disconnect_device()
+    time.sleep(0.2)
+    _close_session(api_client)
+
+    assert db_path.exists(), f"QuickPlot session DB was not created at {db_path}"
+
+    # The bug we're guarding against: zero rows in `columns`.
+    column_count = _row_count(db_path, "columns")
+    assert column_count >= 3, (
+        f"QuickPlot session recorded 0 (or too few) column definitions "
+        f"({column_count}). The replay path will fail with "
+        f"'missing column definitions'."
+    )
+
+    # And there should be actual data, otherwise the test is meaningless
+    assert _row_count(db_path, "readings") >= 5
+
+    # Source title is the NOT NULL column that originally broke the INSERT —
+    # assert it's an empty string, not NULL, for every recorded column.
+    with sqlite3.connect(str(db_path)) as conn:
+        nulls = conn.execute(
+            "SELECT COUNT(*) FROM columns WHERE source_title IS NULL"
+        ).fetchone()[0]
+    assert nulls == 0, "columns.source_title must never be NULL"
+
+    if db_path.exists():
+        db_path.unlink()
+    _enable_export(api_client, False)
+
+
+@pytest.mark.project
+@pytest.mark.slow
+def test_quickplot_session_loads_for_replay(
+    api_client, device_simulator, clean_state, pro_only
+):
+    """
+    The player loader reads the `columns` table to align dataset uids. With
+    the original bug, opening a QuickPlot DB surfaced
+    `columnUniqueIds.empty()` and the loader emitted the
+    "missing column definitions" error. Verify the column unique-id list is
+    present and matches the readings we recorded.
+    """
+    api_client.set_operation_mode("quickplot")
+    time.sleep(0.2)
+
+    db_path = _db_path_for(api_client, QUICK_PLOT_TITLE)
+    if db_path.exists():
+        db_path.unlink()
+
+    _enable_export(api_client, True)
+    api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
+    api_client.connect_device()
+    assert device_simulator.wait_for_connection(timeout=5.0)
+
+    frames = [f"{i},{i * 2}\n".encode() for i in range(15)]
+    device_simulator.send_frames(frames, interval_seconds=0.05)
+    time.sleep(2.5)
+
+    api_client.disconnect_device()
+    time.sleep(0.2)
+    _close_session(api_client)
+
+    assert db_path.exists()
+
+    with sqlite3.connect(str(db_path)) as conn:
+        column_uids = {r[0] for r in conn.execute("SELECT unique_id FROM columns")}
+        reading_uids = {
+            r[0] for r in conn.execute("SELECT DISTINCT unique_id FROM readings")
+        }
+
+    assert column_uids, "columns table is empty — replay would abort"
+    assert reading_uids, "readings table is empty — test setup is wrong"
+    assert reading_uids.issubset(column_uids), (
+        f"readings reference uids not in columns: {reading_uids - column_uids}. "
+        f"The replay path won't be able to map them back to dataset metadata."
+    )
+
+    if db_path.exists():
+        db_path.unlink()
+    _enable_export(api_client, False)
+
+
+@pytest.mark.project
+@pytest.mark.slow
+def test_quickplot_session_project_json_embeds_source(
+    api_client, device_simulator, clean_state, pro_only
+):
+    """
+    The synthetic project JSON written to `sessions.project_json` must include
+    a `sources` array. The FrameBuilder fix populates `frame.sources` so the
+    serializer doesn't have to fall back to inventing one — and other
+    exporters (CSV, MDF4) reading the frame see a real source.
+    """
+    api_client.set_operation_mode("quickplot")
+    time.sleep(0.2)
+
+    db_path = _db_path_for(api_client, QUICK_PLOT_TITLE)
+    if db_path.exists():
+        db_path.unlink()
+
+    _enable_export(api_client, True)
+    api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
+    api_client.connect_device()
+    assert device_simulator.wait_for_connection(timeout=5.0)
+
+    device_simulator.send_frames(
+        [b"1,2\n", b"3,4\n", b"5,6\n", b"7,8\n", b"9,10\n"],
+        interval_seconds=0.05,
+    )
+    time.sleep(2.5)
+
+    api_client.disconnect_device()
+    time.sleep(0.2)
+    _close_session(api_client)
+
+    assert db_path.exists()
+
+    import json
+
+    with sqlite3.connect(str(db_path)) as conn:
+        project_json_text = conn.execute(
+            "SELECT project_json FROM sessions ORDER BY session_id DESC LIMIT 1"
+        ).fetchone()[0]
+
+    project = json.loads(project_json_text)
+    sources = project.get("sources", [])
+    assert sources, "stored project JSON has no sources array"
+
+    # Title must be present and non-empty — the NOT NULL bug's root cause
+    titles = [s.get("title", "") for s in sources]
+    assert all(titles), f"a stored source has an empty title: {titles}"
+
     if db_path.exists():
         db_path.unlink()
     _enable_export(api_client, False)
