@@ -117,28 +117,6 @@ _REFCOUNTED_TYPES = frozenset({
 # wrap a region in `// code-verify off` when the slow path is intentional
 # (init code that builds a regex once, error path that throws, etc.).
 _PERF_BODY_PATTERNS = [
-    # Integer / float division by a non-literal divisor. `idiv`/`udiv` is
-    # the slowest ALU op on x86 (20-40 cyc on Skylake/Zen, not pipelined)
-    # and ARM (12-40 cyc on Cortex-A78). When the divisor is constexpr,
-    # the compiler emits a multiply-by-magic-number; when it's a variable,
-    # you get the real divide.
-    (re.compile(r"(?<![*/=<>!&|^])/\s*(?!/)[A-Za-z_]\w*"),
-     "perf-divide-runtime-divisor",
-     "`/` with a non-literal divisor -- division is the slowest ALU op "
-     "(divsd ~11-22 cyc Skylake, fdiv ~10-40 cyc Cortex-A78; idiv 20-40 cyc, "
-     "not pipelined). Cache the reciprocal once (`r = 1.0 / d`) and multiply "
-     "in the loop, or use a bit-shift for power-of-two integer cases."),
-
-    # Modulo by a non-literal divisor. Same idiv cost as integer divide;
-    # power-of-two N can be replaced with `& (N - 1)` to emit a single
-    # `and` instruction instead.
-    (re.compile(r"(?<![%=*/+\-<>!&|^])%\s*[A-Za-z_]\w*"),
-     "perf-modulo-runtime-divisor",
-     "`%` with a non-literal divisor -- emits `idiv`/`udiv` (20-40 cyc x86, "
-     "12-40 cyc ARM). For power-of-two N use `& (N - 1)` (single-cycle "
-     "`and`); for runtime divisors hoist out of the loop or use a "
-     "libdivide-style precomputed magic-number multiply."),
-
     # `/ <floating-literal>` -- compilers do NOT fold `a / 2.5` to
     # `a * 0.4` without `-ffast-math` (would lose 1 ULP for non-exact
     # reciprocals). Multiplying by a precomputed reciprocal is ~3 cyc
@@ -202,29 +180,6 @@ _PERF_BODY_PATTERNS = [
      "`<QStringBuilder>` and use the `%` operator (single allocation, "
      "sized exactly)."),
 
-    # Mutex / lock-guard acquisition -- even uncontended, the `lock`-
-    # prefixed RMW on x86 takes ~20 cyc and serializes the store buffer.
-    # On ARM, `ldaxr/stxr` with DMB barriers cost similar. Contended
-    # bouncing thrashes the L1 cache line (50-200x slowdown vs
-    # uncontended).
-    (re.compile(
-        r"\b(?:QMutexLocker|QReadLocker|QWriteLocker|QRecursiveMutex"
-        r"|std::lock_guard|std::unique_lock|std::scoped_lock"
-        r"|std::shared_lock)\b"),
-     "perf-lock-acquire",
-     "lock acquisition -- atomic RMW with full memory barrier (~20 cyc "
-     "x86 `lock`-prefix, ldaxr+stxr+DMB on ARM), serializes the store "
-     "buffer; contended bouncing thrashes the L1 line across cores. "
-     "Prefer thread-local / SPSC / per-core state, or a relaxed "
-     "`std::atomic` when the invariant fits a single word."),
-
-    # Bare mutex.lock() / lockForRead() calls -- same physical cost.
-    (re.compile(
-        r"\b\w+\.(?:lock|try_lock|lockForRead|lockForWrite|tryLock)\s*\("),
-     "perf-lock-acquire",
-     "explicit `.lock()`/`.try_lock()`/`.lockForRead()` call -- same "
-     "`lock`-prefix RMW cost as the locker types. See `perf-lock-acquire` "
-     "above."),
 ]
 
 
@@ -237,10 +192,14 @@ _HOTPATH_PERF_PATTERNS = [
     # the heap allocator (malloc on Linux, RtlAllocateHeap on Windows),
     # contended on the arena mutex, not pipelineable. Cache the result
     # at init or hoist into a file-scope `static const`.
+    #
+    # `QStringLiteral("...")` is deliberately NOT flagged: by design it
+    # constant-folds into a static read-only QString with zero heap touch
+    # (that's why Qt has it). The other entries are the genuine heap-
+    # allocating constructors/conversions.
     (re.compile(
         r"\bQString\s*\(\s*[\"R]"
         r"|\bQByteArray\s*\(\s*[\"R]"
-        r"|\bQStringLiteral\s*\(\s*[^)]*\)\s*[^.]"
         r"|\.toUtf8\s*\(\s*\)"
         r"|\.toStdString\s*\(\s*\)"
         r"|\.toLatin1\s*\(\s*\)"
@@ -275,6 +234,53 @@ _HOTPATH_PERF_PATTERNS = [
      "routines (1000s of cycles), mispredicts every catch frame, trashes "
      "the return-address stack predictor. Return an error code, an "
      "`std::expected`-style variant, or a sentinel value instead."),
+
+    # Mutex / lock-guard acquisition on the hotpath -- ~20 cyc lock-prefix
+    # RMW on x86, ldaxr+stxr+DMB on ARM, serializes the store buffer, and
+    # contended bouncing thrashes the L1 line. Outside the kHz frame path
+    # the cost is irrelevant; locks are the right answer for once-per-event
+    # state mutation. Only flag inside known-hot methods.
+    (re.compile(
+        r"\b(?:QMutexLocker|QReadLocker|QWriteLocker|QRecursiveMutex"
+        r"|std::lock_guard|std::unique_lock|std::scoped_lock"
+        r"|std::shared_lock)\b"),
+     "perf-lock-acquire",
+     "lock acquisition on the hotpath -- atomic RMW with full memory "
+     "barrier (~20 cyc x86 `lock`-prefix, ldaxr+stxr+DMB on ARM), "
+     "serializes the store buffer; contended bouncing thrashes the L1 "
+     "line. Prefer thread-local / SPSC / per-core state, or a relaxed "
+     "`std::atomic` when the invariant fits a single word."),
+
+    # Bare mutex.lock() / lockForRead() calls -- same physical cost.
+    (re.compile(
+        r"\b\w+\.(?:lock|try_lock|lockForRead|lockForWrite|tryLock)\s*\("),
+     "perf-lock-acquire",
+     "explicit `.lock()`/`.try_lock()`/`.lockForRead()` call on the "
+     "hotpath -- same `lock`-prefix RMW cost as the locker types."),
+
+    # Integer / float division by a non-literal divisor on the hotpath.
+    # `idiv`/`udiv` is the slowest ALU op (20-40 cyc Skylake/Zen, not
+    # pipelined; 12-40 cyc Cortex-A78). When the divisor is constexpr the
+    # compiler emits a magic-number multiply; the hotpath cost only bites
+    # when the divisor is a true runtime variable. `sizeof(...)` is
+    # compile-time and skipped via lookahead. Reciprocal-cache lines
+    # (`auto inv = 1.0 / x`) are skipped via _is_reciprocal_cache_line.
+    (re.compile(r"(?<![*/=<>!&|^])/\s*(?!/)(?!sizeof\b)[A-Za-z_]\w*"),
+     "perf-divide-runtime-divisor",
+     "`/` with a non-literal divisor on the hotpath -- division is the "
+     "slowest ALU op (divsd ~11-22 cyc Skylake, fdiv ~10-40 cyc Cortex-A78; "
+     "idiv 20-40 cyc, not pipelined). Cache the reciprocal once "
+     "(`r = 1.0 / d`) and multiply in the loop, or use a bit-shift for "
+     "power-of-two integer cases."),
+
+    # Modulo by a non-literal divisor on the hotpath. Same idiv cost as
+    # integer divide; power-of-two N can be replaced with `& (N - 1)`.
+    (re.compile(r"(?<![%=*/+\-<>!&|^])%\s*[A-Za-z_]\w*"),
+     "perf-modulo-runtime-divisor",
+     "`%` with a non-literal divisor on the hotpath -- emits `idiv`/`udiv` "
+     "(20-40 cyc x86, 12-40 cyc ARM). For power-of-two N use `& (N - 1)` "
+     "(single-cycle `and`); for runtime divisors hoist out of the loop or "
+     "use a libdivide-style precomputed magic-number multiply."),
 ]
 
 
@@ -325,10 +331,44 @@ def _walk_to_function_declarator(decl):
     return None
 
 
+def _sink_param_names(func_node, src: bytes) -> set:
+    """Return parameter names that this function treats as sinks.
+
+    A sink parameter is one where pass-by-value + move is the right call
+    instead of pass-by-const-ref:
+      - The body (or a constructor's field initializer list) calls
+        `std::move(<param>)`.
+      - The body ends with `return <param>;` AFTER mutating it -- the
+        param is the function's return value, so the implicit move on
+        `return` makes the by-value form at least as cheap as
+        `const T&` + explicit copy."""
+    names: set = set()
+    body = func_node.child_by_field_name("body")
+    if body is not None:
+        body_text = _node_text(body, src)
+        for m in re.finditer(r"\bstd::move\s*\(\s*([A-Za-z_]\w*)\s*\)", body_text):
+            names.add(m.group(1))
+        # `return <name>;` at any point in the body: param flows out as
+        # the return value, which the compiler implicitly moves from.
+        for m in re.finditer(r"\breturn\s+([A-Za-z_]\w*)\s*;", body_text):
+            names.add(m.group(1))
+    for c in func_node.children:
+        if c.type != "field_initializer_list":
+            continue
+        for m in re.finditer(r"\bstd::move\s*\(\s*([A-Za-z_]\w*)\s*\)",
+                             _node_text(c, src)):
+            names.add(m.group(1))
+    return names
+
+
 def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
     """Flag heavy types or refcounted smart pointers passed by value.
     Applies universally -- by-value copies are wasteful regardless of
-    whether the function is in the hotpath list."""
+    whether the function is in the hotpath list.
+
+    Sink parameters (those `std::move`'d in the body) are skipped: the
+    by-value + move idiom is correct C++ for a function that conditionally
+    keeps a local copy of the argument."""
     findings: list = []
     decl = func_node.child_by_field_name("declarator")
     fdecl = _walk_to_function_declarator(decl)
@@ -337,6 +377,7 @@ def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
     params = fdecl.child_by_field_name("parameters")
     if params is None:
         return findings
+    sink_params = _sink_param_names(func_node, src)
     for param in params.children:
         if param.type != "parameter_declaration":
             continue
@@ -350,6 +391,27 @@ def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
             "rvalue_reference_declarator",
             "abstract_rvalue_reference_declarator",
         ):
+            continue
+        # Resolve the parameter's identifier name (if it has one) so we
+        # can suppress sink-param idioms.
+        pname = None
+        if param_decl is not None:
+            cur = param_decl
+            while cur is not None and cur.type != "identifier":
+                next_cur = None
+                for c in cur.children:
+                    if c.type == "identifier":
+                        next_cur = c
+                        break
+                if next_cur is None:
+                    for c in cur.children:
+                        if hasattr(c, "children") and c.children:
+                            next_cur = c
+                            break
+                cur = next_cur
+            if cur is not None and cur.type == "identifier":
+                pname = _node_text(cur, src)
+        if pname is not None and pname in sink_params:
             continue
         type_text = _node_text(param_type, src).strip()
         base = type_text
@@ -381,21 +443,182 @@ def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
     return findings
 
 
+def _init_only_decl_line_span(body, src: bytes) -> set:
+    """Return the set of 1-based line numbers that belong to a declaration
+    whose initializer runs at most once: `constexpr` (compile-time folded)
+    or `static const`/`static constexpr` (function-local one-shot init).
+
+    Runtime-cost rules (divide, modulo, regex-construct, ...) reason about
+    the per-call cost of code inside a function body. These declarations
+    are not on the per-call path -- the optimizer folds `constexpr` and the
+    runtime evaluates `static const` exactly once -- so the rules must not
+    fire on their initializer lines, no matter how many physical lines the
+    initializer spans."""
+    if body is None:
+        return set()
+    exempt: set = set()
+    for node in _walk(body):
+        if node.type != "declaration":
+            continue
+        specifiers = []
+        for c in node.children:
+            if c.type == "storage_class_specifier":
+                specifiers.append(_node_text(c, src))
+            elif c.type == "type_qualifier":
+                specifiers.append(_node_text(c, src))
+        spec_set = set(s.strip() for s in specifiers)
+        is_constexpr = "constexpr" in spec_set
+        is_static_const = "static" in spec_set and "const" in spec_set
+        if not (is_constexpr or is_static_const):
+            continue
+        first = node.start_point[0] + 1
+        last  = node.end_point[0] + 1
+        for ln in range(first, last + 1):
+            exempt.add(ln)
+    return exempt
+
+
+def _cold_branch_line_span(body, src: bytes) -> set:
+    """Return the set of 1-based line numbers inside cold-path branches:
+    `[[unlikely]]`-attributed statements and `catch_clause` bodies.
+
+    Both are reached only on error / overflow / exception, not on the
+    steady-state hotpath that the perf rules are designed to flag.
+    `qWarning(...)` inside an overflow branch or a catch block is correct
+    code, not a hotpath log call."""
+    if body is None:
+        return set()
+    exempt: set = set()
+    for node in _walk(body):
+        if node.type == "catch_clause":
+            cs = node.child_by_field_name("body")
+            if cs is None:
+                for c in node.children:
+                    if c.type == "compound_statement":
+                        cs = c
+                        break
+            if cs is not None:
+                for ln in range(cs.start_point[0] + 1, cs.end_point[0] + 2):
+                    exempt.add(ln)
+            continue
+        if node.type == "attributed_statement":
+            attr_text = _node_text(node, src)[:64]
+            if "[[unlikely]]" not in attr_text and "[[gnu::unlikely]]" not in attr_text:
+                continue
+            for c in node.children:
+                if c.type == "attribute_declaration":
+                    continue
+                for ln in range(c.start_point[0] + 1, c.end_point[0] + 2):
+                    exempt.add(ln)
+    return exempt
+
+
+_RECIPROCAL_CACHE_RE = re.compile(
+    r"\b1(?:\.0+f?|\.0+L?|\.0+|\b)\s*/\s*[A-Za-z_(]"
+)
+_DIV_OR_MOD_DIVISOR_RE = re.compile(
+    r"(?<![*/=<>!&|^])[/%]\s*(?!/)(?!sizeof\b)([A-Za-z_]\w*)"
+)
+
+
+def _is_reciprocal_cache_line(scrubbed: str) -> bool:
+    """True when the line is a reciprocal-cache declaration like
+    `const float inv = 1.0f / x;` or `auto r = 1.0 / qMax(...);`.
+    These are the rule's RECOMMENDED fix for runtime-divisor cost --
+    cache the reciprocal once, multiply in the loop -- so flagging them
+    is exactly backwards. We detect by the literal-1 numerator pattern."""
+    return bool(_RECIPROCAL_CACHE_RE.search(scrubbed))
+
+
+# Well-known math/system identifiers that resolve to compile-time constants
+# even though they're macros (M_PI family) or constants the compiler
+# substitutes via the standard library headers. Treating these as
+# compile-time means the divisor / modulo rules don't fire on them.
+_KNOWN_COMPILE_TIME_NAMES = frozenset({
+    "M_PI", "M_PI_2", "M_PI_4", "M_1_PI", "M_2_PI", "M_2_SQRTPI",
+    "M_E", "M_LOG2E", "M_LOG10E", "M_LN2", "M_LN10",
+    "M_SQRT2", "M_SQRT1_2",
+    "INT8_MAX", "INT16_MAX", "INT32_MAX", "INT64_MAX",
+    "UINT8_MAX", "UINT16_MAX", "UINT32_MAX", "UINT64_MAX",
+    "CHAR_BIT", "CHAR_MAX", "CHAR_MIN",
+})
+
+
+def _compile_time_constants_in_scope(body, src: bytes) -> set:
+    """Walk the function body for `constexpr` declarations and return the
+    set of their identifier names, plus a fixed set of well-known math/
+    system macros that resolve to compile-time constants. The divisor /
+    modulo rules can then skip lines whose divisor resolves to one of
+    these -- the compiler folds them into a multiply-by-magic-number, no
+    idiv at runtime."""
+    if body is None:
+        return set(_KNOWN_COMPILE_TIME_NAMES)
+    names: set = set(_KNOWN_COMPILE_TIME_NAMES)
+    for node in _walk(body):
+        if node.type != "declaration":
+            continue
+        is_constexpr = any(
+            c.type == "type_qualifier" and _node_text(c, src).strip() == "constexpr"
+            for c in node.children
+        )
+        if not is_constexpr:
+            continue
+        for c in node.children:
+            if c.type != "init_declarator":
+                continue
+            decl = c.child_by_field_name("declarator")
+            if decl is None:
+                continue
+            cur = decl
+            while cur is not None and cur.type != "identifier":
+                next_cur = None
+                for cc in cur.children:
+                    if cc.type == "identifier":
+                        next_cur = cc
+                        break
+                cur = next_cur
+            if cur is not None and cur.type == "identifier":
+                names.add(_node_text(cur, src))
+    return names
+
+
 def _scan_body_lines(body, src: bytes, fname: str, fenced, patterns) -> list:
     """Run a list of `(regex, kind, message)` triples over each line of a
     function body. First-match wins per line so a single problematic
-    expression doesn't fire every pattern."""
+    expression doesn't fire every pattern.
+
+    Lines skipped (all driven by AST walks for multi-line statements):
+      - `constexpr` / `static const` declarations -- init code, not per-call
+      - `[[unlikely]]`-attributed substatement bodies -- cold path
+      - `catch_clause` bodies -- error / exception path, not steady-state
+
+    Lines skipped per-pattern: reciprocal-cache declarations
+    (`const T inv = 1.0 / x;`) bypass the divide rule -- they ARE the
+    recommended fix for runtime-divisor cost."""
     if body is None:
         return []
     findings: list = []
     body_text = _node_text(body, src)
     body_start = body.start_point[0] + 1
+    exempt_lines = _init_only_decl_line_span(body, src) | _cold_branch_line_span(body, src)
+    constexpr_names = _compile_time_constants_in_scope(body, src)
     for j, line in enumerate(body_text.split("\n")):
         abs_line = body_start + j
-        if fenced(abs_line):
+        if fenced(abs_line) or abs_line in exempt_lines:
             continue
         scrubbed = _strip_strings_and_line_comments(line)
+        is_recip_cache = _is_reciprocal_cache_line(scrubbed)
+        # If every divisor / modulo on this line resolves to a constexpr
+        # name we know is in scope, the compiler folds them. Skip the
+        # divide/modulo runtime rules for this line.
+        divisors = _DIV_OR_MOD_DIVISOR_RE.findall(scrubbed)
+        all_compile_time = bool(divisors) and all(d in constexpr_names for d in divisors)
         for pat, kind, msg in patterns:
+            if is_recip_cache and kind == "perf-divide-runtime-divisor":
+                continue
+            if all_compile_time and kind in ("perf-divide-runtime-divisor",
+                                             "perf-modulo-runtime-divisor"):
+                continue
             if pat.search(scrubbed):
                 findings.append(Finding(abs_line, kind, msg))
                 break
@@ -405,27 +628,167 @@ def _scan_body_lines(body, src: bytes, fname: str, fenced, patterns) -> list:
 def _recursion_findings(func_node, fname: str, body, src: bytes, fenced) -> list:
     """Flag direct self-recursion in a hotpath method. Recursion at kHz
     rates blows the i-cache (200+ cyc for an L2 miss), trashes the RAS
-    predictor (mispredict on every return), and prevents inlining."""
+    predictor (mispredict on every return), and prevents inlining.
+
+    Only flags **stack** recursion. The following are NOT recursion and
+    are skipped:
+      - Calls inside a `lambda_expression` body (deferred to whichever
+        executor consumes the lambda; doesn't grow the stack here).
+      - Qualified calls like `Base::fname(...)` or `Foo::fname(...)`
+        (statically dispatched to a different function).
+      - Method calls on a different object (`other.fname(...)`,
+        `other->fname(...)`); only bare `fname(...)` and `this->fname(...)`
+        are real self-calls."""
     if body is None or not fname or fname not in _HOTPATH_METHODS:
         return []
     findings: list = []
-    body_text = _node_text(body, src)
-    body_start = body.start_point[0] + 1
-    pat = re.compile(rf"\b{re.escape(fname)}\s*\(")
-    for j, line in enumerate(body_text.split("\n")):
-        abs_line = body_start + j
-        if fenced(abs_line):
+    seen_lines: set = set()
+    for node in _walk(body):
+        if node.type != "call_expression":
             continue
-        scrubbed = _strip_strings_and_line_comments(line)
-        if pat.search(scrubbed):
-            findings.append(Finding(
-                abs_line, "perf-recursive-hotpath",
-                f"hotpath `{fname}` calls itself -- recursion on a kHz "
-                f"frame loop blows the i-cache (200+ cyc per L2 miss), "
-                f"mispredicts the RAS on every return, and prevents the "
-                f"compiler from inlining. Rewrite iteratively (explicit "
-                f"work-list / std::stack)."))
+        # Skip calls that live inside a lambda body -- those execute when
+        # the lambda runs, not on this call's stack frame.
+        cur = node.parent
+        in_lambda = False
+        while cur is not None and cur is not body:
+            if cur.type == "lambda_expression":
+                in_lambda = True
+                break
+            cur = cur.parent
+        if in_lambda:
+            continue
+        callee = node.child_by_field_name("function")
+        if callee is None:
+            continue
+        # Recognise: `fname(...)` (identifier) or `this->fname(...)` (field_expression
+        # whose object is `this`). Reject `Foo::fname`, `obj.fname`, `obj->fname`.
+        is_self = False
+        if callee.type == "identifier":
+            is_self = (_node_text(callee, src) == fname)
+        elif callee.type == "field_expression":
+            obj = callee.child_by_field_name("argument")
+            field = callee.child_by_field_name("field")
+            if (obj is not None and field is not None
+                    and obj.type == "this"
+                    and _node_text(field, src) == fname):
+                is_self = True
+        if not is_self:
+            continue
+        line = node.start_point[0] + 1
+        if fenced(line) or line in seen_lines:
+            continue
+        seen_lines.add(line)
+        findings.append(Finding(
+            line, "perf-recursive-hotpath",
+            f"hotpath `{fname}` calls itself -- recursion on a kHz "
+            f"frame loop blows the i-cache (200+ cyc per L2 miss), "
+            f"mispredicts the RAS on every return, and prevents the "
+            f"compiler from inlining. Rewrite iteratively (explicit "
+            f"work-list / std::stack)."))
     return findings
+
+
+_RUN_LOOP_COND_RE = re.compile(r"\bm_\w+\s*(?:\.load\s*\(|\)\s*\.\s*load\s*\()")
+
+
+# Qt event-handler suffixes. These methods fire only on user input, geometry
+# changes, focus changes, etc. -- cold paths by construction. Any per-call
+# divide/modulo/pow inside them is irrelevant to the steady-state hotpath.
+_QT_EVENT_HANDLER_SUFFIXES = (
+    "Event",          # mousePressEvent, wheelEvent, keyPressEvent, paintEvent...
+    "EventFilter",    # eventFilter override
+    "ChangeEvent",    # geometryChange, focusChange, etc.
+)
+
+
+def _is_qt_event_handler(fname: str) -> bool:
+    """True when @a fname matches Qt's event-handler naming convention.
+
+    Qt's QObject / QWidget / QQuickItem event handlers all end in `Event`
+    (`mousePressEvent`, `wheelEvent`, `paintEvent`, `geometryChange`,
+    `eventFilter`, ...). They are dispatched once per user gesture or
+    window event -- nowhere near the kHz frame rate the perf rules
+    target."""
+    if not fname:
+        return False
+    for suffix in _QT_EVENT_HANDLER_SUFFIXES:
+        if fname.endswith(suffix) and len(fname) > len(suffix):
+            return True
+    return False
+
+
+# Method-name patterns for the QQuickPaintedItem / QPainter render path. These
+# functions are called at most at the screen refresh rate (~60 Hz) -- two
+# orders of magnitude below the kHz frame loop the perf rules target.
+_PAINT_METHOD_NAMES = frozenset({
+    "paint", "render",
+})
+_PAINT_METHOD_PREFIXES = ("draw", "render", "paint")
+
+
+def _is_paint_method(fname: str) -> bool:
+    """True when @a fname is a paint / render method (`paint`, `paintEvent`,
+    `drawXAxis`, `drawGrid`, `renderTile`, `paintBackground`, ...).
+
+    Paint callbacks fire at the screen refresh rate at most. Compared to
+    the kHz frame hotpath, the per-call cost of one or two divides is
+    invisible. Locks, divides, etc. on these paths are not the rule's
+    target."""
+    if not fname:
+        return False
+    if fname in _PAINT_METHOD_NAMES:
+        return True
+    for prefix in _PAINT_METHOD_PREFIXES:
+        if fname.startswith(prefix) and len(fname) > len(prefix):
+            # Next char must be uppercase to avoid false positives like
+            # `drained` or `paintbrush`.
+            tail = fname[len(prefix)]
+            if tail.isupper():
+                return True
+    return False
+
+
+def _is_constexpr_or_consteval(func_node, src: bytes) -> bool:
+    """True when the function carries `constexpr`, `consteval`, or `constinit`
+    among its specifiers. Such functions are compile-time-evaluable (or are
+    only meaningful at compile time), so runtime-cost rules don't apply to
+    their bodies: any non-literal divisor / modulo / pow / etc. that survives
+    constant folding does so because the function is being called with
+    runtime arguments at a single specific site that the user is choosing
+    to keep generic."""
+    for c in func_node.children:
+        if c.type in ("type_qualifier", "storage_class_specifier"):
+            if _node_text(c, src).strip() in ("constexpr", "consteval", "constinit"):
+                return True
+    return False
+
+
+def _is_long_running_loop_function(body, src: bytes) -> bool:
+    """Heuristic: the function's body contains a `while`/`for`/`do` loop
+    whose condition reads a member atomic flag (e.g. `m_running.load()`),
+    at any nesting level inside the body. That's the canonical
+    thread-entry / event-loop pattern in this codebase -- the function is
+    called once per thread start, not per frame, so a 4 KB stack buffer
+    in front of the loop amortizes.
+
+    Descends through `preproc_ifdef` and similar nesting so a function
+    body that's entirely wrapped in `#ifdef Q_OS_WIN` still matches."""
+    if body is None:
+        return False
+    for node in _walk(body):
+        if node.type not in ("while_statement", "for_statement", "do_statement"):
+            continue
+        cond = node.child_by_field_name("condition")
+        if cond is None:
+            for c in node.children:
+                if c.type == "condition_clause" or c.type == "parenthesized_expression":
+                    cond = c
+                    break
+        if cond is None:
+            continue
+        if _RUN_LOOP_COND_RE.search(_node_text(cond, src)):
+            return True
+    return False
 
 
 def _large_stack_buffer_findings(body, src: bytes, fenced) -> list:
@@ -433,8 +796,15 @@ def _large_stack_buffer_findings(body, src: bytes, fenced) -> list:
     pollutes L1 (32-48 KB) when the function recurses or is called in a
     hot loop with other state already on the stack, and on deep call
     paths risks overflow. The 1024-element threshold catches `double[512]`
-    (4 KB), `int[1024]` (4 KB), `char[4096]` (4 KB) and similar."""
+    (4 KB), `int[1024]` (4 KB), `char[4096]` (4 KB) and similar.
+
+    Functions that ARE the long-running loop (e.g. `pipeReadLoopWin`,
+    detected by a top-level `while (m_*.load())`) are exempted: the stack
+    frame is set up once per thread start, the buffer is reused every
+    iteration, and the cost amortizes."""
     if body is None:
+        return []
+    if _is_long_running_loop_function(body, src):
         return []
     findings: list = []
     body_text = _node_text(body, src)
@@ -470,7 +840,11 @@ def _adjacent_atomic_findings(class_node, src: bytes, fenced) -> list:
     bounce the line across cores -- a 50-200x slowdown vs the uncontended
     case (false sharing). The fix is `alignas(64)` (or
     `std::hardware_destructive_interference_size`) on each, or explicit
-    `char _pad[64];` padding."""
+    `char _pad[64];` padding.
+
+    Pointer-to-atomic fields are skipped: the pointer itself is set once
+    at construction, and the actual atomics live behind the indirection
+    in some other object whose layout we can't reason about from here."""
     findings: list = []
     body = class_node.child_by_field_name("body")
     if body is None:
@@ -481,6 +855,11 @@ def _adjacent_atomic_findings(class_node, src: bytes, fenced) -> list:
             continue
         text = _node_text(child, src)
         if not _ATOMIC_DECL_RE.search(text):
+            prev_line = -100
+            continue
+        # Skip pointer-to-atomic and reference-to-atomic fields: the
+        # atomic that would suffer false sharing lives elsewhere.
+        if re.search(r"atomic\w*\s*(?:<[^>]*>)?\s*[*&]", text):
             prev_line = -100
             continue
         if "alignas" in text:
@@ -501,14 +880,21 @@ def _adjacent_atomic_findings(class_node, src: bytes, fenced) -> list:
     return findings
 
 
-def _virtual_hotpath_findings(src_text: str, fenced) -> list:
+def _virtual_hotpath_findings(src_text: str, path: Path, fenced) -> list:
     """Header line-scan: a hotpath method declared `virtual`. Every call
     site emits a vtable load + indirect branch (5-10 cyc best case, 15-20
     cyc misprediction penalty on polymorphic sites) and the compiler
     can't inline through it. If there's only one implementation, mark
     `final` (devirtualizes when the dynamic type is statically known)
-    or drop `virtual` entirely."""
+    or drop `virtual` entirely.
+
+    Skipped when the method is taken as a Qt member-function pointer
+    (`&Class::method`) anywhere in the header or its paired `.cpp` --
+    that means the method is dispatched through Qt's metacall (signal-slot
+    or `QMetaObject::invokeMethod`), which can't be devirtualized regardless
+    of `final`."""
     findings: list = []
+    metacall_names = _qt_metacall_referenced_methods(src_text, path)
     for i, raw in enumerate(src_text.split("\n"), start=1):
         if fenced(i):
             continue
@@ -519,6 +905,8 @@ def _virtual_hotpath_findings(src_text: str, fenced) -> list:
         if m is None:
             continue
         name = m.group(1)
+        if name in metacall_names:
+            continue
         findings.append(Finding(
             i, "perf-virtual-hotpath",
             f"hotpath method `{name}` declared `virtual` -- every call "
@@ -528,6 +916,31 @@ def _virtual_hotpath_findings(src_text: str, fenced) -> list:
             f"one implementation exists, drop `virtual` or mark `final` "
             f"so the compiler can devirtualize."))
     return findings
+
+
+_QT_METACALL_REF_RE = re.compile(r"&\s*\w+(?:\s*::\s*\w+)*\s*::\s*(\w+)\b")
+
+
+def _qt_metacall_referenced_methods(src_text: str, path: Path) -> set:
+    """Return the set of method names that appear as `&Class::method` in
+    the given header AND in its paired `.cpp` (if any). Such references
+    feed `connect(...)`, `QMetaObject::invokeMethod(...)`, or the Qt
+    property system, all of which dispatch through `QMetaMethod::invoke`
+    and can't be devirtualized -- so `virtual` on those methods isn't
+    avoidable cost."""
+    names: set = set()
+    for m in _QT_METACALL_REF_RE.finditer(src_text):
+        names.add(m.group(1))
+    if path.suffix.lower() in (".h", ".hpp", ".hxx"):
+        cpp = path.with_suffix(".cpp")
+        if cpp.exists():
+            try:
+                cpp_text = cpp.read_text(encoding="utf-8", errors="replace")
+                for m in _QT_METACALL_REF_RE.finditer(cpp_text):
+                    names.add(m.group(1))
+            except OSError:
+                pass
+    return names
 
 
 # ---------------------------------------------------------------------------
@@ -974,12 +1387,23 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             # every function body (file-wide); _HOTPATH_PERF_PATTERNS adds
             # hotpath-only checks for patterns that would be too noisy across
             # the whole codebase (qDebug, QString allocation).
-            out.extend(_scan_body_lines(body, src, fname, fenced,
-                                        _PERF_BODY_PATTERNS))
-            if fname in _HOTPATH_METHODS:
+            #
+            # `constexpr` / `consteval` functions are compile-time-evaluable
+            # so runtime-cost reasoning doesn't apply to their bodies. Qt
+            # event handlers (`*Event`, `eventFilter`, ...) and paint
+            # callbacks (`paint`, `drawXxx`, `renderXxx`, ...) are bound
+            # to the screen refresh rate -- two orders of magnitude below
+            # the kHz frame hotpath -- so per-call divide/modulo cost
+            # there is below the noise floor.
+            if (not _is_constexpr_or_consteval(n, src)
+                    and not _is_qt_event_handler(fname)
+                    and not _is_paint_method(fname)):
                 out.extend(_scan_body_lines(body, src, fname, fenced,
-                                            _HOTPATH_PERF_PATTERNS))
-                out.extend(_recursion_findings(n, fname, body, src, fenced))
+                                            _PERF_BODY_PATTERNS))
+                if fname in _HOTPATH_METHODS:
+                    out.extend(_scan_body_lines(body, src, fname, fenced,
+                                                _HOTPATH_PERF_PATTERNS))
+                    out.extend(_recursion_findings(n, fname, body, src, fenced))
 
             # Universal: function-signature scan for heavy/refcounted types
             # passed by value, and body scan for oversized stack arrays.
@@ -1264,7 +1688,7 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
     # class body in a .cpp would also match if this pattern ever appears
     # there, which is rare.
     if is_header:
-        out.extend(_virtual_hotpath_findings(src_text, fenced))
+        out.extend(_virtual_hotpath_findings(src_text, path, fenced))
 
     return out
 
