@@ -113,7 +113,7 @@ private:
 Lexer::Lexer(const QString& src) : m_src(src), m_pos(0), m_line(1) {}
 
 /**
- * @brief Skips whitespace, `//` line comments, and `/* ... *\/` block comments.
+ * @brief Skips whitespace, line comments, and block comments.
  */
 void Lexer::skipWsAndComments()
 {
@@ -157,7 +157,7 @@ void Lexer::skipLineComment()
 }
 
 /**
- * @brief Skips a `/* ... *\/` block comment, tracking line numbers across newlines.
+ * @brief Skips a block comment, tracking line numbers across newlines.
  */
 void Lexer::skipBlockComment()
 {

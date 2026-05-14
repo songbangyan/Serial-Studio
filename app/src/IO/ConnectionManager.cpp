@@ -90,7 +90,7 @@ IO::ConnectionManager::ConnectionManager()
   // Debounce project autosaves triggered by UI-driver edits (e.g. typing in port fields)
   m_uiDriverSaveTimer.setSingleShot(true);
   m_uiDriverSaveTimer.setInterval(750);
-  connect(&m_uiDriverSaveTimer, &QTimer::timeout, this, [this] {
+  connect(&m_uiDriverSaveTimer, &QTimer::timeout, this, [] {
     auto& model = DataModel::ProjectModel::instance();
     if (model.jsonFilePath().isEmpty())
       return;

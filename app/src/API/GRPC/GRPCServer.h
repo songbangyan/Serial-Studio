@@ -109,11 +109,7 @@ private:
   void broadcastRawBatch(const serialstudio::RawBatch& batch);
 
 private:
-#  ifdef __cpp_lib_hardware_interference_size
-  static constexpr std::size_t kCacheLine = std::hardware_destructive_interference_size;
-#  else
   static constexpr std::size_t kCacheLine = 64;
-#  endif
 
   bool m_enabled;
   alignas(kCacheLine) std::atomic<int> m_clientCount;
