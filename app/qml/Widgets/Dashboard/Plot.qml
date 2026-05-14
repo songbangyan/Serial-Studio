@@ -50,8 +50,8 @@ Item {
   //
   // Custom properties
   //
-  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: false
+  property int interpolationMode: SerialStudio.InterpolationLinear
 
   //
   // User-controlled visibility preferences (persisted, ANDed with size thresholds)
@@ -110,7 +110,6 @@ Item {
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
-
   //
   // Axis range configuration dialog
   //
@@ -133,8 +132,8 @@ Item {
 
           if (root.showAreaUnderPlot) {
             lowerSeries.clear()
-            lowerSeries.append(root.model.minX, 0)
-            lowerSeries.append(root.model.maxX, 0)
+            lowerSeries.append(root.model.minX, root.model.minY)
+            lowerSeries.append(root.model.maxX, root.model.minY)
           }
         }
       }
@@ -184,11 +183,11 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
       icon.source: "qrc:/icons/dashboard-buttons/area.svg"
+      enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
     }
 
     Rectangle {

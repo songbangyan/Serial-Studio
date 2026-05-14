@@ -48,8 +48,8 @@ Item {
   //
   // Custom properties
   //
-  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showLegends: true
+  property int interpolationMode: SerialStudio.InterpolationLinear
 
   //
   // User-controlled visibility preferences (persisted, ANDed with size thresholds)
@@ -114,7 +114,6 @@ Item {
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
-
 
   //
   // Axis range configuration dialog

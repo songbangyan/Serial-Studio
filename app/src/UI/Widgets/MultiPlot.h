@@ -26,6 +26,7 @@
 #include <QXYSeries>
 
 #include "SerialStudio.h"
+
 namespace Widgets {
 /**
  * @brief Multi-curve plotting widget for visualizing multiple datasets on a

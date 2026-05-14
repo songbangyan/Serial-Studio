@@ -24,8 +24,8 @@
 #include <kiss_fft.h>
 
 #include <QQuickItem>
-#include <QXYSeries>
 #include <QVector>
+#include <QXYSeries>
 
 #include "DSP.h"
 #include "SerialStudio.h"

@@ -57,10 +57,13 @@ QtObject {
   {
     if (mode === SerialStudio.InterpolationNone)
       return qsTr("None")
+
     if (mode === SerialStudio.InterpolationZoh)
       return qsTr("ZOH")
+
     if (mode === SerialStudio.InterpolationStem)
       return qsTr("Stem")
+
     return qsTr("Linear")
   }
 

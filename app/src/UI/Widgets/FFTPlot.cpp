@@ -257,10 +257,19 @@ void Widgets::FFTPlot::setRunning(const bool enabled)
  */
 void Widgets::FFTPlot::setInterpolationMode(SerialStudio::InterpolationMode mode)
 {
-  const int clamped = qBound(static_cast<int>(SerialStudio::InterpolationNone),
-                             static_cast<int>(mode),
-                             static_cast<int>(SerialStudio::InterpolationStem));
-  const auto resolved = static_cast<SerialStudio::InterpolationMode>(clamped);
+  SerialStudio::InterpolationMode resolved;
+  switch (mode) {
+    case SerialStudio::InterpolationNone:
+    case SerialStudio::InterpolationLinear:
+    case SerialStudio::InterpolationZoh:
+    case SerialStudio::InterpolationStem:
+      resolved = mode;
+      break;
+    default:
+      resolved = SerialStudio::InterpolationLinear;
+      break;
+  }
+
   if (m_interpolationMode == resolved)
     return;
 
@@ -409,36 +418,39 @@ void Widgets::FFTPlot::updateData()
  */
 void Widgets::FFTPlot::updateInterpolatedData()
 {
-  m_renderData.clear();
-
-  if (m_data.isEmpty())
-    return;
+  const int n = m_data.size();
 
   if (m_interpolationMode == SerialStudio::InterpolationZoh) {
-    if (m_data.size() < 2) {
-      m_renderData = m_data;
+    if (n < 2) {
+      m_renderData.resize(n);
+      if (n == 1)
+        m_renderData.data()[0] = m_data.constData()[0];
+
       return;
     }
 
-    m_renderData.reserve(m_data.size() * 2);
-    m_renderData.append(m_data.first());
-    for (int i = 1; i < m_data.size(); ++i) {
-      const auto& prev = m_data[i - 1];
-      const auto& cur  = m_data[i];
-      m_renderData.append(QPointF(cur.x(), prev.y()));
-      m_renderData.append(cur);
+    m_renderData.resize(2 * n - 1);
+    QPointF* out      = m_renderData.data();
+    const QPointF* in = m_data.constData();
+    out[0]            = in[0];
+    for (int i = 1; i < n; ++i) {
+      out[2 * i - 1] = QPointF(in[i].x(), in[i - 1].y());
+      out[2 * i]     = in[i];
     }
     return;
   }
 
   if (m_interpolationMode == SerialStudio::InterpolationStem) {
-    const double stemBaseline = m_minY;
-    const double nan               = std::numeric_limits<double>::quiet_NaN();
-    m_renderData.reserve(m_data.size() * 3);
-    for (const auto& p : m_data) {
-      m_renderData.append(QPointF(p.x(), p.y()));
-      m_renderData.append(QPointF(p.x(), stemBaseline));
-      m_renderData.append(QPointF(nan, nan));
+    constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
+    const double base     = m_minY;
+
+    m_renderData.resize(3 * n);
+    QPointF* out      = m_renderData.data();
+    const QPointF* in = m_data.constData();
+    for (int i = 0; i < n; ++i) {
+      out[3 * i]     = in[i];
+      out[3 * i + 1] = QPointF(in[i].x(), base);
+      out[3 * i + 2] = QPointF(kNan, kNan);
     }
   }
 }

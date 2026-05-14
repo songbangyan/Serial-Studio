@@ -48,8 +48,8 @@ Item {
   //
   // Custom properties
   //
-  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: true
+  property int interpolationMode: SerialStudio.InterpolationLinear
 
   //
   // User-controlled visibility preferences (persisted, ANDed with size thresholds)
@@ -103,7 +103,6 @@ Item {
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
-
 
   //
   // Axis range configuration dialog
@@ -188,7 +187,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
+      enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
     }
 
     Rectangle {

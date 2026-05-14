@@ -238,35 +238,33 @@ void Widgets::MultiPlot::draw(QXYSeries* series, const int index)
   if (!series || index < 0 || index >= count() || !m_visibleCurves[index])
     return;
 
-  const auto& source = m_data[index];
+  const auto& source         = m_data[index];
   const QList<QPointF>* data = &source;
+  const int n                = source.size();
 
-  if (m_interpolationMode == SerialStudio::InterpolationZoh) {
-    if (source.size() < 2) {
-      data = &source;
-    } else {
-      m_renderData.clear();
-      m_renderData.reserve(source.size() * 2);
-      m_renderData.append(source.first());
-      for (int i = 1; i < source.size(); ++i) {
-        const auto& prev = source[i - 1];
-        const auto& cur  = source[i];
-        m_renderData.append(QPointF(cur.x(), prev.y()));
-        m_renderData.append(cur);
-      }
-      data = &m_renderData;
+  if (m_interpolationMode == SerialStudio::InterpolationZoh && n >= 2) {
+    m_renderData.resize(2 * n - 1);
+    QPointF* out      = m_renderData.data();
+    const QPointF* in = source.constData();
+    out[0]            = in[0];
+    for (int i = 1; i < n; ++i) {
+      out[2 * i - 1] = QPointF(in[i].x(), in[i - 1].y());
+      out[2 * i]     = in[i];
     }
+    data = &m_renderData;
   }
 
-  else if (m_interpolationMode == SerialStudio::InterpolationStem) {
-    constexpr double stemBaseline = 0.0;
-    const double nan               = std::numeric_limits<double>::quiet_NaN();
-    m_renderData.clear();
-    m_renderData.reserve(source.size() * 3);
-    for (const auto& p : source) {
-      m_renderData.append(QPointF(p.x(), p.y()));
-      m_renderData.append(QPointF(p.x(), stemBaseline));
-      m_renderData.append(QPointF(nan, nan));
+  else if (m_interpolationMode == SerialStudio::InterpolationStem && n > 0) {
+    constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
+    const double base     = m_minY;
+
+    m_renderData.resize(3 * n);
+    QPointF* out      = m_renderData.data();
+    const QPointF* in = source.constData();
+    for (int i = 0; i < n; ++i) {
+      out[3 * i]     = in[i];
+      out[3 * i + 1] = QPointF(in[i].x(), base);
+      out[3 * i + 2] = QPointF(kNan, kNan);
     }
     data = &m_renderData;
   }
@@ -319,10 +317,19 @@ void Widgets::MultiPlot::setRunning(const bool enabled)
  */
 void Widgets::MultiPlot::setInterpolationMode(SerialStudio::InterpolationMode mode)
 {
-  const int clamped = qBound(static_cast<int>(SerialStudio::InterpolationNone),
-                             static_cast<int>(mode),
-                             static_cast<int>(SerialStudio::InterpolationStem));
-  const auto resolved = static_cast<SerialStudio::InterpolationMode>(clamped);
+  SerialStudio::InterpolationMode resolved;
+  switch (mode) {
+    case SerialStudio::InterpolationNone:
+    case SerialStudio::InterpolationLinear:
+    case SerialStudio::InterpolationZoh:
+    case SerialStudio::InterpolationStem:
+      resolved = mode;
+      break;
+    default:
+      resolved = SerialStudio::InterpolationLinear;
+      break;
+  }
+
   if (m_interpolationMode == resolved)
     return;
 
@@ -416,11 +423,6 @@ void Widgets::MultiPlot::calculateAutoScaleRange()
   else if (!computeRangeFromDatasets()) {
     scanCurvesForRange();
     padDerivedRange();
-  }
-
-  if (m_interpolationMode == SerialStudio::InterpolationStem) {
-    m_minY = qMin(m_minY, 0.0);
-    m_maxY = qMax(m_maxY, 0.0);
   }
 
   if (DSP::notEqual(prevMinY, m_minY) || DSP::notEqual(prevMaxY, m_maxY))
