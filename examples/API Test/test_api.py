@@ -64,6 +64,7 @@ from enum import Enum
 
 try:
     import readline
+
     READLINE_AVAILABLE = True
 except ImportError:
     READLINE_AVAILABLE = False
@@ -80,21 +81,21 @@ RECV_BUFFER_SIZE = 65536
 
 
 class Colors:
-    RESET = '\033[0m'
-    BOLD = '\033[1m'
-    DIM = '\033[2m'
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    MAGENTA = '\033[95m'
-    CYAN = '\033[96m'
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    RED = "\033[91m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    BLUE = "\033[94m"
+    MAGENTA = "\033[95m"
+    CYAN = "\033[96m"
 
     @staticmethod
     def is_supported():
-        if not hasattr(sys.stdout, 'isatty') or not sys.stdout.isatty():
+        if not hasattr(sys.stdout, "isatty") or not sys.stdout.isatty():
             return False
-        return os.name != 'nt' or 'ANSICON' in os.environ
+        return os.name != "nt" or "ANSICON" in os.environ
 
 
 COLORS_ENABLED = Colors.is_supported()
@@ -103,6 +104,7 @@ COLORS_ENABLED = Colors.is_supported()
 # =============================================================================
 # Protocol Constants (matching C++ API::MessageType and API::ErrorCode)
 # =============================================================================
+
 
 class MessageType:
     COMMAND = "command"
@@ -123,21 +125,39 @@ class ErrorCode:
 # Color Helpers
 # =============================================================================
 
+
 def colorize(text: str, color: str) -> str:
     return f"{color}{text}{Colors.RESET}" if COLORS_ENABLED else text
 
 
-def success(text: str) -> str: return colorize(text, Colors.GREEN)
-def error(text: str) -> str: return colorize(text, Colors.RED)
-def info(text: str) -> str: return colorize(text, Colors.BLUE)
-def warning(text: str) -> str: return colorize(text, Colors.YELLOW)
-def dim(text: str) -> str: return colorize(text, Colors.DIM)
-def bold(text: str) -> str: return colorize(text, Colors.BOLD)
+def success(text: str) -> str:
+    return colorize(text, Colors.GREEN)
+
+
+def error(text: str) -> str:
+    return colorize(text, Colors.RED)
+
+
+def info(text: str) -> str:
+    return colorize(text, Colors.BLUE)
+
+
+def warning(text: str) -> str:
+    return colorize(text, Colors.YELLOW)
+
+
+def dim(text: str) -> str:
+    return colorize(text, Colors.DIM)
+
+
+def bold(text: str) -> str:
+    return colorize(text, Colors.BOLD)
 
 
 # =============================================================================
 # Test Result Tracking
 # =============================================================================
+
 
 class TestResult(Enum):
     PASSED = "PASSED"
@@ -179,9 +199,21 @@ class TestSuite:
         print(bold(f"{'=' * 60}"))
 
         total = len(self.tests)
-        passed_str = success(f"Passed: {self.passed}") if self.passed > 0 else dim(f"Passed: {self.passed}")
-        failed_str = error(f"Failed: {self.failed}") if self.failed > 0 else dim(f"Failed: {self.failed}")
-        skipped_str = warning(f"Skipped: {self.skipped}") if self.skipped > 0 else dim(f"Skipped: {self.skipped}")
+        passed_str = (
+            success(f"Passed: {self.passed}")
+            if self.passed > 0
+            else dim(f"Passed: {self.passed}")
+        )
+        failed_str = (
+            error(f"Failed: {self.failed}")
+            if self.failed > 0
+            else dim(f"Failed: {self.failed}")
+        )
+        skipped_str = (
+            warning(f"Skipped: {self.skipped}")
+            if self.skipped > 0
+            else dim(f"Skipped: {self.skipped}")
+        )
 
         print(f"Total: {total} | {passed_str} | {failed_str} | {skipped_str}")
         print(bold(f"{'=' * 60}"))
@@ -199,10 +231,13 @@ class TestSuite:
 # API Client
 # =============================================================================
 
+
 class SerialStudioAPI:
     """Client for communicating with Serial Studio API Server."""
 
-    def __init__(self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, verbose: bool = False):
+    def __init__(
+        self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, verbose: bool = False
+    ):
         self.host = host
         self.port = port
         self.verbose = verbose
@@ -238,15 +273,15 @@ class SerialStudioAPI:
         try:
             end_time = time.time() + timeout
             while True:
-                newline_pos = self.receive_buffer.find(b'\n')
+                newline_pos = self.receive_buffer.find(b"\n")
                 if newline_pos != -1:
                     line = self.receive_buffer[:newline_pos]
-                    self.receive_buffer = self.receive_buffer[newline_pos + 1:]
+                    self.receive_buffer = self.receive_buffer[newline_pos + 1 :]
 
                     if line.strip():
                         if self.verbose:
                             print(f"[RECV] {line.decode('utf-8', errors='replace')}")
-                        return json.loads(line.decode('utf-8'))
+                        return json.loads(line.decode("utf-8"))
                     continue
 
                 remaining_time = end_time - time.time()
@@ -264,8 +299,12 @@ class SerialStudioAPI:
                 print(f"[ERROR] recv_message: {e}")
             return None
 
-    def send_raw(self, data: bytes, expected_id: Optional[str] = None,
-                 timeout: float = SOCKET_TIMEOUT) -> Optional[dict]:
+    def send_raw(
+        self,
+        data: bytes,
+        expected_id: Optional[str] = None,
+        timeout: float = SOCKET_TIMEOUT,
+    ) -> Optional[dict]:
         """Send bytes; if expected_id is set, skip push notifications until that response arrives."""
         if not self.socket:
             return None
@@ -282,18 +321,25 @@ class SerialStudioAPI:
                     remaining = end_time - time.time()
                     if remaining <= 0:
                         if self.verbose:
-                            print(f"[ERROR] Timeout waiting for response ID {expected_id}")
+                            print(
+                                f"[ERROR] Timeout waiting for response ID {expected_id}"
+                            )
                         return None
 
                     msg = self.recv_message(timeout=remaining)
                     if not msg:
                         return None
 
-                    if msg.get("type") == MessageType.RESPONSE and msg.get("id") == expected_id:
+                    if (
+                        msg.get("type") == MessageType.RESPONSE
+                        and msg.get("id") == expected_id
+                    ):
                         return msg
 
                     if self.verbose:
-                        print(f"[DEBUG] Discarding push notification while waiting for {expected_id}")
+                        print(
+                            f"[DEBUG] Discarding push notification while waiting for {expected_id}"
+                        )
             else:
                 return self.recv_message(timeout=timeout)
 
@@ -303,12 +349,18 @@ class SerialStudioAPI:
             return None
 
     def send_json(self, obj: dict) -> Optional[dict]:
-        data = json.dumps(obj, separators=(',', ':')) + "\n"
+        data = json.dumps(obj, separators=(",", ":")) + "\n"
         expected_id = obj.get("id")
-        return self.send_raw(data.encode('utf-8'), expected_id=expected_id, timeout=SOCKET_TIMEOUT)
+        return self.send_raw(
+            data.encode("utf-8"), expected_id=expected_id, timeout=SOCKET_TIMEOUT
+        )
 
-    def send_command(self, command: str, params: Optional[dict] = None,
-                     request_id: Optional[str] = None) -> Optional[dict]:
+    def send_command(
+        self,
+        command: str,
+        params: Optional[dict] = None,
+        request_id: Optional[str] = None,
+    ) -> Optional[dict]:
         msg = {
             "type": MessageType.COMMAND,
             "id": request_id or str(uuid.uuid4()),
@@ -318,7 +370,9 @@ class SerialStudioAPI:
             msg["params"] = params
         return self.send_json(msg)
 
-    def send_batch(self, commands: list[dict], request_id: Optional[str] = None) -> Optional[dict]:
+    def send_batch(
+        self, commands: list[dict], request_id: Optional[str] = None
+    ) -> Optional[dict]:
         msg = {
             "type": MessageType.BATCH,
             "id": request_id or str(uuid.uuid4()),
@@ -355,45 +409,54 @@ class SerialStudioAPI:
 # scope -- enough to prove each subsystem is wired and responsive without
 # pretending to know the per-driver setter surface.
 SMOKE_COMMANDS: list[tuple[str, str]] = [
-    ("api.getCommands",         "api"),
-    ("io.getStatus",            "io"),
-    ("io.listBuses",            "io"),
-    ("io.uart.listPorts",       "io.uart"),
-    ("io.uart.listBaudRates",   "io.uart"),
+    ("api.getCommands", "api"),
+    ("io.getStatus", "io"),
+    ("io.listBuses", "io"),
+    ("io.uart.listPorts", "io.uart"),
+    ("io.uart.listBaudRates", "io.uart"),
     ("io.network.listSocketTypes", "io.network"),
-    ("console.getConfig",       "console"),
-    ("dashboard.getStatus",     "dashboard"),
+    ("console.getConfig", "console"),
+    ("dashboard.getStatus", "dashboard"),
     ("dashboard.getOperationMode", "dashboard"),
-    ("project.exportJson",      "project"),
-    ("project.template.list",   "project"),
-    ("project.group.list",      "project"),
-    ("project.dataset.list",    "project"),
-    ("project.action.list",     "project"),
-    ("project.workspace.list",  "project"),
-    ("project.source.list",     "project"),
-    ("project.dataTable.list",  "project"),
-    ("ui.window.getLayout",     "ui"),
-    ("ui.window.listGroups",    "ui"),
+    ("project.exportJson", "project"),
+    ("project.template.list", "project"),
+    ("project.group.list", "project"),
+    ("project.dataset.list", "project"),
+    ("project.action.list", "project"),
+    ("project.workspace.list", "project"),
+    ("project.source.list", "project"),
+    ("project.dataTable.list", "project"),
+    ("ui.window.getLayout", "ui"),
+    ("ui.window.listGroups", "ui"),
     ("notifications.getUnreadCount", "notifications"),
-    ("notifications.listChannels",   "notifications"),
-    ("extensions.listRepositories",  "extensions"),
-    ("scripts.list",            "scripts"),
-    ("licensing.getStatus",     "licensing"),
+    ("notifications.listChannels", "notifications"),
+    ("extensions.listRepositories", "extensions"),
+    ("scripts.list", "scripts"),
+    ("licensing.getStatus", "licensing"),
     # Pro-only -- skipped automatically when license tier is below Pro
     ("io.modbus.listProtocols", "io.modbus (Pro)"),
-    ("io.canbus.listPlugins",   "io.canbus (Pro)"),
+    ("io.canbus.listPlugins", "io.canbus (Pro)"),
     ("io.audio.listSampleRates", "io.audio (Pro)"),
-    ("mqtt.getConfig",          "mqtt (Pro)"),
-    ("sessions.getStatus",      "sessions (Pro)"),
+    ("mqtt.getConfig", "mqtt (Pro)"),
+    ("sessions.getStatus", "sessions (Pro)"),
 ]
 
 
-def _record(suite: TestSuite, name: str, result: TestResult, message: str = "",
-            duration_ms: float = 0.0):
-    suite.add_result(TestCase(name=name, result=result, message=message,
-                              duration_ms=duration_ms))
-    icon = success(chr(10003)) if result == TestResult.PASSED else (
-        error(chr(10007)) if result == TestResult.FAILED else warning("~"))
+def _record(
+    suite: TestSuite,
+    name: str,
+    result: TestResult,
+    message: str = "",
+    duration_ms: float = 0.0,
+):
+    suite.add_result(
+        TestCase(name=name, result=result, message=message, duration_ms=duration_ms)
+    )
+    icon = (
+        success(chr(10003))
+        if result == TestResult.PASSED
+        else (error(chr(10007)) if result == TestResult.FAILED else warning("~"))
+    )
     suffix = f" ({duration_ms:.0f} ms)" if duration_ms else ""
     print(f"  {icon} {name}{suffix}{'  ' + dim(message) if message else ''}")
 
@@ -407,19 +470,35 @@ def test_protocol(api: SerialStudioAPI, suite: TestSuite):
     response = api.send_command("does.not.exist." + uuid.uuid4().hex[:8])
     duration = (time.time() - t0) * 1000
     if response is None:
-        _record(suite, "unknown_command -> server response", TestResult.FAILED,
-                "no response received")
+        _record(
+            suite,
+            "unknown_command -> server response",
+            TestResult.FAILED,
+            "no response received",
+        )
     elif response.get("success"):
-        _record(suite, "unknown_command -> error", TestResult.FAILED,
-                "server returned success on a fake command name")
+        _record(
+            suite,
+            "unknown_command -> error",
+            TestResult.FAILED,
+            "server returned success on a fake command name",
+        )
     else:
         err_code = response.get("error", {}).get("code", "")
         if err_code == ErrorCode.UNKNOWN_COMMAND:
-            _record(suite, "unknown_command -> UNKNOWN_COMMAND", TestResult.PASSED,
-                    duration_ms=duration)
+            _record(
+                suite,
+                "unknown_command -> UNKNOWN_COMMAND",
+                TestResult.PASSED,
+                duration_ms=duration,
+            )
         else:
-            _record(suite, "unknown_command -> UNKNOWN_COMMAND", TestResult.FAILED,
-                    f"got {err_code} instead")
+            _record(
+                suite,
+                "unknown_command -> UNKNOWN_COMMAND",
+                TestResult.FAILED,
+                f"got {err_code} instead",
+            )
 
     # 2) Response IDs must match the request ID.
     rid = "test-id-" + uuid.uuid4().hex[:8]
@@ -427,12 +506,20 @@ def test_protocol(api: SerialStudioAPI, suite: TestSuite):
     response = api.send_command("io.getStatus", request_id=rid)
     duration = (time.time() - t0) * 1000
     if response and response.get("id") == rid:
-        _record(suite, "response.id matches request.id", TestResult.PASSED,
-                duration_ms=duration)
+        _record(
+            suite,
+            "response.id matches request.id",
+            TestResult.PASSED,
+            duration_ms=duration,
+        )
     else:
         actual = response.get("id") if response else None
-        _record(suite, "response.id matches request.id", TestResult.FAILED,
-                f"expected {rid!r}, got {actual!r}")
+        _record(
+            suite,
+            "response.id matches request.id",
+            TestResult.FAILED,
+            f"expected {rid!r}, got {actual!r}",
+        )
 
     # 3) Batch responses must come back in order with one entry per command.
     cmds = [
@@ -444,22 +531,36 @@ def test_protocol(api: SerialStudioAPI, suite: TestSuite):
     response = api.send_batch(cmds)
     duration = (time.time() - t0) * 1000
     if not response or "results" not in response:
-        _record(suite, "batch returns results array", TestResult.FAILED,
-                "no results field")
+        _record(
+            suite, "batch returns results array", TestResult.FAILED, "no results field"
+        )
     else:
         results = response["results"]
         if len(results) == len(cmds):
-            ids_ok = all(results[i].get("id") == cmds[i]["id"]
-                         for i in range(len(cmds)))
+            ids_ok = all(
+                results[i].get("id") == cmds[i]["id"] for i in range(len(cmds))
+            )
             if ids_ok:
-                _record(suite, "batch preserves order and IDs", TestResult.PASSED,
-                        duration_ms=duration)
+                _record(
+                    suite,
+                    "batch preserves order and IDs",
+                    TestResult.PASSED,
+                    duration_ms=duration,
+                )
             else:
-                _record(suite, "batch preserves order and IDs", TestResult.FAILED,
-                        "results not in submitted order")
+                _record(
+                    suite,
+                    "batch preserves order and IDs",
+                    TestResult.FAILED,
+                    "results not in submitted order",
+                )
         else:
-            _record(suite, "batch preserves order and IDs", TestResult.FAILED,
-                    f"expected {len(cmds)} results, got {len(results)}")
+            _record(
+                suite,
+                "batch preserves order and IDs",
+                TestResult.FAILED,
+                f"expected {len(cmds)} results, got {len(results)}",
+            )
 
 
 def test_command_registry(api: SerialStudioAPI, suite: TestSuite):
@@ -471,25 +572,44 @@ def test_command_registry(api: SerialStudioAPI, suite: TestSuite):
     duration = (time.time() - t0) * 1000
 
     if not response or not response.get("success"):
-        _record(suite, "api.getCommands succeeds", TestResult.FAILED,
-                "no successful response")
+        _record(
+            suite,
+            "api.getCommands succeeds",
+            TestResult.FAILED,
+            "no successful response",
+        )
         return None
 
     commands = response.get("result", {}).get("commands", [])
     if not isinstance(commands, list) or len(commands) < 50:
-        _record(suite, "api.getCommands returns >= 50 commands", TestResult.FAILED,
-                f"got {len(commands)}")
+        _record(
+            suite,
+            "api.getCommands returns >= 50 commands",
+            TestResult.FAILED,
+            f"got {len(commands)}",
+        )
         return commands
 
-    _record(suite, f"api.getCommands returns {len(commands)} commands",
-            TestResult.PASSED, duration_ms=duration)
+    _record(
+        suite,
+        f"api.getCommands returns {len(commands)} commands",
+        TestResult.PASSED,
+        duration_ms=duration,
+    )
 
     # Spot-check structure: each entry has name + description.
-    bad = [c for c in commands if not isinstance(c, dict)
-           or "name" not in c or "description" not in c]
+    bad = [
+        c
+        for c in commands
+        if not isinstance(c, dict) or "name" not in c or "description" not in c
+    ]
     if bad:
-        _record(suite, "every command has name+description", TestResult.FAILED,
-                f"{len(bad)} entries malformed")
+        _record(
+            suite,
+            "every command has name+description",
+            TestResult.FAILED,
+            f"{len(bad)} entries malformed",
+        )
     else:
         _record(suite, "every command has name+description", TestResult.PASSED)
 
@@ -502,8 +622,12 @@ def test_smoke(api: SerialStudioAPI, suite: TestSuite, available: set[str]):
 
     for cmd, scope in SMOKE_COMMANDS:
         if cmd not in available:
-            _record(suite, f"{cmd} ({scope})", TestResult.SKIPPED,
-                    "not registered (probably GPL build or feature off)")
+            _record(
+                suite,
+                f"{cmd} ({scope})",
+                TestResult.SKIPPED,
+                "not registered (probably GPL build or feature off)",
+            )
             continue
 
         t0 = time.time()
@@ -515,23 +639,26 @@ def test_smoke(api: SerialStudioAPI, suite: TestSuite, available: set[str]):
             continue
 
         if response.get("success"):
-            _record(suite, f"{cmd} ({scope})", TestResult.PASSED,
-                    duration_ms=duration)
+            _record(suite, f"{cmd} ({scope})", TestResult.PASSED, duration_ms=duration)
         else:
             err = response.get("error", {})
             code = err.get("code", "?")
             # license_required is a soft pass -- the command exists, the
             # server just won't run it without a Pro key.
             if code == "license_required":
-                _record(suite, f"{cmd} ({scope})", TestResult.SKIPPED,
-                        "license_required")
+                _record(
+                    suite, f"{cmd} ({scope})", TestResult.SKIPPED, "license_required"
+                )
             else:
-                _record(suite, f"{cmd} ({scope})", TestResult.FAILED,
-                        f"{code}: {err.get('message', '')}")
+                _record(
+                    suite,
+                    f"{cmd} ({scope})",
+                    TestResult.FAILED,
+                    f"{code}: {err.get('message', '')}",
+                )
 
 
-def test_blocked_commands(api: SerialStudioAPI, suite: TestSuite,
-                          available: set[str]):
+def test_blocked_commands(api: SerialStudioAPI, suite: TestSuite, available: set[str]):
     """The legacy TCP API does not enforce AI safety tags, but unknown
     commands and bad params must still come back as structured errors."""
     print(bold(info("\n[ Error-shape checks ]")))
@@ -542,32 +669,56 @@ def test_blocked_commands(api: SerialStudioAPI, suite: TestSuite,
         if response and not response.get("success"):
             code = response.get("error", {}).get("code", "")
             if code in (ErrorCode.MISSING_PARAM, ErrorCode.INVALID_PARAM):
-                _record(suite, "missing required param -> structured error",
-                        TestResult.PASSED)
+                _record(
+                    suite,
+                    "missing required param -> structured error",
+                    TestResult.PASSED,
+                )
             else:
-                _record(suite, "missing required param -> structured error",
-                        TestResult.FAILED, f"got {code}")
-        else:
-            _record(suite, "missing required param -> structured error",
+                _record(
+                    suite,
+                    "missing required param -> structured error",
                     TestResult.FAILED,
-                    "server accepted the command without baudRate")
+                    f"got {code}",
+                )
+        else:
+            _record(
+                suite,
+                "missing required param -> structured error",
+                TestResult.FAILED,
+                "server accepted the command without baudRate",
+            )
     else:
-        _record(suite, "missing required param -> structured error",
-                TestResult.SKIPPED, "io.uart.setBaudRate not registered")
+        _record(
+            suite,
+            "missing required param -> structured error",
+            TestResult.SKIPPED,
+            "io.uart.setBaudRate not registered",
+        )
 
     # Wrong parameter type.
     if "io.uart.setBaudRate" in available:
-        response = api.send_command("io.uart.setBaudRate",
-                                    params={"baudRate": "not-a-number"})
+        response = api.send_command(
+            "io.uart.setBaudRate", params={"baudRate": "not-a-number"}
+        )
         if response and not response.get("success"):
-            _record(suite, "type-mismatched param -> structured error",
-                    TestResult.PASSED)
+            _record(
+                suite, "type-mismatched param -> structured error", TestResult.PASSED
+            )
         else:
-            _record(suite, "type-mismatched param -> structured error",
-                    TestResult.FAILED, "server accepted non-numeric baudRate")
+            _record(
+                suite,
+                "type-mismatched param -> structured error",
+                TestResult.FAILED,
+                "server accepted non-numeric baudRate",
+            )
     else:
-        _record(suite, "type-mismatched param -> structured error",
-                TestResult.SKIPPED, "io.uart.setBaudRate not registered")
+        _record(
+            suite,
+            "type-mismatched param -> structured error",
+            TestResult.SKIPPED,
+            "io.uart.setBaudRate not registered",
+        )
 
 
 def cmd_test(api: SerialStudioAPI, args) -> int:
@@ -596,6 +747,7 @@ def cmd_test(api: SerialStudioAPI, args) -> int:
     except Exception as e:
         print(error(f"\n[FATAL] Unexpected error: {e}"))
         import traceback
+
         traceback.print_exc()
 
     suite.print_summary()
@@ -605,6 +757,7 @@ def cmd_test(api: SerialStudioAPI, args) -> int:
 # =============================================================================
 # CLI Modes
 # =============================================================================
+
 
 def parse_params(param_list: list[str]) -> Optional[dict]:
     """
@@ -630,19 +783,24 @@ def parse_params(param_list: list[str]) -> Optional[dict]:
         except json.JSONDecodeError:
             # PowerShell often strips quotes around keys -- fix {key:value}
             import re
-            fixed = re.sub(r'(\{|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:', r'\1"\2":', stripped)
+
+            fixed = re.sub(
+                r"(\{|,)\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:", r'\1"\2":', stripped
+            )
             try:
                 return json.loads(fixed)
             except json.JSONDecodeError as e:
                 raise ValueError(
                     f"Invalid JSON: {e}\n"
-                    "Tip: On PowerShell, use key=value format instead: -p baudRate=115200")
+                    "Tip: On PowerShell, use key=value format instead: -p baudRate=115200"
+                )
 
     params = {}
     for param in param_list:
         if "=" not in param:
             raise ValueError(
-                f"Invalid parameter format: '{param}'. Use key=value or JSON format.")
+                f"Invalid parameter format: '{param}'. Use key=value or JSON format."
+            )
         key, value = param.split("=", 1)
         key = key.strip()
         value = value.strip()
@@ -690,8 +848,7 @@ def cmd_send(api: SerialStudioAPI, args) -> int:
                 print("[OK] Command executed successfully")
         else:
             err = response.get("error", {})
-            print(f"[ERROR] {err.get('code')}: {err.get('message')}",
-                  file=sys.stderr)
+            print(f"[ERROR] {err.get('code')}: {err.get('message')}", file=sys.stderr)
             return 1
 
     return 0
@@ -700,7 +857,7 @@ def cmd_send(api: SerialStudioAPI, args) -> int:
 def cmd_batch(api: SerialStudioAPI, args) -> int:
     """Send batch commands from a JSON file."""
     try:
-        with open(args.file, 'r') as f:
+        with open(args.file, "r") as f:
             data = json.load(f)
     except FileNotFoundError:
         print(f"[ERROR] File not found: {args.file}", file=sys.stderr)
@@ -714,8 +871,9 @@ def cmd_batch(api: SerialStudioAPI, args) -> int:
     elif isinstance(data, dict) and "commands" in data:
         commands = data["commands"]
     else:
-        print("[ERROR] Expected array of commands or {\"commands\": [...]}",
-              file=sys.stderr)
+        print(
+            '[ERROR] Expected array of commands or {"commands": [...]}', file=sys.stderr
+        )
         return 1
 
     response = api.send_batch(commands)
@@ -729,8 +887,10 @@ def cmd_batch(api: SerialStudioAPI, args) -> int:
     else:
         results = response.get("results", [])
         success_count = sum(1 for r in results if r.get("success"))
-        print(f"Executed {len(results)} commands: {success_count} succeeded, "
-              f"{len(results) - success_count} failed")
+        print(
+            f"Executed {len(results)} commands: {success_count} succeeded, "
+            f"{len(results) - success_count} failed"
+        )
         for i, result in enumerate(results):
             status = chr(10003) if result.get("success") else chr(10007)
             cmd_id = result.get("id", f"#{i+1}")
@@ -738,8 +898,9 @@ def cmd_batch(api: SerialStudioAPI, args) -> int:
                 print(f"  {status} {cmd_id}")
             else:
                 err = result.get("error", {})
-                print(f"  {status} {cmd_id}: {err.get('code')} - "
-                      f"{err.get('message')}")
+                print(
+                    f"  {status} {cmd_id}: {err.get('code')} - " f"{err.get('message')}"
+                )
 
     return 0 if response.get("success") else 1
 
@@ -820,7 +981,11 @@ def cmd_interactive(api: SerialStudioAPI, args) -> int:
     print(dim("Features:"))
     if READLINE_AVAILABLE:
         print(dim(f"  - {success(chr(10003))} Command history (up/down arrows)"))
-        print(dim(f"  - {success(chr(10003))} Tab completion ({len(available_commands)} commands)"))
+        print(
+            dim(
+                f"  - {success(chr(10003))} Tab completion ({len(available_commands)} commands)"
+            )
+        )
     else:
         print(dim(f"  - {warning('!')} Install 'readline' for history & completion"))
     print(dim(f"  - Type {bold('help')} for built-in commands"))
@@ -847,19 +1012,21 @@ def cmd_interactive(api: SerialStudioAPI, args) -> int:
             print(bold("=" * 60))
             print(f"{info('  help')}                          Show this help")
             print(f"{info('  quit, exit, q')}                 Exit interactive mode")
-            print(f"{info('  list')}                          List all available API commands")
+            print(
+                f"{info('  list')}                          List all available API commands"
+            )
             print(f"{info('  clear')}                         Clear the screen")
             print(f"{info('  <command>')}                     Execute a command")
             print(f"{info('  <command> <json_params>')}       Execute with params")
             print(bold("\nExamples:"))
-            print(dim('  io.getStatus'))
+            print(dim("  io.getStatus"))
             print(dim('  io.uart.setBaudRate {"baudRate": 115200}'))
             print(dim('  io.network.setRemoteAddress {"address": "192.168.1.100"}'))
             print()
             continue
 
         if line.lower() == "clear":
-            os.system('clear' if os.name != 'nt' else 'cls')
+            os.system("clear" if os.name != "nt" else "cls")
             continue
 
         if line.lower() == "list":
@@ -881,7 +1048,7 @@ def cmd_interactive(api: SerialStudioAPI, args) -> int:
                 params = json.loads(parts[1])
             except json.JSONDecodeError as e:
                 print(error(f"[ERROR] Invalid JSON parameters: {e}"))
-                print(dim("Tip: Use double quotes for JSON: {\"key\": \"value\"}"))
+                print(dim('Tip: Use double quotes for JSON: {"key": "value"}'))
                 continue
 
         response = api.send_command(command, params)
@@ -938,14 +1105,19 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
                     if args.show_raw_data:
                         try:
                             decoded = base64.b64decode(msg["data"]).decode(
-                                'utf-8', errors='replace')
-                            display_text = decoded.replace('\n', '\\n').replace(
-                                '\r', '\\r')
+                                "utf-8", errors="replace"
+                            )
+                            display_text = decoded.replace("\n", "\\n").replace(
+                                "\r", "\\r"
+                            )
                             if len(display_text) > 100:
                                 display_text = display_text[:97] + "..."
-                            print(f"\rRaw [{raw_data_count}]: "
-                                  f"{display_text}".ljust(120), end='',
-                                  flush=True)
+                            print(
+                                f"\rRaw [{raw_data_count}]: "
+                                f"{display_text}".ljust(120),
+                                end="",
+                                flush=True,
+                            )
                         except Exception:
                             pass
                 elif "frames" in msg:
@@ -970,26 +1142,25 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
 
                 if not args.show_raw_data:
                     print("=" * 60)
-                    print(f"Serial Studio Live Monitor "
-                          f"(Update: {args.interval}ms)")
+                    print(f"Serial Studio Live Monitor " f"(Update: {args.interval}ms)")
                     print("=" * 60)
                     print()
 
                 connected = status.get("isConnected", False)
                 paused = status.get("paused", False)
-                conn_label = ("CONNECTED" if connected
-                              else "DISCONNECTED")
+                conn_label = "CONNECTED" if connected else "DISCONNECTED"
                 pause_label = " (paused)" if paused else ""
 
                 if not args.show_raw_data:
                     print(f"Status: {conn_label}{pause_label}")
                     print(f"Bus Type: {status.get('busTypeName', 'Unknown')}")
                     config_ok = status.get("configurationOk", False)
-                    print(f"Configuration: "
-                          f"{'OK' if config_ok else 'Not Ready'}")
-                    rw = ("Read/Write" if status.get("readWrite", False)
-                          else "Read-Only" if status.get("readOnly", False)
-                          else "None")
+                    print(f"Configuration: " f"{'OK' if config_ok else 'Not Ready'}")
+                    rw = (
+                        "Read/Write"
+                        if status.get("readWrite", False)
+                        else "Read-Only" if status.get("readOnly", False) else "None"
+                    )
                     print(f"Mode: {rw}")
 
                     if connected:
@@ -1002,11 +1173,12 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
                             if uart and uart.get("success"):
                                 cfg = uart.get("result", {})
                                 print(f"Port: {cfg.get('port', 'N/A')}")
-                                print(f"Baud Rate: "
-                                      f"{cfg.get('baudRate', 'N/A')}")
-                                parity = (cfg.get('parity', '?') or '?')[0]
-                                print(f"Config: {cfg.get('dataBits', '?')}"
-                                      f"{parity}{cfg.get('stopBits', '?')}")
+                                print(f"Baud Rate: " f"{cfg.get('baudRate', 'N/A')}")
+                                parity = (cfg.get("parity", "?") or "?")[0]
+                                print(
+                                    f"Config: {cfg.get('dataBits', '?')}"
+                                    f"{parity}{cfg.get('stopBits', '?')}"
+                                )
 
                         elif bus_type == 1:  # Network
                             net = api.send_command("io.network.getConfig")
@@ -1014,31 +1186,35 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
                                 cfg = net.get("result", {})
                                 socket_types = ["TCP", "UDP"]
                                 idx = cfg.get("socketTypeIndex", 0)
-                                stype = (socket_types[idx]
-                                         if idx < len(socket_types)
-                                         else "Unknown")
+                                stype = (
+                                    socket_types[idx]
+                                    if idx < len(socket_types)
+                                    else "Unknown"
+                                )
                                 print(f"Type: {stype}")
-                                print(f"Address: "
-                                      f"{cfg.get('remoteAddress', 'N/A')}")
+                                print(f"Address: " f"{cfg.get('remoteAddress', 'N/A')}")
                                 if idx == 0:
-                                    print(f"Port: "
-                                          f"{cfg.get('tcpPort', 'N/A')}")
+                                    print(f"Port: " f"{cfg.get('tcpPort', 'N/A')}")
                                 else:
-                                    print(f"Local Port: "
-                                          f"{cfg.get('udpLocalPort', 'N/A')}")
-                                    print(f"Remote Port: "
-                                          f"{cfg.get('udpRemotePort', 'N/A')}")
+                                    print(
+                                        f"Local Port: "
+                                        f"{cfg.get('udpLocalPort', 'N/A')}"
+                                    )
+                                    print(
+                                        f"Remote Port: "
+                                        f"{cfg.get('udpRemotePort', 'N/A')}"
+                                    )
 
                         elif bus_type == 2:  # Bluetooth LE
                             ble = api.send_command("io.ble.getConfig")
                             if ble and ble.get("success"):
                                 cfg = ble.get("result", {})
-                                print(f"Device: "
-                                      f"{cfg.get('deviceName', 'N/A')}")
-                                print(f"Service: "
-                                      f"{cfg.get('serviceName', 'N/A')}")
-                                print(f"Characteristic: "
-                                      f"{cfg.get('characteristicName', 'N/A')}")
+                                print(f"Device: " f"{cfg.get('deviceName', 'N/A')}")
+                                print(f"Service: " f"{cfg.get('serviceName', 'N/A')}")
+                                print(
+                                    f"Characteristic: "
+                                    f"{cfg.get('characteristicName', 'N/A')}"
+                                )
 
                     print()
                     print("-" * 60)
@@ -1048,8 +1224,9 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
                         cs = csv.get("result", {})
                         en = cs.get("enabled", False)
                         op = cs.get("isOpen", False)
-                        label = ("Active" if en and op
-                                 else "Enabled" if en else "Disabled")
+                        label = (
+                            "Active" if en and op else "Enabled" if en else "Disabled"
+                        )
                         print(f"CSV Export: {label}")
 
                     if last_status and not args.compact:
@@ -1060,8 +1237,10 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
 
                     print()
                     print("-" * 60)
-                    print(f"Frames: {frame_count} | Raw Data Packets: "
-                          f"{raw_data_count} | Press Ctrl+C to exit")
+                    print(
+                        f"Frames: {frame_count} | Raw Data Packets: "
+                        f"{raw_data_count} | Press Ctrl+C to exit"
+                    )
 
                 last_status = status
 
@@ -1078,6 +1257,7 @@ def cmd_monitor(api: SerialStudioAPI, args) -> int:
 # Main Entry Point
 # =============================================================================
 
+
 def main():
     parser = argparse.ArgumentParser(
         description="Serial Studio API Client & Test Suite",
@@ -1092,48 +1272,70 @@ Examples:
   %(prog)s monitor --interval 500                         # Live monitor
   %(prog)s batch commands.json                            # Batch from file
   %(prog)s test --verbose                                 # Run smoke tests
-        """)
+        """,
+    )
 
-    parser.add_argument("--host", default=DEFAULT_HOST,
-                        help=f"Server host (default: {DEFAULT_HOST})")
-    parser.add_argument("--port", type=int, default=DEFAULT_PORT,
-                        help=f"Server port (default: {DEFAULT_PORT})")
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Enable verbose output")
-    parser.add_argument("--json", "-j", action="store_true",
-                        help="Output raw JSON (for scripting)")
+    parser.add_argument(
+        "--host", default=DEFAULT_HOST, help=f"Server host (default: {DEFAULT_HOST})"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=DEFAULT_PORT,
+        help=f"Server port (default: {DEFAULT_PORT})",
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose output"
+    )
+    parser.add_argument(
+        "--json", "-j", action="store_true", help="Output raw JSON (for scripting)"
+    )
 
     subparsers = parser.add_subparsers(dest="mode", help="Operation mode")
 
     send_parser = subparsers.add_parser("send", help="Send a single command")
-    send_parser.add_argument("command",
-                             help="Command to send (e.g., io.getStatus)")
+    send_parser.add_argument("command", help="Command to send (e.g., io.getStatus)")
     send_parser.add_argument(
-        "--params", "-p", nargs="+", metavar="PARAM",
+        "--params",
+        "-p",
+        nargs="+",
+        metavar="PARAM",
         help="Parameters as key=value pairs or JSON. "
-             "Examples: baudRate=115200 or '{\"baudRate\": 115200}'")
+        "Examples: baudRate=115200 or '{\"baudRate\": 115200}'",
+    )
 
-    batch_parser = subparsers.add_parser("batch",
-                                         help="Send batch commands from JSON file")
+    batch_parser = subparsers.add_parser(
+        "batch", help="Send batch commands from JSON file"
+    )
     batch_parser.add_argument("file", help="JSON file containing commands")
 
     subparsers.add_parser("list", help="List all available commands")
 
-    subparsers.add_parser("interactive", aliases=["i", "repl"],
-                          help="Interactive REPL mode")
+    subparsers.add_parser(
+        "interactive", aliases=["i", "repl"], help="Interactive REPL mode"
+    )
 
-    monitor_parser = subparsers.add_parser("monitor", aliases=["m", "live"],
-                                           help="Live data monitor")
+    monitor_parser = subparsers.add_parser(
+        "monitor", aliases=["m", "live"], help="Live data monitor"
+    )
     monitor_parser.add_argument(
-        "--interval", type=int, default=1000, metavar="MS",
-        help="Update interval in milliseconds (default: 1000)")
+        "--interval",
+        type=int,
+        default=1000,
+        metavar="MS",
+        help="Update interval in milliseconds (default: 1000)",
+    )
     monitor_parser.add_argument(
-        "--compact", action="store_true",
-        help="Compact mode (append updates instead of clearing screen)")
+        "--compact",
+        action="store_true",
+        help="Compact mode (append updates instead of clearing screen)",
+    )
     monitor_parser.add_argument(
-        "--show-raw-data", action="store_true",
+        "--show-raw-data",
+        action="store_true",
         help="Show raw device data on a single line "
-             "(uses \\r for continuous update)")
+        "(uses \\r for continuous update)",
+    )
 
     subparsers.add_parser("test", help="Run the API smoke test suite")
 
@@ -1141,8 +1343,10 @@ Examples:
 
     if args.mode is None:
         parser.print_help()
-        print("\nTip: Use 'interactive' for a REPL, or "
-              "'send <command>' to execute a command.")
+        print(
+            "\nTip: Use 'interactive' for a REPL, or "
+            "'send <command>' to execute a command."
+        )
         return 0
 
     api = SerialStudioAPI(args.host, args.port, args.verbose)
@@ -1154,15 +1358,15 @@ Examples:
         if args.json:
             print(json.dumps({"error": "Connection failed"}))
         else:
-            print("\n[ERROR] Could not connect to Serial Studio.",
-                  file=sys.stderr)
+            print("\n[ERROR] Could not connect to Serial Studio.", file=sys.stderr)
             print("Please ensure:", file=sys.stderr)
             print("  1. Serial Studio is running", file=sys.stderr)
-            print("  2. API Server is enabled "
-                  "(Settings -> Miscellaneous -> Enable API Server)",
-                  file=sys.stderr)
-            print(f"  3. The server is listening on port {args.port}",
-                  file=sys.stderr)
+            print(
+                "  2. API Server is enabled "
+                "(Settings -> Miscellaneous -> Enable API Server)",
+                file=sys.stderr,
+            )
+            print(f"  3. The server is listening on port {args.port}", file=sys.stderr)
         return 1
 
     if not args.json:

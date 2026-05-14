@@ -50,7 +50,6 @@ import uuid
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -106,6 +105,7 @@ def make_cmd(command, params=None):
 # 1. JAVASCRIPT SANDBOX ESCAPE
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.critical
 @pytest.mark.destructive
@@ -132,8 +132,7 @@ class TestJavaScriptSandboxEscape:
         # Attempt to read environment variables
         (
             "env_leak",
-            "function parse(f){var e=process.env;"
-            "return [JSON.stringify(e)];}",
+            "function parse(f){var e=process.env;" "return [JSON.stringify(e)];}",
         ),
         # Infinite loop to freeze the engine
         (
@@ -181,9 +180,7 @@ class TestJavaScriptSandboxEscape:
         MALICIOUS_SCRIPTS,
         ids=[s[0] for s in MALICIOUS_SCRIPTS],
     )
-    def test_js_sandbox_escape(
-        self, security_client, check_server_alive, name, script
-    ):
+    def test_js_sandbox_escape(self, security_client, check_server_alive, name, script):
         """
         Attempt to inject malicious JavaScript via frameParserCode.
 
@@ -220,9 +217,7 @@ class TestJavaScriptSandboxEscape:
             wait_time=2.0
         ), f"Server crashed on JS injection: {name}"
 
-    def test_js_code_via_project_json(
-        self, security_client, check_server_alive
-    ):
+    def test_js_code_via_project_json(self, security_client, check_server_alive):
         """
         Attempt JS injection via project.loadJson with frameParserCode.
         This is the most likely attack path since project files contain JS.
@@ -239,17 +234,13 @@ class TestJavaScriptSandboxEscape:
                 {
                     "title": "Data",
                     "widget": "datagrid",
-                    "datasets": [
-                        {"title": "Value", "index": 1, "widget": "gauge"}
-                    ],
+                    "datasets": [{"title": "Value", "index": 1, "widget": "gauge"}],
                 }
             ],
         }
 
         try:
-            security_client.command(
-                "project.loadJson", {"config": malicious_project}
-            )
+            security_client.command("project.loadJson", {"config": malicious_project})
         except Exception:
             pass
 
@@ -257,9 +248,7 @@ class TestJavaScriptSandboxEscape:
             wait_time=2.0
         ), "Server crashed on malicious project load with JS code"
 
-    def test_js_code_length_bomb(
-        self, security_client, check_server_alive
-    ):
+    def test_js_code_length_bomb(self, security_client, check_server_alive):
         """
         Send extremely large JavaScript code to exhaust parser memory.
         """
@@ -270,9 +259,7 @@ class TestJavaScriptSandboxEscape:
         )
 
         try:
-            security_client.command(
-                "project.frameParser.setCode", {"code": huge_code}
-            )
+            security_client.command("project.frameParser.setCode", {"code": huge_code})
         except Exception:
             pass
 
@@ -284,6 +271,7 @@ class TestJavaScriptSandboxEscape:
 # ===================================================================
 # 2. PROTOTYPE POLLUTION
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.critical
@@ -299,13 +287,7 @@ class TestPrototypePollution:
         {"constructor": {"prototype": {"isAdmin": True}}},
         {"__proto__": {"toString": "pwned"}},
         {"__proto__": {"valueOf": 42}},
-        {
-            "__proto__": {
-                "__proto__": {
-                    "__proto__": {"deep": "pollution"}
-                }
-            }
-        },
+        {"__proto__": {"__proto__": {"__proto__": {"deep": "pollution"}}}},
         {"constructor": {"name": "EvilConstructor"}},
         # Nested pollution in params
         {
@@ -320,9 +302,7 @@ class TestPrototypePollution:
         POLLUTION_PAYLOADS,
         ids=[f"proto_{i}" for i in range(len(POLLUTION_PAYLOADS))],
     )
-    def test_prototype_pollution_via_command(
-        self, security_client, payload
-    ):
+    def test_prototype_pollution_via_command(self, security_client, payload):
         """
         Send __proto__ keys in command parameters.
 
@@ -337,7 +317,9 @@ class TestPrototypePollution:
         # Verify server still works normally
         try:
             result = security_client.command("api.getCommands")
-            assert isinstance(result, dict), "API response corrupted after proto pollution"
+            assert isinstance(
+                result, dict
+            ), "API response corrupted after proto pollution"
         except Exception:
             pass
 
@@ -360,6 +342,7 @@ class TestPrototypePollution:
 # ===================================================================
 # 3. UTF-8 OVERLONG ENCODING / ENCODING ATTACKS
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.critical
@@ -413,12 +396,8 @@ class TestEncodingAttacks:
 
         for path in double_encoded_paths:
             try:
-                security_client.command(
-                    "project.open", {"filePath": path}
-                )
-                pytest.fail(
-                    f"Double-encoded path traversal accepted: {path}"
-                )
+                security_client.command("project.open", {"filePath": path})
+                pytest.fail(f"Double-encoded path traversal accepted: {path}")
             except Exception:
                 pass
 
@@ -450,6 +429,7 @@ class TestEncodingAttacks:
 # 4. NULL BYTE INJECTION
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.critical
 class TestNullByteInjection:
@@ -474,9 +454,7 @@ class TestNullByteInjection:
 
         for path in null_byte_paths:
             try:
-                security_client.command(
-                    "project.open", {"filePath": path}
-                )
+                security_client.command("project.open", {"filePath": path})
             except Exception:
                 pass
 
@@ -525,6 +503,7 @@ class TestNullByteInjection:
 # ===================================================================
 # 5. STATE DESYNCHRONIZATION
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.destructive
@@ -655,6 +634,7 @@ class TestStateDesync:
 # 6. HASH COLLISION DoS
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.destructive
 class TestHashCollisionDoS:
@@ -678,9 +658,7 @@ class TestHashCollisionDoS:
         payload["params"] = params
 
         start = time.time()
-        response, error = raw_send(
-            json.dumps(payload).encode() + b"\n", timeout=10.0
-        )
+        response, error = raw_send(json.dumps(payload).encode() + b"\n", timeout=10.0)
         elapsed = time.time() - start
 
         # If parsing took > 5s, hash collision DoS is likely working
@@ -700,7 +678,9 @@ class TestHashCollisionDoS:
         # Build JSON with 5000 duplicate "x" keys
         # Using raw bytes since Python's json.dumps deduplicates
         parts = []
-        parts.append(b'{"type":"command","id":"dup","command":"api.getCommands","params":{')
+        parts.append(
+            b'{"type":"command","id":"dup","command":"api.getCommands","params":{'
+        )
         for i in range(5000):
             if i > 0:
                 parts.append(b",")
@@ -714,9 +694,7 @@ class TestHashCollisionDoS:
         elapsed = time.time() - start
 
         if elapsed > 5.0:
-            pytest.fail(
-                f"Quadratic blowup: 5000 duplicate keys took {elapsed:.2f}s"
-            )
+            pytest.fail(f"Quadratic blowup: 5000 duplicate keys took {elapsed:.2f}s")
 
         assert check_server_alive(), "Server crashed on duplicate key payload"
 
@@ -724,6 +702,7 @@ class TestHashCollisionDoS:
 # ===================================================================
 # 7. CROSS-CLIENT INTERFERENCE
 # ===================================================================
+
 
 @pytest.mark.security
 class TestCrossClientAttacks:
@@ -813,6 +792,7 @@ class TestCrossClientAttacks:
 # 8. FRAME INJECTION VIA DATA PATH
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.critical
 class TestFrameInjection:
@@ -829,15 +809,11 @@ class TestFrameInjection:
         """
         malicious_frames = [
             # JSON command disguised as frame data
-            base64.b64encode(
-                b'{"type":"command","command":"io.connect"}'
-            ).decode(),
+            base64.b64encode(b'{"type":"command","command":"io.connect"}').decode(),
             # Start/end delimiters embedded in data
             base64.b64encode(b"/*evil frame content*/").decode(),
             # Newline-terminated fake command
-            base64.b64encode(
-                b'{"type":"raw","data":"nested"}\n'
-            ).decode(),
+            base64.b64encode(b'{"type":"raw","data":"nested"}\n').decode(),
         ]
 
         for encoded_data in malicious_frames:
@@ -881,6 +857,7 @@ class TestFrameInjection:
 # 9. CHECKSUM CONFUSION
 # ===================================================================
 
+
 @pytest.mark.security
 class TestChecksumConfusion:
     """
@@ -896,16 +873,20 @@ class TestChecksumConfusion:
         algorithm, accepting corrupted data.
         """
         algorithms = [
-            "", "XOR-8", "MOD-256", "CRC-8", "CRC-16-MODBUS",
-            "CRC-32", "Fletcher-16", "Adler-32",
+            "",
+            "XOR-8",
+            "MOD-256",
+            "CRC-8",
+            "CRC-16-MODBUS",
+            "CRC-32",
+            "Fletcher-16",
+            "Adler-32",
         ]
 
         for i in range(100):
             algo = algorithms[i % len(algorithms)]
             try:
-                security_client.configure_frame_parser(
-                    checksum_algorithm=algo
-                )
+                security_client.configure_frame_parser(checksum_algorithm=algo)
             except Exception:
                 pass
 
@@ -930,8 +911,8 @@ class TestChecksumConfusion:
 
         # Send frame with truncated checksum (only 2 bytes instead of 4)
         short_checksum_frames = [
-            base64.b64encode(b"$1,2,3\xAB\xCD\r\n").decode(),
-            base64.b64encode(b"$1,2,3\xAB\r\n").decode(),
+            base64.b64encode(b"$1,2,3\xab\xcd\r\n").decode(),
+            base64.b64encode(b"$1,2,3\xab\r\n").decode(),
             base64.b64encode(b"$1,2,3\r\n").decode(),
         ]
 
@@ -946,6 +927,7 @@ class TestChecksumConfusion:
 # 10. USE-AFTER-FREE TRIGGERS
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.destructive
 class TestUseAfterFree:
@@ -957,7 +939,7 @@ class TestUseAfterFree:
 
     @pytest.mark.xfail(
         reason="Server crashes under 10-thread × 200-command stress "
-               "(rate limiter overwhelmed or rapid setOperationMode cycling)",
+        "(rate limiter overwhelmed or rapid setOperationMode cycling)",
         strict=False,
     )
     def test_rapid_framereader_recreation(self, check_server_alive):
@@ -966,6 +948,7 @@ class TestUseAfterFree:
         recreation. If any code holds a dangling reference to the old
         FrameReader, this triggers use-after-free.
         """
+
         def reconfigure_rapidly(thread_id):
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -991,8 +974,7 @@ class TestUseAfterFree:
                 pass
 
         threads = [
-            threading.Thread(target=reconfigure_rapidly, args=(i,))
-            for i in range(10)
+            threading.Thread(target=reconfigure_rapidly, args=(i,)) for i in range(10)
         ]
         for t in threads:
             t.start()
@@ -1009,6 +991,7 @@ class TestUseAfterFree:
         This could trigger use-after-free if the old project's data
         structures are accessed after deletion.
         """
+
         def send_data():
             try:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -1016,9 +999,7 @@ class TestUseAfterFree:
                 sock.connect((API_HOST, API_PORT))
 
                 for i in range(100):
-                    data = base64.b64encode(
-                        f"/*{i},123,456*/".encode()
-                    ).decode()
+                    data = base64.b64encode(f"/*{i},123,456*/".encode()).decode()
                     msg = {
                         "type": "raw",
                         "id": str(uuid.uuid4()),
@@ -1058,9 +1039,7 @@ class TestUseAfterFree:
                             }
                         ],
                     }
-                    cmd = make_cmd(
-                        "project.loadJson", {"config": project}
-                    )
+                    cmd = make_cmd("project.loadJson", {"config": project})
                     try:
                         sock.sendall(cmd)
                     except Exception:
@@ -1088,6 +1067,7 @@ class TestUseAfterFree:
 # ===================================================================
 # 11. ANSI ESCAPE INJECTION VIA TERMINAL
 # ===================================================================
+
 
 @pytest.mark.security
 class TestTerminalEscapeInjection:
@@ -1130,9 +1110,7 @@ class TestTerminalEscapeInjection:
         ESCAPE_PAYLOADS,
         ids=[f"ansi_{i}" for i in range(len(ESCAPE_PAYLOADS))],
     )
-    def test_ansi_escape_via_raw_data(
-        self, payload, check_server_alive
-    ):
+    def test_ansi_escape_via_raw_data(self, payload, check_server_alive):
         """
         Send ANSI escape sequences as raw device data.
 
@@ -1149,6 +1127,7 @@ class TestTerminalEscapeInjection:
 # ===================================================================
 # 12. INTEGER TRUNCATION ATTACKS
 # ===================================================================
+
 
 @pytest.mark.security
 class TestIntegerTruncation:
@@ -1210,9 +1189,7 @@ class TestIntegerTruncation:
         """
         rejected = False
         try:
-            result = security_client.command(
-                "dashboard.setFps", {"fps": value}
-            )
+            result = security_client.command("dashboard.setFps", {"fps": value})
             # Command succeeded - check if value was actually applied
             accepted_fps = result.get("fps", None)
             if accepted_fps is not None and (
@@ -1254,16 +1231,12 @@ class TestIntegerTruncation:
         """
         rejected = False
         try:
-            result = security_client.command(
-                "dashboard.setPoints", {"points": value}
-            )
+            result = security_client.command("dashboard.setPoints", {"points": value})
             accepted_points = result.get("points", None)
             if accepted_points is not None and accepted_points > self.POINTS_SANE_MAX:
                 # Restore before failing so we don't leave the app broken
                 try:
-                    security_client.command(
-                        "dashboard.setPoints", {"points": 100}
-                    )
+                    security_client.command("dashboard.setPoints", {"points": 100})
                 except Exception:
                     pass
 
@@ -1295,9 +1268,7 @@ class TestIntegerTruncation:
 
         for port in evil_ports:
             try:
-                security_client.command(
-                    "io.network.setTcpPort", {"port": port}
-                )
+                security_client.command("io.network.setTcpPort", {"port": port})
             except Exception:
                 pass
 
@@ -1307,6 +1278,7 @@ class TestIntegerTruncation:
 # ===================================================================
 # 13. HEAP SPRAY VIA PREDICTABLE ALLOCATIONS
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.destructive
@@ -1368,9 +1340,7 @@ class TestHeapSpray:
         except Exception:
             pass
 
-        assert check_server_alive(
-            wait_time=2.0
-        ), "Server crashed during heap spray"
+        assert check_server_alive(wait_time=2.0), "Server crashed during heap spray"
 
     def test_rapid_string_allocation_spray(self, check_server_alive):
         """
@@ -1414,6 +1384,7 @@ class TestHeapSpray:
 # 14. DESERIALIZATION GADGET CHAINS
 # ===================================================================
 
+
 @pytest.mark.security
 @pytest.mark.critical
 class TestDeserializationGadgets:
@@ -1453,7 +1424,7 @@ class TestDeserializationGadgets:
         parser stack depth.
         """
         depth = 500
-        inner = '{"a":[{"b":[' * depth + '1' + ']}]}' * depth
+        inner = '{"a":[{"b":[' * depth + "1" + "]}]}" * depth
 
         payload = (
             b'{"type":"command","id":"nest","command":"project.loadJson",'
@@ -1513,6 +1484,7 @@ class TestDeserializationGadgets:
 # ===================================================================
 # 15. MEMORY DISCLOSURE VIA ERRORS
 # ===================================================================
+
 
 @pytest.mark.security
 class TestMemoryDisclosure:
@@ -1600,6 +1572,7 @@ class TestMemoryDisclosure:
 # 16. UNICODE HOMOGRAPH ATTACKS
 # ===================================================================
 
+
 @pytest.mark.security
 class TestUnicodeHomographs:
     """
@@ -1630,9 +1603,7 @@ class TestUnicodeHomographs:
         HOMOGRAPH_COMMANDS,
         ids=[f"homograph_{i}" for i in range(len(HOMOGRAPH_COMMANDS))],
     )
-    def test_homograph_command_bypass(
-        self, security_client, cmd
-    ):
+    def test_homograph_command_bypass(self, security_client, cmd):
         """
         Send commands with homograph characters.
 
@@ -1643,9 +1614,7 @@ class TestUnicodeHomographs:
             result = security_client.command(cmd)
             # If the command succeeded, that means homograph bypassed validation
             if isinstance(result, dict) and "commands" in result:
-                pytest.fail(
-                    f"Homograph command accepted as valid: {repr(cmd)}"
-                )
+                pytest.fail(f"Homograph command accepted as valid: {repr(cmd)}")
         except Exception:
             pass
 
@@ -1653,6 +1622,7 @@ class TestUnicodeHomographs:
 # ===================================================================
 # 17. RESOURCE EXHAUSTION VIA PROJECT COMPLEXITY
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.destructive
@@ -1701,21 +1671,18 @@ class TestProjectComplexityBomb:
         """
         Create project with deeply nested group/dataset hierarchy.
         """
+
         def make_nested_group(depth, max_depth=50):
             if depth >= max_depth:
                 return {
                     "title": f"Leaf_{depth}",
                     "widget": "datagrid",
-                    "datasets": [
-                        {"title": "D", "index": 1, "widget": "gauge"}
-                    ],
+                    "datasets": [{"title": "D", "index": 1, "widget": "gauge"}],
                 }
             return {
                 "title": f"Level_{depth}",
                 "widget": "datagrid",
-                "datasets": [
-                    {"title": f"D_{depth}", "index": 1, "widget": "gauge"}
-                ],
+                "datasets": [{"title": f"D_{depth}", "index": 1, "widget": "gauge"}],
             }
 
         project = {
@@ -1737,7 +1704,9 @@ class TestProjectComplexityBomb:
         # JavaScript with many closures and allocations
         complex_js = "function parse(f){"
         for i in range(100):
-            complex_js += f"var v{i}=f.split(',').map(function(x){{return parseFloat(x)*{i};}});"
+            complex_js += (
+                f"var v{i}=f.split(',').map(function(x){{return parseFloat(x)*{i};}});"
+            )
         complex_js += "return f.split(',');}"
 
         project = {
@@ -1747,9 +1716,7 @@ class TestProjectComplexityBomb:
                 {
                     "title": "G",
                     "widget": "datagrid",
-                    "datasets": [
-                        {"title": "D", "index": 1, "widget": "gauge"}
-                    ],
+                    "datasets": [{"title": "D", "index": 1, "widget": "gauge"}],
                 }
             ],
         }
@@ -1757,14 +1724,13 @@ class TestProjectComplexityBomb:
         cmd = make_cmd("project.loadJson", {"config": project})
         raw_send(cmd, timeout=10.0)
 
-        assert check_server_alive(
-            wait_time=2.0
-        ), "Server crashed on complex JS parser"
+        assert check_server_alive(wait_time=2.0), "Server crashed on complex JS parser"
 
 
 # ===================================================================
 # 18. SYMLINK AND PATH MANIPULATION
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.critical
@@ -1824,15 +1790,18 @@ class TestSymlinkAttacks:
         # Check response doesn't contain sensitive data
         if response:
             sensitive_patterns = [
-                b"root:", b"daemon:", b"nobody:",  # /etc/passwd
-                b"NTFS", b"\\Windows\\",  # SAM file
-                b"ProductVersion", b"ProductName",  # macOS plist
+                b"root:",
+                b"daemon:",
+                b"nobody:",  # /etc/passwd
+                b"NTFS",
+                b"\\Windows\\",  # SAM file
+                b"ProductVersion",
+                b"ProductName",  # macOS plist
             ]
             for pattern in sensitive_patterns:
                 if pattern in response:
                     pytest.fail(
-                        f"Sensitive data leaked via path: {path}\n"
-                        f"Found: {pattern}"
+                        f"Sensitive data leaked via path: {path}\n" f"Found: {pattern}"
                     )
 
         assert check_server_alive(), f"Server crashed on path: {path}"
@@ -1841,6 +1810,7 @@ class TestSymlinkAttacks:
 # ===================================================================
 # 19. CONCURRENT OPERATION CHAOS
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.destructive
@@ -1951,9 +1921,7 @@ class TestConcurrentChaos:
                             for g in range(n_groups)
                         ],
                     }
-                    cmd = make_cmd(
-                        "project.loadJson", {"config": project}
-                    )
+                    cmd = make_cmd("project.loadJson", {"config": project})
                     try:
                         sock.sendall(cmd)
                     except Exception:
@@ -2015,6 +1983,7 @@ class TestConcurrentChaos:
 # ===================================================================
 # 20. ADVANCED TIMING ORACLE
 # ===================================================================
+
 
 @pytest.mark.security
 @pytest.mark.slow
@@ -2080,6 +2049,7 @@ class TestTimingOracle:
 # 21. MALFORMED BATCH STRUCTURES
 # ===================================================================
 
+
 @pytest.mark.security
 class TestMalformedBatch:
     """
@@ -2105,7 +2075,9 @@ class TestMalformedBatch:
         # Recursive batch reference
         b'{"type":"batch","id":"x","commands":[{"command":"api.getCommands","type":"batch"}]}\n',
         # Very long command names in batch
-        b'{"type":"batch","id":"x","commands":[{"command":"' + b"a" * 100000 + b'"}]}\n',
+        b'{"type":"batch","id":"x","commands":[{"command":"'
+        + b"a" * 100000
+        + b'"}]}\n',
         # Batch with duplicate IDs
         b'{"type":"batch","id":"x","commands":[{"id":"dup","command":"api.getCommands"},{"id":"dup","command":"api.getCommands"}]}\n',
     ]
@@ -2128,6 +2100,7 @@ class TestMalformedBatch:
 # ===================================================================
 # 22. API TYPE/FIELD CONFUSION
 # ===================================================================
+
 
 @pytest.mark.security
 class TestTypeFieldConfusion:
@@ -2179,6 +2152,7 @@ class TestTypeFieldConfusion:
 # 23. RESPONSE PARSING ATTACKS (Reflected)
 # ===================================================================
 
+
 @pytest.mark.security
 class TestReflectedAttacks:
     """
@@ -2189,7 +2163,7 @@ class TestReflectedAttacks:
     REFLECTED_PAYLOADS = [
         # XSS attempts (if response is rendered in web UI)
         '<script>alert("XSS")</script>',
-        '<img src=x onerror=alert(1)>',
+        "<img src=x onerror=alert(1)>",
         '"><svg/onload=alert(1)>',
         "javascript:alert(1)",
         # Log injection
@@ -2208,17 +2182,13 @@ class TestReflectedAttacks:
         REFLECTED_PAYLOADS,
         ids=[f"reflect_{i}" for i in range(len(REFLECTED_PAYLOADS))],
     )
-    def test_reflected_payload_in_title(
-        self, security_client, payload
-    ):
+    def test_reflected_payload_in_title(self, security_client, payload):
         """
         Set project title to a malicious payload, then read it back.
         The payload should be stored as-is (not executed) or sanitized.
         """
         try:
-            security_client.command(
-                "project.setTitle", {"title": payload}
-            )
+            security_client.command("project.setTitle", {"title": payload})
         except Exception:
             return
 

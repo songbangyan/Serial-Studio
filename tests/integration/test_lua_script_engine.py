@@ -36,10 +36,10 @@ import pytest
 
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _setup_parser_project(
     api_client,
@@ -61,9 +61,7 @@ def _setup_parser_project(
     time.sleep(0.2)
 
     # Add a group with one plot dataset per title
-    api_client.command(
-        "project.group.add", {"title": "Lua Group", "widgetType": 0}
-    )
+    api_client.command("project.group.add", {"title": "Lua Group", "widgetType": 0})
     time.sleep(0.1)
     for _ in dataset_titles:
         api_client.command("project.dataset.add", {"groupId": 0, "options": 1})
@@ -90,7 +88,9 @@ def _setup_parser_project(
 
 
 def _setup_lua_project(api_client, lua_code: str, dataset_titles=None) -> None:
-    _setup_parser_project(api_client, lua_code, language=1, dataset_titles=dataset_titles)
+    _setup_parser_project(
+        api_client, lua_code, language=1, dataset_titles=dataset_titles
+    )
 
 
 def _try_install_lua(api_client, lua_code: str, dataset_titles=None) -> None:
@@ -100,7 +100,9 @@ def _try_install_lua(api_client, lua_code: str, dataset_titles=None) -> None:
     the explicit language parameter triggers up-front engine validation.
     Callers wrap this in pytest.raises(APIError) for error-handling tests.
     """
-    _setup_parser_project(api_client, lua_code, language=1, dataset_titles=dataset_titles)
+    _setup_parser_project(
+        api_client, lua_code, language=1, dataset_titles=dataset_titles
+    )
 
 
 def _get_parser_code(api_client, source_id: int = 0) -> str:
@@ -111,6 +113,7 @@ def _get_parser_code(api_client, source_id: int = 0) -> str:
 # ---------------------------------------------------------------------------
 # 0. API: project.frameParser.setLanguage / getLanguage
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_setLanguage_api_switches_engine(api_client, clean_state):
@@ -137,9 +140,9 @@ def test_setLanguage_api_switches_engine(api_client, clean_state):
     # After the switch, the parser code must be valid JavaScript — at minimum,
     # it must contain a `function parse(` declaration
     js_code = _get_parser_code(api_client, 0)
-    assert "function parse(" in js_code, (
-        f"JS default template must contain 'function parse(', got:\n{js_code[:200]}"
-    )
+    assert (
+        "function parse(" in js_code
+    ), f"JS default template must contain 'function parse(', got:\n{js_code[:200]}"
 
     # Switch back to Lua
     result = api_client.set_frame_parser_language(1, source_id=0)
@@ -150,9 +153,9 @@ def test_setLanguage_api_switches_engine(api_client, clean_state):
 
     # After the switch, the parser code must be valid Lua — containing `function parse(`
     lua_code = _get_parser_code(api_client, 0)
-    assert "function parse(" in lua_code, (
-        f"Lua default template must contain 'function parse(', got:\n{lua_code[:200]}"
-    )
+    assert (
+        "function parse(" in lua_code
+    ), f"Lua default template must contain 'function parse(', got:\n{lua_code[:200]}"
 
 
 @pytest.mark.project
@@ -193,6 +196,7 @@ def test_setLanguage_api_noop_when_same_language(api_client, clean_state):
 # 1. Persistence: Lua language survives loadFromJSON roundtrip
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_lua_language_persists_through_loadFromJSON(api_client, clean_state):
     """The frameParserLanguage field is serialized and deserialized.
@@ -200,11 +204,7 @@ def test_lua_language_persists_through_loadFromJSON(api_client, clean_state):
     Kept as a single dedicated persistence test rather than a helper, because
     all other tests go through the simpler setLanguage + setCode path.
     """
-    lua_code = (
-        "function parse(frame)\n"
-        "  return { frame }\n"
-        "end\n"
-    )
+    lua_code = "function parse(frame)\n" "  return { frame }\n" "end\n"
 
     config = {
         "title": "Lua Persistence Test",
@@ -217,38 +217,57 @@ def test_lua_language_persists_through_loadFromJSON(api_client, clean_state):
         "checksumAlgorithm": "",
         "mapTilerApiKey": "",
         "thunderforestApiKey": "",
-        "groups": [{"title": "G", "widget": "", "datasets": [
+        "groups": [
             {
-                "title": "x", "units": "", "widget": "", "index": 1,
-                "graph": True, "log": False, "fft": False, "led": False,
-                "min": 0, "max": 100, "alarm": 0, "ledHigh": 1,
-                "fftSamples": 1024, "fftSamplingRate": 100, "value": "",
+                "title": "G",
+                "widget": "",
+                "datasets": [
+                    {
+                        "title": "x",
+                        "units": "",
+                        "widget": "",
+                        "index": 1,
+                        "graph": True,
+                        "log": False,
+                        "fft": False,
+                        "led": False,
+                        "min": 0,
+                        "max": 100,
+                        "alarm": 0,
+                        "ledHigh": 1,
+                        "fftSamples": 1024,
+                        "fftSamplingRate": 100,
+                        "value": "",
+                    }
+                ],
             }
-        ]}],
+        ],
         "actions": [],
-        "sources": [{
-            "title": "Device A",
-            "sourceId": 0,
-            "busType": 0,
-            "frameStart": "/*",
-            "frameEnd": "*/",
-            "checksumAlgorithm": "",
-            "frameDetection": 1,
-            "decoderMethod": 0,
-            "hexadecimalDelimiters": False,
-            "frameParserLanguage": 1,  # SerialStudio::Lua
-            "frameParserCode": lua_code,
-            "connectionSettings": {},
-        }],
+        "sources": [
+            {
+                "title": "Device A",
+                "sourceId": 0,
+                "busType": 0,
+                "frameStart": "/*",
+                "frameEnd": "*/",
+                "checksumAlgorithm": "",
+                "frameDetection": 1,
+                "decoderMethod": 0,
+                "hexadecimalDelimiters": False,
+                "frameParserLanguage": 1,  # SerialStudio::Lua
+                "frameParserCode": lua_code,
+                "connectionSettings": {},
+            }
+        ],
     }
 
     result = api_client.load_project_from_json(config)
     assert result["loaded"] is True
 
     # The deserialized project must report Lua as the language
-    assert api_client.get_frame_parser_language(0) == 1, (
-        "frameParserLanguage did not survive the loadFromJSON roundtrip"
-    )
+    assert (
+        api_client.get_frame_parser_language(0) == 1
+    ), "frameParserLanguage did not survive the loadFromJSON roundtrip"
 
     # And the parser code must match what was sent
     stored = _get_parser_code(api_client, 0)
@@ -258,6 +277,7 @@ def test_lua_language_persists_through_loadFromJSON(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # 2. End-to-end: a Lua parse() produces dashboard data
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_lua_parse_end_to_end_csv(api_client, device_simulator, clean_state):
@@ -297,14 +317,15 @@ def test_lua_parse_end_to_end_csv(api_client, device_simulator, clean_state):
     time.sleep(1.5)
 
     data = api_client.get_dashboard_data()
-    assert data["datasetCount"] >= 3, (
-        f"Lua parser did not populate datasets (got {data['datasetCount']})"
-    )
+    assert (
+        data["datasetCount"] >= 3
+    ), f"Lua parser did not populate datasets (got {data['datasetCount']})"
 
 
 # ---------------------------------------------------------------------------
 # 3. Sandbox: dangerous globals must not be reachable
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 @pytest.mark.parametrize(
@@ -402,12 +423,13 @@ def test_lua_sandbox_blocks_require(api_client, clean_state):
 # 4. Error handling: broken Lua must be rejected cleanly
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_lua_syntax_error_rejected(api_client, clean_state):
     """A script with a Lua syntax error must be rejected by parser.setCode."""
     lua_code = (
         "function parse(frame)\n"
-        "  local x =\n"          # dangling assignment
+        "  local x =\n"  # dangling assignment
         "end\n"
     )
 
@@ -418,10 +440,7 @@ def test_lua_syntax_error_rejected(api_client, clean_state):
 @pytest.mark.project
 def test_lua_missing_parse_function_rejected(api_client, clean_state):
     """A script that does NOT define parse() must be rejected."""
-    lua_code = (
-        "local function helper() return 1 end\n"
-        "-- no global parse() defined\n"
-    )
+    lua_code = "local function helper() return 1 end\n" "-- no global parse() defined\n"
 
     with pytest.raises(APIError):
         _try_install_lua(api_client, lua_code)
@@ -430,11 +449,7 @@ def test_lua_missing_parse_function_rejected(api_client, clean_state):
 @pytest.mark.project
 def test_lua_runtime_error_in_probe_rejected(api_client, clean_state):
     """A parse() that raises at probe time must be rejected at load."""
-    lua_code = (
-        "function parse(frame)\n"
-        "  error('boom')\n"
-        "end\n"
-    )
+    lua_code = "function parse(frame)\n" "  error('boom')\n" "end\n"
 
     with pytest.raises(APIError):
         _try_install_lua(api_client, lua_code)
@@ -444,14 +459,11 @@ def test_lua_runtime_error_in_probe_rejected(api_client, clean_state):
 # 5. Output shapes — 1D, 2D
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_lua_returns_1d_table(api_client, device_simulator, clean_state):
     """A flat 1D Lua table produces a single dashboard frame."""
-    lua_code = (
-        "function parse(frame)\n"
-        "  return { '1', '2', '3' }\n"
-        "end\n"
-    )
+    lua_code = "function parse(frame)\n" "  return { '1', '2', '3' }\n" "end\n"
 
     _setup_lua_project(api_client, lua_code, dataset_titles=["a", "b", "c"])
 
@@ -468,7 +480,9 @@ def test_lua_returns_1d_table(api_client, device_simulator, clean_state):
     time.sleep(1.0)
 
     data = api_client.get_dashboard_data()
-    assert data["datasetCount"] >= 3, f"Expected >=3 datasets, got {data['datasetCount']}"
+    assert (
+        data["datasetCount"] >= 3
+    ), f"Expected >=3 datasets, got {data['datasetCount']}"
 
 
 @pytest.mark.project
@@ -501,6 +515,7 @@ def test_lua_returns_2d_table_multi_frame(api_client, device_simulator, clean_st
 # 6. Watchdog — real now that QDeadlineTimer is wired
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_lua_infinite_loop_interrupted(api_client, clean_state):
     """An infinite Lua loop must be interrupted by the watchdog within ~1s.
@@ -524,9 +539,9 @@ def test_lua_infinite_loop_interrupted(api_client, clean_state):
     elapsed = time.time() - start
 
     # Generous upper bound: 1s watchdog + Qt event processing + network roundtrip
-    assert elapsed < 5.0, (
-        f"Watchdog did not interrupt infinite loop within 5s (took {elapsed:.2f}s)"
-    )
+    assert (
+        elapsed < 5.0
+    ), f"Watchdog did not interrupt infinite loop within 5s (took {elapsed:.2f}s)"
 
 
 @pytest.mark.project

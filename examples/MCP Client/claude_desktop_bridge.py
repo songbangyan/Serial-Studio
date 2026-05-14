@@ -46,7 +46,9 @@ MAX_RECONNECT_ATTEMPTS = 5
 def log(message):
     """Log messages to stderr (visible in Claude Desktop logs)"""
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    print(f"[{timestamp}] [Serial Studio Bridge] {message}", file=sys.stderr, flush=True)
+    print(
+        f"[{timestamp}] [Serial Studio Bridge] {message}", file=sys.stderr, flush=True
+    )
 
 
 def tcp_to_stdout(sock, should_stop):
@@ -72,11 +74,11 @@ def tcp_to_stdout(sock, should_stop):
                 buffer += chunk
 
                 # Process complete lines (newline-delimited JSON-RPC messages)
-                while b'\n' in buffer:
-                    line, buffer = buffer.split(b'\n', 1)
+                while b"\n" in buffer:
+                    line, buffer = buffer.split(b"\n", 1)
                     if line.strip():
                         # Forward to Claude Desktop via stdout
-                        sys.stdout.buffer.write(line + b'\n')
+                        sys.stdout.buffer.write(line + b"\n")
                         sys.stdout.buffer.flush()
 
             except socket.timeout:
@@ -131,7 +133,9 @@ def connect_to_serial_studio(max_attempts=MAX_RECONNECT_ATTEMPTS):
     """
     for attempt in range(1, max_attempts + 1):
         try:
-            log(f"Connecting to Serial Studio at {SERIAL_STUDIO_HOST}:{SERIAL_STUDIO_PORT} (attempt {attempt}/{max_attempts})...")
+            log(
+                f"Connecting to Serial Studio at {SERIAL_STUDIO_HOST}:{SERIAL_STUDIO_PORT} (attempt {attempt}/{max_attempts})..."
+            )
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.connect((SERIAL_STUDIO_HOST, SERIAL_STUDIO_PORT))
             log("✓ Connected to Serial Studio")
@@ -168,18 +172,12 @@ def main():
 
     # Start bidirectional forwarding threads
     tcp_thread = threading.Thread(
-        target=tcp_to_stdout,
-        args=(sock, should_stop),
-        daemon=True,
-        name="TCP→stdout"
+        target=tcp_to_stdout, args=(sock, should_stop), daemon=True, name="TCP→stdout"
     )
     tcp_thread.start()
 
     stdin_thread = threading.Thread(
-        target=stdin_to_tcp,
-        args=(sock, should_stop),
-        daemon=True,
-        name="stdin→TCP"
+        target=stdin_to_tcp, args=(sock, should_stop), daemon=True, name="stdin→TCP"
     )
     stdin_thread.start()
 

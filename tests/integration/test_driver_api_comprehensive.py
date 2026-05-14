@@ -15,7 +15,6 @@ SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
 import pytest
 import time
 
-
 GUI_VALIDATION_DELAY = 1.0
 
 
@@ -40,7 +39,9 @@ def test_uart_driver_comprehensive(api_client, clean_state):
 
         baud_rate_list_result = api_client.command("io.uart.listBaudRates")
         baud_rates = baud_rate_list_result.get("baudRateList", [])
-        current_baud = baud_rate_list_result.get("currentBaudRate", original_config.get("baudRate", 9600))
+        current_baud = baud_rate_list_result.get(
+            "currentBaudRate", original_config.get("baudRate", 9600)
+        )
         assert isinstance(baud_rates, list), "baudRateList should be a list"
         assert len(baud_rates) > 0, "Should have at least one baud rate"
 
@@ -114,21 +115,41 @@ def test_uart_driver_comprehensive(api_client, clean_state):
 
     finally:
         if "baudRate" in original_config:
-            api_client.command("io.uart.setBaudRate", {"baudRate": original_config["baudRate"]})
+            api_client.command(
+                "io.uart.setBaudRate", {"baudRate": original_config["baudRate"]}
+            )
         if "parityIndex" in original_config:
-            api_client.command("io.uart.setParity", {"parityIndex": original_config["parityIndex"]})
+            api_client.command(
+                "io.uart.setParity", {"parityIndex": original_config["parityIndex"]}
+            )
         if "dataBitsIndex" in original_config:
-            api_client.command("io.uart.setDataBits", {"dataBitsIndex": original_config["dataBitsIndex"]})
+            api_client.command(
+                "io.uart.setDataBits",
+                {"dataBitsIndex": original_config["dataBitsIndex"]},
+            )
         if "stopBitsIndex" in original_config:
-            api_client.command("io.uart.setStopBits", {"stopBitsIndex": original_config["stopBitsIndex"]})
+            api_client.command(
+                "io.uart.setStopBits",
+                {"stopBitsIndex": original_config["stopBitsIndex"]},
+            )
         if "flowControlIndex" in original_config:
-            api_client.command("io.uart.setFlowControl", {"flowControlIndex": original_config["flowControlIndex"]})
+            api_client.command(
+                "io.uart.setFlowControl",
+                {"flowControlIndex": original_config["flowControlIndex"]},
+            )
         if "dtrEnabled" in original_config:
-            api_client.command("io.uart.setDtrEnabled", {"dtrEnabled": original_config["dtrEnabled"]})
+            api_client.command(
+                "io.uart.setDtrEnabled", {"dtrEnabled": original_config["dtrEnabled"]}
+            )
         if "autoReconnect" in original_config:
-            api_client.command("io.uart.setAutoReconnect", {"autoReconnect": original_config["autoReconnect"]})
+            api_client.command(
+                "io.uart.setAutoReconnect",
+                {"autoReconnect": original_config["autoReconnect"]},
+            )
         if "portIndex" in original_config:
-            api_client.command("io.uart.setPortIndex", {"portIndex": original_config["portIndex"]})
+            api_client.command(
+                "io.uart.setPortIndex", {"portIndex": original_config["portIndex"]}
+            )
 
 
 @pytest.mark.integration
@@ -151,7 +172,9 @@ def test_network_driver_comprehensive(api_client, clean_state):
         current_address = original_config.get("remoteAddress", "127.0.0.1")
         if current_address in ("localhost", "127.0.0.1"):
             test_address_1 = "192.168.1.100"
-            test_address_2 = "127.0.0.1" if current_address == "localhost" else "localhost"
+            test_address_2 = (
+                "127.0.0.1" if current_address == "localhost" else "localhost"
+            )
         else:
             test_address_1 = "127.0.0.1"
             test_address_2 = "localhost"
@@ -212,21 +235,41 @@ def test_network_driver_comprehensive(api_client, clean_state):
         assert config["udpMulticast"] is False
 
         lookup_result = api_client.command("io.network.lookup", {"host": "localhost"})
-        assert "lookupStarted" in lookup_result or "address" in lookup_result or "error" in lookup_result
+        assert (
+            "lookupStarted" in lookup_result
+            or "address" in lookup_result
+            or "error" in lookup_result
+        )
 
     finally:
         if "remoteAddress" in original_config:
-            api_client.command("io.network.setRemoteAddress", {"address": original_config["remoteAddress"]})
+            api_client.command(
+                "io.network.setRemoteAddress",
+                {"address": original_config["remoteAddress"]},
+            )
         if "socketTypeIndex" in original_config:
-            api_client.command("io.network.setSocketType", {"socketTypeIndex": original_config["socketTypeIndex"]})
+            api_client.command(
+                "io.network.setSocketType",
+                {"socketTypeIndex": original_config["socketTypeIndex"]},
+            )
         if "tcpPort" in original_config:
-            api_client.command("io.network.setTcpPort", {"port": original_config["tcpPort"]})
+            api_client.command(
+                "io.network.setTcpPort", {"port": original_config["tcpPort"]}
+            )
         if "udpLocalPort" in original_config:
-            api_client.command("io.network.setUdpLocalPort", {"port": original_config["udpLocalPort"]})
+            api_client.command(
+                "io.network.setUdpLocalPort", {"port": original_config["udpLocalPort"]}
+            )
         if "udpRemotePort" in original_config:
-            api_client.command("io.network.setUdpRemotePort", {"port": original_config["udpRemotePort"]})
+            api_client.command(
+                "io.network.setUdpRemotePort",
+                {"port": original_config["udpRemotePort"]},
+            )
         if "udpMulticast" in original_config:
-            api_client.command("io.network.setUdpMulticast", {"enabled": original_config["udpMulticast"]})
+            api_client.command(
+                "io.network.setUdpMulticast",
+                {"enabled": original_config["udpMulticast"]},
+            )
 
 
 @pytest.mark.integration
@@ -284,7 +327,9 @@ def test_ble_driver_comprehensive(api_client, clean_state):
                 assert isinstance(characteristics, list)
 
                 if len(characteristics) > 0:
-                    api_client.command("io.ble.setCharacteristicIndex", {"characteristicIndex": 0})
+                    api_client.command(
+                        "io.ble.setCharacteristicIndex", {"characteristicIndex": 0}
+                    )
                     time.sleep(GUI_VALIDATION_DELAY)
                     config = api_client.command("io.ble.getConfig")
                     assert config["characteristicIndex"] == 0
@@ -292,17 +337,26 @@ def test_ble_driver_comprehensive(api_client, clean_state):
     finally:
         if "deviceIndex" in original_config:
             try:
-                api_client.command("io.ble.selectDevice", {"deviceIndex": original_config["deviceIndex"]})
+                api_client.command(
+                    "io.ble.selectDevice",
+                    {"deviceIndex": original_config["deviceIndex"]},
+                )
             except Exception:
                 pass
         if "serviceIndex" in original_config:
             try:
-                api_client.command("io.ble.selectService", {"serviceIndex": original_config["serviceIndex"]})
+                api_client.command(
+                    "io.ble.selectService",
+                    {"serviceIndex": original_config["serviceIndex"]},
+                )
             except Exception:
                 pass
         if "characteristicIndex" in original_config:
             try:
-                api_client.command("io.ble.setCharacteristicIndex", {"characteristicIndex": original_config["characteristicIndex"]})
+                api_client.command(
+                    "io.ble.setCharacteristicIndex",
+                    {"characteristicIndex": original_config["characteristicIndex"]},
+                )
             except Exception:
                 pass
 
@@ -452,22 +506,18 @@ def test_modbus_driver_comprehensive(api_client, clean_state):
         original_groups_result = api_client.command("io.modbus.listRegisterGroups")
         original_groups = original_groups_result.get("registerGroups", [])
 
-        api_client.command("io.modbus.addRegisterGroup", {
-            "type": 0,
-            "startAddress": 0,
-            "count": 10
-        })
+        api_client.command(
+            "io.modbus.addRegisterGroup", {"type": 0, "startAddress": 0, "count": 10}
+        )
         time.sleep(GUI_VALIDATION_DELAY)
 
         groups_result = api_client.command("io.modbus.listRegisterGroups")
         groups = groups_result.get("registerGroups", [])
         assert len(groups) == len(original_groups) + 1
 
-        api_client.command("io.modbus.addRegisterGroup", {
-            "type": 1,
-            "startAddress": 100,
-            "count": 5
-        })
+        api_client.command(
+            "io.modbus.addRegisterGroup", {"type": 1, "startAddress": 100, "count": 5}
+        )
         time.sleep(GUI_VALIDATION_DELAY)
 
         groups_result = api_client.command("io.modbus.listRegisterGroups")
@@ -475,7 +525,9 @@ def test_modbus_driver_comprehensive(api_client, clean_state):
         assert len(groups) == len(original_groups) + 2
 
         if len(groups) > 0:
-            api_client.command("io.modbus.removeRegisterGroup", {"groupIndex": len(groups) - 1})
+            api_client.command(
+                "io.modbus.removeRegisterGroup", {"groupIndex": len(groups) - 1}
+            )
             time.sleep(GUI_VALIDATION_DELAY)
             groups_result = api_client.command("io.modbus.listRegisterGroups")
             groups = groups_result.get("registerGroups", [])
@@ -491,33 +543,53 @@ def test_modbus_driver_comprehensive(api_client, clean_state):
         api_client.command("io.modbus.clearRegisterGroups")
         for group in original_config.get("registerGroups", []):
             try:
-                api_client.command("io.modbus.addRegisterGroup", {
-                    "type": group.get("type", 0),
-                    "startAddress": group.get("startAddress", 0),
-                    "count": group.get("count", 1)
-                })
+                api_client.command(
+                    "io.modbus.addRegisterGroup",
+                    {
+                        "type": group.get("type", 0),
+                        "startAddress": group.get("startAddress", 0),
+                        "count": group.get("count", 1),
+                    },
+                )
             except Exception:
                 pass
 
         if "protocolIndex" in original_config:
-            api_client.command("io.modbus.setProtocolIndex", {"protocolIndex": original_config["protocolIndex"]})
+            api_client.command(
+                "io.modbus.setProtocolIndex",
+                {"protocolIndex": original_config["protocolIndex"]},
+            )
         if "serialPortIndex" in original_config:
             try:
-                api_client.command("io.modbus.setSerialPortIndex", {"portIndex": original_config["serialPortIndex"]})
+                api_client.command(
+                    "io.modbus.setSerialPortIndex",
+                    {"portIndex": original_config["serialPortIndex"]},
+                )
             except Exception:
                 pass
         if "baudRate" in original_config:
-            api_client.command("io.modbus.setBaudRate", {"baudRate": original_config["baudRate"]})
+            api_client.command(
+                "io.modbus.setBaudRate", {"baudRate": original_config["baudRate"]}
+            )
         if "parityIndex" in original_config:
-            api_client.command("io.modbus.setParityIndex", {"parityIndex": original_config["parityIndex"]})
+            api_client.command(
+                "io.modbus.setParityIndex",
+                {"parityIndex": original_config["parityIndex"]},
+            )
         if "host" in original_config:
             api_client.command("io.modbus.setHost", {"host": original_config["host"]})
         if "port" in original_config:
             api_client.command("io.modbus.setPort", {"port": original_config["port"]})
         if "slaveAddress" in original_config:
-            api_client.command("io.modbus.setSlaveAddress", {"address": original_config["slaveAddress"]})
+            api_client.command(
+                "io.modbus.setSlaveAddress",
+                {"address": original_config["slaveAddress"]},
+            )
         if "pollInterval" in original_config:
-            api_client.command("io.modbus.setPollInterval", {"intervalMs": original_config["pollInterval"]})
+            api_client.command(
+                "io.modbus.setPollInterval",
+                {"intervalMs": original_config["pollInterval"]},
+            )
 
 
 @pytest.mark.integration
@@ -567,7 +639,9 @@ def test_canbus_driver_comprehensive(api_client, clean_state):
 
             bitrates_result = api_client.command("io.canbus.listBitrates")
             bitrates = bitrates_result.get("bitrates", [])
-            current_bitrate = bitrates_result.get("currentBitrate", original_config.get("bitrate", 250000))
+            current_bitrate = bitrates_result.get(
+                "currentBitrate", original_config.get("bitrate", 250000)
+            )
             assert isinstance(bitrates, list)
 
             if len(bitrates) == 0:
@@ -576,7 +650,9 @@ def test_canbus_driver_comprehensive(api_client, clean_state):
             if len(bitrates) >= 2:
                 test_bitrate = None
                 for rate_str in bitrates:
-                    rate_int = int(rate_str) if isinstance(rate_str, str) else int(rate_str)
+                    rate_int = (
+                        int(rate_str) if isinstance(rate_str, str) else int(rate_str)
+                    )
                     if rate_int != current_bitrate:
                         test_bitrate = rate_int
                         break
@@ -602,18 +678,28 @@ def test_canbus_driver_comprehensive(api_client, clean_state):
     finally:
         if "pluginIndex" in original_config:
             try:
-                api_client.command("io.canbus.setPluginIndex", {"pluginIndex": original_config["pluginIndex"]})
+                api_client.command(
+                    "io.canbus.setPluginIndex",
+                    {"pluginIndex": original_config["pluginIndex"]},
+                )
             except Exception:
                 pass
         if "interfaceIndex" in original_config:
             try:
-                api_client.command("io.canbus.setInterfaceIndex", {"interfaceIndex": original_config["interfaceIndex"]})
+                api_client.command(
+                    "io.canbus.setInterfaceIndex",
+                    {"interfaceIndex": original_config["interfaceIndex"]},
+                )
             except Exception:
                 pass
         if "bitrate" in original_config:
-            api_client.command("io.canbus.setBitrate", {"bitrate": original_config["bitrate"]})
+            api_client.command(
+                "io.canbus.setBitrate", {"bitrate": original_config["bitrate"]}
+            )
         if "canFD" in original_config:
-            api_client.command("io.canbus.setCanFd", {"enabled": original_config["canFD"]})
+            api_client.command(
+                "io.canbus.setCanFd", {"enabled": original_config["canFD"]}
+            )
 
 
 @pytest.mark.integration
@@ -657,83 +743,169 @@ def test_audio_driver_comprehensive(api_client, clean_state):
             api_client.command("io.audio.setInputDevice", {"deviceIndex": 0})
             time.sleep(GUI_VALIDATION_DELAY)
             config = api_client.command("io.audio.getConfig")
-            assert "selectedInputDevice" in config or "inputDevice" in config or "inputDeviceIndex" in config
+            assert (
+                "selectedInputDevice" in config
+                or "inputDevice" in config
+                or "inputDeviceIndex" in config
+            )
 
         if len(output_devices) > 0:
             api_client.command("io.audio.setOutputDevice", {"deviceIndex": 0})
             time.sleep(GUI_VALIDATION_DELAY)
             config = api_client.command("io.audio.getConfig")
-            assert "selectedOutputDevice" in config or "outputDevice" in config or "outputDeviceIndex" in config
+            assert (
+                "selectedOutputDevice" in config
+                or "outputDevice" in config
+                or "outputDeviceIndex" in config
+            )
 
         if len(sample_rates) >= 2:
             api_client.command("io.audio.setSampleRate", {"rateIndex": 1})
             time.sleep(GUI_VALIDATION_DELAY)
             config = api_client.command("io.audio.getConfig")
-            assert "selectedSampleRate" in config or "sampleRate" in config or "sampleRateIndex" in config
+            assert (
+                "selectedSampleRate" in config
+                or "sampleRate" in config
+                or "sampleRateIndex" in config
+            )
 
         if len(input_formats) > 0:
             api_client.command("io.audio.setInputSampleFormat", {"formatIndex": 0})
             time.sleep(GUI_VALIDATION_DELAY)
             config = api_client.command("io.audio.getConfig")
-            assert "selectedInputSampleFormat" in config or "inputFormat" in config or "inputFormatIndex" in config
+            assert (
+                "selectedInputSampleFormat" in config
+                or "inputFormat" in config
+                or "inputFormatIndex" in config
+            )
 
         if len(output_formats) > 0:
             api_client.command("io.audio.setOutputSampleFormat", {"formatIndex": 0})
             time.sleep(GUI_VALIDATION_DELAY)
             config = api_client.command("io.audio.getConfig")
-            assert "selectedOutputSampleFormat" in config or "outputFormat" in config or "outputFormatIndex" in config
+            assert (
+                "selectedOutputSampleFormat" in config
+                or "outputFormat" in config
+                or "outputFormatIndex" in config
+            )
 
         api_client.command("io.audio.setInputChannelConfig", {"channelIndex": 0})
         time.sleep(GUI_VALIDATION_DELAY)
         config = api_client.command("io.audio.getConfig")
-        assert "selectedInputChannelConfig" in config or "inputChannel" in config or "inputChannelIndex" in config
+        assert (
+            "selectedInputChannelConfig" in config
+            or "inputChannel" in config
+            or "inputChannelIndex" in config
+        )
 
         api_client.command("io.audio.setOutputChannelConfig", {"channelIndex": 0})
         time.sleep(GUI_VALIDATION_DELAY)
         config = api_client.command("io.audio.getConfig")
-        assert "selectedOutputChannelConfig" in config or "outputChannel" in config or "outputChannelIndex" in config
+        assert (
+            "selectedOutputChannelConfig" in config
+            or "outputChannel" in config
+            or "outputChannelIndex" in config
+        )
 
     finally:
-        if "selectedInputDevice" in original_config or "inputDeviceIndex" in original_config or "inputDevice" in original_config:
+        if (
+            "selectedInputDevice" in original_config
+            or "inputDeviceIndex" in original_config
+            or "inputDevice" in original_config
+        ):
             try:
-                device_idx = original_config.get("selectedInputDevice", original_config.get("inputDeviceIndex", 0))
-                api_client.command("io.audio.setInputDevice", {"deviceIndex": device_idx})
+                device_idx = original_config.get(
+                    "selectedInputDevice", original_config.get("inputDeviceIndex", 0)
+                )
+                api_client.command(
+                    "io.audio.setInputDevice", {"deviceIndex": device_idx}
+                )
             except Exception:
                 pass
-        if "selectedOutputDevice" in original_config or "outputDeviceIndex" in original_config or "outputDevice" in original_config:
+        if (
+            "selectedOutputDevice" in original_config
+            or "outputDeviceIndex" in original_config
+            or "outputDevice" in original_config
+        ):
             try:
-                device_idx = original_config.get("selectedOutputDevice", original_config.get("outputDeviceIndex", 0))
-                api_client.command("io.audio.setOutputDevice", {"deviceIndex": device_idx})
+                device_idx = original_config.get(
+                    "selectedOutputDevice", original_config.get("outputDeviceIndex", 0)
+                )
+                api_client.command(
+                    "io.audio.setOutputDevice", {"deviceIndex": device_idx}
+                )
             except Exception:
                 pass
-        if "selectedSampleRate" in original_config or "sampleRateIndex" in original_config or "sampleRate" in original_config:
+        if (
+            "selectedSampleRate" in original_config
+            or "sampleRateIndex" in original_config
+            or "sampleRate" in original_config
+        ):
             try:
-                rate_idx = original_config.get("selectedSampleRate", original_config.get("sampleRateIndex", 0))
+                rate_idx = original_config.get(
+                    "selectedSampleRate", original_config.get("sampleRateIndex", 0)
+                )
                 api_client.command("io.audio.setSampleRate", {"rateIndex": rate_idx})
             except Exception:
                 pass
-        if "selectedInputSampleFormat" in original_config or "inputFormatIndex" in original_config or "inputFormat" in original_config:
+        if (
+            "selectedInputSampleFormat" in original_config
+            or "inputFormatIndex" in original_config
+            or "inputFormat" in original_config
+        ):
             try:
-                fmt_idx = original_config.get("selectedInputSampleFormat", original_config.get("inputFormatIndex", 0))
-                api_client.command("io.audio.setInputSampleFormat", {"formatIndex": fmt_idx})
+                fmt_idx = original_config.get(
+                    "selectedInputSampleFormat",
+                    original_config.get("inputFormatIndex", 0),
+                )
+                api_client.command(
+                    "io.audio.setInputSampleFormat", {"formatIndex": fmt_idx}
+                )
             except Exception:
                 pass
-        if "selectedOutputSampleFormat" in original_config or "outputFormatIndex" in original_config or "outputFormat" in original_config:
+        if (
+            "selectedOutputSampleFormat" in original_config
+            or "outputFormatIndex" in original_config
+            or "outputFormat" in original_config
+        ):
             try:
-                fmt_idx = original_config.get("selectedOutputSampleFormat", original_config.get("outputFormatIndex", 0))
-                api_client.command("io.audio.setOutputSampleFormat", {"formatIndex": fmt_idx})
+                fmt_idx = original_config.get(
+                    "selectedOutputSampleFormat",
+                    original_config.get("outputFormatIndex", 0),
+                )
+                api_client.command(
+                    "io.audio.setOutputSampleFormat", {"formatIndex": fmt_idx}
+                )
             except Exception:
                 pass
-        if "selectedInputChannelConfig" in original_config or "inputChannelIndex" in original_config or "inputChannel" in original_config:
+        if (
+            "selectedInputChannelConfig" in original_config
+            or "inputChannelIndex" in original_config
+            or "inputChannel" in original_config
+        ):
             try:
-                ch_idx = original_config.get("selectedInputChannelConfig", original_config.get("inputChannelIndex", 0))
-                api_client.command("io.audio.setInputChannelConfig", {"channelIndex": ch_idx})
+                ch_idx = original_config.get(
+                    "selectedInputChannelConfig",
+                    original_config.get("inputChannelIndex", 0),
+                )
+                api_client.command(
+                    "io.audio.setInputChannelConfig", {"channelIndex": ch_idx}
+                )
             except Exception:
                 pass
-        if "selectedOutputChannelConfig" in original_config or "outputChannelIndex" in original_config or "outputChannel" in original_config:
+        if (
+            "selectedOutputChannelConfig" in original_config
+            or "outputChannelIndex" in original_config
+            or "outputChannel" in original_config
+        ):
             try:
-                ch_idx = original_config.get("selectedOutputChannelConfig", original_config.get("outputChannelIndex", 0))
-                api_client.command("io.audio.setOutputChannelConfig", {"channelIndex": ch_idx})
+                ch_idx = original_config.get(
+                    "selectedOutputChannelConfig",
+                    original_config.get("outputChannelIndex", 0),
+                )
+                api_client.command(
+                    "io.audio.setOutputChannelConfig", {"channelIndex": ch_idx}
+                )
             except Exception:
                 pass
 

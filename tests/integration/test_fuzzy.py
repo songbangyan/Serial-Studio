@@ -49,7 +49,9 @@ def test_malformed_json_resilience(
     time.sleep(0.5)
 
     status = api_client.command("io.getStatus")
-    assert status["isConnected"], "Application crashed or disconnected on malformed JSON"
+    assert status[
+        "isConnected"
+    ], "Application crashed or disconnected on malformed JSON"
 
 
 def test_binary_garbage_flood(api_client, device_simulator, clean_state):
@@ -200,7 +202,9 @@ def test_numeric_edge_cases(api_client, device_simulator, clean_state, edge_case
     time.sleep(0.5)
 
     status = api_client.command("io.getStatus")
-    assert status["isConnected"], f"Application failed on edge case: {edge_case['title']}"
+    assert status[
+        "isConnected"
+    ], f"Application failed on edge case: {edge_case['title']}"
 
 
 @pytest.mark.parametrize("unicode_str", DataGenerator.generate_unicode_stress())
@@ -247,8 +251,12 @@ def test_unicode_handling(api_client, device_simulator, clean_state, unicode_str
     assert status["isConnected"], "Application failed on Unicode edge case"
 
 
-@pytest.mark.parametrize("confusing_frame", DataGenerator.generate_delimiter_confusion())
-def test_delimiter_confusion(api_client, device_simulator, clean_state, confusing_frame):
+@pytest.mark.parametrize(
+    "confusing_frame", DataGenerator.generate_delimiter_confusion()
+)
+def test_delimiter_confusion(
+    api_client, device_simulator, clean_state, confusing_frame
+):
     """
     Test frames designed to confuse delimiter detection.
 
@@ -392,9 +400,9 @@ def test_checksum_brute_force(api_client, device_simulator, clean_state):
     base_frame = DataGenerator.wrap_frame(payload, checksum_type=ChecksumType.CRC32)
 
     for _ in range(50):
-        corrupted = base_frame[:-6] + bytes(
-            [random.randint(0, 255) for _ in range(4)]
-        ) + b"\n"
+        corrupted = (
+            base_frame[:-6] + bytes([random.randint(0, 255) for _ in range(4)]) + b"\n"
+        )
         device_simulator.send_frame(corrupted)
         time.sleep(0.02)
 

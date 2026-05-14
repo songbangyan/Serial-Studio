@@ -158,7 +158,9 @@ def test_csv_export_enable_disable_cycle(api_client, clean_state):
             time.sleep(0.3)  # Increased from 0.1s to avoid rate limiting
 
             status = api_client.get_csv_export_status()
-            assert not status["enabled"], f"CSV export should be disabled (iteration {i+1})"
+            assert not status[
+                "enabled"
+            ], f"CSV export should be disabled (iteration {i+1})"
 
         except ConnectionError as e:
             # If server disconnected us due to rate limiting, reconnect and continue

@@ -14,7 +14,9 @@ from pathlib import Path
 from typing import Any, Optional
 
 
-def validate_frame_structure(frame: dict, expected_groups: Optional[int] = None) -> bool:
+def validate_frame_structure(
+    frame: dict, expected_groups: Optional[int] = None
+) -> bool:
     """
     Validate frame has correct structure.
 
@@ -33,9 +35,9 @@ def validate_frame_structure(frame: dict, expected_groups: Optional[int] = None)
     assert isinstance(frame["g"], list), "Groups must be a list"
 
     if expected_groups is not None:
-        assert len(frame["g"]) == expected_groups, (
-            f"Expected {expected_groups} groups, got {len(frame['g'])}"
-        )
+        assert (
+            len(frame["g"]) == expected_groups
+        ), f"Expected {expected_groups} groups, got {len(frame['g'])}"
 
     for i, group in enumerate(frame["g"]):
         assert isinstance(group, dict), f"Group {i} is not a dict"
@@ -80,18 +82,18 @@ def validate_csv_export(
         rows = list(reader)
 
     assert len(rows) >= 2, "CSV must have header + at least one data row"
-    assert len(rows) - 1 >= min_rows, (
-        f"Expected at least {min_rows} data rows, got {len(rows) - 1}"
-    )
+    assert (
+        len(rows) - 1 >= min_rows
+    ), f"Expected at least {min_rows} data rows, got {len(rows) - 1}"
 
     header = rows[0]
     assert header[0].lower() == "timestamp", "First column must be 'Timestamp'"
 
     if expected_columns is not None:
         for row in rows[1:]:
-            assert len(row) == expected_columns, (
-                f"Expected {expected_columns} columns, got {len(row)}"
-            )
+            assert (
+                len(row) == expected_columns
+            ), f"Expected {expected_columns} columns, got {len(row)}"
 
     if check_timestamps and len(rows) > 2:
         timestamps = []
@@ -102,9 +104,9 @@ def validate_csv_export(
                 raise AssertionError(f"Invalid timestamp value: {row[0]}")
 
         for i in range(1, len(timestamps)):
-            assert timestamps[i] >= timestamps[i - 1], (
-                f"Timestamps not monotonic at row {i}: {timestamps[i - 1]} -> {timestamps[i]}"
-            )
+            assert (
+                timestamps[i] >= timestamps[i - 1]
+            ), f"Timestamps not monotonic at row {i}: {timestamps[i - 1]} -> {timestamps[i]}"
 
     return True
 
@@ -163,9 +165,9 @@ def validate_checksum(
         raise AssertionError(f"Unknown checksum type: {checksum_type}")
 
     calculated = DataGenerator.calculate_checksum(data, algo)
-    assert calculated == checksum_value, (
-        f"Checksum mismatch: expected {checksum_value:X}, got {calculated:X}"
-    )
+    assert (
+        calculated == checksum_value
+    ), f"Checksum mismatch: expected {checksum_value:X}, got {calculated:X}"
 
     return True
 

@@ -30,11 +30,15 @@ def _layout_key(group_id: int) -> str:
 # Project builders
 # ---------------------------------------------------------------------------
 
+
 def _single_group_project(title="WL-Single") -> dict:
     """One group, 4 datasets — produces a handful of windows in the dashboard."""
     base = DataGenerator.generate_project_with_frame_delimiters(
-        start="/*", end="*/", detection_mode=1,
-        title=title, checksum_algorithm="None",
+        start="/*",
+        end="*/",
+        detection_mode=1,
+        title=title,
+        checksum_algorithm="None",
     )
     return base
 
@@ -47,14 +51,16 @@ def _multi_group_project(title="WL-Multi", n_groups=3) -> dict:
     """
     groups = []
     for g in range(n_groups):
-        groups.append({
-            "title": f"Group {g}",
-            "widget": "datagrid",
-            "datasets": [
-                {"title": f"G{g}D{d}", "graph": True, "units": "", "value": "0"}
-                for d in range(3)
-            ],
-        })
+        groups.append(
+            {
+                "title": f"Group {g}",
+                "widget": "datagrid",
+                "datasets": [
+                    {"title": f"G{g}D{d}", "graph": True, "units": "", "value": "0"}
+                    for d in range(3)
+                ],
+            }
+        )
 
     return {
         "title": title,
@@ -112,6 +118,7 @@ def _connect_and_send(api_client, device_simulator, n_values=9):
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _require_groups(api_client, minimum=1):
     """Return groups list or skip if fewer than `minimum` are available."""
@@ -178,7 +185,9 @@ def test_get_groups_single_group(api_client, device_simulator, clean_state, tmp_
 @pytest.mark.project
 def test_get_groups_multi_group(api_client, device_simulator, clean_state, tmp_path):
     """getGroups returns all three groups for a 3-group project."""
-    proj_path = _write_project(tmp_path / "multi.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "multi.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -199,7 +208,9 @@ def test_get_groups_multi_group(api_client, device_simulator, clean_state, tmp_p
 @pytest.mark.project
 def test_set_active_group_by_id(api_client, device_simulator, clean_state, tmp_path):
     """setActiveGroup changes the active group; getStatus confirms the change."""
-    proj_path = _write_project(tmp_path / "nav_id.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "nav_id.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -218,7 +229,9 @@ def test_set_active_group_by_id(api_client, device_simulator, clean_state, tmp_p
 @pytest.mark.project
 def test_set_active_group_by_index(api_client, device_simulator, clean_state, tmp_path):
     """setActiveGroupIndex changes the active group; getStatus confirms."""
-    proj_path = _write_project(tmp_path / "nav_idx.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "nav_idx.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -236,7 +249,9 @@ def test_set_active_group_by_index(api_client, device_simulator, clean_state, tm
 @pytest.mark.project
 def test_cycle_through_all_groups(api_client, device_simulator, clean_state, tmp_path):
     """Cycling through all groups via setActiveGroup works for each one."""
-    proj_path = _write_project(tmp_path / "cycle.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "cycle.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -246,9 +261,9 @@ def test_cycle_through_all_groups(api_client, device_simulator, clean_state, tmp
         api_client.command("ui.window.setActiveGroup", {"groupId": g["id"]})
         time.sleep(0.2)
         status = api_client.command("ui.window.getStatus")
-        assert status.get("activeGroupId") == g["id"], (
-            f"Expected activeGroupId={g['id']}, got {status.get('activeGroupId')}"
-        )
+        assert (
+            status.get("activeGroupId") == g["id"]
+        ), f"Expected activeGroupId={g['id']}, got {status.get('activeGroupId')}"
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +272,9 @@ def test_cycle_through_all_groups(api_client, device_simulator, clean_state, tmp
 
 
 @pytest.mark.project
-def test_get_window_states_has_entries(api_client, device_simulator, clean_state, tmp_path):
+def test_get_window_states_has_entries(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """getWindowStates returns a non-empty array with required fields."""
     proj_path = _write_project(tmp_path / "ws.ssproj", _multi_group_project(n_groups=2))
     api_client.command("project.open", {"filePath": str(proj_path)})
@@ -279,7 +296,9 @@ def test_set_window_state_accepted(api_client, device_simulator, clean_state, tm
     and resets on every rebuildModel() (disconnect / new frame).  We verify
     the command contract: success=true, echo of id and state values.
     """
-    proj_path = _write_project(tmp_path / "wst.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "wst.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -288,7 +307,9 @@ def test_set_window_state_accepted(api_client, device_simulator, clean_state, tm
     win_id = windows[0]["id"]
 
     for state in (1, 2, 0):
-        result = api_client.command("ui.window.setWindowState", {"id": win_id, "state": state})
+        result = api_client.command(
+            "ui.window.setWindowState", {"id": win_id, "state": state}
+        )
         assert result.get("id") == win_id
         assert result.get("state") == state
 
@@ -305,7 +326,9 @@ def test_auto_layout_toggle(api_client, device_simulator, clean_state, tmp_path)
     setAutoLayout(true)  → getLayout has 'autoLayout': true.
     getStatus reflects the change in autoLayoutEnabled.
     """
-    proj_path = _write_project(tmp_path / "autolayout.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "autolayout.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -332,13 +355,17 @@ def test_auto_layout_toggle(api_client, device_simulator, clean_state, tmp_path)
 
 
 @pytest.mark.project
-def test_auto_layout_off_produces_geometries(api_client, device_simulator, clean_state, tmp_path):
+def test_auto_layout_off_produces_geometries(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """
     With autoLayout disabled, serializeLayout() includes a 'geometries' array
     (populated only while QML windows are registered) or an empty array.
     The key must exist in the layout object.
     """
-    proj_path = _write_project(tmp_path / "geom.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "geom.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -347,19 +374,23 @@ def test_auto_layout_off_produces_geometries(api_client, device_simulator, clean
     time.sleep(0.3)
 
     layout = api_client.command("ui.window.getLayout")["layout"]
-    assert "geometries" in layout, (
-        f"Expected 'geometries' key when autoLayout=false; got keys: {list(layout.keys())}"
-    )
+    assert (
+        "geometries" in layout
+    ), f"Expected 'geometries' key when autoLayout=false; got keys: {list(layout.keys())}"
     assert isinstance(layout["geometries"], list)
 
 
 @pytest.mark.project
-def test_auto_layout_on_omits_geometries(api_client, device_simulator, clean_state, tmp_path):
+def test_auto_layout_on_omits_geometries(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """
     With autoLayout enabled, serializeLayout() does NOT include 'geometries'
     (positions are managed automatically and not persisted).
     """
-    proj_path = _write_project(tmp_path / "nogeom.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "nogeom.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -368,9 +399,9 @@ def test_auto_layout_on_omits_geometries(api_client, device_simulator, clean_sta
     time.sleep(0.3)
 
     layout = api_client.command("ui.window.getLayout")["layout"]
-    assert "geometries" not in layout, (
-        f"Expected no 'geometries' key when autoLayout=true; got keys: {list(layout.keys())}"
-    )
+    assert (
+        "geometries" not in layout
+    ), f"Expected no 'geometries' key when autoLayout=true; got keys: {list(layout.keys())}"
 
 
 # ---------------------------------------------------------------------------
@@ -386,7 +417,9 @@ def test_set_layout_moves_windows(api_client, device_simulator, clean_state, tmp
     With QML windows registered the geometry changes are applied directly to
     the QQuickItem.  serializeLayout() then reflects the new positions.
     """
-    proj_path = _write_project(tmp_path / "move.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "move.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -404,13 +437,15 @@ def test_set_layout_moves_windows(api_client, device_simulator, clean_state, tmp
     # Build a layout with distinct, non-overlapping positions for each window
     new_geometries = []
     for idx, win_id in enumerate(window_order):
-        new_geometries.append({
-            "id": win_id,
-            "x": float(idx * 210),
-            "y": float(idx * 10),
-            "width": 200.0,
-            "height": 150.0,
-        })
+        new_geometries.append(
+            {
+                "id": win_id,
+                "x": float(idx * 210),
+                "y": float(idx * 10),
+                "width": 200.0,
+                "height": 150.0,
+            }
+        )
 
     new_layout = {
         "autoLayout": False,
@@ -430,16 +465,18 @@ def test_set_layout_moves_windows(api_client, device_simulator, clean_state, tmp
         for entry in new_geometries:
             wid = entry["id"]
             if wid in after_geoms:
-                assert abs(after_geoms[wid]["x"] - entry["x"]) < 2, (
-                    f"Window {wid} x={after_geoms[wid]['x']!r} ≠ expected {entry['x']}"
-                )
-                assert abs(after_geoms[wid]["y"] - entry["y"]) < 2, (
-                    f"Window {wid} y={after_geoms[wid]['y']!r} ≠ expected {entry['y']}"
-                )
+                assert (
+                    abs(after_geoms[wid]["x"] - entry["x"]) < 2
+                ), f"Window {wid} x={after_geoms[wid]['x']!r} ≠ expected {entry['x']}"
+                assert (
+                    abs(after_geoms[wid]["y"] - entry["y"]) < 2
+                ), f"Window {wid} y={after_geoms[wid]['y']!r} ≠ expected {entry['y']}"
 
 
 @pytest.mark.project
-def test_set_layout_auto_layout_roundtrip(api_client, device_simulator, clean_state, tmp_path):
+def test_set_layout_auto_layout_roundtrip(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """
     getLayout → setLayout (unchanged) → getLayout: windowOrder and autoLayout are stable.
     """
@@ -465,7 +502,9 @@ def test_set_layout_auto_layout_roundtrip(api_client, device_simulator, clean_st
 @pytest.mark.project
 def test_save_and_load_layout(api_client, device_simulator, clean_state, tmp_path):
     """saveLayout persists the layout; loadLayout restores it without error."""
-    proj_path = _write_project(tmp_path / "persist.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "persist.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -486,9 +525,13 @@ def test_save_and_load_layout(api_client, device_simulator, clean_state, tmp_pat
 
 
 @pytest.mark.project
-def test_layout_stored_in_project_file(api_client, device_simulator, clean_state, tmp_path):
+def test_layout_stored_in_project_file(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """After saveLayout + project.save the disk file contains the layout key."""
-    proj_path = _write_project(tmp_path / "disk.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "disk.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -506,9 +549,9 @@ def test_layout_stored_in_project_file(api_client, device_simulator, clean_state
 
     if group_id is not None and group_id >= 0:
         layout_key = _layout_key(group_id)
-        assert layout_key in ws, (
-            f"Expected layout key {layout_key!r} in widgetSettings; got: {list(ws.keys())}"
-        )
+        assert (
+            layout_key in ws
+        ), f"Expected layout key {layout_key!r} in widgetSettings; got: {list(ws.keys())}"
 
 
 @pytest.mark.project
@@ -526,7 +569,9 @@ def test_layout_persists_across_group_switch(
          re-applies autoLayout=False.
       4. Verify getLayout still shows autoLayout=False for group A.
     """
-    proj_path = _write_project(tmp_path / "switch.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "switch.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -555,9 +600,9 @@ def test_layout_persists_across_group_switch(
     time.sleep(0.5)
 
     layout_a = api_client.command("ui.window.getLayout")["layout"]
-    assert layout_a.get("autoLayout") is False, (
-        f"Group A autoLayout=False was not restored after switching back; got: {layout_a}"
-    )
+    assert (
+        layout_a.get("autoLayout") is False
+    ), f"Group A autoLayout=False was not restored after switching back; got: {layout_a}"
 
 
 # ---------------------------------------------------------------------------
@@ -581,7 +626,9 @@ def test_manual_layout_save_reload(api_client, device_simulator, clean_state, tm
     full restoration of a manual layout in-process, use ui.window.setLayout
     with the saved JSON directly, which calls restoreLayout().
     """
-    proj_path = _write_project(tmp_path / "manual.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "manual.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -617,18 +664,22 @@ def test_manual_layout_save_reload(api_client, device_simulator, clean_state, tm
 
     # 5. autoLayout should be False because positioned["autoLayout"] = False
     layout_final = api_client.command("ui.window.getLayout")["layout"]
-    assert layout_final.get("autoLayout") is False, (
-        f"After setLayout with autoLayout=false, expected false; got {layout_final}"
-    )
+    assert (
+        layout_final.get("autoLayout") is False
+    ), f"After setLayout with autoLayout=false, expected false; got {layout_final}"
 
 
 @pytest.mark.project
-def test_manual_layout_switch_auto_back(api_client, device_simulator, clean_state, tmp_path):
+def test_manual_layout_switch_auto_back(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """
     Switch to manual layout, then back to auto layout.
     autoLayout flag in getLayout must reflect each transition.
     """
-    proj_path = _write_project(tmp_path / "toggle.ssproj", _multi_group_project(n_groups=2))
+    proj_path = _write_project(
+        tmp_path / "toggle.ssproj", _multi_group_project(n_groups=2)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=6)
@@ -640,7 +691,9 @@ def test_manual_layout_switch_auto_back(api_client, device_simulator, clean_stat
     # Disable
     api_client.command("ui.window.setAutoLayout", {"enabled": False})
     time.sleep(0.3)
-    assert api_client.command("ui.window.getLayout")["layout"].get("autoLayout") is False
+    assert (
+        api_client.command("ui.window.getLayout")["layout"].get("autoLayout") is False
+    )
 
     # Re-enable
     api_client.command("ui.window.setAutoLayout", {"enabled": True})
@@ -662,23 +715,32 @@ def test_get_set_widget_settings(api_client, device_simulator, clean_state, tmp_
     _connect_and_send(api_client, device_simulator, n_values=6)
 
     widget_id = "test_widget_42"
-    api_client.command("ui.window.setWidgetSetting",
-                       {"widgetId": widget_id, "key": "interpolate", "value": True})
-    api_client.command("ui.window.setWidgetSetting",
-                       {"widgetId": widget_id, "key": "showArea", "value": False})
-    api_client.command("ui.window.setWidgetSetting",
-                       {"widgetId": widget_id, "key": "lineWidth", "value": 2})
+    api_client.command(
+        "ui.window.setWidgetSetting",
+        {"widgetId": widget_id, "key": "interpolate", "value": True},
+    )
+    api_client.command(
+        "ui.window.setWidgetSetting",
+        {"widgetId": widget_id, "key": "showArea", "value": False},
+    )
+    api_client.command(
+        "ui.window.setWidgetSetting",
+        {"widgetId": widget_id, "key": "lineWidth", "value": 2},
+    )
     time.sleep(0.3)
 
-    settings = api_client.command("ui.window.getWidgetSettings",
-                                  {"widgetId": widget_id})["settings"]
+    settings = api_client.command(
+        "ui.window.getWidgetSettings", {"widgetId": widget_id}
+    )["settings"]
     assert settings.get("interpolate") is True
     assert settings.get("showArea") is False
     assert settings.get("lineWidth") == 2
 
 
 @pytest.mark.project
-def test_widget_settings_persist_to_disk(api_client, device_simulator, clean_state, tmp_path):
+def test_widget_settings_persist_to_disk(
+    api_client, device_simulator, clean_state, tmp_path
+):
     """setWidgetSetting + project.save writes the setting to disk."""
     proj_path = _write_project(tmp_path / "ws_disk.ssproj", _single_group_project())
     api_client.command("project.open", {"filePath": str(proj_path)})
@@ -686,8 +748,10 @@ def test_widget_settings_persist_to_disk(api_client, device_simulator, clean_sta
     _connect_and_send(api_client, device_simulator, n_values=6)
 
     widget_id = "disk_test_1001"
-    api_client.command("ui.window.setWidgetSetting",
-                       {"widgetId": widget_id, "key": "showArea", "value": False})
+    api_client.command(
+        "ui.window.setWidgetSetting",
+        {"widgetId": widget_id, "key": "showArea", "value": False},
+    )
     time.sleep(0.2)
 
     api_client.command("project.save")
@@ -695,7 +759,9 @@ def test_widget_settings_persist_to_disk(api_client, device_simulator, clean_sta
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
     ws = data.get(_WS_KEY, {})
-    assert widget_id in ws, f"widgetId {widget_id!r} not found in widgetSettings; keys={list(ws)}"
+    assert (
+        widget_id in ws
+    ), f"widgetId {widget_id!r} not found in widgetSettings; keys={list(ws)}"
     assert ws[widget_id].get("showArea") is False
 
 
@@ -704,7 +770,9 @@ def test_widget_settings_survive_group_switch(
     api_client, device_simulator, clean_state, tmp_path
 ):
     """Widget settings set on group A survive switching to B and back."""
-    proj_path = _write_project(tmp_path / "ws_gs.ssproj", _multi_group_project(n_groups=3))
+    proj_path = _write_project(
+        tmp_path / "ws_gs.ssproj", _multi_group_project(n_groups=3)
+    )
     api_client.command("project.open", {"filePath": str(proj_path)})
     time.sleep(0.3)
     _connect_and_send(api_client, device_simulator, n_values=9)
@@ -716,8 +784,10 @@ def test_widget_settings_survive_group_switch(
     time.sleep(0.2)
 
     widget_id = "persist_test_widget"
-    api_client.command("ui.window.setWidgetSetting",
-                       {"widgetId": widget_id, "key": "color", "value": "red"})
+    api_client.command(
+        "ui.window.setWidgetSetting",
+        {"widgetId": widget_id, "key": "color", "value": "red"},
+    )
     time.sleep(0.2)
 
     api_client.command("ui.window.setActiveGroup", {"groupId": id_b})
@@ -725,6 +795,7 @@ def test_widget_settings_survive_group_switch(
     api_client.command("ui.window.setActiveGroup", {"groupId": id_a})
     time.sleep(0.2)
 
-    settings = api_client.command("ui.window.getWidgetSettings",
-                                  {"widgetId": widget_id})["settings"]
+    settings = api_client.command(
+        "ui.window.getWidgetSettings", {"widgetId": widget_id}
+    )["settings"]
     assert settings.get("color") == "red"

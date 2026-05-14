@@ -18,13 +18,13 @@ import time
 
 import pytest
 
-
 CONSOLE_ONLY_MODE = 1  # SerialStudio::OperationMode enum value
 
 
 # ---------------------------------------------------------------------------
 # Mode switch + identity
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_set_console_only_mode(api_client, clean_state):
@@ -68,10 +68,9 @@ def test_mode_switch_round_trip(api_client, clean_state):
 # No-parsing invariant — dashboard stays empty
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
-def test_console_only_produces_no_datasets(
-    api_client, device_simulator, clean_state
-):
+def test_console_only_produces_no_datasets(api_client, device_simulator, clean_state):
     """
     In ConsoleOnly mode, sending frames that would normally produce datasets
     results in dashboard.getData reporting zero datasets. FrameReader skips
@@ -131,6 +130,7 @@ def test_console_only_stays_connected_under_load(
 # Raw-byte plumbing — terminal/stats paths still see traffic
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_console_only_increments_rx_byte_counter(
     api_client, device_simulator, clean_state
@@ -173,6 +173,7 @@ def test_console_only_increments_rx_byte_counter(
 # ---------------------------------------------------------------------------
 # REGRESSION — out-of-range mode rejected
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_set_operation_mode_rejects_out_of_range(api_client, clean_state):

@@ -105,9 +105,9 @@ from lxml import etree
 # Provider SDKs are imported lazily inside _call_provider() so the script
 # still runs when only one of them is installed.
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Configuration
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # Path to the directory containing .ts translation files
 TS_DIRECTORY = "ts"
@@ -151,7 +151,7 @@ LANGUAGE_MAP = {
     "hi_IN": "Hindi",
     "ro_RO": "Romanian",
     "nl_NL": "Dutch",
-    "sv_SE": "Swedish"
+    "sv_SE": "Swedish",
 }
 
 # Languages that use scripts WITHOUT uppercase/lowercase distinction
@@ -168,51 +168,203 @@ CASELESS_SCRIPTS = {
 # (except when they're the first or last word)
 TITLE_CASE_SMALL_WORDS = {
     "es_MX": {  # Spanish
-        "de", "del", "la", "las", "el", "los", "un", "una", "unos", "unas",
-        "y", "e", "o", "u", "en", "con", "por", "para", "sin", "sobre",
-        "a", "al", "desde", "hasta"
+        "de",
+        "del",
+        "la",
+        "las",
+        "el",
+        "los",
+        "un",
+        "una",
+        "unos",
+        "unas",
+        "y",
+        "e",
+        "o",
+        "u",
+        "en",
+        "con",
+        "por",
+        "para",
+        "sin",
+        "sobre",
+        "a",
+        "al",
+        "desde",
+        "hasta",
     },
     "fr_FR": {  # French
-        "de", "du", "des", "la", "le", "les", "un", "une",
-        "et", "ou", "à", "au", "aux", "en", "dans", "pour", "avec",
-        "par", "sur", "sous", "sans"
+        "de",
+        "du",
+        "des",
+        "la",
+        "le",
+        "les",
+        "un",
+        "une",
+        "et",
+        "ou",
+        "à",
+        "au",
+        "aux",
+        "en",
+        "dans",
+        "pour",
+        "avec",
+        "par",
+        "sur",
+        "sous",
+        "sans",
     },
     "pt_BR": {  # Portuguese
-        "de", "do", "da", "dos", "das", "o", "a", "os", "as", "um", "uma",
-        "e", "ou", "em", "no", "na", "nos", "nas", "com", "por", "para",
-        "sem", "sob", "sobre"
+        "de",
+        "do",
+        "da",
+        "dos",
+        "das",
+        "o",
+        "a",
+        "os",
+        "as",
+        "um",
+        "uma",
+        "e",
+        "ou",
+        "em",
+        "no",
+        "na",
+        "nos",
+        "nas",
+        "com",
+        "por",
+        "para",
+        "sem",
+        "sob",
+        "sobre",
     },
     "it_IT": {  # Italian
-        "di", "del", "della", "dei", "delle", "il", "lo", "la", "i", "gli", "le",
-        "un", "uno", "una", "e", "o", "in", "con", "per", "a", "da", "su"
+        "di",
+        "del",
+        "della",
+        "dei",
+        "delle",
+        "il",
+        "lo",
+        "la",
+        "i",
+        "gli",
+        "le",
+        "un",
+        "uno",
+        "una",
+        "e",
+        "o",
+        "in",
+        "con",
+        "per",
+        "a",
+        "da",
+        "su",
     },
     "de_DE": {  # German (capitalize ALL nouns, but small words exist)
-        "der", "die", "das", "den", "dem", "des", "ein", "eine", "einen",
-        "und", "oder", "in", "von", "zu", "mit", "für", "auf", "an"
+        "der",
+        "die",
+        "das",
+        "den",
+        "dem",
+        "des",
+        "ein",
+        "eine",
+        "einen",
+        "und",
+        "oder",
+        "in",
+        "von",
+        "zu",
+        "mit",
+        "für",
+        "auf",
+        "an",
     },
-    "tr_TR": {  # Turkish
-        "ve", "veya", "ile", "için", "de", "da", "den", "dan", "bir"
-    },
+    "tr_TR": {"ve", "veya", "ile", "için", "de", "da", "den", "dan", "bir"},  # Turkish
     "ru_RU": {  # Russian (Cyrillic)
-        "и", "или", "в", "на", "с", "от", "до", "для", "к", "о", "об", "по"
+        "и",
+        "или",
+        "в",
+        "на",
+        "с",
+        "от",
+        "до",
+        "для",
+        "к",
+        "о",
+        "об",
+        "по",
     },
     "uk_UA": {  # Ukrainian (Cyrillic)
-        "і", "та", "або", "в", "на", "з", "від", "до", "для", "к", "о", "по"
+        "і",
+        "та",
+        "або",
+        "в",
+        "на",
+        "з",
+        "від",
+        "до",
+        "для",
+        "к",
+        "о",
+        "по",
     },
     "pl_PL": {  # Polish
-        "i", "lub", "w", "na", "z", "od", "do", "dla", "o", "po", "przez"
+        "i",
+        "lub",
+        "w",
+        "na",
+        "z",
+        "od",
+        "do",
+        "dla",
+        "o",
+        "po",
+        "przez",
     },
-    "cs_CZ": {  # Czech
-        "a", "nebo", "v", "na", "s", "od", "do", "pro", "k", "o", "po"
-    },
+    "cs_CZ": {"a", "nebo", "v", "na", "s", "od", "do", "pro", "k", "o", "po"},  # Czech
     "ro_RO": {  # Romanian
-        "de", "și", "sau", "în", "pe", "cu", "la", "din", "pentru", "ca"
+        "de",
+        "și",
+        "sau",
+        "în",
+        "pe",
+        "cu",
+        "la",
+        "din",
+        "pentru",
+        "ca",
     },
     "nl_NL": {  # Dutch
-        "de", "het", "een", "en", "of", "in", "op", "van", "voor", "met", "aan"
+        "de",
+        "het",
+        "een",
+        "en",
+        "of",
+        "in",
+        "op",
+        "van",
+        "voor",
+        "met",
+        "aan",
     },
     "sv_SE": {  # Swedish
-        "och", "eller", "i", "på", "av", "för", "med", "till", "från", "om"
+        "och",
+        "eller",
+        "i",
+        "på",
+        "av",
+        "för",
+        "med",
+        "till",
+        "från",
+        "om",
     },
 }
 
@@ -221,43 +373,229 @@ TITLE_CASE_SMALL_WORDS = {
 # matching: 'json', 'Json', 'JSON' all collapse to 'JSON'.
 TECHNICAL_ACRONYMS = {
     # Buses / protocols (the core surface)
-    "CAN", "CAN-FD", "TCP", "UDP", "IP", "TCP/IP", "MQTT", "BLE", "USB", "HID",
-    "UART", "RTU", "ASCII", "RS232", "RS485", "RS422", "I2C", "SPI", "GPIO",
-    "PWM", "ADC", "DAC", "DMA", "PLC", "SCADA", "OBD", "OBD2", "J1939",
-    "ISOTP", "SLCAN", "SOCKETCAN", "PEAK", "VECTOR", "KVASER",
+    "CAN",
+    "CAN-FD",
+    "TCP",
+    "UDP",
+    "IP",
+    "TCP/IP",
+    "MQTT",
+    "BLE",
+    "USB",
+    "HID",
+    "UART",
+    "RTU",
+    "ASCII",
+    "RS232",
+    "RS485",
+    "RS422",
+    "I2C",
+    "SPI",
+    "GPIO",
+    "PWM",
+    "ADC",
+    "DAC",
+    "DMA",
+    "PLC",
+    "SCADA",
+    "OBD",
+    "OBD2",
+    "J1939",
+    "ISOTP",
+    "SLCAN",
+    "SOCKETCAN",
+    "PEAK",
+    "VECTOR",
+    "KVASER",
     # Network / IO
-    "ICMP", "ARP", "DNS", "DHCP", "TLS", "SSL", "SSH", "FTP", "HTTP", "HTTPS",
-    "WS", "WSS", "UDP", "VPN", "VLAN", "WAN", "LAN", "WLAN", "WIFI", "OTA",
-    "QOS", "MAC", "POE",
+    "ICMP",
+    "ARP",
+    "DNS",
+    "DHCP",
+    "TLS",
+    "SSL",
+    "SSH",
+    "FTP",
+    "HTTP",
+    "HTTPS",
+    "WS",
+    "WSS",
+    "UDP",
+    "VPN",
+    "VLAN",
+    "WAN",
+    "LAN",
+    "WLAN",
+    "WIFI",
+    "OTA",
+    "QOS",
+    "MAC",
+    "POE",
     # Data formats
-    "JSON", "XML", "YAML", "CSV", "TSV", "TOML", "INI", "PDF", "HTML", "MD",
-    "GZIP", "ZIP", "TAR", "BZ2", "LZ4", "ZSTD", "BMP", "PNG", "JPG", "JPEG",
-    "GIF", "SVG", "WAV", "MP3", "FLAC", "OPUS", "OGG",
+    "JSON",
+    "XML",
+    "YAML",
+    "CSV",
+    "TSV",
+    "TOML",
+    "INI",
+    "PDF",
+    "HTML",
+    "MD",
+    "GZIP",
+    "ZIP",
+    "TAR",
+    "BZ2",
+    "LZ4",
+    "ZSTD",
+    "BMP",
+    "PNG",
+    "JPG",
+    "JPEG",
+    "GIF",
+    "SVG",
+    "WAV",
+    "MP3",
+    "FLAC",
+    "OPUS",
+    "OGG",
     # Telemetry / measurement / signal processing
-    "FFT", "DFT", "PSD", "RMS", "SNR", "DC", "AC", "EMC", "EMF", "EMI",
-    "GPS", "GNSS", "NMEA", "IMU", "GYRO", "MAG", "PPM", "PPB",
+    "FFT",
+    "DFT",
+    "PSD",
+    "RMS",
+    "SNR",
+    "DC",
+    "AC",
+    "EMC",
+    "EMF",
+    "EMI",
+    "GPS",
+    "GNSS",
+    "NMEA",
+    "IMU",
+    "GYRO",
+    "MAG",
+    "PPM",
+    "PPB",
     # Files / storage / databases
-    "MDF", "MDF4", "DBC", "ASC", "BLF", "TRC", "SQL", "SQLITE", "CRC",
-    "CRC16", "CRC32", "MD5", "SHA1", "SHA256", "FAT", "NTFS", "NFS", "EEPROM",
-    "FRAM", "SRAM", "RAM", "ROM", "EXT2", "EXT3", "EXT4",
+    "MDF",
+    "MDF4",
+    "DBC",
+    "ASC",
+    "BLF",
+    "TRC",
+    "SQL",
+    "SQLITE",
+    "CRC",
+    "CRC16",
+    "CRC32",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "FAT",
+    "NTFS",
+    "NFS",
+    "EEPROM",
+    "FRAM",
+    "SRAM",
+    "RAM",
+    "ROM",
+    "EXT2",
+    "EXT3",
+    "EXT4",
     # Tooling / dev
-    "API", "SDK", "CLI", "GUI", "IDE", "RPC", "GRPC", "MCP", "JSON-RPC",
-    "QML", "JS", "QT", "C++", "URL", "URI", "URN", "UTF", "UTF-8", "UTF-16",
-    "BOM", "REGEX", "OS", "VM", "JIT", "AOT",
+    "API",
+    "SDK",
+    "CLI",
+    "GUI",
+    "IDE",
+    "RPC",
+    "GRPC",
+    "MCP",
+    "JSON-RPC",
+    "QML",
+    "JS",
+    "QT",
+    "C++",
+    "URL",
+    "URI",
+    "URN",
+    "UTF",
+    "UTF-8",
+    "UTF-16",
+    "BOM",
+    "REGEX",
+    "OS",
+    "VM",
+    "JIT",
+    "AOT",
     # File-transfer protocols
-    "XMODEM", "YMODEM", "ZMODEM", "KERMIT", "TFTP", "SFTP", "SCP",
+    "XMODEM",
+    "YMODEM",
+    "ZMODEM",
+    "KERMIT",
+    "TFTP",
+    "SFTP",
+    "SCP",
     # CNC / lab instrumentation
-    "GRBL", "GCODE", "GCODE", "GRBL-HAL", "SCPI", "VISA", "GPIB",
+    "GRBL",
+    "GCODE",
+    "GCODE",
+    "GRBL-HAL",
+    "SCPI",
+    "VISA",
+    "GPIB",
     # Hardware / vendor / certs
-    "MCU", "DSP", "FPGA", "CPU", "GPU", "SOC", "PCB", "LED", "LCD", "OLED",
-    "TFT", "FCC", "CE", "ROHS", "REACH", "ISO",
+    "MCU",
+    "DSP",
+    "FPGA",
+    "CPU",
+    "GPU",
+    "SOC",
+    "PCB",
+    "LED",
+    "LCD",
+    "OLED",
+    "TFT",
+    "FCC",
+    "CE",
+    "ROHS",
+    "REACH",
+    "ISO",
     # MQTT-specific (protocol field names that should never be translated)
-    "MQTTS", "MQTT-SN",
+    "MQTTS",
+    "MQTT-SN",
     # Auth / mail
-    "OAUTH", "OAUTH2", "JWT", "SAML", "SMTP", "IMAP", "POP3", "SASL",
+    "OAUTH",
+    "OAUTH2",
+    "JWT",
+    "SAML",
+    "SMTP",
+    "IMAP",
+    "POP3",
+    "SASL",
     # Misc
-    "ID", "UUID", "GUID", "PID", "VID", "EOT", "SOH", "STX", "ETX", "ENQ",
-    "ACK", "NAK", "CAN", "DLE", "CR", "LF", "CRLF", "BOM", "BPS", "MBPS",
+    "ID",
+    "UUID",
+    "GUID",
+    "PID",
+    "VID",
+    "EOT",
+    "SOH",
+    "STX",
+    "ETX",
+    "ENQ",
+    "ACK",
+    "NAK",
+    "CAN",
+    "DLE",
+    "CR",
+    "LF",
+    "CRLF",
+    "BOM",
+    "BPS",
+    "MBPS",
     "KBPS",
 }
 
@@ -265,13 +603,49 @@ TECHNICAL_ACRONYMS = {
 # every language and must not be translated. The translator should treat them
 # as proper nouns. (TECHNICAL_ACRONYMS handles the all-caps cases above.)
 PROTOCOL_NAMES = {
-    "Modbus", "Bluetooth", "Wi-Fi", "Ethernet", "Serial Studio", "Pro",
-    "Hobbyist", "Enterprise", "GitHub", "GitLab", "Lua", "JavaScript",
-    "Python", "TypeScript", "Linux", "Windows", "macOS", "iOS", "Android",
-    "Qt", "QML", "OpenSSL", "libusb", "hidapi", "QuaZip", "KissFFT",
-    "QCodeEditor", "mdflib", "QSimpleUpdater", "LemonSqueezy", "SocketCAN",
-    "PEAK-System", "Vector", "Kvaser", "PEAK", "FreeRTOS", "Arduino",
-    "Raspberry Pi", "ESP32", "STM32", "Teensy", "Chart.js", "Mermaid",
+    "Modbus",
+    "Bluetooth",
+    "Wi-Fi",
+    "Ethernet",
+    "Serial Studio",
+    "Pro",
+    "Hobbyist",
+    "Enterprise",
+    "GitHub",
+    "GitLab",
+    "Lua",
+    "JavaScript",
+    "Python",
+    "TypeScript",
+    "Linux",
+    "Windows",
+    "macOS",
+    "iOS",
+    "Android",
+    "Qt",
+    "QML",
+    "OpenSSL",
+    "libusb",
+    "hidapi",
+    "QuaZip",
+    "KissFFT",
+    "QCodeEditor",
+    "mdflib",
+    "QSimpleUpdater",
+    "LemonSqueezy",
+    "SocketCAN",
+    "PEAK-System",
+    "Vector",
+    "Kvaser",
+    "PEAK",
+    "FreeRTOS",
+    "Arduino",
+    "Raspberry Pi",
+    "ESP32",
+    "STM32",
+    "Teensy",
+    "Chart.js",
+    "Mermaid",
 }
 
 # Domain glossary: terms that need disambiguation context for the LLM. Without
@@ -340,9 +714,10 @@ DOMAIN_GLOSSARY = [
     "'Console' / 'Terminal' — text-based I/O view. Standard term.",
 ]
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Utility Functions
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def run_qt_translation_tool(mode):
     """
@@ -350,17 +725,18 @@ def run_qt_translation_tool(mode):
     Valid modes: '--lupdate' or '--lrelease'.
     """
     subprocess.run(
-        [sys.executable, "translation_manager.py", mode],
-        cwd=SCRIPT_DIR,
-        check=True
+        [sys.executable, "translation_manager.py", mode], cwd=SCRIPT_DIR, check=True
     )
+
 
 def remove_wrapping_quotes(text):
     """
     Remove single or double quotes around a string.
     """
     text = text.strip()
-    if (text.startswith('"') and text.endswith('"')) or (text.startswith("'") and text.endswith("'")):
+    if (text.startswith('"') and text.endswith('"')) or (
+        text.startswith("'") and text.endswith("'")
+    ):
         return text[1:-1].strip()
 
     return text
@@ -404,9 +780,9 @@ def harvest_translation_memory(ts_root) -> list[tuple[str, str]]:
     return pairs
 
 
-def select_tm_examples(batch_sources: list[str],
-                       tm: list[tuple[str, str]],
-                       k: int = TM_TOP_K) -> list[tuple[str, str]]:
+def select_tm_examples(
+    batch_sources: list[str], tm: list[tuple[str, str]], k: int = TM_TOP_K
+) -> list[tuple[str, str]]:
     """Pick the K most relevant TM entries for the current batch.
 
     Score each TM entry by the maximum Jaccard token-overlap against any
@@ -464,7 +840,9 @@ def format_tm_block(examples: list[tuple[str, str]], target_language: str) -> st
     return "\n".join(lines)
 
 
-def _call_provider(prompt: str, temperature: float = 0.2, max_tokens: int = 2048) -> str:
+def _call_provider(
+    prompt: str, temperature: float = 0.2, max_tokens: int = 2048
+) -> str:
     """Send PROMPT to the active LLM provider and return the raw text response.
 
     Provider/model are read from the module-level PROVIDER and LLM_MODEL
@@ -476,6 +854,7 @@ def _call_provider(prompt: str, temperature: float = 0.2, max_tokens: int = 2048
     """
     if PROVIDER == "openai":
         import openai
+
         api_key = os.environ.get("OPENAI_API_KEY")
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY is not set")
@@ -490,6 +869,7 @@ def _call_provider(prompt: str, temperature: float = 0.2, max_tokens: int = 2048
 
     if PROVIDER == "anthropic":
         import anthropic
+
         api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
             raise RuntimeError("ANTHROPIC_API_KEY is not set")
@@ -501,7 +881,9 @@ def _call_provider(prompt: str, temperature: float = 0.2, max_tokens: int = 2048
             messages=[{"role": "user", "content": prompt}],
         )
         # Anthropic returns a list of content blocks; we only ever ask for text.
-        parts = [b.text for b in response.content if getattr(b, "type", "text") == "text"]
+        parts = [
+            b.text for b in response.content if getattr(b, "type", "text") == "text"
+        ]
         return "".join(parts)
 
     raise RuntimeError(f"Unknown provider: {PROVIDER!r}")
@@ -510,12 +892,14 @@ def _call_provider(prompt: str, temperature: float = 0.2, max_tokens: int = 2048
 # Retry / backoff tuning. Designed for unattended overnight runs: a single
 # batch can survive up to ~1 hour of provider trouble before giving up.
 RETRY_MAX_ATTEMPTS = 10
-RETRY_BASE_DELAY = 4.0      # seconds for the first backoff
-RETRY_MAX_DELAY = 300.0     # 5 minute cap per backoff sleep
-RETRY_TOTAL_BUDGET = 3600.0 # absolute wall-clock cap per batch (1 hour)
+RETRY_BASE_DELAY = 4.0  # seconds for the first backoff
+RETRY_MAX_DELAY = 300.0  # 5 minute cap per backoff sleep
+RETRY_TOTAL_BUDGET = 3600.0  # absolute wall-clock cap per batch (1 hour)
 
 
-def _interruptible_sleep(seconds: float, stop_event: threading.Event | None = None) -> None:
+def _interruptible_sleep(
+    seconds: float, stop_event: threading.Event | None = None
+) -> None:
     """Sleep in 0.5s slices so Ctrl-C and dashboard updates stay responsive."""
     deadline = time.monotonic() + max(0.0, seconds)
     while True:
@@ -540,6 +924,7 @@ def _classify_provider_error(exc: BaseException) -> tuple[str, float | None, boo
     # Anthropic SDK exception hierarchy
     try:
         import anthropic
+
         if isinstance(exc, anthropic.RateLimitError):
             hint = _extract_retry_after(exc)
             return ("rate-limit", hint, True)
@@ -559,6 +944,7 @@ def _classify_provider_error(exc: BaseException) -> tuple[str, float | None, boo
     # OpenAI SDK exception hierarchy
     try:
         import openai
+
         if isinstance(exc, openai.RateLimitError):
             return ("rate-limit", _extract_retry_after(exc), True)
         if isinstance(exc, openai.APITimeoutError):
@@ -596,11 +982,13 @@ def _extract_retry_after(exc: BaseException) -> float | None:
         return None
 
 
-def _call_provider_with_retry(prompt: str,
-                              temperature: float = 0.2,
-                              max_tokens: int = 2048,
-                              status_fn=None,
-                              stop_event: threading.Event | None = None) -> str:
+def _call_provider_with_retry(
+    prompt: str,
+    temperature: float = 0.2,
+    max_tokens: int = 2048,
+    status_fn=None,
+    stop_event: threading.Event | None = None,
+) -> str:
     """Call the provider with exponential-backoff retry around transient errors.
 
     status_fn(kind: str, attempt: int, sleep_for: float) is invoked every time
@@ -611,7 +999,9 @@ def _call_provider_with_retry(prompt: str,
 
     for attempt in range(1, RETRY_MAX_ATTEMPTS + 1):
         try:
-            return _call_provider(prompt, temperature=temperature, max_tokens=max_tokens)
+            return _call_provider(
+                prompt, temperature=temperature, max_tokens=max_tokens
+            )
         except Exception as exc:
             last_exc = exc
             kind, hint, retryable = _classify_provider_error(exc)
@@ -648,8 +1038,15 @@ def _call_provider_with_retry(prompt: str,
     raise RuntimeError("provider call failed without an exception")
 
 
-def translate_batch(source_texts, target_language, lang_code=None, tm=None, log_fn=print,
-                    status_fn=None, stop_event: threading.Event | None = None):
+def translate_batch(
+    source_texts,
+    target_language,
+    lang_code=None,
+    tm=None,
+    log_fn=print,
+    status_fn=None,
+    stop_event: threading.Event | None = None,
+):
     """
     Translate a batch of UI strings to a given target language using the active provider.
 
@@ -676,14 +1073,18 @@ def translate_batch(source_texts, target_language, lang_code=None, tm=None, log_
         confidence in 1..5, or 5 if the LLM omitted a score.
     """
 
-    def parse_numbered_translations(raw_text: str, expected_count: int) -> list[tuple[str, int]]:
+    def parse_numbered_translations(
+        raw_text: str, expected_count: int
+    ) -> list[tuple[str, int]]:
         # Remove any markdown fences
         raw_text = re.sub(r"^```[a-z]*", "", raw_text, flags=re.MULTILINE)
         raw_text = re.sub(r"```$", "", raw_text, flags=re.MULTILINE)
 
         # Each line should look like:  '7. 5 | Guardar Archivo'
         # Be lenient — accept missing score (default 5) and missing pipe.
-        numbered_lines = re.findall(r"^\s*(\d+)\.\s*(.*)$", raw_text, flags=re.MULTILINE)
+        numbered_lines = re.findall(
+            r"^\s*(\d+)\.\s*(.*)$", raw_text, flags=re.MULTILINE
+        )
 
         translation_map: dict[int, tuple[str, int]] = {}
         for index_str, line in numbered_lines:
@@ -735,163 +1136,168 @@ def translate_batch(source_texts, target_language, lang_code=None, tm=None, log_
     tm_block = format_tm_block(tm_examples, target_language)
 
     # Build prompt with filename/line context
-    prompt = "\n".join([
-        f"You are translating UI strings for Serial Studio into {target_language}.",
-        "",
-        "===========================================================================",
-        "ABOUT SERIAL STUDIO — READ THIS FIRST",
-        "===========================================================================",
-        "Serial Studio is a cross-platform desktop application for engineers and",
-        "embedded developers to visualize live telemetry from devices over UART,",
-        "TCP/UDP, Bluetooth Low Energy, audio, USB, HID, Modbus (RTU and TCP),",
-        "CAN bus, MQTT, and process I/O. It parses incoming byte streams using",
-        "user-defined JavaScript or Lua scripts, then renders the values in a",
-        "dashboard of plots, gauges, 3D plots, FFT views, GPS maps, data grids,",
-        "and other engineering visualizations. It can record sessions to SQLite,",
-        "export to CSV / MDF4 / PDF, and stream control commands back to the device.",
-        "",
-        "Audience: embedded firmware engineers, hardware engineers, lab/test",
-        "technicians, telemetry operators. They expect protocol-correct terminology",
-        "in their language — NOT word-for-word literal translation.",
-        "",
-        "Built with Qt/QML in C++20. Strings come from .cpp/.h/.qml source files.",
-        "The [Component @ File:Line] tag in each input gives you the surrounding",
-        "code context — use it to disambiguate ('Frame' in IO/Drivers/CANBus.cpp",
-        "is a CAN frame; 'Frame' in Misc/UI is a UI box).",
-        "",
-        "===========================================================================",
-        "DOMAIN GLOSSARY — DISAMBIGUATION RULES",
-        "===========================================================================",
-        "These are the terms most often mistranslated. Apply these rules even when",
-        "the surrounding sentence looks like ordinary English. The glossary OVERRIDES",
-        "general translation instinct.",
-        "",
-    ] + glossary_lines + [
-        "",
-        "===========================================================================",
-        "PROTOCOL / PRODUCT NAMES — NEVER TRANSLATE",
-        "===========================================================================",
-        "Treat the following as proper nouns — keep their exact spelling and casing",
-        "in every language, never inflect, never translate, never localize:",
-        "",
-        f"  {protocol_list}",
-        "",
-        "Plus: any all-uppercase token that looks like an acronym (CAN, USB, MQTT,",
-        "TCP, JSON, FFT, GPS, NMEA, …) stays uppercase. See the rule block below.",
-        "",
-        tm_block,
-        "===========================================================================",
-        "OUTPUT FORMAT — STRICT",
-        "===========================================================================",
-        f"- Emit exactly {len(escaped_entries)} numbered lines, 1 through {len(escaped_entries)}, in order.",
-        "- Each line MUST follow this exact shape:",
-        "      N. <score> | <translation>",
-        "  where <score> is a single digit 1-5 expressing your confidence:",
-        "      5 = perfect match, idiomatic, terminology certain",
-        "      4 = good, minor stylistic uncertainty",
-        "      3 = acceptable, some terminology guess",
-        "      2 = unsure of meaning or terminology, best-effort",
-        "      1 = guess (rare technical term, ambiguous source)",
-        "  Be honest. Low scores trigger human review — that is good, not bad.",
-        "  Example: '7. 5 | Guardar Archivo'",
-        "  Example: '8. 3 | Tema de Voluntad'   (uncertain about MQTT field name)",
-        "- One translation per line. No blank lines. No skipped numbers.",
-        "- Never wrap output in code fences (```), never add commentary, never restate the source.",
-        "- Never copy the [Component @ File:Line] context into the translation — that is metadata only.",
-        "- Preserve embedded escapes such as \\n, %1, %2, {0}, %L1, &amp;, &lt;, &gt;, &quot;, &apos; exactly as written.",
-        "",
-        "===========================================================================",
-        "TRANSLATION FIDELITY",
-        "===========================================================================",
-        "- Translate meaning, not words. Do not paraphrase, expand, simplify, or omit.",
-        "- Keep technical terms intact: 'unsigned int', '24-bit', 'baud rate', 'checksum', 'register', 'frame', 'NMEA', 'gRPC', etc.",
-        "- Do not localize protocol names, file extensions, vendor names, or product names (e.g., 'Modbus', 'CAN', 'XMODEM', 'Serial Studio', 'Pro').",
-        "- Match the source length where possible — Serial Studio is space-constrained.",
-        "- If the source contains only a placeholder (e.g., '%1'), output the placeholder unchanged.",
-        "",
-        "===========================================================================",
-        "VOICE & TONE — APPLE HIG STYLE",
-        "===========================================================================",
-        "Serial Studio uses a concise, neutral, functional voice. Match it in the target language.",
-        "",
-        "1. ACTIONS (buttons, menu items, toolbar labels): imperative verbs.",
-        "   - 'Save', 'Delete', 'Try Again', 'Open Project', 'Add Action'.",
-        "   - English source already follows this rule; translate using your language's imperative form.",
-        "   - Spanish: 'Guardar', 'Borrar', 'Reintentar' (NOT 'Guardando', 'Borrado').",
-        "   - French: 'Enregistrer', 'Supprimer', 'Réessayer'.",
-        "   - German: 'Speichern', 'Löschen', 'Erneut versuchen' (German imperatives are infinitive form).",
-        "",
-        "2. LABELS (section titles, group headers, settings rows): noun phrases.",
-        "   - 'Account Settings', 'Privacy', 'Notifications', 'Frame Detection'.",
-        "   - Use noun phrases in the target language too. Do NOT turn a label into a verb.",
-        "",
-        "3. STATES / STATUS messages: present tense or short descriptive phrases.",
-        "   - 'No Connection', 'Uploading…', 'Sync Complete', 'Listening on port 7777'.",
-        "   - Avoid future tense in any language.",
-        "",
-        "4. COMPLETED ACTIONS: short past-participle forms.",
-        "   - 'Saved', 'Deleted', 'Upload Complete'.",
-        "",
-        "5. NO FUTURE TENSE. Replace any 'will' / 'going to' construction with present tense or",
-        "   completed-action form. If the English source still uses future tense, translate it as",
-        "   present-tense status if natural; otherwise keep the original tense.",
-        "",
-        "6. NO USER ADDRESS unless the source already uses it.",
-        "   - Avoid 'you', 'we', 'your', 'our' in your translation. Use impersonal/passive forms common in the target language.",
-        "   - Spanish: prefer impersonal 'se' constructions; 'Save your changes?' → 'Guardar cambios?' (not 'Guardar tus cambios?').",
-        "   - French: prefer impersonal 'on' or infinitive forms.",
-        "   - German: prefer infinitive or passive ('Änderungen speichern?').",
-        "   - If the English source DOES use 'you'/'your', keep the personal address — do not over-correct.",
-        "",
-        "7. NO POLITENESS FILLER. Drop 'Please', 'Sorry', 'Kindly' unless they appear in the source.",
-        "",
-        "8. ERROR MESSAGES: direct and neutral. Never blame the user.",
-        "   - 'Unable to Connect', 'Failed to Open File', 'Invalid Configuration'.",
-        "",
-        "9. ELLIPSIS '…': use only when the action requires more input or opens another step.",
-        "   - Keep the ellipsis when the source has it ('Save As…', 'Add Account…').",
-        "   - Use the single Unicode character '…' (U+2026), not three dots '...'. If the source",
-        "     uses three ASCII dots, preserve them exactly — do not silently replace.",
-        "",
-        "===========================================================================",
-        "CAPITALIZATION — TITLE CASE WITH LANGUAGE-AWARE EXCEPTIONS",
-        "===========================================================================",
-        "- If the source is in Title Case (every meaningful word capitalized), the translation must",
-        "  also be in title case, adapted to your language's conventions:",
-        "    * Spanish: lowercase 'de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'o', 'u',",
-        "      'en', 'con', 'por', 'para', 'sin', 'a', 'al' (unless first/last word).",
-        "    * French: lowercase 'de', 'du', 'des', 'la', 'le', 'les', 'et', 'ou', 'à', 'au',",
-        "      'en', 'dans', 'pour', 'avec' (unless first/last word).",
-        "    * German: capitalize ALL nouns regardless of position (this is grammar, not style).",
-        "      Keep articles ('der', 'die', 'das') lowercase mid-phrase.",
-        "    * Italian, Portuguese: similar to Spanish/French — see the language-specific list.",
-        "- ALWAYS capitalize the first and last words, regardless of what they are.",
-        "- 'Data Grid' → ES: 'Cuadrícula de Datos' / FR: 'Grille de Données' / DE: 'Datenraster'.",
-        "- A SINGLE-WORD title-cased source ('Dataset') still expands to title case in multi-word",
-        "  translations: ES 'Conjunto de Datos' (NOT 'Conjunto de datos'), FR 'Jeu de Données'.",
-        "- If the source is sentence case ('Add a 3D plot visualization'), keep that pattern.",
-        "- If the source is ALL UPPERCASE ('PAUSE'), output ALL UPPERCASE in the translation.",
-        "- If the source is all lowercase, preserve that.",
-        "",
-        "===========================================================================",
-        "ACRONYMS — ALWAYS UPPERCASE",
-        "===========================================================================",
-        "- Keep technical acronyms in ALL CAPS in every language and every position:",
-        "  CAN, TCP, IP, UDP, USB, HID, BLE, MQTT, FFT, GPS, NMEA, JSON, XML, CSV, MDF, SQL,",
-        "  GPL, MIT, SPDX, JS, QML, API, RPC, PDF, HTML, CRC, SLCAN, GRBL, GCODE, SCPI, SMTP,",
-        "  IMAP, OAUTH, GPU, CPU, RAM, ROM, GUI, CLI, SDK, IDE.",
-        "- 'CAN Bus' → 'Magistrala CAN' (NOT 'Magistrala Can').",
-        "- 'JSON Layout' → 'Diseño JSON' (NOT 'Diseño Json').",
-        "- 'USB Device' → 'Dispositivo USB' (NOT 'Dispositivo Usb').",
-        "",
-        "===========================================================================",
-        "CONSISTENCY",
-        "===========================================================================",
-        "- Use the same target-language term for the same English term across the batch.",
-        "- 'Save' must always render the same way; 'Cancel' must always render the same way.",
-        "- Do not mix sentence styles in similar contexts.",
-        "",
-    ] + [f"{i+1}. [{loc}] {line}" for i, (loc, line) in enumerate(escaped_entries)])
+    prompt = "\n".join(
+        [
+            f"You are translating UI strings for Serial Studio into {target_language}.",
+            "",
+            "===========================================================================",
+            "ABOUT SERIAL STUDIO — READ THIS FIRST",
+            "===========================================================================",
+            "Serial Studio is a cross-platform desktop application for engineers and",
+            "embedded developers to visualize live telemetry from devices over UART,",
+            "TCP/UDP, Bluetooth Low Energy, audio, USB, HID, Modbus (RTU and TCP),",
+            "CAN bus, MQTT, and process I/O. It parses incoming byte streams using",
+            "user-defined JavaScript or Lua scripts, then renders the values in a",
+            "dashboard of plots, gauges, 3D plots, FFT views, GPS maps, data grids,",
+            "and other engineering visualizations. It can record sessions to SQLite,",
+            "export to CSV / MDF4 / PDF, and stream control commands back to the device.",
+            "",
+            "Audience: embedded firmware engineers, hardware engineers, lab/test",
+            "technicians, telemetry operators. They expect protocol-correct terminology",
+            "in their language — NOT word-for-word literal translation.",
+            "",
+            "Built with Qt/QML in C++20. Strings come from .cpp/.h/.qml source files.",
+            "The [Component @ File:Line] tag in each input gives you the surrounding",
+            "code context — use it to disambiguate ('Frame' in IO/Drivers/CANBus.cpp",
+            "is a CAN frame; 'Frame' in Misc/UI is a UI box).",
+            "",
+            "===========================================================================",
+            "DOMAIN GLOSSARY — DISAMBIGUATION RULES",
+            "===========================================================================",
+            "These are the terms most often mistranslated. Apply these rules even when",
+            "the surrounding sentence looks like ordinary English. The glossary OVERRIDES",
+            "general translation instinct.",
+            "",
+        ]
+        + glossary_lines
+        + [
+            "",
+            "===========================================================================",
+            "PROTOCOL / PRODUCT NAMES — NEVER TRANSLATE",
+            "===========================================================================",
+            "Treat the following as proper nouns — keep their exact spelling and casing",
+            "in every language, never inflect, never translate, never localize:",
+            "",
+            f"  {protocol_list}",
+            "",
+            "Plus: any all-uppercase token that looks like an acronym (CAN, USB, MQTT,",
+            "TCP, JSON, FFT, GPS, NMEA, …) stays uppercase. See the rule block below.",
+            "",
+            tm_block,
+            "===========================================================================",
+            "OUTPUT FORMAT — STRICT",
+            "===========================================================================",
+            f"- Emit exactly {len(escaped_entries)} numbered lines, 1 through {len(escaped_entries)}, in order.",
+            "- Each line MUST follow this exact shape:",
+            "      N. <score> | <translation>",
+            "  where <score> is a single digit 1-5 expressing your confidence:",
+            "      5 = perfect match, idiomatic, terminology certain",
+            "      4 = good, minor stylistic uncertainty",
+            "      3 = acceptable, some terminology guess",
+            "      2 = unsure of meaning or terminology, best-effort",
+            "      1 = guess (rare technical term, ambiguous source)",
+            "  Be honest. Low scores trigger human review — that is good, not bad.",
+            "  Example: '7. 5 | Guardar Archivo'",
+            "  Example: '8. 3 | Tema de Voluntad'   (uncertain about MQTT field name)",
+            "- One translation per line. No blank lines. No skipped numbers.",
+            "- Never wrap output in code fences (```), never add commentary, never restate the source.",
+            "- Never copy the [Component @ File:Line] context into the translation — that is metadata only.",
+            "- Preserve embedded escapes such as \\n, %1, %2, {0}, %L1, &amp;, &lt;, &gt;, &quot;, &apos; exactly as written.",
+            "",
+            "===========================================================================",
+            "TRANSLATION FIDELITY",
+            "===========================================================================",
+            "- Translate meaning, not words. Do not paraphrase, expand, simplify, or omit.",
+            "- Keep technical terms intact: 'unsigned int', '24-bit', 'baud rate', 'checksum', 'register', 'frame', 'NMEA', 'gRPC', etc.",
+            "- Do not localize protocol names, file extensions, vendor names, or product names (e.g., 'Modbus', 'CAN', 'XMODEM', 'Serial Studio', 'Pro').",
+            "- Match the source length where possible — Serial Studio is space-constrained.",
+            "- If the source contains only a placeholder (e.g., '%1'), output the placeholder unchanged.",
+            "",
+            "===========================================================================",
+            "VOICE & TONE — APPLE HIG STYLE",
+            "===========================================================================",
+            "Serial Studio uses a concise, neutral, functional voice. Match it in the target language.",
+            "",
+            "1. ACTIONS (buttons, menu items, toolbar labels): imperative verbs.",
+            "   - 'Save', 'Delete', 'Try Again', 'Open Project', 'Add Action'.",
+            "   - English source already follows this rule; translate using your language's imperative form.",
+            "   - Spanish: 'Guardar', 'Borrar', 'Reintentar' (NOT 'Guardando', 'Borrado').",
+            "   - French: 'Enregistrer', 'Supprimer', 'Réessayer'.",
+            "   - German: 'Speichern', 'Löschen', 'Erneut versuchen' (German imperatives are infinitive form).",
+            "",
+            "2. LABELS (section titles, group headers, settings rows): noun phrases.",
+            "   - 'Account Settings', 'Privacy', 'Notifications', 'Frame Detection'.",
+            "   - Use noun phrases in the target language too. Do NOT turn a label into a verb.",
+            "",
+            "3. STATES / STATUS messages: present tense or short descriptive phrases.",
+            "   - 'No Connection', 'Uploading…', 'Sync Complete', 'Listening on port 7777'.",
+            "   - Avoid future tense in any language.",
+            "",
+            "4. COMPLETED ACTIONS: short past-participle forms.",
+            "   - 'Saved', 'Deleted', 'Upload Complete'.",
+            "",
+            "5. NO FUTURE TENSE. Replace any 'will' / 'going to' construction with present tense or",
+            "   completed-action form. If the English source still uses future tense, translate it as",
+            "   present-tense status if natural; otherwise keep the original tense.",
+            "",
+            "6. NO USER ADDRESS unless the source already uses it.",
+            "   - Avoid 'you', 'we', 'your', 'our' in your translation. Use impersonal/passive forms common in the target language.",
+            "   - Spanish: prefer impersonal 'se' constructions; 'Save your changes?' → 'Guardar cambios?' (not 'Guardar tus cambios?').",
+            "   - French: prefer impersonal 'on' or infinitive forms.",
+            "   - German: prefer infinitive or passive ('Änderungen speichern?').",
+            "   - If the English source DOES use 'you'/'your', keep the personal address — do not over-correct.",
+            "",
+            "7. NO POLITENESS FILLER. Drop 'Please', 'Sorry', 'Kindly' unless they appear in the source.",
+            "",
+            "8. ERROR MESSAGES: direct and neutral. Never blame the user.",
+            "   - 'Unable to Connect', 'Failed to Open File', 'Invalid Configuration'.",
+            "",
+            "9. ELLIPSIS '…': use only when the action requires more input or opens another step.",
+            "   - Keep the ellipsis when the source has it ('Save As…', 'Add Account…').",
+            "   - Use the single Unicode character '…' (U+2026), not three dots '...'. If the source",
+            "     uses three ASCII dots, preserve them exactly — do not silently replace.",
+            "",
+            "===========================================================================",
+            "CAPITALIZATION — TITLE CASE WITH LANGUAGE-AWARE EXCEPTIONS",
+            "===========================================================================",
+            "- If the source is in Title Case (every meaningful word capitalized), the translation must",
+            "  also be in title case, adapted to your language's conventions:",
+            "    * Spanish: lowercase 'de', 'del', 'la', 'las', 'el', 'los', 'y', 'e', 'o', 'u',",
+            "      'en', 'con', 'por', 'para', 'sin', 'a', 'al' (unless first/last word).",
+            "    * French: lowercase 'de', 'du', 'des', 'la', 'le', 'les', 'et', 'ou', 'à', 'au',",
+            "      'en', 'dans', 'pour', 'avec' (unless first/last word).",
+            "    * German: capitalize ALL nouns regardless of position (this is grammar, not style).",
+            "      Keep articles ('der', 'die', 'das') lowercase mid-phrase.",
+            "    * Italian, Portuguese: similar to Spanish/French — see the language-specific list.",
+            "- ALWAYS capitalize the first and last words, regardless of what they are.",
+            "- 'Data Grid' → ES: 'Cuadrícula de Datos' / FR: 'Grille de Données' / DE: 'Datenraster'.",
+            "- A SINGLE-WORD title-cased source ('Dataset') still expands to title case in multi-word",
+            "  translations: ES 'Conjunto de Datos' (NOT 'Conjunto de datos'), FR 'Jeu de Données'.",
+            "- If the source is sentence case ('Add a 3D plot visualization'), keep that pattern.",
+            "- If the source is ALL UPPERCASE ('PAUSE'), output ALL UPPERCASE in the translation.",
+            "- If the source is all lowercase, preserve that.",
+            "",
+            "===========================================================================",
+            "ACRONYMS — ALWAYS UPPERCASE",
+            "===========================================================================",
+            "- Keep technical acronyms in ALL CAPS in every language and every position:",
+            "  CAN, TCP, IP, UDP, USB, HID, BLE, MQTT, FFT, GPS, NMEA, JSON, XML, CSV, MDF, SQL,",
+            "  GPL, MIT, SPDX, JS, QML, API, RPC, PDF, HTML, CRC, SLCAN, GRBL, GCODE, SCPI, SMTP,",
+            "  IMAP, OAUTH, GPU, CPU, RAM, ROM, GUI, CLI, SDK, IDE.",
+            "- 'CAN Bus' → 'Magistrala CAN' (NOT 'Magistrala Can').",
+            "- 'JSON Layout' → 'Diseño JSON' (NOT 'Diseño Json').",
+            "- 'USB Device' → 'Dispositivo USB' (NOT 'Dispositivo Usb').",
+            "",
+            "===========================================================================",
+            "CONSISTENCY",
+            "===========================================================================",
+            "- Use the same target-language term for the same English term across the batch.",
+            "- 'Save' must always render the same way; 'Cancel' must always render the same way.",
+            "- Do not mix sentence styles in similar contexts.",
+            "",
+        ]
+        + [f"{i+1}. [{loc}] {line}" for i, (loc, line) in enumerate(escaped_entries)]
+    )
 
     # Wrap the dashboard's status callback so the retry layer only has to
     # know one signature: (kind, attempt, sleep_for).
@@ -955,15 +1361,19 @@ def translate_batch(source_texts, target_language, lang_code=None, tm=None, log_
         # In dashboard mode log_fn is a no-op; in serial / non-TTY runs this
         # still ends up on stdout.
         flag = " ⚠ FLAGGED FOR REVIEW" if score <= 3 else ""
-        log_fn(f"\n[EN] {src_text}\n[{target_language.upper()} score={score}{flag}] {trans}\n")
+        log_fn(
+            f"\n[EN] {src_text}\n[{target_language.upper()} score={score}{flag}] {trans}\n"
+        )
 
         final_output.append((trans, score))
 
     return final_output
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # Verification Logic - Deterministic Capitalization Matching
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def _looks_like_acronym(word: str) -> bool:
     """Detect tokens like 'CAN', 'TCP/IP', 'JSON' that must stay uppercase."""
@@ -1007,8 +1417,7 @@ def _titlecase_translation(translation: str, lang_code: str | None) -> str:
     # Identify the first and last *alphabetic* word indices so symbols
     # ("—", "(", ":") at the boundaries don't leak the small-word rule.
     alpha_indices = [
-        idx for idx, w in enumerate(trans_words)
-        if w and any(c.isalpha() for c in w)
+        idx for idx, w in enumerate(trans_words) if w and any(c.isalpha() for c in w)
     ]
     if not alpha_indices:
         return translation
@@ -1028,8 +1437,9 @@ def _titlecase_translation(translation: str, lang_code: str | None) -> str:
             continue
 
         word_lower = word.lower()
-        force_capitalize = (i == first_alpha) or (i == last_alpha) \
-            or word_lower not in small_words
+        force_capitalize = (
+            (i == first_alpha) or (i == last_alpha) or word_lower not in small_words
+        )
 
         if force_capitalize:
             # Capitalize the first alphabetic character; preserve any leading punct.
@@ -1037,7 +1447,7 @@ def _titlecase_translation(translation: str, lang_code: str | None) -> str:
             for j, c in enumerate(chars):
                 if c.isalpha():
                     chars[j] = c.upper()
-                    chars[j+1:] = list("".join(chars[j+1:]).lower())
+                    chars[j + 1 :] = list("".join(chars[j + 1 :]).lower())
                     break
             result_words.append("".join(chars))
         else:
@@ -1046,7 +1456,9 @@ def _titlecase_translation(translation: str, lang_code: str | None) -> str:
     return " ".join(result_words)
 
 
-def apply_capitalization_pattern(source: str, translation: str, lang_code: str = None) -> str:
+def apply_capitalization_pattern(
+    source: str, translation: str, lang_code: str = None
+) -> str:
     """
     Apply language-aware capitalization pattern from source to translation.
 
@@ -1165,12 +1577,20 @@ def verify_capitalization_batch(entries, lang_code):
 
     return results
 
-#------------------------------------------------------------------------------
-# Core Translation Logic
-#------------------------------------------------------------------------------
 
-def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
-                      progress=None, stop_event: threading.Event | None = None):
+# ------------------------------------------------------------------------------
+# Core Translation Logic
+# ------------------------------------------------------------------------------
+
+
+def translate_ts_file(
+    filename,
+    batch_size=10,
+    min_score=4,
+    log_fn=print,
+    progress=None,
+    stop_event: threading.Event | None = None,
+):
     """
     Process a TS file and translate all unfinished or empty entries.
 
@@ -1222,12 +1642,12 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
         log_fn(f"{filename}: {copied} entries copied from source (no LLM call).")
         if progress is not None:
             en_total = sum(
-                1 for ctx in root.findall("context")
+                1
+                for ctx in root.findall("context")
                 for msg in ctx.findall("message")
                 if msg.findtext("source", default="").strip()
             )
-            progress.update(lang_code, state="done",
-                            done=en_total, total=en_total)
+            progress.update(lang_code, state="done", done=en_total, total=en_total)
         return
 
     # Harvest translation memory ONCE per file. Stays stable across batches.
@@ -1266,8 +1686,7 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
 
             translation_text = translation.text or ""
             needs_translation = (
-                translation.get("type") == "unfinished"
-                or not translation_text.strip()
+                translation.get("type") == "unfinished" or not translation_text.strip()
             )
             if not needs_translation:
                 continue
@@ -1277,15 +1696,19 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
     total_pending = len(pending)
     already_done = file_total - total_pending
     if progress is not None:
-        progress.update(lang_code, state="translating", total=file_total,
-                        done=already_done, flagged=0)
+        progress.update(
+            lang_code,
+            state="translating",
+            total=file_total,
+            done=already_done,
+            flagged=0,
+        )
 
     if total_pending == 0:
         tree.write(ts_path, encoding="utf-8", xml_declaration=True)
         log_fn(f"{filename}: nothing to translate.")
         if progress is not None:
-            progress.update(lang_code, state="done",
-                            total=file_total, done=file_total)
+            progress.update(lang_code, state="done", total=file_total, done=file_total)
         return
 
     total_updated = 0
@@ -1299,12 +1722,15 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
             if state == "calling":
                 progress.update(lang_code, state="calling")
             elif state == "retry":
-                progress.note_retry(lang_code,
-                                    kind=info.get("kind", "?"),
-                                    attempt=info.get("attempt", 0),
-                                    sleep_for=info.get("sleep_for", 0.0))
+                progress.note_retry(
+                    lang_code,
+                    kind=info.get("kind", "?"),
+                    attempt=info.get("attempt", 0),
+                    sleep_for=info.get("sleep_for", 0.0),
+                )
             elif state == "parsing":
                 progress.update(lang_code, state="parsing")
+
         return _status
 
     # Process the pending list in batches.
@@ -1313,7 +1739,7 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
             log_fn(f"{filename}: aborted before completion.")
             break
 
-        chunk = pending[start:start + batch_size]
+        chunk = pending[start : start + batch_size]
         source_batch = [(loc, src) for loc, src, _ in chunk]
         translation_nodes = [node for _, _, node in chunk]
 
@@ -1330,9 +1756,12 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
         except Exception as e:
             log_fn(f"Error in batch starting at {start}: {e}")
             if progress is not None:
-                progress.update(lang_code, state="translating",
-                                done=already_done + total_updated + len(chunk),
-                                flagged=total_flagged)
+                progress.update(
+                    lang_code,
+                    state="translating",
+                    done=already_done + total_updated + len(chunk),
+                    flagged=total_flagged,
+                )
             total_updated += len(chunk)
             continue
 
@@ -1346,19 +1775,28 @@ def translate_ts_file(filename, batch_size=10, min_score=4, log_fn=print,
             total_updated += 1
 
         if progress is not None:
-            progress.update(lang_code, state="translating",
-                            done=already_done + total_updated, flagged=total_flagged)
+            progress.update(
+                lang_code,
+                state="translating",
+                done=already_done + total_updated,
+                flagged=total_flagged,
+            )
 
     # Save updated file
     tree.write(ts_path, encoding="utf-8", xml_declaration=True)
-    log_fn(f"{filename}: {total_updated} strings translated, "
-           f"{total_flagged} flagged for human review (score < {min_score}).")
+    log_fn(
+        f"{filename}: {total_updated} strings translated, "
+        f"{total_flagged} flagged for human review (score < {min_score})."
+    )
 
     if progress is not None:
-        progress.update(lang_code, state="done",
-                        total=file_total,
-                        done=already_done + total_updated,
-                        flagged=total_flagged)
+        progress.update(
+            lang_code,
+            state="done",
+            total=file_total,
+            done=already_done + total_updated,
+            flagged=total_flagged,
+        )
 
 
 def _fill_en_us_translations(root) -> int:
@@ -1383,8 +1821,7 @@ def _fill_en_us_translations(root) -> int:
 
             translation_text = translation.text or ""
             needs_fill = (
-                translation.get("type") == "unfinished"
-                or not translation_text.strip()
+                translation.get("type") == "unfinished" or not translation_text.strip()
             )
             if not needs_fill:
                 continue
@@ -1439,7 +1876,10 @@ def reset_translations(only_lang: str | None = None) -> None:
         grand_total += cleared
         print(f"  {filename}: {cleared} translations cleared.")
 
-    print(f"\nReset complete — {grand_total} entries cleared across {len(files)} files.")
+    print(
+        f"\nReset complete — {grand_total} entries cleared across {len(files)} files."
+    )
+
 
 def verify_capitalization_ts_file(filename):
     """
@@ -1475,7 +1915,11 @@ def verify_capitalization_ts_file(filename):
             if source is None or not source.text or not source.text.strip():
                 continue
 
-            if translation is None or not translation.text or not translation.text.strip():
+            if (
+                translation is None
+                or not translation.text
+                or not translation.text.strip()
+            ):
                 continue
 
             if translation.get("type") == "unfinished":
@@ -1499,43 +1943,39 @@ def verify_capitalization_ts_file(filename):
     else:
         print(f"\n{filename}: No capitalization issues found. ✓\n")
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # Source-String Linter (--lint-sources)
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # Regex patterns that flag style violations in English source strings.
 # Each entry is (pattern, label, severity). Severity: "error" / "warn" / "info".
 # Patterns are applied with re.IGNORECASE unless they include explicit case classes.
 LINT_PATTERNS = [
     # Future tense — replace with present tense or completed-action form.
-    (r"\b(will\s+(?:not\s+)?(?:be\s+)?[a-z]+|won['’]t|going\s+to|shall(?!\s+be\s+liable))\b",
-     "future-tense", "warn"),
-
+    (
+        r"\b(will\s+(?:not\s+)?(?:be\s+)?[a-z]+|won['’]t|going\s+to|shall(?!\s+be\s+liable))\b",
+        "future-tense",
+        "warn",
+    ),
     # User address — drop or rephrase impersonally unless intentional.
-    (r"\b(you|your|yours|yourself|we|our|ours|us)\b",
-     "user-address", "warn"),
-
+    (r"\b(you|your|yours|yourself|we|our|ours|us)\b", "user-address", "warn"),
     # Politeness filler — drop unless the source is asking for input.
-    (r"\b(please|sorry|kindly|unfortunately)\b",
-     "politeness", "info"),
-
+    (r"\b(please|sorry|kindly|unfortunately)\b", "politeness", "info"),
     # Three ASCII dots used as ellipsis — prefer the single '…' character.
-    (r"\.{3}",
-     "ascii-ellipsis", "info"),
-
+    (r"\.{3}", "ascii-ellipsis", "info"),
     # Leading or trailing whitespace.
-    (r"^\s|\s$",
-     "edge-whitespace", "info"),
-
+    (r"^\s|\s$", "edge-whitespace", "info"),
     # Double space inside the string.
-    (r"  ",
-     "double-space", "info"),
-
+    (r"  ", "double-space", "info"),
     # Common noun-form action labels that should be imperative when they appear
     # on buttons or menu items. The linter cannot tell context, so this is
     # surfaced as "info" and the human decides.
-    (r"^(Cancellation|Deletion|Removal|Submission|Connection|Disconnection|Authentication|Saving|Loading)\.?$",
-     "noun-form-action", "info"),
+    (
+        r"^(Cancellation|Deletion|Removal|Submission|Connection|Disconnection|Authentication|Saving|Loading)\.?$",
+        "noun-form-action",
+        "info",
+    ),
 ]
 
 
@@ -1582,13 +2022,19 @@ def lint_source_strings(filename="en_US.ts"):
                 continue
 
             locations = message.findall("location")
-            location_str = ", ".join(
-                f"{loc.get('filename')}:{loc.get('line')}" for loc in locations
-            ) if locations else "unknown"
+            location_str = (
+                ", ".join(
+                    f"{loc.get('filename')}:{loc.get('line')}" for loc in locations
+                )
+                if locations
+                else "unknown"
+            )
 
             for label, severity, evidence in findings:
                 counts[label] = counts.get(label, 0) + 1
-                rows.append((severity, label, source.text, evidence, context_name, location_str))
+                rows.append(
+                    (severity, label, source.text, evidence, context_name, location_str)
+                )
 
     # Sort: errors first, then warnings, then info.
     severity_rank = {"error": 0, "warn": 1, "info": 2}
@@ -1608,9 +2054,9 @@ def lint_source_strings(filename="en_US.ts"):
         print(f"  {label:18s} {counts[label]}")
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Live Dashboard
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # ANSI sequences for the live dashboard. We use absolute redraw — every tick
 # moves the cursor back to the top-of-block and rewrites every row.
@@ -1645,10 +2091,26 @@ _STATE_COLORS = {
 # waiting on the LLM.
 _SPINNER_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 _FLAVOR_VERBS = [
-    "Translating", "Cogitating", "Localizing", "Pondering", "Polishing",
-    "Negotiating", "Diphthonging", "Conjugating", "Declining", "Transliterating",
-    "Marshalling", "Untangling", "Glossing", "Wordsmithing", "Paraphrasing",
-    "Disambiguating", "Coalescing", "Catalyzing", "Harmonizing", "Calibrating",
+    "Translating",
+    "Cogitating",
+    "Localizing",
+    "Pondering",
+    "Polishing",
+    "Negotiating",
+    "Diphthonging",
+    "Conjugating",
+    "Declining",
+    "Transliterating",
+    "Marshalling",
+    "Untangling",
+    "Glossing",
+    "Wordsmithing",
+    "Paraphrasing",
+    "Disambiguating",
+    "Coalescing",
+    "Catalyzing",
+    "Harmonizing",
+    "Calibrating",
 ]
 
 
@@ -1691,7 +2153,9 @@ class Progress:
                     row["retry_until"] = 0.0
             row.update(fields)
 
-    def note_retry(self, lang_code: str, kind: str, attempt: int, sleep_for: float) -> None:
+    def note_retry(
+        self, lang_code: str, kind: str, attempt: int, sleep_for: float
+    ) -> None:
         now = time.monotonic()
         with self._lock:
             row = self._rows.get(lang_code)
@@ -1706,9 +2170,11 @@ class Progress:
 
     def snapshot(self) -> tuple[list[str], dict[str, dict], float]:
         with self._lock:
-            return (list(self._order),
-                    {k: dict(v) for k, v in self._rows.items()},
-                    self._started_at)
+            return (
+                list(self._order),
+                {k: dict(v) for k, v in self._rows.items()},
+                self._started_at,
+            )
 
 
 class Dashboard:
@@ -1719,8 +2185,7 @@ class Dashboard:
     are silently dropped because the bars convey progress on their own.
     """
 
-    def __init__(self, progress: Progress, banner: str = "",
-                 refresh_hz: float = 8.0):
+    def __init__(self, progress: Progress, banner: str = "", refresh_hz: float = 8.0):
         self._progress = progress
         self._banner = banner
         self._stop = threading.Event()
@@ -1803,11 +2268,15 @@ class Dashboard:
         total_done = sum(r["done"] for r in rows.values())
         total_total = sum(r["total"] for r in rows.values())
         total_flagged = sum(r["flagged"] for r in rows.values())
-        active = sum(1 for r in rows.values()
-                     if r["state"] in ("translating", "calling", "parsing",
-                                       "retry", "rate-limited", "copying"))
-        finished = sum(1 for r in rows.values()
-                       if r["state"] in ("done", "skipped", "error"))
+        active = sum(
+            1
+            for r in rows.values()
+            if r["state"]
+            in ("translating", "calling", "parsing", "retry", "rate-limited", "copying")
+        )
+        finished = sum(
+            1 for r in rows.values() if r["state"] in ("done", "skipped", "error")
+        )
 
         # Snapshot the rate baseline once a worker actually starts producing,
         # so the rate reflects new work / time-since-real-work-began.
@@ -1842,8 +2311,11 @@ class Dashboard:
         return "  ".join(bits)
 
     def _format_activity(self, rows: dict[str, dict], final: bool) -> str:
-        active_codes = [code for code, r in rows.items()
-                        if r["state"] in ("translating", "calling", "parsing", "copying")]
+        active_codes = [
+            code
+            for code, r in rows.items()
+            if r["state"] in ("translating", "calling", "parsing", "copying")
+        ]
         if final or not active_codes:
             return ""
 
@@ -1853,8 +2325,10 @@ class Dashboard:
         preview = ", ".join(active_codes[:6])
         if len(active_codes) > 6:
             preview += f" +{len(active_codes) - 6}"
-        return (f"  {_ANSI_BOLD}{spinner}{_ANSI_RESET} "
-                f"{verb} {_ANSI_DIM}({preview}){_ANSI_RESET}…")
+        return (
+            f"  {_ANSI_BOLD}{spinner}{_ANSI_RESET} "
+            f"{verb} {_ANSI_DIM}({preview}){_ANSI_RESET}…"
+        )
 
     def _format_row(self, lang_code: str, row: dict) -> str:
         state = row["state"]
@@ -1871,8 +2345,11 @@ class Dashboard:
         if state in ("retry", "rate-limited"):
             wait = max(0.0, row["retry_until"] - time.monotonic())
             kind = row.get("retry_kind") or "?"
-            status_parts = [f"{state}({kind})", f"in {wait:0.0f}s",
-                            f"#{row['retry_count']}"]
+            status_parts = [
+                f"{state}({kind})",
+                f"in {wait:0.0f}s",
+                f"#{row['retry_count']}",
+            ]
         elif state == "done":
             row_elapsed = (row["finished_at"] or 0) - (row["started_at"] or 0)
             if row_elapsed > 0:
@@ -1883,9 +2360,11 @@ class Dashboard:
             status_parts.append(f"retries={row['retry_count']}")
 
         status = " ".join(status_parts)
-        return (f"  {lang_code:<6s} {color}{bar}{_ANSI_RESET} "
-                f"{row['done']:>5d}/{row['total']:<5d} "
-                f"{pct:5.1f}%  {color}{status}{_ANSI_RESET}")
+        return (
+            f"  {lang_code:<6s} {color}{bar}{_ANSI_RESET} "
+            f"{row['done']:>5d}/{row['total']:<5d} "
+            f"{pct:5.1f}%  {color}{status}{_ANSI_RESET}"
+        )
 
 
 def _format_bar(done: int, total: int, width: int = 24) -> str:
@@ -1907,65 +2386,79 @@ def _format_duration(seconds: float) -> str:
     return f"{hours}h{minutes:02d}m"
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Entry Point
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def main():
     """Run translation pipeline: lupdate → translate (or other mode) → lrelease."""
     import argparse
+
     global PROVIDER, LLM_MODEL
 
     parser = argparse.ArgumentParser(
         description="Translate Serial Studio .ts files via an LLM with "
-                    "domain glossary, translation memory, and confidence scoring.",
+        "domain glossary, translation memory, and confidence scoring.",
     )
     parser.add_argument(
-        "--provider", choices=["openai", "anthropic"], default=DEFAULT_PROVIDER,
+        "--provider",
+        choices=["openai", "anthropic"],
+        default=DEFAULT_PROVIDER,
         help=f"LLM provider (default: {DEFAULT_PROVIDER}).",
     )
     parser.add_argument(
-        "--model", default=None,
+        "--model",
+        default=None,
         help=f"Override model name. Defaults: openai={OPENAI_MODEL_DEFAULT}, "
-             f"anthropic={ANTHROPIC_MODEL_DEFAULT}.",
+        f"anthropic={ANTHROPIC_MODEL_DEFAULT}.",
     )
     parser.add_argument(
-        "--lang", default=None,
+        "--lang",
+        default=None,
         help="Process only this language (e.g. 'fr_FR'). Default: all.",
     )
     parser.add_argument(
-        "--min-score", type=int, default=4,
+        "--min-score",
+        type=int,
+        default=4,
         help="Translations with score below this are flagged 'unfinished' "
-             "for human review (default: 4).",
+        "for human review (default: 4).",
     )
     parser.add_argument(
-        "--verify-only", action="store_true",
+        "--verify-only",
+        action="store_true",
         help="Re-apply deterministic capitalization to existing translations. "
-             "No LLM calls.",
+        "No LLM calls.",
     )
     parser.add_argument(
-        "--lint-sources", action="store_true",
+        "--lint-sources",
+        action="store_true",
         help="Scan en_US.ts for English source-string style violations.",
     )
     parser.add_argument(
-        "--reset", action="store_true",
+        "--reset",
+        action="store_true",
         help="Clear every translation in every non-en_US .ts file. Use --lang "
-             "to limit to one file. Combine with a normal run to re-translate "
-             "from scratch.",
+        "to limit to one file. Combine with a normal run to re-translate "
+        "from scratch.",
     )
     parser.add_argument(
-        "--workers", type=int, default=8,
+        "--workers",
+        type=int,
+        default=8,
         help="Translate this many .ts files in parallel (default: 8). Each "
-             "worker handles one language file end-to-end. Set to 1 to "
-             "preserve the legacy serial behavior. Higher values may hit "
-             "provider rate limits.",
+        "worker handles one language file end-to-end. Set to 1 to "
+        "preserve the legacy serial behavior. Higher values may hit "
+        "provider rate limits.",
     )
     parser.add_argument(
-        "--no-dashboard", action="store_true",
+        "--no-dashboard",
+        action="store_true",
         help="Disable the live multi-row TUI dashboard. Falls back to the "
-             "buffered per-file log mode (each file's output is printed in "
-             "one block when it finishes). The dashboard is also disabled "
-             "automatically when stdout is not a TTY.",
+        "buffered per-file log mode (each file's output is printed in "
+        "one block when it finishes). The dashboard is also disabled "
+        "automatically when stdout is not a TTY.",
     )
 
     args = parser.parse_args()
@@ -1981,8 +2474,11 @@ def main():
 
     # --reset can run alone or before a translation pass.
     if args.reset:
-        print(f"=== Resetting translations" +
-              (f" for {args.lang}" if args.lang else "") + " ===")
+        print(
+            f"=== Resetting translations"
+            + (f" for {args.lang}" if args.lang else "")
+            + " ==="
+        )
         reset_translations(only_lang=args.lang)
         # If reset is the only action requested, stop here.
         if not args.verify_only and not args.lint_sources:
@@ -1998,7 +2494,8 @@ def main():
         run_qt_translation_tool("--lupdate")
 
     ts_files = sorted(
-        f for f in os.listdir(os.path.join(SCRIPT_DIR, TS_DIRECTORY))
+        f
+        for f in os.listdir(os.path.join(SCRIPT_DIR, TS_DIRECTORY))
         if f.endswith(".ts")
     )
     if args.lang:
@@ -2030,8 +2527,10 @@ def main():
         and workers > 1
     )
 
-    banner = (f"  {_ANSI_BOLD}Serial Studio · Translation Progress{_ANSI_RESET}"
-              f"  {_ANSI_DIM}provider {PROVIDER} · model {LLM_MODEL}{_ANSI_RESET}")
+    banner = (
+        f"  {_ANSI_BOLD}Serial Studio · Translation Progress{_ANSI_RESET}"
+        f"  {_ANSI_DIM}provider {PROVIDER} · model {LLM_MODEL}{_ANSI_RESET}"
+    )
 
     progress = Progress(lang_codes)
     dashboard = Dashboard(progress, banner=banner) if use_dashboard else None
@@ -2047,10 +2546,13 @@ def main():
         lang_code = file.replace(".ts", "")
         if dashboard is not None:
             try:
-                translate_ts_file(file, min_score=args.min_score,
-                                  log_fn=dashboard.log,
-                                  progress=progress,
-                                  stop_event=stop_event)
+                translate_ts_file(
+                    file,
+                    min_score=args.min_score,
+                    log_fn=dashboard.log,
+                    progress=progress,
+                    stop_event=stop_event,
+                )
             except Exception as e:
                 progress.update(lang_code, state="error")
                 dashboard.log(f"!!! {file}: worker crashed: {e}")
@@ -2061,10 +2563,13 @@ def main():
         buf_log = lambda msg: buf.write(str(msg) + "\n")
         buf_log(f"\n=== Translating: {file} ===")
         try:
-            translate_ts_file(file, min_score=args.min_score,
-                              log_fn=buf_log,
-                              progress=progress,
-                              stop_event=stop_event)
+            translate_ts_file(
+                file,
+                min_score=args.min_score,
+                log_fn=buf_log,
+                progress=progress,
+                stop_event=stop_event,
+            )
         except Exception as e:
             buf_log(f"!!! {file}: worker crashed: {e}")
         return buf.getvalue()
@@ -2077,8 +2582,10 @@ def main():
                     print(result, end="")
         else:
             if dashboard is None:
-                print(f"=== Running {min(workers, len(ts_files))} parallel workers "
-                      f"across {len(ts_files)} files ===")
+                print(
+                    f"=== Running {min(workers, len(ts_files))} parallel workers "
+                    f"across {len(ts_files)} files ==="
+                )
             with ThreadPoolExecutor(max_workers=workers) as pool:
                 futures = {pool.submit(_run_one, f): f for f in ts_files}
                 try:
@@ -2096,6 +2603,7 @@ def main():
             dashboard.stop()
 
     run_qt_translation_tool("--lrelease")
+
 
 if __name__ == "__main__":
     main()

@@ -17,6 +17,7 @@ rules. The CI install pins both in tests/requirements.txt.
 `code-verify off / on` fences mask every rule here too, same as the
 existing rules — the driver passes the fence mask in.
 """
+
 from __future__ import annotations
 
 import re
@@ -26,6 +27,7 @@ from pathlib import Path
 try:
     import tree_sitter
     import tree_sitter_cpp
+
     _CPP_LANG = tree_sitter.Language(tree_sitter_cpp.language())
     _CPP_PARSER = tree_sitter.Parser(_CPP_LANG)
     HAS_TREE_SITTER = True
@@ -38,6 +40,7 @@ except Exception:
 # ---------------------------------------------------------------------------
 # Public types
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -52,21 +55,23 @@ class Finding:
 
 # Methods named here are walked for new/make_shared/append calls. The names
 # come straight from CLAUDE.md's "Threading Rules" / "Hotpath" sections.
-_HOTPATH_METHODS = frozenset({
-    "hotpathRxFrame",
-    "hotpathRxSourceFrame",
-    "processData",
-    "onReadyRead",
-    "onFrameReady",
-    "onRawDataReceived",
-    "appendChunk",
-    "frameTimestamp",
-    "applyTransform",
-    "parseProjectFrame",
-    "updateData",
-    "updateLineSeries",
-    "pushSample",
-})
+_HOTPATH_METHODS = frozenset(
+    {
+        "hotpathRxFrame",
+        "hotpathRxSourceFrame",
+        "processData",
+        "onReadyRead",
+        "onFrameReady",
+        "onRawDataReceived",
+        "appendChunk",
+        "frameTimestamp",
+        "applyTransform",
+        "parseProjectFrame",
+        "updateData",
+        "updateLineSeries",
+        "pushSample",
+    }
+)
 
 # Calls / patterns banned on the hotpath. Each entry is (regex, message).
 _HOTPATH_BANNED_CALLS = [
@@ -94,22 +99,56 @@ _HOTPATH_BANNED_CALLS = [
 # shared Qt containers (QString/QByteArray/QList/...) pay an atomic refcount
 # bump on the COW pointer, which is a `lock`-prefix instruction on x86 or an
 # `ldxr/stxr` loop on ARM without LSE. std:: containers do a full deep copy.
-_HEAVY_TYPES = frozenset({
-    "QString", "QByteArray", "QStringList",
-    "QVariant", "QVariantMap", "QVariantList", "QVariantHash",
-    "QList", "QVector", "QMap", "QHash", "QSet", "QQueue", "QStack",
-    "QJsonObject", "QJsonArray", "QJsonDocument", "QJsonValue",
-    "QImage", "QPixmap", "QPolygon", "QPolygonF", "QPainterPath",
-    "QBitArray", "QDateTime",
-    "std::string", "std::wstring", "std::vector", "std::map",
-    "std::unordered_map", "std::list", "std::deque", "std::set",
-    "std::unordered_set", "std::multimap", "std::unordered_multimap",
-})
+_HEAVY_TYPES = frozenset(
+    {
+        "QString",
+        "QByteArray",
+        "QStringList",
+        "QVariant",
+        "QVariantMap",
+        "QVariantList",
+        "QVariantHash",
+        "QList",
+        "QVector",
+        "QMap",
+        "QHash",
+        "QSet",
+        "QQueue",
+        "QStack",
+        "QJsonObject",
+        "QJsonArray",
+        "QJsonDocument",
+        "QJsonValue",
+        "QImage",
+        "QPixmap",
+        "QPolygon",
+        "QPolygonF",
+        "QPainterPath",
+        "QBitArray",
+        "QDateTime",
+        "std::string",
+        "std::wstring",
+        "std::vector",
+        "std::map",
+        "std::unordered_map",
+        "std::list",
+        "std::deque",
+        "std::set",
+        "std::unordered_set",
+        "std::multimap",
+        "std::unordered_multimap",
+    }
+)
 
-_REFCOUNTED_TYPES = frozenset({
-    "std::shared_ptr", "QSharedPointer", "QSharedDataPointer",
-    "QExplicitlySharedDataPointer", "boost::shared_ptr",
-})
+_REFCOUNTED_TYPES = frozenset(
+    {
+        "std::shared_ptr",
+        "QSharedPointer",
+        "QSharedDataPointer",
+        "QExplicitlySharedDataPointer",
+        "boost::shared_ptr",
+    }
+)
 
 
 # File-wide perf patterns: scanned inside every function body, not just
@@ -121,65 +160,73 @@ _PERF_BODY_PATTERNS = [
     # `a * 0.4` without `-ffast-math` (would lose 1 ULP for non-exact
     # reciprocals). Multiplying by a precomputed reciprocal is ~3 cyc
     # vs ~12-22 cyc for divsd.
-    (re.compile(r"(?<![*/=<>!&|^])/\s*(?:\d+\.\d*|\.\d+|\d+\.\d*[eE][+-]?\d+)"
-                r"[fFlL]?"),
-     "perf-divide-by-float-literal",
-     "`/` with a floating-point literal -- compilers don't fold to "
-     "reciprocal multiply (would lose IEEE accuracy without -ffast-math). "
-     "Precompute `constexpr double kInvX = 1.0 / X;` and multiply (~3 cyc "
-     "mulsd vs ~12-22 cyc divsd)."),
-
+    (
+        re.compile(
+            r"(?<![*/=<>!&|^])/\s*(?:\d+\.\d*|\.\d+|\d+\.\d*[eE][+-]?\d+)" r"[fFlL]?"
+        ),
+        "perf-divide-by-float-literal",
+        "`/` with a floating-point literal -- compilers don't fold to "
+        "reciprocal multiply (would lose IEEE accuracy without -ffast-math). "
+        "Precompute `constexpr double kInvX = 1.0 / X;` and multiply (~3 cyc "
+        "mulsd vs ~12-22 cyc divsd).",
+    ),
     # `pow(x, N)` -- libm transcendental, goes through `exp(log(x) * y)`.
     # 40+ cyc on Intel, similar on ARM. Caller-saved FPU/SIMD state gets
     # clobbered too.
-    (re.compile(r"\b(?:std::)?pow\s*\("),
-     "perf-pow-call",
-     "`pow(...)` -- libm transcendental via `exp(log(x) * y)` (40+ cyc on "
-     "Intel/ARM) and clobbers caller-saved FPU/SIMD state. For small "
-     "integer exponents write the multiply (`x*x`, `x*x*x`); for "
-     "`pow(x, 0.5)` use `std::sqrt(x)`; for `pow(2.0, n)` use "
-     "`std::ldexp(1.0, n)` (single mantissa-shift insn)."),
-
+    (
+        re.compile(r"\b(?:std::)?pow\s*\("),
+        "perf-pow-call",
+        "`pow(...)` -- libm transcendental via `exp(log(x) * y)` (40+ cyc on "
+        "Intel/ARM) and clobbers caller-saved FPU/SIMD state. For small "
+        "integer exponents write the multiply (`x*x`, `x*x*x`); for "
+        "`pow(x, 0.5)` use `std::sqrt(x)`; for `pow(2.0, n)` use "
+        "`std::ldexp(1.0, n)` (single mantissa-shift insn).",
+    ),
     # `dynamic_cast<T>` -- walks the inheritance graph via RTTI typeinfo
     # string comparisons; 50-200+ cyc worst case and a function call.
-    (re.compile(r"\bdynamic_cast\s*<"),
-     "perf-dynamic-cast",
-     "`dynamic_cast<...>` -- walks the inheritance graph via RTTI typeinfo "
-     "string compares (50-200+ cyc worst case, runtime call). Use a "
-     "discriminating enum + `static_cast`, or pre-resolve the cast once "
-     "(store the typed pointer at object init)."),
-
+    (
+        re.compile(r"\bdynamic_cast\s*<"),
+        "perf-dynamic-cast",
+        "`dynamic_cast<...>` -- walks the inheritance graph via RTTI typeinfo "
+        "string compares (50-200+ cyc worst case, runtime call). Use a "
+        "discriminating enum + `static_cast`, or pre-resolve the cast once "
+        "(store the typed pointer at object init).",
+    ),
     # malloc / free family -- same arena-mutex cost as `new`/`delete`,
     # just less visible. Both Linux glibc and Windows HeapAlloc serialize
     # on a per-arena mutex; on contended workloads this is a real cost.
-    (re.compile(r"\b(?:malloc|calloc|realloc|free|aligned_alloc|posix_memalign)"
-                r"\s*\("),
-     "perf-malloc-family",
-     "C heap call -- malloc/free contend on a per-arena mutex (glibc, "
-     "RtlHeap) and aren't pipelineable. In a hot loop, reuse a "
-     "pre-reserved buffer or a small-object pool."),
-
+    (
+        re.compile(
+            r"\b(?:malloc|calloc|realloc|free|aligned_alloc|posix_memalign)" r"\s*\("
+        ),
+        "perf-malloc-family",
+        "C heap call -- malloc/free contend on a per-arena mutex (glibc, "
+        "RtlHeap) and aren't pipelineable. In a hot loop, reuse a "
+        "pre-reserved buffer or a small-object pool.",
+    ),
     # `QRegularExpression(...)` constructor -- compiles the regex to a
     # state machine, heap-allocates capture tables. If invoked in a loop,
     # the regex gets recompiled every iteration.
-    (re.compile(r"\bQRegularExpression\s*\([^)]"),
-     "perf-regex-construct",
-     "`QRegularExpression(...)` constructor -- compiles a DFA/NFA state "
-     "machine and heap-allocates capture state. Build the regex once "
-     "(file-scope `static const`, or a class member init) and reuse the "
-     "`.match(...)` path each iteration."),
-
+    (
+        re.compile(r"\bQRegularExpression\s*\([^)]"),
+        "perf-regex-construct",
+        "`QRegularExpression(...)` constructor -- compiles a DFA/NFA state "
+        "machine and heap-allocates capture state. Build the regex once "
+        "(file-scope `static const`, or a class member init) and reuse the "
+        "`.match(...)` path each iteration.",
+    ),
     # `.arg(...).arg(...)` chains -- each call returns a new QString
     # (heap alloc + copy). Two .arg()s = two allocs. Pass all args in
     # one call (`s.arg(a, b, c)`) or use QStringBuilder (`%` operator
     # with `<QStringBuilder>` included).
-    (re.compile(r"\.arg\s*\([^()]*\)\s*\.arg\s*\("),
-     "perf-arg-chain",
-     "`.arg(...).arg(...)` chain -- each call allocates a fresh QString "
-     "(heap + memcpy). Combine into one call (`.arg(a, b, c)`) or include "
-     "`<QStringBuilder>` and use the `%` operator (single allocation, "
-     "sized exactly)."),
-
+    (
+        re.compile(r"\.arg\s*\([^()]*\)\s*\.arg\s*\("),
+        "perf-arg-chain",
+        "`.arg(...).arg(...)` chain -- each call allocates a fresh QString "
+        "(heap + memcpy). Combine into one call (`.arg(a, b, c)`) or include "
+        "`<QStringBuilder>` and use the `%` operator (single allocation, "
+        "sized exactly).",
+    ),
 ]
 
 
@@ -197,67 +244,73 @@ _HOTPATH_PERF_PATTERNS = [
     # constant-folds into a static read-only QString with zero heap touch
     # (that's why Qt has it). The other entries are the genuine heap-
     # allocating constructors/conversions.
-    (re.compile(
-        r"\bQString\s*\(\s*[\"R]"
-        r"|\bQByteArray\s*\(\s*[\"R]"
-        r"|\.toUtf8\s*\(\s*\)"
-        r"|\.toStdString\s*\(\s*\)"
-        r"|\.toLatin1\s*\(\s*\)"
-        r"|\.toLocal8Bit\s*\(\s*\)"
-        r"|\bQString::fromUtf8\s*\("
-        r"|\bQString::fromLatin1\s*\("),
-     "perf-string-alloc-hotpath",
-     "string construction/conversion on the hotpath -- heap allocation + "
-     "memcpy. malloc contends on a per-arena mutex; the new buffer "
-     "pollutes L1 (32-48 KB). Cache the QString at init, or use a "
-     "fixed stack buffer for transient formatting."),
-
+    (
+        re.compile(
+            r"\bQString\s*\(\s*[\"R]"
+            r"|\bQByteArray\s*\(\s*[\"R]"
+            r"|\.toUtf8\s*\(\s*\)"
+            r"|\.toStdString\s*\(\s*\)"
+            r"|\.toLatin1\s*\(\s*\)"
+            r"|\.toLocal8Bit\s*\(\s*\)"
+            r"|\bQString::fromUtf8\s*\("
+            r"|\bQString::fromLatin1\s*\("
+        ),
+        "perf-string-alloc-hotpath",
+        "string construction/conversion on the hotpath -- heap allocation + "
+        "memcpy. malloc contends on a per-arena mutex; the new buffer "
+        "pollutes L1 (32-48 KB). Cache the QString at init, or use a "
+        "fixed stack buffer for transient formatting.",
+    ),
     # qDebug / qWarning -- builds a QDebug stream object, takes the global
     # message-handler mutex, formats and writes. Even filtered-out
     # categories pay the format cost because `<<` is eager. Hundreds of
     # cycles minimum per call; thousands when the handler dispatches to
     # a Console widget that re-enters the event loop.
-    (re.compile(r"\bq(?:Debug|Info|Warning|Critical|Fatal)\s*\("),
-     "perf-log-on-hotpath",
-     "Qt logging call on the hotpath -- builds a QDebug stream, takes "
-     "the global message-handler mutex, formats and writes. `<<` is "
-     "eager: even filtered-out categories pay the format cost. Gate "
-     "behind `#ifdef SERIAL_STUDIO_DEBUG` or move to a sampled counter."),
-
+    (
+        re.compile(r"\bq(?:Debug|Info|Warning|Critical|Fatal)\s*\("),
+        "perf-log-on-hotpath",
+        "Qt logging call on the hotpath -- builds a QDebug stream, takes "
+        "the global message-handler mutex, formats and writes. `<<` is "
+        "eager: even filtered-out categories pay the format cost. Gate "
+        "behind `#ifdef SERIAL_STUDIO_DEBUG` or move to a sampled counter.",
+    ),
     # `throw` on the hotpath -- exception throw runs the personality "
     # routine, walks DWARF / SEH unwind tables (1000s of cycles per
     # frame), mispredicts every catch on the way out, trashes the
     # return-address stack. `noexcept` callers crash hard.
-    (re.compile(r"\bthrow\s+\w"),
-     "perf-throw-on-hotpath",
-     "`throw` on the hotpath -- stack unwinding via DWARF/SEH personality "
-     "routines (1000s of cycles), mispredicts every catch frame, trashes "
-     "the return-address stack predictor. Return an error code, an "
-     "`std::expected`-style variant, or a sentinel value instead."),
-
+    (
+        re.compile(r"\bthrow\s+\w"),
+        "perf-throw-on-hotpath",
+        "`throw` on the hotpath -- stack unwinding via DWARF/SEH personality "
+        "routines (1000s of cycles), mispredicts every catch frame, trashes "
+        "the return-address stack predictor. Return an error code, an "
+        "`std::expected`-style variant, or a sentinel value instead.",
+    ),
     # Mutex / lock-guard acquisition on the hotpath -- ~20 cyc lock-prefix
     # RMW on x86, ldaxr+stxr+DMB on ARM, serializes the store buffer, and
     # contended bouncing thrashes the L1 line. Outside the kHz frame path
     # the cost is irrelevant; locks are the right answer for once-per-event
     # state mutation. Only flag inside known-hot methods.
-    (re.compile(
-        r"\b(?:QMutexLocker|QReadLocker|QWriteLocker|QRecursiveMutex"
-        r"|std::lock_guard|std::unique_lock|std::scoped_lock"
-        r"|std::shared_lock)\b"),
-     "perf-lock-acquire",
-     "lock acquisition on the hotpath -- atomic RMW with full memory "
-     "barrier (~20 cyc x86 `lock`-prefix, ldaxr+stxr+DMB on ARM), "
-     "serializes the store buffer; contended bouncing thrashes the L1 "
-     "line. Prefer thread-local / SPSC / per-core state, or a relaxed "
-     "`std::atomic` when the invariant fits a single word."),
-
+    (
+        re.compile(
+            r"\b(?:QMutexLocker|QReadLocker|QWriteLocker|QRecursiveMutex"
+            r"|std::lock_guard|std::unique_lock|std::scoped_lock"
+            r"|std::shared_lock)\b"
+        ),
+        "perf-lock-acquire",
+        "lock acquisition on the hotpath -- atomic RMW with full memory "
+        "barrier (~20 cyc x86 `lock`-prefix, ldaxr+stxr+DMB on ARM), "
+        "serializes the store buffer; contended bouncing thrashes the L1 "
+        "line. Prefer thread-local / SPSC / per-core state, or a relaxed "
+        "`std::atomic` when the invariant fits a single word.",
+    ),
     # Bare mutex.lock() / lockForRead() calls -- same physical cost.
-    (re.compile(
-        r"\b\w+\.(?:lock|try_lock|lockForRead|lockForWrite|tryLock)\s*\("),
-     "perf-lock-acquire",
-     "explicit `.lock()`/`.try_lock()`/`.lockForRead()` call on the "
-     "hotpath -- same `lock`-prefix RMW cost as the locker types."),
-
+    (
+        re.compile(r"\b\w+\.(?:lock|try_lock|lockForRead|lockForWrite|tryLock)\s*\("),
+        "perf-lock-acquire",
+        "explicit `.lock()`/`.try_lock()`/`.lockForRead()` call on the "
+        "hotpath -- same `lock`-prefix RMW cost as the locker types.",
+    ),
     # Integer / float division by a non-literal divisor on the hotpath.
     # `idiv`/`udiv` is the slowest ALU op (20-40 cyc Skylake/Zen, not
     # pipelined; 12-40 cyc Cortex-A78). When the divisor is constexpr the
@@ -265,22 +318,25 @@ _HOTPATH_PERF_PATTERNS = [
     # when the divisor is a true runtime variable. `sizeof(...)` is
     # compile-time and skipped via lookahead. Reciprocal-cache lines
     # (`auto inv = 1.0 / x`) are skipped via _is_reciprocal_cache_line.
-    (re.compile(r"(?<![*/=<>!&|^])/\s*(?!/)(?!sizeof\b)[A-Za-z_]\w*"),
-     "perf-divide-runtime-divisor",
-     "`/` with a non-literal divisor on the hotpath -- division is the "
-     "slowest ALU op (divsd ~11-22 cyc Skylake, fdiv ~10-40 cyc Cortex-A78; "
-     "idiv 20-40 cyc, not pipelined). Cache the reciprocal once "
-     "(`r = 1.0 / d`) and multiply in the loop, or use a bit-shift for "
-     "power-of-two integer cases."),
-
+    (
+        re.compile(r"(?<![*/=<>!&|^])/\s*(?!/)(?!sizeof\b)[A-Za-z_]\w*"),
+        "perf-divide-runtime-divisor",
+        "`/` with a non-literal divisor on the hotpath -- division is the "
+        "slowest ALU op (divsd ~11-22 cyc Skylake, fdiv ~10-40 cyc Cortex-A78; "
+        "idiv 20-40 cyc, not pipelined). Cache the reciprocal once "
+        "(`r = 1.0 / d`) and multiply in the loop, or use a bit-shift for "
+        "power-of-two integer cases.",
+    ),
     # Modulo by a non-literal divisor on the hotpath. Same idiv cost as
     # integer divide; power-of-two N can be replaced with `& (N - 1)`.
-    (re.compile(r"(?<![%=*/+\-<>!&|^])%\s*[A-Za-z_]\w*"),
-     "perf-modulo-runtime-divisor",
-     "`%` with a non-literal divisor on the hotpath -- emits `idiv`/`udiv` "
-     "(20-40 cyc x86, 12-40 cyc ARM). For power-of-two N use `& (N - 1)` "
-     "(single-cycle `and`); for runtime divisors hoist out of the loop or "
-     "use a libdivide-style precomputed magic-number multiply."),
+    (
+        re.compile(r"(?<![%=*/+\-<>!&|^])%\s*[A-Za-z_]\w*"),
+        "perf-modulo-runtime-divisor",
+        "`%` with a non-literal divisor on the hotpath -- emits `idiv`/`udiv` "
+        "(20-40 cyc x86, 12-40 cyc ARM). For power-of-two N use `& (N - 1)` "
+        "(single-cycle `and`); for runtime divisors hoist out of the loop or "
+        "use a libdivide-style precomputed magic-number multiply.",
+    ),
 ]
 
 
@@ -355,8 +411,9 @@ def _sink_param_names(func_node, src: bytes) -> set:
     for c in func_node.children:
         if c.type != "field_initializer_list":
             continue
-        for m in re.finditer(r"\bstd::move\s*\(\s*([A-Za-z_]\w*)\s*\)",
-                             _node_text(c, src)):
+        for m in re.finditer(
+            r"\bstd::move\s*\(\s*([A-Za-z_]\w*)\s*\)", _node_text(c, src)
+        ):
             names.add(m.group(1))
     return names
 
@@ -386,8 +443,10 @@ def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
         if param_type is None:
             continue
         if param_decl is not None and param_decl.type in (
-            "pointer_declarator", "reference_declarator",
-            "abstract_pointer_declarator", "abstract_reference_declarator",
+            "pointer_declarator",
+            "reference_declarator",
+            "abstract_pointer_declarator",
+            "abstract_reference_declarator",
             "rvalue_reference_declarator",
             "abstract_rvalue_reference_declarator",
         ):
@@ -417,29 +476,37 @@ def _parameter_perf_findings(func_node, src: bytes, fenced) -> list:
         base = type_text
         for q in ("const ", "constexpr ", "volatile ", "mutable ", "register "):
             while base.startswith(q):
-                base = base[len(q):].lstrip()
+                base = base[len(q) :].lstrip()
         cuts = [i for i in (base.find("<"), base.find(" ")) if i >= 0]
         if cuts:
-            base = base[:min(cuts)]
+            base = base[: min(cuts)]
         line = _line_of(param)
         if fenced(line):
             continue
         if base in _HEAVY_TYPES:
-            findings.append(Finding(
-                line, "perf-large-by-value-param",
-                f"`{type_text}` passed by value -- forces a copy in the "
-                f"prologue (atomic ref-bump for Qt COW types: `lock`-prefix "
-                f"on x86, ldxr+stxr on ARM without LSE; full deep memcpy "
-                f"for std:: containers). Pass `const {base}&` and copy "
-                f"only when you genuinely keep a local copy."))
+            findings.append(
+                Finding(
+                    line,
+                    "perf-large-by-value-param",
+                    f"`{type_text}` passed by value -- forces a copy in the "
+                    f"prologue (atomic ref-bump for Qt COW types: `lock`-prefix "
+                    f"on x86, ldxr+stxr on ARM without LSE; full deep memcpy "
+                    f"for std:: containers). Pass `const {base}&` and copy "
+                    f"only when you genuinely keep a local copy.",
+                )
+            )
         elif base in _REFCOUNTED_TYPES:
-            findings.append(Finding(
-                line, "perf-shared-ptr-by-value",
-                f"`{type_text}` by value -- two atomic refcount ops per "
-                f"call (`lock add`/`lock sub` on x86, ~20 cyc each; "
-                f"ldxr/stxr loop on ARM without LSE/v8.1 atomics). "
-                f"Pass `const {base}<...>&` and copy only when you "
-                f"actually store the pointer."))
+            findings.append(
+                Finding(
+                    line,
+                    "perf-shared-ptr-by-value",
+                    f"`{type_text}` by value -- two atomic refcount ops per "
+                    f"call (`lock add`/`lock sub` on x86, ~20 cyc each; "
+                    f"ldxr/stxr loop on ARM without LSE/v8.1 atomics). "
+                    f"Pass `const {base}<...>&` and copy only when you "
+                    f"actually store the pointer.",
+                )
+            )
     return findings
 
 
@@ -472,7 +539,7 @@ def _init_only_decl_line_span(body, src: bytes) -> set:
         if not (is_constexpr or is_static_const):
             continue
         first = node.start_point[0] + 1
-        last  = node.end_point[0] + 1
+        last = node.end_point[0] + 1
         for ln in range(first, last + 1):
             exempt.add(ln)
     return exempt
@@ -513,9 +580,7 @@ def _cold_branch_line_span(body, src: bytes) -> set:
     return exempt
 
 
-_RECIPROCAL_CACHE_RE = re.compile(
-    r"\b1(?:\.0+f?|\.0+L?|\.0+|\b)\s*/\s*[A-Za-z_(]"
-)
+_RECIPROCAL_CACHE_RE = re.compile(r"\b1(?:\.0+f?|\.0+L?|\.0+|\b)\s*/\s*[A-Za-z_(]")
 _DIV_OR_MOD_DIVISOR_RE = re.compile(
     r"(?<![*/=<>!&|^])[/%]\s*(?!/)(?!sizeof\b)([A-Za-z_]\w*)"
 )
@@ -534,14 +599,34 @@ def _is_reciprocal_cache_line(scrubbed: str) -> bool:
 # even though they're macros (M_PI family) or constants the compiler
 # substitutes via the standard library headers. Treating these as
 # compile-time means the divisor / modulo rules don't fire on them.
-_KNOWN_COMPILE_TIME_NAMES = frozenset({
-    "M_PI", "M_PI_2", "M_PI_4", "M_1_PI", "M_2_PI", "M_2_SQRTPI",
-    "M_E", "M_LOG2E", "M_LOG10E", "M_LN2", "M_LN10",
-    "M_SQRT2", "M_SQRT1_2",
-    "INT8_MAX", "INT16_MAX", "INT32_MAX", "INT64_MAX",
-    "UINT8_MAX", "UINT16_MAX", "UINT32_MAX", "UINT64_MAX",
-    "CHAR_BIT", "CHAR_MAX", "CHAR_MIN",
-})
+_KNOWN_COMPILE_TIME_NAMES = frozenset(
+    {
+        "M_PI",
+        "M_PI_2",
+        "M_PI_4",
+        "M_1_PI",
+        "M_2_PI",
+        "M_2_SQRTPI",
+        "M_E",
+        "M_LOG2E",
+        "M_LOG10E",
+        "M_LN2",
+        "M_LN10",
+        "M_SQRT2",
+        "M_SQRT1_2",
+        "INT8_MAX",
+        "INT16_MAX",
+        "INT32_MAX",
+        "INT64_MAX",
+        "UINT8_MAX",
+        "UINT16_MAX",
+        "UINT32_MAX",
+        "UINT64_MAX",
+        "CHAR_BIT",
+        "CHAR_MAX",
+        "CHAR_MIN",
+    }
+)
 
 
 def _compile_time_constants_in_scope(body, src: bytes) -> set:
@@ -600,7 +685,9 @@ def _scan_body_lines(body, src: bytes, fname: str, fenced, patterns) -> list:
     findings: list = []
     body_text = _node_text(body, src)
     body_start = body.start_point[0] + 1
-    exempt_lines = _init_only_decl_line_span(body, src) | _cold_branch_line_span(body, src)
+    exempt_lines = _init_only_decl_line_span(body, src) | _cold_branch_line_span(
+        body, src
+    )
     constexpr_names = _compile_time_constants_in_scope(body, src)
     for j, line in enumerate(body_text.split("\n")):
         abs_line = body_start + j
@@ -612,12 +699,16 @@ def _scan_body_lines(body, src: bytes, fname: str, fenced, patterns) -> list:
         # name we know is in scope, the compiler folds them. Skip the
         # divide/modulo runtime rules for this line.
         divisors = _DIV_OR_MOD_DIVISOR_RE.findall(scrubbed)
-        all_compile_time = bool(divisors) and all(d in constexpr_names for d in divisors)
+        all_compile_time = bool(divisors) and all(
+            d in constexpr_names for d in divisors
+        )
         for pat, kind, msg in patterns:
             if is_recip_cache and kind == "perf-divide-runtime-divisor":
                 continue
-            if all_compile_time and kind in ("perf-divide-runtime-divisor",
-                                             "perf-modulo-runtime-divisor"):
+            if all_compile_time and kind in (
+                "perf-divide-runtime-divisor",
+                "perf-modulo-runtime-divisor",
+            ):
                 continue
             if pat.search(scrubbed):
                 findings.append(Finding(abs_line, kind, msg))
@@ -664,13 +755,16 @@ def _recursion_findings(func_node, fname: str, body, src: bytes, fenced) -> list
         # whose object is `this`). Reject `Foo::fname`, `obj.fname`, `obj->fname`.
         is_self = False
         if callee.type == "identifier":
-            is_self = (_node_text(callee, src) == fname)
+            is_self = _node_text(callee, src) == fname
         elif callee.type == "field_expression":
             obj = callee.child_by_field_name("argument")
             field = callee.child_by_field_name("field")
-            if (obj is not None and field is not None
-                    and obj.type == "this"
-                    and _node_text(field, src) == fname):
+            if (
+                obj is not None
+                and field is not None
+                and obj.type == "this"
+                and _node_text(field, src) == fname
+            ):
                 is_self = True
         if not is_self:
             continue
@@ -678,13 +772,17 @@ def _recursion_findings(func_node, fname: str, body, src: bytes, fenced) -> list
         if fenced(line) or line in seen_lines:
             continue
         seen_lines.add(line)
-        findings.append(Finding(
-            line, "perf-recursive-hotpath",
-            f"hotpath `{fname}` calls itself -- recursion on a kHz "
-            f"frame loop blows the i-cache (200+ cyc per L2 miss), "
-            f"mispredicts the RAS on every return, and prevents the "
-            f"compiler from inlining. Rewrite iteratively (explicit "
-            f"work-list / std::stack)."))
+        findings.append(
+            Finding(
+                line,
+                "perf-recursive-hotpath",
+                f"hotpath `{fname}` calls itself -- recursion on a kHz "
+                f"frame loop blows the i-cache (200+ cyc per L2 miss), "
+                f"mispredicts the RAS on every return, and prevents the "
+                f"compiler from inlining. Rewrite iteratively (explicit "
+                f"work-list / std::stack).",
+            )
+        )
     return findings
 
 
@@ -695,9 +793,9 @@ _RUN_LOOP_COND_RE = re.compile(r"\bm_\w+\s*(?:\.load\s*\(|\)\s*\.\s*load\s*\()")
 # changes, focus changes, etc. -- cold paths by construction. Any per-call
 # divide/modulo/pow inside them is irrelevant to the steady-state hotpath.
 _QT_EVENT_HANDLER_SUFFIXES = (
-    "Event",          # mousePressEvent, wheelEvent, keyPressEvent, paintEvent...
-    "EventFilter",    # eventFilter override
-    "ChangeEvent",    # geometryChange, focusChange, etc.
+    "Event",  # mousePressEvent, wheelEvent, keyPressEvent, paintEvent...
+    "EventFilter",  # eventFilter override
+    "ChangeEvent",  # geometryChange, focusChange, etc.
 )
 
 
@@ -720,9 +818,12 @@ def _is_qt_event_handler(fname: str) -> bool:
 # Method-name patterns for the QQuickPaintedItem / QPainter render path. These
 # functions are called at most at the screen refresh rate (~60 Hz) -- two
 # orders of magnitude below the kHz frame loop the perf rules target.
-_PAINT_METHOD_NAMES = frozenset({
-    "paint", "render",
-})
+_PAINT_METHOD_NAMES = frozenset(
+    {
+        "paint",
+        "render",
+    }
+)
 _PAINT_METHOD_PREFIXES = ("draw", "render", "paint")
 
 
@@ -823,13 +924,17 @@ def _large_stack_buffer_findings(body, src: bytes, fenced) -> list:
             continue
         if n < 1024:
             continue
-        findings.append(Finding(
-            abs_line, "perf-large-stack-buffer",
-            f"local array of {n} elements on the stack -- frame-setup "
-            f"cost, pollutes L1 (32-48 KB) when called in a hot loop, "
-            f"risks overflow on deep call paths (Windows default 1 MB, "
-            f"Linux 8 MB). Promote to a member, thread_local, or a "
-            f"pre-reserved buffer."))
+        findings.append(
+            Finding(
+                abs_line,
+                "perf-large-stack-buffer",
+                f"local array of {n} elements on the stack -- frame-setup "
+                f"cost, pollutes L1 (32-48 KB) when called in a hot loop, "
+                f"risks overflow on deep call paths (Windows default 1 MB, "
+                f"Linux 8 MB). Promote to a member, thread_local, or a "
+                f"pre-reserved buffer.",
+            )
+        )
     return findings
 
 
@@ -867,15 +972,19 @@ def _adjacent_atomic_findings(class_node, src: bytes, fenced) -> list:
             continue
         line = _line_of(child)
         if not fenced(line) and 0 < line - prev_line <= 4:
-            findings.append(Finding(
-                line, "perf-false-sharing-risk",
-                "adjacent atomic members will share a cache line "
-                "(64 B Intel/AArch64, up to 128 B on Apple Silicon "
-                "M-series via the 128 B speculative line). Cross-core "
-                "writes thrash MESI/MOESI invalidations (50-200x slowdown "
-                "vs uncontended). Add `alignas(64)` / "
-                "`alignas(std::hardware_destructive_interference_size)` "
-                "or insert `char _pad[64 - sizeof(prev)];` between them."))
+            findings.append(
+                Finding(
+                    line,
+                    "perf-false-sharing-risk",
+                    "adjacent atomic members will share a cache line "
+                    "(64 B Intel/AArch64, up to 128 B on Apple Silicon "
+                    "M-series via the 128 B speculative line). Cross-core "
+                    "writes thrash MESI/MOESI invalidations (50-200x slowdown "
+                    "vs uncontended). Add `alignas(64)` / "
+                    "`alignas(std::hardware_destructive_interference_size)` "
+                    "or insert `char _pad[64 - sizeof(prev)];` between them.",
+                )
+            )
         prev_line = line
     return findings
 
@@ -907,14 +1016,18 @@ def _virtual_hotpath_findings(src_text: str, path: Path, fenced) -> list:
         name = m.group(1)
         if name in metacall_names:
             continue
-        findings.append(Finding(
-            i, "perf-virtual-hotpath",
-            f"hotpath method `{name}` declared `virtual` -- every call "
-            f"site emits a vtable load + indirect branch (5-10 cyc best "
-            f"case, 15-20 cyc misprediction on polymorphic sites). The "
-            f"compiler can't inline through the indirect call. If only "
-            f"one implementation exists, drop `virtual` or mark `final` "
-            f"so the compiler can devirtualize."))
+        findings.append(
+            Finding(
+                i,
+                "perf-virtual-hotpath",
+                f"hotpath method `{name}` declared `virtual` -- every call "
+                f"site emits a vtable load + indirect branch (5-10 cyc best "
+                f"case, 15-20 cyc misprediction on polymorphic sites). The "
+                f"compiler can't inline through the indirect call. If only "
+                f"one implementation exists, drop `virtual` or mark `final` "
+                f"so the compiler can devirtualize.",
+            )
+        )
     return findings
 
 
@@ -950,18 +1063,31 @@ def _qt_metacall_referenced_methods(src_text: str, path: Path) -> set:
 # Mirrors the inline constexpr declarations at the top of Frame.h. When one
 # of these strings appears as a literal in a .cpp/.h that ALSO uses ss_jsr
 # or QJsonObject, it's almost certainly a writer/reader bypassing Keys::*.
-_PROJECT_KEY_LITERALS = frozenset({
-    "busType", "frameStart", "frameEnd", "frameDetection", "frameParserCode",
-    "frameParserLanguage", "decoderMethod", "checksumAlgorithm",
-    "hexadecimalDelimiters", "schemaVersion", "writerVersion",
-    "writerVersionAtCreation", "sourceId",
-    "datasetId", "uniqueId",
-})
+_PROJECT_KEY_LITERALS = frozenset(
+    {
+        "busType",
+        "frameStart",
+        "frameEnd",
+        "frameDetection",
+        "frameParserCode",
+        "frameParserLanguage",
+        "decoderMethod",
+        "checksumAlgorithm",
+        "hexadecimalDelimiters",
+        "schemaVersion",
+        "writerVersion",
+        "writerVersionAtCreation",
+        "sourceId",
+        "datasetId",
+        "uniqueId",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _line_of(node) -> int:
     """1-based start line of a tree-sitter node."""
@@ -969,7 +1095,7 @@ def _line_of(node) -> int:
 
 
 def _node_text(node, src: bytes) -> str:
-    return src[node.start_byte:node.end_byte].decode("utf-8", errors="replace")
+    return src[node.start_byte : node.end_byte].decode("utf-8", errors="replace")
 
 
 def _walk(node):
@@ -1030,7 +1156,7 @@ def _has_attribute(node, src: bytes, attr_name: str) -> bool:
     # Attributes are parsed as attribute_declaration siblings before the
     # declaration's type, OR as attribute children inside the declarator.
     # Walk a small radius around the node to find them.
-    text_before = src[max(0, node.start_byte - 200):node.start_byte].decode(
+    text_before = src[max(0, node.start_byte - 200) : node.start_byte].decode(
         "utf-8", errors="replace"
     )
     if f"[[{attr_name}]]" in text_before or f"[[ {attr_name} ]]" in text_before:
@@ -1057,8 +1183,12 @@ def _max_nesting_depth(body_node) -> int:
         return 0
 
     NESTERS = {
-        "if_statement", "for_statement", "for_range_loop",
-        "while_statement", "do_statement", "switch_statement",
+        "if_statement",
+        "for_statement",
+        "for_range_loop",
+        "while_statement",
+        "do_statement",
+        "switch_statement",
         "try_statement",
     }
     LAMBDA = "lambda_expression"
@@ -1100,10 +1230,16 @@ def _previous_doxygen_brief(node, src: bytes) -> bool:
     skip = 0
     while cur >= 0 and skip < 8:
         s = lines[cur].strip()
-        if (not s or s.startswith("//") or s.startswith("template")
-                or s.startswith("requires") or s.startswith("[[")
-                or s.startswith("public:") or s.startswith("private:")
-                or s.startswith("protected:")):
+        if (
+            not s
+            or s.startswith("//")
+            or s.startswith("template")
+            or s.startswith("requires")
+            or s.startswith("[[")
+            or s.startswith("public:")
+            or s.startswith("private:")
+            or s.startswith("protected:")
+        ):
             cur -= 1
             skip += 1
             continue
@@ -1120,7 +1256,7 @@ def _previous_doxygen_brief(node, src: bytes) -> bool:
             break
     if open_idx < 0:
         return False
-    block = "\n".join(lines[open_idx:cur + 1])
+    block = "\n".join(lines[open_idx : cur + 1])
     return "@brief" in block
 
 
@@ -1138,10 +1274,16 @@ def _previous_doxygen_block_range(node, src: bytes):
     skip = 0
     while cur >= 0 and skip < 8:
         s = lines[cur].strip()
-        if (not s or s.startswith("//") or s.startswith("template")
-                or s.startswith("requires") or s.startswith("[[")
-                or s.startswith("public:") or s.startswith("private:")
-                or s.startswith("protected:")):
+        if (
+            not s
+            or s.startswith("//")
+            or s.startswith("template")
+            or s.startswith("requires")
+            or s.startswith("[[")
+            or s.startswith("public:")
+            or s.startswith("private:")
+            or s.startswith("protected:")
+        ):
             cur -= 1
             skip += 1
             continue
@@ -1161,9 +1303,25 @@ def _previous_doxygen_block_range(node, src: bytes):
 
 
 _VERBOSE_DOXY_TAGS = (
-    "@param", "@return", "@returns", "@retval", "@throws", "@throw",
-    "@exception", "@see", "@sa", "@note", "@warning", "@todo", "@since",
-    "@deprecated", "@pre", "@post", "@invariant", "@tparam", "@details",
+    "@param",
+    "@return",
+    "@returns",
+    "@retval",
+    "@throws",
+    "@throw",
+    "@exception",
+    "@see",
+    "@sa",
+    "@note",
+    "@warning",
+    "@todo",
+    "@since",
+    "@deprecated",
+    "@pre",
+    "@post",
+    "@invariant",
+    "@tparam",
+    "@details",
 )
 
 
@@ -1192,18 +1350,23 @@ def _verbose_doxygen_reason(block_lines: list[str]) -> str:
             return f"contains `{tag}` -- one-line `@brief` is the contract"
     for raw in block_lines:
         if raw.strip() == "*":
-            return ("contains a blank `*` continuation -- extended "
-                    "description belongs in the commit message, not the "
-                    "header doxygen")
+            return (
+                "contains a blank `*` continuation -- extended "
+                "description belongs in the commit message, not the "
+                "header doxygen"
+            )
     if len(block_lines) > 4:
-        return (f"spans {len(block_lines)} lines -- collapse to a one-line "
-                "`/** @brief ... */`")
+        return (
+            f"spans {len(block_lines)} lines -- collapse to a one-line "
+            "`/** @brief ... */`"
+        )
     return ""
 
 
 # ---------------------------------------------------------------------------
 # C++ rules (tree-sitter)
 # ---------------------------------------------------------------------------
+
 
 def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
     """Run tree-sitter-backed C++/Qt rules on `src`. Returns one Finding per
@@ -1255,20 +1418,37 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
         scrubbed = _strip_strings_and_line_comments(raw)
         # Bare `emit` -- token must be word-isolated.
         if re.search(r"\bemit\b\s+[A-Za-z_]", scrubbed):
-            out.append(Finding(i, "qt-bare-emit",
-                               "use `Q_EMIT` instead of bare `emit`"))
+            out.append(
+                Finding(i, "qt-bare-emit", "use `Q_EMIT` instead of bare `emit`")
+            )
         if re.search(r"\bQ_SIGNALS\s*:", scrubbed):
-            out.append(Finding(i, "qt-uppercase-signal-slot",
-                               "use lowercase `signals:` (CLAUDE.md)"))
+            out.append(
+                Finding(
+                    i,
+                    "qt-uppercase-signal-slot",
+                    "use lowercase `signals:` (CLAUDE.md)",
+                )
+            )
         if re.search(r"\b(?:public|protected|private)?\s*Q_SLOTS\s*:", scrubbed):
-            out.append(Finding(i, "qt-uppercase-signal-slot",
-                               "use lowercase `slots:` (CLAUDE.md)"))
+            out.append(
+                Finding(
+                    i, "qt-uppercase-signal-slot", "use lowercase `slots:` (CLAUDE.md)"
+                )
+            )
         if re.search(r"\bgoto\b", scrubbed):
-            out.append(Finding(i, "cxx-goto-or-jmp",
-                               "`goto` is banned (NASA Power of Ten rule 1)"))
+            out.append(
+                Finding(
+                    i, "cxx-goto-or-jmp", "`goto` is banned (NASA Power of Ten rule 1)"
+                )
+            )
         if re.search(r"\b(?:setjmp|longjmp)\s*\(", scrubbed):
-            out.append(Finding(i, "cxx-goto-or-jmp",
-                               "`setjmp`/`longjmp` are banned (NASA P10 rule 1)"))
+            out.append(
+                Finding(
+                    i,
+                    "cxx-goto-or-jmp",
+                    "`setjmp`/`longjmp` are banned (NASA P10 rule 1)",
+                )
+            )
 
     # Q_INVOKABLE void on the same source line is unambiguous; spread cases
     # are rare enough that we accept the false-negative.
@@ -1278,8 +1458,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             continue
         scrubbed = _strip_strings_and_line_comments(raw)
         if invokable_void_re.search(scrubbed):
-            out.append(Finding(i, "qt-invokable-void",
-                               "`Q_INVOKABLE void` -- move to `public slots:`"))
+            out.append(
+                Finding(
+                    i,
+                    "qt-invokable-void",
+                    "`Q_INVOKABLE void` -- move to `public slots:`",
+                )
+            )
 
     # disconnect(<conn>, nullptr) -- the 2-arg form where nullptr is in
     # the slot slot. CLAUDE.md flags this because it disconnects every
@@ -1294,11 +1479,15 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
         # Match: disconnect ( <one-arg> , nullptr )  -- exactly two args.
         # The first arg can be a chain like `obj->signal`, but must not
         # contain a comma (we only want the 2-arg form).
-        if re.search(r"\bdisconnect\s*\(\s*[^,()]+\s*,\s*nullptr\s*\)",
-                     scrubbed):
-            out.append(Finding(i, "qt-disconnect-nullptr",
-                               "`disconnect(<conn>, nullptr)` disconnects ALL slots from the "
-                               "connection; capture the QMetaObject::Connection and disconnect that"))
+        if re.search(r"\bdisconnect\s*\(\s*[^,()]+\s*,\s*nullptr\s*\)", scrubbed):
+            out.append(
+                Finding(
+                    i,
+                    "qt-disconnect-nullptr",
+                    "`disconnect(<conn>, nullptr)` disconnects ALL slots from the "
+                    "connection; capture the QMetaObject::Connection and disconnect that",
+                )
+            )
 
     # parseFunction.call(...) is the JS engine path that must go through
     # IScriptEngine::guardedCall for the runtime watchdog.
@@ -1307,9 +1496,14 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             continue
         scrubbed = _strip_strings_and_line_comments(raw)
         if re.search(r"\bparseFunction\.call\s*\(", scrubbed):
-            out.append(Finding(i, "qt-direct-jsengine-call",
-                               "`parseFunction.call()` bypasses the runtime watchdog -- "
-                               "route through `IScriptEngine::guardedCall()`"))
+            out.append(
+                Finding(
+                    i,
+                    "qt-direct-jsengine-call",
+                    "`parseFunction.call()` bypasses the runtime watchdog -- "
+                    "route through `IScriptEngine::guardedCall()`",
+                )
+            )
 
     # ---- AST-driven rules
     # Walk every function_definition: function-too-long, nesting-too-deep,
@@ -1322,14 +1516,24 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             body = n.child_by_field_name("body")
             length = _function_body_lines(body)
             if length > 100:
-                out.append(Finding(line, "cxx-function-too-long",
-                                   f"function spans {length} lines (>100; "
-                                   f"NASA P10 rule 4 caps at 100)"))
+                out.append(
+                    Finding(
+                        line,
+                        "cxx-function-too-long",
+                        f"function spans {length} lines (>100; "
+                        f"NASA P10 rule 4 caps at 100)",
+                    )
+                )
             depth = _max_nesting_depth(body)
             if depth > 3:
-                out.append(Finding(line, "cxx-nesting-too-deep",
-                                   f"control-flow nesting depth {depth} (>3; "
-                                   f"CLAUDE.md caps at 3)"))
+                out.append(
+                    Finding(
+                        line,
+                        "cxx-nesting-too-deep",
+                        f"control-flow nesting depth {depth} (>3; "
+                        f"CLAUDE.md caps at 3)",
+                    )
+                )
 
             if not is_header and not _previous_doxygen_brief(n, src):
                 fname = _function_name(n, src)
@@ -1345,9 +1549,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                 # main entry points aren't worth flagging.
                 if fname == "main" and not _has_function_ancestor(n):
                     continue
-                out.append(Finding(
-                    line, "doc-missing-brief-cpp",
-                    f"`{fname}` lacks a preceding `/** @brief ... */`"))
+                out.append(
+                    Finding(
+                        line,
+                        "doc-missing-brief-cpp",
+                        f"`{fname}` lacks a preceding `/** @brief ... */`",
+                    )
+                )
 
             # Verbose doxygen above a function definition. Applies to both
             # `.cpp` definitions and inline-defined methods in headers; the
@@ -1358,13 +1566,18 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     rng = _previous_doxygen_block_range(n, src)
                     if rng is not None:
                         open_idx, close_idx = rng
-                        block_lines = src.decode("utf-8", errors="replace") \
-                            .split("\n")[open_idx:close_idx + 1]
+                        block_lines = src.decode("utf-8", errors="replace").split("\n")[
+                            open_idx : close_idx + 1
+                        ]
                         reason = _verbose_doxygen_reason(block_lines)
                         if reason and not fenced(open_idx + 1):
-                            out.append(Finding(
-                                open_idx + 1, "doc-verbose-brief",
-                                f"verbose doxygen above `{fname}`: {reason}"))
+                            out.append(
+                                Finding(
+                                    open_idx + 1,
+                                    "doc-verbose-brief",
+                                    f"verbose doxygen above `{fname}`: {reason}",
+                                )
+                            )
 
             # Hotpath allocations.
             fname = _function_name(n, src)
@@ -1378,9 +1591,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     scrubbed = _strip_strings_and_line_comments(body_line)
                     for pat, msg in _HOTPATH_BANNED_CALLS:
                         if pat.search(scrubbed):
-                            out.append(Finding(
-                                abs_line, "hotpath-allocation",
-                                f"{msg} (in `{fname}`)"))
+                            out.append(
+                                Finding(
+                                    abs_line,
+                                    "hotpath-allocation",
+                                    f"{msg} (in `{fname}`)",
+                                )
+                            )
                             break
 
             # CPU-microarchitecture / perf rules. _PERF_BODY_PATTERNS runs on
@@ -1395,14 +1612,20 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             # to the screen refresh rate -- two orders of magnitude below
             # the kHz frame hotpath -- so per-call divide/modulo cost
             # there is below the noise floor.
-            if (not _is_constexpr_or_consteval(n, src)
-                    and not _is_qt_event_handler(fname)
-                    and not _is_paint_method(fname)):
-                out.extend(_scan_body_lines(body, src, fname, fenced,
-                                            _PERF_BODY_PATTERNS))
+            if (
+                not _is_constexpr_or_consteval(n, src)
+                and not _is_qt_event_handler(fname)
+                and not _is_paint_method(fname)
+            ):
+                out.extend(
+                    _scan_body_lines(body, src, fname, fenced, _PERF_BODY_PATTERNS)
+                )
                 if fname in _HOTPATH_METHODS:
-                    out.extend(_scan_body_lines(body, src, fname, fenced,
-                                                _HOTPATH_PERF_PATTERNS))
+                    out.extend(
+                        _scan_body_lines(
+                            body, src, fname, fenced, _HOTPATH_PERF_PATTERNS
+                        )
+                    )
                     out.extend(_recursion_findings(n, fname, body, src, fenced))
 
             # Universal: function-signature scan for heavy/refcounted types
@@ -1428,21 +1651,31 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                 continue
             for child in body.children:
                 if child.type not in (
-                    "function_definition", "declaration", "template_declaration",
-                    "class_specifier", "struct_specifier", "enum_specifier",
-                    "type_definition", "alias_declaration", "union_specifier",
+                    "function_definition",
+                    "declaration",
+                    "template_declaration",
+                    "class_specifier",
+                    "struct_specifier",
+                    "enum_specifier",
+                    "type_definition",
+                    "alias_declaration",
+                    "union_specifier",
                 ):
                     continue
                 line = _line_of(child)
                 if fenced(line):
                     continue
                 label = _anon_member_label(child, src)
-                out.append(Finding(
-                    line, "cxx-anonymous-namespace",
-                    f"`{label}` defined inside an anonymous namespace -- "
-                    f"hard to trace; prefer a class-private `static` "
-                    f"(default), file-scope `static` for free helpers, or "
-                    f"a named `detail` namespace for TU-private types"))
+                out.append(
+                    Finding(
+                        line,
+                        "cxx-anonymous-namespace",
+                        f"`{label}` defined inside an anonymous namespace -- "
+                        f"hard to trace; prefer a class-private `static` "
+                        f"(default), file-scope `static` for free helpers, or "
+                        f"a named `detail` namespace for TU-private types",
+                    )
+                )
 
     # ---- Header-only: function doxygen blocks above non-type declarations.
     # CLAUDE.md "Headers (.h) -- strict rule": the only block-doc allowed in
@@ -1493,9 +1726,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             skip = 0
             while cur >= 0 and skip < 6:
                 s = lines2[cur].strip()
-                if (not s or s.startswith("//")
-                        or s.startswith("[[") or s.startswith("template")
-                        or s.startswith("requires")):
+                if (
+                    not s
+                    or s.startswith("//")
+                    or s.startswith("[[")
+                    or s.startswith("template")
+                    or s.startswith("requires")
+                ):
                     cur -= 1
                     skip += 1
                     continue
@@ -1512,18 +1749,22 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     break
             if open_idx < 0:
                 continue
-            block = "\n".join(lines2[open_idx:cur + 1])
+            block = "\n".join(lines2[open_idx : cur + 1])
             # If the block is just `/** @brief ... */` on one line above a
             # type-level def, the doc-missing-brief-h rule is happy. But
             # if it's above a function declaration, CLAUDE.md still says it
             # shouldn't be there. Report it with a kind that maps to advisory
             # (heuristic only, broad existing-code debt).
-            out.append(Finding(
-                open_idx + 1, "doc-header-function-block",
-                "header function declaration carries a doxygen block -- "
-                "headers should hold ONLY @brief banners above type-level "
-                "definitions; delete the block (CLAUDE.md \"Headers (.h) -- "
-                "strict rule\")"))
+            out.append(
+                Finding(
+                    open_idx + 1,
+                    "doc-header-function-block",
+                    "header function declaration carries a doxygen block -- "
+                    "headers should hold ONLY @brief banners above type-level "
+                    'definitions; delete the block (CLAUDE.md "Headers (.h) -- '
+                    'strict rule")',
+                )
+            )
 
     # ---- Header-only rules: in-header member init, @brief on type-level defs
     if is_header:
@@ -1551,17 +1792,24 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                 last_ident = name.split()[-1].lstrip("&*")
                 if not last_ident.startswith("m_"):
                     continue
-                out.append(Finding(
-                    line, "qt-header-member-init",
-                    f"in-header default init `{last_ident}` -- "
-                    f"initialize in the constructor member init list"))
+                out.append(
+                    Finding(
+                        line,
+                        "qt-header-member-init",
+                        f"in-header default init `{last_ident}` -- "
+                        f"initialize in the constructor member init list",
+                    )
+                )
 
         # Type-level @brief: every class/struct/enum/typedef/using-alias at
         # namespace scope needs a /** @brief */ banner, per CLAUDE.md.
         for n in _walk(root):
             if n.type not in {
-                "class_specifier", "struct_specifier",
-                "enum_specifier", "type_definition", "alias_declaration",
+                "class_specifier",
+                "struct_specifier",
+                "enum_specifier",
+                "type_definition",
+                "alias_declaration",
             }:
                 continue
             # Skip nested types (parent is field_declaration_list / class
@@ -1569,8 +1817,7 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             if _is_nested_type(n):
                 continue
             # Skip forward declarations (no body / definition).
-            if n.type in ("class_specifier", "struct_specifier",
-                          "enum_specifier"):
+            if n.type in ("class_specifier", "struct_specifier", "enum_specifier"):
                 body_field = n.child_by_field_name("body")
                 if body_field is None:
                     continue
@@ -1584,9 +1831,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             if not _previous_doxygen_brief(n, src):
                 name = _type_name(n, src)
                 if name:
-                    out.append(Finding(
-                        line, "doc-missing-brief-h",
-                        f"`{name}` lacks a preceding `/** @brief ... */`"))
+                    out.append(
+                        Finding(
+                            line,
+                            "doc-missing-brief-h",
+                            f"`{name}` lacks a preceding `/** @brief ... */`",
+                        )
+                    )
             else:
                 # Verbose @brief on a type-level definition. Same rule:
                 # one-line `/** @brief ... */`, no `@param`/`@note`/blank-`*`
@@ -1596,13 +1847,18 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     rng = _previous_doxygen_block_range(n, src)
                     if rng is not None:
                         open_idx, close_idx = rng
-                        block_lines = src.decode("utf-8", errors="replace") \
-                            .split("\n")[open_idx:close_idx + 1]
+                        block_lines = src.decode("utf-8", errors="replace").split("\n")[
+                            open_idx : close_idx + 1
+                        ]
                         reason = _verbose_doxygen_reason(block_lines)
                         if reason and not fenced(open_idx + 1):
-                            out.append(Finding(
-                                open_idx + 1, "doc-verbose-brief",
-                                f"verbose doxygen above `{name}`: {reason}"))
+                            out.append(
+                                Finding(
+                                    open_idx + 1,
+                                    "doc-verbose-brief",
+                                    f"verbose doxygen above `{name}`: {reason}",
+                                )
+                            )
 
     # ---- nodiscard on const getters in headers. CLAUDE.md says
     # "[[nodiscard]] on every non-void return". We narrow to the case
@@ -1649,9 +1905,13 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
             # leaves a clean exit condition).
             if name.startswith("set") and len(name) > 3 and name[3].isupper():
                 continue
-            out.append(Finding(
-                line, "qt-missing-nodiscard",
-                f"non-void const getter `{name}` lacks `[[nodiscard]]`"))
+            out.append(
+                Finding(
+                    line,
+                    "qt-missing-nodiscard",
+                    f"non-void const getter `{name}` lacks `[[nodiscard]]`",
+                )
+            )
 
     # ---- Hardcoded JSON keys: only flag inside writer/reader functions,
     # detected by presence of `ss_jsr(` OR `QJsonObject` OR `QJsonValue` in
@@ -1666,10 +1926,14 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                 # Match `"<key>"` literal where <key> is in the curated list.
                 for m in re.finditer(r'"([A-Za-z_][A-Za-z0-9_]*)"', scrubbed):
                     if m.group(1) in _PROJECT_KEY_LITERALS:
-                        out.append(Finding(
-                            i, "keys-hardcoded-literal",
-                            f"hardcoded JSON key `\"{m.group(1)}\"` -- "
-                            f"use `Keys::{_camel(m.group(1))}` from Frame.h"))
+                        out.append(
+                            Finding(
+                                i,
+                                "keys-hardcoded-literal",
+                                f'hardcoded JSON key `"{m.group(1)}"` -- '
+                                f"use `Keys::{_camel(m.group(1))}` from Frame.h",
+                            )
+                        )
                         break  # one finding per line is plenty
 
     # ---- False-sharing risk: adjacent std::atomic / QAtomic members in a
@@ -1708,9 +1972,14 @@ def _function_name(func_node, src: bytes) -> str:
     while decl is not None and decl.type == "qualified_identifier":
         nested = None
         for child in decl.children:
-            if child.type in ("identifier", "field_identifier",
-                              "destructor_name", "qualified_identifier",
-                              "operator_name", "template_function"):
+            if child.type in (
+                "identifier",
+                "field_identifier",
+                "destructor_name",
+                "qualified_identifier",
+                "operator_name",
+                "template_function",
+            ):
                 nested = child
         if nested is None:
             return ""
@@ -1800,14 +2069,23 @@ def _anon_member_label(node, src: bytes) -> str:
     if node.type == "function_definition":
         name = _function_name(node, src)
         return name if name else "<function>"
-    if node.type in ("class_specifier", "struct_specifier", "enum_specifier",
-                     "union_specifier", "type_definition", "alias_declaration"):
+    if node.type in (
+        "class_specifier",
+        "struct_specifier",
+        "enum_specifier",
+        "union_specifier",
+        "type_definition",
+        "alias_declaration",
+    ):
         name = _type_name(node, src)
         return name if name else "<type>"
     if node.type == "template_declaration":
         for child in node.children:
-            if child.type in ("function_definition", "class_specifier",
-                              "struct_specifier"):
+            if child.type in (
+                "function_definition",
+                "class_specifier",
+                "struct_specifier",
+            ):
                 return _anon_member_label(child, src)
         return "<template>"
     if node.type == "declaration":
@@ -1877,44 +2155,61 @@ def _camel(snake: str) -> str:
 
 _NARRATION_PATTERNS = [
     # Tutorial voice -- "we", "let's", "now we"
-    (re.compile(r"\b(?:we|let's|let us|now we|first we)\b", re.IGNORECASE),
-     "tutorial voice (`we`/`let's`) -- rewrite without the first person"),
+    (
+        re.compile(r"\b(?:we|let's|let us|now we|first we)\b", re.IGNORECASE),
+        "tutorial voice (`we`/`let's`) -- rewrite without the first person",
+    ),
     # "This is a helper / function / class that..."
-    (re.compile(
-        r"\bThis is a (?:helper |small |simple |utility )?"
-        r"(?:function|class|method|variable|helper|piece of code|wrapper|macro)\b"),
-     "tutorial voice (`This is a function/class/...`) -- the code already says that"),
+    (
+        re.compile(
+            r"\bThis is a (?:helper |small |simple |utility )?"
+            r"(?:function|class|method|variable|helper|piece of code|wrapper|macro)\b"
+        ),
+        "tutorial voice (`This is a function/class/...`) -- the code already says that",
+    ),
     # Throat-clearing prefixes
-    (re.compile(r"\b(?:Note that|Please note|FYI)\b"),
-     "throat-clearing (`Note that`/`FYI`) -- drop the prefix or drop the comment"),
+    (
+        re.compile(r"\b(?:Note that|Please note|FYI)\b"),
+        "throat-clearing (`Note that`/`FYI`) -- drop the prefix or drop the comment",
+    ),
     # Caller references
-    (re.compile(
-        r"\b(?:Used by|Called from|Called by|Invoked by|invoked from)\b"),
-     "caller-reference (`Used by`/`Called from`) -- those rot; if it's load-bearing, "
-     "encode it as an invariant in the function instead"),
+    (
+        re.compile(r"\b(?:Used by|Called from|Called by|Invoked by|invoked from)\b"),
+        "caller-reference (`Used by`/`Called from`) -- those rot; if it's load-bearing, "
+        "encode it as an invariant in the function instead",
+    ),
     # Rot-references (phrasing tied to a transient state)
-    (re.compile(
-        r"\b(?:this PR|recent fix|the recent (?:fix|change)|"
-        r"as mentioned above|see below|see above)\b", re.IGNORECASE),
-     "rot-reference (`this PR`/`see below`) -- moves the moment it ships; put context "
-     "in the commit message"),
+    (
+        re.compile(
+            r"\b(?:this PR|recent fix|the recent (?:fix|change)|"
+            r"as mentioned above|see below|see above)\b",
+            re.IGNORECASE,
+        ),
+        "rot-reference (`this PR`/`see below`) -- moves the moment it ships; put context "
+        "in the commit message",
+    ),
     # Restating the code
-    (re.compile(r"\b(?:Loops over|Iterates over|Iterate through)\b"),
-     "restating the code (`Loops over`/`Iterates over`) -- the loop already says that"),
+    (
+        re.compile(r"\b(?:Loops over|Iterates over|Iterate through)\b"),
+        "restating the code (`Loops over`/`Iterates over`) -- the loop already says that",
+    ),
     # Hedging
-    (re.compile(
-        r"\b(?:For now,|for now,|For clarity,|for clarity,|ideally,)\b"),
-     "hedging (`for now`/`ideally`) -- be definite or delete"),
+    (
+        re.compile(r"\b(?:For now,|for now,|For clarity,|for clarity,|ideally,)\b"),
+        "hedging (`for now`/`ideally`) -- be definite or delete",
+    ),
     # Filler adverbs
-    (re.compile(r"\b(?:simply|basically)\b", re.IGNORECASE),
-     "filler adverb (`simply`/`basically`) -- delete or rephrase"),
+    (
+        re.compile(r"\b(?:simply|basically)\b", re.IGNORECASE),
+        "filler adverb (`simply`/`basically`) -- delete or rephrase",
+    ),
 ]
 
 # Files whose prose is upstream and not authored by this codebase.
 _NARRATION_VENDORED_PATH_HINTS = (
     "/ThirdParty/",
     "/lemonsqueezy/",  # Pro license-server example template
-    "/SimpleCrypt.",   # Andre Somers' vendored crypto helper
+    "/SimpleCrypt.",  # Andre Somers' vendored crypto helper
 )
 
 
@@ -1952,26 +2247,33 @@ def _is_vendored_path(path: Path) -> bool:
 # region in `// code-verify off` to silence the rule with intent.
 
 _STDIO_PATTERNS = [
-    (re.compile(r"\bstd::(?:cout|cerr|clog)\b"),
-     "qt-prefer-qdebug",
-     "`std::cout` / `std::cerr` -- prefer `qDebug()` / `qWarning()` "
-     "(routes through the Qt message handler and the Console widget)"),
-    (re.compile(r"^\s*#include\s+<iostream>"),
-     "qt-prefer-qdebug",
-     "`<iostream>` -- prefer `<QDebug>` (Qt streams integrate with the message handler)"),
-    (re.compile(r"\bprintf\s*\("),
-     "qt-prefer-qdebug",
-     "`printf(...)` -- prefer `qDebug()` (Qt routes through the message handler "
-     "and the Console widget)"),
-    (re.compile(r"\bstd::endl\b"),
-     "qt-prefer-newline",
-     "`std::endl` flushes the stream on every line -- use `'\\n'` "
-     "(or Qt::endl when explicit flushing is intentional)"),
+    (
+        re.compile(r"\bstd::(?:cout|cerr|clog)\b"),
+        "qt-prefer-qdebug",
+        "`std::cout` / `std::cerr` -- prefer `qDebug()` / `qWarning()` "
+        "(routes through the Qt message handler and the Console widget)",
+    ),
+    (
+        re.compile(r"^\s*#include\s+<iostream>"),
+        "qt-prefer-qdebug",
+        "`<iostream>` -- prefer `<QDebug>` (Qt streams integrate with the message handler)",
+    ),
+    (
+        re.compile(r"\bprintf\s*\("),
+        "qt-prefer-qdebug",
+        "`printf(...)` -- prefer `qDebug()` (Qt routes through the message handler "
+        "and the Console widget)",
+    ),
+    (
+        re.compile(r"\bstd::endl\b"),
+        "qt-prefer-newline",
+        "`std::endl` flushes the stream on every line -- use `'\\n'` "
+        "(or Qt::endl when explicit flushing is intentional)",
+    ),
 ]
 
 
-def _stdio_findings(src_text: str, path: Path,
-                    fence_mask: list[bool]) -> list[Finding]:
+def _stdio_findings(src_text: str, path: Path, fence_mask: list[bool]) -> list[Finding]:
     """Flag raw-stdio output (`std::cout`, `<iostream>`, `printf`, `std::endl`)
     in Qt source code. Strings and `//` line comments are masked first so
     `// printf("...")` in prose doesn't fire."""
@@ -1994,8 +2296,9 @@ def _stdio_findings(src_text: str, path: Path,
 _TRAILING_DOXY_RE = re.compile(r"/\*\*<")
 
 
-def _trailing_doxy_findings(src_text: str, path: Path,
-                            fence_mask: list[bool]) -> list[Finding]:
+def _trailing_doxy_findings(
+    src_text: str, path: Path, fence_mask: list[bool]
+) -> list[Finding]:
     """Flag trailing-style doxygen `/**< ... */` member comments in headers.
 
     CLAUDE.md "Headers (.h) -- strict rule" forbids member-variable
@@ -2012,15 +2315,20 @@ def _trailing_doxy_findings(src_text: str, path: Path,
         if i - 1 < len(fence_mask) and fence_mask[i - 1]:
             continue
         if _TRAILING_DOXY_RE.search(raw):
-            out.append(Finding(
-                i, "doc-trailing-member",
-                "header member-variable trailing doxygen `/**< ... */` -- "
-                "delete it (CLAUDE.md \"No member-variable comments\" rule)"))
+            out.append(
+                Finding(
+                    i,
+                    "doc-trailing-member",
+                    "header member-variable trailing doxygen `/**< ... */` -- "
+                    'delete it (CLAUDE.md "No member-variable comments" rule)',
+                )
+            )
     return out
 
 
-def _comment_narration_findings(src_text: str, path: Path,
-                                fence_mask: list[bool]) -> list[Finding]:
+def _comment_narration_findings(
+    src_text: str, path: Path, fence_mask: list[bool]
+) -> list[Finding]:
     """Scan comment text in @p src_text and emit one finding per banned pattern.
 
     Walks every line: `// ...` line comments contribute their tail text, and
@@ -2069,17 +2377,32 @@ def _comment_narration_findings(src_text: str, path: Path,
 # Files that are allowed to use direct font.pixelSize/font.family. These are
 # the dashboard widgets that compute zoom-dependent font sizes; the
 # `font:` helpers don't accept dynamic sizes.
-_FONT_PIXEL_OK_FILES = frozenset({
-    "FFTPlot.qml", "Plot.qml", "MultiPlot.qml", "Bar.qml",
-    "Gauge.qml", "Compass.qml", "DataGrid.qml", "Accelerometer.qml",
-    "Gyroscope.qml", "GPS.qml", "LEDPanel.qml", "Plot3D.qml",
-    "Waterfall.qml", "ImageView.qml", "Terminal.qml", "PlotWidget.qml",
-    "VisualRange.qml", "NotificationLog.qml",
-    # Project-editor visualizations that compute zoom-dependent font sizes
-    # are also exempt -- the `font:` helpers don't accept a dynamic
-    # pixelSize, and these views need it for Ctrl+Wheel zoom.
-    "FlowDiagram.qml",
-})
+_FONT_PIXEL_OK_FILES = frozenset(
+    {
+        "FFTPlot.qml",
+        "Plot.qml",
+        "MultiPlot.qml",
+        "Bar.qml",
+        "Gauge.qml",
+        "Compass.qml",
+        "DataGrid.qml",
+        "Accelerometer.qml",
+        "Gyroscope.qml",
+        "GPS.qml",
+        "LEDPanel.qml",
+        "Plot3D.qml",
+        "Waterfall.qml",
+        "ImageView.qml",
+        "Terminal.qml",
+        "PlotWidget.qml",
+        "VisualRange.qml",
+        "NotificationLog.qml",
+        # Project-editor visualizations that compute zoom-dependent font sizes
+        # are also exempt -- the `font:` helpers don't accept a dynamic
+        # pixelSize, and these views need it for Ctrl+Wheel zoom.
+        "FlowDiagram.qml",
+    }
+)
 
 
 def _qml_rules(src: str, path: Path, fence_mask: list[bool]) -> list[Finding]:
@@ -2103,22 +2426,33 @@ def _qml_rules(src: str, path: Path, fence_mask: list[bool]) -> list[Finding]:
         # dashboard whitelist. JS function bodies inside QML still match,
         # but those very rarely set fonts.
         if not file_allows_pixel:
-            if re.search(r"\bfont\.(pixelSize|pointSize|family|bold|italic"
-                         r"|weight|capitalization)\s*:", line):
-                out.append(Finding(
-                    i, "qml-font-pixel",
-                    "use `font: Cpp_Misc_CommonFonts.uiFont` (or another "
-                    "helper) instead of individual `font.*` sub-properties"))
+            if re.search(
+                r"\bfont\.(pixelSize|pointSize|family|bold|italic"
+                r"|weight|capitalization)\s*:",
+                line,
+            ):
+                out.append(
+                    Finding(
+                        i,
+                        "qml-font-pixel",
+                        "use `font: Cpp_Misc_CommonFonts.uiFont` (or another "
+                        "helper) instead of individual `font.*` sub-properties",
+                    )
+                )
 
         # qml-bus-type-int: `busType: <integer>` or `BusType: <int>`. The
         # property name on a `Source` is `busType`; the C++ enum is
         # `SerialStudio.BusType.UART`. Reject literal ints.
         m = re.search(r"\bbusType\s*:\s*(-?\d+)\b", line)
         if m:
-            out.append(Finding(
-                i, "qml-bus-type-int",
-                f"hardcoded busType `{m.group(1)}` -- use "
-                f"`SerialStudio.BusType.<NAME>`"))
+            out.append(
+                Finding(
+                    i,
+                    "qml-bus-type-int",
+                    f"hardcoded busType `{m.group(1)}` -- use "
+                    f"`SerialStudio.BusType.<NAME>`",
+                )
+            )
 
     return out
 
@@ -2126,6 +2460,7 @@ def _qml_rules(src: str, path: Path, fence_mask: list[bool]) -> list[Finding]:
 # ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
+
 
 def analyze(path: Path, src_text: str, fence_mask: list[bool]) -> list[Finding]:
     """Run every applicable rule against `src_text` for `path`. The driver

@@ -8,7 +8,6 @@ source so regressions are caught even when integration tests are not running.
 from pathlib import Path
 import re
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -40,13 +39,17 @@ def test_hal_write_api_uses_signed_sizes():
         "app/src/IO/Drivers/Audio.h",
         "app/src/IO/Drivers/Modbus.h",
     ]:
-        assert "[[nodiscard]] qint64 write(const QByteArray& data) override;" in _read(rel)
+        assert "[[nodiscard]] qint64 write(const QByteArray& data) override;" in _read(
+            rel
+        )
 
 
 def test_io_manager_bounds_written_byte_count():
     text = _read("app/src/IO/ConnectionManager.cpp")
 
-    assert "const qint64 boundedBytes = qMin<qint64>(bytes, writtenData.size());" in text
+    assert (
+        "const qint64 boundedBytes = qMin<qint64>(bytes, writtenData.size());" in text
+    )
     assert "writtenData.chop(writtenData.length() - boundedBytes);" in text
 
 
@@ -227,16 +230,18 @@ def test_license_guard_present_in_mdf4_export():
     """MDF4::ExportWorker::createFile() must check SS_LICENSE_GUARD()."""
     text = _read("app/src/MDF4/Export.cpp")
 
-    assert text.count("SS_LICENSE_GUARD()") >= 2, \
-        "SS_LICENSE_GUARD() should appear in both createFile and setExportEnabled in MDF4::Export"
+    assert (
+        text.count("SS_LICENSE_GUARD()") >= 2
+    ), "SS_LICENSE_GUARD() should appear in both createFile and setExportEnabled in MDF4::Export"
 
 
 def test_license_guard_present_in_console_export():
     """Console::ExportWorker::createFile() must check SS_LICENSE_GUARD()."""
     text = _read("app/src/Console/Export.cpp")
 
-    assert text.count("SS_LICENSE_GUARD()") >= 2, \
-        "SS_LICENSE_GUARD() should appear in both createFile and setExportEnabled in Console::Export"
+    assert (
+        text.count("SS_LICENSE_GUARD()") >= 2
+    ), "SS_LICENSE_GUARD() should appear in both createFile and setExportEnabled in Console::Export"
 
 
 def test_license_guard_present_in_connection_manager():
@@ -308,10 +313,11 @@ def test_license_guard_minimum_count():
     """The generator must produce at least 20 guard functions."""
     text = _read("cmake/GenLicenseGuards.cmake")
 
-    match = re.search(r'set\(_LG_COUNT\s+(\d+)\)', text)
+    match = re.search(r"set\(_LG_COUNT\s+(\d+)\)", text)
     assert match, "_LG_COUNT not found in GenLicenseGuards.cmake"
-    assert int(match.group(1)) >= 20, \
-        f"Guard count too low: {match.group(1)} (minimum 20)"
+    assert (
+        int(match.group(1)) >= 20
+    ), f"Guard count too low: {match.group(1)} (minimum 20)"
 
 
 def test_license_guard_build_dir_is_gitignored():
@@ -360,14 +366,27 @@ def test_timestamp_pipeline_starts_in_driver_and_shares_parsed_frames():
     assert "void processData(const IO::CapturedDataPtr& data);" in reader_h
     assert "frameTimestamp(qsizetype endOffsetExclusive)" in reader_h
     assert "buildFrame(QByteArray&& data, qsizetype endOffsetExclusive)" in reader_h
-    assert "m_queue.try_enqueue(buildFrame(std::move(frame), frameEndPos))" in reader_cpp
+    assert (
+        "m_queue.try_enqueue(buildFrame(std::move(frame), frameEndPos))" in reader_cpp
+    )
 
     assert "void hotpathRxFrame(const IO::CapturedDataPtr& data);" in builder_h
-    assert "void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);" in builder_h
+    assert (
+        "void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);" in builder_h
+    )
     assert "dashboard.hotpathRxFrame(frame);" in builder_cpp
-    assert "std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i)" in builder_cpp
+    assert (
+        "std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i)"
+        in builder_cpp
+    )
     assert "updateTimestampedFramesEnabled" not in builder_cpp
     assert "nextTimestampedFrameTime" not in builder_cpp
 
-    assert "void hotpathRxFrame(const DataModel::TimestampedFramePtr& frame);" in dashboard_h
-    assert "void hotpathTxRawBytes(int deviceId, const IO::CapturedDataPtr& data);" in sessions_h
+    assert (
+        "void hotpathRxFrame(const DataModel::TimestampedFramePtr& frame);"
+        in dashboard_h
+    )
+    assert (
+        "void hotpathTxRawBytes(int deviceId, const IO::CapturedDataPtr& data);"
+        in sessions_h
+    )

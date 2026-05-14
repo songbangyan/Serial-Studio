@@ -30,7 +30,7 @@ import time
 
 
 class LorenzAttractor:
-    def __init__(self, sigma=10.0, rho=28.0, beta=8.0/3.0, dt=0.01):
+    def __init__(self, sigma=10.0, rho=28.0, beta=8.0 / 3.0, dt=0.01):
         self.sigma = sigma
         self.rho = rho
         self.beta = beta
@@ -53,7 +53,7 @@ class LorenzAttractor:
 
 
 def main():
-    host = '127.0.0.1'
+    host = "127.0.0.1"
     port = 9000
     transmission_interval = 0.001
 
@@ -73,11 +73,13 @@ def main():
 
             message = f"{x:.6f},{y:.6f},{z:.6f}\n"
 
-            sock.sendto(message.encode('utf-8'), (host, port))
+            sock.sendto(message.encode("utf-8"), (host, port))
 
             packet_count += 1
             if packet_count % 1000 == 0:
-                print(f"Sent {packet_count} packets - Current: x={x:.3f}, y={y:.3f}, z={z:.3f}")
+                print(
+                    f"Sent {packet_count} packets - Current: x={x:.3f}, y={y:.3f}, z={z:.3f}"
+                )
 
             time.sleep(transmission_interval)
 

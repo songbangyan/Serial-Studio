@@ -53,7 +53,9 @@ class DoSTester:
     def get_process_stats(self):
         """Get current process resource usage"""
         try:
-            for proc in psutil.process_iter(["pid", "name", "memory_info", "cpu_percent"]):
+            for proc in psutil.process_iter(
+                ["pid", "name", "memory_info", "cpu_percent"]
+            ):
                 if "Serial-Studio" in proc.info["name"]:
                     return {
                         "pid": proc.info["pid"],
@@ -126,9 +128,7 @@ def test_memory_exhaustion(tester):
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.connect((tester.host, tester.port))
-            sock.sendall(
-                b'{"type":"command","id":"x","command":"api.getCommands"}\n'
-            )
+            sock.sendall(b'{"type":"command","id":"x","command":"api.getCommands"}\n')
             sock.close()
         except:
             pass
@@ -138,7 +138,9 @@ def test_memory_exhaustion(tester):
 
     if initial_stats and final_stats:
         memory_increase = final_stats["memory_mb"] - initial_stats["memory_mb"]
-        print(f"    Memory increased by {memory_increase:.2f} MB after 1000 connections")
+        print(
+            f"    Memory increased by {memory_increase:.2f} MB after 1000 connections"
+        )
 
         if memory_increase > 100:
             tester.log_success(
@@ -187,9 +189,13 @@ def test_cpu_exhaustion(tester):
         print(f"    Duration: {elapsed:.2f}s")
 
         if final_stats["cpu_percent"] > 90:
-            tester.log_success("CPU Exhaustion", f"CPU reached {final_stats['cpu_percent']:.1f}%")
+            tester.log_success(
+                "CPU Exhaustion", f"CPU reached {final_stats['cpu_percent']:.1f}%"
+            )
         else:
-            print(f"    Server maintained {final_stats['cpu_percent']:.1f}% CPU under load")
+            print(
+                f"    Server maintained {final_stats['cpu_percent']:.1f}% CPU under load"
+            )
 
     # Attack 2: Complex JSON parsing
     print("  - Testing complex JSON parsing...")
@@ -313,7 +319,9 @@ def test_slowloris_attack(tester):
     elapsed = time.time() - start_time
     still_connected = sum(1 for s in slow_sockets if s.fileno() != -1)
 
-    print(f"    After {elapsed:.1f}s: {still_connected}/{len(slow_sockets)} still connected")
+    print(
+        f"    After {elapsed:.1f}s: {still_connected}/{len(slow_sockets)} still connected"
+    )
 
     if still_connected > len(slow_sockets) * 0.5:
         tester.log_success(
@@ -357,7 +365,9 @@ def test_bandwidth_exhaustion(tester):
         elapsed = time.time() - start_time
         bandwidth_mbps = (total_sent / elapsed) / (1024 * 1024)
 
-        print(f"    Sent {total_sent / (1024*1024):.2f} MB in {elapsed:.2f}s ({bandwidth_mbps:.2f} MB/s)")
+        print(
+            f"    Sent {total_sent / (1024*1024):.2f} MB in {elapsed:.2f}s ({bandwidth_mbps:.2f} MB/s)"
+        )
 
         sock.close()
 
@@ -365,7 +375,9 @@ def test_bandwidth_exhaustion(tester):
         if tester.check_server_responsive(timeout=5.0):
             print("    Server responsive after bandwidth flood")
         else:
-            tester.log_success("Bandwidth Exhaustion", "Server unresponsive after flood")
+            tester.log_success(
+                "Bandwidth Exhaustion", "Server unresponsive after flood"
+            )
 
     except Exception as e:
         print(f"    Exception: {e}")
@@ -403,7 +415,9 @@ def test_queue_overflow(tester):
         if tester.check_server_responsive():
             print("    Server still responsive")
         else:
-            tester.log_success("Queue Overflow", "Server unresponsive after message flood")
+            tester.log_success(
+                "Queue Overflow", "Server unresponsive after message flood"
+            )
 
     except Exception as e:
         print(f"    Exception: {e}")
@@ -452,7 +466,9 @@ def test_amplification_attack(tester):
     try:
         with SerialStudioClient() as client:
             # Small request
-            request_size = len(b'{"type":"command","id":"x","command":"api.getCommands"}\n')
+            request_size = len(
+                b'{"type":"command","id":"x","command":"api.getCommands"}\n'
+            )
 
             responses = []
             for i in range(100):

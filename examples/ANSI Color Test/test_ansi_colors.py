@@ -11,17 +11,17 @@ import socket
 import sys
 import time
 
-
-HOST = '127.0.0.1'
+HOST = "127.0.0.1"
 PORT = 9000
 
 
 # ─── Transport ────────────────────────────────────────────────────────────────
 
+
 def send(text, host=HOST, port=PORT):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
-        sock.sendto(text.encode('utf-8'), (host, port))
+        sock.sendto(text.encode("utf-8"), (host, port))
     finally:
         sock.close()
 
@@ -58,12 +58,18 @@ def hsv_to_rgb(h, s, v):
     c_val = v * s
     x = c_val * (1 - abs((h / 60) % 2 - 1))
     m = v - c_val
-    if   h < 60:  rv, gv, bv = c_val, x,     0
-    elif h < 120: rv, gv, bv = x,     c_val, 0
-    elif h < 180: rv, gv, bv = 0,     c_val, x
-    elif h < 240: rv, gv, bv = 0,     x,     c_val
-    elif h < 300: rv, gv, bv = x,     0,     c_val
-    else:         rv, gv, bv = c_val, 0,     x
+    if h < 60:
+        rv, gv, bv = c_val, x, 0
+    elif h < 120:
+        rv, gv, bv = x, c_val, 0
+    elif h < 180:
+        rv, gv, bv = 0, c_val, x
+    elif h < 240:
+        rv, gv, bv = 0, x, c_val
+    elif h < 300:
+        rv, gv, bv = x, 0, c_val
+    else:
+        rv, gv, bv = c_val, 0, x
     return (int((rv + m) * 255), int((gv + m) * 255), int((bv + m) * 255))
 
 
@@ -80,24 +86,25 @@ def section(title):
 
 # ─── 1. Text Attributes ───────────────────────────────────────────────────────
 
+
 def test_attributes():
     section("Text Attributes")
 
     attrs = [
-        ("0",     "Normal"),
-        ("1",     "Bold"),
-        ("2",     "Dim"),
-        ("3",     "Italic"),
-        ("4",     "Underline"),
-        ("4:2",   "Double Underline"),
-        ("4:3",   "Curly Underline"),
-        ("5",     "Blink"),
-        ("7",     "Reverse"),
-        ("8",     "Hidden"),
-        ("9",     "Strikethrough"),
-        ("1;4",   "Bold + Underline"),
-        ("1;7",   "Bold + Reverse"),
-        ("3;9",   "Italic + Strikethrough"),
+        ("0", "Normal"),
+        ("1", "Bold"),
+        ("2", "Dim"),
+        ("3", "Italic"),
+        ("4", "Underline"),
+        ("4:2", "Double Underline"),
+        ("4:3", "Curly Underline"),
+        ("5", "Blink"),
+        ("7", "Reverse"),
+        ("8", "Hidden"),
+        ("9", "Strikethrough"),
+        ("1;4", "Bold + Underline"),
+        ("1;7", "Bold + Reverse"),
+        ("3;9", "Italic + Strikethrough"),
     ]
 
     for code, name in attrs:
@@ -108,24 +115,49 @@ def test_attributes():
 
 # ─── 2. 4-bit Colors ──────────────────────────────────────────────────────────
 
+
 def test_4bit():
     section("4-bit Colors  (16 standard ANSI colors)")
 
     fg_normal = [
-        (30, "Black"),   (31, "Red"),     (32, "Green"),   (33, "Yellow"),
-        (34, "Blue"),    (35, "Magenta"), (36, "Cyan"),    (37, "White"),
+        (30, "Black"),
+        (31, "Red"),
+        (32, "Green"),
+        (33, "Yellow"),
+        (34, "Blue"),
+        (35, "Magenta"),
+        (36, "Cyan"),
+        (37, "White"),
     ]
     fg_bright = [
-        (90, "Br. Black"),  (91, "Br. Red"),    (92, "Br. Green"),  (93, "Br. Yellow"),
-        (94, "Br. Blue"),   (95, "Br. Magenta"), (96, "Br. Cyan"),   (97, "Br. White"),
+        (90, "Br. Black"),
+        (91, "Br. Red"),
+        (92, "Br. Green"),
+        (93, "Br. Yellow"),
+        (94, "Br. Blue"),
+        (95, "Br. Magenta"),
+        (96, "Br. Cyan"),
+        (97, "Br. White"),
     ]
     bg_normal = [
-        (40, "Black"),   (41, "Red"),     (42, "Green"),   (43, "Yellow"),
-        (44, "Blue"),    (45, "Magenta"), (46, "Cyan"),    (47, "White"),
+        (40, "Black"),
+        (41, "Red"),
+        (42, "Green"),
+        (43, "Yellow"),
+        (44, "Blue"),
+        (45, "Magenta"),
+        (46, "Cyan"),
+        (47, "White"),
     ]
     bg_bright = [
-        (100, "Br. Black"),  (101, "Br. Red"),    (102, "Br. Green"),  (103, "Br. Yellow"),
-        (104, "Br. Blue"),   (105, "Br. Magenta"), (106, "Br. Cyan"),   (107, "Br. White"),
+        (100, "Br. Black"),
+        (101, "Br. Red"),
+        (102, "Br. Green"),
+        (103, "Br. Yellow"),
+        (104, "Br. Blue"),
+        (105, "Br. Magenta"),
+        (106, "Br. Cyan"),
+        (107, "Br. White"),
     ]
 
     emit("  Foreground — normal (30–37):\n")
@@ -149,6 +181,7 @@ def test_4bit():
 
 # ─── 3. 4-bit FG × BG Matrix ─────────────────────────────────────────────────
 
+
 def test_color_matrix():
     section("4-bit FG × BG Matrix")
 
@@ -168,6 +201,7 @@ def test_color_matrix():
 
 
 # ─── 4. 256-Color Palette ─────────────────────────────────────────────────────
+
 
 def test_256_colors():
     section("8-bit Colors  (256-color palette)")
@@ -203,6 +237,7 @@ def test_256_colors():
 
 # ─── 5. 24-bit Truecolor ──────────────────────────────────────────────────────
 
+
 def test_truecolor():
     section("24-bit Truecolor  (16.7 million colors)")
 
@@ -219,10 +254,10 @@ def test_truecolor():
 
     # Primary channel ramps
     channel_ramps = [
-        ("Red   (R→0)",  lambda t: (int(t * 255), 0,            0           )),
-        ("Green (G→0)",  lambda t: (0,            int(t * 255), 0           )),
-        ("Blue  (B→0)",  lambda t: (0,            0,            int(t * 255))),
-        ("White (0→W)",  lambda t: (int(t * 255), int(t * 255), int(t * 255))),
+        ("Red   (R→0)", lambda t: (int(t * 255), 0, 0)),
+        ("Green (G→0)", lambda t: (0, int(t * 255), 0)),
+        ("Blue  (B→0)", lambda t: (0, 0, int(t * 255))),
+        ("White (0→W)", lambda t: (int(t * 255), int(t * 255), int(t * 255))),
     ]
 
     emit("  Primary channel ramps:\n")
@@ -233,11 +268,11 @@ def test_truecolor():
 
     # Multi-color gradients
     gradients = [
-        ("Red → Blue",    (255,   0,   0), (  0,   0, 255)),
-        ("Green → Yellow",(  0, 180,   0), (255, 220,   0)),
-        ("Cyan → Magenta",(  0, 210, 210), (210,   0, 210)),
-        ("Black → White", (  0,   0,   0), (255, 255, 255)),
-        ("Navy → Orange", ( 10,  10, 100), (255, 140,   0)),
+        ("Red → Blue", (255, 0, 0), (0, 0, 255)),
+        ("Green → Yellow", (0, 180, 0), (255, 220, 0)),
+        ("Cyan → Magenta", (0, 210, 210), (210, 0, 210)),
+        ("Black → White", (0, 0, 0), (255, 255, 255)),
+        ("Navy → Orange", (10, 10, 100), (255, 140, 0)),
     ]
 
     emit("\n  Color gradients:\n")
@@ -265,40 +300,42 @@ def test_truecolor():
 
 # ─── 6. Named Truecolor Samples ───────────────────────────────────────────────
 
+
 def test_named_colors():
     section("Named Truecolor Samples  (CSS/X11 reference)")
 
     named = [
-        (255,   0,   0, "Red"),
-        (  0, 128,   0, "Green"),
-        (  0,   0, 255, "Blue"),
-        (255, 255,   0, "Yellow"),
-        (  0, 255, 255, "Cyan"),
-        (255,   0, 255, "Magenta"),
-        (255, 165,   0, "Orange"),
-        (128,   0, 128, "Purple"),
-        (255,  20, 147, "Deep Pink"),
-        ( 64, 224, 208, "Turquoise"),
-        (255, 215,   0, "Gold"),
-        (  0, 191, 255, "Deep Sky Blue"),
-        (138,  43, 226, "Blue Violet"),
-        (  0, 128, 128, "Teal"),
-        (210, 105,  30, "Chocolate"),
+        (255, 0, 0, "Red"),
+        (0, 128, 0, "Green"),
+        (0, 0, 255, "Blue"),
+        (255, 255, 0, "Yellow"),
+        (0, 255, 255, "Cyan"),
+        (255, 0, 255, "Magenta"),
+        (255, 165, 0, "Orange"),
+        (128, 0, 128, "Purple"),
+        (255, 20, 147, "Deep Pink"),
+        (64, 224, 208, "Turquoise"),
+        (255, 215, 0, "Gold"),
+        (0, 191, 255, "Deep Sky Blue"),
+        (138, 43, 226, "Blue Violet"),
+        (0, 128, 128, "Teal"),
+        (210, 105, 30, "Chocolate"),
         (128, 128, 128, "Gray"),
         (192, 192, 192, "Silver"),
-        ( 75,   0, 130, "Indigo"),
+        (75, 0, 130, "Indigo"),
     ]
 
     for rv, gv, bv, name in named:
         swatch = bg(rv, gv, bv) + "    " + R
-        label  = fg(rv, gv, bv) + f"  {name:<18}" + R
-        code   = f"\033[2m  \\033[38;2;{rv};{gv};{bv}m\033[0m"
+        label = fg(rv, gv, bv) + f"  {name:<18}" + R
+        code = f"\033[2m  \\033[38;2;{rv};{gv};{bv}m\033[0m"
         emit(swatch + label + code + "\n", 0.07)
 
     emit("\n", 0.1)
 
 
 # ─── 7. VT-100 / Control Sequences ───────────────────────────────────────────
+
 
 def test_vt100():
     section("VT-100 Control Sequences")
@@ -326,15 +363,15 @@ def test_vt100():
 
     emit("\n  Combined attributes:\n")
     combos = [
-        ("\033[1m",      "Bold"),
-        ("\033[2m",      "Dim"),
-        ("\033[3m",      "Italic"),
-        ("\033[4m",      "Underline"),
-        ("\033[7m",      "Reverse"),
-        ("\033[9m",      "Strikethrough"),
-        ("\033[1;31m",   "Bold Red"),
-        ("\033[1;32m",   "Bold Green"),
-        ("\033[4;34m",   "Underline Blue"),
+        ("\033[1m", "Bold"),
+        ("\033[2m", "Dim"),
+        ("\033[3m", "Italic"),
+        ("\033[4m", "Underline"),
+        ("\033[7m", "Reverse"),
+        ("\033[9m", "Strikethrough"),
+        ("\033[1;31m", "Bold Red"),
+        ("\033[1;32m", "Bold Green"),
+        ("\033[4;34m", "Underline Blue"),
         ("\033[1;7;33m", "Bold + Reverse + Yellow"),
     ]
     for code, name in combos:
@@ -345,11 +382,14 @@ def test_vt100():
 
 # ─── 8. 2D Truecolor Rendering ────────────────────────────────────────────────
 
+
 def test_2d_render():
     section("2D Truecolor Rendering  (plasma / sine field)")
 
-    emit("  Each cell is an independent 24-bit RGB value.\n"
-         "  Banding or posterization indicates limited color support.\n\n")
+    emit(
+        "  Each cell is an independent 24-bit RGB value.\n"
+        "  Banding or posterization indicates limited color support.\n\n"
+    )
 
     rows, cols = 14, 64
     for row in range(rows):
@@ -370,17 +410,24 @@ def test_2d_render():
 
 # ─── Summary ──────────────────────────────────────────────────────────────────
 
+
 def print_summary():
     section("Summary")
 
     tests = [
-        ("Text attributes",          "bold, dim, italic, underline, blink, reverse, strikethrough"),
-        ("4-bit colors",             "16-color foreground and background, FG×BG matrix"),
-        ("8-bit colors",             "256-color system palette, RGB cube, grayscale ramp"),
-        ("24-bit truecolor",         "channel ramps, gradients, hue/saturation/value sweeps"),
-        ("Named truecolor samples",  "18 standard CSS/X11 color references"),
-        ("VT-100 sequences",         "cursor movement, overwrite, erase, combined attributes"),
-        ("2D truecolor rendering",   "sine-field plasma — detects banding or palette reduction"),
+        (
+            "Text attributes",
+            "bold, dim, italic, underline, blink, reverse, strikethrough",
+        ),
+        ("4-bit colors", "16-color foreground and background, FG×BG matrix"),
+        ("8-bit colors", "256-color system palette, RGB cube, grayscale ramp"),
+        ("24-bit truecolor", "channel ramps, gradients, hue/saturation/value sweeps"),
+        ("Named truecolor samples", "18 standard CSS/X11 color references"),
+        ("VT-100 sequences", "cursor movement, overwrite, erase, combined attributes"),
+        (
+            "2D truecolor rendering",
+            "sine-field plasma — detects banding or palette reduction",
+        ),
     ]
 
     for name, detail in tests:
@@ -390,6 +437,7 @@ def print_summary():
 
 
 # ─── Full Run ──────────────────────────────────────────────────────────────────
+
 
 def run_all():
     print("\n" + "─" * 64)
@@ -436,13 +484,13 @@ if __name__ == "__main__":
             opt = sys.argv[1]
             dispatch = {
                 "--attributes": test_attributes,
-                "--4bit":       test_4bit,
-                "--matrix":     test_color_matrix,
-                "--256":        test_256_colors,
-                "--truecolor":  test_truecolor,
-                "--named":      test_named_colors,
-                "--vt100":      test_vt100,
-                "--plasma":     test_2d_render,
+                "--4bit": test_4bit,
+                "--matrix": test_color_matrix,
+                "--256": test_256_colors,
+                "--truecolor": test_truecolor,
+                "--named": test_named_colors,
+                "--vt100": test_vt100,
+                "--plasma": test_2d_render,
             }
             if opt in ("--help", "-h"):
                 print("\nSerial Studio — ANSI Color Test")
@@ -457,7 +505,9 @@ if __name__ == "__main__":
                 print("  --truecolor    24-bit truecolor ramps, gradients, HSV sweeps")
                 print("  --named        Named truecolor samples (CSS/X11 reference)")
                 print("  --vt100        VT-100 cursor, erase, and attribute sequences")
-                print("  --plasma       2D truecolor rendering test (sine-field plasma)")
+                print(
+                    "  --plasma       2D truecolor rendering test (sine-field plasma)"
+                )
                 print("  --help         Show this help")
                 print(f"\nAll output sent via UDP to {HOST}:{PORT}\n")
             elif opt in dispatch:

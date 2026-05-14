@@ -17,10 +17,10 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _list_tables(api_client):
     return api_client.command("project.dataTable.list")
@@ -66,6 +66,7 @@ def _delete_table(api_client, name):
 # ---------------------------------------------------------------------------
 # Table CRUD
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_empty_project_has_no_tables(api_client, clean_state):
@@ -177,6 +178,7 @@ def test_get_missing_table_errors(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Register CRUD
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_add_numeric_register_preserves_type(api_client, clean_state):
@@ -307,13 +309,16 @@ def test_update_missing_register_errors(api_client, clean_state):
 # Persistence round-trip
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_tables_persist_through_json_roundtrip(api_client, clean_state, tmp_path):
     """Tables and registers survive a project export → import cycle."""
     _add_table(api_client, "Calibration")
     _add_register(api_client, "Calibration", "gain", computed=False, value=2.5)
     _add_register(api_client, "Calibration", "offset", computed=False, value=0.1)
-    _add_register(api_client, "Calibration", "mode_label", computed=False, value="ready")
+    _add_register(
+        api_client, "Calibration", "mode_label", computed=False, value="ready"
+    )
 
     # Export the project JSON — project.exportJson returns {config: {...}}
     exported = api_client.command("project.exportJson")

@@ -53,7 +53,9 @@ class TestJSONExploits:
                     got_error_response = True
                 else:
                     # Server accepted it - BAD!
-                    pytest.fail(f"Server accepted {depth} level nesting without error: {response[:200]}")
+                    pytest.fail(
+                        f"Server accepted {depth} level nesting without error: {response[:200]}"
+                    )
 
             sock.close()
 
@@ -63,11 +65,15 @@ class TestJSONExploits:
 
         # Either error response OR connection closure is acceptable
         # We only care if the server CRASHED (process died)
-        assert check_server_alive(wait_time=2.0), "Server crashed on deeply nested JSON (process died)!"
+        assert check_server_alive(
+            wait_time=2.0
+        ), "Server crashed on deeply nested JSON (process died)!"
 
         # Optionally verify defensive behavior worked
         if not (got_error_response or connection_closed):
-            pytest.fail(f"Server neither rejected nor closed connection for {depth}-level nesting")
+            pytest.fail(
+                f"Server neither rejected nor closed connection for {depth}-level nesting"
+            )
 
     def test_oversized_json_payload(self, security_client, vuln_tracker):
         """
@@ -152,7 +158,12 @@ class TestInjectionAttacks:
             "/etc/passwd",
             "C:\\Windows\\System32\\config\\SAM",
         ],
-        ids=["unix_traversal", "windows_traversal", "absolute_unix", "absolute_windows"],
+        ids=[
+            "unix_traversal",
+            "windows_traversal",
+            "absolute_unix",
+            "absolute_windows",
+        ],
     )
     def test_path_traversal(self, security_client, payload, vuln_tracker):
         """
@@ -183,7 +194,14 @@ class TestInjectionAttacks:
             # - Any error containing validation keywords
             valid_rejection = any(
                 keyword in error_msg
-                for keyword in ["error", "invalid", "closed", "not allowed", "permission", "denied"]
+                for keyword in [
+                    "error",
+                    "invalid",
+                    "closed",
+                    "not allowed",
+                    "permission",
+                    "denied",
+                ]
             )
 
             if not valid_rejection:
@@ -205,7 +223,14 @@ class TestInjectionAttacks:
             "${USER}",
             "'; DROP TABLE datasets; --",
         ],
-        ids=["shell_rm", "shell_pipe", "command_subst", "backtick", "var_expansion", "sql_injection"],
+        ids=[
+            "shell_rm",
+            "shell_pipe",
+            "command_subst",
+            "backtick",
+            "var_expansion",
+            "sql_injection",
+        ],
     )
     def test_command_injection(self, security_client, injection, vuln_tracker):
         """Test defense against command injection in parameters"""
@@ -274,7 +299,9 @@ class TestBufferExploits:
                             "Server buffered 10MB without newline without disconnecting",
                             "10MB data",
                         )
-                        pytest.fail("Server accepted 10MB without newline - buffer limit not enforced!")
+                        pytest.fail(
+                            "Server accepted 10MB without newline - buffer limit not enforced!"
+                        )
                 except (socket.timeout, ConnectionError, BrokenPipeError):
                     # Connection closed during command - acceptable
                     connection_closed = True
@@ -285,7 +312,9 @@ class TestBufferExploits:
 
         # Defensive connection closure is SUCCESS, not failure!
         # We only care if server CRASHED, not if it defended itself
-        assert check_server_alive(), "Server crashed on buffer exhaustion (process died)!"
+        assert (
+            check_server_alive()
+        ), "Server crashed on buffer exhaustion (process died)!"
 
         # Optionally verify connection WAS closed (defensive behavior working)
         if not connection_closed:
@@ -296,7 +325,9 @@ class TestBufferExploits:
                 "10MB without newline",
             )
 
-    def test_rapid_message_flood(self, security_client, check_server_alive, vuln_tracker):
+    def test_rapid_message_flood(
+        self, security_client, check_server_alive, vuln_tracker
+    ):
         """
         Test rate limiting with rapid message flood.
 
@@ -438,13 +469,15 @@ class TestBatchExploits:
 
         # Verify server rejected the batch
         assert isinstance(result, dict), "Expected error response dict"
-        assert result.get("error") or result.get("success") == False, \
-            "Server should reject batch over limit"
+        assert (
+            result.get("error") or result.get("success") == False
+        ), "Server should reject batch over limit"
 
         # Check error message mentions size/limit
         error_msg = result.get("message", "").lower()
-        assert "limit" in error_msg or "size" in error_msg or "exceeds" in error_msg, \
-            f"Error message should mention limit: {error_msg}"
+        assert (
+            "limit" in error_msg or "size" in error_msg or "exceeds" in error_msg
+        ), f"Error message should mention limit: {error_msg}"
 
 
 @pytest.mark.security
@@ -470,7 +503,11 @@ class TestConnectionExhaustion:
                     sock.connect(("127.0.0.1", 7777))
 
                     # Verify connection is actually active by sending a small message
-                    test_msg = {"type": "command", "id": f"test-{i}", "command": "api.getCommands"}
+                    test_msg = {
+                        "type": "command",
+                        "id": f"test-{i}",
+                        "command": "api.getCommands",
+                    }
                     sock.sendall(json.dumps(test_msg).encode() + b"\n")
 
                     # Try to receive response to confirm connection is active
@@ -481,7 +518,12 @@ class TestConnectionExhaustion:
                         # No response but connection accepted
                         active_sockets.append(sock)
 
-                except (ConnectionRefusedError, ConnectionError, OSError, BrokenPipeError):
+                except (
+                    ConnectionRefusedError,
+                    ConnectionError,
+                    OSError,
+                    BrokenPipeError,
+                ):
                     # Connection was rejected or closed - GOOD! Limit is working
                     rejected_count += 1
                     try:
@@ -499,7 +541,9 @@ class TestConnectionExhaustion:
                     f"Weak or no connection limit: {len(active_sockets)} active connections (limit should be 32)",
                     f"{len(active_sockets)} connections",
                 )
-                pytest.fail(f"Server accepted {len(active_sockets)} connections (limit should be ~32)")
+                pytest.fail(
+                    f"Server accepted {len(active_sockets)} connections (limit should be ~32)"
+                )
 
             # We should have SOME rejections if we tried to open 50 connections
             if rejected_count == 0:
@@ -522,7 +566,9 @@ class TestConnectionExhaustion:
             time.sleep(0.5)
 
         # Verify server didn't crash (rejecting connections is OK!)
-        assert check_server_alive(), "Server crashed on connection exhaustion (process died)!"
+        assert (
+            check_server_alive()
+        ), "Server crashed on connection exhaustion (process died)!"
 
 
 @pytest.mark.security
@@ -540,7 +586,9 @@ class TestParameterValidation:
             security_client.command("dashboard.setFps", {"fps": fps_value})
 
             # Should have rejected invalid type/value
-            if isinstance(fps_value, (list, dict, type(None))) or not isinstance(fps_value, (int, float)):
+            if isinstance(fps_value, (list, dict, type(None))) or not isinstance(
+                fps_value, (int, float)
+            ):
                 pytest.fail(f"Server accepted invalid FPS type: {type(fps_value)}")
 
         except Exception:
@@ -580,11 +628,13 @@ class TestRawDataInjection:
             parsed = json.loads(response.decode())
 
             # As long as the API validates the data format, this is acceptable
-            assert "success" in parsed or "error" in parsed, \
-                "API should respond to raw data commands"
+            assert (
+                "success" in parsed or "error" in parsed
+            ), "API should respond to raw data commands"
 
         except Exception as e:
             # If there's an error, it should be a validation error, not a crash
             error_msg = str(e).lower()
-            assert any(keyword in error_msg for keyword in ["invalid", "format", "encoding"]), \
-                f"Unexpected error: {e}"
+            assert any(
+                keyword in error_msg for keyword in ["invalid", "format", "encoding"]
+            ), f"Unexpected error: {e}"

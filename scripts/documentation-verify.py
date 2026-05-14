@@ -56,7 +56,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
-
 # ---------------------------------------------------------------------------
 # Rules
 # ---------------------------------------------------------------------------
@@ -66,6 +65,7 @@ from typing import Iterable
 # URLs, and inline code have been masked). Matching is case-insensitive
 # unless the pattern uses an explicit `(?-i:...)` group.
 
+
 def _ci(pattern: str) -> re.Pattern:
     return re.compile(pattern, re.IGNORECASE)
 
@@ -73,178 +73,262 @@ def _ci(pattern: str) -> re.Pattern:
 # Marketing / blog cliches. These are the ones that scream "blog post"
 # instead of "manual". A single hit per line is reported (not per phrase).
 _MARKETING_PHRASES: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bescape hatch\b"),                  "metaphor; describe the actual capability"),
-    (_ci(r"\bin one breath\b"),                 "blog-style heading; rename to a topic"),
+    (_ci(r"\bescape hatch\b"), "metaphor; describe the actual capability"),
+    (_ci(r"\bin one breath\b"), "blog-style heading; rename to a topic"),
     # Match "magic" as marketing voice, but skip technical compound terms
     # like "magic bytes", "magic numbers", "magic value/word/string/cookie".
-    (_ci(r"\b(?:the\s+)?(?:real\s+)?magic\b(?!\s+(?:byte|number|value|word|string|cookie|method|constant)s?\b)"),
-                                                 "marketing word; describe the mechanism"),
-    (_ci(r"\bseamless(?:ly)?\b"),               "marketing adjective; remove or restate"),
-    (_ci(r"\beffortless(?:ly)?\b"),             "marketing adjective; remove or restate"),
-    (_ci(r"\bworld[-\s]class\b"),               "marketing superlative; remove"),
-    (_ci(r"\bbest[-\s]in[-\s]class\b"),         "marketing superlative; remove"),
-    (_ci(r"\bcutting[-\s]edge\b"),              "marketing adjective; remove or restate"),
-    (_ci(r"\bstate[-\s]of[-\s]the[-\s]art\b"),  "marketing adjective; remove or restate"),
-    (_ci(r"\bindustry[-\s]leading\b"),          "marketing adjective; remove"),
-    (_ci(r"\bgame[-\s]chang(?:er|ing)\b"),      "marketing cliche; remove or restate"),
-    (_ci(r"\bfuture[-\s]proof(?:ed)?\b"),       "marketing adjective; remove"),
-    (_ci(r"\bturnkey\b"),                       "marketing adjective; remove"),
-    (_ci(r"\bplug[-\s]and[-\s]play\b"),         "marketing cliche; restate"),
-    (_ci(r"\bbattle[-\s]tested\b"),             "marketing cliche; restate"),
-    (_ci(r"\bproduction[-\s]ready\b"),          "marketing adjective; restate"),
-    (_ci(r"\bhandcrafted\b"),                   "marketing adjective; remove"),
-    (_ci(r"\b(?:beautifully|elegantly|cleanly)\s+(?:designed|crafted|built|done)\b"),
-                                                 "marketing phrasing; restate"),
-    (_ci(r"\bunder the hood\b"),                "blog metaphor; replace with 'internally' or describe the mechanism"),
-    (_ci(r"\bbehind the scenes\b"),             "blog metaphor; replace with 'internally' or describe the mechanism"),
-    (_ci(r"\bout of the box\b"),                "marketing cliche; restate (e.g. 'by default', 'with no setup')"),
-    (_ci(r"\bship[s]?\s+with\b"),               "informal; consider 'is bundled with' or 'is included with'"),
-    (_ci(r"\bgives you\b"),                     "blog phrasing; consider 'provides' or restate"),
-    (_ci(r"\bhands you\b"),                     "blog phrasing; consider 'provides' or restate"),
-    (_ci(r"\blands on\b"),                      "blog phrasing; describe the actual write/render path"),
-    (_ci(r"\bthe trick is\b"),                  "tutorial-blog phrasing; describe the technique directly"),
-    (_ci(r"\b(?:the\s+)?secret sauce\b"),       "marketing cliche; remove"),
-    (_ci(r"\bpoor[-\s]man'?s\b"),               "informal phrase; restate as a neutral description"),
-    (_ci(r"\b(?:looks|reads)\s+(?:great|amazing|gorgeous|stunning)\b"),
-                                                 "subjective claim; remove or describe what changed"),
-    (_ci(r"\b(?:looks|reads)\s+(?:as|like)\s+\""), "marketing simile; describe directly"),
-    (_ci(r"\bscreenshots?\s+well\b"),           "marketing claim; remove"),
-    (_ci(r"\bdesigned to\b"),                   "marketing voice; describe what it actually does"),
-    (_ci(r"\bbuilt for\b"),                     "marketing voice; describe what it actually does"),
-    (_ci(r"\bdeliberate(?:ly)?\b"),             "editorializing; describe the actual design constraint"),
-    (_ci(r"\bpolished\b"),                      "subjective; remove or restate"),
-    (_ci(r"\bprofessional[- ]grade\b"),         "marketing claim; remove"),
-    (_ci(r"\bblazing\s+fast\b"),                "marketing superlative; cite an actual figure"),
-    (_ci(r"\blightning[-\s]fast\b"),            "marketing superlative; cite an actual figure"),
-    (_ci(r"\bbuttery\s+smooth\b"),              "marketing cliche; remove"),
-    (_ci(r"\b(?:fully|completely)\s+(?:integrated|customizable)\b"),
-                                                 "marketing intensifier; drop the adverb"),
-    (_ci(r"\bunleash\b"),                       "marketing verb; restate"),
-    (_ci(r"\bsupercharge\b"),                   "marketing verb; restate"),
-    (_ci(r"\bempower(?:s|ed|ing)?\b"),          "marketing verb; restate"),
-    (_ci(r"\b(?:rich|robust|comprehensive)\s+(?:set|suite|api|features?)\b"),
-                                                 "marketing adjective; describe what is included"),
-    (_ci(r"\bship\s+it\b"),                     "informal; remove"),
+    (
+        _ci(
+            r"\b(?:the\s+)?(?:real\s+)?magic\b(?!\s+(?:byte|number|value|word|string|cookie|method|constant)s?\b)"
+        ),
+        "marketing word; describe the mechanism",
+    ),
+    (_ci(r"\bseamless(?:ly)?\b"), "marketing adjective; remove or restate"),
+    (_ci(r"\beffortless(?:ly)?\b"), "marketing adjective; remove or restate"),
+    (_ci(r"\bworld[-\s]class\b"), "marketing superlative; remove"),
+    (_ci(r"\bbest[-\s]in[-\s]class\b"), "marketing superlative; remove"),
+    (_ci(r"\bcutting[-\s]edge\b"), "marketing adjective; remove or restate"),
+    (
+        _ci(r"\bstate[-\s]of[-\s]the[-\s]art\b"),
+        "marketing adjective; remove or restate",
+    ),
+    (_ci(r"\bindustry[-\s]leading\b"), "marketing adjective; remove"),
+    (_ci(r"\bgame[-\s]chang(?:er|ing)\b"), "marketing cliche; remove or restate"),
+    (_ci(r"\bfuture[-\s]proof(?:ed)?\b"), "marketing adjective; remove"),
+    (_ci(r"\bturnkey\b"), "marketing adjective; remove"),
+    (_ci(r"\bplug[-\s]and[-\s]play\b"), "marketing cliche; restate"),
+    (_ci(r"\bbattle[-\s]tested\b"), "marketing cliche; restate"),
+    (_ci(r"\bproduction[-\s]ready\b"), "marketing adjective; restate"),
+    (_ci(r"\bhandcrafted\b"), "marketing adjective; remove"),
+    (
+        _ci(r"\b(?:beautifully|elegantly|cleanly)\s+(?:designed|crafted|built|done)\b"),
+        "marketing phrasing; restate",
+    ),
+    (
+        _ci(r"\bunder the hood\b"),
+        "blog metaphor; replace with 'internally' or describe the mechanism",
+    ),
+    (
+        _ci(r"\bbehind the scenes\b"),
+        "blog metaphor; replace with 'internally' or describe the mechanism",
+    ),
+    (
+        _ci(r"\bout of the box\b"),
+        "marketing cliche; restate (e.g. 'by default', 'with no setup')",
+    ),
+    (
+        _ci(r"\bship[s]?\s+with\b"),
+        "informal; consider 'is bundled with' or 'is included with'",
+    ),
+    (_ci(r"\bgives you\b"), "blog phrasing; consider 'provides' or restate"),
+    (_ci(r"\bhands you\b"), "blog phrasing; consider 'provides' or restate"),
+    (_ci(r"\blands on\b"), "blog phrasing; describe the actual write/render path"),
+    (
+        _ci(r"\bthe trick is\b"),
+        "tutorial-blog phrasing; describe the technique directly",
+    ),
+    (_ci(r"\b(?:the\s+)?secret sauce\b"), "marketing cliche; remove"),
+    (_ci(r"\bpoor[-\s]man'?s\b"), "informal phrase; restate as a neutral description"),
+    (
+        _ci(r"\b(?:looks|reads)\s+(?:great|amazing|gorgeous|stunning)\b"),
+        "subjective claim; remove or describe what changed",
+    ),
+    (
+        _ci(r"\b(?:looks|reads)\s+(?:as|like)\s+\""),
+        "marketing simile; describe directly",
+    ),
+    (_ci(r"\bscreenshots?\s+well\b"), "marketing claim; remove"),
+    (_ci(r"\bdesigned to\b"), "marketing voice; describe what it actually does"),
+    (_ci(r"\bbuilt for\b"), "marketing voice; describe what it actually does"),
+    (
+        _ci(r"\bdeliberate(?:ly)?\b"),
+        "editorializing; describe the actual design constraint",
+    ),
+    (_ci(r"\bpolished\b"), "subjective; remove or restate"),
+    (_ci(r"\bprofessional[- ]grade\b"), "marketing claim; remove"),
+    (_ci(r"\bblazing\s+fast\b"), "marketing superlative; cite an actual figure"),
+    (_ci(r"\blightning[-\s]fast\b"), "marketing superlative; cite an actual figure"),
+    (_ci(r"\bbuttery\s+smooth\b"), "marketing cliche; remove"),
+    (
+        _ci(r"\b(?:fully|completely)\s+(?:integrated|customizable)\b"),
+        "marketing intensifier; drop the adverb",
+    ),
+    (_ci(r"\bunleash\b"), "marketing verb; restate"),
+    (_ci(r"\bsupercharge\b"), "marketing verb; restate"),
+    (_ci(r"\bempower(?:s|ed|ing)?\b"), "marketing verb; restate"),
+    (
+        _ci(r"\b(?:rich|robust|comprehensive)\s+(?:set|suite|api|features?)\b"),
+        "marketing adjective; describe what is included",
+    ),
+    (_ci(r"\bship\s+it\b"), "informal; remove"),
 ]
 
 # Tutorial / chatty / conversational tone. Reasonable in a blog post,
 # wrong in a manual.
 _TUTORIAL_VOICE: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bwe'(?:ll|re|ve)\b"),               "tutorial voice; rewrite without 'we'"),
-    (_ci(r"\b(?:we|let'?s)\s+(?:take\s+a\s+look|dive\s+in|get\s+started|walk\s+through)\b"),
-                                                 "tutorial voice; describe directly"),
-    (_ci(r"\b(?:buckle|strap|hold)\s+(?:up|on)\b"),
-                                                 "tutorial voice; remove"),
-    (_ci(r"\bin\s+this\s+(?:guide|article|post|tutorial|section\s+we)\b"),
-                                                 "blog meta-reference; remove or restate"),
+    (_ci(r"\bwe'(?:ll|re|ve)\b"), "tutorial voice; rewrite without 'we'"),
+    (
+        _ci(
+            r"\b(?:we|let'?s)\s+(?:take\s+a\s+look|dive\s+in|get\s+started|walk\s+through)\b"
+        ),
+        "tutorial voice; describe directly",
+    ),
+    (_ci(r"\b(?:buckle|strap|hold)\s+(?:up|on)\b"), "tutorial voice; remove"),
+    (
+        _ci(r"\bin\s+this\s+(?:guide|article|post|tutorial|section\s+we)\b"),
+        "blog meta-reference; remove or restate",
+    ),
     (_ci(r"\bas\s+(?:we|you)\s+(?:can\s+)?see\b"), "tutorial voice; remove"),
-    (_ci(r"\bas\s+(?:we|you)'(?:ll|ve)\s+(?:see|noticed)\b"),
-                                                 "tutorial voice; remove or describe directly"),
-    (_ci(r"\bnow\s+(?:we|let'?s|it'?s\s+time)\b"),
-                                                 "tutorial voice; describe the next step directly"),
-    (_ci(r"\bfirst\s+we\b"),                    "tutorial voice; use imperative or numbered step"),
-    (_ci(r"\bnext\s+up\b"),                     "tutorial filler; remove or use a heading"),
-    (_ci(r"\bfor\s+the\s+rest\s+of\s+(?:this|the)\s+(?:guide|article|section)\b"),
-                                                 "blog meta-reference; remove"),
-    (_ci(r"\bthat'?s\s+(?:it|the\s+whole\s+)"),  "informal; remove"),
+    (
+        _ci(r"\bas\s+(?:we|you)'(?:ll|ve)\s+(?:see|noticed)\b"),
+        "tutorial voice; remove or describe directly",
+    ),
+    (
+        _ci(r"\bnow\s+(?:we|let'?s|it'?s\s+time)\b"),
+        "tutorial voice; describe the next step directly",
+    ),
+    (_ci(r"\bfirst\s+we\b"), "tutorial voice; use imperative or numbered step"),
+    (_ci(r"\bnext\s+up\b"), "tutorial filler; remove or use a heading"),
+    (
+        _ci(r"\bfor\s+the\s+rest\s+of\s+(?:this|the)\s+(?:guide|article|section)\b"),
+        "blog meta-reference; remove",
+    ),
+    (_ci(r"\bthat'?s\s+(?:it|the\s+whole\s+)"), "informal; remove"),
     (_ci(r"\bthat'?s\s+the\s+whole\s+widget\b"), "informal; describe the result"),
-    (_ci(r"\bthe\s+rest\s+is\s+just\b"),         "informal; describe the rest"),
-    (_ci(r"\byou'?ll\s+(?:want|need|love)\b"),   "tutorial voice; use imperative or describe"),
-    (_ci(r"\byou\s+already\s+know\b"),           "blog phrasing; remove"),
-    (_ci(r"\bif\s+you'?ve\s+(?:ever|drawn|used|written)\b"),
-                                                 "blog phrasing; describe directly"),
-    (_ci(r"\btrust\s+(?:us|me)\b"),              "informal; remove"),
-    (_ci(r"\btake\s+(?:our|my)\s+word\b"),       "informal; remove"),
+    (_ci(r"\bthe\s+rest\s+is\s+just\b"), "informal; describe the rest"),
+    (
+        _ci(r"\byou'?ll\s+(?:want|need|love)\b"),
+        "tutorial voice; use imperative or describe",
+    ),
+    (_ci(r"\byou\s+already\s+know\b"), "blog phrasing; remove"),
+    (
+        _ci(r"\bif\s+you'?ve\s+(?:ever|drawn|used|written)\b"),
+        "blog phrasing; describe directly",
+    ),
+    (_ci(r"\btrust\s+(?:us|me)\b"), "informal; remove"),
+    (_ci(r"\btake\s+(?:our|my)\s+word\b"), "informal; remove"),
 ]
 
 # Conversational asides and rhetorical hedging.
 _CONVERSATIONAL: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bobviously\b"),                     "patronising hedge; remove"),
-    (_ci(r"\bof\s+course\b"),                   "patronising hedge; remove"),
-    (_ci(r"\bclearly\b"),                       "patronising hedge; remove"),
-    (_ci(r"\bnaturally\b"),                     "patronising hedge; remove"),
-    (_ci(r"\bneedless\s+to\s+say\b"),           "filler; remove"),
-    (_ci(r"\bit\s+goes\s+without\s+saying\b"),  "filler; remove"),
+    (_ci(r"\bobviously\b"), "patronising hedge; remove"),
+    (_ci(r"\bof\s+course\b"), "patronising hedge; remove"),
+    (_ci(r"\bclearly\b"), "patronising hedge; remove"),
+    (_ci(r"\bnaturally\b"), "patronising hedge; remove"),
+    (_ci(r"\bneedless\s+to\s+say\b"), "filler; remove"),
+    (_ci(r"\bit\s+goes\s+without\s+saying\b"), "filler; remove"),
     (_ci(r"\bat\s+the\s+end\s+of\s+the\s+day\b"), "blog filler; remove"),
-    (_ci(r"\b(?:long\s+story\s+short|tldr|tl;dr)\b"),
-                                                 "blog filler; rewrite into a heading"),
-    (_ci(r"\bthe\s+thing\s+is\b"),              "blog filler; remove"),
-    (_ci(r"\bhere'?s\s+the\s+(?:thing|deal|kicker|catch)\b"),
-                                                 "blog filler; describe directly"),
-    (_ci(r"\bspoiler\s*(?:alert)?\b"),          "blog filler; remove"),
-    (_ci(r"\bhot\s+take\b"),                    "blog filler; remove"),
-    (_ci(r"\bin\s+a\s+nutshell\b"),             "blog filler; replace with 'in summary' or remove"),
-    (_ci(r"\b(?:like\s+)?we\s+said\b"),         "blog reference; remove"),
-    (_ci(r"\bas\s+(?:we|i)\s+mentioned\b"),     "blog reference; remove"),
+    (
+        _ci(r"\b(?:long\s+story\s+short|tldr|tl;dr)\b"),
+        "blog filler; rewrite into a heading",
+    ),
+    (_ci(r"\bthe\s+thing\s+is\b"), "blog filler; remove"),
+    (
+        _ci(r"\bhere'?s\s+the\s+(?:thing|deal|kicker|catch)\b"),
+        "blog filler; describe directly",
+    ),
+    (_ci(r"\bspoiler\s*(?:alert)?\b"), "blog filler; remove"),
+    (_ci(r"\bhot\s+take\b"), "blog filler; remove"),
+    (_ci(r"\bin\s+a\s+nutshell\b"), "blog filler; replace with 'in summary' or remove"),
+    (_ci(r"\b(?:like\s+)?we\s+said\b"), "blog reference; remove"),
+    (_ci(r"\bas\s+(?:we|i)\s+mentioned\b"), "blog reference; remove"),
 ]
 
 # Editorializing adjectives. These are subjective claims masquerading as
 # facts. Most of them belong in a marketing page, not a manual.
 _EDITORIALIZING: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bpowerful\b"),                      "subjective; describe what it does"),
-    (_ci(r"\b(?:incredibly|amazingly|surprisingly)\s+\w+"),
-                                                 "subjective intensifier; remove"),
+    (_ci(r"\bpowerful\b"), "subjective; describe what it does"),
+    (
+        _ci(r"\b(?:incredibly|amazingly|surprisingly)\s+\w+"),
+        "subjective intensifier; remove",
+    ),
     (_ci(r"\b(?:beautiful|elegant|gorgeous)\b"), "subjective; remove or describe"),
-    (_ci(r"\bdelightful\b"),                    "subjective; remove"),
-    (_ci(r"\bintuitive(?:ly)?\b"),              "subjective; remove or describe the affordance"),
-    (_ci(r"\beasy\s+to\s+(?:use|understand|learn)\b"),
-                                                 "subjective; describe what makes it so"),
-    (_ci(r"\buser[-\s]friendly\b"),             "subjective; describe the affordance"),
-    (_ci(r"\bsimple\s+(?:and\s+)?(?:clean|elegant|powerful)\b"),
-                                                 "subjective stack; remove or restate"),
-    (_ci(r"\b(?:a|the)\s+breeze\b"),            "informal; remove"),
-    (_ci(r"\b(?:works|just\s+works)\s+(?:like\s+a\s+charm|magic|beautifully)\b"),
-                                                 "marketing phrasing; remove"),
-    (_ci(r"\bjust\s+works\b"),                  "marketing phrasing; describe the behaviour"),
-    (_ci(r"\bbest\s+practice[s]?\b"),           "vague; cite the specific rule"),
-    (_ci(r"\b(?:the\s+)?right\s+thing\b"),      "vague; cite the actual choice"),
+    (_ci(r"\bdelightful\b"), "subjective; remove"),
+    (_ci(r"\bintuitive(?:ly)?\b"), "subjective; remove or describe the affordance"),
+    (
+        _ci(r"\beasy\s+to\s+(?:use|understand|learn)\b"),
+        "subjective; describe what makes it so",
+    ),
+    (_ci(r"\buser[-\s]friendly\b"), "subjective; describe the affordance"),
+    (
+        _ci(r"\bsimple\s+(?:and\s+)?(?:clean|elegant|powerful)\b"),
+        "subjective stack; remove or restate",
+    ),
+    (_ci(r"\b(?:a|the)\s+breeze\b"), "informal; remove"),
+    (
+        _ci(r"\b(?:works|just\s+works)\s+(?:like\s+a\s+charm|magic|beautifully)\b"),
+        "marketing phrasing; remove",
+    ),
+    (_ci(r"\bjust\s+works\b"), "marketing phrasing; describe the behaviour"),
+    (_ci(r"\bbest\s+practice[s]?\b"), "vague; cite the specific rule"),
+    (_ci(r"\b(?:the\s+)?right\s+thing\b"), "vague; cite the actual choice"),
 ]
 
 # Empty filler words. Manuals are tighter without them.
 _FILLER: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bessentially\b"),                   "filler; remove or rewrite"),
-    (_ci(r"\bbasically\b"),                     "filler; remove or rewrite"),
-    (_ci(r"\bsimply\b"),                        "filler; remove"),
-    (_ci(r"\bjust\s+(?:add|use|set|click|run|call|write|do|make)\b"),
-                                                 "minimising 'just'; remove"),
-    (_ci(r"\bactually\b"),                      "filler; remove unless contrasting with a stated misconception"),
-    (_ci(r"\breally\b"),                        "filler intensifier; remove"),
-    (_ci(r"\bvery\s+(?:fast|easy|simple|good|nice|useful|important)\b"),
-                                                 "filler intensifier; describe directly"),
-    (_ci(r"\bquite\b"),                         "filler hedge; remove"),
-    (_ci(r"\bpretty\s+(?:much|simple|easy|fast|good|straightforward)\b"),
-                                                 "filler hedge; remove or quantify"),
-    (_ci(r"\bkind\s+of\b"),                     "filler hedge; remove"),
-    (_ci(r"\bsort\s+of\b"),                     "filler hedge; remove"),
-    (_ci(r"\bin\s+order\s+to\b"),               "verbose; replace with 'to'"),
-    (_ci(r"\bmake\s+sure\s+to\b"),              "verbose; replace with imperative"),
-    (_ci(r"\ba\s+(?:lot|bunch|ton)\s+of\b"),    "informal quantifier; cite a number or use 'many'"),
-    (_ci(r"\btons\s+of\b"),                     "informal quantifier; cite a number or use 'many'"),
-    (_ci(r"\bawesome\b"),                       "filler adjective; remove"),
-    (_ci(r"\bnice\b"),                          "filler adjective; remove or describe"),
+    (_ci(r"\bessentially\b"), "filler; remove or rewrite"),
+    (_ci(r"\bbasically\b"), "filler; remove or rewrite"),
+    (_ci(r"\bsimply\b"), "filler; remove"),
+    (
+        _ci(r"\bjust\s+(?:add|use|set|click|run|call|write|do|make)\b"),
+        "minimising 'just'; remove",
+    ),
+    (
+        _ci(r"\bactually\b"),
+        "filler; remove unless contrasting with a stated misconception",
+    ),
+    (_ci(r"\breally\b"), "filler intensifier; remove"),
+    (
+        _ci(r"\bvery\s+(?:fast|easy|simple|good|nice|useful|important)\b"),
+        "filler intensifier; describe directly",
+    ),
+    (_ci(r"\bquite\b"), "filler hedge; remove"),
+    (
+        _ci(r"\bpretty\s+(?:much|simple|easy|fast|good|straightforward)\b"),
+        "filler hedge; remove or quantify",
+    ),
+    (_ci(r"\bkind\s+of\b"), "filler hedge; remove"),
+    (_ci(r"\bsort\s+of\b"), "filler hedge; remove"),
+    (_ci(r"\bin\s+order\s+to\b"), "verbose; replace with 'to'"),
+    (_ci(r"\bmake\s+sure\s+to\b"), "verbose; replace with imperative"),
+    (
+        _ci(r"\ba\s+(?:lot|bunch|ton)\s+of\b"),
+        "informal quantifier; cite a number or use 'many'",
+    ),
+    (_ci(r"\btons\s+of\b"), "informal quantifier; cite a number or use 'many'"),
+    (_ci(r"\bawesome\b"), "filler adjective; remove"),
+    (_ci(r"\bnice\b"), "filler adjective; remove or describe"),
 ]
 
 # Meta-references. The doc shouldn't talk about itself.
 _META: list[tuple[re.Pattern, str]] = [
-    (_ci(r"\bthis\s+(?:section|chapter|guide|document|article)\s+(?:will|covers|explains|describes|walks)\b"),
-                                                 "self-reference; describe the topic directly"),
-    (_ci(r"\bin\s+the\s+(?:next|previous)\s+(?:section|chapter|paragraph)\b"),
-                                                 "rot reference; link to the section by name"),
-    (_ci(r"\bsee\s+below\b"),                   "rot reference; link to the section"),
-    (_ci(r"\bsee\s+above\b"),                   "rot reference; link to the section"),
-    (_ci(r"\bas\s+(?:we|you)\s+saw\s+(?:above|earlier)\b"),
-                                                 "rot reference; remove or link"),
+    (
+        _ci(
+            r"\bthis\s+(?:section|chapter|guide|document|article)\s+(?:will|covers|explains|describes|walks)\b"
+        ),
+        "self-reference; describe the topic directly",
+    ),
+    (
+        _ci(r"\bin\s+the\s+(?:next|previous)\s+(?:section|chapter|paragraph)\b"),
+        "rot reference; link to the section by name",
+    ),
+    (_ci(r"\bsee\s+below\b"), "rot reference; link to the section"),
+    (_ci(r"\bsee\s+above\b"), "rot reference; link to the section"),
+    (
+        _ci(r"\bas\s+(?:we|you)\s+saw\s+(?:above|earlier)\b"),
+        "rot reference; remove or link",
+    ),
 ]
 
 
 # Combined rule table (kind, list of (pattern, message)).
 _RULES: list[tuple[str, list[tuple[re.Pattern, str]]]] = [
     ("ai-marketing-phrase", _MARKETING_PHRASES),
-    ("ai-tutorial-voice",   _TUTORIAL_VOICE),
-    ("ai-conversational",   _CONVERSATIONAL),
-    ("ai-editorializing",   _EDITORIALIZING),
-    ("ai-filler",           _FILLER),
-    ("ai-meta-reference",   _META),
+    ("ai-tutorial-voice", _TUTORIAL_VOICE),
+    ("ai-conversational", _CONVERSATIONAL),
+    ("ai-editorializing", _EDITORIALIZING),
+    ("ai-filler", _FILLER),
+    ("ai-meta-reference", _META),
 ]
 
 
@@ -269,8 +353,8 @@ _NON_ASCII_GLYPHS = {
     "—": "em-dash (use --)",
     "–": "en-dash (use - or numeric range)",
     "…": "ellipsis (use ...)",
-    "“": "left smart quote (use \")",
-    "”": "right smart quote (use \")",
+    "“": 'left smart quote (use ")',
+    "”": 'right smart quote (use ")',
     "‘": "left smart quote (use ')",
     "’": "right smart quote (use ')",
     "→": "right arrow (use -> or 'to')",
@@ -295,13 +379,13 @@ _EMDASH_DENSITY_THRESHOLD = 8
 # Replace inline-code spans, link URLs, and image targets with spaces of
 # the same length so column offsets in the original line are preserved.
 _INLINE_CODE_RE = re.compile(r"`+[^`\n]*?`+")
-_AUTOLINK_RE   = re.compile(r"<[a-zA-Z][^>\s]*://[^>\s]*>")
-_LINK_URL_RE   = re.compile(r"\]\([^)\n]*\)")
-_LINK_REF_RE   = re.compile(r"\]\[[^\]\n]*\]")
-_IMG_URL_RE    = re.compile(r"!\[[^\]\n]*\]\([^)\n]*\)")
-_HTML_TAG_RE   = re.compile(r"</?[A-Za-z][^>\n]*>")
+_AUTOLINK_RE = re.compile(r"<[a-zA-Z][^>\s]*://[^>\s]*>")
+_LINK_URL_RE = re.compile(r"\]\([^)\n]*\)")
+_LINK_REF_RE = re.compile(r"\]\[[^\]\n]*\]")
+_IMG_URL_RE = re.compile(r"!\[[^\]\n]*\]\([^)\n]*\)")
+_HTML_TAG_RE = re.compile(r"</?[A-Za-z][^>\n]*>")
 # Top-of-file YAML or TOML front matter.
-_FRONT_MATTER  = re.compile(r"\A(?:---|\+\+\+).*?\n(?:---|\+\+\+)\n", re.DOTALL)
+_FRONT_MATTER = re.compile(r"\A(?:---|\+\+\+).*?\n(?:---|\+\+\+)\n", re.DOTALL)
 
 
 _TOC_LINE_RE = re.compile(
@@ -314,9 +398,7 @@ _TOC_LINE_RE = re.compile(
     re.VERBOSE,
 )
 
-_BOLD_HEADING_RE = re.compile(
-    r"^\s*\*\*[^*]+(?::|\.|\?|!)?\*\*\s*:?\s*$"
-)
+_BOLD_HEADING_RE = re.compile(r"^\s*\*\*[^*]+(?::|\.|\?|!)?\*\*\s*:?\s*$")
 
 
 def _is_toc_line(line: str) -> bool:
@@ -332,12 +414,19 @@ def _mask(line: str) -> str:
     tags, and link references masked to spaces. Preserves length so the
     column offsets returned by re.search() still index into the original
     line."""
+
     def blank(m: re.Match) -> str:
         return " " * (m.end() - m.start())
 
     masked = line
-    for pat in (_INLINE_CODE_RE, _IMG_URL_RE, _LINK_URL_RE, _LINK_REF_RE,
-                _AUTOLINK_RE, _HTML_TAG_RE):
+    for pat in (
+        _INLINE_CODE_RE,
+        _IMG_URL_RE,
+        _LINK_URL_RE,
+        _LINK_REF_RE,
+        _AUTOLINK_RE,
+        _HTML_TAG_RE,
+    ):
         masked = pat.sub(blank, masked)
     return masked
 
@@ -345,6 +434,7 @@ def _mask(line: str) -> str:
 # ---------------------------------------------------------------------------
 # File walker
 # ---------------------------------------------------------------------------
+
 
 @dataclass
 class Finding:
@@ -379,7 +469,7 @@ def _strip_code_blocks(text: str) -> list[tuple[int, str]]:
             marker = m.group(2)
             if not in_fence:
                 in_fence = True
-                fence_marker = marker[:3]   # match opening backtick or tilde count
+                fence_marker = marker[:3]  # match opening backtick or tilde count
                 continue
             if marker.startswith(fence_marker):
                 in_fence = False
@@ -445,15 +535,19 @@ def scan_file(path: Path) -> list[Finding]:
         # Only flag when the previous prose line is blank, to avoid
         # mis-flagging a setext h2 underline (`Heading\n---`).
         if _HR_SEPARATOR.match(raw) and prev_raw.strip() == "":
-            findings.append(Finding(
-                path=path,
-                line=lineno,
-                col=1,
-                kind="style-hr-separator",
-                message=("horizontal-rule separator; section headings "
-                         "already provide structure -- remove the rule"),
-                excerpt=raw.strip()[:140],
-            ))
+            findings.append(
+                Finding(
+                    path=path,
+                    line=lineno,
+                    col=1,
+                    kind="style-hr-separator",
+                    message=(
+                        "horizontal-rule separator; section headings "
+                        "already provide structure -- remove the rule"
+                    ),
+                    excerpt=raw.strip()[:140],
+                )
+            )
             prev_raw = raw
             continue
 
@@ -483,14 +577,16 @@ def scan_file(path: Path) -> list[Finding]:
             for pat, msg in rules:
                 m = pat.search(masked)
                 if m:
-                    findings.append(Finding(
-                        path=path,
-                        line=lineno,
-                        col=m.start() + 1,
-                        kind=kind,
-                        message=f"\"{m.group(0)}\": {msg}",
-                        excerpt=raw.strip()[:140],
-                    ))
+                    findings.append(
+                        Finding(
+                            path=path,
+                            line=lineno,
+                            col=m.start() + 1,
+                            kind=kind,
+                            message=f'"{m.group(0)}": {msg}',
+                            excerpt=raw.strip()[:140],
+                        )
+                    )
                     # One hit per (line, kind) keeps reports readable.
                     break
 
@@ -501,17 +597,19 @@ def scan_file(path: Path) -> list[Finding]:
         for m in _SHOUTING.finditer(masked):
             # Reject obvious false positives: !=, !==, !$, !-style URLs.
             ch_before = masked[m.start() - 1] if m.start() > 0 else ""
-            ch_after  = masked[m.start() + 1] if m.start() + 1 < len(masked) else ""
+            ch_after = masked[m.start() + 1] if m.start() + 1 < len(masked) else ""
             if ch_after in ("=", "!", "$"):
                 continue
-            findings.append(Finding(
-                path=path,
-                line=lineno,
-                col=m.start() + 1,
-                kind="style-shouting",
-                message="trailing '!' in body prose; manuals don't shout",
-                excerpt=raw.strip()[:140],
-            ))
+            findings.append(
+                Finding(
+                    path=path,
+                    line=lineno,
+                    col=m.start() + 1,
+                    kind="style-shouting",
+                    message="trailing '!' in body prose; manuals don't shout",
+                    excerpt=raw.strip()[:140],
+                )
+            )
             break  # one per line
 
         # Style: non-ASCII typography. Scan the *unmasked* line so
@@ -520,16 +618,18 @@ def scan_file(path: Path) -> list[Finding]:
         # iterate the masked-but-restored characters.
         for col, ch in enumerate(raw):
             if masked[col] == " " and ch != " ":
-                continue   # masked-out code or URL
+                continue  # masked-out code or URL
             if ch in _NON_ASCII_GLYPHS:
-                findings.append(Finding(
-                    path=path,
-                    line=lineno,
-                    col=col + 1,
-                    kind="style-non-ascii",
-                    message=_NON_ASCII_GLYPHS[ch],
-                    excerpt=raw.strip()[:140],
-                ))
+                findings.append(
+                    Finding(
+                        path=path,
+                        line=lineno,
+                        col=col + 1,
+                        kind="style-non-ascii",
+                        message=_NON_ASCII_GLYPHS[ch],
+                        excerpt=raw.strip()[:140],
+                    )
+                )
                 break  # one per line
 
         prev_raw = raw
@@ -546,17 +646,21 @@ def scan_file(path: Path) -> list[Finding]:
         em_count += masked.count("—")
         em_count += len(re.findall(r"(?<=\S)\s--\s(?=\S)", masked))
     if em_count > _EMDASH_DENSITY_THRESHOLD:
-        findings.append(Finding(
-            path=path,
-            line=1,
-            col=1,
-            kind="style-emdash-density",
-            message=(f"{em_count} em-dash / spaced-double-hyphen occurrences; "
-                     "many of these are likely rhythm tics. Replace "
-                     "parentheticals with parentheses, periods, or "
-                     "restructure the sentence."),
-            excerpt="",
-        ))
+        findings.append(
+            Finding(
+                path=path,
+                line=1,
+                col=1,
+                kind="style-emdash-density",
+                message=(
+                    f"{em_count} em-dash / spaced-double-hyphen occurrences; "
+                    "many of these are likely rhythm tics. Replace "
+                    "parentheticals with parentheses, periods, or "
+                    "restructure the sentence."
+                ),
+                excerpt="",
+            )
+        )
 
     return findings
 
@@ -564,6 +668,7 @@ def scan_file(path: Path) -> list[Finding]:
 # ---------------------------------------------------------------------------
 # Targets
 # ---------------------------------------------------------------------------
+
 
 def default_targets(repo_root: Path) -> list[Path]:
     """The default scan set: doc/help, README.md, AGENTS.md, and every
@@ -593,8 +698,10 @@ def iter_markdown_files(targets: list[Path]) -> Iterable[Path]:
             for root, _, files in os.walk(t):
                 # Skip vendored / build trees.
                 parts = Path(root).parts
-                if any(p in {"node_modules", "build", ".git", "venv", "__pycache__"}
-                       for p in parts):
+                if any(
+                    p in {"node_modules", "build", ".git", "venv", "__pycache__"}
+                    for p in parts
+                ):
                     continue
                 for name in files:
                     if name.lower().endswith(".md"):
@@ -716,17 +823,29 @@ def write_report(report_path: Path, findings: list[Finding]) -> None:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(
         description="Markdown linter for AI-narration / marketing-copy patterns",
         epilog="With no arguments, scans doc/help, README.md, AGENTS.md, examples/.",
     )
-    parser.add_argument("paths", nargs="*", type=Path,
-                        help="files or directories to scan (default: repo trees)")
-    parser.add_argument("--no-report", action="store_true",
-                        help="skip writing .doc-report at the repo root")
-    parser.add_argument("--quiet", "-q", action="store_true",
-                        help="don't print per-finding lines (rely on .doc-report)")
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        type=Path,
+        help="files or directories to scan (default: repo trees)",
+    )
+    parser.add_argument(
+        "--no-report",
+        action="store_true",
+        help="skip writing .doc-report at the repo root",
+    )
+    parser.add_argument(
+        "--quiet",
+        "-q",
+        action="store_true",
+        help="don't print per-finding lines (rely on .doc-report)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -758,8 +877,7 @@ def main(argv: list[str]) -> int:
     for f in findings:
         by_kind[f.kind] = by_kind.get(f.kind, 0) + 1
 
-    print(f"\n{len(files)} files scanned, {len(findings)} findings",
-          file=sys.stderr)
+    print(f"\n{len(files)} files scanned, {len(findings)} findings", file=sys.stderr)
     if by_kind:
         for kind in sorted(by_kind):
             print(f"  {kind}: {by_kind[kind]}", file=sys.stderr)

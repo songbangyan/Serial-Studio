@@ -125,7 +125,7 @@ end
             crc = 0xFFFF
             for byte in data:
                 x = (crc >> 8) ^ byte
-                x ^= (x >> 4)
+                x ^= x >> 4
                 crc = ((crc << 8) ^ (x << 12) ^ (x << 5) ^ x) & 0xFFFF
             return crc
 
@@ -282,7 +282,7 @@ end
 
         Examples:
             DeviceSendsJSON mode: /*{"title":"Test","groups":[]}*/\n
-            ProjectFile mode: /*{"title":"Test","groups":[]}*/\xAB\xCD\r\n
+            ProjectFile mode: /*{"title":"Test","groups":[]}*/\xab\xcd\r\n
         """
         payload_bytes = payload.encode("utf-8")
         frame_bytes = (start_delimiter + payload + end_delimiter).encode("utf-8")
@@ -706,7 +706,9 @@ end
                     "frameStart": start,
                     "frameEnd": end,
                     "frameDetection": detection_mode,
-                    "checksum": checksum_algorithm if checksum_algorithm != "None" else "",
+                    "checksum": (
+                        checksum_algorithm if checksum_algorithm != "None" else ""
+                    ),
                     "decoder": 0,
                     "hexadecimalDelimiters": False,
                     "frameParserCode": DataGenerator.CSV_PARSER_TEMPLATE,

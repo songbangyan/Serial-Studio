@@ -24,10 +24,10 @@ import pytest
 
 from utils import DeviceSimulator
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _new_project(api_client, dataset_count: int = 3):
     """Create a new project in ProjectFile mode with one group and dataset_count datasets."""
@@ -48,11 +48,14 @@ def _connect_network(api_client, device_simulator):
     api_client.command("io.setBusType", {"busType": 1})
     time.sleep(0.1)
 
-    api_client.source_configure(0, {
-        "address": "127.0.0.1",
-        "tcpPort": 9000,
-        "socketTypeIndex": 0,
-    })
+    api_client.source_configure(
+        0,
+        {
+            "address": "127.0.0.1",
+            "tcpPort": 9000,
+            "socketTypeIndex": 0,
+        },
+    )
     time.sleep(0.1)
 
     api_client.configure_frame_parser(
@@ -62,9 +65,9 @@ def _connect_network(api_client, device_simulator):
     time.sleep(0.2)
 
     api_client.connect_device()
-    assert device_simulator.wait_for_connection(timeout=5.0), (
-        "Serial Studio did not connect to the device simulator within 5 seconds"
-    )
+    assert device_simulator.wait_for_connection(
+        timeout=5.0
+    ), "Serial Studio did not connect to the device simulator within 5 seconds"
 
 
 def _send_json_frame(api_client, device_simulator, values: list):
@@ -107,14 +110,15 @@ def _wait_for_values(api_client, expected: list, timeout: float = 3.0) -> list:
 # Tests: project.source.update
 # ---------------------------------------------------------------------------
 
+
 class TestSourceConfigure:
     """Tests for the project.source.update command."""
 
     def test_configure_command_exists(self, api_client, clean_state):
         """project.source.update must be registered in the API."""
-        assert api_client.command_exists("project.source.update"), (
-            "project.source.update command is not registered"
-        )
+        assert api_client.command_exists(
+            "project.source.update"
+        ), "project.source.update command is not registered"
 
     def test_configure_accepted_without_error(self, api_client, clean_state):
         """project.source.update must succeed without raising an error."""
@@ -126,11 +130,14 @@ class TestSourceConfigure:
 
         # This must not raise; result is not checked here (persistence only applies
         # when a project file is saved to disk)
-        api_client.source_configure(0, {
-            "address": "127.0.0.1",
-            "tcpPort": 9000,
-            "socketTypeIndex": 0,
-        })
+        api_client.source_configure(
+            0,
+            {
+                "address": "127.0.0.1",
+                "tcpPort": 9000,
+                "socketTypeIndex": 0,
+            },
+        )
 
     def test_configure_with_missing_params_returns_error(self, api_client, clean_state):
         """configure without sourceId must return an API error.
@@ -187,6 +194,7 @@ function parse(frame) {
 # ---------------------------------------------------------------------------
 # Tests: project.source.setProperty (updated routing)
 # ---------------------------------------------------------------------------
+
 
 class TestSourceSetProperty:
     """Tests for the updated project.source.setProperty command."""
@@ -248,9 +256,9 @@ function parse(frame) {
         time.sleep(0.2)
 
         api_client.connect_device()
-        assert device_simulator.wait_for_connection(timeout=5.0), (
-            "Serial Studio did not connect after setProperty configuration"
-        )
+        assert device_simulator.wait_for_connection(
+            timeout=5.0
+        ), "Serial Studio did not connect after setProperty configuration"
 
         _send_json_frame(api_client, device_simulator, [1.1, 2.2, 3.3])
 
@@ -331,9 +339,9 @@ class TestSourceSetPropertyLua:
         time.sleep(0.2)
 
         api_client.connect_device()
-        assert device_simulator.wait_for_connection(timeout=5.0), (
-            "Serial Studio did not connect after setProperty configuration"
-        )
+        assert device_simulator.wait_for_connection(
+            timeout=5.0
+        ), "Serial Studio did not connect after setProperty configuration"
 
         _send_csv_frame(api_client, device_simulator, [1.1, 2.2, 3.3])
 
@@ -345,6 +353,7 @@ class TestSourceSetPropertyLua:
 # ---------------------------------------------------------------------------
 # Tests: source.getConfiguration reflects applied settings
 # ---------------------------------------------------------------------------
+
 
 class TestSourceGetConfiguration:
     """Verify project.source.getConfig returns the full source struct."""

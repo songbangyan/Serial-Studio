@@ -251,9 +251,7 @@ class RCPlaneSimulator:
                 self.heading + (-25 if osc > 0 else 25) * self.dt
             )
 
-            gy = bank * 1.5 * 2 * math.pi / 10 * math.cos(
-                2 * math.pi * p * 1.5
-            )
+            gy = bank * 1.5 * 2 * math.pi / 10 * math.cos(2 * math.pi * p * 1.5)
             gz = -25 * osc
             load_factor = 1.0 / max(0.3, math.cos(math.radians(bank * abs(osc))))
             vib = 0.15
@@ -401,9 +399,7 @@ class RCPlaneSimulator:
             self.speed = 18.0
             self.alt = 110.0
 
-            target_hdg = math.degrees(
-                math.atan2(-self.pos_e, -self.pos_n)
-            ) % 360
+            target_hdg = math.degrees(math.atan2(-self.pos_e, -self.pos_n)) % 360
             hdg_diff = wrap_angle(target_hdg - self.heading)
             turn = clamp(hdg_diff, -15, 15)
             self.heading = wrap_heading(self.heading + turn * self.dt)
@@ -433,9 +429,7 @@ class RCPlaneSimulator:
         elif phase == "flare":
             throttle = lerp(25, 0, ease_in_out(p))
             self.speed = lerp(14, 8, p)
-            self.heading = wrap_heading(
-                lerp(self.heading, 0, ease_in_out(p))
-            )
+            self.heading = wrap_heading(lerp(self.heading, 0, ease_in_out(p)))
             self.pitch = lerp(-5, 3, ease_in_out(p))
             self.alt = lerp(15, GROUND_ALT, ease_in_out(p))
             self.roll = lerp(self.roll, 0, ease_in_out(p))
@@ -512,7 +506,7 @@ class RCPlaneSimulator:
         self.motor_temp += (target_temp - self.motor_temp) * 0.03 * self.dt
 
         # RSSI decreases with distance from field
-        dist = math.sqrt(self.pos_n ** 2 + self.pos_e ** 2 + self.alt ** 2)
+        dist = math.sqrt(self.pos_n**2 + self.pos_e**2 + self.alt**2)
         rssi = clamp(99 - dist * 0.015, 35, 99)
 
         return {

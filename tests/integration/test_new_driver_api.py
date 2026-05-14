@@ -18,10 +18,10 @@ import tempfile
 
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _skip_if_missing(api_client, command_name):
     """Skip the test if a command is not registered (non-Pro build)."""
@@ -39,6 +39,7 @@ def _skip_if_headless(api_client):
 # ---------------------------------------------------------------------------
 # HID Driver tests
 # ---------------------------------------------------------------------------
+
 
 class TestHIDDriver:
     """Tests for io.hid.* commands."""
@@ -139,6 +140,7 @@ class TestHIDDriver:
 # USB Driver tests
 # ---------------------------------------------------------------------------
 
+
 class TestUSBDriver:
     """Tests for io.usb.* commands."""
 
@@ -182,8 +184,13 @@ class TestUSBDriver:
         time.sleep(0.2)
 
         config = api_client.command("io.usb.getConfig")
-        for key in ("deviceIndex", "transferMode", "inEndpointIndex",
-                    "outEndpointIndex", "isoPacketSize"):
+        for key in (
+            "deviceIndex",
+            "transferMode",
+            "inEndpointIndex",
+            "outEndpointIndex",
+            "isoPacketSize",
+        ):
             assert key in config, f"Missing key: {key}"
 
     @pytest.mark.integration
@@ -300,6 +307,7 @@ class TestUSBDriver:
 # Process Driver tests
 # ---------------------------------------------------------------------------
 
+
 class TestProcessDriver:
     """Tests for io.process.* commands."""
 
@@ -396,8 +404,9 @@ class TestProcessDriver:
         test_path = os.path.join(tempfile.gettempdir(), "test-executable")
         open(test_path, "w").close()
         try:
-            result = api_client.command("io.process.setExecutable",
-                                        {"executable": test_path})
+            result = api_client.command(
+                "io.process.setExecutable", {"executable": test_path}
+            )
             assert result["executable"] == test_path
 
             config = api_client.command("io.process.getConfig")
@@ -426,8 +435,7 @@ class TestProcessDriver:
         time.sleep(0.2)
 
         test_args = "--port 9600 --verbose"
-        result = api_client.command("io.process.setArguments",
-                                    {"arguments": test_args})
+        result = api_client.command("io.process.setArguments", {"arguments": test_args})
         assert result["arguments"] == test_args
 
         config = api_client.command("io.process.getConfig")
@@ -468,8 +476,9 @@ class TestProcessDriver:
         time.sleep(0.2)
 
         test_dir = "/tmp"
-        result = api_client.command("io.process.setWorkingDir",
-                                    {"workingDir": test_dir})
+        result = api_client.command(
+            "io.process.setWorkingDir", {"workingDir": test_dir}
+        )
         assert result["workingDir"] == test_dir
 
         config = api_client.command("io.process.getConfig")
@@ -496,8 +505,7 @@ class TestProcessDriver:
         time.sleep(0.2)
 
         test_path = "/tmp/test.fifo"
-        result = api_client.command("io.process.setPipePath",
-                                    {"pipePath": test_path})
+        result = api_client.command("io.process.setPipePath", {"pipePath": test_path})
         assert result["pipePath"] == test_path
 
         config = api_client.command("io.process.getConfig")
@@ -567,8 +575,9 @@ class TestProcessDriver:
 
         for bad_capture in (3, -1, 99):
             with pytest.raises(APIError) as exc_info:
-                api_client.command("io.process.setOutputCapture",
-                                   {"capture": bad_capture})
+                api_client.command(
+                    "io.process.setOutputCapture", {"capture": bad_capture}
+                )
             assert exc_info.value.code == "INVALID_PARAM"
 
     @pytest.mark.integration
@@ -613,11 +622,12 @@ class TestProcessDriver:
         assert len(processes) > 0
 
         import re
+
         pattern = re.compile(r".+\s\[\d+\]$")
         for entry in processes[:10]:  # Check first 10 entries
-            assert pattern.match(entry), (
-                f"Process entry does not match 'name [PID]' format: {entry!r}"
-            )
+            assert pattern.match(
+                entry
+            ), f"Process entry does not match 'name [PID]' format: {entry!r}"
 
     @pytest.mark.integration
     def test_process_full_launch_config_roundtrip(self, api_client, clean_state):
@@ -632,10 +642,11 @@ class TestProcessDriver:
         open(test_exec, "w").close()
         try:
             api_client.command("io.process.setMode", {"mode": 0})
-            api_client.command("io.process.setExecutable",
-                               {"executable": test_exec})
-            api_client.command("io.process.setArguments",
-                               {"arguments": "-c \"import sys; sys.stdout.write('hello\\n')\""})
+            api_client.command("io.process.setExecutable", {"executable": test_exec})
+            api_client.command(
+                "io.process.setArguments",
+                {"arguments": "-c \"import sys; sys.stdout.write('hello\\n')\""},
+            )
             api_client.command("io.process.setWorkingDir", {"workingDir": tmp_dir})
 
             config = api_client.command("io.process.getConfig")
@@ -669,14 +680,15 @@ class TestProcessDriver:
         time.sleep(0.2)
 
         status = api_client.command("io.getStatus")
-        assert status["busType"] == 8, (
-            f"Expected busType 8 (Process), got {status['busType']}"
-        )
+        assert (
+            status["busType"] == 8
+        ), f"Expected busType 8 (Process), got {status['busType']}"
 
 
 # ---------------------------------------------------------------------------
 # Cross-driver: bus-type switching
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_switch_to_all_new_bus_types(api_client, clean_state):
@@ -689,9 +701,9 @@ def test_switch_to_all_new_bus_types(api_client, clean_state):
         time.sleep(0.2)
 
         status = api_client.command("io.getStatus")
-        assert status["busType"] == bus_type, (
-            f"Failed to switch to bus type {bus_type}: got {status['busType']}"
-        )
+        assert (
+            status["busType"] == bus_type
+        ), f"Failed to switch to bus type {bus_type}: got {status['busType']}"
 
     # Return to UART so other tests are not affected
     api_client.command("io.setBusType", {"busType": 0})

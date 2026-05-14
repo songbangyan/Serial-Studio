@@ -81,6 +81,7 @@ def clean_state(api_client):
 
     Handles server disconnections gracefully (e.g., from rate limiting).
     """
+
     # Helper to retry operations if server disconnected
     def safe_command(func, *args, max_retries=2, **kwargs):
         for attempt in range(max_retries):
@@ -185,15 +186,20 @@ def pytest_configure(config):
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
     )
     config.addinivalue_line(
-        "markers", "integration: integration tests requiring running Serial Studio instance"
+        "markers",
+        "integration: integration tests requiring running Serial Studio instance",
     )
     config.addinivalue_line("markers", "performance: performance benchmarks")
-    config.addinivalue_line("markers", "requires_device: tests requiring physical hardware")
+    config.addinivalue_line(
+        "markers", "requires_device: tests requiring physical hardware"
+    )
     config.addinivalue_line("markers", "network: tests using network driver")
     config.addinivalue_line("markers", "uart: tests using UART driver")
     config.addinivalue_line("markers", "ble: tests using Bluetooth LE driver")
     config.addinivalue_line("markers", "csv: tests involving CSV export")
-    config.addinivalue_line("markers", "mdf4: tests involving MDF4 export (Pro feature)")
+    config.addinivalue_line(
+        "markers", "mdf4: tests involving MDF4 export (Pro feature)"
+    )
     config.addinivalue_line("markers", "project: tests involving project files")
 
 

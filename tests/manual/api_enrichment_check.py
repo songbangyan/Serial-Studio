@@ -20,7 +20,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from utils.api_client import SerialStudioClient  # noqa: E402
 
-
 REQUIRED_FIELDS = {
     "project.source.list": ["_summary"],
     "project.group.list": ["_summary"],
@@ -53,8 +52,12 @@ def main() -> int:
             # Per-source / per-group / per-dataset enrichment
             if command == "project.source.list":
                 for src in resp.get("sources", []):
-                    for k in ("busTypeLabel", "busTypeSlug",
-                              "frameDetectionLabel", "decoderMethodLabel"):
+                    for k in (
+                        "busTypeLabel",
+                        "busTypeSlug",
+                        "frameDetectionLabel",
+                        "decoderMethodLabel",
+                    ):
                         if k not in src:
                             print(f"  MISSING in source: {k}")
                             failures += 1

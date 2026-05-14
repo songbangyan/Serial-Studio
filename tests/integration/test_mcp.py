@@ -20,10 +20,10 @@ from typing import Any, Optional
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Low-level MCP client (speaks JSON-RPC 2.0, not the legacy API protocol)
 # ---------------------------------------------------------------------------
+
 
 class MCPError(Exception):
     def __init__(self, code: int, message: str, data: Any = None):
@@ -103,7 +103,7 @@ class MCPClient:
         while True:
             pos = self._buf.find(b"\n")
             if pos != -1:
-                line, self._buf = self._buf[:pos], self._buf[pos + 1:]
+                line, self._buf = self._buf[:pos], self._buf[pos + 1 :]
                 if line.strip():
                     return json.loads(line.decode())
             remaining = deadline - time.time()
@@ -121,14 +121,18 @@ class MCPClient:
     def request(self, method: str, params: Optional[dict] = None) -> Any:
         """Send a JSON-RPC request and return the result (raises MCPError on error)."""
         req_id = self._next_id()
-        self._send({"jsonrpc": "2.0", "id": req_id, "method": method, "params": params or {}})
+        self._send(
+            {"jsonrpc": "2.0", "id": req_id, "method": method, "params": params or {}}
+        )
         deadline = time.time() + self.timeout
         while True:
             response = self._recv(deadline)
             if response.get("id") == req_id:
                 if "error" in response:
                     err = response["error"]
-                    raise MCPError(err.get("code", -1), err.get("message", ""), err.get("data"))
+                    raise MCPError(
+                        err.get("code", -1), err.get("message", ""), err.get("data")
+                    )
                 return response.get("result")
 
     def notify(self, method: str, params: Optional[dict] = None) -> None:
@@ -145,11 +149,14 @@ class MCPClient:
     # ------------------------------------------------------------------
 
     def initialize(self) -> dict:
-        return self.request("initialize", {
-            "protocolVersion": "2024-11-05",
-            "clientInfo": {"name": "pytest-mcp-client", "version": "1.0.0"},
-            "capabilities": {},
-        })
+        return self.request(
+            "initialize",
+            {
+                "protocolVersion": "2024-11-05",
+                "clientInfo": {"name": "pytest-mcp-client", "version": "1.0.0"},
+                "capabilities": {},
+            },
+        )
 
     def tools_list(self) -> list[dict]:
         result = self.request("tools/list")
@@ -177,6 +184,7 @@ class MCPClient:
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 def mcp():
@@ -217,6 +225,7 @@ def fresh_mcp():
 # ---------------------------------------------------------------------------
 # 1. Session lifecycle
 # ---------------------------------------------------------------------------
+
 
 class TestMCPLifecycle:
 
@@ -284,6 +293,7 @@ class TestMCPLifecycle:
 # 2. tools/list
 # ---------------------------------------------------------------------------
 
+
 class TestToolsList:
 
     def test_returns_list(self, mcp):
@@ -300,8 +310,9 @@ class TestToolsList:
         for tool in mcp.tools_list():
             schema = tool.get("inputSchema")
             assert isinstance(schema, dict), f"Tool {tool['name']} missing inputSchema"
-            assert schema.get("type") == "object", \
-                f"Tool {tool['name']} inputSchema.type must be 'object'"
+            assert (
+                schema.get("type") == "object"
+            ), f"Tool {tool['name']} inputSchema.type must be 'object'"
 
     def test_known_commands_present(self, mcp):
         names = {t["name"] for t in mcp.tools_list()}
@@ -357,7 +368,9 @@ class TestToolsList:
         assert props["stopBitsIndex"]["enum"] == [0, 1, 2]
 
     def test_uart_set_flow_control_schema(self, mcp):
-        tool = next(t for t in mcp.tools_list() if t["name"] == "io.uart.setFlowControl")
+        tool = next(
+            t for t in mcp.tools_list() if t["name"] == "io.uart.setFlowControl"
+        )
         props = tool["inputSchema"]["properties"]
         assert props["flowControlIndex"]["enum"] == [0, 1, 2]
 
@@ -443,13 +456,15 @@ class TestToolsList:
         """No tool should fall back to the old generic 'value: string' schema."""
         for tool in mcp.tools_list():
             props = tool.get("inputSchema", {}).get("properties", {})
-            assert "value" not in props, \
-                f"Tool {tool['name']} still has the generic 'value' fallback param"
+            assert (
+                "value" not in props
+            ), f"Tool {tool['name']} still has the generic 'value' fallback param"
 
 
 # ---------------------------------------------------------------------------
 # 3. tools/call — read-only commands
 # ---------------------------------------------------------------------------
+
 
 class TestToolsCallReadOnly:
 
@@ -503,6 +518,7 @@ class TestToolsCallReadOnly:
 # 4. tools/call — write commands (non-destructive)
 # ---------------------------------------------------------------------------
 
+
 class TestToolsCallWrite:
 
     def test_set_baud_rate_valid(self, mcp):
@@ -513,9 +529,7 @@ class TestToolsCallWrite:
     def test_set_baud_rate_roundtrip(self, mcp):
         """Set baud rate and confirm via getConfiguration."""
         mcp.tools_call("io.uart.setBaudRate", {"baudRate": 115200})
-        cfg = json.loads(
-            mcp.tools_call("io.uart.getConfig")["content"][0]["text"]
-        )
+        cfg = json.loads(mcp.tools_call("io.uart.getConfig")["content"][0]["text"])
         assert cfg["baudRate"] == 115200
 
     def test_set_parity_valid(self, mcp):
@@ -577,9 +591,7 @@ class TestToolsCallWrite:
 
     def test_csv_export_toggle(self, mcp):
         mcp.tools_call("csvExport.setEnabled", {"enabled": False})
-        status = json.loads(
-            mcp.tools_call("csvExport.getStatus")["content"][0]["text"]
-        )
+        status = json.loads(mcp.tools_call("csvExport.getStatus")["content"][0]["text"])
         assert status["enabled"] is False
 
     def test_project_set_title(self, mcp):
@@ -592,6 +604,7 @@ class TestToolsCallWrite:
 # ---------------------------------------------------------------------------
 # 5. tools/call — error cases
 # ---------------------------------------------------------------------------
+
 
 class TestToolsCallErrors:
 
@@ -651,6 +664,7 @@ class TestToolsCallErrors:
 
     def test_write_data_when_not_connected_fails(self, mcp):
         import base64
+
         data = base64.b64encode(b"hello").decode()
         with pytest.raises(MCPError):
             mcp.tools_call("io.writeData", {"data": data})
@@ -663,6 +677,7 @@ class TestToolsCallErrors:
 # ---------------------------------------------------------------------------
 # 6. resources/list and resources/read
 # ---------------------------------------------------------------------------
+
 
 class TestMCPResources:
 
@@ -730,6 +745,7 @@ class TestMCPResources:
 # 7. prompts/list and prompts/get
 # ---------------------------------------------------------------------------
 
+
 class TestMCPPrompts:
 
     def test_prompts_list_returns_list(self, mcp):
@@ -767,6 +783,7 @@ class TestMCPPrompts:
 # 8. Batch (JSON-RPC array)
 # ---------------------------------------------------------------------------
 
+
 class TestMCPBatch:
     """
     Batch tests each use fresh_mcp to avoid polluting the shared module-scoped
@@ -777,10 +794,18 @@ class TestMCPBatch:
     def test_batch_two_reads(self, fresh_mcp):
         fresh_mcp.initialize()
         requests = [
-            {"jsonrpc": "2.0", "id": 1001, "method": "tools/call",
-             "params": {"name": "io.getStatus", "arguments": {}}},
-            {"jsonrpc": "2.0", "id": 1002, "method": "tools/call",
-             "params": {"name": "csvExport.getStatus", "arguments": {}}},
+            {
+                "jsonrpc": "2.0",
+                "id": 1001,
+                "method": "tools/call",
+                "params": {"name": "io.getStatus", "arguments": {}},
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": 1002,
+                "method": "tools/call",
+                "params": {"name": "csvExport.getStatus", "arguments": {}},
+            },
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()
@@ -792,10 +817,18 @@ class TestMCPBatch:
     def test_batch_all_succeed(self, fresh_mcp):
         fresh_mcp.initialize()
         requests = [
-            {"jsonrpc": "2.0", "id": 2001, "method": "tools/call",
-             "params": {"name": "io.getStatus", "arguments": {}}},
-            {"jsonrpc": "2.0", "id": 2002, "method": "tools/call",
-             "params": {"name": "io.uart.getConfig", "arguments": {}}},
+            {
+                "jsonrpc": "2.0",
+                "id": 2001,
+                "method": "tools/call",
+                "params": {"name": "io.getStatus", "arguments": {}},
+            },
+            {
+                "jsonrpc": "2.0",
+                "id": 2002,
+                "method": "tools/call",
+                "params": {"name": "io.uart.getConfig", "arguments": {}},
+            },
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()
@@ -814,8 +847,12 @@ class TestMCPBatch:
         fresh_mcp.initialize()
         requests = [
             {"jsonrpc": "2.0", "method": "notifications/initialized", "params": {}},
-            {"jsonrpc": "2.0", "id": 3001, "method": "tools/call",
-             "params": {"name": "io.getStatus", "arguments": {}}},
+            {
+                "jsonrpc": "2.0",
+                "id": 3001,
+                "method": "tools/call",
+                "params": {"name": "io.getStatus", "arguments": {}},
+            },
         ]
         fresh_mcp._send(requests)
         responses = fresh_mcp._recv()

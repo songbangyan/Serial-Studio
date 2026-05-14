@@ -16,7 +16,6 @@ import time
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -163,8 +162,7 @@ def test_ansi_reset_code(console_session):
     api_client.command("console.clear")
 
     payload = (
-        f"{ESC}[31mred text{ESC}[0m normal text\n"
-        f"{ESC}[32mgreen{ESC}[0m\n"
+        f"{ESC}[31mred text{ESC}[0m normal text\n" f"{ESC}[32mgreen{ESC}[0m\n"
     ).encode()
     _feed(device_simulator, payload)
 
@@ -257,7 +255,7 @@ def test_vt100_cursor_position_sequence(console_session):
     sequences = [
         f"{ESC}[1;1Horigin",
         f"{ESC}[5;10Hjumped",
-        f"{ESC}[1;1H",   # home
+        f"{ESC}[1;1H",  # home
         f"{ESC}[24;80H",  # bottom-right common terminal size
     ]
     _feed(device_simulator, "\n".join(sequences).encode())
@@ -376,12 +374,12 @@ def test_non_sgr_csi_sequences(console_session):
     api_client.command("console.clear")
 
     sequences = [
-        f"{ESC}[A",   # cursor up
-        f"{ESC}[B",   # cursor down
-        f"{ESC}[C",   # cursor right
-        f"{ESC}[D",   # cursor left
+        f"{ESC}[A",  # cursor up
+        f"{ESC}[B",  # cursor down
+        f"{ESC}[C",  # cursor right
+        f"{ESC}[D",  # cursor left
         f"{ESC}[2J",  # erase display
-        f"{ESC}[K",   # erase line
+        f"{ESC}[K",  # erase line
     ]
     payload = "\n".join(sequences).encode()
     _feed(device_simulator, payload)
@@ -411,8 +409,8 @@ def test_private_mode_sequences(console_session):
 
     sequences = [
         f"{ESC}[?1049h",  # alternate screen
-        f"{ESC}[?25l",    # hide cursor
-        f"{ESC}[?25h",    # show cursor
+        f"{ESC}[?25l",  # hide cursor
+        f"{ESC}[?25h",  # show cursor
         f"{ESC}[?1049l",  # restore screen
     ]
     payload = "".join(sequences) + "visible text\n"
@@ -482,8 +480,8 @@ def test_buffer_fills_to_max_and_rolls(console_session):
     api_client, device_simulator = console_session
     api_client.command("console.clear")
 
-    chunk = ("A" * 79 + "\n") * 100   # 100 lines per chunk
-    for _ in range(13):               # 1300 lines total
+    chunk = ("A" * 79 + "\n") * 100  # 100 lines per chunk
+    for _ in range(13):  # 1300 lines total
         _feed(device_simulator, chunk.encode(), delay=0.05)
 
     config = api_client.command("console.getConfig")
@@ -513,7 +511,7 @@ def test_flood_with_plain_text(console_session):
     api_client.command("console.clear")
 
     chunk = ("line\n") * 500
-    for _ in range(10):   # 5000 lines
+    for _ in range(10):  # 5000 lines
         _feed(device_simulator, chunk.encode(), delay=0.02)
 
     time.sleep(0.5)
@@ -602,7 +600,7 @@ def test_escape_at_end_of_buffer(console_session):
     api_client, device_simulator = console_session
     api_client.command("console.clear")
 
-    _feed(device_simulator, b"some text\x1b")   # ESC with nothing following
+    _feed(device_simulator, b"some text\x1b")  # ESC with nothing following
     time.sleep(0.05)
     _feed(device_simulator, b"[32m continuation\n")
 
@@ -655,9 +653,7 @@ def test_cursor_home_then_overwrite(console_session):
     api_client, device_simulator = console_session
     api_client.command("console.clear")
 
-    payload = (
-        f"original line\n{ESC}[Hoverwritten\n"
-    ).encode()
+    payload = (f"original line\n{ESC}[Hoverwritten\n").encode()
     _feed(device_simulator, payload)
 
     config = api_client.command("console.getConfig")

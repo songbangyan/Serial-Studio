@@ -16,10 +16,10 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _set_virtual(api_client, group_id, dataset_id, is_virtual):
     return api_client.command(
@@ -38,6 +38,7 @@ def _find_dataset(datasets, group_id, dataset_id):
 # ---------------------------------------------------------------------------
 # Basic toggling
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_dataset_virtual_defaults_false(api_client, clean_state):
@@ -97,6 +98,7 @@ def test_set_virtual_false_clears_flag(api_client, clean_state):
 # Validation
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_set_virtual_missing_group_errors(api_client, clean_state):
     """Setting virtual on a non-existent group returns INVALID_PARAM."""
@@ -135,6 +137,7 @@ def test_set_virtual_missing_params_errors(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Persistence round-trip
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_virtual_flag_round_trips_through_json(api_client, clean_state):

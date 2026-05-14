@@ -98,7 +98,7 @@ class ProtocolFuzzer:
             b'{"type":"command"\n',
             b'{"type":\n',
             b'{"\n',
-            b'{\n',
+            b"{\n",
             # Extra commas
             b'{"type":"command",,,"id":"x"}\n',
             b'{"type":"command","id":"x",}\n',

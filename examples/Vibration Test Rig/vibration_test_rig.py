@@ -45,24 +45,51 @@ import time
 
 def main():
     parser = argparse.ArgumentParser(description="Vibration test rig UDP simulator")
-    parser.add_argument("--host", default="127.0.0.1",
-                        help="UDP destination host (default: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=9000,
-                        help="UDP destination port (default: 9000)")
-    parser.add_argument("--rate", type=float, default=1000.0,
-                        help="Sample/emission rate in Hz (default: 1000)")
-    parser.add_argument("--rpm-min", type=float, default=900.0,
-                        help="Minimum motor RPM (default: 900)")
-    parser.add_argument("--rpm-max", type=float, default=4800.0,
-                        help="Maximum motor RPM (default: 4800)")
-    parser.add_argument("--sweep-period", type=float, default=18.0,
-                        help="Seconds for one full RPM sweep up + down (default: 18)")
-    parser.add_argument("--imbalance", type=float, default=1.4,
-                        help="1x rotational imbalance amplitude in g (default: 1.4)")
-    parser.add_argument("--bearing-amp", type=float, default=0.45,
-                        help="Bearing-defect harmonic amplitude in g (default: 0.45)")
-    parser.add_argument("--noise", type=float, default=0.08,
-                        help="Broadband noise amplitude in g (default: 0.08)")
+    parser.add_argument(
+        "--host", default="127.0.0.1", help="UDP destination host (default: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--port", type=int, default=9000, help="UDP destination port (default: 9000)"
+    )
+    parser.add_argument(
+        "--rate",
+        type=float,
+        default=1000.0,
+        help="Sample/emission rate in Hz (default: 1000)",
+    )
+    parser.add_argument(
+        "--rpm-min", type=float, default=900.0, help="Minimum motor RPM (default: 900)"
+    )
+    parser.add_argument(
+        "--rpm-max",
+        type=float,
+        default=4800.0,
+        help="Maximum motor RPM (default: 4800)",
+    )
+    parser.add_argument(
+        "--sweep-period",
+        type=float,
+        default=18.0,
+        help="Seconds for one full RPM sweep up + down (default: 18)",
+    )
+    parser.add_argument(
+        "--imbalance",
+        type=float,
+        default=1.4,
+        help="1x rotational imbalance amplitude in g (default: 1.4)",
+    )
+    parser.add_argument(
+        "--bearing-amp",
+        type=float,
+        default=0.45,
+        help="Bearing-defect harmonic amplitude in g (default: 0.45)",
+    )
+    parser.add_argument(
+        "--noise",
+        type=float,
+        default=0.08,
+        help="Broadband noise amplitude in g (default: 0.08)",
+    )
     args = parser.parse_args()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -78,9 +105,9 @@ def main():
     #   bearing defect at ~5.43x (non-integer ratio, characteristic of
     #   a rolling-element bearing fault)
     harmonics = [
-        (1.0,  args.imbalance),
-        (2.0,  args.imbalance * 0.35),
-        (3.0,  args.imbalance * 0.18),
+        (1.0, args.imbalance),
+        (2.0, args.imbalance * 0.35),
+        (3.0, args.imbalance * 0.18),
         (5.43, args.bearing_amp),
     ]
 
@@ -137,8 +164,10 @@ def main():
             now = time.perf_counter()
             if now - last_log >= 2.0:
                 rate = sent / (now - last_log)
-                print(f"  {sent:6d} frames sent  |  {rate:7.1f} Hz  |  "
-                      f"rpm={rpm:6.0f}  vib={vib:+5.2f} g")
+                print(
+                    f"  {sent:6d} frames sent  |  {rate:7.1f} Hz  |  "
+                    f"rpm={rpm:6.0f}  vib={vib:+5.2f} g"
+                )
                 sent = 0
                 last_log = now
 

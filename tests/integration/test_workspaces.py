@@ -20,10 +20,10 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _list_workspaces(api_client):
     return api_client.command("project.workspace.list")
@@ -42,9 +42,7 @@ def _delete_workspace(api_client, wid):
 
 
 def _rename_workspace(api_client, wid, title):
-    return api_client.command(
-        "project.workspace.rename", {"id": wid, "title": title}
-    )
+    return api_client.command("project.workspace.rename", {"id": wid, "title": title})
 
 
 def _auto_generate(api_client):
@@ -101,6 +99,7 @@ def _project_groups(api_client):
 # Customize flag + synthetic/automatic mode
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_fresh_project_has_customize_off(api_client, clean_state):
     """A new project starts with customizeWorkspaces=false."""
@@ -151,6 +150,7 @@ def test_customize_on_seeds_from_synthetic(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Workspace CRUD
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_add_workspace_assigns_id_over_999(api_client, clean_state):
@@ -219,6 +219,7 @@ def test_get_missing_workspace_errors(api_client, clean_state):
 # Auto-generate
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_auto_generate_materialises_list(api_client, clean_state):
     """With 2+ groups, autoGenerate produces a customised list."""
@@ -268,6 +269,7 @@ def test_auto_generate_refuses_to_clobber_customised(api_client, clean_state):
 # Widget refs
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_widget_add_and_get(api_client, clean_state):
     """Adding a widget ref appears in the workspace's widgets list."""
@@ -308,6 +310,7 @@ def test_widget_remove_takes_triple_key(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # REGRESSION — group delete shifts relativeIndex correctly
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_group_delete_shifts_ref_group_id(api_client, clean_state):
@@ -400,6 +403,7 @@ def test_group_delete_drops_refs_pointing_at_deleted(api_client, clean_state):
 # REGRESSION — synthetic workspace IDs stay stable across group add/remove
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_synthetic_workspace_ids_stable_across_group_add(api_client, clean_state):
     """
@@ -433,6 +437,7 @@ def test_synthetic_workspace_ids_stable_across_group_add(api_client, clean_state
 # REGRESSION -- workspace JSON round-trip
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_save_in_auto_mode_omits_workspace_keys(api_client, clean_state):
     """
@@ -445,12 +450,12 @@ def test_save_in_auto_mode_omits_workspace_keys(api_client, clean_state):
     time.sleep(0.3)
 
     config = api_client.command("project.exportJson")["config"]
-    assert "customizeWorkspaces" not in config, (
-        "Auto mode must not emit customizeWorkspaces; older builds would promote it"
-    )
-    assert "workspaces" not in config, (
-        "Auto mode must not emit workspaces array; the layout is derived"
-    )
+    assert (
+        "customizeWorkspaces" not in config
+    ), "Auto mode must not emit customizeWorkspaces; older builds would promote it"
+    assert (
+        "workspaces" not in config
+    ), "Auto mode must not emit workspaces array; the layout is derived"
 
 
 @pytest.mark.project
@@ -486,9 +491,9 @@ def test_round_trip_auto_state_preserves_flag(api_client, clean_state):
     api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
-    assert _customize_get(api_client)["enabled"] is False, (
-        "Round-trip must not promote auto-saved project to customized"
-    )
+    assert (
+        _customize_get(api_client)["enabled"] is False
+    ), "Round-trip must not promote auto-saved project to customized"
 
 
 @pytest.mark.project
@@ -511,9 +516,9 @@ def test_round_trip_customized_state_preserves_list(api_client, clean_state):
 
     assert _customize_get(api_client)["enabled"] is True
     ids = [w["id"] for w in _list_workspaces(api_client)["workspaces"]]
-    assert custom_id in ids, (
-        f"Customized workspace {custom_id} missing after round-trip; got {ids}"
-    )
+    assert (
+        custom_id in ids
+    ), f"Customized workspace {custom_id} missing after round-trip; got {ids}"
 
 
 @pytest.mark.project
@@ -528,26 +533,29 @@ def test_unflagged_workspaces_array_is_ignored(api_client, clean_state):
 
     config = api_client.command("project.exportJson")["config"]
     config.pop("customizeWorkspaces", None)
-    config["workspaces"] = [{
-        "workspaceId": 5000,
-        "title": "Stray View",
-        "icon": "",
-        "widgetRefs": [],
-    }]
+    config["workspaces"] = [
+        {
+            "workspaceId": 5000,
+            "title": "Stray View",
+            "icon": "",
+            "widgetRefs": [],
+        }
+    ]
 
     api_client.create_new_project(title="Loader")
     time.sleep(0.3)
     api_client.command("project.loadJson", {"config": config})
     time.sleep(0.3)
 
-    assert _customize_get(api_client)["enabled"] is False, (
-        "Workspaces array without flag must not auto-promote"
-    )
+    assert (
+        _customize_get(api_client)["enabled"] is False
+    ), "Workspaces array without flag must not auto-promote"
 
 
 # ---------------------------------------------------------------------------
 # REGRESSION -- toggling Customize seeds the editor immediately
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_customize_off_to_on_seeds_immediately(api_client, clean_state):
@@ -570,9 +578,9 @@ def test_customize_off_to_on_seeds_immediately(api_client, clean_state):
     # The first click must populate the list, not require a second toggle
     customized = _list_workspaces(api_client)
     assert customized["customizeEnabled"] is True
-    assert customized["count"] == auto_count, (
-        f"Off->On must seed from auto list (had {auto_count}, now {customized['count']})"
-    )
+    assert (
+        customized["count"] == auto_count
+    ), f"Off->On must seed from auto list (had {auto_count}, now {customized['count']})"
 
 
 @pytest.mark.project
@@ -594,14 +602,15 @@ def test_customize_off_discards_user_edits(api_client, clean_state):
     time.sleep(0.2)
 
     ids = [w["id"] for w in _list_workspaces(api_client)["workspaces"]]
-    assert user_id not in ids, (
-        "Off transition must drop user-added workspaces, not preserve them"
-    )
+    assert (
+        user_id not in ids
+    ), "Off transition must drop user-added workspaces, not preserve them"
 
 
 # ---------------------------------------------------------------------------
 # REGRESSION -- API guards reject mutations in auto mode
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_widget_add_in_auto_mode_is_rejected(api_client, clean_state):
@@ -644,6 +653,7 @@ def test_workspace_remove_in_auto_mode_is_rejected(api_client, clean_state):
 # REGRESSION -- user IDs do not collide with auto per-group IDs
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_user_workspace_ids_disjoint_from_auto_range(api_client, clean_state):
     """
@@ -681,18 +691,18 @@ def test_per_group_workspace_renumbers_on_group_delete(api_client, clean_state):
     time.sleep(0.2)
 
     before = _list_workspaces(api_client)["workspaces"]
-    per_group_before = sorted(w["id"] for w in before
-                              if 1002 <= w["id"] < 5000)
-    assert per_group_before == [1002, 1003, 1004], (
-        f"Expected per-group IDs [1002,1003,1004], got {per_group_before}"
-    )
+    per_group_before = sorted(w["id"] for w in before if 1002 <= w["id"] < 5000)
+    assert per_group_before == [
+        1002,
+        1003,
+        1004,
+    ], f"Expected per-group IDs [1002,1003,1004], got {per_group_before}"
 
     api_client.delete_group(1)
     time.sleep(0.3)
 
     after = _list_workspaces(api_client)["workspaces"]
-    per_group_after = sorted(w["id"] for w in after
-                             if 1002 <= w["id"] < 5000)
+    per_group_after = sorted(w["id"] for w in after if 1002 <= w["id"] < 5000)
     assert per_group_after == [1002, 1003], (
         f"Expected per-group IDs [1002,1003] after deleting group 1, "
         f"got {per_group_after}"
@@ -728,9 +738,9 @@ def test_user_deleted_auto_workspace_stays_deleted(api_client, clean_state):
     time.sleep(0.3)
 
     after_ids = [w["id"] for w in _list_workspaces(api_client)["workspaces"]]
-    assert target not in after_ids, (
-        f"Workspace {target} resurrected after user deleted it"
-    )
+    assert (
+        target not in after_ids
+    ), f"Workspace {target} resurrected after user deleted it"
 
 
 @pytest.mark.project
@@ -754,8 +764,6 @@ def test_adding_group_after_user_workspace_does_not_overwrite(api_client, clean_
     after = _list_workspaces(api_client)["workspaces"]
     user_ws = next((w for w in after if w["id"] == user_wid), None)
     assert user_ws is not None, "User workspace disappeared after adding groups"
-    assert user_ws["title"] == "Hand-picked", (
-        f"User workspace title was overwritten: {user_ws['title']!r}"
-    )
-
-
+    assert (
+        user_ws["title"] == "Hand-picked"
+    ), f"User workspace title was overwritten: {user_ws['title']!r}"

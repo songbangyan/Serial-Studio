@@ -15,7 +15,6 @@ import pytest
 
 from utils import SerialStudioClient
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -71,8 +70,8 @@ def test_painter_group_with_datasets_loads(api_client, clean_state):
     """Painter groups must accept datasets (the script reads dataset values)."""
     project = _painter_project()
     project["groups"][0]["datasets"] = [
-        {"title": "Speed",  "index": 1, "units": "km/h", "min": 0, "max": 100},
-        {"title": "Heading", "index": 2, "units": "deg",  "min": 0, "max": 360},
+        {"title": "Speed", "index": 1, "units": "km/h", "min": 0, "max": 100},
+        {"title": "Heading", "index": 2, "units": "deg", "min": 0, "max": 360},
     ]
     api_client.load_project_from_json(project)
     time.sleep(0.3)
@@ -105,9 +104,9 @@ def test_painter_flags_commercial_features(api_client, clean_state):
     time.sleep(0.3)
 
     status = api_client.get_project_status()
-    assert status.get("containsCommercialFeatures") is True, (
-        "Painter widget projects must trip commercialCfg"
-    )
+    assert (
+        status.get("containsCommercialFeatures") is True
+    ), "Painter widget projects must trip commercialCfg"
 
 
 # ---------------------------------------------------------------------------
@@ -158,11 +157,7 @@ def test_painter_with_runaway_loop_persists(api_client, clean_state):
 
     The watchdog interrupts the script; the dashboard tick keeps running.
     """
-    runaway = (
-        "function paint(ctx, w, h) {\n"
-        "  while (true) {}\n"
-        "}\n"
-    )
+    runaway = "function paint(ctx, w, h) {\n" "  while (true) {}\n" "}\n"
     project = _painter_project(code=runaway)
     api_client.load_project_from_json(project)
     time.sleep(0.3)
@@ -241,12 +236,14 @@ def test_two_painter_groups_both_persist(api_client, clean_state):
     """
     project = _painter_project()
     project["title"] = "Two Painters"
-    project["groups"].append({
-        "title": "Second",
-        "widget": "painter",
-        "datasets": [{"title": "X", "index": 1, "min": 0, "max": 100}],
-        "painterCode": DEFAULT_PAINTER_CODE,
-    })
+    project["groups"].append(
+        {
+            "title": "Second",
+            "widget": "painter",
+            "datasets": [{"title": "X", "index": 1, "min": 0, "max": 100}],
+            "painterCode": DEFAULT_PAINTER_CODE,
+        }
+    )
     project["groups"][0]["title"] = "First"
     project["groups"][0]["datasets"] = [
         {"title": "X", "index": 2, "min": 0, "max": 100},

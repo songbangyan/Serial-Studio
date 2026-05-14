@@ -42,18 +42,30 @@ def main():
     parser = argparse.ArgumentParser(description="EM Wave UDP Simulator")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=9000)
-    parser.add_argument("--wavelength", type=float, default=12.0,
-                        help="Carrier wavelength in arbitrary units")
-    parser.add_argument("--speed", type=float, default=20.0,
-                        help="Wave propagation speed (units/s)")
-    parser.add_argument("--amplitude", type=float, default=10.0,
-                        help="E-field peak amplitude")
-    parser.add_argument("--sigma", type=float, default=20.0,
-                        help="Gaussian envelope width (spatial std dev)")
-    parser.add_argument("--samples", type=int, default=80,
-                        help="Spatial sample points per frame")
-    parser.add_argument("--interval", type=float, default=0.025,
-                        help="Time between frames in seconds")
+    parser.add_argument(
+        "--wavelength",
+        type=float,
+        default=12.0,
+        help="Carrier wavelength in arbitrary units",
+    )
+    parser.add_argument(
+        "--speed", type=float, default=20.0, help="Wave propagation speed (units/s)"
+    )
+    parser.add_argument(
+        "--amplitude", type=float, default=10.0, help="E-field peak amplitude"
+    )
+    parser.add_argument(
+        "--sigma",
+        type=float,
+        default=20.0,
+        help="Gaussian envelope width (spatial std dev)",
+    )
+    parser.add_argument(
+        "--samples", type=int, default=80, help="Spatial sample points per frame"
+    )
+    parser.add_argument(
+        "--interval", type=float, default=0.025, help="Time between frames in seconds"
+    )
     args = parser.parse_args()
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -124,8 +136,9 @@ def main():
             t += args.interval
 
             if frame % 100 == 0:
-                print(f"Frame {frame} — t={t:.2f}s, "
-                      f"packet center={packet_center:.1f}")
+                print(
+                    f"Frame {frame} — t={t:.2f}s, " f"packet center={packet_center:.1f}"
+                )
 
             time.sleep(args.interval)
 

@@ -47,7 +47,9 @@ def test_high_data_rate_low_rendering_fps(api_client, device_simulator, clean_st
     time.sleep(1.0)
 
     # Verify still connected (all frames processed successfully)
-    assert api_client.is_connected(), "Should still be connected after high-frequency data"
+    assert (
+        api_client.is_connected()
+    ), "Should still be connected after high-frequency data"
 
     # Verify dashboard settings unchanged
     status = api_client.get_dashboard_status()
@@ -62,7 +64,9 @@ def test_high_data_rate_low_rendering_fps(api_client, device_simulator, clean_st
     )
 
 
-def test_rendering_fps_independent_of_data_rate(api_client, device_simulator, clean_state):
+def test_rendering_fps_independent_of_data_rate(
+    api_client, device_simulator, clean_state
+):
     """
     Test that changing dashboard FPS doesn't affect data processing rate.
     """
@@ -163,9 +167,9 @@ def test_sustained_processing_vs_rendering(api_client, device_simulator, clean_s
 
     # Verify we processed at least 70% of expected frames (realistic for Python test)
     expected_frames = int(duration_seconds * frequency_hz)
-    assert frames_sent >= expected_frames * 0.7, (
-        f"Should process at least 70% of frames ({frames_sent}/{expected_frames})"
-    )
+    assert (
+        frames_sent >= expected_frames * 0.7
+    ), f"Should process at least 70% of frames ({frames_sent}/{expected_frames})"
 
 
 def test_dashboard_fps_range_limits(api_client, clean_state):

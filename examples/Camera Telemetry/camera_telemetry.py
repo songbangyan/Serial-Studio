@@ -34,6 +34,7 @@ import time
 try:
     import cv2
     import numpy as np
+
     HAS_CV2 = True
 except ImportError:
     HAS_CV2 = False
@@ -54,6 +55,7 @@ MAX_FRAME_WIDTH = 640
 # Synthetic test pattern (when no camera available)
 # ---------------------------------------------------------------------------
 
+
 def make_synthetic_frame(t, width=640, height=480):
     """Generate a synthetic colour gradient frame that changes over time."""
     frame = np.zeros((height, width, 3), dtype=np.uint8)
@@ -71,6 +73,7 @@ def make_synthetic_frame(t, width=640, height=480):
 # UDP sender
 # ---------------------------------------------------------------------------
 
+
 class UDPSender:
     def __init__(self, host, port):
         self.addr = (host, port)
@@ -80,7 +83,7 @@ class UDPSender:
     def send(self, data: bytes):
         """Send raw bytes, fragmenting if needed."""
         for offset in range(0, len(data), self.chunk_size):
-            self.sock.sendto(data[offset:offset + self.chunk_size], self.addr)
+            self.sock.sendto(data[offset : offset + self.chunk_size], self.addr)
 
     def send_text(self, text: str):
         self.sock.sendto(text.encode(), self.addr)
@@ -93,18 +96,42 @@ class UDPSender:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def parse_args():
     p = argparse.ArgumentParser(description="Camera Telemetry for Serial Studio")
-    p.add_argument("--camera", type=int, default=0, metavar="INDEX",
-                   help="Camera device index (default: 0)")
-    p.add_argument("--port", type=int, default=UDP_PORT, metavar="PORT",
-                   help="UDP destination port (default: 9000)")
-    p.add_argument("--fps", type=float, default=TARGET_FPS, metavar="FPS",
-                   help="Target frame rate (default: 30)")
-    p.add_argument("--quality", type=int, default=JPEG_QUALITY, metavar="Q",
-                   help="JPEG quality 1-100 (default: 85)")
-    p.add_argument("--no-camera", action="store_true",
-                   help="Use synthetic test pattern instead of camera")
+    p.add_argument(
+        "--camera",
+        type=int,
+        default=0,
+        metavar="INDEX",
+        help="Camera device index (default: 0)",
+    )
+    p.add_argument(
+        "--port",
+        type=int,
+        default=UDP_PORT,
+        metavar="PORT",
+        help="UDP destination port (default: 9000)",
+    )
+    p.add_argument(
+        "--fps",
+        type=float,
+        default=TARGET_FPS,
+        metavar="FPS",
+        help="Target frame rate (default: 30)",
+    )
+    p.add_argument(
+        "--quality",
+        type=int,
+        default=JPEG_QUALITY,
+        metavar="Q",
+        help="JPEG quality 1-100 (default: 85)",
+    )
+    p.add_argument(
+        "--no-camera",
+        action="store_true",
+        help="Use synthetic test pattern instead of camera",
+    )
     return p.parse_args()
 
 
@@ -125,8 +152,9 @@ def encode_jpeg(frame_bgr, quality):
     h, w = frame_bgr.shape[:2]
     if w > MAX_FRAME_WIDTH:
         scale = MAX_FRAME_WIDTH / w
-        frame_bgr = cv2.resize(frame_bgr, (MAX_FRAME_WIDTH, int(h * scale)),
-                               interpolation=cv2.INTER_LINEAR)
+        frame_bgr = cv2.resize(
+            frame_bgr, (MAX_FRAME_WIDTH, int(h * scale)), interpolation=cv2.INTER_LINEAR
+        )
     ok, buf = cv2.imencode(".jpg", frame_bgr, [cv2.IMWRITE_JPEG_QUALITY, quality])
     if not ok:
         return None
@@ -147,13 +175,17 @@ def main():
     if use_camera:
         cap = open_camera(args.camera, args.fps)
         if cap is None:
-            print(f"WARNING: could not open camera {args.camera}, falling back to synthetic pattern.")
+            print(
+                f"WARNING: could not open camera {args.camera}, falling back to synthetic pattern."
+            )
             use_camera = False
 
     sender = UDPSender(UDP_HOST, args.port)
     interval = 1.0 / args.fps
 
-    print(f"Camera Telemetry → udp://{UDP_HOST}:{args.port}  @ {args.fps:.0f} Hz  quality={args.quality}")
+    print(
+        f"Camera Telemetry → udp://{UDP_HOST}:{args.port}  @ {args.fps:.0f} Hz  quality={args.quality}"
+    )
     print("Source:", f"camera {args.camera}" if use_camera else "synthetic pattern")
     print("Press Ctrl+C to stop.\n")
     print(f"{'Frame':>8}  {'FPS':>6}  {'JPEG kB':>8}")
@@ -183,7 +215,11 @@ def main():
                 sender.send(jpeg_bytes)
 
             fps_actual = frame_count / max(t, 0.001)
-            sender.send(b"\xab\xcd\xef" + f"{fps_actual:.1f},{frame_count}".encode() + b"\xfe\xed")
+            sender.send(
+                b"\xab\xcd\xef"
+                + f"{fps_actual:.1f},{frame_count}".encode()
+                + b"\xfe\xed"
+            )
 
             jpeg_kb = len(jpeg_bytes) / 1024.0 if jpeg_bytes else 0.0
             print(f"{frame_count:>8}  {fps_actual:>6.1f}  {jpeg_kb:>8.1f}", end="\r")

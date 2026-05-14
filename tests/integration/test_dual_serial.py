@@ -36,7 +36,9 @@ pytestmark = [
     pytest.mark.integration,
     pytest.mark.project,
     pytest.mark.skipif(not PTY_AVAILABLE, reason="PTY support not available"),
-    pytest.mark.skipif(_IS_CI, reason="QSerialPort cannot open PTY devices reliably in CI"),
+    pytest.mark.skipif(
+        _IS_CI, reason="QSerialPort cannot open PTY devices reliably in CI"
+    ),
 ]
 
 
@@ -178,6 +180,7 @@ DUAL_SENSOR_PROJECT = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _get_group_values(api_client, group_idx: int) -> list:
     """Extract dataset values from a specific group in dashboard.getData."""
     data = api_client.get_dashboard_data()
@@ -235,6 +238,7 @@ def _load_project_with_ports(api_client, dual_ports) -> None:
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def dual_ports():
     """Create two PTY pairs, yield DualSerialPorts, close on teardown."""
@@ -266,6 +270,7 @@ def dual_serial_env(api_client, dual_ports, clean_state):
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestDualSerialConnect:
     """Verify connection setup with two UART sources over PTYs."""
 
@@ -274,9 +279,9 @@ class TestDualSerialConnect:
         api, ports = dual_serial_env
 
         api.connect_device()
-        assert api.wait_for_connection(timeout=5.0), (
-            "Serial Studio did not connect within 5 seconds"
-        )
+        assert api.wait_for_connection(
+            timeout=5.0
+        ), "Serial Studio did not connect within 5 seconds"
         assert api.is_connected()
 
     def test_two_sources_listed(self, dual_serial_env):
@@ -316,12 +321,12 @@ class TestDualSerialDataFlow:
         got_alpha = _wait_for_group_values(api, 0, alpha_values)
         got_bravo = _wait_for_group_values(api, 1, bravo_values)
 
-        assert got_alpha == alpha_values, (
-            f"Alpha group: expected {alpha_values}, got {got_alpha}"
-        )
-        assert got_bravo == bravo_values, (
-            f"Bravo group: expected {bravo_values}, got {got_bravo}"
-        )
+        assert (
+            got_alpha == alpha_values
+        ), f"Alpha group: expected {alpha_values}, got {got_alpha}"
+        assert (
+            got_bravo == bravo_values
+        ), f"Bravo group: expected {bravo_values}, got {got_bravo}"
 
     def test_no_cross_contamination(self, dual_serial_env):
         """
@@ -341,9 +346,11 @@ class TestDualSerialDataFlow:
 
         # Bravo should still show default/empty values (no data sent yet)
         got_bravo = _get_group_values(api, 1)
-        assert got_bravo != ["99.0", "88.0", "77.0"], (
-            "Bravo group received alpha's data — cross-contamination detected"
-        )
+        assert got_bravo != [
+            "99.0",
+            "88.0",
+            "77.0",
+        ], "Bravo group received alpha's data — cross-contamination detected"
 
         # Now send on bravo and verify
         _send_bravo_frame(ports, [11.0, 22.0, 33.0])
@@ -352,9 +359,11 @@ class TestDualSerialDataFlow:
 
         # Alpha should still show its own values
         got_alpha = _get_group_values(api, 0)
-        assert got_alpha == ["99.0", "88.0", "77.0"], (
-            "Alpha group was overwritten by bravo's data"
-        )
+        assert got_alpha == [
+            "99.0",
+            "88.0",
+            "77.0",
+        ], "Alpha group was overwritten by bravo's data"
 
 
 class TestDualSerialSequentialUpdates:
@@ -389,12 +398,12 @@ class TestDualSerialSequentialUpdates:
         got_alpha = _wait_for_group_values(api, 0, expected_alpha)
         got_bravo = _wait_for_group_values(api, 1, expected_bravo)
 
-        assert got_alpha == expected_alpha, (
-            f"Alpha final: expected {expected_alpha}, got {got_alpha}"
-        )
-        assert got_bravo == expected_bravo, (
-            f"Bravo final: expected {expected_bravo}, got {got_bravo}"
-        )
+        assert (
+            got_alpha == expected_alpha
+        ), f"Alpha final: expected {expected_alpha}, got {got_alpha}"
+        assert (
+            got_bravo == expected_bravo
+        ), f"Bravo final: expected {expected_bravo}, got {got_bravo}"
 
 
 class TestDualSerialDifferentRates:
@@ -439,9 +448,9 @@ class TestDualSerialDifferentRates:
         got_alpha = _wait_for_group_values(api, 0, expected_alpha)
         got_bravo = _wait_for_group_values(api, 1, expected_bravo)
 
-        assert got_alpha == expected_alpha, (
-            f"Alpha after burst: expected {expected_alpha}, got {got_alpha}"
-        )
-        assert got_bravo == expected_bravo, (
-            f"Bravo after burst: expected {expected_bravo}, got {got_bravo}"
-        )
+        assert (
+            got_alpha == expected_alpha
+        ), f"Alpha after burst: expected {expected_alpha}, got {got_alpha}"
+        assert (
+            got_bravo == expected_bravo
+        ), f"Bravo after burst: expected {expected_bravo}, got {got_bravo}"

@@ -76,7 +76,9 @@ def test_uart_driver_configuration(api_client, clean_state):
         api_client.command("io.uart.setDevice", {"device": port_list[0]})
 
     baud_rates = api_client.command("io.uart.listBaudRates").get("baudRateList", [])
-    baud_rates = [rate for rate in baud_rates if isinstance(rate, (int, float)) and rate > 0]
+    baud_rates = [
+        rate for rate in baud_rates if isinstance(rate, (int, float)) and rate > 0
+    ]
     if baud_rates:
         api_client.command("io.uart.setBaudRate", {"baudRate": baud_rates[0]})
 

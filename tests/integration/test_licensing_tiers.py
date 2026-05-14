@@ -17,7 +17,6 @@ import pytest
 from utils import SerialStudioClient
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -42,6 +41,7 @@ def _licensing_available(api_client) -> bool:
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def require_licensing(api_client):
     """Skip entire module when running against a GPL build."""
@@ -52,6 +52,7 @@ def require_licensing(api_client):
 # ---------------------------------------------------------------------------
 # Feature tier field tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_get_status_includes_feature_tier(api_client):
@@ -69,8 +70,9 @@ def test_feature_tier_is_valid_name(api_client):
     """featureTier must be one of the recognized tier names."""
     status = api_client.command("licensing.getStatus")
     tier = status["featureTier"]
-    assert tier in VALID_TIER_NAMES, \
-        f"Unexpected tier name: '{tier}', expected one of {VALID_TIER_NAMES}"
+    assert (
+        tier in VALID_TIER_NAMES
+    ), f"Unexpected tier name: '{tier}', expected one of {VALID_TIER_NAMES}"
 
 
 @pytest.mark.integration
@@ -82,8 +84,9 @@ def test_feature_tier_value_matches_name(api_client):
 
     expected_value = TIER_VALUES.get(tier_name)
     assert expected_value is not None, f"No expected value for tier: {tier_name}"
-    assert tier_value == expected_value, \
-        f"Tier '{tier_name}' should have value {expected_value}, got {tier_value}"
+    assert (
+        tier_value == expected_value
+    ), f"Tier '{tier_name}' should have value {expected_value}, got {tier_value}"
 
 
 @pytest.mark.integration
@@ -91,13 +94,13 @@ def test_feature_tier_value_in_range(api_client):
     """featureTierValue must be between 0 and 4."""
     status = api_client.command("licensing.getStatus")
     tier_value = status["featureTierValue"]
-    assert 0 <= tier_value <= 4, \
-        f"featureTierValue out of range: {tier_value}"
+    assert 0 <= tier_value <= 4, f"featureTierValue out of range: {tier_value}"
 
 
 # ---------------------------------------------------------------------------
 # Tier-to-activation consistency
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_activated_implies_nonzero_tier(api_client):
@@ -113,14 +116,10 @@ def test_activated_implies_nonzero_tier(api_client):
     # skip rather than fail when the token is valid but tier is
     # not yet populated.
     if tier == "None" and tier_value == 0:
-        pytest.skip(
-            "Activated license has no tier mapping (CI/test license)"
-        )
+        pytest.skip("Activated license has no tier mapping (CI/test license)")
 
-    assert tier != "None", \
-        "Activated license should have a non-None tier"
-    assert tier_value > 0, \
-        "Activated license should have tier value > 0"
+    assert tier != "None", "Activated license should have a non-None tier"
+    assert tier_value > 0, "Activated license should have tier value > 0"
 
 
 @pytest.mark.integration
@@ -147,6 +146,7 @@ def test_variant_name_consistent_with_tier(api_client):
 # Trial tier consistency
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_trial_tier_is_trial(api_client):
     """When trial is enabled, featureTier should be Trial (value 2)."""
@@ -157,8 +157,9 @@ def test_trial_tier_is_trial(api_client):
     status = api_client.command("licensing.getStatus")
 
     if trial.get("trialEnabled") and not status.get("isActivated"):
-        assert status["featureTier"] == "Trial", \
-            f"Active trial should show Trial tier, got {status['featureTier']}"
+        assert (
+            status["featureTier"] == "Trial"
+        ), f"Active trial should show Trial tier, got {status['featureTier']}"
         assert status["featureTierValue"] == TIER_VALUES["Trial"]
 
 
@@ -166,10 +167,12 @@ def test_trial_tier_is_trial(api_client):
 # Guard integrity with new tiers
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_guards_still_pass_with_new_tiers(api_client):
     """All license guards must still pass after the tier enum change."""
     result = api_client.command("licensing.getGuardStatus")
 
-    assert result.get("allOk") is True, \
-        f"License guards failed after tier changes: {result.get('failures')}"
+    assert (
+        result.get("allOk") is True
+    ), f"License guards failed after tier changes: {result.get('failures')}"

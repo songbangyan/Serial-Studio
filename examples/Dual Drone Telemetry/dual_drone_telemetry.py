@@ -149,12 +149,20 @@ _TILE_URL = (
 _TILE_SIZE = 256
 _TILE_CACHE = {}
 _TILE_CACHE_LOCK = threading.Lock()
-_TILE_CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".tile_cache")
+_TILE_CACHE_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), ".tile_cache"
+)
 
 # Map altitude to zoom level — higher altitude = wider view = lower zoom
 _ALT_ZOOM_TABLE = [
-    (0, 18), (50, 17), (100, 17), (150, 16),
-    (200, 16), (300, 15), (500, 15), (1000, 14),
+    (0, 18),
+    (50, 17),
+    (100, 17),
+    (150, 16),
+    (200, 16),
+    (300, 15),
+    (500, 15),
+    (1000, 14),
 ]
 
 # Per-drone patch cache: skip re-rendering when position barely changed
@@ -172,10 +180,14 @@ def _alt_to_zoom(alt):
 
 def _lat_lon_to_tile(lat, lon, zoom):
     """Convert lat/lon to fractional tile coordinates at given zoom."""
-    n = 2 ** zoom
+    n = 2**zoom
     x = (lon + 180.0) / 360.0 * n
     lat_rad = math.radians(lat)
-    y = (1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi) / 2.0 * n
+    y = (
+        (1.0 - math.log(math.tan(lat_rad) + 1.0 / math.cos(lat_rad)) / math.pi)
+        / 2.0
+        * n
+    )
     return x, y
 
 
@@ -199,7 +211,9 @@ def _fetch_tile(tx, ty, zoom):
     # Fetch from network
     url = _TILE_URL.format(z=zoom, x=tx, y=ty)
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "SerialStudio-DroneDemo/1.0"})
+        req = urllib.request.Request(
+            url, headers={"User-Agent": "SerialStudio-DroneDemo/1.0"}
+        )
         with urllib.request.urlopen(req, timeout=5) as resp:
             data = resp.read()
 
@@ -301,9 +315,17 @@ def _draw_hud_alpha(img, lat, lon, heading, alt):
     cv2.line(img, (cx, cy + 20), (cx, cy + 40), (0, 255, 0), 1)
 
     # Text info
-    cv2.putText(img, f"ALT {alt:.0f}m", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1)
     cv2.putText(
-        img, f"HDG {heading:.0f}", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1
+        img, f"ALT {alt:.0f}m", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 255, 0), 1
+    )
+    cv2.putText(
+        img,
+        f"HDG {heading:.0f}",
+        (10, 40),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.4,
+        (0, 255, 0),
+        1,
     )
     cv2.putText(
         img,
@@ -338,7 +360,13 @@ def _draw_hud_bravo(img, lat, lon, heading, alt):
     # Text info
     cv2.putText(img, "FLIR", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 200, 0), 1)
     cv2.putText(
-        img, f"ALT {alt:.0f}m", (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 200, 0), 1
+        img,
+        f"ALT {alt:.0f}m",
+        (10, 40),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.4,
+        (255, 200, 0),
+        1,
     )
     cv2.putText(
         img,
@@ -353,7 +381,9 @@ def _draw_hud_bravo(img, lat, lon, heading, alt):
 
 def make_alpha_image(lat, lon, heading, alt):
     """Grayscale satellite camera view for Drone Alpha with green HUD."""
-    grey = _get_satellite_patch(lat, lon, heading, alt, IMG_WIDTH, IMG_HEIGHT, cache_key="alpha")
+    grey = _get_satellite_patch(
+        lat, lon, heading, alt, IMG_WIDTH, IMG_HEIGHT, cache_key="alpha"
+    )
     img = cv2.cvtColor(grey, cv2.COLOR_GRAY2BGR)
     _draw_hud_alpha(img, lat, lon, heading, alt)
     return img
@@ -361,7 +391,9 @@ def make_alpha_image(lat, lon, heading, alt):
 
 def make_bravo_image(lat, lon, heading, alt):
     """Thermal/IR remap of satellite imagery for Drone Bravo."""
-    grey = _get_satellite_patch(lat, lon, heading, alt, IMG_WIDTH, IMG_HEIGHT, cache_key="bravo")
+    grey = _get_satellite_patch(
+        lat, lon, heading, alt, IMG_WIDTH, IMG_HEIGHT, cache_key="bravo"
+    )
     img = _apply_thermal_palette(grey)
     _draw_hud_bravo(img, lat, lon, heading, alt)
     return img
@@ -379,9 +411,13 @@ def make_camera_off_image(label):
     text = f"{label} CAMERA OFF"
     ts = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)[0]
     cv2.putText(
-        img, text,
+        img,
+        text,
         (cx - ts[0] // 2, cy + 30),
-        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (100, 100, 100), 1,
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.5,
+        (100, 100, 100),
+        1,
     )
 
     return img
@@ -453,7 +489,9 @@ class DroneAlpha:
             return self._step_landing(dt)
 
     def _make_telemetry(self, airspeed, roll, pitch, current):
-        vspeed = (self._alt - self._prev_alt) / 0.1 if self._prev_alt is not None else 0.0
+        vspeed = (
+            (self._alt - self._prev_alt) / 0.1 if self._prev_alt is not None else 0.0
+        )
         voltage = 21.0 + (self._battery_pct / 100.0) * 4.2 + noise(0.05)
         return {
             "lat": round(self._lat, 6),
@@ -631,7 +669,9 @@ class DroneBravo:
             return self._step_landing(dt)
 
     def _make_telemetry(self, airspeed, roll, pitch, current):
-        vspeed = (self._alt - self._prev_alt) / 0.1 if self._prev_alt is not None else 0.0
+        vspeed = (
+            (self._alt - self._prev_alt) / 0.1 if self._prev_alt is not None else 0.0
+        )
         voltage = 21.0 + (self._battery_pct / 100.0) * 4.2 + noise(0.05)
         return {
             "lat": round(self._lat, 6),
@@ -760,8 +800,8 @@ class CommandState:
     """Mutable state driven by output-control commands from Serial Studio."""
 
     def __init__(self):
-        self.throttle = 50.0      # 0-100 %
-        self.heading_offset = 0.0 # -180 to +180 deg
+        self.throttle = 50.0  # 0-100 %
+        self.heading_offset = 0.0  # -180 to +180 deg
         self.camera_on = True
         self.rth = False
         self.tko = False
@@ -940,8 +980,16 @@ def run_alpha(host, fps, stop_event):
                 csv = ",".join(
                     str(data[k])
                     for k in [
-                        "lat", "lon", "heading", "alt", "airspeed",
-                        "vspeed", "roll", "pitch", "voltage", "current",
+                        "lat",
+                        "lon",
+                        "heading",
+                        "alt",
+                        "airspeed",
+                        "vspeed",
+                        "roll",
+                        "pitch",
+                        "voltage",
+                        "current",
                         "battery_pct",
                     ]
                 )
@@ -1025,8 +1073,16 @@ def run_bravo(host, fps, stop_event):
                 csv = ",".join(
                     str(data[k])
                     for k in [
-                        "lat", "lon", "heading", "alt", "airspeed",
-                        "vspeed", "roll", "pitch", "voltage", "current",
+                        "lat",
+                        "lon",
+                        "heading",
+                        "alt",
+                        "airspeed",
+                        "vspeed",
+                        "roll",
+                        "pitch",
+                        "voltage",
+                        "current",
                         "battery_pct",
                     ]
                 )
@@ -1087,10 +1143,14 @@ def main():
 
     print("Dual Drone Telemetry Simulator — Swiss Alps (Zermatt)")
     print(f"FPS: {args.fps}  |  Host: {args.host}")
-    print(f"Alpha helipad: {ALPHA_HOME_LAT:.4f}, {ALPHA_HOME_LON:.4f} (Zermatt village)")
+    print(
+        f"Alpha helipad: {ALPHA_HOME_LAT:.4f}, {ALPHA_HOME_LON:.4f} (Zermatt village)"
+    )
     print(f"Bravo helipad: {BRAVO_HOME_LAT:.4f}, {BRAVO_HOME_LON:.4f} (Trockener Steg)")
     if HAS_CV2:
-        print(f"Camera: {IMG_WIDTH}x{IMG_HEIGHT} satellite JPEG @ quality {JPEG_QUALITY}")
+        print(
+            f"Camera: {IMG_WIDTH}x{IMG_HEIGHT} satellite JPEG @ quality {JPEG_QUALITY}"
+        )
         print(f"Tile cache: {_TILE_CACHE_DIR}")
     else:
         print("WARNING: opencv-python not installed — no camera images will be sent")

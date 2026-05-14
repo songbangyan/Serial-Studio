@@ -16,7 +16,6 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Bug #9: ProcessHandler missing path validation (security)
 # ---------------------------------------------------------------------------
@@ -26,7 +25,9 @@ from utils import APIError
 class TestProcessHandlerPathValidation:
     """Verify that process driver rejects dangerous executable paths."""
 
-    def test_set_executable_rejects_absolute_outside_allowed(self, api_client, clean_state):
+    def test_set_executable_rejects_absolute_outside_allowed(
+        self, api_client, clean_state
+    ):
         """ProcessHandler.setExecutable should reject paths outside allowed dirs."""
         dangerous_paths = [
             "/usr/bin/rm",
@@ -76,7 +77,9 @@ class TestMCPSessionLeak:
 
         # Server should still be responsive
         result = api_client.command("api.getCommands")
-        assert "commands" in result, "Server should remain responsive after bogus sessions"
+        assert (
+            "commands" in result
+        ), "Server should remain responsive after bogus sessions"
 
 
 # ---------------------------------------------------------------------------
@@ -226,7 +229,9 @@ class TestFrameBuilderSourceFrames:
 class TestDashboardDataIntegrity:
     """Verify dashboard data access doesn't create phantom entries."""
 
-    def test_dashboard_groups_valid_after_connect(self, api_client, device_simulator, clean_state):
+    def test_dashboard_groups_valid_after_connect(
+        self, api_client, device_simulator, clean_state
+    ):
         """After connecting and sending data, all dashboard groups should be valid."""
         api_client.set_operation_mode("quickplot")
         time.sleep(0.5)  # Let queued rebuildDevices settle before configuring
@@ -282,9 +287,9 @@ class TestAudioDriverConfiguration:
             # At least one of input/output should have channels if devices exist
             if config.get("inputDevices") or config.get("outputDevices"):
                 has_channels = len(input_channels) > 0 or len(output_channels) > 0
-                assert has_channels, (
-                    "Bug #2 regression: channel counts should have fallback defaults"
-                )
+                assert (
+                    has_channels
+                ), "Bug #2 regression: channel counts should have fallback defaults"
         except APIError as e:
             if "COMMERCIAL" in str(e).upper() or "NOT_AVAILABLE" in str(e).upper():
                 pytest.skip("Audio driver requires commercial build")

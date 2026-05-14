@@ -59,19 +59,20 @@ def _wait_for_dashboard_widgets(api_client, minimum: int, timeout: float = 2.0) 
     return api_client.get_dashboard_data().get("widgetCount", 0)
 
 
-@pytest.mark.parametrize("checksum_type", [
-    ChecksumType.NONE,
-    ChecksumType.XOR,
-    ChecksumType.SUM,
-    ChecksumType.CRC8,
-    ChecksumType.CRC16,
-    ChecksumType.CRC32,
-    ChecksumType.FLETCHER16,
-    ChecksumType.ADLER32,
-])
-def test_checksum_validation(
-    api_client, device_simulator, clean_state, checksum_type
-):
+@pytest.mark.parametrize(
+    "checksum_type",
+    [
+        ChecksumType.NONE,
+        ChecksumType.XOR,
+        ChecksumType.SUM,
+        ChecksumType.CRC8,
+        ChecksumType.CRC16,
+        ChecksumType.CRC32,
+        ChecksumType.FLETCHER16,
+        ChecksumType.ADLER32,
+    ],
+)
+def test_checksum_validation(api_client, device_simulator, clean_state, checksum_type):
     """Test that Serial Studio correctly validates all checksum types."""
     # Create new project and configure for ProjectFile mode
     api_client.create_new_project()
@@ -82,7 +83,9 @@ def test_checksum_validation(
 
     # Add 6 datasets with plot widgets enabled
     for i in range(6):
-        api_client.command("project.dataset.add", {"groupId": 0, "options": 1})  # 1 = plot widget
+        api_client.command(
+            "project.dataset.add", {"groupId": 0, "options": 1}
+        )  # 1 = plot widget
         time.sleep(0.1)
 
     # Set CSV parser
@@ -168,10 +171,13 @@ def test_checksum_validation(
     assert data["datasetCount"] >= 6, f"Expected datasets, got {data['datasetCount']}"
 
 
-@pytest.mark.parametrize("checksum_type", [
-    ChecksumType.CRC16,
-    ChecksumType.CRC32,
-])
+@pytest.mark.parametrize(
+    "checksum_type",
+    [
+        ChecksumType.CRC16,
+        ChecksumType.CRC32,
+    ],
+)
 def test_invalid_checksum_rejection(
     api_client, device_simulator, clean_state, checksum_type
 ):
@@ -239,7 +245,7 @@ def test_invalid_checksum_rejection(
             start_delimiter="/*",
             end_delimiter="*/",
             checksum_type=checksum_type,
-            mode="project"
+            mode="project",
         )
         valid_frames.append(frame)
 
@@ -250,7 +256,7 @@ def test_invalid_checksum_rejection(
         start_delimiter="/*",
         end_delimiter="*/",
         checksum_type=checksum_type,
-        mode="project"
+        mode="project",
     )
     checksum_length = 2 if checksum_type == ChecksumType.CRC16 else 4
     line_terminator = b"\n"
@@ -291,12 +297,15 @@ def test_invalid_checksum_rejection(
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.parametrize("checksum_type", [
-    ChecksumType.NONE,
-    ChecksumType.CRC8,
-    ChecksumType.CRC16,
-    ChecksumType.CRC32,
-])
+@pytest.mark.parametrize(
+    "checksum_type",
+    [
+        ChecksumType.NONE,
+        ChecksumType.CRC8,
+        ChecksumType.CRC16,
+        ChecksumType.CRC32,
+    ],
+)
 def test_checksum_validation_lua(
     api_client, device_simulator, clean_state, checksum_type
 ):
@@ -312,9 +321,7 @@ def test_checksum_validation_lua(
 
     # Lua CSV template — set the language explicitly so the project model
     # and the script engine agree on which engine should validate the code.
-    api_client.set_frame_parser_code(
-        DataGenerator.CSV_PARSER_TEMPLATE_LUA, language=1
-    )
+    api_client.set_frame_parser_code(DataGenerator.CSV_PARSER_TEMPLATE_LUA, language=1)
     time.sleep(0.2)
 
     checksum_names = {
@@ -375,9 +382,9 @@ def test_checksum_validation_lua(
     assert status["isConnected"], "Device should be connected"
 
     # Sanity-check the language survived the round trip
-    assert api_client.get_frame_parser_language(0) == 1, (
-        "Source 0 should be reporting Lua after explicit setCode"
-    )
+    assert (
+        api_client.get_frame_parser_language(0) == 1
+    ), "Source 0 should be reporting Lua after explicit setCode"
 
     widget_count = _wait_for_dashboard_widgets(api_client, minimum=6)
     assert widget_count >= 6, f"Expected widgets, got {widget_count}"
@@ -422,7 +429,7 @@ def test_json_frame_parsing(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -503,7 +510,7 @@ def test_csv_frame_parsing(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -566,7 +573,9 @@ def test_csv_delimiter_resilience(api_client, device_simulator, clean_state, del
 
     # Set JavaScript parser for the specified delimiter
     delimiter_escaped = delimiter.replace("\t", "\\t")
-    parser_code = f"function parse(frame) {{ return frame.split('{delimiter_escaped}'); }}"
+    parser_code = (
+        f"function parse(frame) {{ return frame.split('{delimiter_escaped}'); }}"
+    )
     api_client.set_frame_parser_code(parser_code, language=0)
     time.sleep(0.2)
 
@@ -576,7 +585,7 @@ def test_csv_delimiter_resilience(api_client, device_simulator, clean_state, del
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -610,7 +619,9 @@ def test_csv_delimiter_resilience(api_client, device_simulator, clean_state, del
 
 
 @pytest.mark.parametrize("line_terminator", ["\r\n", "\n", "\r", ";"])
-def test_frame_delimiter_line_terminators(api_client, device_simulator, clean_state, line_terminator):
+def test_frame_delimiter_line_terminators(
+    api_client, device_simulator, clean_state, line_terminator
+):
     """
     Test different line terminators after frame end delimiters.
 
@@ -643,7 +654,7 @@ def test_frame_delimiter_line_terminators(api_client, device_simulator, clean_st
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -768,7 +779,9 @@ def test_frame_end_delimiters(api_client, device_simulator, clean_state, end_del
         ("[BEGIN", "END]"),
     ],
 )
-def test_frame_start_end_delimiters(api_client, device_simulator, clean_state, start, end):
+def test_frame_start_end_delimiters(
+    api_client, device_simulator, clean_state, start, end
+):
     """
     Test custom frame start and end delimiter combinations.
 
@@ -875,7 +888,7 @@ def test_high_frequency_frames(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -950,7 +963,7 @@ def test_empty_frame_handling(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -1029,7 +1042,7 @@ def test_malformed_json_handling(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -1064,8 +1077,8 @@ def test_malformed_json_handling(api_client, device_simulator, clean_state):
     # Then send malformed frames
     malformed_frames = [
         b"/*{invalid json}*/\r\n",
-        b"/*{\"broken\": }*/\r\n",
-        b"/*{{\"nested\": \"wrong\"}}*/\r\n",
+        b'/*{"broken": }*/\r\n',
+        b'/*{{"nested": "wrong"}}*/\r\n',
     ]
 
     for frame in malformed_frames:
@@ -1085,10 +1098,17 @@ def test_large_frame_handling(api_client, device_simulator, clean_state):
     # Add 50 groups with 20 datasets each (1000 total datasets)
     for group_idx in range(50):
         commands = [
-            {"command": "project.group.add", "params": {"title": f"Group{group_idx}", "widgetType": 0}}
+            {
+                "command": "project.group.add",
+                "params": {"title": f"Group{group_idx}", "widgetType": 0},
+            }
         ]
         commands.extend(
-            {"command": "project.dataset.add", "params": {"groupId": group_idx, "options": 0}} for _ in range(20)
+            {
+                "command": "project.dataset.add",
+                "params": {"groupId": group_idx, "options": 0},
+            }
+            for _ in range(20)
         )
         api_client.batch(commands)
 
@@ -1115,7 +1135,7 @@ def test_large_frame_handling(api_client, device_simulator, clean_state):
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 

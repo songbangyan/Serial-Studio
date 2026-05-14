@@ -41,6 +41,7 @@ VEC3_EVERY_N_FRAMES = 5  # one bare Vec3 frame for every N total frames
 # Wire-format helpers
 # ---------------------------------------------------------------------------
 
+
 def varint(n: int) -> bytes:
     """Encode an unsigned integer as a protobuf varint."""
     out = bytearray()
@@ -83,11 +84,12 @@ def encode_vec3(x: float, y: float, z: float) -> bytes:
 # Frame builders
 # ---------------------------------------------------------------------------
 
+
 def make_sensor_frame(t: float, counter: int) -> bytes:
     """Build a Sensor frame with values that look interesting on a -100..100 plot."""
     # Slow + medium + jitter blend so the lines look alive, not robotic.
     temperature = 25.0 + 40.0 * math.sin(t * 0.7) + 5.0 * math.sin(t * 4.3)
-    humidity    = 50.0 + 35.0 * math.sin(t * 0.31 + 1.0) + random.uniform(-2.0, 2.0)
+    humidity = 50.0 + 35.0 * math.sin(t * 0.31 + 1.0) + random.uniform(-2.0, 2.0)
     # 3-axis accel: chunky vibration + DC offset on Z (1g-ish, scaled up for plots).
     ax = 35.0 * math.sin(t * 5.0) + 8.0 * math.sin(t * 23.0)
     ay = 35.0 * math.cos(t * 5.0) + 8.0 * math.cos(t * 19.0)
@@ -112,8 +114,8 @@ def make_sensor_frame(t: float, counter: int) -> bytes:
     out = bytearray()
     out += field_float(1, temperature)
     out += field_float(2, humidity)
-    out += field_submsg(3, encode_vec3(ax, ay, az))     # accel
-    out += field_submsg(4, encode_vec3(gx, gy, gz))     # gyro
+    out += field_submsg(3, encode_vec3(ax, ay, az))  # accel
+    out += field_submsg(4, encode_vec3(gx, gy, gz))  # gyro
     out += field_uint(5, status)
     out += field_string(6, note)
     return bytes(out)
@@ -133,8 +135,10 @@ def make_vec3_frame(t: float, counter: int) -> bytes:
 
 ANSI_CLEAR_EOL = "\033[K"
 
-def render_status(elapsed: float, total: int, sensor_count: int, vec3_count: int,
-                  kind: str, size: int) -> str:
+
+def render_status(
+    elapsed: float, total: int, sensor_count: int, vec3_count: int, kind: str, size: int
+) -> str:
     rate = total / elapsed if elapsed > 0 else 0.0
     return (
         f"  {kind:<6}  {size:3d}B  "
@@ -147,6 +151,7 @@ def render_status(elapsed: float, total: int, sensor_count: int, vec3_count: int
 # ---------------------------------------------------------------------------
 # Main loop
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -162,10 +167,10 @@ def main() -> None:
     sys.stdout.flush()
 
     t0 = time.monotonic()
-    counter      = 0
+    counter = 0
     sensor_count = 0
-    vec3_count   = 0
-    next_t       = t0
+    vec3_count = 0
+    next_t = t0
 
     try:
         while True:
@@ -174,11 +179,11 @@ def main() -> None:
 
             if counter % VEC3_EVERY_N_FRAMES == 0:
                 frame = make_vec3_frame(t, counter)
-                kind  = "Vec3"
+                kind = "Vec3"
                 vec3_count += 1
             else:
                 frame = make_sensor_frame(t, counter)
-                kind  = "Sensor"
+                kind = "Sensor"
                 sensor_count += 1
 
             sock.sendto(frame, (HOST, PORT))
@@ -192,8 +197,9 @@ def main() -> None:
                 next_t = time.monotonic()  # we fell badly behind, resync
 
             # Status line (refreshes in place).
-            sys.stdout.write(render_status(t, counter, sensor_count, vec3_count,
-                                           kind, len(frame)))
+            sys.stdout.write(
+                render_status(t, counter, sensor_count, vec3_count, kind, len(frame))
+            )
             sys.stdout.flush()
 
     finally:

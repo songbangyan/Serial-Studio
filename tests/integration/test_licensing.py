@@ -24,10 +24,10 @@ import pytest
 from utils import SerialStudioClient
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _licensing_available(api_client) -> bool:
     """Return True if the licensing API commands are registered."""
@@ -41,6 +41,7 @@ def _trial_available(api_client) -> bool:
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def require_licensing(api_client):
@@ -57,6 +58,7 @@ def require_licensing(api_client):
 # Build integrity — license guard validation
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_all_license_guards_pass(api_client):
     """Every generated license guard must pass in the running binary.
@@ -72,12 +74,13 @@ def test_all_license_guards_pass(api_client):
     assert isinstance(result.get("failed"), int)
     assert isinstance(result.get("allOk"), bool)
 
-    assert result["total"] >= 20, \
-        f"Expected at least 20 guards, got {result['total']}"
-    assert result["allOk"] is True, \
-        f"{result['failed']}/{result['total']} license guards failed: indices {result.get('failures')}"
-    assert result["passed"] == result["total"], \
-        f"Only {result['passed']}/{result['total']} guards passed"
+    assert result["total"] >= 20, f"Expected at least 20 guards, got {result['total']}"
+    assert (
+        result["allOk"] is True
+    ), f"{result['failed']}/{result['total']} license guards failed: indices {result.get('failures')}"
+    assert (
+        result["passed"] == result["total"]
+    ), f"Only {result['passed']}/{result['total']} guards passed"
 
 
 @pytest.mark.integration
@@ -95,6 +98,7 @@ def test_license_guard_status_shape(api_client):
 # ---------------------------------------------------------------------------
 # Smoke / status tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_licensing_get_status_shape(api_client):
@@ -157,14 +161,20 @@ def test_licensing_app_name_nonempty(api_client):
 # Input validation
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_set_license_missing_param(api_client):
     """licensing.setLicense without licenseKey must return a validation error."""
     with pytest.raises(APIError) as exc_info:
         api_client.command("licensing.setLicense", {})
 
-    assert exc_info.value.code in ("MISSING_PARAM", "INVALID_PARAM", "VALIDATION_ERROR",
-                                   "missing_param", "invalid_param")
+    assert exc_info.value.code in (
+        "MISSING_PARAM",
+        "INVALID_PARAM",
+        "VALIDATION_ERROR",
+        "missing_param",
+        "invalid_param",
+    )
 
 
 @pytest.mark.integration
@@ -199,6 +209,7 @@ def test_set_license_valid_uuid_format(api_client):
 # Idempotency / graceful error states
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_activate_without_license_key(api_client):
     """Calling activate with no key set returns an error, not a crash."""
@@ -207,9 +218,7 @@ def test_activate_without_license_key(api_client):
     with pytest.raises(APIError) as exc_info:
         api_client.command("licensing.activate")
 
-    assert exc_info.value.code in (
-        "INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM"
-    )
+    assert exc_info.value.code in ("INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM")
 
 
 @pytest.mark.integration
@@ -217,14 +226,14 @@ def test_deactivate_when_not_activated(api_client):
     """Calling deactivate when not activated returns an error, not a crash."""
     status = api_client.command("licensing.getStatus")
     if status.get("isActivated"):
-        pytest.skip("Machine has an active license; skipping deactivate-when-inactive test")
+        pytest.skip(
+            "Machine has an active license; skipping deactivate-when-inactive test"
+        )
 
     with pytest.raises(APIError) as exc_info:
         api_client.command("licensing.deactivate")
 
-    assert exc_info.value.code in (
-        "INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM"
-    )
+    assert exc_info.value.code in ("INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM")
 
 
 @pytest.mark.integration
@@ -240,9 +249,7 @@ def test_trial_enable_when_not_available(api_client):
     with pytest.raises(APIError) as exc_info:
         api_client.command("licensing.enableTrial")
 
-    assert exc_info.value.code in (
-        "INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM"
-    )
+    assert exc_info.value.code in ("INVALID_PARAM", "EXECUTION_ERROR", "MISSING_PARAM")
 
 
 # ---------------------------------------------------------------------------
@@ -264,6 +271,7 @@ def test_trial_enable_when_not_available(api_client):
 #     stress the same signal paths the constructor used to trigger.
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_rapid_status_queries_no_crash(serial_studio_running):
     """
@@ -277,8 +285,9 @@ def test_rapid_status_queries_no_crash(serial_studio_running):
         try:
             with SerialStudioClient() as c:
                 status = c.command("licensing.getStatus")
-                assert isinstance(status.get("isActivated"), bool), \
-                    f"Unexpected response on iteration {i}: {status}"
+                assert isinstance(
+                    status.get("isActivated"), bool
+                ), f"Unexpected response on iteration {i}: {status}"
         except Exception as e:
             failures.append(f"iteration {i}: {e}")
 
@@ -361,5 +370,6 @@ def test_concurrent_connections_status(serial_studio_running):
     assert len(results) == 8
 
     for idx, status in results.items():
-        assert isinstance(status.get("isActivated"), bool), \
-            f"Thread {idx} got unexpected result: {status}"
+        assert isinstance(
+            status.get("isActivated"), bool
+        ), f"Thread {idx} got unexpected result: {status}"

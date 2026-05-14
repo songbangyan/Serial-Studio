@@ -51,6 +51,7 @@ except ImportError:
 
 try:
     import cpuinfo
+
     _CPUINFO_AVAILABLE = True
 except ImportError:
     _CPUINFO_AVAILABLE = False
@@ -67,9 +68,10 @@ TOP_PROCS = 10
 # while still getting accurate per-core measurements.
 # ---------------------------------------------------------------------------
 
-_cpu_lock   = threading.Lock()
-_cpu_total  = 0.0
-_cpu_cores  = [0.0] * MAX_CORES
+_cpu_lock = threading.Lock()
+_cpu_total = 0.0
+_cpu_cores = [0.0] * MAX_CORES
+
 
 def _cpu_sampler() -> None:
     global _cpu_total, _cpu_cores
@@ -97,6 +99,7 @@ def _get_cpu() -> tuple[float, list[float]]:
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _cpu_model() -> str:
     """Return a human-readable CPU model string, cross-platform."""
     if _CPUINFO_AVAILABLE:
@@ -108,7 +111,7 @@ def _cpu_model() -> str:
             pass
 
     processor = platform.processor()
-    machine   = platform.machine()
+    machine = platform.machine()
     if processor and processor not in ("", machine):
         return processor[:48]
 
@@ -133,8 +136,14 @@ def _cpu_temp() -> str:
         temps = psutil.sensors_temperatures()
         if not temps:
             return "N/A"
-        for key in ("coretemp", "cpu_thermal", "k10temp", "zenpower",
-                    "cpu-thermal", "acpitz"):
+        for key in (
+            "coretemp",
+            "cpu_thermal",
+            "k10temp",
+            "zenpower",
+            "cpu-thermal",
+            "acpitz",
+        ):
             if key in temps and temps[key]:
                 return str(round(temps[key][0].current, 1))
         for entries in temps.values():
@@ -148,16 +157,17 @@ def _cpu_temp() -> str:
 _net_prev: tuple[int, int] = (0, 0)
 _net_ts: float = 0.0
 
+
 def _net_mbps() -> tuple[float, float]:
     """Return (sent MB/s, recv MB/s) since the last call."""
     global _net_prev, _net_ts
-    c    = psutil.net_io_counters()
-    now  = time.monotonic()
-    dt   = max(now - _net_ts, 0.001)
+    c = psutil.net_io_counters()
+    now = time.monotonic()
+    dt = max(now - _net_ts, 0.001)
     sent = round((c.bytes_sent - _net_prev[0]) / 1048576 / dt, 3)
     recv = round((c.bytes_recv - _net_prev[1]) / 1048576 / dt, 3)
     _net_prev = (c.bytes_sent, c.bytes_recv)
-    _net_ts   = now
+    _net_ts = now
     return sent, recv
 
 
@@ -172,7 +182,7 @@ def _top_processes(n: int) -> list[str]:
     for p in psutil.process_iter(["name", "cpu_percent"]):
         try:
             name = (p.info["name"] or "?")[:20].strip()
-            cpu  = p.info["cpu_percent"] or 0.0
+            cpu = p.info["cpu_percent"] or 0.0
             procs.append((cpu, name))
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
@@ -194,6 +204,7 @@ def _emit(frame: str) -> None:
 # Header — static system information (emitted once)
 # ---------------------------------------------------------------------------
 
+
 def emit_header() -> None:
     """
     Emit one frame of static system metadata.
@@ -201,8 +212,8 @@ def emit_header() -> None:
     The persistent JS parser stores these values and keeps them visible
     while subsequent live frames update only the dynamic keys.
     """
-    _, disk   = _disk_root()
-    ram       = psutil.virtual_memory()
+    _, disk = _disk_root()
+    ram = psutil.virtual_memory()
     cpu_cores = psutil.cpu_count(logical=False) or 1
     cpu_threads = psutil.cpu_count(logical=True) or 1
 
@@ -222,6 +233,7 @@ def emit_header() -> None:
 # Live loop
 # ---------------------------------------------------------------------------
 
+
 def run_live(interval: float) -> None:
     """
     Emit live telemetry frames at the requested rate.
@@ -236,31 +248,31 @@ def run_live(interval: float) -> None:
     c = psutil.net_io_counters()
     global _net_prev, _net_ts
     _net_prev = (c.bytes_sent, c.bytes_recv)
-    _net_ts   = time.monotonic()
+    _net_ts = time.monotonic()
 
     # Slow-refresh cache (updated at ~1 Hz regardless of frame rate).
     _slow_cache: dict = {}
-    _last_slow  = 0.0
+    _last_slow = 0.0
 
     def _refresh_slow() -> None:
-        disk_pct  = 0.0
+        disk_pct = 0.0
         disk_used = 0.0
         if disk_path:
             try:
-                du        = psutil.disk_usage(disk_path)
-                disk_pct  = du.percent
+                du = psutil.disk_usage(disk_path)
+                disk_pct = du.percent
                 disk_used = round(du.used / 1e9, 1)
             except Exception:
                 pass
 
         swap = psutil.swap_memory()
 
-        _slow_cache["disk_pct"]  = disk_pct
+        _slow_cache["disk_pct"] = disk_pct
         _slow_cache["disk_used"] = disk_used
         _slow_cache["swap_used"] = round(swap.used / 1e9, 2)
-        _slow_cache["cpu_temp"]  = _cpu_temp()
-        _slow_cache["procs"]     = _top_processes(TOP_PROCS)
-        _slow_cache["n_procs"]   = len(psutil.pids())
+        _slow_cache["cpu_temp"] = _cpu_temp()
+        _slow_cache["procs"] = _top_processes(TOP_PROCS)
+        _slow_cache["n_procs"] = len(psutil.pids())
 
     # Populate cache before first frame.
     _refresh_slow()
@@ -275,7 +287,7 @@ def run_live(interval: float) -> None:
             _last_slow = t0
 
         cpu_pct, core_pcts = _get_cpu()
-        ram      = psutil.virtual_memory()
+        ram = psutil.virtual_memory()
         sent_mbps, recv_mbps = _net_mbps()
 
         fields = [

@@ -42,9 +42,7 @@ def device_simulator():
 
 @pytest.mark.performance
 @pytest.mark.parametrize("frequency_hz", [10, 50, 100, 200, 500, 1000])
-def test_frame_rate_throughput(
-    benchmark, api_client, device_simulator, frequency_hz
-):
+def test_frame_rate_throughput(benchmark, api_client, device_simulator, frequency_hz):
     """
     Benchmark: Measure frames-per-second throughput at different rates.
     """
@@ -127,14 +125,15 @@ def test_sustained_high_frequency(benchmark, api_client, device_simulator):
 
 
 @pytest.mark.performance
-@pytest.mark.parametrize("checksum_type", [
-    ChecksumType.NONE,
-    ChecksumType.CRC16,
-    ChecksumType.CRC32,
-])
-def test_checksum_overhead(
-    benchmark, api_client, device_simulator, checksum_type
-):
+@pytest.mark.parametrize(
+    "checksum_type",
+    [
+        ChecksumType.NONE,
+        ChecksumType.CRC16,
+        ChecksumType.CRC32,
+    ],
+)
+def test_checksum_overhead(benchmark, api_client, device_simulator, checksum_type):
     """
     Benchmark: Measure checksum validation overhead.
     """

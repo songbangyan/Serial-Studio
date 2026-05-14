@@ -93,7 +93,9 @@ def test_project_load_from_json(api_client, clean_state):
     assert load_result is not None, "loadFromJSON should return a result"
 
     loaded_status = api_client.get_project_status()
-    assert loaded_status.get("groupCount", 0) >= 1, "Loaded project should have at least one group"
+    assert (
+        loaded_status.get("groupCount", 0) >= 1
+    ), "Loaded project should have at least one group"
 
 
 @pytest.mark.project

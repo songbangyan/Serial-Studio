@@ -36,7 +36,10 @@ class SerialStudioClient:
     TIMEOUT = 5.0
 
     def __init__(
-        self, host: str = DEFAULT_HOST, port: int = DEFAULT_PORT, timeout: float = TIMEOUT
+        self,
+        host: str = DEFAULT_HOST,
+        port: int = DEFAULT_PORT,
+        timeout: float = TIMEOUT,
     ):
         self.host = host
         self.port = port
@@ -116,7 +119,10 @@ class SerialStudioClient:
         self._socket.sendall(data.encode("utf-8"))
 
     def command(
-        self, command: str, params: Optional[dict] = None, timeout: Optional[float] = None
+        self,
+        command: str,
+        params: Optional[dict] = None,
+        timeout: Optional[float] = None,
     ) -> dict:
         """
         Send a command and return the result.
@@ -155,7 +161,10 @@ class SerialStudioClient:
                     return response.get("result", {})
                 else:
                     error = response.get("error", {})
-                    raise APIError(error.get("code", "UNKNOWN"), error.get("message", "Unknown error"))
+                    raise APIError(
+                        error.get("code", "UNKNOWN"),
+                        error.get("message", "Unknown error"),
+                    )
 
     def batch(
         self, commands: list[dict], timeout: Optional[float] = None
@@ -211,8 +220,10 @@ class SerialStudioClient:
                 return {
                     "error": True,
                     "success": False,
-                    "message": response.get("error", {}).get("message", "Batch rejected"),
-                    "code": response.get("error", {}).get("code", "UNKNOWN")
+                    "message": response.get("error", {}).get(
+                        "message", "Batch rejected"
+                    ),
+                    "code": response.get("error", {}).get("code", "UNKNOWN"),
                 }
 
     def set_bus_type(self, bus_type: str) -> None:
@@ -260,9 +271,13 @@ class SerialStudioClient:
         ]
 
         if socket_type.lower() == "tcp":
-            commands.append({"command": "io.network.setTcpPort", "params": {"port": port}})
+            commands.append(
+                {"command": "io.network.setTcpPort", "params": {"port": port}}
+            )
         else:
-            commands.append({"command": "io.network.setUdpRemotePort", "params": {"port": port}})
+            commands.append(
+                {"command": "io.network.setUdpRemotePort", "params": {"port": port}}
+            )
 
         self.batch(commands)
 
@@ -343,7 +358,6 @@ class SerialStudioClient:
         commands = self.get_available_commands()
         return any(cmd.get("name") == name for cmd in commands)
 
-
     def set_operation_mode(self, mode: str) -> None:
         """
         Set dashboard operation mode.
@@ -355,9 +369,9 @@ class SerialStudioClient:
                   v3.3 and slot 1 in the enum was repurposed.
         """
         mode_map = {
-            "project": 0,    # ProjectFile mode
-            "console": 1,    # ConsoleOnly mode (replaces old DeviceSendsJSON)
-            "json": 1,       # Legacy alias — still maps to slot 1
+            "project": 0,  # ProjectFile mode
+            "console": 1,  # ConsoleOnly mode (replaces old DeviceSendsJSON)
+            "json": 1,  # Legacy alias — still maps to slot 1
             "quickplot": 2,  # QuickPlot mode
         }
 
@@ -433,7 +447,9 @@ class SerialStudioClient:
         return self.command("project.frameParser.update", params)
 
     @staticmethod
-    def _normalize_checksum_algorithm(checksum_algorithm: Optional[str]) -> Optional[str]:
+    def _normalize_checksum_algorithm(
+        checksum_algorithm: Optional[str],
+    ) -> Optional[str]:
         if checksum_algorithm is None:
             return None
 
@@ -577,8 +593,10 @@ class SerialStudioClient:
 
     def source_set_property(self, source_id: int, key: str, value) -> None:
         """Set a driver connection property for a source."""
-        self.command("project.source.setProperty",
-                     {"sourceId": source_id, "key": key, "propertyValue": value})
+        self.command(
+            "project.source.setProperty",
+            {"sourceId": source_id, "key": key, "propertyValue": value},
+        )
 
     def source_get_configuration(self, source_id: int) -> dict:
         """Return full Source struct including connectionSettings."""
@@ -598,17 +616,22 @@ class SerialStudioClient:
             settings: Dict of driver property key/value pairs, e.g.
                       {"address": "127.0.0.1", "tcpPort": 9000, "socketTypeIndex": 0}
         """
-        self.command("project.source.setProperties",
-                     {"sourceId": source_id, "settings": settings})
+        self.command(
+            "project.source.setProperties",
+            {"sourceId": source_id, "settings": settings},
+        )
 
     def source_set_frame_parser_code(self, source_id: int, code: str) -> None:
         """Set per-source JavaScript frame parser code."""
-        self.command("project.source.setFrameParserCode",
-                     {"sourceId": source_id, "code": code})
+        self.command(
+            "project.source.setFrameParserCode", {"sourceId": source_id, "code": code}
+        )
 
     def source_get_frame_parser_code(self, source_id: int) -> str:
         """Return per-source JavaScript frame parser code."""
-        result = self.command("project.source.getFrameParserCode", {"sourceId": source_id})
+        result = self.command(
+            "project.source.getFrameParserCode", {"sourceId": source_id}
+        )
         return result.get("code", "")
 
     # ------------------------------------------------------------------
@@ -635,9 +658,7 @@ class SerialStudioClient:
         not include groupId in each entry; ids are sequential indexes so the
         new group's id is the last array index in project.group.list.
         """
-        self.command(
-            "project.group.add", {"title": title, "widgetType": widget_type}
-        )
+        self.command("project.group.add", {"title": title, "widgetType": widget_type})
         groups = self.list_groups()
         return len(groups) - 1 if groups else -1
 
@@ -688,9 +709,7 @@ class SerialStudioClient:
             },
         )
 
-    def set_dataset_options(
-        self, group_id: int, dataset_id: int, options: int
-    ) -> None:
+    def set_dataset_options(self, group_id: int, dataset_id: int, options: int) -> None:
         self.command(
             "project.dataset.setOptions",
             {

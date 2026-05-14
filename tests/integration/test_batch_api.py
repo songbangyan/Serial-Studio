@@ -31,7 +31,9 @@ def test_batch_read_only_queries(api_client, clean_state):
     assert len(results) == len(commands), "Result count must match command count"
 
     for result in results:
-        assert result.get("success") is True, f"All batch results should succeed: {result}"
+        assert (
+            result.get("success") is True
+        ), f"All batch results should succeed: {result}"
 
 
 @pytest.mark.integration

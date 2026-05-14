@@ -62,10 +62,14 @@ def test_quickplot_comma_csv_parsing(api_client, device_simulator, clean_state):
     # 2. Frames are being received without errors
     # We CANNOT check project status because QuickPlot has no project model
     status = api_client.command("io.getStatus")
-    assert status["isConnected"], "Device should remain connected after receiving QuickPlot data"
+    assert status[
+        "isConnected"
+    ], "Device should remain connected after receiving QuickPlot data"
 
 
-def test_csv_parsing_with_javascript_semicolon(api_client, device_simulator, clean_state):
+def test_csv_parsing_with_javascript_semicolon(
+    api_client, device_simulator, clean_state
+):
     """
     Test CSV parsing with semicolon delimiter using JavaScript parser.
 
@@ -96,7 +100,7 @@ def test_csv_parsing_with_javascript_semicolon(api_client, device_simulator, cle
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -169,7 +173,7 @@ def test_csv_parsing_with_javascript_tab(api_client, device_simulator, clean_sta
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 
@@ -242,7 +246,7 @@ def test_csv_parsing_with_javascript_pipe(api_client, device_simulator, clean_st
         end_sequence="*/",
         checksum_algorithm="None",
         operation_mode=0,
-        frame_detection=1
+        frame_detection=1,
     )
     time.sleep(0.2)
 

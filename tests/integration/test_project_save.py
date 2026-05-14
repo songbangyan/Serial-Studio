@@ -29,9 +29,7 @@ _SAMPLE_WIDGET_SETTINGS = {
     "1002": {"visibleCurves": [True, True]},
 }
 
-_SAMPLE_LAYOUT = {
-    "windows": [{"id": 0, "x": 0, "y": 0, "w": 400, "h": 300}]
-}
+_SAMPLE_LAYOUT = {"windows": [{"id": 0, "x": 0, "y": 0, "w": 400, "h": 300}]}
 
 
 def _base_project(extra: dict | None = None) -> dict:
@@ -137,9 +135,9 @@ def test_widget_settings_survive_connect_disconnect(
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
     assert _WS_KEY in data, "widgetSettings must survive connect/disconnect"
-    assert data[_WS_KEY] == _SAMPLE_WIDGET_SETTINGS, (
-        f"widgetSettings values must be unchanged after disconnect; got {data[_WS_KEY]}"
-    )
+    assert (
+        data[_WS_KEY] == _SAMPLE_WIDGET_SETTINGS
+    ), f"widgetSettings values must be unchanged after disconnect; got {data[_WS_KEY]}"
 
 
 @pytest.mark.project
@@ -168,7 +166,9 @@ def test_layout_stored_inside_widget_settings(api_client, clean_state, tmp_path)
     ws = data[_WS_KEY]
     layout_key = _layout_key(group_id)
     assert layout_key in ws, f"{layout_key} must be inside widgetSettings"
-    assert _ACTIVE_GROUP_SUBKEY in ws, "activeGroup sub-key must be inside widgetSettings"
+    assert (
+        _ACTIVE_GROUP_SUBKEY in ws
+    ), "activeGroup sub-key must be inside widgetSettings"
     assert ws[layout_key] == _SAMPLE_LAYOUT
     assert ws[_ACTIVE_GROUP_SUBKEY] == group_id
 
@@ -216,12 +216,12 @@ def test_layout_survives_connect_disconnect(
 
     data = json.loads(proj_path.read_text(encoding="utf-8"))
     saved_ws = data.get(_WS_KEY, {})
-    assert saved_ws.get(_layout_key(group_id)) == _SAMPLE_LAYOUT, (
-        "per-group layout key must survive disconnect"
-    )
-    assert saved_ws.get(_ACTIVE_GROUP_SUBKEY) == group_id, (
-        "activeGroup sub-key must survive disconnect"
-    )
+    assert (
+        saved_ws.get(_layout_key(group_id)) == _SAMPLE_LAYOUT
+    ), "per-group layout key must survive disconnect"
+    assert (
+        saved_ws.get(_ACTIVE_GROUP_SUBKEY) == group_id
+    ), "activeGroup sub-key must survive disconnect"
 
 
 @pytest.mark.project
@@ -238,7 +238,7 @@ def test_exported_json_matches_file_on_disk(api_client, clean_state, tmp_path):
     time.sleep(0.2)
 
     disk = json.loads(proj_path.read_text(encoding="utf-8"))
-    assert exported.get(_WS_KEY) == disk.get(_WS_KEY), (
-        "exportJson and file.save must agree on widgetSettings"
-    )
+    assert exported.get(_WS_KEY) == disk.get(
+        _WS_KEY
+    ), "exportJson and file.save must agree on widgetSettings"
     assert len(exported.get("groups", [])) == len(disk.get("groups", []))

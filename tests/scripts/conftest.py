@@ -12,7 +12,9 @@ from pathlib import Path
 
 import pytest
 
-SCRIPTS_DIR = Path(__file__).parent.parent.parent / "app" / "rcc" / "scripts" / "parser" / "js"
+SCRIPTS_DIR = (
+    Path(__file__).parent.parent.parent / "app" / "rcc" / "scripts" / "parser" / "js"
+)
 
 
 def run_parser(script_name: str, frame_input) -> list:

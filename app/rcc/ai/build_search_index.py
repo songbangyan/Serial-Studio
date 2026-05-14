@@ -27,31 +27,92 @@ from pathlib import Path
 # ---- Paths --------------------------------------------------------------
 
 SCRIPT = Path(__file__).resolve()
-RCC    = SCRIPT.parent.parent          # app/rcc
-APP    = RCC.parent                    # app
-ROOT   = APP.parent                    # repo root
+RCC = SCRIPT.parent.parent  # app/rcc
+APP = RCC.parent  # app
+ROOT = APP.parent  # repo root
 
-OUT       = SCRIPT.parent / "search_index.json"
-SKILLS    = SCRIPT.parent / "skills"
-DOCS_DIR  = SCRIPT.parent / "docs"
+OUT = SCRIPT.parent / "search_index.json"
+SKILLS = SCRIPT.parent / "skills"
+DOCS_DIR = SCRIPT.parent / "docs"
 TEMPLATES = SCRIPT.parent / "templates"
-SCRIPTS   = RCC / "scripts"
-EXAMPLES  = ROOT / "examples"
+SCRIPTS = RCC / "scripts"
+EXAMPLES = ROOT / "examples"
 
 # ---- Tokenization -------------------------------------------------------
 
 STOP = {
-    "the", "a", "an", "and", "or", "of", "to", "for", "in", "on", "at",
-    "is", "are", "was", "were", "be", "been", "being", "this", "that",
-    "these", "those", "it", "its", "as", "by", "with", "from", "into",
-    "you", "your", "we", "our", "they", "their", "i", "if", "then",
-    "do", "does", "did", "doing", "have", "has", "had", "but", "not",
-    "no", "yes", "so", "such", "than", "when", "where", "what", "which",
-    "who", "how", "why", "can", "could", "would", "should", "will",
-    "may", "might", "must", "shall",
+    "the",
+    "a",
+    "an",
+    "and",
+    "or",
+    "of",
+    "to",
+    "for",
+    "in",
+    "on",
+    "at",
+    "is",
+    "are",
+    "was",
+    "were",
+    "be",
+    "been",
+    "being",
+    "this",
+    "that",
+    "these",
+    "those",
+    "it",
+    "its",
+    "as",
+    "by",
+    "with",
+    "from",
+    "into",
+    "you",
+    "your",
+    "we",
+    "our",
+    "they",
+    "their",
+    "i",
+    "if",
+    "then",
+    "do",
+    "does",
+    "did",
+    "doing",
+    "have",
+    "has",
+    "had",
+    "but",
+    "not",
+    "no",
+    "yes",
+    "so",
+    "such",
+    "than",
+    "when",
+    "where",
+    "what",
+    "which",
+    "who",
+    "how",
+    "why",
+    "can",
+    "could",
+    "would",
+    "should",
+    "will",
+    "may",
+    "might",
+    "must",
+    "shall",
 }
 
 TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9_]+")
+
 
 def tokenize(text: str):
     """Split into lowercased word tokens, drop stopwords + 1-char tokens."""
@@ -65,10 +126,12 @@ def tokenize(text: str):
         out.append(t)
     return out
 
+
 # ---- Chunking -----------------------------------------------------------
 
-CHUNK_TARGET = 600   # chars
-CHUNK_MAX    = 1000
+CHUNK_TARGET = 600  # chars
+CHUNK_MAX = 1000
+
 
 def chunk_markdown(text: str):
     """Split markdown by double-newline paragraphs, then re-pack into chunks
@@ -94,6 +157,7 @@ def chunk_markdown(text: str):
         chunks.append("\n\n".join(cur))
     return chunks
 
+
 def chunk_script(path: Path):
     """For .js/.lua templates, the leading comment block is the most useful
     chunk. Take the first 1000 chars of the file (which should include the
@@ -101,25 +165,31 @@ def chunk_script(path: Path):
     text = path.read_text(errors="replace")
     return [text[:CHUNK_MAX]]
 
+
 def first_function_or_decl(text: str, max_lines: int = 30):
     """Return the first ~30 lines so we capture function signatures."""
     lines = text.splitlines()[:max_lines]
     return "\n".join(lines)
 
+
 # ---- Corpus collection --------------------------------------------------
 
-corpus = []   # list of {id, source, title, body}
+corpus = []  # list of {id, source, title, body}
+
 
 def add(source: str, title: str, body: str, doc_id: str):
     body = body.strip()
     if not body:
         return
-    corpus.append({
-        "id":     doc_id,
-        "source": source,
-        "title":  title,
-        "body":   body,
-    })
+    corpus.append(
+        {
+            "id": doc_id,
+            "source": source,
+            "title": title,
+            "body": body,
+        }
+    )
+
 
 def harvest_markdown(dir_path: Path, source: str):
     if not dir_path.exists():
@@ -128,20 +198,26 @@ def harvest_markdown(dir_path: Path, source: str):
         text = md.read_text(errors="replace")
         title = md.stem
         for i, chunk in enumerate(chunk_markdown(text)):
-            add(source=source,
+            add(
+                source=source,
                 title=f"{title}#{i}",
                 body=chunk,
-                doc_id=f"{source}/{md.name}#{i}")
+                doc_id=f"{source}/{md.name}#{i}",
+            )
+
 
 def harvest_scripts(dir_path: Path, source: str):
     if not dir_path.exists():
         return
     for js in sorted(list(dir_path.glob("*.js")) + list(dir_path.glob("*.lua"))):
         for i, chunk in enumerate(chunk_script(js)):
-            add(source=source,
+            add(
+                source=source,
                 title=js.stem,
                 body=chunk,
-                doc_id=f"{source}/{js.name}#{i}")
+                doc_id=f"{source}/{js.name}#{i}",
+            )
+
 
 def harvest_templates_manifest():
     manifest_path = TEMPLATES / "manifest.json"
@@ -150,10 +226,13 @@ def harvest_templates_manifest():
     data = json.loads(manifest_path.read_text())
     for entry in data.get("templates", []):
         body = f"Template: {entry.get('title','')}\n\n{entry.get('description','')}"
-        add(source="template",
-            title=entry.get("id",""),
+        add(
+            source="template",
+            title=entry.get("id", ""),
             body=body,
-            doc_id=f"template/{entry.get('id')}")
+            doc_id=f"template/{entry.get('id')}",
+        )
+
 
 def harvest_examples():
     if not EXAMPLES.exists():
@@ -169,42 +248,45 @@ def harvest_examples():
         # Group + dataset titles tell the model what shape this project is
         for g in data.get("groups", []):
             gw = g.get("widget", "")
-            gtitle = g.get("title","")
-            ds_titles = ", ".join(d.get("title","") for d in g.get("datasets", []))
+            gtitle = g.get("title", "")
+            ds_titles = ", ".join(d.get("title", "") for d in g.get("datasets", []))
             body_parts.append(f"Group '{gtitle}' (widget={gw}): {ds_titles}")
         if parser:
             body_parts.append("Frame parser:\n" + first_function_or_decl(parser))
-        add(source="example",
+        add(
+            source="example",
             title=title,
             body="\n\n".join(body_parts),
-            doc_id=f"example/{proj.relative_to(ROOT)}")
+            doc_id=f"example/{proj.relative_to(ROOT)}",
+        )
+
 
 print("[index] harvesting corpus...", file=sys.stderr)
 harvest_markdown(SKILLS, "skill")
 harvest_markdown(DOCS_DIR, "doc")
 harvest_templates_manifest()
-harvest_scripts(SCRIPTS / "painter",       "script:painter")
-harvest_scripts(SCRIPTS / "parser/js",     "script:parser_js")
-harvest_scripts(SCRIPTS / "parser/lua",    "script:parser_lua")
+harvest_scripts(SCRIPTS / "painter", "script:painter")
+harvest_scripts(SCRIPTS / "parser/js", "script:parser_js")
+harvest_scripts(SCRIPTS / "parser/lua", "script:parser_lua")
 harvest_scripts(SCRIPTS / "transforms/js", "script:transform_js")
-harvest_scripts(SCRIPTS / "transforms/lua","script:transform_lua")
-harvest_scripts(SCRIPTS / "output",        "script:output_widget")
+harvest_scripts(SCRIPTS / "transforms/lua", "script:transform_lua")
+harvest_scripts(SCRIPTS / "output", "script:output_widget")
 harvest_examples()
 
 print(f"[index] corpus has {len(corpus)} chunks", file=sys.stderr)
 
 # ---- BM25 stats ---------------------------------------------------------
 
-doc_tokens = []        # list of token list per doc
-doc_freq   = Counter() # term -> number of docs that contain it
+doc_tokens = []  # list of token list per doc
+doc_freq = Counter()  # term -> number of docs that contain it
 for entry in corpus:
-    toks  = tokenize(entry["title"]) + tokenize(entry["body"])
+    toks = tokenize(entry["title"]) + tokenize(entry["body"])
     doc_tokens.append(toks)
     for t in set(toks):
         doc_freq[t] += 1
 
-N        = len(corpus)
-avgdl    = sum(len(t) for t in doc_tokens) / max(1, N)
+N = len(corpus)
+avgdl = sum(len(t) for t in doc_tokens) / max(1, N)
 
 # IDF using BM25 form
 idf = {}
@@ -217,25 +299,27 @@ for entry, toks in zip(corpus, doc_tokens):
     tf = Counter(toks)
     # Keep only top-50 terms by frequency to keep index size sane.
     most = dict(tf.most_common(50))
-    docs_out.append({
-        "id":     entry["id"],
-        "source": entry["source"],
-        "title":  entry["title"],
-        "body":   entry["body"],
-        "len":    len(toks),
-        "tf":     most,
-    })
+    docs_out.append(
+        {
+            "id": entry["id"],
+            "source": entry["source"],
+            "title": entry["title"],
+            "body": entry["body"],
+            "len": len(toks),
+            "tf": most,
+        }
+    )
 
 # ---- Write --------------------------------------------------------------
 
 index = {
     "version": 1,
-    "k1":      1.5,
-    "b":       0.75,
-    "N":       N,
-    "avgdl":   avgdl,
-    "idf":     idf,   # term -> idf weight
-    "docs":    docs_out,
+    "k1": 1.5,
+    "b": 0.75,
+    "N": N,
+    "avgdl": avgdl,
+    "idf": idf,  # term -> idf weight
+    "docs": docs_out,
 }
 
 OUT.parent.mkdir(parents=True, exist_ok=True)

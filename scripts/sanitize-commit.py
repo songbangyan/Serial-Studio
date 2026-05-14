@@ -9,6 +9,7 @@
 #  - code-verify.py --fix     -> rules clang-format can't express
 #  - clang-format pass 2      -> reflow after code-verify's edits
 #  - code-verify.py --check   -> regenerate .code-report
+#  - black                    -> format Python under app/, examples/, tests/, scripts/
 #  - documentation-verify.py  -> Markdown AI-narration scan
 #  - build_search_index.py    -> refresh AI assistant BM25 index
 #  - prompt to commit (Conventional Commits) and optionally push
@@ -33,7 +34,10 @@ SCRIPT_PATH = Path(__file__).resolve()
 SOURCE_DIRS = ("app", "doc", "examples")
 SOURCE_EXTS = (".cpp", ".h", ".c")
 SOURCE_SKIP = {"miniaudio.h"}
-COMMIT_PATTERN = re.compile(r"^(feat|fix|chore|docs|style|refactor|perf|test)(\(.+\))?: .+")
+PYTHON_DIRS = ("app", "examples", "tests", "scripts")
+COMMIT_PATTERN = re.compile(
+    r"^(feat|fix|chore|docs|style|refactor|perf|test)(\(.+\))?: .+"
+)
 
 
 def run(cmd, **kwargs):
@@ -105,6 +109,27 @@ def run_clang_format(root: Path) -> None:
             print("clang-format failed on one of: " + ", ".join(chunk))
 
 
+def run_black(root: Path) -> None:
+    targets = [str(root / d) for d in PYTHON_DIRS if (root / d).is_dir()]
+    if not targets:
+        return
+
+    print("Running black...")
+    if shutil.which("black") is not None:
+        cmd = ["black", "--quiet", *targets]
+    else:
+        cmd = [sys.executable, "-m", "black", "--quiet", *targets]
+
+    result = run(cmd)
+    if result.returncode == 127 or (
+        result.returncode != 0 and shutil.which("black") is None
+    ):
+        print("black not available -- skipping. Install with: pip install black")
+        return
+    if result.returncode != 0:
+        print("black failed.")
+
+
 def run_python_step(label: str, script: Path, *args: str) -> None:
     if not script.is_file():
         return
@@ -136,26 +161,34 @@ def main() -> int:
 
     sanitize_permissions(root)
 
-    run_python_step("Expanding single-line doxygen comments",
-                    root / "scripts" / "expand-doxygen.py")
+    run_python_step(
+        "Expanding single-line doxygen comments", root / "scripts" / "expand-doxygen.py"
+    )
 
     print("Running clang-format (pass 1)...")
     run_clang_format(root)
 
-    run_python_step("Running code-verify",
-                    root / "scripts" / "code-verify.py", "--fix")
+    run_python_step("Running code-verify", root / "scripts" / "code-verify.py", "--fix")
 
     print("Running clang-format (pass 2)...")
     run_clang_format(root)
 
-    run_python_step_quiet("Regenerating .code-report",
-                          root / "scripts" / "code-verify.py", "--check")
+    run_python_step_quiet(
+        "Regenerating .code-report", root / "scripts" / "code-verify.py", "--check"
+    )
 
-    run_python_step("Running documentation-verify",
-                    root / "scripts" / "documentation-verify.py", "--quiet")
+    run_black(root)
 
-    run_python_step("Rebuilding AI search index",
-                    root / "app" / "rcc" / "ai" / "build_search_index.py")
+    run_python_step(
+        "Running documentation-verify",
+        root / "scripts" / "documentation-verify.py",
+        "--quiet",
+    )
+
+    run_python_step(
+        "Rebuilding AI search index",
+        root / "app" / "rcc" / "ai" / "build_search_index.py",
+    )
 
     print("Checking for changes...")
     changed = capture(["git", "status", "--short"])
@@ -174,18 +207,24 @@ def main() -> int:
         count = len(capture(["git", "diff", "--name-only"]).splitlines())
     print(f"{count} file(s) changed.")
 
-    answer = prompt("Do you want to commit and push these changes? [y/N] ").strip().lower()
+    answer = (
+        prompt("Do you want to commit and push these changes? [y/N] ").strip().lower()
+    )
     if answer != "y":
         print("Aborting.")
         return 0
 
     while True:
         print()
-        print("Enter a Conventional Commit message (e.g., 'fix: correct permission issue'):")
+        print(
+            "Enter a Conventional Commit message (e.g., 'fix: correct permission issue'):"
+        )
         msg = prompt("> ").strip()
         if msg and COMMIT_PATTERN.match(msg):
             break
-        print("Invalid commit message format. Use Conventional Commits (e.g., 'feat: add new thing').")
+        print(
+            "Invalid commit message format. Use Conventional Commits (e.g., 'feat: add new thing')."
+        )
 
     if run(["git", "add", "."]).returncode != 0:
         print("git add failed.")

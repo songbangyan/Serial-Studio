@@ -16,10 +16,10 @@ import pytest
 
 from .conftest import run_parser
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def approx(value, rel=1e-5):
     """Return a pytest.approx wrapper with a relative tolerance."""
@@ -59,6 +59,7 @@ def build_rtcm3(msg_type: int, payload_bits: bytes) -> list[int]:
 # at_commands
 # ---------------------------------------------------------------------------
 
+
 class TestAtCommands:
     SCRIPT = "at_commands.js"
 
@@ -69,7 +70,7 @@ class TestAtCommands:
 
     def test_creg(self):
         result = run_parser(self.SCRIPT, "+CREG: 0,1")
-        assert result[2] == 0   # numeric 0, not string "0"
+        assert result[2] == 0  # numeric 0, not string "0"
         assert result[3] == 1
 
     def test_cgatt(self):
@@ -103,11 +104,13 @@ class TestAtCommands:
 # base64_encoded
 # ---------------------------------------------------------------------------
 
+
 class TestBase64Encoded:
     SCRIPT = "base64_encoded.js"
 
     def test_hello_world(self):
         import base64
+
         expected = list(b"Hello World")
         b64 = base64.b64encode(b"Hello World").decode()
         result = run_parser(self.SCRIPT, b64)
@@ -115,12 +118,14 @@ class TestBase64Encoded:
 
     def test_single_byte(self):
         import base64
+
         b64 = base64.b64encode(bytes([0x42])).decode()
         result = run_parser(self.SCRIPT, b64)
         assert result == [0x42]
 
     def test_all_zeros(self):
         import base64
+
         b64 = base64.b64encode(bytes(4)).decode()
         result = run_parser(self.SCRIPT, b64)
         assert result == [0, 0, 0, 0]
@@ -131,6 +136,7 @@ class TestBase64Encoded:
 
     def test_binary_values(self):
         import base64
+
         data = bytes([0x00, 0xFF, 0x7F, 0x80])
         b64 = base64.b64encode(data).decode()
         result = run_parser(self.SCRIPT, b64)
@@ -140,6 +146,7 @@ class TestBase64Encoded:
 # ---------------------------------------------------------------------------
 # binary_tlv
 # ---------------------------------------------------------------------------
+
 
 class TestBinaryTlv:
     SCRIPT = "binary_tlv.js"
@@ -183,6 +190,7 @@ class TestBinaryTlv:
 # cobs_encoded
 # ---------------------------------------------------------------------------
 
+
 class TestCobsEncoded:
     SCRIPT = "cobs_encoded.js"
 
@@ -221,6 +229,7 @@ class TestCobsEncoded:
 # comma_separated
 # ---------------------------------------------------------------------------
 
+
 class TestCommaSeparated:
     SCRIPT = "comma_separated.js"
 
@@ -240,6 +249,7 @@ class TestCommaSeparated:
 # ---------------------------------------------------------------------------
 # fixed_width_fields
 # ---------------------------------------------------------------------------
+
 
 class TestFixedWidthFields:
     SCRIPT = "fixed_width_fields.js"
@@ -263,6 +273,7 @@ class TestFixedWidthFields:
 # ---------------------------------------------------------------------------
 # hexadecimal_bytes
 # ---------------------------------------------------------------------------
+
 
 class TestHexadecimalBytes:
     SCRIPT = "hexadecimal_bytes.js"
@@ -291,6 +302,7 @@ class TestHexadecimalBytes:
 # ---------------------------------------------------------------------------
 # ini_config
 # ---------------------------------------------------------------------------
+
 
 class TestIniConfig:
     SCRIPT = "ini_config.js"
@@ -326,11 +338,14 @@ class TestIniConfig:
 # json_data
 # ---------------------------------------------------------------------------
 
+
 class TestJsonData:
     SCRIPT = "json_data.js"
 
     def test_full_object(self):
-        result = run_parser(self.SCRIPT, '{"time":"12:05","speed":48,"angle":4.0,"distance":87}')
+        result = run_parser(
+            self.SCRIPT, '{"time":"12:05","speed":48,"angle":4.0,"distance":87}'
+        )
         assert result[0] == "12:05"
         assert result[1] == 48
         assert result[2] == approx(4.0)
@@ -357,6 +372,7 @@ class TestJsonData:
 # key_value_pairs
 # ---------------------------------------------------------------------------
 
+
 class TestKeyValuePairs:
     SCRIPT = "key_value_pairs.js"
 
@@ -382,6 +398,7 @@ class TestKeyValuePairs:
 # mavlink
 # ---------------------------------------------------------------------------
 
+
 class TestMavlink:
     SCRIPT = "mavlink.js"
 
@@ -395,13 +412,13 @@ class TestMavlink:
     def test_attitude_message(self):
         # Message ID 30: time_boot_ms(4) + roll(4) + pitch(4) + yaw(4) + ...
         time_ms = struct.pack("<I", 1000)
-        roll    = self._pack_float(0.1)
-        pitch   = self._pack_float(0.2)
-        yaw     = self._pack_float(0.3)
+        roll = self._pack_float(0.1)
+        pitch = self._pack_float(0.2)
+        yaw = self._pack_float(0.3)
         # Pad to at least 13 bytes (need indices 4,8,12 for roll/pitch/yaw)
         payload = time_ms + roll + pitch + yaw
-        frame   = self._make_v1_frame(30, payload)
-        result  = run_parser(self.SCRIPT, frame)
+        frame = self._make_v1_frame(30, payload)
+        result = run_parser(self.SCRIPT, frame)
         assert result[0] == approx(0.1, rel=1e-4)
         assert result[1] == approx(0.2, rel=1e-4)
         assert result[2] == approx(0.3, rel=1e-4)
@@ -422,6 +439,7 @@ class TestMavlink:
 # ---------------------------------------------------------------------------
 # messagepack
 # ---------------------------------------------------------------------------
+
 
 class TestMessagepack:
     SCRIPT = "messagepack.js"
@@ -464,6 +482,7 @@ class TestMessagepack:
 # ---------------------------------------------------------------------------
 # modbus
 # ---------------------------------------------------------------------------
+
 
 class TestModbus:
     SCRIPT = "modbus.js"
@@ -514,6 +533,7 @@ class TestModbus:
 # nmea_0183
 # ---------------------------------------------------------------------------
 
+
 class TestNmea0183:
     SCRIPT = "nmea_0183.js"
 
@@ -525,7 +545,9 @@ class TestNmea0183:
         assert result[2] == approx(545.4)
 
     def test_gprmc(self):
-        sentence = "$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A"
+        sentence = (
+            "$GPRMC,123519,A,4807.038,N,01131.000,E,022.4,084.4,230394,003.1,W*6A"
+        )
         result = run_parser(self.SCRIPT, sentence)
         assert result[0] == approx(48.1173, rel=1e-3)
 
@@ -552,6 +574,7 @@ class TestNmea0183:
 # ---------------------------------------------------------------------------
 # nmea_2000
 # ---------------------------------------------------------------------------
+
 
 class TestNmea2000:
     SCRIPT = "nmea_2000.js"
@@ -580,6 +603,7 @@ class TestNmea2000:
 # pipe_delimited
 # ---------------------------------------------------------------------------
 
+
 class TestPipeDelimited:
     SCRIPT = "pipe_delimited.js"
 
@@ -596,6 +620,7 @@ class TestPipeDelimited:
 # ---------------------------------------------------------------------------
 # raw_bytes
 # ---------------------------------------------------------------------------
+
 
 class TestRawBytes:
     SCRIPT = "raw_bytes.js"
@@ -618,6 +643,7 @@ class TestRawBytes:
 # ---------------------------------------------------------------------------
 # rtcm_corrections
 # ---------------------------------------------------------------------------
+
 
 class TestRtcmCorrections:
     SCRIPT = "rtcm_corrections.js"
@@ -644,6 +670,7 @@ class TestRtcmCorrections:
 # semicolon_separated
 # ---------------------------------------------------------------------------
 
+
 class TestSemicolonSeparated:
     SCRIPT = "semicolon_separated.js"
 
@@ -661,21 +688,26 @@ class TestSemicolonSeparated:
 # sirf_binary
 # ---------------------------------------------------------------------------
 
+
 class TestSirfBinary:
     SCRIPT = "sirf_binary.js"
 
     def _make_sirf_frame(self, msg_id: int, data: bytes) -> list[int]:
         payload = bytes([msg_id]) + data
-        length  = len(payload)
+        length = len(payload)
         checksum = sum(payload) & 0x7FFF
-        header   = bytes([
-            (length >> 8) & 0x7F,
-            length & 0xFF,
-        ])
-        trailer = bytes([
-            (checksum >> 8) & 0x7F,
-            checksum & 0xFF,
-        ])
+        header = bytes(
+            [
+                (length >> 8) & 0x7F,
+                length & 0xFF,
+            ]
+        )
+        trailer = bytes(
+            [
+                (checksum >> 8) & 0x7F,
+                checksum & 0xFF,
+            ]
+        )
         return list(header + payload + trailer)
 
     def test_too_short_returns_defaults(self):
@@ -698,11 +730,11 @@ class TestSirfBinary:
         #   bytes[3-6]: GPS TOW * 100 (big-endian)
         #   byte[7]:    number of tracked channels
         reserved = bytes([0])
-        week     = struct.pack(">H", 2300)
-        tow      = struct.pack(">I", 123400)   # 1234.00 s * 100
-        payload  = reserved + week + tow + bytes([8]) + bytes(20)
-        frame    = self._make_sirf_frame(4, payload)
-        result   = run_parser(self.SCRIPT, frame)
+        week = struct.pack(">H", 2300)
+        tow = struct.pack(">I", 123400)  # 1234.00 s * 100
+        payload = reserved + week + tow + bytes([8]) + bytes(20)
+        frame = self._make_sirf_frame(4, payload)
+        result = run_parser(self.SCRIPT, frame)
         assert result[14] == 2300
         assert result[15] == approx(1234.0)
         assert result[16] == 8
@@ -712,11 +744,12 @@ class TestSirfBinary:
 # slip_encoded
 # ---------------------------------------------------------------------------
 
+
 class TestSlipEncoded:
     SCRIPT = "slip_encoded.js"
 
     def test_example_from_docstring(self):
-        encoded  = [0x01, 0x02, 0xDB, 0xDC, 0x03, 0xDB, 0xDD, 0x04]
+        encoded = [0x01, 0x02, 0xDB, 0xDC, 0x03, 0xDB, 0xDD, 0x04]
         expected = [0x01, 0x02, 0xC0, 0x03, 0xDB, 0x04]
         assert run_parser(self.SCRIPT, encoded) == expected
 
@@ -746,6 +779,7 @@ class TestSlipEncoded:
 # tab_separated
 # ---------------------------------------------------------------------------
 
+
 class TestTabSeparated:
     SCRIPT = "tab_separated.js"
 
@@ -763,12 +797,20 @@ class TestTabSeparated:
 # ubx_ublox
 # ---------------------------------------------------------------------------
 
+
 class TestUbxUblox:
     SCRIPT = "ubx_ublox.js"
 
-    def _ubx_checksum(self, msg_class: int, msg_id: int, payload: bytes) -> tuple[int, int]:
+    def _ubx_checksum(
+        self, msg_class: int, msg_id: int, payload: bytes
+    ) -> tuple[int, int]:
         ck_a, ck_b = 0, 0
-        for b in [msg_class, msg_id, len(payload) & 0xFF, (len(payload) >> 8) & 0xFF] + list(payload):
+        for b in [
+            msg_class,
+            msg_id,
+            len(payload) & 0xFF,
+            (len(payload) >> 8) & 0xFF,
+        ] + list(payload):
             ck_a = (ck_a + b) & 0xFF
             ck_b = (ck_b + ck_a) & 0xFF
         return ck_a, ck_b
@@ -776,8 +818,11 @@ class TestUbxUblox:
     def _make_ubx_frame(self, msg_class: int, msg_id: int, payload: bytes) -> list[int]:
         length = len(payload)
         ck_a, ck_b = self._ubx_checksum(msg_class, msg_id, payload)
-        return list(bytes([msg_class, msg_id, length & 0xFF, (length >> 8) & 0xFF])
-                    + payload + bytes([ck_a, ck_b]))
+        return list(
+            bytes([msg_class, msg_id, length & 0xFF, (length >> 8) & 0xFF])
+            + payload
+            + bytes([ck_a, ck_b])
+        )
 
     def test_too_short_returns_defaults(self):
         result = run_parser(self.SCRIPT, [0x01, 0x07, 0x00])
@@ -785,23 +830,23 @@ class TestUbxUblox:
 
     def test_bad_checksum_returns_defaults(self):
         payload = bytes(92)
-        frame   = self._make_ubx_frame(0x01, 0x07, payload)
+        frame = self._make_ubx_frame(0x01, 0x07, payload)
         frame[-1] ^= 0xFF
-        result  = run_parser(self.SCRIPT, frame)
+        result = run_parser(self.SCRIPT, frame)
         assert result == [0] * 20
 
     def test_nav_posllh(self):
         # 0x01 0x02: [iTOW(4), lon(4), lat(4), height(4), hMSL(4), hAcc(4), vAcc(4)]
-        iTOW   = struct.pack("<I", 0)
-        lon    = struct.pack("<i", int(11.5 * 1e7))
-        lat    = struct.pack("<i", int(48.2 * 1e7))
+        iTOW = struct.pack("<I", 0)
+        lon = struct.pack("<i", int(11.5 * 1e7))
+        lat = struct.pack("<i", int(48.2 * 1e7))
         height = struct.pack("<i", 500000)
-        hMSL   = struct.pack("<i", 450000)
-        hAcc   = struct.pack("<I", 1000)
-        vAcc   = struct.pack("<I", 2000)
+        hMSL = struct.pack("<i", 450000)
+        hAcc = struct.pack("<I", 1000)
+        vAcc = struct.pack("<I", 2000)
         payload = iTOW + lon + lat + height + hMSL + hAcc + vAcc
-        frame   = self._make_ubx_frame(0x01, 0x02, payload)
-        result  = run_parser(self.SCRIPT, frame)
+        frame = self._make_ubx_frame(0x01, 0x02, payload)
+        result = run_parser(self.SCRIPT, frame)
         assert result[0] == approx(48.2, rel=1e-4)
         assert result[1] == approx(11.5, rel=1e-4)
         assert result[2] == approx(450.0, rel=1e-3)
@@ -813,6 +858,7 @@ class TestUbxUblox:
 # ---------------------------------------------------------------------------
 # url_encoded
 # ---------------------------------------------------------------------------
+
 
 class TestUrlEncoded:
     SCRIPT = "url_encoded.js"
@@ -848,17 +894,18 @@ class TestUrlEncoded:
 # xml_data
 # ---------------------------------------------------------------------------
 
+
 class TestXmlData:
     SCRIPT = "xml_data.js"
 
     def test_basic_tags(self):
-        xml    = "<root><temperature>25.5</temperature><humidity>60</humidity></root>"
+        xml = "<root><temperature>25.5</temperature><humidity>60</humidity></root>"
         result = run_parser(self.SCRIPT, xml)
         assert result[0] == approx(25.5)
         assert result[1] == approx(60.0)
 
     def test_nested_tags(self):
-        xml    = "<data><sensors><pressure>1013</pressure></sensors></data>"
+        xml = "<data><sensors><pressure>1013</pressure></sensors></data>"
         result = run_parser(self.SCRIPT, xml)
         assert result[2] == approx(1013.0)
 
@@ -877,11 +924,14 @@ class TestXmlData:
 # yaml_data
 # ---------------------------------------------------------------------------
 
+
 class TestYamlData:
     SCRIPT = "yaml_data.js"
 
     def test_basic(self):
-        result = run_parser(self.SCRIPT, "temperature: 25.5\nhumidity: 60\npressure: 1013")
+        result = run_parser(
+            self.SCRIPT, "temperature: 25.5\nhumidity: 60\npressure: 1013"
+        )
         assert result[0] == approx(25.5)
         assert result[1] == 60
         assert result[2] == 1013
@@ -914,11 +964,14 @@ class TestYamlData:
 # batched_sensor_data
 # ---------------------------------------------------------------------------
 
+
 class TestBatchedSensorData:
     SCRIPT = "batched_sensor_data.js"
 
     def test_basic_json(self):
-        frame = '{"device_id":42,"battery":3.7,"temperature":25.5,"samples":[1.0,2.0,3.0]}'
+        frame = (
+            '{"device_id":42,"battery":3.7,"temperature":25.5,"samples":[1.0,2.0,3.0]}'
+        )
         result = run_parser(self.SCRIPT, frame)
         assert result[0] == 42
         assert result[1] == approx(3.7)
@@ -926,12 +979,12 @@ class TestBatchedSensorData:
         assert result[3] == approx([1.0, 2.0, 3.0])
 
     def test_missing_samples_is_empty(self):
-        frame  = '{"device_id":1,"battery":4.0,"temperature":20.0}'
+        frame = '{"device_id":1,"battery":4.0,"temperature":20.0}'
         result = run_parser(self.SCRIPT, frame)
         assert result[3] == []
 
     def test_defaults_for_missing_scalars(self):
-        frame  = '{"samples":[5.0]}'
+        frame = '{"samples":[5.0]}'
         result = run_parser(self.SCRIPT, frame)
         assert result[0] == 0
         assert result[1] == approx(0.0)
@@ -941,6 +994,7 @@ class TestBatchedSensorData:
 # ---------------------------------------------------------------------------
 # time_series_2d
 # ---------------------------------------------------------------------------
+
 
 class TestTimeSeries2D:
     SCRIPT = "time_series_2d.js"
@@ -957,11 +1011,11 @@ class TestTimeSeries2D:
         assert result == []
 
     def test_missing_records_key(self):
-        result = run_parser(self.SCRIPT, '{}')
+        result = run_parser(self.SCRIPT, "{}")
         assert result == []
 
     def test_defaults_for_missing_fields(self):
-        frame  = '{"records":[{"timestamp":500}]}'
+        frame = '{"records":[{"timestamp":500}]}'
         result = run_parser(self.SCRIPT, frame)
         assert result[0][0] == 500
         assert result[0][1] == approx(0.0)

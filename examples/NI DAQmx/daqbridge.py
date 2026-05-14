@@ -30,12 +30,50 @@ SAMPLES_PER_READ = 1
 # shunt_resistor: resistance in ohms (only for current type, I = V / R)
 
 CHANNEL_CONFIG = [
-    {"channel": "ai0", "type": "voltage", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Voltage_0"},
-    {"channel": "ai1", "type": "voltage", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Voltage_1"},
-    {"channel": "ai2", "type": "current", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Current_0", "shunt_resistor": 500},
-    {"channel": "ai3", "type": "current", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Current_1", "shunt_resistor": 500},
-    {"channel": "ai4", "type": "voltage", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Voltage_2"},
-    {"channel": "ai5", "type": "voltage", "voltage_range": (-10.0, 10.0), "terminal": "RSE", "name": "Voltage_3"},
+    {
+        "channel": "ai0",
+        "type": "voltage",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Voltage_0",
+    },
+    {
+        "channel": "ai1",
+        "type": "voltage",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Voltage_1",
+    },
+    {
+        "channel": "ai2",
+        "type": "current",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Current_0",
+        "shunt_resistor": 500,
+    },
+    {
+        "channel": "ai3",
+        "type": "current",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Current_1",
+        "shunt_resistor": 500,
+    },
+    {
+        "channel": "ai4",
+        "type": "voltage",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Voltage_2",
+    },
+    {
+        "channel": "ai5",
+        "type": "voltage",
+        "voltage_range": (-10.0, 10.0),
+        "terminal": "RSE",
+        "name": "Voltage_3",
+    },
 ]
 
 # -----------------------------------------------------------------------------
@@ -65,6 +103,7 @@ TERMINAL_MAP = {
 # =============================================================================
 # CUSTOM PROCESSING FUNCTION
 # =============================================================================
+
 
 def process_readings(raw_data: np.ndarray, channel_config: list) -> np.ndarray:
     """
@@ -99,9 +138,11 @@ def process_readings(raw_data: np.ndarray, channel_config: list) -> np.ndarray:
 
     return output
 
+
 # =============================================================================
 # UDP PUBLISHER
 # =============================================================================
+
 
 class UDPPublisher:
     """UDP publisher - one CSV row per packet."""
@@ -118,8 +159,11 @@ class UDPPublisher:
         """Publish each sample as a CSV row via UDP."""
         num_channels, num_samples = data.shape
         for i in range(num_samples):
-            row = ",".join(self._fmt.format(data[ch, i]) for ch in range(num_channels)) + "\n"
-            payload = row.encode('utf-8')
+            row = (
+                ",".join(self._fmt.format(data[ch, i]) for ch in range(num_channels))
+                + "\n"
+            )
+            payload = row.encode("utf-8")
             try:
                 self.socket.sendto(payload, self._address)
                 self.packets_sent += 1
@@ -130,9 +174,11 @@ class UDPPublisher:
     def close(self) -> None:
         self.socket.close()
 
+
 # =============================================================================
 # DAQ READER
 # =============================================================================
+
 
 class DAQReader:
     """NI DAQmx reader with continuous multi-channel acquisition."""
@@ -152,25 +198,29 @@ class DAQReader:
         for ch_cfg in self.channel_config:
             physical_channel = f"{DEVICE_NAME}/{ch_cfg['channel']}"
             v_min, v_max = ch_cfg["voltage_range"]
-            term_config = TERMINAL_MAP.get(ch_cfg["terminal"].upper(), TerminalConfiguration.RSE)
+            term_config = TERMINAL_MAP.get(
+                ch_cfg["terminal"].upper(), TerminalConfiguration.RSE
+            )
 
             self.task.ai_channels.add_ai_voltage_chan(
                 physical_channel,
                 name_to_assign_to_channel=ch_cfg.get("name", ch_cfg["channel"]),
                 min_val=v_min,
                 max_val=v_max,
-                terminal_config=term_config
+                terminal_config=term_config,
             )
             ch_type = ch_cfg.get("type", "voltage")
             if ch_type == "current":
-                print(f"  {ch_cfg['channel']}: {ch_type} (shunt={ch_cfg.get('shunt_resistor', 1.0)} ohm)")
+                print(
+                    f"  {ch_cfg['channel']}: {ch_type} (shunt={ch_cfg.get('shunt_resistor', 1.0)} ohm)"
+                )
             else:
                 print(f"  {ch_cfg['channel']}: {ch_type} ({v_min}V to {v_max}V)")
 
         self.task.timing.cfg_samp_clk_timing(
             rate=SAMPLE_RATE,
             sample_mode=AcquisitionType.CONTINUOUS,
-            samps_per_chan=max(SAMPLES_PER_READ * 10, 10)
+            samps_per_chan=max(SAMPLES_PER_READ * 10, 10),
         )
 
         self.reader = AnalogMultiChannelReader(self.task.in_stream)
@@ -179,7 +229,9 @@ class DAQReader:
 
     def read(self) -> np.ndarray:
         """Read samples from all channels."""
-        samples = self.reader.read_many_sample(self._buffer, number_of_samples_per_channel=SAMPLES_PER_READ)
+        samples = self.reader.read_many_sample(
+            self._buffer, number_of_samples_per_channel=SAMPLES_PER_READ
+        )
         self.samples_read += samples
         return self._buffer[:, :samples]
 
@@ -188,9 +240,11 @@ class DAQReader:
             self.task.stop()
             self.task.close()
 
+
 # =============================================================================
 # MAIN APPLICATION
 # =============================================================================
+
 
 class DAQBridge:
     """Main application: DAQ -> Process -> UDP."""
@@ -250,8 +304,10 @@ class DAQBridge:
         if elapsed >= PRINT_STATS_INTERVAL:
             rate = (self.daq.samples_read - self._last_samples) / elapsed
             avg_loop = np.mean(self._loop_times) * 1000 if self._loop_times else 0
-            print(f"[STATS] Samples: {self.daq.samples_read:,} | Rate: {rate:,.0f} S/s | "
-                  f"Packets: {self.publisher.packets_sent:,} | Loop: {avg_loop:.2f}ms")
+            print(
+                f"[STATS] Samples: {self.daq.samples_read:,} | Rate: {rate:,.0f} S/s | "
+                f"Packets: {self.publisher.packets_sent:,} | Loop: {avg_loop:.2f}ms"
+            )
             self._last_stats_time = now
             self._last_samples = self.daq.samples_read
             self._loop_times.clear()
@@ -260,7 +316,10 @@ class DAQBridge:
         print("Cleaning up...")
         self.daq.close()
         self.publisher.close()
-        print(f"Total: {self.daq.samples_read:,} samples, {self.publisher.packets_sent:,} packets")
+        print(
+            f"Total: {self.daq.samples_read:,} samples, {self.publisher.packets_sent:,} packets"
+        )
+
 
 # =============================================================================
 # ENTRY POINT

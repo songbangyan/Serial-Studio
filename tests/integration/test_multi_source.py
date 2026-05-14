@@ -16,10 +16,10 @@ import pytest
 from utils import SerialStudioClient
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _is_commercial(api_client) -> bool:
     """Return True when connected to a Commercial build of Serial Studio."""
@@ -44,7 +44,7 @@ def _new_project(api_client, title: str = "Multi-Source Test") -> None:
         start_sequence="/*",
         end_sequence="*/",
         checksum_algorithm="",
-        operation_mode=0,   # ProjectFile
+        operation_mode=0,  # ProjectFile
     )
     time.sleep(0.1)
 
@@ -52,6 +52,7 @@ def _new_project(api_client, title: str = "Multi-Source Test") -> None:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_source_list_default(api_client, clean_state):
@@ -131,9 +132,9 @@ def test_source_update_title(api_client, clean_state):
     sources = api_client.source_list()
     match = next((s for s in sources if s["sourceId"] == new_id), None)
     assert match is not None, f"Source {new_id} not found after update"
-    assert match["title"] == "Renamed Device", (
-        f"Expected title 'Renamed Device', got '{match['title']}'"
-    )
+    assert (
+        match["title"] == "Renamed Device"
+    ), f"Expected title 'Renamed Device', got '{match['title']}'"
 
 
 @pytest.mark.project
@@ -151,9 +152,9 @@ def test_source_update_bus_type(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = api_client.source_get_configuration(new_id)
-    assert cfg.get("busType") == 1, (
-        f"Expected busType 1 (Network), got {cfg.get('busType')}"
-    )
+    assert (
+        cfg.get("busType") == 1
+    ), f"Expected busType 1 (Network), got {cfg.get('busType')}"
 
 
 @pytest.mark.project
@@ -171,12 +172,12 @@ def test_source_update_frame_delimiters(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = api_client.source_get_configuration(new_id)
-    assert cfg.get("frameStart") == "$", (
-        f"Expected frameStart '$', got '{cfg.get('frameStart')}'"
-    )
-    assert cfg.get("frameEnd") == "\n", (
-        f"Expected frameEnd '\\n', got repr {repr(cfg.get('frameEnd'))}"
-    )
+    assert (
+        cfg.get("frameStart") == "$"
+    ), f"Expected frameStart '$', got '{cfg.get('frameStart')}'"
+    assert (
+        cfg.get("frameEnd") == "\n"
+    ), f"Expected frameEnd '\\n', got repr {repr(cfg.get('frameEnd'))}"
 
 
 @pytest.mark.project
@@ -191,9 +192,9 @@ def test_source_set_property(api_client, clean_state):
     cfg_after = api_client.source_get_configuration(0)
     settings_after = cfg_after.get("connection", {})
 
-    assert settings_after.get("autoReconnect") is True, (
-        f"autoReconnect should be True after setProperty, got {settings_after.get('autoReconnect')}"
-    )
+    assert (
+        settings_after.get("autoReconnect") is True
+    ), f"autoReconnect should be True after setProperty, got {settings_after.get('autoReconnect')}"
 
 
 @pytest.mark.project
@@ -201,11 +202,7 @@ def test_source_frame_parser_roundtrip(api_client, clean_state):
     """setFrameParserCode / getFrameParserCode round-trip preserves code exactly."""
     _new_project(api_client)
 
-    js_code = (
-        "function parse(frame) {\n"
-        "  return frame.split(',');\n"
-        "}\n"
-    )
+    js_code = "function parse(frame) {\n" "  return frame.split(',');\n" "}\n"
 
     api_client.source_set_frame_parser_code(0, js_code)
     time.sleep(0.1)
@@ -251,9 +248,7 @@ def test_source_list_has_expected_fields(api_client, clean_state):
     required_keys = {"sourceId", "title", "busType"}
     for src in sources:
         missing = required_keys - src.keys()
-        assert not missing, (
-            f"Source entry missing keys {missing}: {src}"
-        )
+        assert not missing, f"Source entry missing keys {missing}: {src}"
 
 
 @pytest.mark.project
@@ -274,9 +269,9 @@ def test_source_delete_valid_source(api_client, clean_state):
     time.sleep(0.1)
 
     sources_after = api_client.source_list()
-    assert len(sources_after) == count_before - 1, (
-        f"Expected {count_before - 1} sources after delete, got {len(sources_after)}"
-    )
+    assert (
+        len(sources_after) == count_before - 1
+    ), f"Expected {count_before - 1} sources after delete, got {len(sources_after)}"
     ids_after = {s["sourceId"] for s in sources_after}
     assert new_id not in ids_after, f"Deleted source {new_id} still present in list"
 
@@ -296,9 +291,9 @@ def test_source_update_checksum_preserved(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = api_client.source_get_configuration(new_id)
-    assert cfg.get("checksumAlgorithm") == "CRC-16", (
-        f"Expected checksumAlgorithm 'CRC-16', got '{cfg.get('checksumAlgorithm')}'"
-    )
+    assert (
+        cfg.get("checksumAlgorithm") == "CRC-16"
+    ), f"Expected checksumAlgorithm 'CRC-16', got '{cfg.get('checksumAlgorithm')}'"
 
 
 @pytest.mark.project
@@ -326,9 +321,9 @@ def test_export_reimport_multi_source(api_client, clean_state):
     time.sleep(0.3)
 
     sources = api_client.source_list()
-    assert len(sources) == 3, (
-        f"Re-imported project should have 3 sources, got {len(sources)}"
-    )
+    assert (
+        len(sources) == 3
+    ), f"Re-imported project should have 3 sources, got {len(sources)}"
 
 
 @pytest.mark.project
@@ -368,9 +363,9 @@ def test_gpl_multi_source_file_truncates_to_one(api_client, clean_state):
     if len(sources) == 3:
         pytest.skip("Commercial build — truncation test not applicable")
 
-    assert len(sources) == 1, (
-        f"GPL build must truncate multi-source project to 1 source, got {len(sources)}"
-    )
+    assert (
+        len(sources) == 1
+    ), f"GPL build must truncate multi-source project to 1 source, got {len(sources)}"
     assert sources[0]["sourceId"] == 0
 
 
@@ -396,10 +391,8 @@ def test_source_frame_parser_independent_per_source(api_client, clean_state):
     returned_0 = api_client.source_get_frame_parser_code(0)
     returned_1 = api_client.source_get_frame_parser_code(new_id)
 
-    assert returned_0 == code_0, (
-        f"Source 0 frame parser mismatch: {repr(returned_0)}"
-    )
-    assert returned_1 == code_1, (
-        f"Source {new_id} frame parser mismatch: {repr(returned_1)}"
-    )
+    assert returned_0 == code_0, f"Source 0 frame parser mismatch: {repr(returned_0)}"
+    assert (
+        returned_1 == code_1
+    ), f"Source {new_id} frame parser mismatch: {repr(returned_1)}"
     assert returned_0 != returned_1, "Two sources must not share frame parser state"

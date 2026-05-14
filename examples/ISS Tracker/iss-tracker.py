@@ -8,10 +8,12 @@ addr = ("127.0.0.1", 9000)
 
 API_URL = "https://api.wheretheiss.at/v1/satellites/25544"
 
+
 def get_iss_data():
     r = requests.get(API_URL, timeout=5)
     r.raise_for_status()
     return r.json()
+
 
 while True:
     try:

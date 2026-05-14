@@ -16,10 +16,10 @@ import pytest
 
 from utils import DataGenerator
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _status(api_client):
     return api_client.get_project_status()
@@ -47,6 +47,7 @@ def _last_action_id(api_client) -> int:
 # ---------------------------------------------------------------------------
 # Group CRUD
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_add_single_group(api_client, clean_state):
@@ -151,6 +152,7 @@ def test_group_update_renames(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Dataset CRUD
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_add_datasets_to_group(api_client, clean_state):
@@ -275,6 +277,7 @@ def test_datasets_list_contains_group_info(api_client, clean_state):
 # Action CRUD
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_add_action(api_client, clean_state):
     """Adding an action increases actionCount."""
@@ -345,6 +348,7 @@ def test_duplicate_action(api_client, clean_state):
 # Modified state
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_modified_flag_set_after_add_group(api_client, clean_state, tmp_path):
     """modified flag is true after adding a group to a saved project."""
@@ -389,6 +393,7 @@ def test_modified_flag_cleared_after_save(api_client, clean_state, tmp_path):
 # ---------------------------------------------------------------------------
 # Export / import round-trip
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_export_preserves_group_count(api_client, clean_state):
@@ -452,7 +457,11 @@ def test_export_contains_required_keys(api_client, clean_state):
 def test_file_open_then_export_matches_disk(api_client, clean_state, tmp_path):
     """project.exportJson and file on disk agree on group structure."""
     proj = DataGenerator.generate_project_with_frame_delimiters(
-        start="/*", end="*/", detection_mode=1, title="DiskMatch", checksum_algorithm="None"
+        start="/*",
+        end="*/",
+        detection_mode=1,
+        title="DiskMatch",
+        checksum_algorithm="None",
     )
     proj_path = tmp_path / "disk_match.ssproj"
     proj_path.write_text(json.dumps(proj, indent=2), encoding="utf-8")
@@ -469,6 +478,7 @@ def test_file_open_then_export_matches_disk(api_client, clean_state, tmp_path):
 # ---------------------------------------------------------------------------
 # Title management
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_set_project_title(api_client, clean_state):
@@ -495,6 +505,7 @@ def test_new_project_resets_title(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Successive add/delete stress
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_rapid_add_delete_groups(api_client, clean_state):

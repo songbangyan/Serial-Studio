@@ -37,11 +37,11 @@ def _sources_response_file(sources):
     Linux/macOS handle the long arg list directly but the response file
     works there too, so we use it unconditionally.
     """
-    fd, path = tempfile.mkstemp(prefix='lupdate_sources_', suffix='.txt', text=True)
+    fd, path = tempfile.mkstemp(prefix="lupdate_sources_", suffix=".txt", text=True)
     try:
-        with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
             for src in sources:
-                f.write(src.replace('\\', '/') + '\n')
+                f.write(src.replace("\\", "/") + "\n")
         yield path
     finally:
         try:
@@ -54,7 +54,11 @@ def run_lupdate(ts_dir, app_sources, lib_sources):
     """
     Run lupdate to update the .ts files.
     """
-    ts_files = [os.path.join(ts_dir, file) for file in os.listdir(ts_dir) if file.endswith('.ts')]
+    ts_files = [
+        os.path.join(ts_dir, file)
+        for file in os.listdir(ts_dir)
+        if file.endswith(".ts")
+    ]
 
     if not ts_files:
         print(f"No .ts files found in {ts_dir}.")
@@ -63,8 +67,10 @@ def run_lupdate(ts_dir, app_sources, lib_sources):
     all_sources = app_sources + lib_sources
 
     with _sources_response_file(all_sources) as list_path:
-        command = ['lupdate', '@' + list_path, '-ts'] + ts_files
-        print(f"Running lupdate on {len(all_sources)} source files (via response file {list_path})")
+        command = ["lupdate", "@" + list_path, "-ts"] + ts_files
+        print(
+            f"Running lupdate on {len(all_sources)} source files (via response file {list_path})"
+        )
 
         try:
             subprocess.run(command, check=True)
@@ -78,7 +84,11 @@ def run_lrelease(ts_dir, qm_dir):
     """
     Run lrelease to compile the .ts files into .qm files.
     """
-    ts_files = [os.path.join(ts_dir, file) for file in os.listdir(ts_dir) if file.endswith('.ts')]
+    ts_files = [
+        os.path.join(ts_dir, file)
+        for file in os.listdir(ts_dir)
+        if file.endswith(".ts")
+    ]
     if not ts_files:
         print(f"No .ts files found in {ts_dir}.")
         return
@@ -87,10 +97,12 @@ def run_lrelease(ts_dir, qm_dir):
         os.makedirs(qm_dir)
 
     for ts_file in ts_files:
-        qm_file = os.path.join(qm_dir, os.path.splitext(os.path.basename(ts_file))[0] + '.qm')
-        command = ['lrelease', ts_file, '-qm', qm_file]
-        
-        print("Running lrelease command:", ' '.join(command))
+        qm_file = os.path.join(
+            qm_dir, os.path.splitext(os.path.basename(ts_file))[0] + ".qm"
+        )
+        command = ["lrelease", ts_file, "-qm", qm_file]
+
+        print("Running lrelease command:", " ".join(command))
 
         try:
             subprocess.run(command, check=True)
@@ -105,17 +117,25 @@ def create_ts(language, ts_dir, app_sources, lib_sources):
     Create a new .ts file for the given language code.
     """
     new_ts_file = os.path.join(ts_dir, f"{language}.ts")
-    
+
     if os.path.exists(new_ts_file):
         print(f"The .ts file for language '{language}' already exists.")
         return
-    
+
     print(f"Creating new .ts file: {new_ts_file}")
     all_sources = app_sources + lib_sources
 
     with _sources_response_file(all_sources) as list_path:
-        command = ['lupdate', '-source-language', 'en_US', '-target-language', language,
-                   '@' + list_path, '-ts', new_ts_file]
+        command = [
+            "lupdate",
+            "-source-language",
+            "en_US",
+            "-target-language",
+            language,
+            "@" + list_path,
+            "-ts",
+            new_ts_file,
+        ]
 
         try:
             subprocess.run(command, check=True)
@@ -132,14 +152,14 @@ def collect_sources(app_dir, lib_dir):
     app_sources = []
     for root, _, files in os.walk(app_dir):
         for file in files:
-            if file.endswith(('.cpp', '.h', '.qml')):
+            if file.endswith((".cpp", ".h", ".qml")):
                 app_sources.append(os.path.join(root, file))
 
     lib_sources = []
     if os.path.exists(lib_dir):
         for root, _, files in os.walk(lib_dir):
             for file in files:
-                if file.endswith(('.cpp', '.h')):
+                if file.endswith((".cpp", ".h")):
                     lib_sources.append(os.path.join(root, file))
 
     return app_sources, lib_sources
@@ -147,10 +167,24 @@ def collect_sources(app_dir, lib_dir):
 
 if __name__ == "__main__":
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Manage translations with lupdate and lrelease.")
-    parser.add_argument('--new-ts', metavar='LANGUAGE', help='Create a new .ts file for the given language code (e.g., "es" for Spanish).')
-    parser.add_argument('--lupdate', action='store_true', help='Run lupdate to update all existing .ts files.')
-    parser.add_argument('--lrelease', action='store_true', help='Run lrelease to compile .ts files into .qm files.')
+    parser = argparse.ArgumentParser(
+        description="Manage translations with lupdate and lrelease."
+    )
+    parser.add_argument(
+        "--new-ts",
+        metavar="LANGUAGE",
+        help='Create a new .ts file for the given language code (e.g., "es" for Spanish).',
+    )
+    parser.add_argument(
+        "--lupdate",
+        action="store_true",
+        help="Run lupdate to update all existing .ts files.",
+    )
+    parser.add_argument(
+        "--lrelease",
+        action="store_true",
+        help="Run lrelease to compile .ts files into .qm files.",
+    )
 
     args = parser.parse_args()
 
@@ -160,11 +194,11 @@ if __name__ == "__main__":
         exit(0)
 
     # Define paths
-    translations_dir = os.path.dirname(os.path.abspath(__file__))  
+    translations_dir = os.path.dirname(os.path.abspath(__file__))
     app_dir = os.path.dirname(os.path.dirname(translations_dir))
-    lib_dir = os.path.join(os.path.dirname(app_dir), 'lib')
-    ts_dir = os.path.join(translations_dir, 'ts')
-    qm_dir = os.path.join(translations_dir, 'qm')
+    lib_dir = os.path.join(os.path.dirname(app_dir), "lib")
+    ts_dir = os.path.join(translations_dir, "ts")
+    qm_dir = os.path.join(translations_dir, "qm")
 
     # Ensure the translations/ts directory exists
     if not os.path.exists(ts_dir):

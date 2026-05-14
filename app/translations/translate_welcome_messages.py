@@ -25,9 +25,9 @@ import os
 import time
 import openai
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Configuration
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 # OpenAI model to use
 OPENAI_MODEL = "gpt-4o"
@@ -59,12 +59,13 @@ LANGUAGE_MAP = {
     "HI": "Hindi",
     "RO": "Romanian",
     "NL": "Dutch",
-    "SV": "Swedish"
+    "SV": "Swedish",
 }
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # Translation Function
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def translate_welcome_message(source_text, target_language, context):
     """
@@ -103,7 +104,7 @@ Provide ONLY the translated text, with no additional commentary or explanation."
         model=OPENAI_MODEL,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.3,
-        max_tokens=2048
+        max_tokens=2048,
     )
 
     translated_text = response.choices[0].message.content.strip()
@@ -120,9 +121,11 @@ Provide ONLY the translated text, with no additional commentary or explanation."
 
     return translated_text
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # Core Translation Logic
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def translate_welcome_files_in_subdir(subdir):
     """
@@ -153,11 +156,7 @@ def translate_welcome_files_in_subdir(subdir):
         print(f"Translating to {lang_name} ({lang_code})...")
 
         try:
-            translated_text = translate_welcome_message(
-                source_text,
-                lang_name,
-                subdir
-            )
+            translated_text = translate_welcome_message(source_text, lang_name, subdir)
 
             # Ensure the file ends with a newline
             if not translated_text.endswith("\n"):
@@ -176,9 +175,11 @@ def translate_welcome_files_in_subdir(subdir):
             print(f"✗ Error translating to {lang_name}: {e}\n")
             continue
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 # Entry Point
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+
 
 def main():
     """Translate all Welcome message files in all subdirectories."""
@@ -188,9 +189,10 @@ def main():
     for subdir in SUBDIRS:
         translate_welcome_files_in_subdir(subdir)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("Translation complete!")
-    print("="*60)
+    print("=" * 60)
+
 
 if __name__ == "__main__":
     main()

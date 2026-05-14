@@ -22,10 +22,10 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Pro gating fixture
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture
 def pro_only(api_client):
@@ -63,9 +63,7 @@ def _close_session(api_client) -> None:
 
 
 def _db_path_for(api_client, title: str) -> Path:
-    result = api_client.command(
-        "sessions.getDbPath", {"projectTitle": title}
-    )
+    result = api_client.command("sessions.getDbPath", {"projectTitle": title})
     return Path(result["path"])
 
 
@@ -76,9 +74,7 @@ def _sqlite_tables(path: Path) -> set[str]:
     with sqlite3.connect(str(path)) as conn:
         return {
             r[0]
-            for r in conn.execute(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            )
+            for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")
         }
 
 
@@ -96,6 +92,7 @@ def _row_count(path: Path, table: str) -> int:
 # ---------------------------------------------------------------------------
 # Basic flag toggling
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_export_flag_toggles(api_client, clean_state, pro_only):
@@ -121,6 +118,7 @@ def test_status_shape(api_client, clean_state, pro_only):
 # ---------------------------------------------------------------------------
 # End-to-end: ProjectFile mode with real frames
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 @pytest.mark.slow
@@ -205,9 +203,9 @@ def test_session_records_project_file_frames(
 
     # And that at least one session + reading rows made it in
     assert _row_count(db_path, "sessions") >= 1
-    assert _row_count(db_path, "readings") >= 5, (
-        "fewer readings than expected — timer may not have drained the queue"
-    )
+    assert (
+        _row_count(db_path, "readings") >= 5
+    ), "fewer readings than expected — timer may not have drained the queue"
 
     # Cleanup so we don't leak test artifacts
     if db_path.exists():
@@ -224,6 +222,7 @@ def test_session_records_project_file_frames(
 # the worker never opens a database. Tests that asserted otherwise (raw-bytes
 # capture, project_json clearing, session close in console mode) were
 # removed when the old DeviceSendsJSON slot was repurposed in v3.3.
+
 
 @pytest.mark.project
 def test_close_is_idempotent(api_client, clean_state, pro_only):

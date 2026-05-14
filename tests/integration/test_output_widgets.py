@@ -22,7 +22,6 @@ import pytest
 from utils import SerialStudioClient
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -51,9 +50,17 @@ def _is_pro_tier(api_client) -> bool:
     return status.get("featureTierValue", 0) >= 3  # Pro = 3
 
 
-def _make_output_widget(title, widget_type="button", transmit_fn=None,
-                        min_val=0, max_val=100, step=1,
-                        on_label="ON", off_label="OFF", units=""):
+def _make_output_widget(
+    title,
+    widget_type="button",
+    transmit_fn=None,
+    min_val=0,
+    max_val=100,
+    step=1,
+    on_label="ON",
+    off_label="OFF",
+    units="",
+):
     """Create an output widget JSON object for use in project configs."""
     if transmit_fn is None:
         transmit_fn = 'function transmit(value) { return "CMD " + value + "\\r\\n"; }'
@@ -98,6 +105,7 @@ def _make_project_with_output_widgets(output_widgets):
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(autouse=True)
 def require_commercial(api_client):
     """Skip tests when running against a GPL build."""
@@ -108,6 +116,7 @@ def require_commercial(api_client):
 # ---------------------------------------------------------------------------
 # Output widget project serialization tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 @pytest.mark.project
@@ -129,9 +138,13 @@ def test_project_with_slider_widget_loads(api_client, clean_state):
     """A project with a slider output widget should load without errors."""
     widgets = [
         _make_output_widget(
-            "Motor Speed", "slider",
+            "Motor Speed",
+            "slider",
             transmit_fn='function transmit(value) { return "SPD " + Math.round(value) + "\\r\\n"; }',
-            min_val=0, max_val=255, step=1, units="RPM",
+            min_val=0,
+            max_val=255,
+            step=1,
+            units="RPM",
         )
     ]
     project = _make_project_with_output_widgets(widgets)
@@ -149,9 +162,11 @@ def test_project_with_toggle_widget_loads(api_client, clean_state):
     """A project with a toggle output widget should load without errors."""
     widgets = [
         _make_output_widget(
-            "Relay", "toggle",
+            "Relay",
+            "toggle",
             transmit_fn='function transmit(value) { return value ? "RELAY ON\\r\\n" : "RELAY OFF\\r\\n"; }',
-            on_label="Energized", off_label="De-energized",
+            on_label="Energized",
+            off_label="De-energized",
         )
     ]
     project = _make_project_with_output_widgets(widgets)
@@ -169,7 +184,8 @@ def test_project_with_textfield_widget_loads(api_client, clean_state):
     """A project with a text field output widget should load without errors."""
     widgets = [
         _make_output_widget(
-            "Command", "textfield",
+            "Command",
+            "textfield",
             transmit_fn='function transmit(value) { return value + "\\r\\n"; }',
         )
     ]
@@ -205,15 +221,20 @@ def test_project_with_multiple_output_widgets(api_client, clean_state):
 # Output widget round-trip serialization
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 @pytest.mark.project
 def test_output_widget_survives_round_trip(api_client, clean_state):
     """Output widgets should survive a save/load round trip."""
     widgets = [
         _make_output_widget(
-            "PWM Control", "slider",
+            "PWM Control",
+            "slider",
             transmit_fn='function transmit(value) { return "PWM " + value + "\\n"; }',
-            min_val=0, max_val=1023, step=1, units="duty",
+            min_val=0,
+            max_val=1023,
+            step=1,
+            units="duty",
         )
     ]
     project = _make_project_with_output_widgets(widgets)
@@ -244,6 +265,7 @@ def test_output_widget_survives_round_trip(api_client, clean_state):
 # Dashboard output widget visibility (requires Pro license)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
     """Output widgets should appear in dashboard when Pro license is active."""
@@ -264,19 +286,21 @@ def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
     total_widgets = dashboard.get("totalWidgetCount", 0)
 
     # Should have at least the data grid + the output button widget
-    assert total_widgets >= 2, \
-        f"Expected at least 2 widgets (datagrid + output button), got {total_widgets}"
+    assert (
+        total_widgets >= 2
+    ), f"Expected at least 2 widgets (datagrid + output button), got {total_widgets}"
 
 
 # ---------------------------------------------------------------------------
 # License tier gating for output widgets
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.integration
 def test_output_widget_js_function_format(api_client, clean_state):
     """Output widget transmit function should accept various JS patterns."""
     test_cases = [
-        ('function transmit(value) { return String(value); }', True),
+        ("function transmit(value) { return String(value); }", True),
         ('function transmit(value) { return "OK\\r\\n"; }', True),
         ('function transmit(v) { return v > 50 ? "HIGH" : "LOW"; }', True),
     ]
@@ -293,6 +317,7 @@ def test_output_widget_js_function_format(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # REGRESSION — project.outputWidget.add accepts "type" parameter
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.integration
 def test_output_widget_add_accepts_type_param(api_client, clean_state):
@@ -311,9 +336,9 @@ def test_output_widget_add_accepts_type_param(api_client, clean_state):
             )
         except APIError as e:
             # Commercial license gating is acceptable; schema mismatch is not.
-            assert "licen" in str(e).lower() or "commercial" in str(e).lower(), (
-                f"outputWidget.add for {widget_name} raised non-licensing error: {e}"
-            )
+            assert (
+                "licen" in str(e).lower() or "commercial" in str(e).lower()
+            ), f"outputWidget.add for {widget_name} raised non-licensing error: {e}"
             return
 
         assert result.get("added") is True

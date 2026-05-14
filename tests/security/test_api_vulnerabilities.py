@@ -217,9 +217,7 @@ def test_command_injection(tester):
             try:
                 # Try injecting into various commands
                 client.command("project.setTitle", {"title": payload})
-                client.command(
-                    "io.network.setRemoteAddress", {"address": payload}
-                )
+                client.command("io.network.setRemoteAddress", {"address": payload})
             except APIError:
                 pass  # Expected to fail
 
@@ -546,7 +544,10 @@ def test_information_disclosure(tester):
                 ]
             ):
                 tester.log_vulnerability(
-                    "LOW", "Information Disclosure", f"Error message leaks info: {e.message}", e.message
+                    "LOW",
+                    "Information Disclosure",
+                    f"Error message leaks info: {e.message}",
+                    e.message,
                 )
 
         # Test 2: Status commands revealing sensitive info

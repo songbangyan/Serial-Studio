@@ -110,9 +110,9 @@ def _connect_device(api_client, device_simulator):
     api_client.command("project.activate")
     time.sleep(0.2)
     api_client.connect_device()
-    assert device_simulator.wait_for_connection(timeout=5.0), (
-        "Serial Studio did not connect to the device simulator within 5 seconds"
-    )
+    assert device_simulator.wait_for_connection(
+        timeout=5.0
+    ), "Serial Studio did not connect to the device simulator within 5 seconds"
 
 
 class TestBasic2DArrayParsing:
@@ -139,7 +139,9 @@ function parse(frame) {
         # Last row is [4.4, 5.5, 6.6]; JS number-to-string keeps decimals
         expected = ["4.4", "5.5", "6.6"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, f"Expected last-frame values {expected}, got {values}"
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
     def test_2d_array_with_different_row_lengths(
         self, api_client, device_simulator, clean_state
@@ -165,9 +167,9 @@ function parse(frame) {
 
         # Last row is [6.6], so dataset[0] must end up as "6.6"
         values = _get_dataset_values(api_client)
-        assert len(values) >= 1 and values[0] == "6.6", (
-            f"First dataset should reflect last-row value 6.6, got {values}"
-        )
+        assert (
+            len(values) >= 1 and values[0] == "6.6"
+        ), f"First dataset should reflect last-row value 6.6, got {values}"
 
 
 class TestMixedScalarVectorParsing:
@@ -194,9 +196,9 @@ function parse(frame) {
         # Last frame: [25.5, 60, 3.3] — JS renders 60.0 as "60" (integer string)
         expected = ["25.5", "60", "3.3"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
     def test_mixed_scalar_multiple_vectors_same_length(
         self, api_client, device_simulator, clean_state
@@ -219,9 +221,9 @@ function parse(frame) {
         # Last frame: [100, 2.2, 4.4] — JS renders 100.0 as "100"
         expected = ["100", "2.2", "4.4"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
     def test_mixed_scalar_multiple_vectors_different_lengths(
         self, api_client, device_simulator, clean_state
@@ -249,9 +251,9 @@ function parse(frame) {
         # Last frame (index 2): [99.9, 3.3, 9.9]
         expected = ["99.9", "3.3", "9.9"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
 
 class TestBLEUseCaseSimulation:
@@ -282,12 +284,12 @@ function parse(frame) {
         # Last frame (index 119): [45.2, 22.5, 11.9]
         expected = ["45.2", "22.5", "11.9"]
         values = _wait_for_dataset_values(api_client, expected, timeout=3.0)
-        assert values == expected, (
-            f"Expected BLE last-frame values {expected}, got {values}"
-        )
-        assert processing_time < 1.0, (
-            f"Processing should complete within 1 second, took {processing_time:.3f}s"
-        )
+        assert (
+            values == expected
+        ), f"Expected BLE last-frame values {expected}, got {values}"
+        assert (
+            processing_time < 1.0
+        ), f"Processing should complete within 1 second, took {processing_time:.3f}s"
 
 
 class TestEdgeCases:
@@ -319,9 +321,7 @@ function parse(frame) {
             f"before={values_before}, after={values_after}"
         )
 
-    def test_mixed_with_empty_vectors(
-        self, api_client, device_simulator, clean_state
-    ):
+    def test_mixed_with_empty_vectors(self, api_client, device_simulator, clean_state):
         """Test [s, [], [v1,v2]] skips empty vector; 2 frames generated."""
         _create_project_with_datasets(api_client, 2)
 
@@ -341,9 +341,9 @@ function parse(frame) {
         # Last frame (index 1): [50, 2.2] — JS renders 50.0 as "50"
         expected = ["50", "2.2"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
 
 class TestBackwardCompatibility:
@@ -369,9 +369,9 @@ function parse(frame) {
 
         expected = ["1.1", "2.2", "3.3"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"1D array should produce a single frame with values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"1D array should produce a single frame with values {expected}, got {values}"
 
     def test_csv_mode_unchanged(self, api_client, device_simulator, clean_state):
         """Test CSV mode still works as before (no parseMultiFrame)."""
@@ -379,9 +379,7 @@ function parse(frame) {
 
         # Project default is Lua; the template is JS, so set the language
         # explicitly so the right engine validates and runs the script.
-        api_client.set_frame_parser_code(
-            DataGenerator.CSV_PARSER_TEMPLATE, language=0
-        )
+        api_client.set_frame_parser_code(DataGenerator.CSV_PARSER_TEMPLATE, language=0)
         time.sleep(0.2)
 
         _connect_device(api_client, device_simulator)
@@ -475,9 +473,9 @@ class TestBasic2DArrayParsingLua:
 
         expected = ["4.4", "5.5", "6.6"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
     def test_2d_array_with_different_row_lengths_lua(
         self, api_client, device_simulator, clean_state
@@ -496,9 +494,9 @@ class TestBasic2DArrayParsingLua:
         assert received, "Should have received at least one frame from the 2D array"
 
         values = _get_dataset_values(api_client)
-        assert len(values) >= 1 and values[0] == "6.6", (
-            f"First dataset should reflect last-row value 6.6, got {values}"
-        )
+        assert (
+            len(values) >= 1 and values[0] == "6.6"
+        ), f"First dataset should reflect last-row value 6.6, got {values}"
 
 
 class TestMixedScalarVectorParsingLua:
@@ -519,9 +517,9 @@ class TestMixedScalarVectorParsingLua:
 
         expected = ["25.5", "60", "3.3"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"Expected last-frame values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"Expected last-frame values {expected}, got {values}"
 
 
 class TestBLEUseCaseSimulationLua:
@@ -546,12 +544,12 @@ class TestBLEUseCaseSimulationLua:
 
         expected = ["45.2", "22.5", "11.9"]
         values = _wait_for_dataset_values(api_client, expected, timeout=3.0)
-        assert values == expected, (
-            f"Expected BLE last-frame values {expected}, got {values}"
-        )
-        assert processing_time < 1.0, (
-            f"Processing should complete within 1 second, took {processing_time:.3f}s"
-        )
+        assert (
+            values == expected
+        ), f"Expected BLE last-frame values {expected}, got {values}"
+        assert (
+            processing_time < 1.0
+        ), f"Processing should complete within 1 second, took {processing_time:.3f}s"
 
 
 class TestBackwardCompatibilityLua:
@@ -572,6 +570,6 @@ class TestBackwardCompatibilityLua:
 
         expected = ["1.1", "2.2", "3.3"]
         values = _wait_for_dataset_values(api_client, expected)
-        assert values == expected, (
-            f"1D array should produce a single frame with values {expected}, got {values}"
-        )
+        assert (
+            values == expected
+        ), f"1D array should produce a single frame with values {expected}, got {values}"

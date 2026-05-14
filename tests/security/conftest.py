@@ -52,9 +52,7 @@ class VulnerabilityTracker:
             "total_vulnerabilities": len(self.vulnerabilities),
             "total_exploits": len(self.exploits),
             "total_crashes": len(self.crashes),
-            "successful_exploits": len(
-                [e for e in self.exploits if e["success"]]
-            ),
+            "successful_exploits": len([e for e in self.exploits if e["success"]]),
             "by_severity": self._count_by_severity(),
         }
 
@@ -108,9 +106,7 @@ def security_client(api_server_required):
     try:
         client.connect()
     except ConnectionError as e:
-        pytest.skip(
-            f"Server unavailable (may have crashed from previous test): {e}"
-        )
+        pytest.skip(f"Server unavailable (may have crashed from previous test): {e}")
 
     yield client
 
@@ -193,9 +189,7 @@ def security_test_warning(request):
     Only shown for tests marked as 'destructive'.
     """
     if "destructive" in [mark.name for mark in request.node.iter_markers()]:
-        print(
-            "\n⚠️  WARNING: This test may crash or hang the server!\n"
-        )
+        print("\n⚠️  WARNING: This test may crash or hang the server!\n")
         # Brief delay before destructive tests (reduced to prevent timeout)
         time.sleep(0.5)
 
@@ -214,27 +208,24 @@ def test_isolation(request):
     time.sleep(0.2)
 
     # Slightly longer delay after stress/destructive tests (reduced to fit within timeout)
-    if any(mark.name in ["destructive", "dos", "exploit"] for mark in request.node.iter_markers()):
+    if any(
+        mark.name in ["destructive", "dos", "exploit"]
+        for mark in request.node.iter_markers()
+    ):
         time.sleep(0.5)
 
 
 def pytest_configure(config):
     """Configure pytest with security-specific markers"""
-    config.addinivalue_line(
-        "markers", "security: security and penetration tests"
-    )
+    config.addinivalue_line("markers", "security: security and penetration tests")
     config.addinivalue_line(
         "markers",
         "exploit: active exploitation attempts (may crash server)",
     )
     config.addinivalue_line("markers", "dos: denial of service attacks")
     config.addinivalue_line("markers", "fuzzing: fuzzing tests")
-    config.addinivalue_line(
-        "markers", "critical: tests for critical vulnerabilities"
-    )
-    config.addinivalue_line(
-        "markers", "high: tests for high severity vulnerabilities"
-    )
+    config.addinivalue_line("markers", "critical: tests for critical vulnerabilities")
+    config.addinivalue_line("markers", "high: tests for high severity vulnerabilities")
     config.addinivalue_line(
         "markers", "medium: tests for medium severity vulnerabilities"
     )
@@ -256,17 +247,11 @@ def pytest_collection_modifyitems(config, items):
         # Mark by test function name patterns
         test_name = item.name.lower()
 
-        if any(
-            pattern in test_name
-            for pattern in ["dos", "flood", "exhaust", "bomb"]
-        ):
+        if any(pattern in test_name for pattern in ["dos", "flood", "exhaust", "bomb"]):
             item.add_marker(pytest.mark.dos)
             item.add_marker(pytest.mark.destructive)
 
-        if any(
-            pattern in test_name
-            for pattern in ["fuzz", "random", "malformed"]
-        ):
+        if any(pattern in test_name for pattern in ["fuzz", "random", "malformed"]):
             item.add_marker(pytest.mark.fuzzing)
 
         if any(

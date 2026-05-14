@@ -254,8 +254,10 @@ def _has_trailing_operator(line: str, is_inner: bool) -> bool:
         # Strip the property-separator `:` and whatever precedes it, then
         # check the remaining value text for unbalanced `?`.  The trailing
         # `:` is the operator we're evaluating, so drop it before counting.
-        m = re.match(r"\s*(?:readonly\s+)?(?:property\s+\w+\s+)?[A-Za-z_][\w.]*\s*:(.*)$",
-                     sanitized)
+        m = re.match(
+            r"\s*(?:readonly\s+)?(?:property\s+\w+\s+)?[A-Za-z_][\w.]*\s*:(.*)$",
+            sanitized,
+        )
         if m:
             value = m.group(1).rstrip()
             if value.endswith(":"):
@@ -273,8 +275,10 @@ class LogicalLine:
     """One or more physical lines that together form one logical unit."""
 
     raws: list[str] = field(default_factory=list)  # raw source lines (no newlines)
-    kind: str = "other"  # "id" | "prop" | "blank" | "comment" | "open" | "close" | "handler" | "other"
-    start_idx: int = 0   # index of first physical line in the source
+    kind: str = (
+        "other"  # "id" | "prop" | "blank" | "comment" | "open" | "close" | "handler" | "other"
+    )
+    start_idx: int = 0  # index of first physical line in the source
 
     @property
     def length(self) -> int:
@@ -440,6 +444,7 @@ def tokenize(raw_lines: list[str]) -> list[LogicalLine]:
 # Block walking
 # ---------------------------------------------------------------------------
 
+
 def _brace_delta(line: LogicalLine) -> int:
     """Net change in brace depth this logical line contributes."""
     if line.kind in ("comment", "blank"):
@@ -458,6 +463,7 @@ def _brace_delta(line: LogicalLine) -> int:
 # ---------------------------------------------------------------------------
 # Safety check — does a run contain anything unsafe to reorder?
 # ---------------------------------------------------------------------------
+
 
 def is_run_safe(run: list[LogicalLine]) -> bool:
     """Sorting is only safe when every logical line is a single physical
@@ -479,6 +485,7 @@ def is_run_safe(run: list[LogicalLine]) -> bool:
 # ---------------------------------------------------------------------------
 # Property-run extraction
 # ---------------------------------------------------------------------------
+
 
 def find_property_runs(lines: list[LogicalLine]) -> list[tuple[int, int]]:
     """Return (start, end_exclusive) ranges of consecutive 'prop' logical
@@ -681,8 +688,9 @@ def _find_brace_free_body_end(lines: list[str], control_idx: int) -> int | None:
     return last
 
 
-def find_brace_free_violations(lines: list[str], path: Path) -> tuple[list[Violation],
-                                                                     list[int]]:
+def find_brace_free_violations(
+    lines: list[str], path: Path
+) -> tuple[list[Violation], list[int]]:
     """Return (violation list, indices that need a blank line inserted after
     them). Each integer in the second list is the index of the LAST physical
     line of a brace-free body whose successor is not blank, `else`, `}`, or
@@ -758,6 +766,7 @@ def apply_brace_free_fixes(lines: list[str], insert_after: list[int]) -> list[st
 # `id:` placement check
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class Violation:
     path: Path
@@ -766,8 +775,9 @@ class Violation:
     message: str
 
 
-def check_id_placement(lines: list[LogicalLine],
-                       path: Path) -> tuple[list[Violation], list[int]]:
+def check_id_placement(
+    lines: list[LogicalLine], path: Path
+) -> tuple[list[Violation], list[int]]:
     """Inside each object body, `id:` must be the first non-comment/blank
     content line and must be followed by one blank line. Returns
     (violations, raw_line_indices) — the second list contains indices in
@@ -865,7 +875,7 @@ def _check_shallow_id(
 # `code-format off/on` is accepted as a legacy synonym; the fixer uses
 # `code-verify` going forward.
 _FENCE_OFF_RE = re.compile(r"^\s*(?://|/\*)\s*code-(?:verify|format)\s+off\b")
-_FENCE_ON_RE  = re.compile(r"^\s*(?://|/\*)\s*code-(?:verify|format)\s+on\b")
+_FENCE_ON_RE = re.compile(r"^\s*(?://|/\*)\s*code-(?:verify|format)\s+on\b")
 
 
 def _compute_fence_mask(lines: list[str]) -> list[bool]:
@@ -1021,22 +1031,31 @@ def find_comment_style_violations(
 
     i = 0
     while i < n:
-        if fence_mask[i] or not _is_line_comment(lines[i]) or _is_tooling_pragma(lines[i]):
+        if (
+            fence_mask[i]
+            or not _is_line_comment(lines[i])
+            or _is_tooling_pragma(lines[i])
+        ):
             i += 1
             continue
 
         run_start = i
-        while (i < n and not fence_mask[i]
-               and _is_line_comment(lines[i])
-               and not _is_tooling_pragma(lines[i])):
+        while (
+            i < n
+            and not fence_mask[i]
+            and _is_line_comment(lines[i])
+            and not _is_tooling_pragma(lines[i])
+        ):
             i += 1
         run_len = i - run_start
 
         if run_len < 2:
             continue
 
-        payloads = [_comment_payload(lines[k]) or ""
-                    for k in range(run_start, run_start + run_len)]
+        payloads = [
+            _comment_payload(lines[k]) or ""
+            for k in range(run_start, run_start + run_len)
+        ]
         if _is_banner_run(payloads):
             continue
 
@@ -1063,62 +1082,82 @@ _AI_PATTERNS: tuple[tuple[str, "re.Pattern[str]"], ...] = (
     # First-person tutorial voice — "we", "let's", "let us"
     (
         "first-person",
-        re.compile(r"\b(?:we'(?:ll|ve|re)|we\s+(?:need|want|have|will|should|now|first|then|can)|let'?s\b|let\s+us\b)",
-                   re.IGNORECASE),
+        re.compile(
+            r"\b(?:we'(?:ll|ve|re)|we\s+(?:need|want|have|will|should|now|first|then|can)|let'?s\b|let\s+us\b)",
+            re.IGNORECASE,
+        ),
     ),
     # Throat-clearing prefixes that add no information
     (
         "throat-clearing",
-        re.compile(r"^\s*(?:note(?:\s+that)?|important|keep\s+in\s+mind|remember(?:\s+that)?|please\s+note|fyi|n\.?b\.?)\s*[:,]",
-                   re.IGNORECASE),
+        re.compile(
+            r"^\s*(?:note(?:\s+that)?|important|keep\s+in\s+mind|remember(?:\s+that)?|please\s+note|fyi|n\.?b\.?)\s*[:,]",
+            re.IGNORECASE,
+        ),
     ),
     # Tutorial step markers
     (
         "tutorial-voice",
-        re.compile(r"^\s*(?:now|here|first(?:ly)?|second(?:ly)?|next|then|finally)\s*,?\s*(?:we\b|you\b|i\b)",
-                   re.IGNORECASE),
+        re.compile(
+            r"^\s*(?:now|here|first(?:ly)?|second(?:ly)?|next|then|finally)\s*,?\s*(?:we\b|you\b|i\b)",
+            re.IGNORECASE,
+        ),
     ),
     # "This is..." / "This does..." / "This function..." narration
     (
         "this-is-narration",
-        re.compile(r"^\s*this\s+(?:is|does|function|method|class|file|module|code|block|line)\b",
-                   re.IGNORECASE),
+        re.compile(
+            r"^\s*this\s+(?:is|does|function|method|class|file|module|code|block|line)\b",
+            re.IGNORECASE,
+        ),
     ),
     # PR/fix/change self-references that rot the moment they're committed
     (
         "rot-reference",
-        re.compile(r"\b(?:this\s+(?:pr|patch|fix|commit|change|cl)|the\s+(?:recent|previous|above|aforementioned)\s+(?:change|fix|pr|commit)|as\s+(?:mentioned|noted|described)\s+above|see\s+(?:above|below))\b",
-                   re.IGNORECASE),
+        re.compile(
+            r"\b(?:this\s+(?:pr|patch|fix|commit|change|cl)|the\s+(?:recent|previous|above|aforementioned)\s+(?:change|fix|pr|commit)|as\s+(?:mentioned|noted|described)\s+above|see\s+(?:above|below))\b",
+            re.IGNORECASE,
+        ),
     ),
     # Hedging vocabulary — "for now", "for clarity", "for readability",
     # "in theory", "ideally", "perhaps", "maybe should"
     (
         "hedging",
-        re.compile(r"\b(?:for\s+(?:now|clarity|readability|reference|completeness)|in\s+theory|ideally|perhaps|maybe\s+(?:should|we|this)|might\s+want\s+to)\b",
-                   re.IGNORECASE),
+        re.compile(
+            r"\b(?:for\s+(?:now|clarity|readability|reference|completeness)|in\s+theory|ideally|perhaps|maybe\s+(?:should|we|this)|might\s+want\s+to)\b",
+            re.IGNORECASE,
+        ),
     ),
     # Restating-the-code openers — strongest signal of AI prose
     (
         "restate-obvious",
-        re.compile(r"^\s*(?:loop(?:s)?\s+(?:over|through)|iterate(?:s)?\s+(?:over|through)|check(?:s)?\s+(?:if|whether)|set(?:s)?\s+\w+\s+to|return(?:s)?\s+the|get(?:s)?\s+the|create(?:s)?\s+(?:a|an|the)|initialize(?:s)?\s+(?:a|an|the)|store(?:s)?\s+the|update(?:s)?\s+the)\b",
-                   re.IGNORECASE),
+        re.compile(
+            r"^\s*(?:loop(?:s)?\s+(?:over|through)|iterate(?:s)?\s+(?:over|through)|check(?:s)?\s+(?:if|whether)|set(?:s)?\s+\w+\s+to|return(?:s)?\s+the|get(?:s)?\s+the|create(?:s)?\s+(?:a|an|the)|initialize(?:s)?\s+(?:a|an|the)|store(?:s)?\s+the|update(?:s)?\s+the)\b",
+            re.IGNORECASE,
+        ),
     ),
     # AI-typical TODO/FIXME without a ticket reference — "TODO: implement this"
     (
         "todo-no-context",
-        re.compile(r"^\s*(?:todo|fixme|xxx|hack)\s*[:!\-]?\s*(?:implement|handle|add|fix|consider|figure\s+out|deal\s+with|come\s+back\s+to)\b",
-                   re.IGNORECASE),
+        re.compile(
+            r"^\s*(?:todo|fixme|xxx|hack)\s*[:!\-]?\s*(?:implement|handle|add|fix|consider|figure\s+out|deal\s+with|come\s+back\s+to)\b",
+            re.IGNORECASE,
+        ),
     ),
     # Emoji in comments — CLAUDE.md bans them outright
     (
         "emoji",
-        re.compile(r"[\U0001F300-\U0001FAFF\U00002600-\U000027BF\U0001F000-\U0001F2FF]"),
+        re.compile(
+            r"[\U0001F300-\U0001FAFF\U00002600-\U000027BF\U0001F000-\U0001F2FF]"
+        ),
     ),
     # "Used by X" / "Called from Y" — caller references rot
     (
         "caller-reference",
-        re.compile(r"\b(?:used\s+by|called\s+(?:by|from)|invoked\s+(?:by|from)|added\s+for|needed\s+for)\s+(?:the\s+)?[A-Z]?\w",
-                   re.IGNORECASE),
+        re.compile(
+            r"\b(?:used\s+by|called\s+(?:by|from)|invoked\s+(?:by|from)|added\s+for|needed\s+for)\s+(?:the\s+)?[A-Z]?\w",
+            re.IGNORECASE,
+        ),
     ),
     # Trailing ellipsis on `//` lines — typically AI hand-waving "...etc"
     (
@@ -1171,7 +1210,11 @@ def find_ai_narration_violations(
         if not stripped_payload or set(stripped_payload) <= {"-", "="}:
             continue
         # Skip `// clang-format off/on` and other tooling pragmas.
-        if re.match(r"^\s*(?:clang-format|code-(?:verify|format)|NOLINT|cppcheck-suppress)", payload, re.IGNORECASE):
+        if re.match(
+            r"^\s*(?:clang-format|code-(?:verify|format)|NOLINT|cppcheck-suppress)",
+            payload,
+            re.IGNORECASE,
+        ):
             continue
 
         for kind, pattern in _AI_PATTERNS:
@@ -1197,8 +1240,8 @@ _NON_ASCII_NAMES: dict[str, str] = {
     "–": "en dash (U+2013, type `-`)",
     "‘": "left single quote (U+2018, type `'`)",
     "’": "right single quote / apostrophe (U+2019, type `'`)",
-    "“": "left double quote (U+201C, type `\"`)",
-    "”": "right double quote (U+201D, type `\"`)",
+    "“": 'left double quote (U+201C, type `"`)',
+    "”": 'right double quote (U+201D, type `"`)',
     "…": "ellipsis (U+2026, type `...`)",
     "→": "right arrow (U+2192, type `->`)",
     "←": "left arrow (U+2190, type `<-`)",
@@ -1266,7 +1309,7 @@ def _strip_translation_args(line: str) -> str:
             i += 1
             continue
 
-        out.append(line[i:m.end()])
+        out.append(line[i : m.end()])
         i = m.end()
         depth = 1
         in_str: str | None = None
@@ -1387,7 +1430,11 @@ def find_qml_inline_comment_violations(
 
         # Skip comment-only lines for stack maintenance — they don't open
         # or close bodies.
-        if stripped.startswith("//") or stripped.startswith("/*") or stripped.startswith("*"):
+        if (
+            stripped.startswith("//")
+            or stripped.startswith("/*")
+            or stripped.startswith("*")
+        ):
             payload = _comment_payload(line)
             if payload is not None and not _is_tooling_pragma(line):
                 p = payload.strip()
@@ -1442,13 +1489,16 @@ def find_qml_inline_comment_violations(
 # File-level processing
 # ---------------------------------------------------------------------------
 
+
 def _is_first_party(path: Path) -> bool:
     """True when `path` lives under app/qml or app/src — the only trees whose
     sources own the project's structural style. Vendored libraries (lib/),
     embedded examples, and generated artifacts keep their upstream layout
     even when they happen to match a tracked suffix."""
     parts = path.resolve().parts
-    return ("app", "qml") in zip(parts, parts[1:]) or ("app", "src") in zip(parts, parts[1:])
+    return ("app", "qml") in zip(parts, parts[1:]) or ("app", "src") in zip(
+        parts, parts[1:]
+    )
 
 
 def process_file(path: Path, fix: bool) -> tuple[list[Violation], str | None]:
@@ -1484,7 +1534,9 @@ def process_file(path: Path, fix: bool) -> tuple[list[Violation], str | None]:
         violations.extend(find_comment_style_violations(raw_lines, path, fence_mask))
         violations.extend(find_ai_narration_violations(raw_lines, path, fence_mask))
         violations.extend(find_non_ascii_violations(raw_lines, path, fence_mask))
-        violations.extend(find_qml_inline_comment_violations(raw_lines, path, fence_mask))
+        violations.extend(
+            find_qml_inline_comment_violations(raw_lines, path, fence_mask)
+        )
 
         # Static-analysis rules (Qt/C++ semantic checks + QML conventions).
         # The rules module degrades gracefully when tree-sitter is missing.
@@ -1542,16 +1594,22 @@ def process_file(path: Path, fix: bool) -> tuple[list[Violation], str | None]:
         # fixes can shift line numbers). Drop violations and inserts that
         # land inside a fenced range.
         post_mask = _compute_fence_mask(new_raws)
-        bf_violations = [v for v in bf_violations
-                         if v.line - 1 < len(post_mask) and not post_mask[v.line - 1]]
-        insert_after = [idx for idx in insert_after
-                        if idx < len(post_mask) and not post_mask[idx]]
+        bf_violations = [
+            v
+            for v in bf_violations
+            if v.line - 1 < len(post_mask) and not post_mask[v.line - 1]
+        ]
+        insert_after = [
+            idx for idx in insert_after if idx < len(post_mask) and not post_mask[idx]
+        ]
         violations.extend(bf_violations)
         bf_changed = bool(insert_after)
         if bf_changed:
             new_raws = apply_brace_free_fixes(new_raws, insert_after)
 
-    if not fix or (not qml_changed and not id_changed and not bf_changed and not crlf_changed):
+    if not fix or (
+        not qml_changed and not id_changed and not bf_changed and not crlf_changed
+    ):
         return violations, None
 
     new_text = "\n".join(new_raws)
@@ -1571,7 +1629,16 @@ _BRACE_FREE_SUFFIXES = (".qml", ".cpp", ".h", ".c", ".mm")
 # Suffixes that get CRLF normalization only — extend the structural-rule
 # set with text formats that frequently arrive from Windows editors.
 _TRACKED_SUFFIXES = _BRACE_FREE_SUFFIXES + (
-    ".txt", ".md", ".py", ".svg", ".ts", ".js", ".lua", ".html", ".rcc", ".yml",
+    ".txt",
+    ".md",
+    ".py",
+    ".svg",
+    ".ts",
+    ".js",
+    ".lua",
+    ".html",
+    ".rcc",
+    ".yml",
 )
 
 
@@ -1597,6 +1664,7 @@ def iter_source_files(targets: list[Path]) -> Iterable[Path]:
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
+
 
 def default_targets() -> list[Path]:
     """Return the trees the formatter walks when no paths are given.
@@ -1625,12 +1693,14 @@ def default_targets() -> list[Path]:
 # Kinds the script CAN auto-fix in place. Anything else (multi-line-comment,
 # ai-*, christmas-tree-once-merged) is flag-only and lives in `.code-report`
 # for human / LLM follow-up.
-_AUTO_FIXABLE_KINDS = frozenset({
-    "line-endings",
-    "id-blank-line",
-    "brace-free-blank",
-    "christmas-tree",
-})
+_AUTO_FIXABLE_KINDS = frozenset(
+    {
+        "line-endings",
+        "id-blank-line",
+        "brace-free-blank",
+        "christmas-tree",
+    }
+)
 
 # Advisory rules: reported, written to `.code-report`, but DO NOT fail
 # `--check`. These are CLAUDE.md guidance (length / nesting limits, doc
@@ -1638,78 +1708,80 @@ _AUTO_FIXABLE_KINDS = frozenset({
 # has accumulated baseline debt. New code should still aim to clear them
 # -- a reviewer reading `.code-report` is the enforcement mechanism, not
 # CI. Errors (everything not in this set) are the contract CI enforces.
-_ADVISORY_KINDS = frozenset({
-    # CLAUDE.md guidance with broad existing-code debt -- promote to
-    # error once the report-driven cleanup catches up.
-    "cxx-function-too-long",
-    "cxx-nesting-too-deep",
-    "cxx-anonymous-namespace",
-    "qt-missing-nodiscard",
-    "doc-missing-brief-cpp",
-    "doc-missing-brief-h",
-    "keys-hardcoded-literal",
-    # AI-narration / multi-line-comment / qml-inline-comment are
-    # heuristic-only and intentionally never fail CI. They populate the
-    # report so a human / LLM cleanup pass has a checklist.
-    "ai-first-person",
-    "ai-throat-clearing",
-    "ai-tutorial-voice",
-    "ai-this-is-narration",
-    "ai-rot-reference",
-    "ai-hedging",
-    "ai-restate-obvious",
-    "ai-todo-no-context",
-    "multi-line-comment",
-    "qml-inline-comment",
-    # comment-narration is the AST-style scan from code_verify_rules.py
-    # (separate driver). Banned tone / phrasing in any comment line.
-    "comment-narration",
-    # Function doxygen blocks above member-function declarations in headers
-    # -- forbidden by CLAUDE.md, but the existing codebase has hundreds
-    # so it ships as advisory.
-    "doc-header-function-block",
-    # Trailing doxygen `/**< ... */` member comments -- same ban, separate
-    # signal because the fix is "delete the trailing block" rather than
-    # "delete the leading block".
-    "doc-trailing-member",
-    # Verbose doxygen blocks (carry `@param`/`@return`/`@note`/`@see`,
-    # blank-`*` paragraph splits, or wrap to 5+ lines). CLAUDE.md says the
-    # contract is a one-line `/** @brief ... */`; the existing codebase has
-    # plenty of multi-tag blocks so this ships as advisory.
-    "doc-verbose-brief",
-    # Raw stdio in Qt code -- `std::cout`, `<iostream>`, `printf` should
-    # route through `qDebug()` / `qWarning()` so the message handler and
-    # the Console widget see the output. Two known exceptions
-    # (the message handler itself, Windows console attachment) wrap their
-    # call in `// code-verify off` to declare intent.
-    "qt-prefer-qdebug",
-    # `std::endl` flushes the stream every line -- `'\n'` is faster and
-    # more idiomatic for Qt streams. `Qt::endl` is the explicit-flush form.
-    "qt-prefer-newline",
-    # CPU-microarchitecture / perf rules. These reason about the compiled
-    # assembly (idiv/udiv cost, lock-prefix RMW, false sharing, indirect
-    # branches, vtable loads) and how the cost lands on Intel x86-64 and
-    # ARM AArch64 hardware. Every one ships as advisory -- the existing
-    # codebase has baseline debt and the report is the cleanup checklist.
-    "perf-divide-runtime-divisor",
-    "perf-modulo-runtime-divisor",
-    "perf-divide-by-float-literal",
-    "perf-pow-call",
-    "perf-dynamic-cast",
-    "perf-malloc-family",
-    "perf-regex-construct",
-    "perf-arg-chain",
-    "perf-lock-acquire",
-    "perf-string-alloc-hotpath",
-    "perf-log-on-hotpath",
-    "perf-throw-on-hotpath",
-    "perf-large-by-value-param",
-    "perf-shared-ptr-by-value",
-    "perf-large-stack-buffer",
-    "perf-recursive-hotpath",
-    "perf-false-sharing-risk",
-    "perf-virtual-hotpath",
-})
+_ADVISORY_KINDS = frozenset(
+    {
+        # CLAUDE.md guidance with broad existing-code debt -- promote to
+        # error once the report-driven cleanup catches up.
+        "cxx-function-too-long",
+        "cxx-nesting-too-deep",
+        "cxx-anonymous-namespace",
+        "qt-missing-nodiscard",
+        "doc-missing-brief-cpp",
+        "doc-missing-brief-h",
+        "keys-hardcoded-literal",
+        # AI-narration / multi-line-comment / qml-inline-comment are
+        # heuristic-only and intentionally never fail CI. They populate the
+        # report so a human / LLM cleanup pass has a checklist.
+        "ai-first-person",
+        "ai-throat-clearing",
+        "ai-tutorial-voice",
+        "ai-this-is-narration",
+        "ai-rot-reference",
+        "ai-hedging",
+        "ai-restate-obvious",
+        "ai-todo-no-context",
+        "multi-line-comment",
+        "qml-inline-comment",
+        # comment-narration is the AST-style scan from code_verify_rules.py
+        # (separate driver). Banned tone / phrasing in any comment line.
+        "comment-narration",
+        # Function doxygen blocks above member-function declarations in headers
+        # -- forbidden by CLAUDE.md, but the existing codebase has hundreds
+        # so it ships as advisory.
+        "doc-header-function-block",
+        # Trailing doxygen `/**< ... */` member comments -- same ban, separate
+        # signal because the fix is "delete the trailing block" rather than
+        # "delete the leading block".
+        "doc-trailing-member",
+        # Verbose doxygen blocks (carry `@param`/`@return`/`@note`/`@see`,
+        # blank-`*` paragraph splits, or wrap to 5+ lines). CLAUDE.md says the
+        # contract is a one-line `/** @brief ... */`; the existing codebase has
+        # plenty of multi-tag blocks so this ships as advisory.
+        "doc-verbose-brief",
+        # Raw stdio in Qt code -- `std::cout`, `<iostream>`, `printf` should
+        # route through `qDebug()` / `qWarning()` so the message handler and
+        # the Console widget see the output. Two known exceptions
+        # (the message handler itself, Windows console attachment) wrap their
+        # call in `// code-verify off` to declare intent.
+        "qt-prefer-qdebug",
+        # `std::endl` flushes the stream every line -- `'\n'` is faster and
+        # more idiomatic for Qt streams. `Qt::endl` is the explicit-flush form.
+        "qt-prefer-newline",
+        # CPU-microarchitecture / perf rules. These reason about the compiled
+        # assembly (idiv/udiv cost, lock-prefix RMW, false sharing, indirect
+        # branches, vtable loads) and how the cost lands on Intel x86-64 and
+        # ARM AArch64 hardware. Every one ships as advisory -- the existing
+        # codebase has baseline debt and the report is the cleanup checklist.
+        "perf-divide-runtime-divisor",
+        "perf-modulo-runtime-divisor",
+        "perf-divide-by-float-literal",
+        "perf-pow-call",
+        "perf-dynamic-cast",
+        "perf-malloc-family",
+        "perf-regex-construct",
+        "perf-arg-chain",
+        "perf-lock-acquire",
+        "perf-string-alloc-hotpath",
+        "perf-log-on-hotpath",
+        "perf-throw-on-hotpath",
+        "perf-large-by-value-param",
+        "perf-shared-ptr-by-value",
+        "perf-large-stack-buffer",
+        "perf-recursive-hotpath",
+        "perf-false-sharing-risk",
+        "perf-virtual-hotpath",
+    }
+)
 
 
 _REPORT_HEADER = """\
@@ -2174,13 +2246,23 @@ def main(argv: list[str]) -> int:
     )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("--check", action="store_true", help="report only, no writes")
-    group.add_argument("--fix", action="store_true", help="rewrite files in place (default)")
-    parser.add_argument("--diff", action="store_true",
-                        help="show unified diff of proposed changes")
-    parser.add_argument("--no-report", action="store_true",
-                        help="skip writing .code-report at the repo root")
-    parser.add_argument("paths", nargs="*", type=Path,
-                        help="files or directories to process (default: repo trees)")
+    group.add_argument(
+        "--fix", action="store_true", help="rewrite files in place (default)"
+    )
+    parser.add_argument(
+        "--diff", action="store_true", help="show unified diff of proposed changes"
+    )
+    parser.add_argument(
+        "--no-report",
+        action="store_true",
+        help="skip writing .code-report at the repo root",
+    )
+    parser.add_argument(
+        "paths",
+        nargs="*",
+        type=Path,
+        help="files or directories to process (default: repo trees)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -2242,16 +2324,21 @@ def main(argv: list[str]) -> int:
         _write_report(repo_root / ".code-report", flag_only)
 
     if args.check:
-        print(f"\n{len(files)} files scanned, {error_count} errors, "
-              f"{advisory_count} advisory ({len(flag_only)} flag-only)",
-              file=sys.stderr)
+        print(
+            f"\n{len(files)} files scanned, {error_count} errors, "
+            f"{advisory_count} advisory ({len(flag_only)} flag-only)",
+            file=sys.stderr,
+        )
         # CI gate: fail on errors only. Advisory findings populate
         # `.code-report` for follow-up but don't block the build.
         return 1 if error_count else 0
 
-    print(f"\n{len(files)} files scanned, {total_changed} rewritten, "
-          f"{error_count} errors, {advisory_count} advisory "
-          f"({len(flag_only)} flag-only)", file=sys.stderr)
+    print(
+        f"\n{len(files)} files scanned, {total_changed} rewritten, "
+        f"{error_count} errors, {advisory_count} advisory "
+        f"({len(flag_only)} flag-only)",
+        file=sys.stderr,
+    )
     return 0
 
 

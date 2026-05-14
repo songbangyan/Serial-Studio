@@ -119,9 +119,7 @@ function parse(frame) {
     for i in range(10):
         payload = f"{20.0 + i},{30.0 + i},{40.0 + i}"
         frame = DataGenerator.wrap_frame(
-            payload,
-            mode="project",
-            checksum_type=ChecksumType.NONE
+            payload, mode="project", checksum_type=ChecksumType.NONE
         )
         frames.append(frame)
 
@@ -277,9 +275,7 @@ function parse(frame) {
     for i in range(10):
         payload = f"{10.0 + i},{20.0 + i},{30.0 + i},{40.0 + i},{50.0 + i}"
         frame = DataGenerator.wrap_frame(
-            payload,
-            mode="project",
-            checksum_type=ChecksumType.NONE
+            payload, mode="project", checksum_type=ChecksumType.NONE
         )
         frames.append(frame)
 

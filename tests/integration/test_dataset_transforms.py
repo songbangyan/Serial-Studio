@@ -21,7 +21,6 @@ import pytest
 
 from utils import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -106,9 +105,9 @@ def _dataset_value(data: dict, dataset_index: int) -> tuple[float, str]:
     groups = data.get("frame", {}).get("groups", [])
     assert len(groups) >= 1, "frame has no groups"
     datasets = groups[0].get("datasets", [])
-    assert len(datasets) > dataset_index, (
-        f"group has {len(datasets)} datasets, need index {dataset_index}"
-    )
+    assert (
+        len(datasets) > dataset_index
+    ), f"group has {len(datasets)} datasets, need index {dataset_index}"
     d = datasets[dataset_index]
     return d.get("numericValue", 0.0), d.get("value", "")
 
@@ -116,6 +115,7 @@ def _dataset_value(data: dict, dataset_index: int) -> tuple[float, str]:
 # ---------------------------------------------------------------------------
 # Persistence round-trip (no device required)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_transform_code_persists_round_trip(api_client, clean_state):
@@ -160,6 +160,7 @@ def test_transform_code_clear_on_empty_string(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Lua numeric transforms (end-to-end)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_lua_numeric_transform_end_to_end(api_client, device_simulator, clean_state):
@@ -235,6 +236,7 @@ def test_lua_transform_returns_string(api_client, device_simulator, clean_state)
 # JavaScript numeric transforms
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_js_numeric_transform_end_to_end(api_client, device_simulator, clean_state):
     """A JS transform squaring the input reaches dashboard.getData."""
@@ -286,6 +288,7 @@ def test_js_transform_iife_isolation(api_client, device_simulator, clean_state):
 # Error paths — malformed transforms fall through to raw value
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_lua_transform_runtime_error_falls_back(
     api_client, device_simulator, clean_state
@@ -296,9 +299,7 @@ def test_lua_transform_runtime_error_falls_back(
     # error() always throws at runtime
     _set_transform(api_client, 0, 0, "function transform(v) error('boom') end")
 
-    data = _send_csv_and_read(
-        api_client, device_simulator, [b"42"], settle_seconds=1.0
-    )
+    data = _send_csv_and_read(api_client, device_simulator, [b"42"], settle_seconds=1.0)
 
     num, _ = _dataset_value(data, 0)
     assert num == pytest.approx(42.0)  # untransformed
@@ -313,9 +314,7 @@ def test_lua_transform_non_numeric_return_falls_back(
 
     _set_transform(api_client, 0, 0, "function transform(v) return nil end")
 
-    data = _send_csv_and_read(
-        api_client, device_simulator, [b"17"], settle_seconds=1.0
-    )
+    data = _send_csv_and_read(api_client, device_simulator, [b"17"], settle_seconds=1.0)
 
     num, _ = _dataset_value(data, 0)
     assert num == pytest.approx(17.0)

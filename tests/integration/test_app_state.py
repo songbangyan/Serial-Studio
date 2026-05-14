@@ -21,10 +21,10 @@ import pytest
 from utils import SerialStudioClient
 from utils.api_client import APIError
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _new_project(api_client, title: str = "AppState Test") -> None:
     """Create a fresh project and set ProjectFile mode."""
@@ -65,6 +65,7 @@ def _get_frame_config(api_client) -> dict:
 # ---------------------------------------------------------------------------
 # Tests: Operation Mode Changes
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_set_operation_mode_projectfile(api_client, clean_state):
@@ -137,6 +138,7 @@ def test_invalid_operation_mode_missing_param(api_client, clean_state):
 # Tests: dashboard.getOperationMode
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_get_operation_mode_matches_set(api_client, clean_state):
     """dashboard.getOperationMode returns the same value as was set."""
@@ -145,9 +147,9 @@ def test_get_operation_mode_matches_set(api_client, clean_state):
         time.sleep(0.1)
 
         result = api_client.command("dashboard.getOperationMode")
-        assert result.get("mode") == mode, (
-            f"getOperationMode should return {mode}, got {result.get('mode')}"
-        )
+        assert (
+            result.get("mode") == mode
+        ), f"getOperationMode should return {mode}, got {result.get('mode')}"
 
 
 @pytest.mark.project
@@ -160,22 +162,29 @@ def test_get_operation_mode_returns_mode_name(api_client, clean_state):
         time.sleep(0.1)
 
         result = api_client.command("dashboard.getOperationMode")
-        assert result.get("modeName") == name, (
-            f"Mode {mode} should have modeName '{name}', got '{result.get('modeName')}'"
-        )
+        assert (
+            result.get("modeName") == name
+        ), f"Mode {mode} should have modeName '{name}', got '{result.get('modeName')}'"
 
 
 # ---------------------------------------------------------------------------
 # Tests: dashboard.getStatus
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_dashboard_status_has_required_fields(api_client, clean_state):
     """dashboard.getStatus contains all required fields."""
     status = api_client.get_dashboard_status()
 
-    required = {"operationMode", "operationModeName", "fps", "points",
-                "widgetCount", "datasetCount"}
+    required = {
+        "operationMode",
+        "operationModeName",
+        "fps",
+        "points",
+        "widgetCount",
+        "datasetCount",
+    }
     missing = required - status.keys()
     assert not missing, f"dashboard.getStatus missing fields: {missing}"
 
@@ -189,9 +198,9 @@ def test_dashboard_status_operation_mode_consistent_with_get(api_client, clean_s
     status = api_client.get_dashboard_status()
     get_result = api_client.command("dashboard.getOperationMode")
 
-    assert status.get("operationMode") == get_result.get("mode"), (
-        "getStatus.operationMode must match getOperationMode.mode"
-    )
+    assert status.get("operationMode") == get_result.get(
+        "mode"
+    ), "getStatus.operationMode must match getOperationMode.mode"
 
 
 @pytest.mark.project
@@ -214,19 +223,27 @@ def test_dashboard_status_operation_mode_name_matches_mode(api_client, clean_sta
 # Tests: project.frameParser.getConfig
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_frame_parser_getconfig_has_required_fields(api_client, clean_state):
     """project.frameParser.getConfig returns all required fields."""
     cfg = _get_frame_config(api_client)
 
-    required = {"startSequence", "endSequence", "checksumAlgorithm",
-                "operationMode", "frameDetection"}
+    required = {
+        "startSequence",
+        "endSequence",
+        "checksumAlgorithm",
+        "operationMode",
+        "frameDetection",
+    }
     missing = required - cfg.keys()
     assert not missing, f"frameParser.getConfig missing fields: {missing}"
 
 
 @pytest.mark.project
-def test_frame_parser_getconfig_operation_mode_matches_dashboard(api_client, clean_state):
+def test_frame_parser_getconfig_operation_mode_matches_dashboard(
+    api_client, clean_state
+):
     """operationMode in frameParser.getConfig matches dashboard.getStatus."""
     for mode in [0, 1, 2]:
         api_client.command("dashboard.setOperationMode", {"mode": mode})
@@ -235,9 +252,9 @@ def test_frame_parser_getconfig_operation_mode_matches_dashboard(api_client, cle
         cfg = _get_frame_config(api_client)
         status = api_client.get_dashboard_status()
 
-        assert cfg.get("operationMode") == status.get("operationMode"), (
-            f"frameParser.getConfig.operationMode must match dashboard operationMode for mode {mode}"
-        )
+        assert cfg.get("operationMode") == status.get(
+            "operationMode"
+        ), f"frameParser.getConfig.operationMode must match dashboard operationMode for mode {mode}"
 
 
 @pytest.mark.project
@@ -248,9 +265,9 @@ def test_frame_parser_configure_sets_start_sequence(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("startSequence") == "$", (
-        f"Expected startSequence '$', got '{cfg.get('startSequence')}'"
-    )
+    assert (
+        cfg.get("startSequence") == "$"
+    ), f"Expected startSequence '$', got '{cfg.get('startSequence')}'"
 
 
 @pytest.mark.project
@@ -261,9 +278,9 @@ def test_frame_parser_configure_sets_end_sequence(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("endSequence") == "\n", (
-        f"Expected endSequence '\\n', got repr {repr(cfg.get('endSequence'))}"
-    )
+    assert (
+        cfg.get("endSequence") == "\n"
+    ), f"Expected endSequence '\\n', got repr {repr(cfg.get('endSequence'))}"
 
 
 @pytest.mark.project
@@ -274,9 +291,9 @@ def test_frame_parser_configure_sets_checksum(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("checksumAlgorithm") == "CRC-16", (
-        f"Expected checksumAlgorithm 'CRC-16', got '{cfg.get('checksumAlgorithm')}'"
-    )
+    assert (
+        cfg.get("checksumAlgorithm") == "CRC-16"
+    ), f"Expected checksumAlgorithm 'CRC-16', got '{cfg.get('checksumAlgorithm')}'"
 
 
 @pytest.mark.project
@@ -287,9 +304,9 @@ def test_frame_parser_configure_sets_frame_detection(api_client, clean_state):
     time.sleep(0.1)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("frameDetection") == 1, (
-        f"Expected frameDetection 1, got {cfg.get('frameDetection')}"
-    )
+    assert (
+        cfg.get("frameDetection") == 1
+    ), f"Expected frameDetection 1, got {cfg.get('frameDetection')}"
 
 
 @pytest.mark.project
@@ -314,9 +331,9 @@ def test_frame_parser_configure_no_params_returns_not_updated(api_client, clean_
     # The actual no-params call path: api_client.configure_frame_parser() skips the command
     # So test the command directly with an empty dict
     result = api_client.command("project.frameParser.update", {})
-    assert result.get("updated") is False, (
-        "configure with no params should return updated=false"
-    )
+    assert (
+        result.get("updated") is False
+    ), "configure with no params should return updated=false"
 
 
 @pytest.mark.project
@@ -334,13 +351,20 @@ def test_frame_parser_getconfig_consistent_across_calls(api_client, clean_state)
 # Tests: project.getStatus
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_project_status_has_required_fields(api_client, clean_state):
     """project.getStatus returns all required fields."""
     status = api_client.get_project_status()
 
-    required = {"title", "filePath", "modified", "groupCount",
-                "datasetCount", "actionCount"}
+    required = {
+        "title",
+        "filePath",
+        "modified",
+        "groupCount",
+        "datasetCount",
+        "actionCount",
+    }
     missing = required - status.keys()
     assert not missing, f"project.getStatus missing fields: {missing}"
 
@@ -352,12 +376,12 @@ def test_project_new_creates_empty_project(api_client, clean_state):
     time.sleep(0.2)
 
     status = api_client.get_project_status()
-    assert status.get("groupCount") == 0, (
-        f"New project should have 0 groups, got {status.get('groupCount')}"
-    )
-    assert status.get("datasetCount") == 0, (
-        f"New project should have 0 datasets, got {status.get('datasetCount')}"
-    )
+    assert (
+        status.get("groupCount") == 0
+    ), f"New project should have 0 groups, got {status.get('groupCount')}"
+    assert (
+        status.get("datasetCount") == 0
+    ), f"New project should have 0 datasets, got {status.get('datasetCount')}"
 
 
 @pytest.mark.project
@@ -369,9 +393,9 @@ def test_project_set_title_reflected_in_status(api_client, clean_state):
     time.sleep(0.1)
 
     status = api_client.get_project_status()
-    assert status.get("title") == "Verified Title", (
-        f"Expected title 'Verified Title', got '{status.get('title')}'"
-    )
+    assert (
+        status.get("title") == "Verified Title"
+    ), f"Expected title 'Verified Title', got '{status.get('title')}'"
 
 
 @pytest.mark.project
@@ -384,6 +408,7 @@ def test_project_set_title_empty_rejected(api_client, clean_state):
 # ---------------------------------------------------------------------------
 # Tests: ProjectModel integration (reactive updates on mode change)
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_frame_detection_change_persists(api_client, clean_state):
@@ -417,7 +442,9 @@ def test_multiple_configure_fields_in_one_call(api_client, clean_state):
 
 
 @pytest.mark.project
-def test_mode_change_via_configure_and_dashboard_produce_same_state(api_client, clean_state):
+def test_mode_change_via_configure_and_dashboard_produce_same_state(
+    api_client, clean_state
+):
     """Setting mode via configure or dashboard both update AppState identically."""
     api_client.configure_frame_parser(operation_mode=2)
     time.sleep(0.1)
@@ -443,9 +470,9 @@ def test_new_project_resets_operation_mode_to_project_file(api_client, clean_sta
 
     # project.new explicitly sets ProjectFile (mode 0) so the editor is usable
     mode = _get_operation_mode(api_client)
-    assert mode == 0, (
-        f"project.new must switch to ProjectFile mode; expected 0, got {mode}"
-    )
+    assert (
+        mode == 0
+    ), f"project.new must switch to ProjectFile mode; expected 0, got {mode}"
 
 
 @pytest.mark.project
@@ -460,17 +487,20 @@ def test_rapid_mode_changes_end_in_consistent_state(api_client, clean_state):
     final_mode = _get_operation_mode(api_client)
     # The final mode after all rapid changes must be valid (we don't guarantee
     # exact ordering since these are fire-and-forget, but the result must be 0-2)
-    assert 0 <= final_mode <= 2, (
-        f"Mode must remain valid (0-2) after rapid changes, got {final_mode}"
-    )
+    assert (
+        0 <= final_mode <= 2
+    ), f"Mode must remain valid (0-2) after rapid changes, got {final_mode}"
 
     cfg = _get_frame_config(api_client)
-    assert "startSequence" in cfg, "Frame config must remain valid after rapid mode changes"
+    assert (
+        "startSequence" in cfg
+    ), "Frame config must remain valid after rapid mode changes"
 
 
 # ---------------------------------------------------------------------------
 # Tests: API command registry
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.project
 def test_api_registry_includes_dashboard_setoperationmode(api_client, clean_state):
@@ -506,6 +536,7 @@ def test_api_registry_includes_frameparser_getconfig(api_client, clean_state):
 # Tests: Multi-source scenarios (Commercial only)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.project
 def test_adding_source_does_not_change_operation_mode(api_client, clean_state):
     """Adding a new source does not alter the current operation mode."""
@@ -522,9 +553,9 @@ def test_adding_source_does_not_change_operation_mode(api_client, clean_state):
     api_client.source_add()
     time.sleep(0.2)
 
-    assert _get_operation_mode(api_client) == 0, (
-        "Adding a source must not alter the operation mode"
-    )
+    assert (
+        _get_operation_mode(api_client) == 0
+    ), "Adding a source must not alter the operation mode"
 
 
 @pytest.mark.project
@@ -541,16 +572,18 @@ def test_source0_framestart_propagates_to_frameparser_config(api_client, clean_s
     time.sleep(0.2)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("startSequence") == "<", (
-        "source[0] frameStart must propagate to frameParser.getConfig"
-    )
-    assert cfg.get("endSequence") == ">", (
-        "source[0] frameEnd must propagate to frameParser.getConfig"
-    )
+    assert (
+        cfg.get("startSequence") == "<"
+    ), "source[0] frameStart must propagate to frameParser.getConfig"
+    assert (
+        cfg.get("endSequence") == ">"
+    ), "source[0] frameEnd must propagate to frameParser.getConfig"
 
 
 @pytest.mark.project
-def test_secondary_source_delimiters_do_not_affect_frameparser_config(api_client, clean_state):
+def test_secondary_source_delimiters_do_not_affect_frameparser_config(
+    api_client, clean_state
+):
     """Delimiters set on a non-primary source do not appear in frameParser.getConfig."""
     _new_project(api_client)
 
@@ -568,16 +601,18 @@ def test_secondary_source_delimiters_do_not_affect_frameparser_config(api_client
     time.sleep(0.2)
 
     cfg = _get_frame_config(api_client)
-    assert cfg.get("startSequence") == "/*", (
-        "Secondary source frameStart must not overwrite frameParser.getConfig"
-    )
-    assert cfg.get("endSequence") == "*/", (
-        "Secondary source frameEnd must not overwrite frameParser.getConfig"
-    )
+    assert (
+        cfg.get("startSequence") == "/*"
+    ), "Secondary source frameStart must not overwrite frameParser.getConfig"
+    assert (
+        cfg.get("endSequence") == "*/"
+    ), "Secondary source frameEnd must not overwrite frameParser.getConfig"
 
 
 @pytest.mark.project
-def test_deleting_secondary_source_leaves_frameparser_config_unchanged(api_client, clean_state):
+def test_deleting_secondary_source_leaves_frameparser_config_unchanged(
+    api_client, clean_state
+):
     """Deleting a secondary source does not alter the frame parser config."""
     _new_project(api_client)
 
