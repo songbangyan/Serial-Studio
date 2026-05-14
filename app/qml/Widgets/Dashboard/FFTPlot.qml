@@ -48,6 +48,7 @@ Item {
   //
   // Custom properties
   //
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: true
 
   //
@@ -56,26 +57,29 @@ Item {
   property bool userShowXLabel: true
   property bool userShowYLabel: true
 
-  //
-  // Set downsample size based on widget size & zoom factor
-  //
-  function setDownsampleFactor()
-  {
-    const z = plot.zoom
-    model.dataW = plot.plotArea.width * z
-    model.dataH = plot.plotArea.height * z
+  PlotCommon {
+    id: plotCommon
   }
 
   //
   // Sync model width/height with widget, then restore persisted settings
   //
   Component.onCompleted: {
-    root.setDownsampleFactor()
+    plotCommon.setDownsampleFactor(plot, model)
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
+
+    if (s["interpolationMode"] !== undefined)
+      root.interpolationMode = plotCommon.normalizeInterpolationMode(s["interpolationMode"])
+
+    if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
+      root.showAreaUnderPlot = false
+
+    if (root.model)
+      root.model.interpolationMode = root.interpolationMode
 
     if (s["userShowXLabel"] !== undefined)
       root.userShowXLabel = s["userShowXLabel"]
@@ -89,11 +93,17 @@ Item {
   //
   onWidthChanged: updateWidgetOptions()
   onHeightChanged: updateWidgetOptions()
+  onInterpolationModeChanged: {
+    scatterSeries.clear()
+    upperSeries.clear()
+    lowerSeries.clear()
+  }
   function updateWidgetOptions() {
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
+
 
   //
   // Axis range configuration dialog
@@ -110,10 +120,16 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        root.model.draw(upperSeries)
-        lowerSeries.clear()
-        lowerSeries.append(root.model.minX, root.model.minY)
-        lowerSeries.append(root.model.maxX, root.model.minY)
+        if (root.interpolationMode === SerialStudio.InterpolationNone) {
+          root.model.draw(scatterSeries)
+        } else {
+          root.model.draw(upperSeries)
+          if (root.showAreaUnderPlot) {
+            lowerSeries.clear()
+            lowerSeries.append(root.model.minX, root.model.minY)
+            lowerSeries.append(root.model.maxX, root.model.minY)
+          }
+        }
       }
     }
   }
@@ -136,6 +152,33 @@ Item {
     }
 
     DashboardToolButton {
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
+      ToolTip.text: qsTr("Interpolation: %1").arg(plotCommon.modeLabel(root.interpolationMode))
+      onClicked: {
+        root.interpolationMode = plotCommon.nextInterpolationMode(root.interpolationMode)
+        if (root.model)
+          root.model.interpolationMode = root.interpolationMode
+
+        if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
+          root.showAreaUnderPlot = false
+
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "interpolationMode",
+                                                root.interpolationMode)
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
+      }
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
+                     ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+                     : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    DashboardToolButton {
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
@@ -145,6 +188,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
+       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
     }
 
     Rectangle {
@@ -252,20 +296,34 @@ Item {
     xAxis.tickInterval: plot.xTickInterval
     yAxis.tickInterval: plot.yTickInterval
 
-    onZoomChanged: root.setDownsampleFactor()
-    onWidthChanged: root.setDownsampleFactor()
-    onHeightChanged: root.setDownsampleFactor()
+    onZoomChanged: plotCommon.setDownsampleFactor(plot, model)
+    onWidthChanged: plotCommon.setDownsampleFactor(plot, model)
+    onHeightChanged: plotCommon.setDownsampleFactor(plot, model)
 
     Component.onCompleted: {
       graph.addSeries(areaSeries)
       graph.addSeries(upperSeries)
       graph.addSeries(lowerSeries)
+      graph.addSeries(scatterSeries)
+    }
+
+    ScatterSeries {
+      id: scatterSeries
+
+      visible: root.interpolationMode === SerialStudio.InterpolationNone
+      pointDelegate: Rectangle {
+        width: 2
+        height: 2
+        radius: 1
+        color: root.color
+      }
     }
 
     LineSeries {
       id: upperSeries
 
       width: 2
+      visible: root.interpolationMode !== SerialStudio.InterpolationNone
     }
 
     LineSeries {
@@ -282,6 +340,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
+           && root.interpolationMode !== SerialStudio.InterpolationNone
+           && root.interpolationMode !== SerialStudio.InterpolationStem
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }

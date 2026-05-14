@@ -50,7 +50,7 @@ Item {
   //
   // Custom properties
   //
-  property bool interpolate: true
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showAreaUnderPlot: false
 
   //
@@ -59,29 +59,33 @@ Item {
   property bool userShowXLabel: true
   property bool userShowYLabel: true
 
-  //
-  // Set downsample size based on widget size & zoom factor
-  //
-  function setDownsampleFactor()
-  {
-    const z = plot.zoom
-    model.dataW = plot.plotArea.width * z
-    model.dataH = plot.plotArea.height * z
+  PlotCommon {
+    id: plotCommon
   }
 
   //
   // Sync model width/height with widget, then restore persisted settings
   //
   Component.onCompleted: {
-    root.setDownsampleFactor()
+    plotCommon.setDownsampleFactor(plot, model)
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
-    if (s["interpolate"] !== undefined)
-      root.interpolate = s["interpolate"]
+    if (s["interpolationMode"] !== undefined)
+      root.interpolationMode = plotCommon.normalizeInterpolationMode(s["interpolationMode"])
+    else if (s["interpolate"] !== undefined)
+      root.interpolationMode = s["interpolate"]
+        ? SerialStudio.InterpolationLinear
+        : SerialStudio.InterpolationNone
+
+    if (root.model)
+      root.model.interpolationMode = root.interpolationMode
 
     if (s["showAreaUnderPlot"] !== undefined)
       root.showAreaUnderPlot = s["showAreaUnderPlot"]
+
+    if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
+      root.showAreaUnderPlot = false
 
     if (s["userShowXLabel"] !== undefined)
       root.userShowXLabel = s["userShowXLabel"]
@@ -95,11 +99,17 @@ Item {
   //
   onWidthChanged: updateWidgetOptions()
   onHeightChanged: updateWidgetOptions()
+  onInterpolationModeChanged: {
+    scatterSeries.clear()
+    upperSeries.clear()
+    lowerSeries.clear()
+  }
   function updateWidgetOptions() {
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
+
 
   //
   // Axis range configuration dialog
@@ -116,18 +126,17 @@ Item {
 
     function onUiTimeout() {
       if (root.visible && root.model) {
-        if (root.interpolate) {
+        if (root.interpolationMode === SerialStudio.InterpolationNone) {
+          root.model.draw(scatterSeries)
+        } else {
           root.model.draw(upperSeries)
 
           if (root.showAreaUnderPlot) {
             lowerSeries.clear()
-            lowerSeries.append(root.model.minX, root.model.minY)
-            lowerSeries.append(root.model.maxX, root.model.minY)
+            lowerSeries.append(root.model.minX, 0)
+            lowerSeries.append(root.model.maxX, 0)
           }
         }
-
-        else
-          root.model.draw(scatterSeries)
       }
     }
   }
@@ -151,19 +160,23 @@ Item {
 
     DashboardToolButton {
       onClicked: {
-        root.interpolate = !root.interpolate
+        root.interpolationMode = plotCommon.nextInterpolationMode(root.interpolationMode)
+        if (root.model)
+          root.model.interpolationMode = root.interpolationMode
 
-        if (!root.interpolate)
+        if (!plotCommon.canShowAreaUnderPlot(root.interpolationMode))
           root.showAreaUnderPlot = false
 
-        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "interpolate", root.interpolate)
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "interpolationMode",
+                                                root.interpolationMode)
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      checked: root.interpolate
-      ToolTip.text: qsTr("Interpolate")
-      icon.source: root.interpolate?
-                     "qrc:/icons/dashboard-buttons/interpolate-on.svg" :
-                     "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
+      ToolTip.text: qsTr("Interpolation: %1").arg(plotCommon.modeLabel(root.interpolationMode))
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
+             ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+             : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
 
     DashboardToolButton {
@@ -171,7 +184,7 @@ Item {
         root.showAreaUnderPlot = !root.showAreaUnderPlot
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "showAreaUnderPlot", root.showAreaUnderPlot)
       }
-      enabled: root.interpolate
+       enabled: plotCommon.canShowAreaUnderPlot(root.interpolationMode)
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
       ToolTip.text: qsTr("Show Area Under Plot")
@@ -281,9 +294,9 @@ Item {
     xAxis.tickInterval: plot.xTickInterval
     yAxis.tickInterval: plot.yTickInterval
 
-    onZoomChanged: root.setDownsampleFactor()
-    onWidthChanged: root.setDownsampleFactor()
-    onHeightChanged: root.setDownsampleFactor()
+    onZoomChanged: plotCommon.setDownsampleFactor(plot, model)
+    onWidthChanged: plotCommon.setDownsampleFactor(plot, model)
+    onHeightChanged: plotCommon.setDownsampleFactor(plot, model)
 
     Connections {
       target: root.windowRoot
@@ -302,7 +315,7 @@ Item {
     ScatterSeries {
       id: scatterSeries
 
-      visible: !root.interpolate
+      visible: root.interpolationMode === SerialStudio.InterpolationNone
       pointDelegate: Rectangle {
         width: 2
         height: 2
@@ -315,7 +328,7 @@ Item {
       id: upperSeries
 
       width: 2
-      visible: root.interpolate
+      visible: root.interpolationMode !== SerialStudio.InterpolationNone
     }
 
     LineSeries {
@@ -332,6 +345,8 @@ Item {
       lowerSeries: lowerSeries
       borderColor: "transparent"
       visible: root.showAreaUnderPlot
+           && root.interpolationMode !== SerialStudio.InterpolationNone
+           && root.interpolationMode !== SerialStudio.InterpolationStem
       color: Qt.rgba(root.color.r, root.color.g, root.color.b, 0.2)
     }
   }

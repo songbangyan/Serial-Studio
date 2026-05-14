@@ -48,7 +48,7 @@ Item {
   //
   // Custom properties
   //
-  property bool interpolate: true
+  property int interpolationMode: SerialStudio.InterpolationLinear
   property bool showLegends: true
 
   //
@@ -58,26 +58,27 @@ Item {
   property bool userShowYLabel: true
   property bool userShowLegends: true
 
-  //
-  // Set downsample size based on widget size & zoom factor
-  //
-  function setDownsampleFactor()
-  {
-    const z = plot.zoom
-    model.dataW = plot.plotArea.width * z
-    model.dataH = plot.plotArea.height * z
+  PlotCommon {
+    id: plotCommon
   }
 
   //
   // Sync model width/height with widget, then restore persisted settings
   //
   Component.onCompleted: {
-    root.setDownsampleFactor()
+    plotCommon.setDownsampleFactor(plot, model)
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
-    if (s["interpolate"] !== undefined)
-      root.interpolate = s["interpolate"]
+    if (s["interpolationMode"] !== undefined)
+      root.interpolationMode = plotCommon.normalizeInterpolationMode(s["interpolationMode"])
+    else if (s["interpolate"] !== undefined)
+      root.interpolationMode = s["interpolate"]
+        ? SerialStudio.InterpolationLinear
+        : SerialStudio.InterpolationNone
+
+    if (root.model)
+      root.model.interpolationMode = root.interpolationMode
 
     if (s["userShowLegends"] !== undefined)
       root.userShowLegends = s["userShowLegends"]
@@ -102,12 +103,18 @@ Item {
   //
   onWidthChanged: updateWidgetOptions()
   onHeightChanged: updateWidgetOptions()
+  onInterpolationModeChanged: {
+    const count = plot.graph.seriesList.length
+    for (let i = 0; i < count; ++i)
+      plot.graph.seriesList[i].clear()
+  }
   function updateWidgetOptions() {
     root.showLegends = root.userShowLegends && (root.width >= 320)
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
     root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
+
 
   //
   // Axis range configuration dialog
@@ -166,15 +173,20 @@ Item {
     }
 
     DashboardToolButton {
-      checked: root.interpolate
-      ToolTip.text: qsTr("Interpolate")
+      checked: root.interpolationMode !== SerialStudio.InterpolationNone
+      ToolTip.text: qsTr("Interpolation: %1").arg(plotCommon.modeLabel(root.interpolationMode))
       onClicked: {
-        root.interpolate = !root.interpolate
-        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "interpolate", root.interpolate)
+        root.interpolationMode = plotCommon.nextInterpolationMode(root.interpolationMode)
+        if (root.model)
+          root.model.interpolationMode = root.interpolationMode
+
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "interpolationMode",
+                                                root.interpolationMode)
       }
-      icon.source: root.interpolate?
-                     "qrc:/icons/dashboard-buttons/interpolate-on.svg" :
-                     "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+      icon.source: root.interpolationMode === SerialStudio.InterpolationNone
+                     ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
+                     : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
 
     DashboardToolButton {
@@ -299,9 +311,9 @@ Item {
       xAxis.tickInterval: plot.xTickInterval
       yAxis.tickInterval: plot.yTickInterval
 
-      onZoomChanged: root.setDownsampleFactor()
-      onWidthChanged: root.setDownsampleFactor()
-      onHeightChanged: root.setDownsampleFactor()
+      onZoomChanged: plotCommon.setDownsampleFactor(plot, model)
+      onWidthChanged: plotCommon.setDownsampleFactor(plot, model)
+      onHeightChanged: plotCommon.setDownsampleFactor(plot, model)
 
       //
       // Register line series
@@ -310,7 +322,7 @@ Item {
         model: root.model.count
         delegate: LineSeries {
           property int curveIndex: index
-          property bool curveVisible: root.interpolate
+          property bool curveVisible: root.interpolationMode !== SerialStudio.InterpolationNone
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
         }
@@ -323,7 +335,7 @@ Item {
         model: root.model.count
         delegate: ScatterSeries {
           property int curveIndex: index
-          property bool curveVisible: !root.interpolate
+          property bool curveVisible: root.interpolationMode === SerialStudio.InterpolationNone
                                      && root.model.visibleCurves[index]
           Component.onCompleted: plot.graph.addSeries(this)
           pointDelegate: Rectangle {
