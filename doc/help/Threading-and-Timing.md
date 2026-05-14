@@ -1,6 +1,6 @@
 # Threading and Timing Guarantees
 
-A short, honest description of what Serial Studio's hot path actually guarantees, what it doesn't, and why the threading model looks the way it does. If you're integrating Serial Studio into something time-sensitive or just trying to figure out where to expect jitter, read this once.
+A short, honest description of what Serial Studio's hot path guarantees, what it doesn't, and why the threading model looks the way it does. If you're integrating Serial Studio into something time-sensitive or trying to figure out where to expect jitter, read this once.
 
 ## TL;DR
 
@@ -22,7 +22,7 @@ A short, honest description of what Serial Studio's hot path actually guarantees
 ### Not guaranteed
 
 - **Latency bounds.** There is no upper bound on end-to-end latency from acquisition to dashboard. On an idle machine it's in the low milliseconds; on a loaded machine running a slow Lua transform, it can grow.
-- **Jitter bounds.** Frame-to-frame spacing on the dashboard is whatever Qt's event loop gives you that millisecond. The dashboard tick runs at ~24 Hz; widgets sample the latest frame on their tick.
+- **Jitter bounds.** Frame-to-frame spacing on the dashboard is whatever Qt's event loop schedules that millisecond. The dashboard tick runs at ~24 Hz; widgets sample the latest frame on their tick.
 - **Determinism on Windows.** Windows' `steady_clock` resolution is roughly 15 ms. Two frames produced inside the same tick get the same timestamp at acquisition. Export workers break ties using a monotonic counter (`monotonicFrameNs`), but on the dashboard you'll see them collapse onto one visual sample.
 - **Wall-clock accuracy.** All timestamps are `steady_clock`, not `system_clock`. They're great for measuring durations and ordering events; they're not synchronized to NTP and don't help you correlate with external systems by absolute time.
 - **Hard deadlines.** Nothing in Serial Studio yields if a frame takes too long. A 50 ms transform on one frame just makes that frame take 50 ms; the next frame starts when this one ends.
@@ -55,7 +55,7 @@ These drivers don't spawn threads. They use Qt's async I/O facilities, which run
 
 For these drivers, `dataReceived` fires on the main thread and the connection to `FrameReader` is a same-thread dispatch. No copy, no event-queue insertion.
 
-This is not laziness; it's a deliberate choice. The Qt classes for these protocols are already non-blocking and deliver bytes via signals. Wrapping them in a worker thread would only add a queued cross-thread emit per frame, which at high rates is the most expensive thing you can do in Qt.
+This is not laziness; it's a measured choice. The Qt classes for these protocols are already non-blocking and deliver bytes via signals. Wrapping them in a worker thread would only add a queued cross-thread emit per frame, which at high rates is the most expensive thing you can do in Qt.
 
 ### FrameReader and FrameBuilder run on the main thread
 
@@ -125,14 +125,14 @@ A few specific guarantees fall out of this:
 
 ### When you might think you have a timing problem and don't
 
-- **"My CSV timestamps look chunky on Windows."** Windows' `steady_clock` ticks at ~15 ms. Same-tick frames really did happen at the same time as far as the kernel is concerned. The export worker's `monotonicFrameNs` is what makes them strictly increasing for SQL/CSV ordering, but the visible chunks reflect real clock granularity.
+- **"My CSV timestamps look chunky on Windows."** Windows' `steady_clock` ticks at ~15 ms. Same-tick frames did happen at the same time as far as the kernel is concerned. The export worker's `monotonicFrameNs` is what makes them strictly increasing for SQL/CSV ordering, but the visible chunks reflect real clock granularity.
 - **"My dashboard is laggy at 100 kHz."** It isn't. The dashboard ticks at 24 Hz on purpose. Open the session report or the CSV after the run; that's the full-rate data.
 - **"A widget skips frames."** Widgets sample on their tick, not per frame. They're not supposed to render every frame. The export and session-database paths see every frame; the UI doesn't need to.
 - **"My transform makes the dashboard stutter."** Transforms run on the main thread because they read peer-dataset values that are also on the main thread. A heavy transform (regex, JSON parsing, tight Lua loops) will block. Profile it. If you genuinely need expensive math per frame, do it offline against the session database.
 
 ## Summary, in one sentence
 
-Serial Studio is a soft-real-time pipeline that survives 256 kHz audio without missing a beat, optimized for throughput and zero copies, with timestamps owned by the driver and a deliberate single-threaded hot path that the project has earned the right to keep through years of profiling. Treat it as a logger, not a controller, and it will not surprise you.
+Serial Studio is a soft-real-time pipeline that survives 256 kHz audio without missing a beat, optimized for throughput and zero copies, with timestamps owned by the driver and a single-threaded hot path that the project has earned the right to keep through years of profiling. Treat it as a logger, not a controller, and it will not surprise you.
 
 ## See also
 

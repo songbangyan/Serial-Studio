@@ -2,7 +2,7 @@
 
 The HID driver lets Serial Studio talk to USB Human Interface Device (HID) class peripherals: keyboards, mice, gamepads, joysticks, drawing tablets, custom HID firmware, and any vendor-specific device that registers itself as a HID class member.
 
-HID is the simplest path to a plug-and-play device on every consumer OS without per-vendor driver installs. Every modern OS includes a generic HID driver, so a HID-class device shows up immediately. This makes HID a good choice for custom controllers and low-cost data-acquisition devices.
+HID is the simplest path to a device that works on every consumer OS without per-vendor driver installs. Every modern OS includes a generic HID driver, so a HID-class device shows up immediately. This makes HID a good choice for custom controllers and low-cost data-acquisition devices.
 
 ## What is USB HID?
 
@@ -14,15 +14,15 @@ A HID device is a USB device that:
 2. Provides a **HID Report Descriptor** that describes the structure of the data it will send and receive.
 3. Communicates through **HID reports** sent over **interrupt endpoints**.
 
-That's it. The USB packet structure is the standard interrupt-transfer mechanism (see the [USB driver page](Drivers-USB.md)); the HID class layer adds the report descriptor and a small control-transfer protocol.
+The USB packet structure is the standard interrupt-transfer mechanism (see the [USB driver page](Drivers-USB.md)); the HID class layer adds the report descriptor and a small control-transfer protocol.
 
 ### Reports
 
 A **report** is a unit of data exchanged between host and device. There are three types:
 
-- **Input report** — device to host. Periodic. Carries button state, axis position, or sensor readings; the bread and butter of HID.
-- **Output report** — host to device. State the host wants the device to act on, such as an LED on/off or a vibration motor strength.
-- **Feature report** — bidirectional. Configuration values, calibration, anything outside the streaming exchange.
+- **Input report**: device to host. Periodic. Carries button state, axis position, or sensor readings; the bread and butter of HID.
+- **Output report**: host to device. State the host wants the device to act on, such as an LED on/off or a vibration motor strength.
+- **Feature report**: bidirectional. Configuration values, calibration, anything outside the streaming exchange.
 
 Reports may be *numbered* (each begins with a 1-byte report ID, used when the device has multiple report formats) or *unnumbered* (a single format, no ID byte).
 
@@ -30,7 +30,7 @@ Reports may be *numbered* (each begins with a 1-byte report ID, used when the de
 
 Rather than each HID device family inventing its own protocol, the device describes its data structure to the host through a **report descriptor**. A report descriptor is a sequence of small items declaring:
 
-- The **usage page** and **usage** of each field — its semantic meaning.
+- The **usage page** and **usage** of each field, defining its semantic meaning.
 - The **size** of each field, in bits.
 - The **count** of fields of that size.
 - The **logical and physical ranges** of values.
@@ -101,7 +101,7 @@ The HID driver runs a dedicated read thread that issues blocking `hid_read` call
 
 HID data is just bytes. If the device declares a custom report format (for example 8-byte reports with two `int16` axes and a `uint8` packed button byte), write a frame parser to decode it as you would any other binary protocol. The HID report descriptor itself is advisory at the protocol level; the host does not require you to honour it.
 
-For step-by-step setup, see the [Protocol Setup Guides — HID section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, HID section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
@@ -119,12 +119,12 @@ For step-by-step setup, see the [Protocol Setup Guides — HID section](Protocol
 
 ## Further reading
 
-- [Human Interface Devices (HID) Specifications and Tools — USB-IF](https://www.usb.org/hid)
-- [Introduction to HID report descriptors — Linux Kernel Documentation](https://docs.kernel.org/hid/hidintro.html)
-- [HID Report Descriptors — Adafruit Learning System](https://learn.adafruit.com/custom-hid-devices-in-circuitpython/report-descriptors)
-- [AN249: Human Interface Device Tutorial — Silicon Labs (PDF)](https://www.silabs.com/documents/public/application-notes/AN249.pdf)
-- [hidapi — GitHub](https://github.com/libusb/hidapi)
-- [USB Component: HID — Keil/MDK](https://www.keil.com/pack/doc/mw/USB/html/group__usbd__hid_functions.html)
+- [Human Interface Devices (HID) Specifications and Tools (USB-IF)](https://www.usb.org/hid)
+- [Introduction to HID report descriptors (Linux Kernel Documentation)](https://docs.kernel.org/hid/hidintro.html)
+- [HID Report Descriptors (Adafruit Learning System)](https://learn.adafruit.com/custom-hid-devices-in-circuitpython/report-descriptors)
+- [AN249: Human Interface Device Tutorial (Silicon Labs, PDF)](https://www.silabs.com/documents/public/application-notes/AN249.pdf)
+- [hidapi on GitHub](https://github.com/libusb/hidapi)
+- [USB Component: HID (Keil/MDK)](https://www.keil.com/pack/doc/mw/USB/html/group__usbd__hid_functions.html)
 
 ## See also
 
@@ -133,5 +133,5 @@ For step-by-step setup, see the [Protocol Setup Guides — HID section](Protocol
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [Use Cases](Use-Cases.md): gamepads, custom HID firmware, and HID-class sensors.
 - [Frame Parser Scripting](JavaScript-API.md): decoding custom HID report layouts into datasets.
-- [Drivers — USB](Drivers-USB.md): for vendor-specific (non-HID) USB devices.
-- [Drivers — UART](Drivers-UART.md): for USB-CDC virtual serial ports.
+- [Drivers: USB](Drivers-USB.md): for vendor-specific (non-HID) USB devices.
+- [Drivers: UART](Drivers-UART.md): for USB-CDC virtual serial ports.

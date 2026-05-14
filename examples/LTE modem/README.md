@@ -25,8 +25,6 @@ The examples were built on [Arch Linux](https://archlinux.org/), where you can:
 
 Data from the HUAWEI K5161H is pulled from the URL API `http://192.168.9.1/api/device/signal`. Python is used to receive, process, and generate data frames.
 
----
-
 <a name="method_1"></a>
 
 ## Method 1: Virtual serial port
@@ -83,8 +81,6 @@ After the first frame of data arrives, Serial Studio opens the dashboard with pl
 
 ![Screenshot virtual serial port](doc/screenshot_serial.png)
 
----
-
 <a name="method_2"></a>
 
 ## Method 2: MQTT
@@ -137,8 +133,6 @@ After the first frame of data arrives, Serial Studio opens the dashboard with pl
 After the first frame of data arrives, Serial Studio opens the dashboard with plots automatically.
 
 ![Screenshot MQTT](doc/screenshot_mqtt.png)
-
----
 
 <a name="method_3"></a>
 

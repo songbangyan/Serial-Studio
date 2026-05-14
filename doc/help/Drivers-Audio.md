@@ -103,7 +103,7 @@ For step-by-step setup, see the [Protocol Setup Guides — Audio Input section](
 - **FFT or waterfall looks wrong.** Set `fftSamplingRate` on the dataset to match the audio sample rate. If the sample rate is 48 kHz and `fftSamplingRate` is left at 1000, the frequency axis is scaled by 48x.
 - **Latency feels high.** Audio backends typically buffer 10 to 50 ms by default. That is fine for real-time visualisation but not for closed-loop applications. Lower-latency capture requires backend-specific tuning that Serial Studio does not currently expose.
 - **Stereo input but only one channel visible.** Channel configuration is set to Mono. Switch to Stereo and the second channel appears as a second dataset.
-- **High CPU at 192 kHz.** FFT plus waterfall at a high sample rate is a lot of work. Reduce `fftSamples` or disable the waterfall on per-dataset settings.
+- **High CPU at 192 kHz.** FFT plus waterfall at a high sample rate is expensive. Reduce `fftSamples` or disable the waterfall on per-dataset settings.
 
 ## Further reading
 

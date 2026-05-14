@@ -23,8 +23,6 @@ You will see CAN messages in Serial Studio's Console (View → Console).
 
 Switch Console to **Hexadecimal** mode to see the raw data.
 
----
-
 ## Importing the DBC File
 
 To create a dashboard with gauges, plots, and organized data:
@@ -74,8 +72,6 @@ Reopen the project editor to:
 - Adjust min/max ranges
 - Modify titles and units
 
----
-
 ## What's in This Example
 
 ### Simulated CAN Messages
@@ -113,8 +109,6 @@ The ECU simulator sends realistic automotive data:
 - **`ecu_simulator.py`**: All-in-one simulator (VirtualCAN, PCAN, SocketCAN, Vector)
 - **`example_vehicle.dbc`**: DBC database file
 - **`README.md`**: This file
-
----
 
 ## Usage Options
 
@@ -187,8 +181,6 @@ python ecu_simulator.py -i pcan -c PCAN_USBBUS1
 - Interface: `PCAN_USBBUS1`
 - Bitrate: `500000`
 
----
-
 ## Hardware Setup (If Using Physical CAN)
 
 ### macOS
@@ -224,8 +216,6 @@ sudo ip link set up can0
 2. **Connect Hardware** and verify in Device Manager
 
 3. **Launch Serial Studio** and check driver dropdown
-
----
 
 ## Troubleshooting
 
@@ -269,8 +259,6 @@ The raw CAN frames are binary data. To see meaningful information:
 1. **Import the DBC file** (see "Importing the DBC File" section above)
 2. Or switch Console to **Hexadecimal** mode to see raw hex values
 
----
-
 ## Advanced Customization
 
 ### Modify Simulation Behavior
@@ -312,8 +300,6 @@ cansend vcan0 100#1122334455    # Send test frame
 - View → Console
 - Set Display Mode to **Hexadecimal**
 - All CAN frames shown in format: `[ID_H ID_L DLC DATA...]`
-
----
 
 ## See Also
 

@@ -2,11 +2,11 @@
 
 MQTT is the standard publish/subscribe protocol for IoT. It is the right transport when many devices share a network and the publishers and subscribers should not need to know about each other directly. The header is small, it is robust over unreliable links, every constrained microcontroller has a client, and bridging it into a dashboard is straightforward.
 
-Serial Studio Pro includes an MQTT client that can subscribe to broker topics to receive telemetry, or publish incoming frame data to a broker for other apps to consume. Unlike UART, BLE, CAN Bus, and the other transports listed under **Drivers**, MQTT does not present a physical bus to Serial Studio — it sits on top of TCP and a broker, so it is documented here in the **Connectivity** section rather than as a hardware driver.
+Serial Studio Pro includes an MQTT client that can subscribe to broker topics to receive telemetry, or publish incoming frame data to a broker for other apps to consume. Unlike UART, BLE, CAN Bus, and the other transports listed under **Drivers**, MQTT does not present a physical bus to Serial Studio. It sits on top of TCP and a broker, so it is documented here in the **Connectivity** section rather than as a hardware driver.
 
 ## What is MQTT?
 
-MQTT stands for **Message Queuing Telemetry Transport**. The name is partly historical — MQTT does not provide queuing in the traditional sense, but the publish/subscribe and "telemetry over unreliable links" parts of the name still describe it accurately. The protocol was designed in 1999 by IBM for monitoring oil pipelines over satellite links and standardised as an OASIS specification in 2014. The current version is MQTT 5.0 (2019); MQTT 3.1.1 remains extremely common in the field.
+MQTT stands for **Message Queuing Telemetry Transport**. The name is partly historical: MQTT does not provide queuing in the traditional sense, but the publish/subscribe and "telemetry over unreliable links" parts of the name still describe it accurately. The protocol was designed in 1999 by IBM for monitoring oil pipelines over satellite links and standardised as an OASIS specification in 2014. The current version is MQTT 5.0 (2019); MQTT 3.1.1 remains extremely common in the field.
 
 The core idea is decoupling. Publishers and subscribers do not connect to each other. They connect to a **broker**, and the broker handles routing.
 
@@ -20,7 +20,7 @@ flowchart LR
     Broker -- "subscribed: factory/pumps/1" --> S3[Subscriber: Alarm]
 ```
 
-A new publisher coming online does not announce itself to subscribers; it simply publishes to a topic, and any subscriber listening to that topic receives the message. A new subscriber does not announce itself to publishers; it subscribes to a topic pattern, and the broker routes new messages to it. Either side can be added or removed without coordination.
+A new publisher coming online does not announce itself to subscribers; it publishes to a topic, and any subscriber listening to that topic receives the message. A new subscriber does not announce itself to publishers; it subscribes to a topic pattern, and the broker routes new messages to it. Either side can be added or removed without coordination.
 
 ### Topics
 
@@ -74,8 +74,8 @@ sequenceDiagram
 
 A publisher can mark a message as *retained*. The broker remembers the last retained message on each topic and delivers it immediately to any new subscriber. This is the way to signal "current state" rather than "events":
 
-- `home/heating/setpoint` retained — the current setpoint, available to anyone who subscribes.
-- `home/heating/events/setpoint-changed` non-retained — the change events, only seen by clients listening at the time.
+- `home/heating/setpoint` retained: the current setpoint, available to anyone who subscribes.
+- `home/heating/events/setpoint-changed` non-retained: the change events, only seen by clients listening at the time.
 
 Retained messages do not expire unless MQTT 5 message expiry is set. Publishing an empty payload to a topic with the retain flag clears the retained message.
 
@@ -87,13 +87,13 @@ When a client connects, it can register a **Last Will** message: a topic, payloa
 
 By default MQTT 3.x assumes persistent sessions: the broker remembers a client's subscriptions and queued messages across disconnects, keyed by the client ID. When the client reconnects, it resumes where it left off.
 
-For interactive clients — a dashboard connecting from a laptop — persistent sessions usually cause more confusion than they solve. **Clean session = on** is the right default for most Serial Studio uses; the broker forgets the client between connections.
+For interactive clients (a dashboard connecting from a laptop) persistent sessions usually cause more confusion than they solve. **Clean session = on** is the right default for most Serial Studio uses; the broker forgets the client between connections.
 
 ## How Serial Studio uses it
 
 The MQTT client wraps Qt MQTT (`QMqttClient`) and runs on the main thread's event loop. It can operate in two complementary modes:
 
-- **Subscriber.** Serial Studio connects to the broker, subscribes to a topic filter, and treats every received payload as a frame — exactly as if the bytes had arrived over UART or TCP. Use this to ingest telemetry from a fleet of devices into a dashboard.
+- **Subscriber.** Serial Studio connects to the broker, subscribes to a topic filter, and treats every received payload as a frame, exactly as if the bytes had arrived over UART or TCP. Use this to ingest telemetry from a fleet of devices into a dashboard.
 - **Publisher.** Serial Studio reads from another data source (UART, network, BLE, ...) and republishes each parsed frame to an MQTT topic. Use this to bridge a serial device into existing IoT infrastructure without modifying the device firmware.
 
 Both modes can run in parallel: subscribe to one topic and publish to another.
@@ -227,12 +227,12 @@ If two clients connect to the same broker with the same client ID, the broker di
 
 ## Quality of Service in Serial Studio
 
-The QoS setting in the MQTT Configuration dialog applies to the **will message**. The subscription QoS is determined by the broker's configuration and the publishing client's QoS — Serial Studio does not override what the publisher chose. See [Quality of Service (QoS)](#quality-of-service-qos) above for the protocol-level meaning of each level.
+The QoS setting in the MQTT Configuration dialog applies to the **will message**. The subscription QoS is determined by the broker's configuration and the publishing client's QoS; Serial Studio does not override what the publisher chose. See [Quality of Service (QoS)](#quality-of-service-qos) above for the protocol-level meaning of each level.
 
 ## Common pitfalls
 
 - **Connection refused / authentication failed.** Verify the broker hostname, port, username, and password with another tool first (`mosquitto_sub` or the MQTT Explorer GUI). Eliminate the broker as a variable before debugging Serial Studio.
-- **Subscribed but no data.** Topics are case-sensitive: `Factory/Temp` is not the same as `factory/temp`. The publisher may also be using a different level structure than expected. Running `mosquitto_sub -t '#' -v` shows everything the broker is currently routing — useful for discovery.
+- **Subscribed but no data.** Topics are case-sensitive: `Factory/Temp` is not the same as `factory/temp`. The publisher may also be using a different level structure than expected. Running `mosquitto_sub -t '#' -v` shows everything the broker is currently routing, useful for discovery.
 - **Connected but messages do not appear in real time.** A retained message at a different topic level may be hiding the live stream. Subscribe to `your/topic/#` to see everything beneath the prefix.
 - **Client ID conflict.** Brokers enforce unique client IDs per connection. If two Serial Studio instances use the same client ID, the broker disconnects the older one. Set a distinct client ID per instance.
 - **TLS errors.** A broker that requires TLS (`mqtts://` on port 8883) needs Serial Studio to trust its certificate authority. Self-signed certificates require importing the CA explicitly.
@@ -291,18 +291,18 @@ The QoS setting in the MQTT Configuration dialog applies to the **will message**
 
 ## Further reading
 
-- [MQTT 2026 Guide — HiveMQ Essentials](https://www.hivemq.com/mqtt/)
-- [MQTT Publish/Subscribe Architecture — HiveMQ Essentials Part 2](https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/)
-- [MQTT Quality of Service Levels — HiveMQ Essentials Part 6](https://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels/)
-- [Retained Messages in MQTT — HiveMQ Essentials Part 8](https://www.hivemq.com/blog/mqtt-essentials-part-8-retained-messages/)
-- [MQTT Topics, Wildcards, & Best Practices — HiveMQ Essentials Part 5](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)
-- [mqtt.org — official MQTT site](https://mqtt.org/)
+- [HiveMQ: MQTT 2026 Guide](https://www.hivemq.com/mqtt/)
+- [HiveMQ Essentials, Part 2: Publish/Subscribe Architecture](https://www.hivemq.com/blog/mqtt-essentials-part2-publish-subscribe/)
+- [HiveMQ Essentials, Part 6: Quality of Service Levels](https://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels/)
+- [HiveMQ Essentials, Part 8: Retained Messages](https://www.hivemq.com/blog/mqtt-essentials-part-8-retained-messages/)
+- [HiveMQ Essentials, Part 5: Topics, Wildcards, and Best Practices](https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/)
+- [mqtt.org, the official MQTT site](https://mqtt.org/)
 
 ## See also
 
 - [Communication Protocols](Communication-Protocols.md): protocol overview and comparison.
 - [Protocol Setup Guides](Protocol-Setup-Guides.md): step-by-step MQTT setup.
-- [Drivers — Network](Drivers-Network.md): raw TCP/UDP, when you don't need a broker.
+- [Drivers: Network](Drivers-Network.md): raw TCP/UDP, when you don't need a broker.
 - [Use Cases](Use-Cases.md): IoT and distributed-sensor scenarios that fit MQTT's pub/sub model.
 - [Pro vs Free Features](Pro-vs-Free.md): MQTT is a Pro feature.
 - [Troubleshooting](Troubleshooting.md): general troubleshooting guide.

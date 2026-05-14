@@ -97,7 +97,7 @@ Dataset
 └─ uniqueId   → sourceId·1e6 + groupId·1e4 + datasetId  (used for reads)
 ```
 
-That's the whole identity model. If something is ever ambiguous, default to looking it up fresh from the project snapshot rather than caching it across an edit.
+If something is ever ambiguous, default to looking it up fresh from the project snapshot rather than caching it across an edit.
 
 ## See also
 

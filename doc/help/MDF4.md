@@ -6,7 +6,7 @@ For text-based logging and the broader "what file format should I pick?" compari
 
 ## What is MDF4?
 
-MDF stands for **Measurement Data Format**. The current revision is MDF4 (also written MF4 or `.mf4`), standardised by [ASAM](https://www.asam.net/) (the Association for Standardisation of Automation and Measuring Systems). It was designed for the automotive ECU-test workflow, where a single recording can carry hundreds of channels at very different sample rates — a CAN bus running at 1 kHz, an analog sensor at 10 kHz, GPS at 1 Hz — all timestamped against a common clock.
+MDF stands for **Measurement Data Format**. The current revision is MDF4 (also written MF4 or `.mf4`), standardised by [ASAM](https://www.asam.net/) (the Association for Standardisation of Automation and Measuring Systems). It was designed for the automotive ECU-test workflow, where a single recording can carry hundreds of channels at very different sample rates (a CAN bus running at 1 kHz, an analog sensor at 10 kHz, GPS at 1 Hz), all timestamped against a common clock.
 
 Compared to CSV, MDF4 differs in three ways that matter day to day:
 
@@ -14,7 +14,7 @@ Compared to CSV, MDF4 differs in three ways that matter day to day:
 - **Per-channel sample rates.** Each "channel group" carries its own time base. A 1 Hz GPS channel and a 10 kHz vibration channel coexist in the same file without padding, and the readers respect each channel's native rate.
 - **Rich metadata.** Channel name, units, conversion formulas (linear, table, rational), comments, and source information travel with the data. A reader knows what `EngineRPM` means in physical units, not just as a column index.
 
-The trade-off is ecosystem: CSV opens in anything. MDF4 needs a tool that understands the format — usually Vector CANape, NI DIAdem, MATLAB Vehicle Network Toolbox, or the open-source [`asammdf`](https://asammdf.readthedocs.io/) Python library.
+The trade-off is ecosystem: CSV opens in anything. MDF4 needs a tool that understands the format, usually Vector CANape, NI DIAdem, MATLAB Vehicle Network Toolbox, or the open-source [`asammdf`](https://asammdf.readthedocs.io/) Python library.
 
 ```mermaid
 flowchart LR
@@ -75,7 +75,7 @@ Each dataset becomes one MDF4 channel. The exporter writes:
 
 ### Background writing
 
-MDF4 export runs on its own worker thread and flushes to disk in batches. On modern desktop hardware, sustained 100 kHz frame rates are routine. The dashboard, the API server, and other consumers see the same parsed frame object — there is no copy or re-stamp.
+MDF4 export runs on its own worker thread and flushes to disk in batches. On modern desktop hardware, sustained 100 kHz frame rates are routine. The dashboard, the API server, and other consumers see the same parsed frame object; there is no copy or re-stamp.
 
 ## MDF4 playback
 
@@ -115,7 +115,7 @@ MDF4 readers worth knowing:
 - **MATLAB Vehicle Network Toolbox.** Native MDF4 support inside MATLAB.
 - **Python `asammdf`.** Open-source library, widely used for batch processing and conversion to other formats: `from asammdf import MDF; mdf = MDF('file.mf4')`.
 
-For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.mat`, and a few other formats — useful when an analysis tool downstream doesn't speak MDF4 directly.
+For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.mat`, and a few other formats. This is useful when an analysis tool downstream doesn't speak MDF4 directly.
 
 ## Common pitfalls
 
@@ -123,22 +123,22 @@ For one-off conversions, `asammdf` exports MDF4 to CSV, Parquet, HDF5, MATLAB `.
 - **File size grows fast on high-rate sources.** Even with compression, an audio source at 48 kHz or a full CAN bus will produce gigabytes per hour. Monitor disk space and rotate sessions if you're recording continuously.
 - **MDF4 reader can't open the file.** Some older readers (pre-2015) only support MDF3. Confirm the reader supports the MDF4 (`.mf4`) format. `asammdf` handles both.
 - **Channel names look mangled.** MDF4 limits channel names to ASCII in some reader implementations. Non-ASCII characters in your dataset titles may render as `?` in third-party tools. Stick to ASCII for portability.
-- **Timestamps drift compared to CSV.** They shouldn't -- both formats record the same source-derived timestamps. If they disagree, the issue is almost always in how the reader interprets the time channel's master/slave configuration. See [Threading and Timing Guarantees](Threading-and-Timing.md) for what the source timestamp represents.
+- **Timestamps drift compared to CSV.** They shouldn't, since both formats record the same source-derived timestamps. If they disagree, the issue is almost always in how the reader interprets the time channel's master/slave configuration. See [Threading and Timing Guarantees](Threading-and-Timing.md) for what the source timestamp represents.
 
 ## Further reading
 
-- [ASAM MDF Standard — official site](https://www.asam.net/standards/detail/mdf/)
-- [MDF (Measurement Data Format) — Wikipedia](https://en.wikipedia.org/wiki/Measurement_Data_Format)
-- [asammdf — Python library documentation](https://asammdf.readthedocs.io/)
-- [Introduction to MDF4 — CSS Electronics](https://www.csselectronics.com/pages/mdf4-measurement-data-format)
-- [Vector — MDF format overview](https://www.vector.com/int/en/know-how/protocols/mdf-measurement-data-format/)
-- [MATLAB — Read MDF-Files](https://www.mathworks.com/help/vnt/mdf-files.html)
+- [ASAM MDF Standard (official site)](https://www.asam.net/standards/detail/mdf/)
+- [MDF (Measurement Data Format) on Wikipedia](https://en.wikipedia.org/wiki/Measurement_Data_Format)
+- [asammdf Python library documentation](https://asammdf.readthedocs.io/)
+- [Introduction to MDF4 (CSS Electronics)](https://www.csselectronics.com/pages/mdf4-measurement-data-format)
+- [Vector: MDF format overview](https://www.vector.com/int/en/know-how/protocols/mdf-measurement-data-format/)
+- [MATLAB: Read MDF-Files](https://www.mathworks.com/help/vnt/mdf-files.html)
 
 ## See also
 
 - [CSV Export & Playback](CSV-Export-Playback.md): text-based logging and replay, when MDF4 tooling is overkill.
 - [Session Database](Session-Database.md): SQLite-backed project archive with built-in replay.
 - [Session Reports](Session-Reports.md): rendered HTML/PDF summaries of recorded sessions.
-- [Drivers — CAN Bus](Drivers-CAN-Bus.md): the canonical source for MDF4-style automotive recordings.
+- [Drivers: CAN Bus](Drivers-CAN-Bus.md): the canonical source for MDF4-style automotive recordings.
 - [Threading and Timing Guarantees](Threading-and-Timing.md): what timestamps in exported MDF4 files mean.
 - [Pro vs Free Features](Pro-vs-Free.md): MDF4 export and playback are Pro features.

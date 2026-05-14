@@ -5,7 +5,7 @@ The Process I/O driver lets Serial Studio ingest data from any external program.
 - **Launch mode.** Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, or anything else that writes bytes to stdout.
 - **Named pipe mode.** Serial Studio opens an existing named pipe (a FIFO on Linux/macOS, a Windows named pipe on Windows) and reads from it. The producer is whatever process opens the same pipe for writing.
 
-This is the universal escape hatch. When no built-in driver fits a data source but a script can emit bytes for it, the Process I/O driver bridges the gap.
+This is the catch-all transport. When no built-in driver fits a data source but a script can emit bytes for it, the Process I/O driver bridges the gap.
 
 ## What is process I/O?
 
@@ -70,7 +70,7 @@ The Process I/O driver runs the child or pipe read on a dedicated thread (`m_pip
 | **Arguments** | Command-line arguments, space-separated |
 | **Working directory** | The directory the child should be spawned in (cwd) |
 
-On connect, Serial Studio spawns the child process and reads its stdout until the child exits or the user disconnects. The driver does not capture stderr — anything the child writes there flows to Serial Studio's own stderr.
+On connect, Serial Studio spawns the child process and reads its stdout until the child exits or the user disconnects. The driver does not capture stderr; anything the child writes there flows to Serial Studio's own stderr.
 
 ### Named pipe mode configuration
 
@@ -105,26 +105,26 @@ while True:
 
 In Launch mode, set Executable to `/usr/bin/python3` (or wherever Python lives on the system) and Arguments to the script path. Connect, switch to Quick Plot mode, and the two sine/cosine signals will plot.
 
-For step-by-step setup, see the [Protocol Setup Guides — Process I/O section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, Process I/O section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
 - **No data appears.** The child is usually buffering its own output. Standard-library functions buffer stdout in 4 KB chunks when stdout is not a terminal. Force a flush after each line: in Python use `print(..., flush=True)` or `sys.stdout.flush()`; in C use `fflush(stdout)`; in Bash use `stdbuf -oL my_program` to force line-buffered output.
-- **Child process exits immediately.** Serial Studio reports the child as terminated and reads no data. Run the child from a normal terminal first to confirm it actually starts.
+- **Child process exits immediately.** Serial Studio reports the child as terminated and reads no data. Run the child from a normal terminal first to confirm it starts.
 - **Path issues.** Spaces and Unicode in executable paths or arguments can be misparsed. On Windows, quote paths that contain spaces. The arguments field is split on whitespace (no shell-style quoting), so an argument with a space requires the same care.
 - **Working directory matters.** Some programs read configuration files relative to their working directory. Set the Working Directory field accordingly.
 - **Permission denied on the pipe.** On Linux/macOS, the FIFO inherits filesystem permissions. `chmod 666 /tmp/mypipe` opens it to all users; tighter permissions require both reader and writer to share a user or group.
-- **Pipe buffer fills up.** Linux pipes have a small buffer (typically 64 KB). If the writer outruns Serial Studio (or vice versa), the writer blocks until the reader catches up. This is normal flow control. For real-time critical paths, send bytes through a TCP socket instead (see [Drivers — Network](Drivers-Network.md)).
+- **Pipe buffer fills up.** Linux pipes have a small buffer (typically 64 KB). If the writer outruns Serial Studio (or vice versa), the writer blocks until the reader catches up. This is normal flow control. For real-time critical paths, send bytes through a TCP socket instead (see [Drivers: Network](Drivers-Network.md)).
 - **Windows-specific pipe path syntax.** On Windows, the pipe must be named `\\.\pipe\<name>`. A Unix-style path fails silently or with an opaque error.
 - **Process I/O is convenient but not free.** At very high data rates (hundreds of kHz), the cost of stdout buffering, the OS pipe, and the cross-thread queue becomes noticeable. Direct drivers are always cheaper. Process I/O is the right tool at moderate rates and for prototype or integration work.
 
 ## Further reading
 
-- [subprocess — Python Standard Library](https://docs.python.org/3/library/subprocess.html)
-- [Inter-process Communication: Pipes — OCaml UNIX](https://ocaml.github.io/ocamlunix/pipes.html)
-- [Inter Process Communication — Named Pipes (TutorialsPoint)](https://www.tutorialspoint.com/inter_process_communication/inter_process_communication_named_pipes.htm)
-- [Inter-process Communication CS 217 — Princeton (PDF)](https://www.cs.princeton.edu/courses/archive/spr04/cos217/lectures/Communication.pdf)
-- [Python and Pipes — Lyceum Allotments](https://lyceum-allotments.github.io/2017/03/python-and-pipes-part-5-subprocesses-and-pipes/)
+- [subprocess (Python Standard Library)](https://docs.python.org/3/library/subprocess.html)
+- [Inter-process Communication: Pipes (OCaml UNIX)](https://ocaml.github.io/ocamlunix/pipes.html)
+- [Inter Process Communication, Named Pipes (TutorialsPoint)](https://www.tutorialspoint.com/inter_process_communication/inter_process_communication_named_pipes.htm)
+- [Inter-process Communication CS 217 (Princeton, PDF)](https://www.cs.princeton.edu/courses/archive/spr04/cos217/lectures/Communication.pdf)
+- [Python and Pipes (Lyceum Allotments)](https://lyceum-allotments.github.io/2017/03/python-and-pipes-part-5-subprocesses-and-pipes/)
 
 ## See also
 
@@ -133,5 +133,5 @@ For step-by-step setup, see the [Protocol Setup Guides — Process I/O section](
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [Operation Modes](Operation-Modes.md): Quick Plot is the easiest way to visualize ad-hoc CSV from a script.
 - [Use Cases](Use-Cases.md): bridging exotic transports through helper processes.
-- [Drivers — Network](Drivers-Network.md): for higher-rate streaming when a pipe isn't enough.
+- [Drivers: Network](Drivers-Network.md): for higher-rate streaming when a pipe isn't enough.
 - [Frame Parser Scripting](JavaScript-API.md): for parsing whatever your producer emits.

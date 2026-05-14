@@ -14,7 +14,7 @@ A UART is a peripheral, not a protocol. The protocol it implements is usually ca
 
 Every byte sent over a UART line is wrapped in a small fixed-shape frame: an idle high level, a single low start bit, the data bits (typically 8, least-significant first), an optional parity bit, and one or more high stop bits before the line returns to idle.
 
-![UART frame on the wire — 8N1, byte 0x4B](https://quickchart.io/chart/render/zf-ab7ff419-8d59-4cce-a948-0af6371223e4)
+![UART frame on the wire (8N1, byte 0x4B)](https://quickchart.io/chart/render/zf-ab7ff419-8d59-4cce-a948-0af6371223e4)
 
 The trace above shows the byte `0x4B` (`0100 1011`) sent as 8N1: 8 data bits, no parity, 1 stop bit. Bit times are equal; the receiver clocks at a multiple of the baud rate and samples each bit near the middle.
 
@@ -24,7 +24,7 @@ The trace above shows the byte `0x4B` (`0100 1011`) sent as 8N1: 8 data bits, no
 - **Parity bit**, if enabled, makes the total number of `1` bits either always even or always odd. It catches single-bit errors.
 - **Stop bit(s)** return the line high for at least one bit-time (sometimes 1.5 or 2) before the next start bit.
 
-The most common configuration is **8N1**: 8 data bits, **N**o parity, **1** stop bit. With the start and stop bits, that is ten line bits per byte — a raw efficiency of 80%.
+The most common configuration is **8N1**: 8 data bits, **N**o parity, **1** stop bit. With the start and stop bits, that is ten line bits per byte, a raw efficiency of 80%.
 
 ### Baud rate
 
@@ -32,7 +32,7 @@ The most common configuration is **8N1**: 8 data bits, **N**o parity, **1** stop
 
 Common baud rates are 9600, 19200, 38400, 57600, 115200, 230400, 460800, and 921600. Modern USB-serial chips and microcontrollers usually support 1 Mbps and higher.
 
-Both ends must agree. UARTs tolerate small clock mismatches between transmitter and receiver — roughly ±2% over a single frame — but if the configured baud rates differ (for example 115200 vs 9600) the result is garbage or no data at all.
+Both ends must agree. UARTs tolerate small clock mismatches between transmitter and receiver (roughly ±2% over a single frame), but if the configured baud rates differ (for example 115200 vs 9600) the result is garbage or no data at all.
 
 ### Parity
 
@@ -40,11 +40,11 @@ A parity bit makes the total number of `1`s in the frame either always even or a
 
 Parity options exposed by Serial Studio:
 
-- **None** — no parity bit. The default for almost every modern device.
-- **Even** — total number of `1`s is always even.
-- **Odd** — total number of `1`s is always odd.
-- **Mark** — parity bit is always `1`. Used for inter-byte signalling on a few legacy buses.
-- **Space** — parity bit is always `0`. Also rare.
+- **None**: no parity bit. The default for almost every modern device.
+- **Even**: total number of `1`s is always even.
+- **Odd**: total number of `1`s is always odd.
+- **Mark**: parity bit is always `1`. Used for inter-byte signalling on a few legacy buses.
+- **Space**: parity bit is always `0`. Also rare.
 
 ### Stop bits
 
@@ -56,7 +56,7 @@ Flow control lets the receiver tell the sender to pause when its buffer is full.
 
 - **Hardware flow control (RTS/CTS)** uses two extra wires. The receiver raises CTS (Clear To Send) when it can accept data and lowers it when it cannot. The sender checks CTS before each byte. Reliable, but the cable must include those lines.
 - **Software flow control (XON/XOFF)** sends special characters in the data stream (`0x11` = XON, `0x13` = XOFF) to signal go/stop. This reserves those byte values, so it cannot be used with arbitrary binary data.
-- **None** — no flow control. The right choice when both sides are fast enough to never pause, or when the protocol layered on top provides its own back-pressure.
+- **None**: no flow control. The right choice when both sides are fast enough to never pause, or when the protocol layered on top provides its own back-pressure.
 
 For typical Arduino, ESP32, and STM32 telemetry, choose **None**. Hardware flow control matters mainly with industrial equipment or sustained high-rate streams where the host cannot keep up at the application layer.
 
@@ -64,9 +64,9 @@ For typical Arduino, ESP32, and STM32 telemetry, choose **None**. Hardware flow 
 
 UART is the protocol; the physical layer is separate. Serial Studio works with any of them as long as the OS exposes a serial port, but the differences matter when you choose hardware:
 
-- **TTL serial** — 0 V / 3.3 V (or 5 V) logic levels. What microcontroller pins drive directly. Short cables only.
-- **RS-232** — ±3 V to ±15 V, single-ended, full-duplex over separate TX and RX wires. Cable lengths up to about 15 m. The classic 9-pin DE-9 connector found on PC serial ports.
-- **RS-485** — differential signalling on two wires (A and B). Tolerates cable runs up to 1200 m and supports multi-drop buses (one master plus many slaves on the same pair). Native operation is half-duplex; a 4-wire variant supports full-duplex. This is the physical layer used by Modbus RTU and many industrial buses.
+- **TTL serial**: 0 V / 3.3 V (or 5 V) logic levels. What microcontroller pins drive directly. Short cables only.
+- **RS-232**: ±3 V to ±15 V, single-ended, full-duplex over separate TX and RX wires. Cable lengths up to about 15 m. The classic 9-pin DE-9 connector found on PC serial ports.
+- **RS-485**: differential signalling on two wires (A and B). Tolerates cable runs up to 1200 m and supports multi-drop buses (one master plus many slaves on the same pair). Native operation is half-duplex; a 4-wire variant supports full-duplex. This is the physical layer used by Modbus RTU and many industrial buses.
 
 A USB-to-serial adapter converts USB to TTL or RS-232 levels. To Serial Studio, all of them appear as a COM port on Windows or as `/dev/ttyUSB0` / `/dev/tty.usbserial-XXXX` on Linux and macOS.
 
@@ -87,7 +87,7 @@ The UART driver wraps Qt's `QSerialPort`. Settings exposed in the Setup Panel ma
 
 `QSerialPort` uses Qt's event loop for non-blocking reads, so the UART driver runs entirely on the main thread; bytes arrive there and feed the FrameReader directly. See [Threading and Timing Guarantees](Threading-and-Timing.md) for the rationale.
 
-For step-by-step setup, see the [Protocol Setup Guides — Serial/UART section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, Serial/UART section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
@@ -99,11 +99,11 @@ For step-by-step setup, see the [Protocol Setup Guides — Serial/UART section](
 
 ## Further reading
 
-- [Universal asynchronous receiver-transmitter — Wikipedia](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
-- [UART: A Hardware Communication Protocol — Analog Devices](https://www.analog.com/en/resources/analog-dialogue/articles/uart-a-hardware-communication-protocol.html)
-- [Basics of UART Communication — Circuit Basics](https://www.circuitbasics.com/basics-uart-communication/)
-- [RS-485 — Wikipedia](https://en.wikipedia.org/wiki/RS-485)
-- [The main differences between RS-232, RS-422 and RS-485 — IPC2U](https://ipc2u.com/articles/knowledge-base/the-main-differences-between-rs-232-rs-422-and-rs-485/)
+- [Universal asynchronous receiver-transmitter (Wikipedia)](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver-transmitter)
+- [UART: A Hardware Communication Protocol (Analog Devices)](https://www.analog.com/en/resources/analog-dialogue/articles/uart-a-hardware-communication-protocol.html)
+- [Basics of UART Communication (Circuit Basics)](https://www.circuitbasics.com/basics-uart-communication/)
+- [RS-485 (Wikipedia)](https://en.wikipedia.org/wiki/RS-485)
+- [The main differences between RS-232, RS-422 and RS-485 (IPC2U)](https://ipc2u.com/articles/knowledge-base/the-main-differences-between-rs-232-rs-422-and-rs-485/)
 
 ## See also
 
@@ -114,4 +114,4 @@ For step-by-step setup, see the [Protocol Setup Guides — Serial/UART section](
 - [Use Cases](Use-Cases.md): real-world examples built around UART-connected microcontrollers.
 - [Troubleshooting](Troubleshooting.md): diagnostic steps for connection problems.
 - [FAQ](FAQ.md): common questions about supported boards and adapters.
-- [Drivers — Network](Drivers-Network.md): TCP and UDP, the next step up when serial isn't enough.
+- [Drivers: Network](Drivers-Network.md): TCP and UDP, the next step up when serial isn't enough.

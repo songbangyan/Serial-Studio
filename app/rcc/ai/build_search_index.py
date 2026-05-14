@@ -239,5 +239,5 @@ index = {
 }
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
-OUT.write_text(json.dumps(index, separators=(",", ":")))
+OUT.write_bytes(json.dumps(index, separators=(",", ":")).encode("utf-8"))
 print(f"[index] wrote {OUT} ({OUT.stat().st_size // 1024} KiB)", file=sys.stderr)

@@ -44,7 +44,7 @@ The bus has two voltage states:
 - **Dominant** (logic 0). The driver pulls the bus to a defined level.
 - **Recessive** (logic 1). The driver releases the bus, and biasing resistors hold it at the recessive level.
 
-If two nodes start transmitting at the same time and they reach a bit position where one drives dominant and the other drives recessive, the dominant level always wins — it physically overrides the recessive one. The node that was driving recessive sees the bus go dominant against its will and immediately stops transmitting. The dominant node continues without knowing anything happened.
+If two nodes start transmitting at the same time and they reach a bit position where one drives dominant and the other drives recessive, the dominant level always wins. It physically overrides the recessive one. The node that was driving recessive sees the bus go dominant against its will and immediately stops transmitting. The dominant node continues without knowing anything happened.
 
 ```mermaid
 sequenceDiagram
@@ -60,7 +60,7 @@ sequenceDiagram
     Note over A,B: still tied
     A-)Bus: 0 (bit 9, dominant for 0x100)
     B-)Bus: 1 (bit 9, recessive for 0x200)
-    Note over B: B sees bus dominant when driving recessive — backs off
+    Note over B: B sees bus dominant when driving recessive (backs off)
     A-)Bus: continues with frame
 ```
 
@@ -100,7 +100,7 @@ That declares: message ID 256 (`0x100`), 8 bytes long, sent by `ECU`, received b
 - **ThrottlePosition** at bit 16, 8 bits wide, factor 0.392, offset 0, units %.
 - **EngineTemp** at bit 24, 8 bits wide, factor 1, offset -40, units °C.
 
-Most automotive and industrial CAN networks ship with a DBC describing every message and signal. Serial Studio's importer reads the file and generates a project automatically — see [Auto-Generating Projects](Auto-Generating-Projects.md).
+Most automotive and industrial CAN networks come with a DBC describing every message and signal. Serial Studio's importer reads the file and generates a project automatically (see [Auto-Generating Projects](Auto-Generating-Projects.md)).
 
 ## How Serial Studio uses it
 
@@ -138,7 +138,7 @@ When the project is built by hand, the dispatch logic is written in Lua or JavaS
 
 The CAN driver runs on the main thread. Qt's async I/O delivers received frames via signals; there is no dedicated worker thread for CAN. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
-For step-by-step setup, see the [Protocol Setup Guides — CAN Bus section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, CAN Bus section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
@@ -147,17 +147,17 @@ For step-by-step setup, see the [Protocol Setup Guides — CAN Bus section](Prot
 - **Interface not listed (Linux).** Run `ip link show can0`. If the interface is not there, the kernel module is not loaded. `modprobe can_dev` and `modprobe vcan` (for virtual-CAN testing) usually fix it.
 - **Permission denied on SocketCAN.** Your user needs the `dialout` or `can` group, depending on the distribution. `sudo` works as a quick test but is not a long-term solution.
 - **DBC import produces wrong values.** Check the byte order on the signals. DBC supports both little-endian (Intel) and big-endian (Motorola) encoding inside the same message. Auto-generated parsers handle both, but a manually edited DBC with the wrong byte order produces values that look scaled or shifted by a constant amount.
-- **Multiplexed (MUX) signals do not decode.** Simple multiplexing is supported automatically: the importer recognises the message's `MultiplexorSwitch` selector and gates each muxed signal on the matching mux value. Imported datasets are titled `Foo (mux 3)` so you can tell them apart on the dashboard. Extended multiplexing (`SG_MUL_VAL_`, `SwitchAndSignal` intermediates, value ranges) is not supported; those signals are skipped during import and the post-import dialog reports how many were dropped — edit the generated Lua to handle them by hand.
+- **Multiplexed (MUX) signals do not decode.** Simple multiplexing is supported automatically: the importer recognises the message's `MultiplexorSwitch` selector and gates each muxed signal on the matching mux value. Imported datasets are titled `Foo (mux 3)` so you can tell them apart on the dashboard. Extended multiplexing (`SG_MUL_VAL_`, `SwitchAndSignal` intermediates, value ranges) is not supported; those signals are skipped during import and the post-import dialog reports how many were dropped. Edit the generated Lua to handle them by hand.
 - **CAN FD frames are dropped.** The bus, the adapter, and Serial Studio all need to be in CAN FD mode. Mixing classic-only nodes on a CAN FD bus works only if the FD nodes downshift, which not every adapter supports.
 - **PCAN/Vector/Kvaser SDK not found (Windows).** The vendor driver and runtime are separate installs. Qt's CAN plugin is only a wrapper; the actual hardware support comes from the vendor.
 
 ## Further reading
 
-- [CAN bus — Wikipedia](https://en.wikipedia.org/wiki/CAN_bus)
-- [CAN Bus Explained: A Simple Intro — CSS Electronics](https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial)
-- [CAN Bus Protocol Tutorial — Kvaser](https://kvaser.com/can-protocol-tutorial/)
-- [CAN FD Protocol Tutorial — Kvaser](https://kvaser.com/can-fd-protocol-tutorial/)
-- [An Introduction to CAN FD — Vector (PDF)](https://cdn.vector.com/cms/content/know-how/can/Slides/CAN_FD_Introduction_EN.pdf)
+- [CAN bus (Wikipedia)](https://en.wikipedia.org/wiki/CAN_bus)
+- [CAN Bus Explained: A Simple Intro (CSS Electronics)](https://www.csselectronics.com/pages/can-bus-simple-intro-tutorial)
+- [CAN Bus Protocol Tutorial (Kvaser)](https://kvaser.com/can-protocol-tutorial/)
+- [CAN FD Protocol Tutorial (Kvaser)](https://kvaser.com/can-fd-protocol-tutorial/)
+- [An Introduction to CAN FD (Vector, PDF)](https://cdn.vector.com/cms/content/know-how/can/Slides/CAN_FD_Introduction_EN.pdf)
 
 ## See also
 
@@ -167,5 +167,5 @@ For step-by-step setup, see the [Protocol Setup Guides — CAN Bus section](Prot
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [Use Cases](Use-Cases.md): automotive and industrial CAN dashboards.
 - [Troubleshooting](Troubleshooting.md): bit-rate, termination, and adapter-detection diagnostics.
-- [Drivers — Modbus](Drivers-Modbus.md): the other industrial protocol.
+- [Drivers: Modbus](Drivers-Modbus.md): the other industrial protocol.
 - [Frame Parser Scripting](JavaScript-API.md): for editing the generated parser by hand.

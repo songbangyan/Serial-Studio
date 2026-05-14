@@ -42,7 +42,7 @@ Modbus organises data into four tables, distinguished by read/write capability a
 | **Input registers**| 16 bits  | R only | Analog inputs (sensor readings)       |
 | **Holding registers**| 16 bits | R/W   | General-purpose storage (setpoints, configuration, scratch values) |
 
-Real devices are fuzzier than the table suggests. A modern temperature transmitter might expose its current reading as a holding register (writable in principle, but writing has no effect) simply because that is what the firmware engineer chose. Always check the device's documentation rather than assume.
+Real devices are fuzzier than the table suggests. A modern temperature transmitter might expose its current reading as a holding register (writable in principle, but writing has no effect) because that is what the firmware engineer chose. Always check the device's documentation rather than assume.
 
 Addresses inside each table go from 0 to 65535. Vendors document them in two ways, which is a frequent source of confusion:
 
@@ -145,7 +145,7 @@ For devices with documented register maps, the [Modbus map importer](Auto-Genera
 
 The Modbus driver wraps Qt's `QModbusClient` and runs on the main thread. Polling is event-driven (no busy loop); Qt's async I/O delivers responses via signals. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
-For step-by-step setup, see the [Protocol Setup Guides — Modbus section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, Modbus section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
@@ -153,19 +153,19 @@ For step-by-step setup, see the [Protocol Setup Guides — Modbus section](Proto
 - **Off-by-one address.** PLC numbering versus protocol numbering. If the docs say "holding register 40101", the protocol address is *100*, not 40101 and not 101.
 - **CRC errors on RTU.** Almost always a wiring or termination issue. RS-485 needs 120 Ω terminators at both ends of the trunk. Stub branches longer than a few inches corrupt the CRC at high baud rates.
 - **Wrong byte order for 32-bit values.** Read raw 16-bit registers, inspect the bytes, and compare them to the vendor documentation. Most modern devices use big-endian word and big-endian byte order. A float that reads as `1.234e-23` is being decoded with the wrong endianness.
-- **Polling too fast.** Some devices, especially older PLCs, cannot process requests faster than about one every 100 ms. Serial Studio is happy to poll at 10 ms, but the device may simply not respond. Slow the poll interval down.
+- **Polling too fast.** Some devices, especially older PLCs, cannot process requests faster than about one every 100 ms. Serial Studio is happy to poll at 10 ms, but the device may not respond. Slow the poll interval down.
 - **TCP works but RTU does not.** RS-485 is an unforgiving electrical environment: long cables, missing ground, intermittent termination, or missing bias resistors can all break it. Some adapters lack pull-up/pull-down on the idle bus and need an external biasing network. An oscilloscope on the line is the fastest way to diagnose this.
 - **"Illegal data address" exception.** The slave's memory map does not contain that register. Recheck the vendor documentation. Some PLCs only respond to addresses configured in their program; others allow reads of any address.
 - **Slave responds slowly under load.** Modern Modbus TCP is fast; Modbus RTU at 9600 baud is slow by design. A 60-register read takes about 12 ms of wire time alone, plus device processing time. Do not expect kilohertz polling on serial.
 
 ## Further reading
 
-- [Modbus — Wikipedia](https://en.wikipedia.org/wiki/Modbus)
-- [Modbus Protocol Overview — modbustools.com](https://www.modbustools.com/modbus.html)
-- [Modbus RTU Made Simple — IPC2U](https://ipc2u.com/articles/knowledge-base/modbus-rtu-made-simple-with-detailed-descriptions-and-examples/)
-- [What is Modbus & How Does It Work — NI](https://www.ni.com/en/shop/seamlessly-connect-to-third-party-devices-and-supervisory-system/the-modbus-protocol-in-depth.html)
-- [Introduction to Modbus and Modbus Function Codes — Control.com](https://control.com/technical-articles/introduction-to-modbus-and-modbus-function-codes/)
-- [modbus.org — official Modbus site](https://modbus.org/)
+- [Modbus (Wikipedia)](https://en.wikipedia.org/wiki/Modbus)
+- [Modbus Protocol Overview (modbustools.com)](https://www.modbustools.com/modbus.html)
+- [Modbus RTU Made Simple (IPC2U)](https://ipc2u.com/articles/knowledge-base/modbus-rtu-made-simple-with-detailed-descriptions-and-examples/)
+- [What is Modbus & How Does It Work (NI)](https://www.ni.com/en/shop/seamlessly-connect-to-third-party-devices-and-supervisory-system/the-modbus-protocol-in-depth.html)
+- [Introduction to Modbus and Modbus Function Codes (Control.com)](https://control.com/technical-articles/introduction-to-modbus-and-modbus-function-codes/)
+- [modbus.org (official Modbus site)](https://modbus.org/)
 
 ## See also
 
@@ -175,6 +175,6 @@ For step-by-step setup, see the [Protocol Setup Guides — Modbus section](Proto
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [Use Cases](Use-Cases.md): industrial monitoring and PLC integration examples.
 - [Troubleshooting](Troubleshooting.md): wiring, addressing, and CRC-error diagnostics.
-- [Drivers — UART](Drivers-UART.md): RTU rides on serial; the UART page covers RS-485 physical layer.
-- [Drivers — Network](Drivers-Network.md): TCP transport details.
-- [Drivers — CAN Bus](Drivers-CAN-Bus.md): the other big industrial protocol.
+- [Drivers: UART](Drivers-UART.md): RTU rides on serial; the UART page covers RS-485 physical layer.
+- [Drivers: Network](Drivers-Network.md): TCP transport details.
+- [Drivers: CAN Bus](Drivers-CAN-Bus.md): the other big industrial protocol.

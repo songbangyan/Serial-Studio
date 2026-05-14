@@ -2,7 +2,7 @@
 
 The Bluetooth Low Energy (BLE) driver lets Serial Studio connect to any BLE peripheral that exposes its data through GATT services and characteristics. It is shipped in the free build. BLE is the common wireless transport for battery-powered sensors, fitness wearables, and prototyping boards such as the ESP32 and nRF52.
 
-For "classic" Bluetooth devices (the older 2.x flavor that uses the Serial Port Profile), the OS already exposes a virtual COM port — use the [UART driver](Drivers-UART.md) for those. This page covers BLE only.
+For "classic" Bluetooth devices (the older 2.x flavor that uses the Serial Port Profile), the OS already exposes a virtual COM port. Use the [UART driver](Drivers-UART.md) for those. This page covers BLE only.
 
 ## What is Bluetooth Low Energy?
 
@@ -24,8 +24,8 @@ BLE excels at infrequent small bursts of data from devices that need to live on 
 
 Two roles matter:
 
-- **Peripheral** — the device that *advertises* its presence and *exposes* data. A heart-rate monitor, a temperature sensor, or an ESP32 running custom firmware.
-- **Central** — the device that *scans* for advertisements and *connects* to a peripheral. The laptop running Serial Studio is the central.
+- **Peripheral**: the device that *advertises* its presence and *exposes* data. A heart-rate monitor, a temperature sensor, or an ESP32 running custom firmware.
+- **Central**: the device that *scans* for advertisements and *connects* to a peripheral. The laptop running Serial Studio is the central.
 
 A peripheral broadcasts short advertising packets every few hundred milliseconds. A central scans those packets, picks one, and initiates a connection. Once connected, the link is point-to-point until either side disconnects.
 
@@ -51,8 +51,8 @@ sequenceDiagram
 
 Once connected, BLE devices talk over the **Generic Attribute Profile (GATT)**. GATT is a simple hierarchical data model:
 
-- A **service** is a logical grouping of related data — "Heart Rate Service", "Battery Service", "Custom Vendor Service".
-- A **characteristic** is one piece of data inside a service — "Heart Rate Measurement", "Battery Level", "Sensor X Reading".
+- A **service** is a logical grouping of related data (for example "Heart Rate Service", "Battery Service", or "Custom Vendor Service").
+- A **characteristic** is one piece of data inside a service (for example "Heart Rate Measurement", "Battery Level", or "Sensor X Reading").
 - A **descriptor** is metadata about a characteristic: units, format, valid range, or the Client Characteristic Configuration descriptor that enables notifications.
 
 ```mermaid
@@ -76,10 +76,10 @@ Standard services and characteristics use 16-bit UUIDs assigned by the Bluetooth
 
 A central can use four GATT operations against a characteristic:
 
-- **Read** — pull the current value once. Used for values that change rarely, such as firmware version or a calibration constant.
-- **Write** — push a value to the peripheral. Used for control: toggle a relay, set a sample rate.
-- **Notify** — the peripheral pushes a new value to the central whenever the value changes. The central must enable notifications first by writing to the **Client Characteristic Configuration Descriptor (CCCD)**. This is the standard pattern for telemetry.
-- **Indicate** — like Notify, but the central acknowledges each update. Slightly more reliable, slightly slower.
+- **Read**: pull the current value once. Used for values that change rarely, such as firmware version or a calibration constant.
+- **Write**: push a value to the peripheral. Used for control such as toggling a relay or setting a sample rate.
+- **Notify**: the peripheral pushes a new value to the central whenever the value changes. The central must enable notifications first by writing to the **Client Characteristic Configuration Descriptor (CCCD)**. This is the standard pattern for telemetry.
+- **Indicate**: like Notify, but the central acknowledges each update. Slightly more reliable, slightly slower.
 
 For Serial Studio, the operation is almost always Notify: select a characteristic, enable notifications, and every value the peripheral sends becomes a frame.
 
@@ -102,7 +102,7 @@ From that point on, every notification's payload bytes become a frame, exactly a
 
 Serial Studio caches BLE discovery state in static storage shared across all instances of the driver. The consequences:
 
-- Discovery runs once even when multiple driver instances exist — for example a UI driver and a live driver.
+- Discovery runs once even when multiple driver instances exist (for example a UI driver and a live driver).
 - The device list is append-only during rediscovery, so dropdown indices stay stable across QML rebuilds.
 - Selecting the same device twice is a no-op when it is already selected and connected.
 
@@ -112,12 +112,12 @@ This is intentional. It prevents the dropdown from snapping to a different selec
 
 The driver lives on the main thread. QtBluetooth's event-driven async I/O delivers notifications via Qt signals; there is no dedicated worker thread. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
-For step-by-step setup, see the [Protocol Setup Guides — Bluetooth LE section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, Bluetooth LE section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
 - **Device does not appear in the scan.** The peripheral may not be advertising, or its advertisement interval may be very long. Power-cycle it. On macOS, grant Serial Studio Bluetooth permission in **System Settings → Privacy & Security → Bluetooth**. On Linux, the user may need to be in the `bluetooth` group.
-- **Connected, but no characteristic appears.** GATT discovery may not have finished. Wait a few seconds after connect; some peripherals are slow to respond to discovery requests. If nothing ever appears, the device may require pairing or bonding before exposing the service — some Nordic-based devices do.
+- **Connected, but no characteristic appears.** GATT discovery may not have finished. Wait a few seconds after connect; some peripherals are slow to respond to discovery requests. If nothing ever appears, the device may require pairing or bonding before exposing the service (some Nordic-based devices do).
 - **Notifications enable but no data arrives.** Notifications were probably enabled on a characteristic that does not push notifications. Check the characteristic's properties (Read / Write / Notify / Indicate). Only Notify-capable characteristics deliver data continuously.
 - **Throughput is much lower than expected.** This is BLE working as designed. The connection interval (negotiated between central and peripheral, typically 7.5 ms to 4 s) caps the packet rate. A 7.5 ms interval with a 247-byte MTU yields roughly 250 kbps of payload. Peripherals often negotiate slow intervals to save power; check the firmware for a way to request a faster interval.
 - **Connection drops after a few seconds.** The peripheral may be enforcing a security requirement (encryption or bonding). Pair the device through the OS first, then reconnect from Serial Studio.
@@ -126,11 +126,11 @@ For step-by-step setup, see the [Protocol Setup Guides — Bluetooth LE section]
 
 ## Further reading
 
-- [Bluetooth Low Energy Fundamentals — Nordic Developer Academy](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/)
-- [Bluetooth Low Energy: A Primer — Memfault Interrupt blog](https://interrupt.memfault.com/blog/bluetooth-low-energy-a-primer)
-- [Bluetooth Low Energy — Wikipedia](https://en.wikipedia.org/wiki/Bluetooth_Low_Energy)
-- [Bluetooth low energy Characteristics, a beginner's tutorial — Nordic DevZone](https://devzone.nordicsemi.com/tutorials/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial)
-- [Services and characteristics — Nordic Developer Academy](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/lessons/lesson-4-bluetooth-le-data-exchange/topic/services-and-characteristics/)
+- [Bluetooth Low Energy Fundamentals (Nordic Developer Academy)](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/)
+- [Bluetooth Low Energy: A Primer (Memfault Interrupt blog)](https://interrupt.memfault.com/blog/bluetooth-low-energy-a-primer)
+- [Bluetooth Low Energy (Wikipedia)](https://en.wikipedia.org/wiki/Bluetooth_Low_Energy)
+- [Bluetooth low energy Characteristics, a beginner's tutorial (Nordic DevZone)](https://devzone.nordicsemi.com/tutorials/b/bluetooth-low-energy/posts/ble-characteristics-a-beginners-tutorial)
+- [Services and characteristics (Nordic Developer Academy)](https://academy.nordicsemi.com/courses/bluetooth-low-energy-fundamentals/lessons/lesson-4-bluetooth-le-data-exchange/topic/services-and-characteristics/)
 
 ## See also
 
@@ -139,5 +139,5 @@ For step-by-step setup, see the [Protocol Setup Guides — Bluetooth LE section]
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [Use Cases](Use-Cases.md): wireless sensor patterns and BLE prototyping setups.
 - [Troubleshooting](Troubleshooting.md): pairing, permission, and adapter-detection diagnostics.
-- [Drivers — UART](Drivers-UART.md): for classic Bluetooth SPP devices that show up as virtual COM ports.
-- [Drivers — Network](Drivers-Network.md): when you need more throughput than BLE can provide.
+- [Drivers: UART](Drivers-UART.md): for classic Bluetooth SPP devices that show up as virtual COM ports.
+- [Drivers: Network](Drivers-Network.md): when you need more throughput than BLE can provide.

@@ -1,14 +1,14 @@
 # Auto-Generating Projects
 
-For two of the most painful protocol configurations, Serial Studio can build the project for you from a vendor file. Drop in a `.dbc` for CAN Bus or a register-map CSV/XML/JSON for Modbus, and you get back a complete `.ssproj` with groups, datasets, dashboard widgets, and a working frame parser. No hand-typed register addresses, no copy-paste from PDFs.
+For three of the most painful protocol configurations, Serial Studio can build the project for you from a vendor file. Drop in a `.dbc` for CAN Bus, a register-map CSV/XML/JSON for Modbus, or a `.proto` schema for Protocol Buffers, and you get back a complete `.ssproj` with groups, datasets, dashboard widgets, and a working frame parser. No hand-typed register addresses, no copy-paste from PDFs.
 
-Both importers are Pro features and live in the **Setup Panel** of the relevant driver.
+The DBC and Modbus importers live in the **Setup Panel** of the relevant driver. The Protobuf importer lives in the Project Editor toolbar (**Import > Protobuf**) and applies to any transport that delivers a serialized message blob. All three are Pro features.
 
 ## Why this exists
 
-Hand-configuring an industrial protocol is the slow part of using Serial Studio. A typical PLC has dozens of holding registers, each with a name, data type, scale factor, and units. A typical automotive ECU has hundreds of CAN signals across multiple message IDs. Typing those into the Project Editor one at a time is the kind of work that takes a full afternoon and leaves you uncertain you got it right.
+Hand-configuring an industrial protocol is the slow part of using Serial Studio. A typical PLC has dozens of holding registers, each with a name, data type, scale factor, and units. A typical automotive ECU has hundreds of CAN signals across multiple message IDs. Typing those into the Project Editor one at a time is tedious and error-prone work that takes a full afternoon.
 
-The shortcut is to start from the file the vendor already wrote. CAN networks ship with `.dbc` files. Modbus devices ship with register tables. Serial Studio reads those directly.
+The shortcut is to start from the file the vendor already wrote. CAN networks are documented in `.dbc` files. Modbus devices are documented in register tables. Serial Studio reads those directly.
 
 ## What you get
 
@@ -27,12 +27,13 @@ You get a project that's already wired up. From there you arrange widgets in wor
 |-----------------|--------------------------|--------------------|-------------------------------------------------|
 | **DBC**         | `.dbc`                   | No                 | Project + Lua parser, signals grouped by CAN ID |
 | **Modbus map**  | `.csv` / `.xml` / `.json`| Yes (register groups) | Project + Lua parser, registers grouped by type/contiguity |
+| **Protobuf**    | `.proto`                 | No                 | Project + JavaScript parser, groups per message, recursive descent into nested messages |
 
-Both importers preview before committing. You see the parsed messages or registers, click **Create Project**, and a `.ssproj` is generated and opened in the Project Editor.
+All three importers preview before committing. You see the parsed messages, registers, or fields, click **Create Project**, and a `.ssproj` is generated and opened in the Project Editor.
 
 ## DBC import (CAN Bus)
 
-A DBC (CAN Database) file describes every message and signal on a CAN network: message IDs, signal bit positions, byte order, scaling, units, and value tables. Most automotive and industrial CAN networks ship with one. Serial Studio's importer parses it with Qt's `QCanDbcFileParser` and turns each message into a group.
+A DBC (CAN Database) file describes every message and signal on a CAN network: message IDs, signal bit positions, byte order, scaling, units, and value tables. Most automotive and industrial CAN networks come with one. Serial Studio's importer parses it with Qt's `QCanDbcFileParser` and turns each message into a group.
 
 ### How to run it
 
@@ -106,25 +107,57 @@ The detailed format spec for CSV, XML, and JSON register maps lives in [Protocol
 
 You can usually get going with just `address` and `name`. Everything else has reasonable defaults.
 
+## Protobuf import
+
+[Protocol Buffers](https://protobuf.dev/) is a schema-defined binary serialization format from Google, widely used by drones, robotics stacks, and any device whose firmware was written against `protoc`. A `.proto` file declares messages, fields, scalar types, and tags; the device serialises one of those messages per frame and the receiver decodes it back into named values.
+
+Serial Studio's importer parses the schema directly (no `protoc` invocation, no generated code) and produces a project that decodes the wire format at runtime using a hand-written varint/length-delimited reader emitted into the frame parser.
+
+### How to run it
+
+1. Open the **Project Editor**.
+2. In the toolbar, expand the **Import** section and click **Protobuf**.
+3. Pick a `.proto` schema file.
+4. Review the parsed messages in the preview dialog. The picker lists every top-level message; selecting one shows its fields with their tag, type, name, and `repeated` flag.
+5. Click **Create Project**. A `.ssproj` is generated and opened in the editor.
+
+The importer does not load the result into any specific driver. You wire the project to whatever transport delivers the serialised bytes (UART, TCP, MQTT, BLE, anything that yields a complete message blob per frame).
+
+### What it generates
+
+- One **group per message** in the schema, with nested messages descended into recursively so each leaf scalar becomes its own dataset.
+- A **dataset per scalar field**, carrying the field name, its protobuf scalar type, and its tag.
+- A generated **JavaScript frame parser** containing a self-contained varint and length-delimited decoder plus per-message dispatch tables, so no runtime dependency on `protobuf.js` or generated stubs is required.
+- A score-based top-level dispatcher: when the schema declares more than one root message, the parser inspects the incoming bytes and routes them to the matching message decoder.
+
+Strings, bytes, enums, and maps decode to their natural JavaScript representations; repeated scalar fields decode into arrays. Nested messages are flattened into the dataset list in declaration order so the dashboard layout follows the schema.
+
+### Limitations
+
+- Imports the `proto2` and `proto3` subset that covers scalar fields, nested messages, enums, and `repeated`. `oneof`, `map<K, V>`, `Any`, services, RPC methods, and the `Well-Known Types` are not generated as datasets (fields outside the supported subset are skipped silently and the preview dialog reports the kept count).
+- The generator emits a JavaScript parser, not Lua, so the dataset-level language must remain JavaScript.
+- One serialised message per Serial Studio frame. If the transport batches multiple messages, split them upstream before the bytes reach the FrameReader.
+
 ## When to use auto-generation vs. by hand
 
 Auto-generation is the right call when:
 
-- The vendor ships a `.dbc` or a register-map file and it's reasonably accurate.
+- The vendor ships a `.dbc`, a register-map file, or a `.proto` schema and it's reasonably accurate.
 - You're prototyping against a device for the first time and want to see signals on the dashboard immediately.
-- The device has more than a handful of signals or registers (the cost of typing them in by hand grows linearly).
+- The device has more than a handful of signals, registers, or message fields (the cost of typing them in by hand grows linearly).
 
 Build the project by hand when:
 
-- You only care about a few specific signals out of a 200-signal DBC. Importing all of them and then deleting most is more work than adding three datasets manually.
+- You only care about a few specific signals out of a 200-signal DBC or a 100-field protobuf schema. Importing all of them and then deleting most is more work than adding three datasets manually.
 - The device speaks Modbus but the registers don't fit the standard "address, type, name, units" pattern (custom encodings, bit-packed flags inside one register, packed structs).
+- The schema uses protobuf features the importer skips (`oneof`, `map`, `Any`).
 - You want full control over the frame parser, including custom dispatch logic, conditional decoding, or multi-frame state machines.
 
 ## Editing after import
 
-The generated project is just a project. Once it's open in the Project Editor, everything is editable: rename datasets, regroup them, swap widgets, edit the Lua parser, add transforms, attach datasets to workspaces. The importer's job is to get you to a working dashboard fast, not to lock you into a layout.
+The generated project is a project like any other. Once it's open in the Project Editor, everything is editable: rename datasets, regroup them, swap widgets, edit the parser (Lua for DBC/Modbus, JavaScript for Protobuf), add transforms, attach datasets to workspaces. The importer's job is to get you to a working dashboard fast, not to lock you into a layout.
 
-If you need to re-import (the vendor shipped a new DBC, you added a register), the safest path is to import again as a new project and copy over your dashboard customizations, rather than trying to merge by hand.
+If you need to re-import (the vendor published a new DBC, you added a register, the protobuf schema gained a field), the safest path is to import again as a new project and copy over your dashboard customizations, rather than trying to merge by hand.
 
 ## See also
 

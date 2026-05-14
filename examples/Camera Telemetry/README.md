@@ -8,8 +8,6 @@ No microcontroller needed. A standard webcam or built-in laptop camera is all yo
 
 ![Camera telemetry screenshot](doc/screenshot.png)
 
----
-
 ## What it streams
 
 ### Image data (Image View widget)
@@ -22,8 +20,6 @@ Raw JPEG frames sent directly over UDP. The Image View widget uses **autodetect*
 |-------|-------------|------------------------------------|
 | 1     | FPS         | Actual stream frame rate           |
 | 2     | Frame Count | Total frames sent since start      |
-
----
 
 ## Frame format
 
@@ -45,8 +41,6 @@ AB CD EF 32 39 2E 38 2C 31 30 32 34 FE ED
 ```
 
 The sentinels are chosen so they're statistically impossible to occur in JPEG, PNG, BMP, or WebP compressed data. `AB CD EF` isn't a valid JPEG marker sequence and doesn't arise from JPEG byte-stuffing rules. The FrameReader extracts only bytes between the two sentinels. The ImageFrameReader ignores ASCII telemetry packets since they carry no image magic bytes.
-
----
 
 ## How to run
 
@@ -86,22 +80,16 @@ python3 camera_telemetry.py --quality 60         # smaller packets
 3. Set **Port** to `9000` (or whatever `--port` you used).
 4. Click **Connect**.
 
----
-
 ## Performance tips
 
 - Lowering `--quality` cuts JPEG size and UDP fragmentation pressure. Quality 60 to 75 is usually enough for 640x480 preview.
 - Frames wider than 640 px are automatically downscaled before encoding.
 - The synthetic pattern (`--no-camera`) animates a color gradient with a moving circle. Useful for testing without any camera hardware.
 
----
-
 ## Dependencies
 
 - Python 3.8 or later.
 - [`opencv-python`](https://pypi.org/project/opencv-python/). `pip install opencv-python`.
-
----
 
 ## License
 

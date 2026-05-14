@@ -8,8 +8,8 @@ the high-level user view, start with [Data Flow](Data-Flow.md). For threading-sp
 plugin authors, and anyone debugging throughput, latency, or timing problems.
 
 The hotpath is the chain of components that runs once per received frame at full data rate.
-Serial Studio targets sustained data rates above 256 kHz, so every stage on this path is
-designed to avoid allocations, copies, and cross-thread context switches.
+Serial Studio targets sustained data rates above 256 kHz, so every stage on this path avoids
+allocations, copies, and cross-thread context switches.
 
 ## Stages
 
@@ -25,9 +25,8 @@ flowchart TD
 ```
 
 Each arrow is either a direct in-thread call or a `Qt::DirectConnection` signal. Same-thread
-queued connections are deliberately avoided on this path: at 10 kHz they fill Qt's event queue
-faster than the consumer can drain it, and the FrameReader's bounded queue starts dropping
-frames.
+queued connections are avoided on this path: at 10 kHz they fill Qt's event queue faster than
+the consumer can drain it, and the FrameReader's bounded queue starts dropping frames.
 
 ### Stage 1: driver
 

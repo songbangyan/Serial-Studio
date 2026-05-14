@@ -45,13 +45,13 @@ Once the handshake completes, both sides see a virtual full-duplex pipe: write b
 
 The most important thing about TCP is that it is a stream of bytes, not a stream of messages. If a device writes 100 bytes followed by 100 bytes, the receiver may see one read of 200 bytes, or two of 100, or 200 of 1. The boundaries are not preserved.
 
-This matters for Serial Studio because frame parsing has to operate on the stream. With a delimiter (newline, custom byte sequence) the FrameReader finds frames regardless of how the OS chunked the stream. With fixed-length frames it counts bytes. Either approach works; just do not assume "one TCP packet = one frame".
+This matters for Serial Studio because frame parsing has to operate on the stream. With a delimiter (newline, custom byte sequence) the FrameReader finds frames regardless of how the OS chunked the stream. With fixed-length frames it counts bytes. Either approach works; do not assume "one TCP packet = one frame".
 
 ### Ports
 
 Every TCP endpoint is `(IP address, port number)`. Ports go from 0 to 65535. 0-1023 are "well-known" (reserved for system services on most operating systems); 1024-49151 are "registered" (database servers, application services); 49152-65535 are "ephemeral" (assigned by the OS to outgoing client connections).
 
-Serial Studio enforces no specific choice — use whatever the device is configured for.
+Serial Studio enforces no specific choice. Use whatever the device is configured for.
 
 ## What is UDP?
 
@@ -64,9 +64,9 @@ UDP's header is 8 bytes: source port, destination port, length, and checksum. Th
 - **Real-time data where freshness beats reliability.** Live sensor readings at high rates: a dropped packet is replaced by the next one on its way, and retransmitting a stale reading is worse than skipping it.
 - **One-to-many distribution (multicast).** TCP cannot multicast; UDP can.
 - **Low overhead.** UDP avoids per-connection state and the handshake. Useful when the device is a small microcontroller with limited RAM.
-- **Discovery and beacons.** "I'm here, my IP is X" announcements fit naturally onto UDP broadcast or multicast.
+- **Discovery and beacons.** "I'm here, my IP is X" announcements fit onto UDP broadcast or multicast.
 
-Choose UDP when either the data is naturally datagram-shaped (one self-contained reading per packet), or it is acceptable to drop a stale message rather than wait for it.
+Choose UDP when either the data is inherently datagram-shaped (one self-contained reading per packet), or it is acceptable to drop a stale message rather than wait for it.
 
 ### Multicast
 
@@ -82,7 +82,7 @@ flowchart LR
     R2["Receiver 2<br/>joined 239.1.1.1:5000"]
     R3["Receiver 3<br/>not joined"]
 
-    Sender -- "to 239.1.1.1:5000" --> Switch
+    Sender -->|"to 239.1.1.1:5000"| Switch
     Switch --> R1
     Switch --> R2
     Switch -. drop .-> R3
@@ -100,7 +100,7 @@ In Serial Studio, multicast is useful when:
 
 The Network driver wraps Qt's `QTcpSocket` and `QUdpSocket`. It lives on the main thread and uses Qt's async I/O; there is no dedicated thread (see [Threading and Timing Guarantees](Threading-and-Timing.md)).
 
-> **Serial Studio is a TCP client only.** It dials out to an existing TCP server — it does not listen for incoming TCP connections, and there is no setting to make it act as a server. If the device expects to push data to a listener, run a small TCP server in front of Serial Studio (see [Common pitfalls](#common-pitfalls)).
+> **Serial Studio is a TCP client only.** It dials out to an existing TCP server. It does not listen for incoming TCP connections, and there is no setting to make it act as a server. If the device expects to push data to a listener, run a small TCP server in front of Serial Studio (see [Common pitfalls](#common-pitfalls)).
 
 The Setup panel exposes these fields:
 
@@ -112,16 +112,16 @@ The Setup panel exposes these fields:
 | **Local Port** | UDP only | Port to bind for receiving; `0` = OS-assigned |
 | **Multicast** | UDP only | When checked, **Remote Address** is treated as a multicast group (e.g. `239.1.1.1`) and Serial Studio joins it on connect; the OS handles IGMP transparently |
 
-UDP uses a single bidirectional socket — there is no separate Receiver / Sender / Multicast mode. Serial Studio binds **Local Port** for receiving and uses **Remote Address** plus **Remote Port** as the destination when writing data back.
+UDP uses a single bidirectional socket; there is no separate Receiver / Sender / Multicast mode. Serial Studio binds **Local Port** for receiving and uses **Remote Address** plus **Remote Port** as the destination when writing data back.
 
-For step-by-step setup, see the [Protocol Setup Guides — Network section](Protocol-Setup-Guides.md).
+For step-by-step setup, see the [Protocol Setup Guides, Network section](Protocol-Setup-Guides.md).
 
 ## Common pitfalls
 
-- **Serial Studio cannot connect over TCP.** Confirm that the device or remote service is actually listening. From a terminal, `telnet host port` (or `nc host port`) tries the same connection; if that fails, the problem is in the network or the remote endpoint, not in Serial Studio.
-- **The device wants to push to a listener.** Serial Studio is TCP client only and cannot listen for inbound TCP connections. Stand up a small TCP server that the device connects to and point Serial Studio at that server. A 10-line Python script is enough (the [FAQ](FAQ.md) includes one); `ncat -lk <port>` and `socat` also work. To avoid running a relay at all, send the data over UDP — Serial Studio binds a local port for that.
+- **Serial Studio cannot connect over TCP.** Confirm that the device or remote service is listening. From a terminal, `telnet host port` (or `nc host port`) tries the same connection; if that fails, the problem is in the network or the remote endpoint, not in Serial Studio.
+- **The device wants to push to a listener.** Serial Studio is TCP client only and cannot listen for inbound TCP connections. Stand up a small TCP server that the device connects to and point Serial Studio at that server. A 10-line Python script is enough (the [FAQ](FAQ.md) includes one); `ncat -lk <port>` and `socat` also work. To avoid running a relay at all, send the data over UDP, since Serial Studio binds a local port for that.
 - **Firewall blocks the port.** On Windows, the Windows Firewall prompt may have been dismissed without granting access. Re-allow Serial Studio in Windows Firewall settings. On Linux, `ufw status` shows whether the port is blocked.
-- **Address already in use (UDP local port).** Another process is bound to the same port. Find it with `netstat -an | findstr :7777` (Windows) or `lsof -i :7777` (Linux/macOS). The error does not apply to TCP — Serial Studio is a TCP client and uses an OS-assigned ephemeral source port.
+- **Address already in use (UDP local port).** Another process is bound to the same port. Find it with `netstat -an | findstr :7777` (Windows) or `lsof -i :7777` (Linux/macOS). The error does not apply to TCP: Serial Studio is a TCP client and uses an OS-assigned ephemeral source port.
 - **UDP packets arrive out of order or get lost.** That is UDP working as designed, not a bug. If the application cannot tolerate it, switch to TCP or layer sequence numbers on top.
 - **Multicast traffic does not cross subnets.** Most home routers do not forward multicast across VLANs without explicit IGMP-snooping configuration. Multicast is reliable on a single LAN segment; cross-subnet routing is a network-admin problem.
 - **TCP appears slow on Windows.** Nagle's algorithm is on by default and bunches small writes together to amortise header overhead. For interactive serial-style streams it can add up to 200 ms of latency. Most embedded TCP stacks support disabling Nagle (`TCP_NODELAY`); Serial Studio sets this where Qt allows.
@@ -129,12 +129,12 @@ For step-by-step setup, see the [Protocol Setup Guides — Network section](Prot
 
 ## Further reading
 
-- [RFC 793 — Transmission Control Protocol (TCP)](https://www.rfc-editor.org/rfc/rfc793)
-- [RFC 768 — User Datagram Protocol (UDP)](https://www.rfc-editor.org/rfc/rfc768)
-- [Internet Group Management Protocol — Wikipedia](https://en.wikipedia.org/wiki/Internet_Group_Management_Protocol)
-- [What is IGMP? — Cloudflare Learning Center](https://www.cloudflare.com/learning/network-layer/what-is-igmp/)
-- [User Datagram Protocol — Wikipedia](https://en.wikipedia.org/wiki/User_Datagram_Protocol)
-- [The Difference Between TCP and UDP Explained — Linode Docs](https://www.linode.com/docs/guides/difference-between-tcp-and-udp/)
+- [RFC 793: Transmission Control Protocol (TCP)](https://www.rfc-editor.org/rfc/rfc793)
+- [RFC 768: User Datagram Protocol (UDP)](https://www.rfc-editor.org/rfc/rfc768)
+- [Internet Group Management Protocol (Wikipedia)](https://en.wikipedia.org/wiki/Internet_Group_Management_Protocol)
+- [What is IGMP? (Cloudflare Learning Center)](https://www.cloudflare.com/learning/network-layer/what-is-igmp/)
+- [User Datagram Protocol (Wikipedia)](https://en.wikipedia.org/wiki/User_Datagram_Protocol)
+- [The Difference Between TCP and UDP Explained (Linode Docs)](https://www.linode.com/docs/guides/difference-between-tcp-and-udp/)
 
 ## See also
 
@@ -143,5 +143,5 @@ For step-by-step setup, see the [Protocol Setup Guides — Network section](Prot
 - [Communication Protocols](Communication-Protocols.md): overview of all supported transports.
 - [MQTT Integration](MQTT-Integration.md): when you need pub/sub semantics on top of TCP.
 - [Troubleshooting](Troubleshooting.md): firewall, port-conflict, and connectivity diagnostics.
-- [Drivers — UART](Drivers-UART.md): the physical-layer alternative when both ends are local.
+- [Drivers: UART](Drivers-UART.md): the physical-layer alternative when both ends are local.
 - [API Reference](API-Reference.md): Serial Studio's own JSON-RPC TCP API on port 7777.

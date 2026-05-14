@@ -8,8 +8,6 @@ Serial Studio spawns `system-monitor.py` (or the platform launcher), and the scr
 
 > The Process I/O driver needs a Serial Studio Pro license. See [serial-studio.com](https://serial-studio.com/) for details.
 
----
-
 ## What it monitors
 
 | Metric                    | Widget              | Notes |
@@ -26,8 +24,6 @@ Serial Studio spawns `system-monitor.py` (or the platform launcher), and the scr
 | Process count             | Bar                 | Total running processes |
 | Top 10 processes          | Data grid           | Sorted by CPU. Format: `Name (nn.n% CPU)` |
 | System info               | Data grid           | OS, hostname, CPU model, cores, RAM, disk. Static |
-
----
 
 ## Frame format
 
@@ -54,8 +50,6 @@ All frames use `$` as `frameStart` and `\n` as `frameEnd`.
 #### Core sentinel value
 
 The project always declares 32 core slots (`CORE0` to `CORE31`). Slots beyond the machine's actual logical core count are emitted as `-1`. The multiplot widget treats `-1` as out-of-range and hides those curves automatically.
-
----
 
 ## How to run
 
@@ -103,8 +97,6 @@ Press `Ctrl+C` to stop.
 |----------------------|-------------------|--------------------------------|
 | `--interval SECONDS` | `1/30 ≈ 0.033`    | Seconds between live frames    |
 
----
-
 ## How the frame parser works
 
 The JavaScript parser inside `system-monitor.ssproj` uses a persistent value array declared at module scope. Keys absent from a frame keep their last value, so the static header fields (OS, hostname, CPU model, and so on) stay visible while live metric frames keep updating the rest.
@@ -129,8 +121,6 @@ function parse(frame) {
 
 Dataset index `N` in the `.ssproj` maps to `_vals[N - 1]` (Serial Studio uses 1-based dataset indices, the JS array is 0-based).
 
----
-
 ## Index layout
 
 | Index  | Key                        | Description                       |
@@ -149,23 +139,17 @@ Dataset index `N` in the `.ssproj` maps to `_vals[N - 1]` (Serial Studio uses 1-
 | 18-49  | `CORE0` to `CORE31`        | Per-core CPU % (`-1` = core absent) |
 | 50-59  | `PROC0` to `PROC9`         | Top processes by CPU              |
 
----
-
 ## Architecture notes
 
 - **CPU sampling** runs on a dedicated background thread using `psutil.cpu_percent(interval=1.0, percpu=True)`. That's necessary on macOS, where `interval=None` always returns `0.0` until at least one blocking measurement has completed. The main loop reads the latest snapshot non-blocking via a lock.
 - **Slow metrics** (disk, temperature, process list) are refreshed at 1 Hz regardless of frame rate, to avoid I/O overhead at 30 Hz.
 - **Fast metrics** (RAM, network) are sampled every frame.
 
----
-
 ## Dependencies
 
 - Python 3.8 or later.
 - [`psutil`](https://pypi.org/project/psutil/). `pip install psutil`.
 - [`py-cpuinfo`](https://pypi.org/project/py-cpuinfo/). `pip install py-cpuinfo`.
-
----
 
 ## License
 

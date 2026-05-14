@@ -47,6 +47,7 @@ The editor window has three areas: a toolbar across the top, a tree view on the 
 - **Add gyroscope.** Add a group pre-configured for 3-axis rotation.
 - **Add map.** Add a group for GPS data (latitude, longitude, altitude).
 - **Add container.** Add a group with no group-level widget.
+- **Import > Protobuf** (Pro). Generate a project from a Protocol Buffers (`.proto`) schema. See [Auto-Generating Projects](Auto-Generating-Projects.md).
 
 ### Tree view (left panel)
 
@@ -72,6 +73,25 @@ The number in brackets is the dataset's frame index: its position in the parsed 
 ### Property panel (right panel)
 
 Shows a form for the selected tree item. Every change takes effect immediately in the project model. The form fields vary depending on whether you selected the project root, a group, a dataset, an action, or a source.
+
+## Project Overview
+
+Select the project root in the tree and the right panel switches to the **Project Overview** (also called the Summary). It is a read-only diagram of the entire project configuration, laid out left-to-right in four columns:
+
+1. **Sources** (devices). One card per data source, with its bus type, frame detection, and decoder.
+2. **Frame parsers and actions**. The parser script attached to each source, plus any global action buttons.
+3. **Groups**. The dataset containers and group-level widgets (Multiplot, GPS, Accelerometer, etc.).
+4. **Datasets**. Per-dataset pills, with their transform block (if any) drawn between the group and the dataset pill.
+
+Data tables, output widgets, and workspaces are drawn alongside as their own cards. Arrows show how parsed bytes flow into datasets and how transforms feed downstream consumers.
+
+The diagram is interactive:
+
+- **Double-click any block** to jump into the matching configuration form. Double-clicking a source card opens that source's settings; a group card opens the group form; a dataset pill opens the dataset form; a frame-parser card opens the script editor; an action card opens the action form; a data-table card opens the table editor; an output-widget card opens the output editor.
+- **Right-click any block** for a context menu tailored to that node: add a sibling group, add a dataset to that group, duplicate, delete, change widget type, attach to a workspace, and so on. Right-clicking empty background opens the "add source / add table / add action" shortcuts. This is the fastest way to grow a project once the high-level shape is in place; you do not have to walk back through the tree on the left.
+- **Scroll wheel** zooms the diagram in and out. The toolbar has a reset-zoom button.
+
+The overview is useful as a sanity check ("does my group widget have the three datasets it needs?") and as a navigation surface once a project gets too large to keep entirely in the tree.
 
 ## Creating a project step by step
 

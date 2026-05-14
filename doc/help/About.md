@@ -8,7 +8,7 @@ Serial Studio is built by **Alex Spataru** (`alex@serial-studio.com`). The proje
 
 ## The problem that started it
 
-Before Serial Studio, Alex worked on a [CanSat competition](https://cansatcompetition.com/) and later on the [NASA Human Exploration Rover Challenge](https://www.nasa.gov/learning-resources/nasa-human-exploration-rover-challenge/) during college. The CanSat work shipped with its own ground-station software, purpose-built for that competition's telemetry format. Every protocol tweak meant another late night in the dashboard code instead of on the hardware. The pattern repeated across teams and semesters: a microcontroller printed sensor values over a serial cable, and somebody had to build a custom GUI around them.
+Before Serial Studio, Alex worked on a [CanSat competition](https://cansatcompetition.com/) and later on the [NASA Human Exploration Rover Challenge](https://www.nasa.gov/learning-resources/nasa-human-exploration-rover-challenge/) during college. The CanSat work came with its own ground-station software, custom-written for that competition's telemetry format. Every protocol tweak meant another late night in the dashboard code instead of on the hardware. The pattern repeated across teams and semesters: a microcontroller printed sensor values over a serial cable, and somebody had to build a custom GUI around them.
 
 The first attempt at a generic answer was a personal project called **SigLAB**. It worked. The data model was already protocol-agnostic, and the dashboard was already data-driven. The reason it was eventually renamed wasn't technical. Alex wanted the project to live under its own organization rather than buried in a personal list of side projects, with room for outside contributors and a clean GitHub identity.
 
@@ -16,7 +16,7 @@ On October 18, 2020 the SigLAB codebase was imported into a new repository under
 
 The launch blog post, [*Introducing Serial Studio*](https://www.aspatru.com/blog/introducing-serial-studio) (December 29, 2020), opens with the line that still describes the project:
 
-> *Did you ever have the need to display data from a microcontroller on a dashboard, and spent more time developing (and fixing) your dashboard software, than actually working on your MCU project?*
+> *Did you ever have the need to display data from a microcontroller on a dashboard, and spent more time developing (and fixing) your dashboard software, than working on your MCU project?*
 
 ## Philosophy
 
@@ -37,7 +37,7 @@ Serial Studio grew driver-by-driver as users brought new hardware to it. Most ad
 - **MQTT (February–March 2021).** Both publisher and subscriber. The trigger was IoT users who wanted to bridge a fleet of devices through a broker rather than running a dedicated TCP listener per node.
 - **Bluetooth Low Energy (February 2022).** GATT services and characteristics, with shared discovery state across instances so the device list survives QML rebuilds. Brought in for wireless sensors and prototyping boards (ESP32, nRF52) without a USB cable attached.
 - **Audio input (July 2025).** Microphones, line-in, and any OS-level audio device, used as a high-rate analog data source. The audio driver added the FFT pipeline that the rest of the dashboard now reuses, and pushed the codebase to handle 48 kHz+ sample rates without dropping frames.
-- **Modbus and CAN Bus (December 2025).** The first deliberately *industrial* drivers. Modbus TCP and RTU, with a register-map importer that turns vendor CSV/XML/JSON into a working project. CAN Bus uses Qt's SocketCAN/PCAN/Vector backends and ships with a DBC importer so automotive `.dbc` files decode signals automatically.
+- **Modbus and CAN Bus (December 2025).** The first explicitly *industrial* drivers. Modbus TCP and RTU, with a register-map importer that turns vendor CSV/XML/JSON into a working project. CAN Bus uses Qt's SocketCAN/PCAN/Vector backends and includes a DBC importer so automotive `.dbc` files decode signals automatically.
 - **Raw USB via libusb (February 2026).** For devices that expose vendor-specific USB endpoints instead of a CDC serial profile. Common on logic analyzers, custom data acquisition boards, and some scientific instruments.
 - **HID and Process I/O (March 2026).** HID via hidapi for game controllers, custom HID firmware, and medical devices. Process I/O for piping data in from any external program: `socat`, `nc`, a Python script, anything that writes to stdout. Both shipped together as the "experimental" tier of drivers.
 
@@ -46,7 +46,7 @@ Serial Studio grew driver-by-driver as users brought new hardware to it. Most ad
 The widget set started with line plots, gauges, bar charts, and a GPS map in late 2020, and slowly grew into the current set of 15+ widgets. The bigger inflection points were:
 
 - **XY plot** (November 2024) for arbitrary x/y mappings instead of time-on-x.
-- **3D plot** (May 2025). A hand-rolled CPU 2.5D painter, deliberately not Qt3D, so it works without a discrete GPU and still draws thousands of points smoothly.
+- **3D plot** (May 2025). A hand-rolled CPU 2.5D painter, intentionally not Qt3D, so it works without a discrete GPU and still draws thousands of points smoothly.
 - **Image View** (live camera feed) and **Painter widget** (a scriptable Canvas2D-style canvas driven by a JavaScript `paint(ctx, w, h)` callback, May 2026) for visualizations that don't fit any of the standard widgets.
 - **FFT Plot** and **Waterfall / spectrogram** (April 2026). They share the same per-dataset FFT settings, and the waterfall can also run in *Campbell mode*, where rows are placed by another dataset's value (e.g. RPM) for order-tracking analysis.
 

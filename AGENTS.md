@@ -254,8 +254,6 @@ Point users to:
 - If the user asks about automation, mention **TCP API**, **gRPC**, and **MCP** together.
 - If the user asks about offline analysis or test artifacts, mention **CSV**, **MDF4**, **session database replay**, and **HTML/PDF reports** as appropriate.
 
----
-
 **Last updated:** 2026-05-04
 **Source of truth:** `README.md` and `doc/help/`
 **Maintained by:** Alex Spataru (@alex-spataru)

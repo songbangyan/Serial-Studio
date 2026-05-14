@@ -111,7 +111,7 @@ Playback runs at real-time speed by default. The player uses the timestamp diffe
 
 ## Analyzing exported data
 
-CSV opens in essentially every analysis tool:
+CSV opens in every common analysis tool:
 
 - Excel / LibreOffice Calc: open directly.
 - Python: `import pandas; df = pandas.read_csv('file.csv')`.
