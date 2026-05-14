@@ -25,10 +25,10 @@
 #include <QFile>
 #include <QThread>
 
+#include "DataModel/ProjectModel.h"
 #include "DataModel/Scripting/IScriptEngine.h"
 #include "DataModel/Scripting/JsScriptEngine.h"
 #include "DataModel/Scripting/LuaScriptEngine.h"
-#include "DataModel/ProjectModel.h"
 #include "DataModel/Scripting/ScriptTemplates.h"
 #include "Misc/TimerEvents.h"
 #include "Misc/Translator.h"
@@ -318,6 +318,7 @@ QList<QStringList> DataModel::FrameParser::parseMultiFrame(const QByteArray& fra
 // Script loading
 //--------------------------------------------------------------------------------------------------
 
+// code-verify off  (cold project-edit path; dynamic_cast cost is negligible vs the script reload)
 /**
  * @brief Validates and loads a frame parser script into the source's engine.
  */
@@ -342,6 +343,8 @@ bool DataModel::FrameParser::loadScript(int sourceId, const QString& script, boo
   return engine.loadScript(script, sourceId, showMessageBoxes);
 }
 
+// code-verify on
+
 /**
  * @brief Enables or disables UI message boxes (suppressed during API calls).
  */
@@ -354,6 +357,7 @@ void DataModel::FrameParser::setSuppressMessageBoxes(const bool suppress)
 // Code reload
 //--------------------------------------------------------------------------------------------------
 
+// code-verify off  (cold project-load path; dynamic_cast cost is negligible vs the script reload)
 /**
  * @brief Loads the code stored in the project model into all engines.
  */
@@ -389,6 +393,9 @@ void DataModel::FrameParser::readCode()
   Q_EMIT modifiedChanged();
 }
 
+// code-verify on
+
+// code-verify off  (cold reset path; dynamic_cast cost is negligible vs the script reload)
 /**
  * @brief Resets the execution context by re-loading all current code.
  */
@@ -419,6 +426,8 @@ void DataModel::FrameParser::clearContext()
     if (src.sourceId > 0 && !src.frameParserCode.isEmpty())
       (void)loadScript(src.sourceId, src.frameParserCode, false);
 }
+
+// code-verify on
 
 /**
  * @brief Runs one cycle of garbage collection on all engines.

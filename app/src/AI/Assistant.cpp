@@ -601,6 +601,7 @@ bool AI::Assistant::requiresApiKey(int providerIdx) const
   return static_cast<ProviderId>(providerIdx) != ProviderId::Local;
 }
 
+// code-verify off  (cold settings paths; dynamic_cast is one-shot per user action)
 /**
  * @brief Returns the configured base URL of the local model provider.
  */
@@ -631,3 +632,5 @@ void AI::Assistant::refreshLocalModels()
   if (auto* lp = dynamic_cast<LocalProvider*>(m_local.get()))
     lp->refreshModels();
 }
+
+// code-verify on

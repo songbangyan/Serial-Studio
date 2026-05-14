@@ -14,6 +14,8 @@
 #pragma once
 
 #include <atomic>
+#include <cstddef>
+#include <new>
 #include <optional>
 #include <QMutex>
 #include <QObject>
@@ -155,14 +157,20 @@ private:
   void refreshProjectSnapshot();
 
 private:
+#  ifdef __cpp_lib_hardware_interference_size
+  static constexpr std::size_t kCacheLine = std::hardware_destructive_interference_size;
+#  else
+  static constexpr std::size_t kCacheLine = 64;
+#  endif
+
   QSettings m_settings;
-  std::atomic<bool> m_isOpen;
-  std::atomic<bool> m_exportEnabled;
-  std::atomic<int> m_currentSessionId;
+  alignas(kCacheLine) std::atomic<bool> m_isOpen;
+  alignas(kCacheLine) std::atomic<bool> m_exportEnabled;
+  alignas(kCacheLine) std::atomic<int> m_currentSessionId;
   bool m_persistSettings;
 
   moodycamel::ReaderWriterQueue<TimestampedRawBytes> m_rawBytesQueue;
-  std::atomic<int> m_operationMode;
+  alignas(kCacheLine) std::atomic<int> m_operationMode;
 
   QMutex m_projectSnapshotMutex;
   QByteArray m_projectSnapshot;

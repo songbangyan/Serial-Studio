@@ -46,6 +46,11 @@ constexpr int MIN_ZOOM = 2;
 constexpr int WEATHER_MAX_ZOOM = 6;
 constexpr int WEATHER_GIBS_MAX_ZOOM = 9;
 constexpr auto CLOUD_URL = "https://clouds.matteason.co.uk/images/4096x2048/clouds-alpha.png";
+constexpr double kInvTile = 1.0 / 256.0;
+constexpr double kInv360  = 1.0 / 360.0;
+constexpr double kInv180  = 1.0 / 180.0;
+constexpr double kInv120  = 1.0 / 120.0;
+constexpr double kInvPi   = 1.0 / M_PI;
 // clang-format on
 
 QCache<QString, QImage> Widgets::GPS::s_tileCache;
@@ -301,10 +306,10 @@ void Widgets::GPS::setZoomLevel(int zoom)
   // Set zoom level and center map on viewport center
   if (!autoCenter()) {
     // Compute which lat/lon is currently at the center of the widget
-    const QPointF pixelCenter(width() / 2.0, height() / 2.0);
+    const QPointF pixelCenter(width() * 0.5, height() * 0.5);
     const QPointF tileCenter = m_centerTile
-                             + QPointF((pixelCenter.x() - width() / 2.0) / 256.0,
-                                       (pixelCenter.y() - height() / 2.0) / 256.0);
+                             + QPointF((pixelCenter.x() - width() * 0.5) * kInvTile,
+                                       (pixelCenter.y() - height() * 0.5) * kInvTile);
 
     // Convert screen center tile to geographic lat/lon
     const QPointF geo = tileToLatLon(tileCenter, m_zoom);
@@ -350,10 +355,10 @@ void Widgets::GPS::setZoomLevelPrecise(double zoom)
   // Set zoom level and center map on viewport center
   if (!autoCenter()) {
     // Compute which lat/lon is currently at the center of the widget
-    const QPointF pixelCenter(width() / 2.0, height() / 2.0);
+    const QPointF pixelCenter(width() * 0.5, height() * 0.5);
     const QPointF tileCenter = m_centerTile
-                             + QPointF((pixelCenter.x() - width() / 2.0) / 256.0,
-                                       (pixelCenter.y() - height() / 2.0) / 256.0);
+                             + QPointF((pixelCenter.x() - width() * 0.5) * kInvTile,
+                                       (pixelCenter.y() - height() * 0.5) * kInvTile);
 
     // Convert screen center tile to geographic lat/lon
     const QPointF geo = tileToLatLon(tileCenter, m_zoom);
@@ -895,14 +900,14 @@ void Widgets::GPS::renderCloudOverlay(QPainter* painter,
   // Compute geographic longitude bounds and Web Mercator latitude bounds
   const double lon0 = (wrappedTx / n) * 360.0 - 180.0;
   const double lon1 = ((wrappedTx + 1) / n) * 360.0 - 180.0;
-  const double lat0 = 180.0 / M_PI * std::atan(std::sinh(M_PI * (1 - 2.0 * ty / n)));
-  const double lat1 = 180.0 / M_PI * std::atan(std::sinh(M_PI * (1 - 2.0 * (ty + 1) / n)));
+  const double lat0 = 180.0 * kInvPi * std::atan(std::sinh(M_PI * (1 - 2.0 * ty / n)));
+  const double lat1 = 180.0 * kInvPi * std::atan(std::sinh(M_PI * (1 - 2.0 * (ty + 1) / n)));
 
   // Normalize lon/lat to [0,1] UV range
-  const double u0 = (lon0 + 180.0) / 360.0;
-  const double u1 = (lon1 + 180.0) / 360.0;
-  const double v0 = (90.0 - lat0) / 180.0;
-  const double v1 = (90.0 - lat1) / 180.0;
+  const double u0 = (lon0 + 180.0) * kInv360;
+  const double u1 = (lon1 + 180.0) * kInv360;
+  const double v0 = (90.0 - lat0) * kInv180;
+  const double v1 = (90.0 - lat1) * kInv180;
 
   // Convert UVs to source pixel rectangle in the cloud image
   const QRect sourceRect(int(u0 * cloudWidth),
@@ -1122,7 +1127,7 @@ QPointF Widgets::GPS::clampCenterTile(QPointF tile) const
   const double scale          = qPow(2.0, fractionalZoom);
   const double scaledTileSize = 256.0 * scale;
   const double tilesInViewY   = static_cast<double>(height()) / scaledTileSize;
-  const double marginY        = tilesInViewY / 2.0;
+  const double marginY        = tilesInViewY * 0.5;
 
   // Clamp Y so full view fits within tile bounds (no overshooting north/south)
   double y = qBound(marginY, tile.y(), maxTile - marginY);
@@ -1148,8 +1153,8 @@ QPointF Widgets::GPS::latLonToTile(double lat, double lon, double zoom)
 {
   double latRad = qDegreesToRadians(lat);
   double n      = qPow(2.0, zoom);
-  double x      = (lon + 180.0) / 360.0 * n;
-  double y      = (1.0 - qLn(qTan(latRad) + 1.0 / qCos(latRad)) / M_PI) / 2.0 * n;
+  double x      = (lon + 180.0) * kInv360 * n;
+  double y      = (1.0 - qLn(qTan(latRad) + 1.0 / qCos(latRad)) * kInvPi) * 0.5 * n;
   return QPointF(x, y);
 }
 
@@ -1235,7 +1240,7 @@ void Widgets::GPS::wheelEvent(QWheelEvent* event)
   double newZoom;
   if (isTouchpad) {
     const double zoomFactor = 1.05;
-    const double deltaNorm  = -delta / 120.0;
+    const double deltaNorm  = -delta * kInv120;
     const double factor     = qPow(zoomFactor, -deltaNorm);
     newZoom                 = m_zoom * factor;
   } else {
@@ -1251,8 +1256,8 @@ void Widgets::GPS::wheelEvent(QWheelEvent* event)
 
   if (!autoCenter()) {
     const QPointF cursorPos = event->position();
-    const QPointF cursorTileOffset((cursorPos.x() - width() / 2.0) / 256.0,
-                                   (cursorPos.y() - height() / 2.0) / 256.0);
+    const QPointF cursorTileOffset((cursorPos.x() - width() * 0.5) * kInvTile,
+                                   (cursorPos.y() - height() * 0.5) * kInvTile);
 
     const QPointF cursorTile = m_centerTile + cursorTileOffset;
     const QPointF geo        = tileToLatLon(cursorTile, m_zoom);
@@ -1280,7 +1285,7 @@ void Widgets::GPS::mouseMoveEvent(QMouseEvent* event)
     const QPoint delta = event->pos() - m_lastMousePos;
     m_lastMousePos     = event->pos();
 
-    m_centerTile -= QPointF(delta.x() / 256.0, delta.y() / 256.0);
+    m_centerTile -= QPointF(delta.x() * kInvTile, delta.y() * kInvTile);
     m_centerTile = clampCenterTile(m_centerTile);
 
     updateTiles();

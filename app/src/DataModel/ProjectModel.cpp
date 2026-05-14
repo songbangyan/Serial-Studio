@@ -38,10 +38,10 @@
 
 #include "AppInfo.h"
 #include "AppState.h"
-#include "DataModel/FrameBuilder.h"
-#include "DataModel/Scripting/FrameParser.h"
 #include "DataModel/Editors/OutputCodeEditor.h"
+#include "DataModel/FrameBuilder.h"
 #include "DataModel/ProjectEditor.h"
+#include "DataModel/Scripting/FrameParser.h"
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/IconEngine.h"
@@ -3501,7 +3501,7 @@ void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption optio
   for (const auto& d : std::as_const(m_groups[groupId].datasets)) {
     if (d.title == newTitle) {
       count++;
-      newTitle = QString("%1 (%2)").arg(title).arg(count);
+      newTitle = QString("%1 (%2)").arg(title, QString::number(count));
     }
   }
 
@@ -3512,7 +3512,7 @@ void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption optio
         continue;
 
       count++;
-      newTitle    = QString("%1 (%2)").arg(title).arg(count);
+      newTitle    = QString("%1 (%2)").arg(title, QString::number(count));
       titleExists = true;
       break;
     }
@@ -3630,7 +3630,7 @@ void DataModel::ProjectModel::addAction(int sourceId)
   for (const auto& action : std::as_const(m_actions)) {
     if (action.title == title) {
       count++;
-      title = QString("%1 (%2)").arg(title).arg(count);
+      title = QString("%1 (%2)").arg(title, QString::number(count));
     }
   }
 
@@ -3641,7 +3641,7 @@ void DataModel::ProjectModel::addAction(int sourceId)
         continue;
 
       count++;
-      title       = QString("%1 (%2)").arg(title).arg(count);
+      title       = QString("%1 (%2)").arg(title, QString::number(count));
       titleExists = true;
       break;
     }
@@ -3668,7 +3668,8 @@ void DataModel::ProjectModel::addAction(int sourceId)
  * @brief Adds a new group with a unique title and the given widget type.
  */
 void DataModel::ProjectModel::addGroup(const QString& title,
-                                       const SerialStudio::GroupWidget widget, int sourceId)
+                                       const SerialStudio::GroupWidget widget,
+                                       int sourceId)
 {
   // Generate a unique title
   int count        = 1;
@@ -3676,7 +3677,7 @@ void DataModel::ProjectModel::addGroup(const QString& title,
   for (const auto& group : std::as_const(m_groups)) {
     if (group.title == newTitle) {
       count++;
-      newTitle = QString("%1 (%2)").arg(title).arg(count);
+      newTitle = QString("%1 (%2)").arg(title, QString::number(count));
     }
   }
 
@@ -3687,7 +3688,7 @@ void DataModel::ProjectModel::addGroup(const QString& title,
         continue;
 
       count++;
-      newTitle    = QString("%1 (%2)").arg(title).arg(count);
+      newTitle    = QString("%1 (%2)").arg(title, QString::number(count));
       titleExists = true;
       break;
     }
@@ -4198,7 +4199,7 @@ QString DataModel::ProjectModel::addTable(const QString& name)
   };
 
   while (hasName(unique))
-    unique = QStringLiteral("%1 %2").arg(base).arg(suffix++);
+    unique = QStringLiteral("%1 %2").arg(base, QString::number(suffix++));
 
   // Append and notify
   DataModel::TableDef table;
@@ -4280,7 +4281,7 @@ void DataModel::ProjectModel::addRegister(const QString& table,
   };
 
   while (hasName(unique))
-    unique = QStringLiteral("%1_%2").arg(base).arg(suffix++);
+    unique = QStringLiteral("%1_%2").arg(base, QString::number(suffix++));
 
   // Build the register def and append
   DataModel::RegisterDef reg;
@@ -4428,14 +4429,9 @@ void DataModel::ProjectModel::promptRenameGroup(int groupId)
 
   bool ok        = false;
   const auto old = m_groups[groupId].title;
-  const auto fresh
-    = QInputDialog::getText(nullptr,
-                            tr("Rename Group"),
-                            tr("Name:"),
-                            QLineEdit::Normal,
-                            old,
-                            &ok)
-        .trimmed();
+  const auto fresh =
+    QInputDialog::getText(nullptr, tr("Rename Group"), tr("Name:"), QLineEdit::Normal, old, &ok)
+      .trimmed();
   if (!ok || fresh.isEmpty() || fresh == old)
     return;
 
@@ -4457,14 +4453,9 @@ void DataModel::ProjectModel::promptRenameDataset(int groupId, int datasetId)
 
   bool ok        = false;
   const auto old = m_groups[groupId].datasets[datasetId].title;
-  const auto fresh
-    = QInputDialog::getText(nullptr,
-                            tr("Rename Dataset"),
-                            tr("Name:"),
-                            QLineEdit::Normal,
-                            old,
-                            &ok)
-        .trimmed();
+  const auto fresh =
+    QInputDialog::getText(nullptr, tr("Rename Dataset"), tr("Name:"), QLineEdit::Normal, old, &ok)
+      .trimmed();
   if (!ok || fresh.isEmpty() || fresh == old)
     return;
 
@@ -4487,16 +4478,11 @@ void DataModel::ProjectModel::promptRenameSource(int sourceId)
   if (!src)
     return;
 
-  bool ok        = false;
-  const auto old = src->title;
-  const auto fresh
-    = QInputDialog::getText(nullptr,
-                            tr("Rename Data Source"),
-                            tr("Name:"),
-                            QLineEdit::Normal,
-                            old,
-                            &ok)
-        .trimmed();
+  bool ok          = false;
+  const auto old   = src->title;
+  const auto fresh = QInputDialog::getText(
+                       nullptr, tr("Rename Data Source"), tr("Name:"), QLineEdit::Normal, old, &ok)
+                       .trimmed();
   if (!ok || fresh.isEmpty() || fresh == old)
     return;
 
@@ -4513,14 +4499,9 @@ void DataModel::ProjectModel::promptRenameAction(int actionId)
 
   bool ok        = false;
   const auto old = m_actions[actionId].title;
-  const auto fresh
-    = QInputDialog::getText(nullptr,
-                            tr("Rename Action"),
-                            tr("Name:"),
-                            QLineEdit::Normal,
-                            old,
-                            &ok)
-        .trimmed();
+  const auto fresh =
+    QInputDialog::getText(nullptr, tr("Rename Action"), tr("Name:"), QLineEdit::Normal, old, &ok)
+      .trimmed();
   if (!ok || fresh.isEmpty() || fresh == old)
     return;
 
@@ -5721,8 +5702,8 @@ QVariantList DataModel::ProjectModel::tablesForDiagram() const
 
   for (const auto& tbl : m_tables) {
     QVariantMap map;
-    map[Keys::Name]                          = tbl.name;
-    map[QStringLiteral("registerCount")]     = static_cast<int>(tbl.registers.size());
+    map[Keys::Name]                      = tbl.name;
+    map[QStringLiteral("registerCount")] = static_cast<int>(tbl.registers.size());
     result.append(map);
   }
 

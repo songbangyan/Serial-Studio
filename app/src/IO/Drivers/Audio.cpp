@@ -30,6 +30,9 @@
 #include "Misc/TimerEvents.h"
 #include "Misc/Translator.h"
 
+// SPSC queue depth for audio in/out buffers; sized for ~24Hz drain vs ~10ms produce
+static constexpr std::size_t kAudioQueueCapacity = 1024;
+
 //--------------------------------------------------------------------------------------------------
 // Utility functions
 //--------------------------------------------------------------------------------------------------
@@ -276,6 +279,8 @@ IO::Drivers::Audio::Audio()
   , m_selectedOutputDevice(-1)
   , m_selectedOutputSampleFormat(0)
   , m_selectedOutputChannelConfiguration(0)
+  , m_inputQueue(kAudioQueueCapacity)
+  , m_outputQueue(kAudioQueueCapacity)
   , m_inputWorkerTimer(nullptr)
 {
   // Manually select backend for each operating system
@@ -368,16 +373,16 @@ void IO::Drivers::Audio::closeDevice()
     m_inputWorkerThread.wait();
   }
 
-  // Clear internal input buffer
+  // Drain SPSC queues; ma_device_uninit above joined the audio thread
   {
-    QMutexLocker locker(&m_inputBufferLock);
-    m_rawInput.clear();
+    QByteArray dropped;
+    while (m_inputQueue.try_dequeue(dropped)) {
+    }
   }
-
-  // Clear internal output queue
   {
-    QMutexLocker locker(&m_outputBufferLock);
-    m_outputQueue.clear();
+    QVector<quint8> dropped;
+    while (m_outputQueue.try_dequeue(dropped)) {
+    }
   }
 
   m_isOpen = false;
@@ -470,9 +475,11 @@ qint64 IO::Drivers::Audio::write(const QByteArray& data)
     if (!packCsvSample(format, parts[i], frame))
       return 0;
 
-  // Enqueue frame for playback
-  QMutexLocker locker(&m_outputBufferLock);
-  m_outputQueue.push_back(std::move(frame));
+  // Enqueue frame for playback (lock-free SPSC: main thread is the only producer)
+  if (!m_outputQueue.try_enqueue(std::move(frame))) [[unlikely]] {
+    qWarning() << "Audio output queue full -- dropping frame";
+    return 0;
+  }
 
   return data.size();
 }
@@ -1053,16 +1060,14 @@ void IO::Drivers::Audio::configureOutput()
  */
 void IO::Drivers::Audio::processInputBuffer()
 {
-  // Swap out the shared buffer to minimize lock duration
+  // Drain all enqueued chunks lock-free (audio thread is sole producer)
   QByteArray raw;
-  {
-    QMutexLocker locker(&m_inputBufferLock);
-    if (m_rawInput.isEmpty())
-      return;
+  QByteArray chunk;
+  while (m_inputQueue.try_dequeue(chunk))
+    raw.append(chunk);
 
-    raw = std::move(m_rawInput);
-    m_rawInput.clear();
-  }
+  if (raw.isEmpty())
+    return;
 
   // Validate frame alignment
   const int channels       = m_config.capture.channels;
@@ -1290,38 +1295,31 @@ void IO::Drivers::Audio::handleCallback(void* output, const void* input, ma_uint
   const ma_uint32 bytesPerSample = ma_get_bytes_per_sample(format);
   const ma_uint32 bytesPerFrame  = bytesPerSample * channels;
 
-  // Append raw input data to buffer for later CSV conversion
+  // Hand input off to main-thread consumer via SPSC queue; drop on full to avoid underrun
   if (input && channels > 0 && format != ma_format_unknown) {
-    QMutexLocker locker(&m_inputBufferLock);
     const char* inputPtr = reinterpret_cast<const char*>(input);
-    m_rawInput.append(inputPtr, frameCount * bytesPerFrame);
+    QByteArray chunk(inputPtr, static_cast<int>(frameCount * bytesPerFrame));
+    (void)m_inputQueue.try_enqueue(std::move(chunk));
   }
 
   // Drain queued output frames, zero-fill if queue is empty
   if (output && m_config.playback.channels > 0 && m_config.playback.format != ma_format_unknown) {
-    QMutexLocker locker(&m_outputBufferLock);
-
-    // clang-format off
-    char *out = reinterpret_cast<char *>(output);
-    const ma_uint32 outBytesPerFrame = ma_get_bytes_per_sample(m_config.playback.format) * m_config.playback.channels;
-    // clang-format on
+    char* out = reinterpret_cast<char*>(output);
+    const ma_uint32 outBytesPerFrame =
+      ma_get_bytes_per_sample(m_config.playback.format) * m_config.playback.channels;
 
     // Write one queued frame per output slot
+    QVector<quint8> frame;
     for (ma_uint32 i = 0; i < frameCount; ++i, out += outBytesPerFrame) {
-      if (m_outputQueue.isEmpty()) [[unlikely]] {
+      if (!m_outputQueue.try_dequeue(frame)) [[unlikely]] {
         std::memset(out, 0, outBytesPerFrame);
         continue;
       }
 
-      // clang-format off
-      const QVector<quint8> &frame = m_outputQueue.front();
       const ma_uint32 bytesToCopy = qMin(outBytesPerFrame, static_cast<ma_uint32>(frame.size()));
       std::memcpy(out, frame.constData(), bytesToCopy);
       if (bytesToCopy < outBytesPerFrame) [[unlikely]]
         std::memset(out + bytesToCopy, 0, outBytesPerFrame - bytesToCopy);
-        
-      m_outputQueue.pop_front();
-      // clang-format on
     }
   }
 }

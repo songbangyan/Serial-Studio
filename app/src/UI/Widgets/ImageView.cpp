@@ -478,10 +478,12 @@ void Widgets::ImageView::onFrameReady(const QByteArray& data)
   m_imageHeight = img.height();
 
   {
-    const QImage thumb = img.scaled(16, 16, Qt::IgnoreAspectRatio, Qt::FastTransformation)
-                           .convertToFormat(QImage::Format_RGB32);
+    constexpr int kThumbSide   = 16;
+    constexpr int kThumbPixels = kThumbSide * kThumbSide;
+    const QImage thumb =
+      img.scaled(kThumbSide, kThumbSide, Qt::IgnoreAspectRatio, Qt::FastTransformation)
+        .convertToFormat(QImage::Format_RGB32);
     quint64 r = 0, g = 0, b = 0;
-    const int n = thumb.width() * thumb.height();
     for (int y = 0; y < thumb.height(); ++y) {
       const QRgb* line = reinterpret_cast<const QRgb*>(thumb.constScanLine(y));
       for (int x = 0; x < thumb.width(); ++x) {
@@ -490,8 +492,9 @@ void Widgets::ImageView::onFrameReady(const QByteArray& data)
         b += qBlue(line[x]);
       }
     }
-    m_primaryColor =
-      QColor(static_cast<int>(r / n), static_cast<int>(g / n), static_cast<int>(b / n));
+    m_primaryColor = QColor(static_cast<int>(r / kThumbPixels),
+                            static_cast<int>(g / kThumbPixels),
+                            static_cast<int>(b / kThumbPixels));
   }
 
   if (auto* prov = UI::ImageProvider::global())

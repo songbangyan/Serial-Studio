@@ -36,6 +36,8 @@
 #include "Misc/WorkspaceManager.h"
 #include "UI/Dashboard.h"
 
+static constexpr double kInvMs = 1.0 / 1000.0;
+
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
 //--------------------------------------------------------------------------------------------------
@@ -491,7 +493,7 @@ void CSV::Player::updateTimestampDisplay()
     auto frameTime = getDateTime(ts);
     if (frameTime.isValid() && m_startTimestamp.isValid()) {
       qint64 elapsedMs = m_startTimestamp.msecsTo(frameTime);
-      m_timestamp      = formatTimestamp(elapsedMs / 1000.0);
+      m_timestamp      = formatTimestamp(elapsedMs * kInvMs);
     }
 
     else
@@ -512,7 +514,7 @@ bool CSV::Player::recomputeMsUntilNext(qint64& msUntilNext)
       return false;
     }
 
-    const double target = m_startTimestampSeconds + (m_elapsedTimer.elapsed() / 1000.0);
+    const double target = m_startTimestampSeconds + (m_elapsedTimer.elapsed() * kInvMs);
     const double next   = m_timestampCache[m_framePos + 1];
     msUntilNext         = qMax(0LL, static_cast<qint64>((next - target) * 1000.0));
     return true;
@@ -561,7 +563,7 @@ void CSV::Player::updateData()
       return;
     }
 
-    const double targetTime = m_startTimestampSeconds + (elapsedMs / 1000.0);
+    const double targetTime = m_startTimestampSeconds + (elapsedMs * kInvMs);
     const double nextTime   = m_timestampCache[framePosition() + 1];
     msUntilNext             = qMax(0LL, static_cast<qint64>((nextTime - targetTime) * 1000.0));
   }
@@ -848,9 +850,12 @@ double CSV::Player::getTimestampSeconds(const QString& cell)
  */
 QString CSV::Player::formatTimestamp(double seconds) const
 {
+  constexpr double kInvHour = 1.0 / 3600.0;
+  constexpr double kInvMin  = 1.0 / 60.0;
+
   // Split total seconds into hours, minutes, and fractional seconds
-  int hours   = static_cast<int>(seconds / 3600.0);
-  int minutes = static_cast<int>((seconds - hours * 3600.0) / 60.0);
+  int hours   = static_cast<int>(seconds * kInvHour);
+  int minutes = static_cast<int>((seconds - hours * 3600.0) * kInvMin);
   double secs = seconds - hours * 3600.0 - minutes * 60.0;
 
   return QString("%1:%2:%3")

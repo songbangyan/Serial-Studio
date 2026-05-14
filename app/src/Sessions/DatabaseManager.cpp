@@ -754,8 +754,9 @@ void Sessions::DatabaseManager::exportSessionToCsv(int sessionId)
     QStringLiteral("%1/%2").arg(Misc::WorkspaceManager::instance().path("CSV"), safeProj);
   QDir().mkpath(dir);
 
-  const QString suggested = QStringLiteral("%1/session_%2.csv").arg(dir).arg(sessionId);
-  const auto path         = QFileDialog::getSaveFileName(
+  const QString suggested =
+    QStringLiteral("%1/session_%2.csv").arg(dir, QString::number(sessionId));
+  const auto path = QFileDialog::getSaveFileName(
     nullptr, tr("Export Session to CSV"), suggested, tr("CSV files (*.csv)"));
   if (path.isEmpty())
     return;

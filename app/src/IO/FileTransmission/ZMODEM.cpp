@@ -625,8 +625,8 @@ void IO::Protocols::ZMODEM::parseReceivedHeader(quint8 type, quint32 arg)
         return;
       }
 
-      Q_EMIT statusMessage(
-        tr("NAK received, retrying (%1/%2)…").arg(m_retryCount).arg(m_maxRetries));
+      Q_EMIT statusMessage(tr("NAK received, retrying (%1/%2)…")
+                             .arg(QString::number(m_retryCount), QString::number(m_maxRetries)));
 
       if (m_state == State::SentZRQINIT)
         sendZRQINIT();
@@ -881,7 +881,8 @@ void IO::Protocols::ZMODEM::handleTimeout()
     return;
   }
 
-  Q_EMIT statusMessage(tr("Timeout, retrying (%1/%2)…").arg(m_retryCount).arg(m_maxRetries));
+  Q_EMIT statusMessage(tr("Timeout, retrying (%1/%2)…")
+                         .arg(QString::number(m_retryCount), QString::number(m_maxRetries)));
 
   switch (m_state) {
     case State::SentZRQINIT:

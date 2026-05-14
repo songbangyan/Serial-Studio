@@ -538,8 +538,8 @@ void Widgets::Painter::renderFrame()
 
     if (m_slowPaintStreak >= 2 && !m_slowPaintWarned) {
       m_slowPaintWarned = true;
-      setLastError(
-        QStringLiteral("warning: paint() took %1 ms (>%2 ms budget)").arg(dt).arg(kSlowPaintMs));
+      setLastError(QStringLiteral("warning: paint() took %1 ms (>%2 ms budget)")
+                     .arg(QString::number(dt), QString::number(kSlowPaintMs)));
     }
   } else {
     m_slowPaintStreak = 0;

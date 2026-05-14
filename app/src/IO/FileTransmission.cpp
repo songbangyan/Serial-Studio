@@ -746,12 +746,14 @@ void IO::FileTransmission::updateTransferSpeed()
   m_lastSpeedBytes   = m_bytesSent;
   m_speedTimer.restart();
 
+  constexpr double kInvKB = 1.0 / 1024.0;
+  constexpr double kInvMB = 1.0 / (1024.0 * 1024.0);
   if (bytesPerSec < 1024)
     m_transferSpeed = tr("%1 B/s").arg(bytesPerSec);
   else if (bytesPerSec < 1024 * 1024)
-    m_transferSpeed = tr("%1 KB/s").arg(bytesPerSec / 1024.0, 0, 'f', 1);
+    m_transferSpeed = tr("%1 KB/s").arg(bytesPerSec * kInvKB, 0, 'f', 1);
   else
-    m_transferSpeed = tr("%1 MB/s").arg(bytesPerSec / (1024.0 * 1024.0), 0, 'f', 2);
+    m_transferSpeed = tr("%1 MB/s").arg(bytesPerSec * kInvMB, 0, 'f', 2);
 
   Q_EMIT transferSpeedChanged();
 }

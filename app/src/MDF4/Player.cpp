@@ -617,8 +617,9 @@ void MDF4::Player::updateData()
 
   sendFrame(m_framePos);
 
+  constexpr double kInvMs = 1.0 / 1000.0;
   const qint64 elapsedMs  = m_elapsedTimer.elapsed();
-  const double targetTime = m_startTimestamp + (elapsedMs / 1000.0);
+  const double targetTime = m_startTimestamp + (elapsedMs * kInvMs);
   const double nextTime   = m_frameIndex[framePosition() + 1].timestamp;
 
   if (nextTime <= targetTime) {
@@ -976,9 +977,11 @@ void MDF4::Player::sendHeaderFrame()
  */
 QString MDF4::Player::formatTimestamp(double timestamp) const
 {
-  int hours      = static_cast<int>(timestamp / 3600.0);
-  int minutes    = static_cast<int>((timestamp - hours * 3600.0) / 60.0);
-  double seconds = timestamp - hours * 3600.0 - minutes * 60.0;
+  constexpr double kInvHour = 1.0 / 3600.0;
+  constexpr double kInvMin  = 1.0 / 60.0;
+  int hours                 = static_cast<int>(timestamp * kInvHour);
+  int minutes               = static_cast<int>((timestamp - hours * 3600.0) * kInvMin);
+  double seconds            = timestamp - hours * 3600.0 - minutes * 60.0;
 
   return QString("%1:%2:%3")
     .arg(qMax(hours, 0), 2, 10, QChar('0'))

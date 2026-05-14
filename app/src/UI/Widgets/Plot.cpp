@@ -268,22 +268,22 @@ void Widgets::Plot::updateData()
     m_data.resize(count);
 
   // Update plot data points, avoid queue operations overhead
-  const auto xCapacity = X.capacity();
-  const auto yCapacity = Y.capacity();
-  if (xCapacity == 0 || yCapacity == 0)
+  if (X.capacity() == 0 || Y.capacity() == 0)
     return;
 
   // Obtain raw pointers and queue states for faster iteration
-  QPointF* out      = m_data.data();
-  const auto* xData = X.raw();
-  const auto* yData = Y.raw();
-  std::size_t xIdx  = X.frontIndex();
-  std::size_t yIdx  = Y.frontIndex();
+  QPointF* out            = m_data.data();
+  const auto* xData       = X.raw();
+  const auto* yData       = Y.raw();
+  const std::size_t xMask = X.storageMask();
+  const std::size_t yMask = Y.storageMask();
+  std::size_t xIdx        = X.frontIndex();
+  std::size_t yIdx        = Y.frontIndex();
   for (qsizetype i = 0; i < count; ++i) {
     out[i].setX(xData[xIdx]);
     out[i].setY(yData[yIdx]);
-    xIdx = (xIdx + 1) % xCapacity;
-    yIdx = (yIdx + 1) % yCapacity;
+    xIdx = (xIdx + 1) & xMask;
+    yIdx = (yIdx + 1) & yMask;
   }
 }
 

@@ -30,8 +30,8 @@
 #include <stdexcept>
 
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "Misc/Utilities.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -169,10 +169,10 @@ void DataModel::LuaScriptEngine::createState()
   lua_sethook(m_state, watchdogHook, LUA_MASKCOUNT, kHookInstructionCount);
 
   // Deadline armed per-call; fresh state re-arms the circuit breaker
-  m_deadline             = QDeadlineTimer(QDeadlineTimer::Forever);
-  m_loaded               = false;
-  m_disabled             = false;
-  m_consecutiveTimeouts  = 0;
+  m_deadline            = QDeadlineTimer(QDeadlineTimer::Forever);
+  m_loaded              = false;
+  m_disabled            = false;
+  m_consecutiveTimeouts = 0;
 }
 
 /**
@@ -250,9 +250,8 @@ bool DataModel::LuaScriptEngine::noteTimeoutAndCheckDisabled(int sourceId)
     return false;
 
   m_disabled = true;
-  qWarning() << "[LuaScriptEngine] Source" << sourceId
-             << "disabled after" << kMaxConsecutiveTimeouts
-             << "consecutive watchdog timeouts.";
+  qWarning() << "[LuaScriptEngine] Source" << sourceId << "disabled after"
+             << kMaxConsecutiveTimeouts << "consecutive watchdog timeouts.";
   Misc::Utilities::showMessageBox(
     QObject::tr("Frame Parser Disabled"),
     QObject::tr("The Lua frame parser for source %1 timed out %2 frames in a row "

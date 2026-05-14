@@ -13,8 +13,8 @@
 #include <QQuickPaintedItem>
 #include <QSyntaxStyle>
 
-#include "DataModel/Frame.h"
 #include "DataModel/Dialogs/TransmitTestDialog.h"
+#include "DataModel/Frame.h"
 
 namespace DataModel {
 

@@ -37,9 +37,9 @@
 #include <QUrl>
 
 #include "DataModel/Editors/CodeFormatter.h"
-#include "DataModel/Scripting/FrameParser.h"
 #include "DataModel/ProjectEditor.h"
 #include "DataModel/ProjectModel.h"
+#include "DataModel/Scripting/FrameParser.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"

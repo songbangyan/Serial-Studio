@@ -299,13 +299,14 @@ static std::size_t readAxisData(QSqlQuery& rows,
   globalMax         = -std::numeric_limits<double>::infinity();
   std::size_t count = 0;
 
+  constexpr double kInvNs = 1.0 / 1.0e9;
   while (rows.next()) {
     const double val = rows.value(1).toDouble();
     if (!std::isfinite(val))
       continue;
 
     const qint64 ts   = rows.value(0).toLongLong();
-    const double tSec = static_cast<double>(ts - originNs) / 1.0e9;
+    const double tSec = static_cast<double>(ts - originNs) * kInvNs;
     x.push(tSec);
     y.push(val);
 

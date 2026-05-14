@@ -965,8 +965,7 @@ void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId
             });
   }
 
-  m_transformEditor->displayDialog(
-    dataset.title, dataset.transformCode, lang, groupId, datasetId);
+  m_transformEditor->displayDialog(dataset.title, dataset.transformCode, lang, groupId, datasetId);
 }
 
 /**

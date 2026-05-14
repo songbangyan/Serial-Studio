@@ -462,8 +462,8 @@ void Widgets::MultiPlot::applyDerivedYBounds()
   }
 
   // Expand range symmetrically around midY, with a 10% padding
-  const double midY      = (m_minY + m_maxY) / 2.0;
-  const double halfRange = (m_maxY - m_minY) / 2.0;
+  const double midY      = (m_minY + m_maxY) * 0.5;
+  const double halfRange = (m_maxY - m_minY) * 0.5;
 
   double paddedRange = halfRange * 1.1;
   if (DSP::isZero(paddedRange))

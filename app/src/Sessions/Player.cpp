@@ -673,10 +673,12 @@ void Sessions::Player::updateData()
   }
 
   // Schedule the next frame on the recording's wall-clock delta
-  const qint64 elapsedMs = m_elapsedTimer.elapsed();
-  const double nextSec   = m_timestampsNs[static_cast<size_t>(m_framePos + 1)] / 1e9;
-  const double targetSec = m_startTimestampSeconds + (elapsedMs / 1000.0);
-  qint64 msUntilNext     = qMax(0LL, static_cast<qint64>((nextSec - targetSec) * 1000.0));
+  constexpr double kInvMs = 1.0 / 1000.0;
+  constexpr double kInvNs = 1.0 / 1e9;
+  const qint64 elapsedMs  = m_elapsedTimer.elapsed();
+  const double nextSec    = m_timestampsNs[static_cast<size_t>(m_framePos + 1)] * kInvNs;
+  const double targetSec  = m_startTimestampSeconds + (elapsedMs * kInvMs);
+  qint64 msUntilNext      = qMax(0LL, static_cast<qint64>((nextSec - targetSec) * 1000.0));
 
   // Burst-emit late frames in one chunk to prevent runaway queues
   if (msUntilNext <= 0) {
@@ -689,8 +691,8 @@ void Sessions::Player::updateData()
       ++processed;
 
       if (m_framePos + 1 < frameCount()) {
-        const double next   = m_timestampsNs[static_cast<size_t>(m_framePos + 1)] / 1e9;
-        const double target = m_startTimestampSeconds + (m_elapsedTimer.elapsed() / 1000.0);
+        const double next   = m_timestampsNs[static_cast<size_t>(m_framePos + 1)] * kInvNs;
+        const double target = m_startTimestampSeconds + (m_elapsedTimer.elapsed() * kInvMs);
         msUntilNext         = qMax(0LL, static_cast<qint64>((next - target) * 1000.0));
       }
 
@@ -1009,9 +1011,11 @@ void Sessions::Player::updateTimestampDisplay()
  */
 QString Sessions::Player::formatTimestamp(double seconds) const
 {
-  int hours   = static_cast<int>(seconds / 3600.0);
-  int minutes = static_cast<int>((seconds - hours * 3600.0) / 60.0);
-  double secs = seconds - hours * 3600.0 - minutes * 60.0;
+  constexpr double kInvHour = 1.0 / 3600.0;
+  constexpr double kInvMin  = 1.0 / 60.0;
+  int hours                 = static_cast<int>(seconds * kInvHour);
+  int minutes               = static_cast<int>((seconds - hours * 3600.0) * kInvMin);
+  double secs               = seconds - hours * 3600.0 - minutes * 60.0;
 
   return QString("%1:%2:%3")
     .arg(hours, 2, 10, QChar('0'))

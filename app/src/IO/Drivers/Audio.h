@@ -24,7 +24,6 @@
 
 #include <QBuffer>
 #include <QMap>
-#include <QMutex>
 #include <QObject>
 #include <QSettings>
 #include <QTextStream>
@@ -34,6 +33,7 @@
 
 #include "IO/HAL_Driver.h"
 #include "ThirdParty/miniaudio.h"
+#include "ThirdParty/readerwriterqueue.h"
 
 namespace IO {
 namespace Drivers {
@@ -215,15 +215,13 @@ private:
   QVector<ma_device_info> m_outputDevices;
 
   QSettings m_settings;
-  QMutex m_inputBufferLock;
-  QByteArray m_rawInput;
+  moodycamel::ReaderWriterQueue<QByteArray> m_inputQueue;
 
   mutable QBuffer m_csvBuffer;
   mutable QByteArray m_csvData;
   mutable QTextStream m_csvStream;
 
-  QMutex m_outputBufferLock;
-  QVector<QVector<quint8>> m_outputQueue;
+  moodycamel::ReaderWriterQueue<QVector<quint8>> m_outputQueue;
 
   QTimer* m_inputWorkerTimer;
   QThread m_inputWorkerThread;

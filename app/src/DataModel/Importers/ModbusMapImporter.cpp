@@ -380,7 +380,8 @@ void DataModel::ModbusMapImporter::confirmImport()
         return;
 
       Misc::Utilities::showMessageBox(
-        tr("Successfully imported %1 registers in %2 groups.").arg(registerCount).arg(blockCount),
+        tr("Successfully imported %1 registers in %2 groups.")
+          .arg(QString::number(registerCount), QString::number(blockCount)),
         tr("The project editor is now open for customization."),
         QMessageBox::Information,
         tr("Modbus Import Complete"));
@@ -789,7 +790,8 @@ QString DataModel::ModbusMapImporter::buildFrameParser(const QVector<RegisterBlo
   code += QStringLiteral("-- Modbus Register Map Parser\n");
   code += QStringLiteral("-- Auto-generated from: %1\n").arg(QFileInfo(m_filePath).fileName());
   code += QStringLiteral("--\n");
-  code += QStringLiteral("-- Groups: %1, Datasets: %2\n").arg(group_count).arg(total_datasets);
+  code += QStringLiteral("-- Groups: %1, Datasets: %2\n")
+            .arg(QString::number(group_count), QString::number(total_datasets));
   code += QStringLiteral("-- Frame: {slaveAddr, funcCode, byteCount, ...data}\n");
   code += QStringLiteral("--\n\n");
 
@@ -1014,8 +1016,8 @@ QString DataModel::ModbusMapImporter::emitParserEntry(const RegisterEntry& entry
   if (is_bit) {
     const int byte_idx = reg_off / 8 + 1;
     const int bit_idx  = reg_off % 8;
-    out +=
-      QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n").arg(idx).arg(byte_idx).arg(bit_idx);
+    out += QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n")
+             .arg(QString::number(idx), QString::number(byte_idx), QString::number(bit_idx));
     return out;
   }
 

@@ -45,18 +45,39 @@ namespace DSP {
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief A fixed-capacity, auto-overwriting circular buffer (FIFO queue).
+ * @brief Rounds @a value up to the next power of two (>= 2). Used by FixedQueue
+ *        to size its backing storage so wrap-around can mask with `& (cap-1)`.
+ */
+[[nodiscard]] inline std::size_t roundUpToPowerOfTwo(std::size_t value) noexcept
+{
+  std::size_t v = value < 2 ? 2 : value;
+  --v;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  if constexpr (sizeof(std::size_t) > 4)
+    v |= v >> 32;
+  return v + 1;
+}
+
+/**
+ * @brief A fixed-capacity, auto-overwriting circular buffer (FIFO queue) with pow2 storage.
  */
 template<typename T>
   requires std::copy_constructible<T> && std::is_copy_assignable_v<T>
 class FixedQueue {
 public:
   /**
-   * @brief Constructs a FixedQueue with a given capacity.
+   * @brief Constructs a FixedQueue with a given logical capacity. Backing storage
+   *        is rounded up to the next power of two for fast wrap-around.
    */
   explicit FixedQueue(std::size_t capacity = 100)
     : m_capacity(capacity < 1 ? 1 : capacity)
-    , m_data(std::shared_ptr<T[]>(new T[capacity < 1 ? 1 : capacity]))
+    , m_storageCapacity(roundUpToPowerOfTwo(capacity < 1 ? 1 : capacity))
+    , m_storageMask(m_storageCapacity - 1)
+    , m_data(std::shared_ptr<T[]>(new T[m_storageCapacity]))
     , m_start(0)
     , m_size(0)
   {}
@@ -120,9 +141,31 @@ public:
   [[nodiscard]] bool empty() const { return m_size == 0; }
 
   /**
-   * @brief Returns the internal index of the front (oldest) element.
+   * @brief Returns the storage index of the front (oldest) element. Pair with
+   *        `nextIndex()` (or `storageMask()`) to walk the ring without modulo.
    */
   [[nodiscard]] std::size_t frontIndex() const { return m_start; }
+
+  /**
+   * @brief Returns `(idx + 1) & storageMask` -- the next storage position when
+   *        walking the ring from `frontIndex()`. Use instead of `% capacity()`.
+   */
+  [[nodiscard]] std::size_t nextIndex(std::size_t idx) const noexcept
+  {
+    return (idx + 1) & m_storageMask;
+  }
+
+  /**
+   * @brief Returns the storage AND-mask. Lets advanced callers inline the
+   *        wrap (`idx = (idx + n) & mask`) when walking by a stride > 1.
+   */
+  [[nodiscard]] std::size_t storageMask() const noexcept { return m_storageMask; }
+
+  /**
+   * @brief Returns the backing storage size (>= capacity()), always a power of two.
+   *        Use for span/wrap math that operates on the raw buffer indices.
+   */
+  [[nodiscard]] std::size_t storageCapacity() const noexcept { return m_storageCapacity; }
 
   /**
    * @brief Provides read-only access to an element at a given index.
@@ -228,27 +271,30 @@ public:
     if (newCapacity == m_capacity)
       return;
 
-    std::shared_ptr<T[]> newData(new T[newCapacity]);
+    const std::size_t newStorage = roundUpToPowerOfTwo(newCapacity);
+    std::shared_ptr<T[]> newData(new T[newStorage]);
     std::size_t elementsToCopy = std::min(m_size, newCapacity);
     for (std::size_t i = 0; i < elementsToCopy; ++i)
       newData[i] = std::move((*this)[m_size - elementsToCopy + i]);
 
-    m_start    = 0;
-    m_size     = elementsToCopy;
-    m_capacity = newCapacity;
-    m_data     = std::move(newData);
+    m_start           = 0;
+    m_size            = elementsToCopy;
+    m_capacity        = newCapacity;
+    m_storageCapacity = newStorage;
+    m_storageMask     = newStorage - 1;
+    m_data            = std::move(newData);
   }
 
 private:
   /**
-   * @brief Computes the index where the next element will be inserted.
+   * @brief Computes the storage index where the next element will be inserted.
    */
-  std::size_t endIndex() const { return (m_start + m_size) % m_capacity; }
+  std::size_t endIndex() const { return (m_start + m_size) & m_storageMask; }
 
   /**
-   * @brief Computes the actual buffer index for a logical element index.
+   * @brief Computes the storage index for a logical element index.
    */
-  std::size_t wrappedIndex(std::size_t index) const { return (m_start + index) % m_capacity; }
+  std::size_t wrappedIndex(std::size_t index) const { return (m_start + index) & m_storageMask; }
 
   /**
    * @brief Advances the internal index after an insertion.
@@ -259,14 +305,16 @@ private:
     if (m_size < m_capacity)
       ++m_size;
     else
-      m_start = (m_start + 1) % m_capacity;
+      m_start = (m_start + 1) & m_storageMask;
   }
 
 private:
-  std::size_t m_capacity;       ///< Maximum number of elements.
-  std::shared_ptr<T[]> m_data;  ///< Shared pointer to the internal buffer.
-  std::size_t m_start;          ///< Index of the oldest element.
-  std::size_t m_size;           ///< Current number of elements.
+  std::size_t m_capacity;         ///< Logical (user-requested) capacity.
+  std::size_t m_storageCapacity;  ///< Backing storage size (pow2, >= m_capacity).
+  std::size_t m_storageMask;      ///< m_storageCapacity - 1; AND-mask for wrap.
+  std::shared_ptr<T[]> m_data;    ///< Shared pointer to the internal buffer.
+  std::size_t m_start;            ///< Storage index of the oldest element.
+  std::size_t m_size;             ///< Current number of elements.
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -384,9 +432,9 @@ inline void spanFromFixedQueue(
   const T* base = q.raw();
 
   const std::size_t n    = q.size();
-  const std::size_t cap  = q.capacity();
+  const std::size_t scap = q.storageCapacity();
   const std::size_t i0   = q.frontIndex();
-  const std::size_t tail = std::min<std::size_t>(n, cap - i0);
+  const std::size_t tail = std::min<std::size_t>(n, scap - i0);
 
   p0 = base + i0;
   n0 = tail;

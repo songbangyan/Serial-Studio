@@ -117,6 +117,7 @@ static void enableWindowsPerformanceMode()
   SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED);
 }
 
+// code-verify off  (cold argv setup before QApplication exists; C malloc is intentional)
 /**
  * @brief Forces the Qt windows platform plugin to use FreeType font rendering.
  */
@@ -138,6 +139,8 @@ static char** adjustArgumentsForFreeType(int& argc, char** argv)
   argc += 2;
   return newArgv;
 }
+
+// code-verify on
 #endif
 
 namespace AppPlatform {
@@ -155,6 +158,7 @@ QString shortcutIdentityHash(const QString& shortcutPath)
   return QString::fromLatin1(digest.toHex().left(16));
 }
 
+// code-verify off  (cold argv setup before QApplication exists; C malloc is intentional)
 /**
  * @brief Injects "-platform <platform>" into argv before Qt parses it.
  */
@@ -175,6 +179,8 @@ char** injectPlatformArg(int& argc, char** argv, const char* platform)
   argc += 2;
   return newArgv;
 }
+
+// code-verify on
 
 /**
  * @brief Performs platform fixups, fractional scaling, and WebEngine init.
@@ -250,6 +256,7 @@ void registerFileAssociation()
 #endif
 }
 
+// code-verify off  (mirrors malloc above; pair with adjustArgumentsForFreeType / injectPlatformArg)
 /**
  * @brief Frees the heap-duplicated argv produced by adjustArgumentsForFreeType.
  */
@@ -265,6 +272,8 @@ void releaseAdjustedArgv(int argc, char** argv)
   Q_UNUSED(argv);
 #endif
 }
+
+// code-verify on
 
 }  // namespace AppPlatform
 

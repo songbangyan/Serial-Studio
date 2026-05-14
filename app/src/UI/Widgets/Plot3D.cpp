@@ -22,6 +22,7 @@
 
 #include "UI/Widgets/Plot3D.h"
 
+#include <cmath>
 #include <QCursor>
 
 #include "DSP.h"
@@ -29,6 +30,22 @@
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
 #include "UI/Dashboard.h"
+
+/**
+ * @brief Integer-exponent 10^n via table lookup; std::pow fallback for out-of-band values.
+ */
+static double fastPow10(double exponent) noexcept
+{
+  static constexpr double kTable[] = {
+    1e-15, 1e-14, 1e-13, 1e-12, 1e-11, 1e-10, 1e-9, 1e-8, 1e-7, 1e-6, 1e-5,
+    1e-4,  1e-3,  1e-2,  1e-1,  1e0,   1e1,   1e2,  1e3,  1e4,  1e5,  1e6,
+    1e7,   1e8,   1e9,   1e10,  1e11,  1e12,  1e13, 1e14, 1e15,
+  };
+  const int idx = static_cast<int>(exponent) + 15;
+  if (idx < 0 || idx >= static_cast<int>(sizeof(kTable) / sizeof(kTable[0]))) [[unlikely]]
+    return std::pow(10.0, exponent);
+  return kTable[idx];
+}
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & initialization
@@ -283,9 +300,10 @@ double Widgets::Plot3D::idealWorldScale() const
   if (maxExtent < 1e-9)
     return m_worldScale;
 
-  const double targetStep = (maxExtent * 1.2) / 6.0;
+  constexpr double kInv6  = 1.0 / 6.0;
+  const double targetStep = (maxExtent * 1.2) * kInv6;
   const double exponent   = std::floor(std::log10(targetStep));
-  const double base       = std::pow(10.0, exponent);
+  const double base       = fastPow10(exponent);
   double snappedStep;
   if (targetStep <= base)
     snappedStep = base;
@@ -856,7 +874,7 @@ double Widgets::Plot3D::gridStep(const double scale) const
 
   const float rawStep  = 1.0f / s;
   const float exponent = std::floor(std::log10(rawStep));
-  const float base     = std::pow(10.0f, exponent);
+  const float base     = static_cast<float>(fastPow10(exponent));
 
   if (rawStep >= base * 5)
     return base * 5;
@@ -886,8 +904,9 @@ std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& 
       continue;
 
     // Normalized Device Coordinates [-1, 1]
-    const float ndcX = v.x() / v.w();
-    const float ndcY = v.y() / v.w();
+    const float invW = 1.0f / v.w();
+    const float ndcX = v.x() * invW;
+    const float ndcY = v.y() * invW;
 
     // Convert NDC to screen-space
     const float screenX = halfW + ndcX * halfW;
@@ -918,7 +937,8 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
   const float halfW = w * 0.5f;
   const float halfH = h * 0.5f;
   const QPointF center(halfW, halfH);
-  const float maxDist = 0.5f * std::hypot(w, h);
+  const float maxDist    = 0.5f * std::hypot(w, h);
+  const float invMaxDist = maxDist > 0.0f ? 1.0f / maxDist : 0.0f;
 
   // Off-screen culling threshold relative to viewport
   const float screenRatio = 0.4f;
@@ -953,7 +973,7 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
     // Compute fade factor based on distance from center
     QPointF mid = 0.5f * (pA + pB);
     float dist  = QLineF(mid, center).length();
-    float alpha = 1.0f - std::clamp(dist / maxDist, 0.0f, 1.0f);
+    float alpha = 1.0f - std::clamp(dist * invMaxDist, 0.0f, 1.0f);
 
     // Apply distance-based fade and draw
     QColor faded = color;
@@ -1098,8 +1118,9 @@ QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
   for (const auto& ta : transformedAxes) {
     // Project axis endpoint to screen space
     const QVector4D& t = ta.transformed;
-    QPointF endpoint(origin.x() + (t.x() / t.w()) * lineScale,
-                     origin.y() - (t.y() / t.w()) * lineScale);
+    const float invW   = t.w() != 0.0f ? 1.0f / t.w() : 0.0f;
+    QPointF endpoint(origin.x() + (t.x() * invW) * lineScale,
+                     origin.y() - (t.y() * invW) * lineScale);
 
     painter.setPen(QPen(ta.axis.color, 3));
     painter.drawLine(origin, endpoint);
@@ -1139,9 +1160,10 @@ QImage Widgets::Plot3D::renderData(const QMatrix4x4& matrix, const DSP::LineSeri
     const auto& endColor   = m_lineHeadColor;
     const auto& startColor = m_lineTailColor;
     const auto numPoints   = static_cast<qsizetype>(points.size());
+    const double invPoints = numPoints > 0 ? 1.0 / numPoints : 0.0;
     for (qsizetype i = 1; i < numPoints; ++i) {
       QColor c;
-      double t = double(i) / numPoints;
+      double t = double(i) * invPoints;
       c.setRedF(startColor.redF() * (1 - t) + endColor.redF() * t);
       c.setGreenF(startColor.greenF() * (1 - t) + endColor.greenF() * t);
       c.setBlueF(startColor.blueF() * (1 - t) + endColor.blueF() * t);
@@ -1206,9 +1228,10 @@ void Widgets::Plot3D::wheelEvent(QWheelEvent* event)
 
     const bool isTouchpad =
       !event->pixelDelta().isNull() || event->source() == Qt::MouseEventSynthesizedBySystem;
-    const double zoomFactor = isTouchpad ? 1.05 : 1.06;
-    const double delta      = -event->angleDelta().y() / 120.0;
-    const double factor     = qPow(zoomFactor, -delta);
+    const double zoomFactor  = isTouchpad ? 1.05 : 1.06;
+    constexpr double kInv120 = 1.0 / 120.0;
+    const double delta       = -event->angleDelta().y() * kInv120;
+    const double factor      = qPow(zoomFactor, -delta);
 
     setWorldScale(worldScale() * factor);
   }

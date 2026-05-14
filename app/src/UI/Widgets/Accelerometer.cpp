@@ -196,10 +196,11 @@ void Widgets::Accelerometer::updateData()
   }
 
   // Convert to G-force
-  const double factor = m_inputInG ? 1.0 : (1.0 / 9.81);
-  const double gx     = rawX * factor;
-  const double gy     = rawY * factor;
-  const double gz     = rawZ * factor;
+  constexpr double kInv981 = 1.0 / 9.81;
+  const double factor      = m_inputInG ? 1.0 : kInv981;
+  const double gx          = rawX * factor;
+  const double gy          = rawY * factor;
+  const double gz          = rawZ * factor;
 
   // 2D polar (X-Y plane)
   const double mag   = qSqrt(gx * gx + gy * gy);

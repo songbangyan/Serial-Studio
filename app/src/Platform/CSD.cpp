@@ -132,7 +132,7 @@ void Titlebar::paint(QPainter* painter)
 
   // Draw application icon
   if (!m_icon.isNull()) {
-    const qreal y = (height() - CSD::IconSize) / 2.0;
+    const qreal y = (height() - CSD::IconSize) * 0.5;
     painter->drawPixmap(QPointF(CSD::IconMargin, y), m_icon);
   }
 
@@ -214,7 +214,9 @@ QColor Titlebar::foregroundColor() const
 
   // Fall back to luminance-based contrast (W3C formula)
   // clang-format off
-  auto linearize = [](qreal c) { return c <= 0.03928 ? c / 12.92 : qPow((c + 0.055) / 1.055, 2.4); };
+  constexpr qreal kInv1292 = 1.0 / 12.92;
+  constexpr qreal kInv1055 = 1.0 / 1.055;
+  auto linearize = [](qreal c) { return c <= 0.03928 ? c * kInv1292 : qPow((c + 0.055) * kInv1055, 2.4); };
   const qreal luminance = 0.2126 * linearize(m_backgroundColor.redF())
                           + 0.7152 * linearize(m_backgroundColor.greenF())
                           + 0.0722 * linearize(m_backgroundColor.blueF());
@@ -781,8 +783,9 @@ void Frame::regenerateShadow()
   m_shadowEdge = QImage(1, m_shadowRadius, QImage::Format_ARGB32_Premultiplied);
   m_shadowEdge.fill(Qt::transparent);
 
+  const qreal invShadowRadius = m_shadowRadius > 0 ? 1.0 / m_shadowRadius : 0.0;
   for (int y = 0; y < m_shadowRadius; ++y) {
-    const qreal dist = static_cast<qreal>(m_shadowRadius - y - 1) / m_shadowRadius;
+    const qreal dist = static_cast<qreal>(m_shadowRadius - y - 1) * invShadowRadius;
     qreal alpha      = 1.0 - dist;
     alpha            = alpha * alpha * (3.0 - 2.0 * alpha);
     alpha *= CSD::ShadowOpacity;
@@ -796,7 +799,7 @@ void Frame::regenerateShadow()
   m_shadowEdgeVertical.fill(Qt::transparent);
 
   for (int x = 0; x < m_shadowRadius; ++x) {
-    const qreal dist = static_cast<qreal>(x) / m_shadowRadius;
+    const qreal dist = static_cast<qreal>(x) * invShadowRadius;
     qreal alpha      = 1.0 - dist;
     alpha            = alpha * alpha * (3.0 - 2.0 * alpha);
     alpha *= CSD::ShadowOpacity;
@@ -814,13 +817,14 @@ QImage Frame::generateShadowCorner(int size)
   QImage tile(size, size, QImage::Format_ARGB32_Premultiplied);
   tile.fill(Qt::transparent);
 
+  const qreal invSize = size > 0 ? 1.0 / static_cast<qreal>(size) : 0.0;
   for (int y = 0; y < size; ++y) {
     for (int x = 0; x < size; ++x) {
       const qreal dx   = static_cast<qreal>(size - x - 1);
       const qreal dy   = static_cast<qreal>(size - y - 1);
       const qreal dist = qSqrt(dx * dx + dy * dy);
 
-      qreal alpha = 1.0 - qMin(dist / static_cast<qreal>(size), 1.0);
+      qreal alpha = 1.0 - qMin(dist * invSize, 1.0);
       alpha       = alpha * alpha * (3.0 - 2.0 * alpha);
       alpha *= CSD::ShadowOpacity;
       tile.setPixelColor(x, y, QColor(0, 0, 0, qRound(alpha * 255)));

@@ -325,7 +325,7 @@ void AI::OpenAIReply::onReplyFinished()
     else if (status == 429)
       finishWithError(tr("Rate limited: %1").arg(msg));
     else
-      finishWithError(tr("%1 %2: %3").arg(m_providerLabel).arg(status).arg(msg));
+      finishWithError(tr("%1 %2: %3").arg(m_providerLabel, QString::number(status), msg));
 
     return;
   }

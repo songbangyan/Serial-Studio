@@ -331,7 +331,7 @@ void AI::AnthropicReply::onReplyFinished()
     else if (status == 429)
       finishWithError(tr("Rate limited: %1").arg(msg));
     else
-      finishWithError(tr("Anthropic %1: %2").arg(status).arg(msg));
+      finishWithError(tr("Anthropic %1: %2").arg(QString::number(status), msg));
 
     return;
   }

@@ -37,10 +37,10 @@
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
+#include "DataModel/ProjectModel.h"
 #include "DataModel/Scripting/FrameParser.h"
 #include "DataModel/Scripting/JsScriptEngine.h"
 #include "DataModel/Scripting/LuaScriptEngine.h"
-#include "DataModel/ProjectModel.h"
 #include "IO/ConnectionManager.h"
 #include "SerialStudio.h"
 
@@ -1512,7 +1512,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("Invalid count: must be 1..%1 (got %2)").arg(kMaxAddManyCount).arg(count));
+      QStringLiteral("Invalid count: must be 1..%1 (got %2)")
+        .arg(QString::number(kMaxAddManyCount), QString::number(count)));
 
   if (options < 0 || options > 0b01111111)
     return CommandResponse::makeError(
@@ -1612,10 +1613,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString&
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found: %1 in group %2")
+                                        .arg(QString::number(datasetId), QString::number(groupId)));
 
   const auto preEpoch = captureProjectEpoch();
   project.deleteDataset(groupId, datasetId);
@@ -1652,10 +1653,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDuplicate(const QStri
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found: %1 in group %2")
+                                        .arg(QString::number(datasetId), QString::number(groupId)));
 
   project.duplicateDataset(groupId, datasetId);
 
@@ -1715,10 +1716,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found: %1 in group %2")
+                                        .arg(QString::number(datasetId), QString::number(groupId)));
 
   // changeDatasetOption() reads m_selectedDataset; select first.
   project.setSelectedDataset(groups[groupId].datasets[datasetId]);
@@ -1774,10 +1775,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QStr
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= groups[groupId].datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found: %1 in group %2")
+                                        .arg(QString::number(datasetId), QString::number(groupId)));
 
   DataModel::Dataset d = groups[groupId].datasets[datasetId];
   d.plt                = (options & SerialStudio::DatasetPlot) != 0;
@@ -1850,10 +1851,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetVirtual(const QStr
   });
 
   if (dit == datasets.end())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found in group: %1/%2").arg(groupId).arg(datasetId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found in group: %1/%2")
+                                        .arg(QString::number(groupId), QString::number(datasetId)));
 
   // Apply the flag -- updateDataset validates, emits signals, and rebuilds the tree
   DataModel::Dataset updated = *dit;
@@ -1906,10 +1907,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   });
 
   if (dit == datasets.end())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found in group: %1/%2").arg(groupId).arg(datasetId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found in group: %1/%2")
+                                        .arg(QString::number(groupId), QString::number(datasetId)));
 
   DataModel::Dataset updated = *dit;
   updated.transformCode      = code;
@@ -2089,10 +2090,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDelete(const QSt
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (widgetId < 0 || static_cast<size_t>(widgetId) >= groups[groupId].outputWidgets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Widget id not found: %1 in group %2")
+                                        .arg(QString::number(widgetId), QString::number(groupId)));
 
   project.deleteOutputWidget(groupId, widgetId);
 
@@ -2126,10 +2127,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDuplicate(const 
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
 
   if (widgetId < 0 || static_cast<size_t>(widgetId) >= groups[groupId].outputWidgets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Widget id not found: %1 in group %2")
+                                        .arg(QString::number(widgetId), QString::number(groupId)));
 
   project.duplicateOutputWidget(groupId, widgetId);
 
@@ -2163,10 +2164,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetGet(const QStrin
 
   const auto& widgets = groups[groupId].outputWidgets;
   if (widgetId < 0 || static_cast<size_t>(widgetId) >= widgets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Widget id not found: %1 in group %2")
+                                        .arg(QString::number(widgetId), QString::number(groupId)));
 
   const auto& w = widgets[widgetId];
   QJsonObject result;
@@ -2582,11 +2583,11 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetByTitle(const QStr
     extra[QStringLiteral("hint")] =
       QStringLiteral("Multiple datasets match this title. Pass sourceId or groupId to "
                      "disambiguate, or call project.dataset.getByPath.");
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Ambiguous title '%1' (%2 matches)").arg(title).arg(matches.size()),
-      extra);
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Ambiguous title '%1' (%2 matches)")
+                                        .arg(title, QString::number(matches.size())),
+                                      extra);
   }
 
   return CommandResponse::makeSuccess(id, matches.first().toObject());
@@ -3891,10 +3892,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
 
   const auto& datasets = groups[groupId].datasets;
   if (datasetId < 0 || static_cast<size_t>(datasetId) >= datasets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset id not found: %1 in group %2").arg(datasetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found: %1 in group %2")
+                                        .arg(QString::number(datasetId), QString::number(groupId)));
 
   DataModel::Dataset d = datasets[datasetId];
   bool rebuildTree     = false;
@@ -4029,10 +4030,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
 
   DataModel::Group g = groups[groupId];
   if (widgetId < 0 || static_cast<size_t>(widgetId) >= g.outputWidgets.size())
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Widget id not found: %1 in group %2").arg(widgetId).arg(groupId));
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Widget id not found: %1 in group %2")
+                                        .arg(QString::number(widgetId), QString::number(groupId)));
 
   DataModel::OutputWidget& w = g.outputWidgets[widgetId];
   bool rebuildTree           = false;
@@ -4245,7 +4246,8 @@ API::CommandResponse API::Handlers::ProjectHandler::projectBatch(const QString& 
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("ops array exceeds limit of %1 (got %2)").arg(kMaxBatchOps).arg(ops.size()),
+      QStringLiteral("ops array exceeds limit of %1 (got %2)")
+        .arg(QString::number(kMaxBatchOps), QString::number(ops.size())),
       buildBatchSchemaHint());
 
   const bool stopOnError = params.value(QStringLiteral("stopOnError")).toBool(false);
@@ -4487,7 +4489,8 @@ static void validateDataset(const DataModel::Dataset& d,
                             QJsonArray& issues,
                             bool& ok)
 {
-  const QString dloc = QStringLiteral("group[%1].dataset[%2]").arg(g.groupId).arg(d.datasetId);
+  const QString dloc = QStringLiteral("group[%1].dataset[%2]")
+                         .arg(QString::number(g.groupId), QString::number(d.datasetId));
 
   if (!sourceIds.contains(d.sourceId)) {
     ok = false;

@@ -197,11 +197,10 @@ void DataModel::DBCImporter::confirmImport()
   auto& pm = ProjectModel::instance();
   AppState::instance().setOperationMode(SerialStudio::ProjectFile);
   if (!pm.loadFromJsonDocument(QJsonDocument(project), QString())) {
-    Misc::Utilities::showMessageBox(
-      tr("Failed to load imported project"),
-      tr("The generated project JSON could not be loaded."),
-      QMessageBox::Critical,
-      tr("DBC Import Error"));
+    Misc::Utilities::showMessageBox(tr("Failed to load imported project"),
+                                    tr("The generated project JSON could not be loaded."),
+                                    QMessageBox::Critical,
+                                    tr("DBC Import Error"));
     return;
   }
 
@@ -676,8 +675,7 @@ QString DataModel::DBCImporter::emitSelectorExtraction(const QCanSignalDescripti
 
   code += generateSignalExtraction(selector);
   code += QString("  values[%1] = value_%2\n")
-            .arg(datasetIndex)
-            .arg(sanitizeString(selector.name()));
+            .arg(QString::number(datasetIndex), sanitizeString(selector.name()));
   ++datasetIndex;
   return code;
 }
@@ -710,8 +708,7 @@ QString DataModel::DBCImporter::emitPlainExtractions(const QCanMessageDescriptio
 
     code += generateSignalExtraction(signal);
     code += QString("  values[%1] = value_%2\n")
-              .arg(datasetIndex)
-              .arg(sanitizeString(signal.name()));
+              .arg(QString::number(datasetIndex), sanitizeString(signal.name()));
     ++datasetIndex;
   }
 
@@ -745,11 +742,11 @@ QString DataModel::DBCImporter::emitMuxedExtractions(const QCanMessageDescriptio
 
     const auto unit = signal.physicalUnit();
     if (unit.isEmpty())
-      code += QString("  -- %1 [mux %2]\n").arg(signal.name()).arg(mv);
+      code += QString("  -- %1 [mux %2]\n").arg(signal.name(), QString::number(mv));
     else
-      code += QString("  -- %1 [%2] [mux %3]\n").arg(signal.name(), unit).arg(mv);
+      code += QString("  -- %1 [%2] [mux %3]\n").arg(signal.name(), unit, QString::number(mv));
 
-    code += QString("  if raw_%1 == %2 then\n").arg(selectorId).arg(mv);
+    code += QString("  if raw_%1 == %2 then\n").arg(selectorId, QString::number(mv));
 
     QString extraction = generateSignalExtraction(signal);
     extraction.replace("\n  ", "\n    ");
@@ -758,8 +755,7 @@ QString DataModel::DBCImporter::emitMuxedExtractions(const QCanMessageDescriptio
 
     code += extraction;
     code += QString("    values[%1] = value_%2\n")
-              .arg(datasetIndex)
-              .arg(sanitizeString(signal.name()));
+              .arg(QString::number(datasetIndex), sanitizeString(signal.name()));
     code += "  end\n";
     ++datasetIndex;
   }
@@ -1044,8 +1040,9 @@ QString DataModel::DBCImporter::detectMotionWidget(
  */
 QString DataModel::DBCImporter::sanitizeString(const QString& str)
 {
+  static const QRegularExpression kNonIdentChars(QStringLiteral("[^a-zA-Z0-9_]"));
   QString result = str;
-  result.replace(QRegularExpression("[^a-zA-Z0-9_]"), "_");
+  result.replace(kNonIdentChars, "_");
   return result;
 }
 

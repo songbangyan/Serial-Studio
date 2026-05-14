@@ -400,7 +400,7 @@ bool IO::Drivers::Modbus::configureTcpClient(QString& target)
   tcp_device->setConnectionParameter(QModbusDevice::NetworkPortParameter, m_port);
   m_device = tcp_device;
 
-  target = QStringLiteral("%1:%2").arg(m_host).arg(m_port);
+  target = QStringLiteral("%1:%2").arg(m_host, QString::number(m_port));
   return true;
 }
 
@@ -908,7 +908,7 @@ QJsonObject IO::Drivers::Modbus::buildProject() const
     const QString type_name = (reg_group.registerType < type_names.count())
                               ? type_names[reg_group.registerType]
                               : tr("Unknown");
-    group.title             = QStringLiteral("%1 @ %2").arg(type_name).arg(reg_group.startAddress);
+    group.title = QStringLiteral("%1 @ %2").arg(type_name, QString::number(reg_group.startAddress));
 
     // Register types (16-bit) vs bit types (coil/discrete)
     const bool is_reg = (reg_group.registerType <= 1);

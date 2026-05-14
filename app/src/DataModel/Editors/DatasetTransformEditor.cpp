@@ -37,8 +37,8 @@
 
 #include "DataModel/Editors/CodeFormatter.h"
 #include "DataModel/FrameBuilder.h"
-#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/Scripting/ScriptTemplates.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"

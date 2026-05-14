@@ -49,8 +49,9 @@ static bool removeAnyPath(const QString& path)
  */
 static QString sanitizeBundleExecName(const QString& bundleName)
 {
+  static const QRegularExpression kNonIdentChars(QStringLiteral("[^A-Za-z0-9_]"));
   QString execName = bundleName;
-  execName.replace(QRegularExpression(QStringLiteral("[^A-Za-z0-9_]")), QStringLiteral("_"));
+  execName.replace(kNonIdentChars, QStringLiteral("_"));
   if (execName.isEmpty())
     execName = QStringLiteral("SerialStudioShortcut");
 

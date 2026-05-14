@@ -256,7 +256,7 @@ void AI::GeminiReply::handleHttpError(int status)
   else if (status == 400 && msg.contains(QStringLiteral("API_KEY_INVALID")))
     finishWithError(tr("Invalid API key"));
   else
-    finishWithError(tr("Gemini %1: %2").arg(status).arg(msg));
+    finishWithError(tr("Gemini %1: %2").arg(QString::number(status), msg));
 }
 
 //--------------------------------------------------------------------------------------------------

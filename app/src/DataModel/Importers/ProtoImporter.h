@@ -56,8 +56,8 @@ enum class ProtoScalar {
  * @brief A single field declared inside a parsed `.proto` message.
  */
 struct ProtoField {
-  int tag        = 0;
-  bool repeated  = false;
+  int tag            = 0;
+  bool repeated      = false;
   ProtoScalar scalar = ProtoScalar::Int32;
   QString name;
   QString typeRef;
@@ -137,8 +137,10 @@ private:
 
   static void emitParserBanner(QString& code, const QString& sourceFile, int totalDatasets);
   static void emitDispatchTables(QString& code, const QVector<DispatchRecord>& records);
-  static QString formatDispatchEntry(const ProtoField& field, const DispatchRecord& rec,
-                                     const QVector<DispatchRecord>& records, int& datasetIdx,
+  static QString formatDispatchEntry(const ProtoField& field,
+                                     const DispatchRecord& rec,
+                                     const QVector<DispatchRecord>& records,
+                                     int& datasetIdx,
                                      int& childCursor);
   static void emitTopLevelDispatchers(QString& code, const QVector<DispatchRecord>& records);
   static void emitScoreDispatcher(QString& code);

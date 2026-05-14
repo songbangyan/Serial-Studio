@@ -305,8 +305,7 @@ public slots:
   void restoreSourceSettings(int sourceId);
   void setSource0BusType(int busType);
   void setSource0ConnectionSettings(const QJsonObject& settings);
-  void addGroup(const QString& title, const SerialStudio::GroupWidget widget,
-                int sourceId = -1);
+  void addGroup(const QString& title, const SerialStudio::GroupWidget widget, int sourceId = -1);
   bool setGroupWidget(const int group, const SerialStudio::GroupWidget widget);
 
   void setModified(const bool modified);

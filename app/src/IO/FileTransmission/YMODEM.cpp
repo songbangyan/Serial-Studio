@@ -343,8 +343,10 @@ void IO::Protocols::YMODEM::sendDataBlock()
   Q_EMIT writeRequested(packet);
   m_bytesSent = qMin(m_bytesSent + m_lastBlockBytes, m_fileSize);
   Q_EMIT progressChanged(m_bytesSent, m_fileSize);
-  Q_EMIT statusMessage(
-    tr("Sending block %1 (%2/%3 bytes)").arg(m_blockNumber).arg(m_bytesSent).arg(m_fileSize));
+  Q_EMIT statusMessage(tr("Sending block %1 (%2/%3 bytes)")
+                         .arg(QString::number(m_blockNumber),
+                              QString::number(m_bytesSent),
+                              QString::number(m_fileSize)));
 
   m_yState = YState::WaitingForDataAck;
   m_timeoutTimer.start(m_timeoutMs);

@@ -323,7 +323,8 @@ void IO::Protocols::XMODEM::sendBlock()
 
   m_bytesSent = qMin(m_bytesSent + m_lastBlockBytes, m_fileSize);
   Q_EMIT progressChanged(m_bytesSent, m_fileSize);
-  Q_EMIT statusMessage(tr("Sending block %1 (%2 bytes)").arg(m_blockNumber).arg(m_bytesSent));
+  Q_EMIT statusMessage(tr("Sending block %1 (%2 bytes)")
+                         .arg(QString::number(m_blockNumber), QString::number(m_bytesSent)));
   m_state = State::WaitingForAck;
   m_timeoutTimer.start(m_timeoutMs);
 }
@@ -382,7 +383,8 @@ void IO::Protocols::XMODEM::handleTimeout()
     return;
   }
 
-  Q_EMIT statusMessage(tr("Timeout, retrying (%1/%2)…").arg(m_retryCount).arg(m_maxRetries));
+  Q_EMIT statusMessage(tr("Timeout, retrying (%1/%2)…")
+                         .arg(QString::number(m_retryCount), QString::number(m_maxRetries)));
 
   if (m_state == State::WaitingForEOTAck) {
     sendEOT();

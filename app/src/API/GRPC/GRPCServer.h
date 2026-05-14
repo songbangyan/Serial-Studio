@@ -12,9 +12,11 @@
 #ifdef ENABLE_GRPC
 
 #  include <atomic>
+#  include <cstddef>
 #  include <grpcpp/grpcpp.h>
 #  include <memory>
 #  include <mutex>
+#  include <new>
 #  include <QObject>
 #  include <thread>
 #  include <vector>
@@ -107,9 +109,15 @@ private:
   void broadcastRawBatch(const serialstudio::RawBatch& batch);
 
 private:
+#  ifdef __cpp_lib_hardware_interference_size
+  static constexpr std::size_t kCacheLine = std::hardware_destructive_interference_size;
+#  else
+  static constexpr std::size_t kCacheLine = 64;
+#  endif
+
   bool m_enabled;
-  std::atomic<int> m_clientCount;
-  std::atomic<bool> m_writerRunning;
+  alignas(kCacheLine) std::atomic<int> m_clientCount;
+  alignas(kCacheLine) std::atomic<bool> m_writerRunning;
 
   std::unique_ptr<grpc::Server> m_grpcServer;
   std::unique_ptr<SerialStudioServiceImpl> m_service;

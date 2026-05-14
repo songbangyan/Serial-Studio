@@ -13,7 +13,9 @@
 
 #  include "UI/Widgets/PainterContext.h"
 
+#  include <array>
 #  include <cmath>
+#  include <cstdint>
 #  include <functional>
 #  include <QConicalGradient>
 #  include <QDir>
@@ -1061,15 +1063,17 @@ void Widgets::PainterContext::arcTo(qreal x1, qreal y1, qreal x2, qreal y2, qrea
   }
 
   // Tangent points on the two segments and arc centre at distance r/sin(a/2) along the bisector
-  const qreal d   = r / std::tan(a * 0.5);
-  const qreal n1x = v1x / len1;
-  const qreal n1y = v1y / len1;
-  const qreal n2x = v2x / len2;
-  const qreal n2y = v2y / len2;
-  const qreal tx1 = x1 + n1x * d;
-  const qreal ty1 = y1 + n1y * d;
-  const qreal tx2 = x1 + n2x * d;
-  const qreal ty2 = y1 + n2y * d;
+  const qreal d       = r / std::tan(a * 0.5);
+  const qreal invLen1 = 1.0 / len1;
+  const qreal invLen2 = 1.0 / len2;
+  const qreal n1x     = v1x * invLen1;
+  const qreal n1y     = v1y * invLen1;
+  const qreal n2x     = v2x * invLen2;
+  const qreal n2y     = v2y * invLen2;
+  const qreal tx1     = x1 + n1x * d;
+  const qreal ty1     = y1 + n1y * d;
+  const qreal tx2     = x1 + n2x * d;
+  const qreal ty2     = y1 + n2y * d;
 
   const qreal sx = n1x + n2x;
   const qreal sy = n1y + n2y;
@@ -1080,8 +1084,9 @@ void Widgets::PainterContext::arcTo(qreal x1, qreal y1, qreal x2, qreal y2, qrea
   }
 
   const qreal cR    = r / std::sin(a * 0.5);
-  const qreal cX    = x1 + (sx / sl) * cR;
-  const qreal cY    = y1 + (sy / sl) * cR;
+  const qreal invSl = 1.0 / sl;
+  const qreal cX    = x1 + (sx * invSl) * cR;
+  const qreal cY    = y1 + (sy * invSl) * cR;
   const qreal cross = v1x * v2y - v1y * v2x;
 
   m_path.lineTo(tx1, ty1);
@@ -1571,8 +1576,8 @@ QFont Widgets::PainterContext::parseFontSpec(const QString& spec) const
   if (sizeMatch.hasMatch()) {
     const int sizeEnd  = sizeMatch.capturedEnd();
     const QString tail = spec.mid(sizeEnd).trimmed();
-    const QStringList tokens =
-      tail.split(QRegularExpression(QStringLiteral("[,\\s]+")), Qt::SkipEmptyParts);
+    static const QRegularExpression kSep(QStringLiteral("[,\\s]+"));
+    const QStringList tokens = tail.split(kSep, Qt::SkipEmptyParts);
     if (!tokens.isEmpty())
       family = tokens.first();
   }
@@ -1686,13 +1691,34 @@ bool Widgets::PainterContext::shadowActive() const noexcept
   return m_state.shadowBlur > 0.0 || m_state.shadowOffsetX != 0.0 || m_state.shadowOffsetY != 0.0;
 }
 
+// Shadow blur radius is clamped to [1, 32] in renderWithShadow; max tap count is 2*32+1
+static constexpr int kMaxBlurTaps         = 65;
+static constexpr int kBlurReciprocalShift = 24;
+
+/**
+ * @brief Builds the Q24 ceiling-reciprocal table so `(sum * inv) >> 24 == sum / n` exactly.
+ */
+static const std::array<int64_t, kMaxBlurTaps + 1>& blurReciprocalTable()
+{
+  static const auto table = []() {
+    std::array<int64_t, kMaxBlurTaps + 1> t{};
+    const int64_t one = int64_t(1) << kBlurReciprocalShift;
+    for (int n = 1; n <= kMaxBlurTaps; ++n)
+      t[n] = (one + n - 1) / n;
+
+    return t;
+  }();
+  return table;
+}
+
 /**
  * @brief Horizontal pass of a box-blur with the given radius.
  */
 static void boxBlurHorizontal(const QImage& src, QImage& dst, int radius)
 {
-  const int w = src.width();
-  const int h = src.height();
+  const int w     = src.width();
+  const int h     = src.height();
+  const auto& inv = blurReciprocalTable();
   for (int y = 0; y < h; ++y) {
     const QRgb* srow = reinterpret_cast<const QRgb*>(src.constScanLine(y));
     QRgb* drow       = reinterpret_cast<QRgb*>(dst.scanLine(y));
@@ -1707,7 +1733,11 @@ static void boxBlurHorizontal(const QImage& src, QImage& dst, int radius)
         a += qAlpha(srow[k]);
         ++n;
       }
-      drow[x] = qRgba(r / n, g / n, b / n, a / n);
+      const int64_t recip = inv[n];
+      drow[x]             = qRgba(static_cast<int>((r * recip) >> kBlurReciprocalShift),
+                      static_cast<int>((g * recip) >> kBlurReciprocalShift),
+                      static_cast<int>((b * recip) >> kBlurReciprocalShift),
+                      static_cast<int>((a * recip) >> kBlurReciprocalShift));
     }
   }
 }
@@ -1717,8 +1747,9 @@ static void boxBlurHorizontal(const QImage& src, QImage& dst, int radius)
  */
 static void boxBlurVertical(const QImage& src, QImage& dst, int radius)
 {
-  const int w = src.width();
-  const int h = src.height();
+  const int w     = src.width();
+  const int h     = src.height();
+  const auto& inv = blurReciprocalTable();
   for (int x = 0; x < w; ++x) {
     for (int y = 0; y < h; ++y) {
       int r = 0, g = 0, b = 0, a = 0, n = 0;
@@ -1732,7 +1763,12 @@ static void boxBlurVertical(const QImage& src, QImage& dst, int radius)
         a += qAlpha(px);
         ++n;
       }
-      reinterpret_cast<QRgb*>(dst.scanLine(y))[x] = qRgba(r / n, g / n, b / n, a / n);
+      const int64_t recip = inv[n];
+      reinterpret_cast<QRgb*>(dst.scanLine(y))[x] =
+        qRgba(static_cast<int>((r * recip) >> kBlurReciprocalShift),
+              static_cast<int>((g * recip) >> kBlurReciprocalShift),
+              static_cast<int>((b * recip) >> kBlurReciprocalShift),
+              static_cast<int>((a * recip) >> kBlurReciprocalShift));
     }
   }
 }

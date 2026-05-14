@@ -285,10 +285,11 @@ void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
     dbCache.resize(spectrumSize);
 
   const float normFactor = static_cast<float>(m_size) * static_cast<float>(m_size);
+  const float invNorm    = 1.0f / normFactor;
   for (int i = 0; i < spectrumSize; ++i) {
     const float re    = m_fftOutput[i].r;
     const float im    = m_fftOutput[i].i;
-    const float power = std::max((re * re + im * im) / normFactor, eps_squared);
+    const float power = std::max((re * re + im * im) * invNorm, eps_squared);
     dbCache[i]        = std::max(10.0f * std::log10(power), floorDB);
   }
 
@@ -302,6 +303,16 @@ void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
     m_yData.clear();
   }
 
+  static constexpr float kInvSmoothingTaps[] = {
+    0.0f,
+    1.0f / 1.0f,
+    1.0f / 2.0f,
+    1.0f / 3.0f,
+    1.0f / 4.0f,
+    1.0f / 5.0f,
+  };
+  const float invSize  = m_size > 0 ? 1.0f / static_cast<float>(m_size) : 0.0f;
+  const float freqStep = m_samplingRate * invSize;
   for (int i = 0; i < spectrumSize; ++i) {
     const int minIdx = std::max(0, i - halfWindow);
     const int maxIdx = std::min(spectrumSize - 1, i + halfWindow);
@@ -310,8 +321,8 @@ void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
     for (int k = minIdx; k <= maxIdx; ++k)
       sum += dbCache[k];
 
-    const float smoothedDB = sum / (maxIdx - minIdx + 1);
-    const float freq       = static_cast<float>(i) * m_samplingRate / m_size;
+    const float smoothedDB = sum * kInvSmoothingTaps[maxIdx - minIdx + 1];
+    const float freq       = static_cast<float>(i) * freqStep;
 
     m_xData.push(freq);
     m_yData.push(smoothedDB);
@@ -341,17 +352,17 @@ void Widgets::FFTPlot::updateData()
     return;
 
   // Normalize time-domain input samples into [-1, 1] range
-  const double* in      = data.raw();
-  std::size_t idx       = data.frontIndex();
-  const std::size_t cap = data.capacity();
-  const double offset   = m_scaleIsValid ? -m_center : 0.0;
-  const double scale    = m_scaleIsValid ? (1.0 / m_halfRange) : 1.0;
+  const double* in       = data.raw();
+  std::size_t idx        = data.frontIndex();
+  const std::size_t mask = data.storageMask();
+  const double offset    = m_scaleIsValid ? -m_center : 0.0;
+  const double scale     = m_scaleIsValid ? (1.0 / m_halfRange) : 1.0;
   for (int i = 0; i < m_size; ++i) {
     const double raw = in[idx];
     const float v    = std::isfinite(raw) ? static_cast<float>((raw + offset) * scale) : 0.0f;
     m_samples[i].r   = v * m_window[i];
     m_samples[i].i   = 0.0f;
-    idx              = (idx + 1) % cap;
+    idx              = (idx + 1) & mask;
   }
 
   // Run FFT, smooth the resulting spectrum, and downsample for the line series

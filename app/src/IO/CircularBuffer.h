@@ -22,20 +22,41 @@
 #pragma once
 
 #include <atomic>
+#include <cstddef>
 #include <cstring>
+#include <new>
 #include <QByteArray>
 #include <vector>
 
 #include "Concepts.h"
 
 namespace IO {
+
+/**
+ * @brief Rounds a positive size up to the next power of two (>= 2). Used so the
+ *        SPSC ring can mask wrap-around with `& (cap - 1)` instead of `% cap`.
+ */
+[[nodiscard]] inline qsizetype roundUpToPowerOfTwo(qsizetype value) noexcept
+{
+  qsizetype v = value < 2 ? 2 : value;
+  --v;
+  v |= v >> 1;
+  v |= v >> 2;
+  v |= v >> 4;
+  v |= v >> 8;
+  v |= v >> 16;
+  if constexpr (sizeof(qsizetype) > 4)
+    v |= v >> 32;
+  return v + 1;
+}
+
 /**
  * @brief A lock-free circular buffer for high-throughput data streaming.
  */
 template<typename T, Concepts::ByteLike StorageType = uint8_t>
 class CircularBuffer {
 public:
-  explicit CircularBuffer(qsizetype capacity = 1024 * 1024 * 10);
+  explicit CircularBuffer(qsizetype capacity = 1024 * 1024 * 16);
 
   [[nodiscard]] StorageType& operator[](qsizetype index);
 
@@ -80,10 +101,16 @@ private:
   [[nodiscard]] std::vector<int> computeKMPTable(const T& p) const;
 
 private:
-  std::atomic<qsizetype> m_head;
-  std::atomic<qsizetype> m_tail;
-  std::atomic<qsizetype> m_overflowCount;
+#ifdef __cpp_lib_hardware_interference_size
+  static constexpr std::size_t kCacheLine = std::hardware_destructive_interference_size;
+#else
+  static constexpr std::size_t kCacheLine = 64;
+#endif
+  alignas(kCacheLine) std::atomic<qsizetype> m_head;
+  alignas(kCacheLine) std::atomic<qsizetype> m_tail;
+  alignas(kCacheLine) std::atomic<qsizetype> m_overflowCount;
   qsizetype m_capacity;
+  qsizetype m_capacityMask;
   std::vector<StorageType> m_buffer;
 };
 }  // namespace IO
@@ -93,9 +120,13 @@ private:
  */
 template<typename T, Concepts::ByteLike StorageType>
 IO::CircularBuffer<T, StorageType>::CircularBuffer(qsizetype capacity)
-  : m_head(0), m_tail(0), m_overflowCount(0), m_capacity(capacity)
+  : m_head(0)
+  , m_tail(0)
+  , m_overflowCount(0)
+  , m_capacity(roundUpToPowerOfTwo(capacity))
+  , m_capacityMask(m_capacity - 1)
 {
-  m_buffer.resize(capacity);
+  m_buffer.resize(m_capacity);
 }
 
 /**
@@ -110,7 +141,7 @@ StorageType& IO::CircularBuffer<T, StorageType>::operator[](qsizetype index)
     return m_buffer[0];
 
   const qsizetype head           = m_head.load(std::memory_order_acquire);
-  const qsizetype effectiveIndex = (head + index) % m_capacity;
+  const qsizetype effectiveIndex = (head + index) & m_capacityMask;
   return m_buffer[effectiveIndex];
 }
 
@@ -154,7 +185,7 @@ void IO::CircularBuffer<T, StorageType>::append(const T& data)
     const qsizetype overwrite = copySize - free_space;
     m_overflowCount.fetch_add(overwrite, std::memory_order_relaxed);
 
-    const qsizetype new_head = (head + overwrite) % m_capacity;
+    const qsizetype new_head = (head + overwrite) & m_capacityMask;
     m_head.store(new_head, std::memory_order_release);
   }
 
@@ -164,7 +195,7 @@ void IO::CircularBuffer<T, StorageType>::append(const T& data)
   if (copySize > firstChunk) [[unlikely]]
     std::memcpy(&m_buffer[0], src + firstChunk, copySize - firstChunk);
 
-  const qsizetype new_tail = (tail + copySize) % m_capacity;
+  const qsizetype new_tail = (tail + copySize) & m_capacityMask;
   m_tail.store(new_tail, std::memory_order_release);
 }
 
@@ -175,8 +206,9 @@ template<typename T, Concepts::ByteLike StorageType>
 void IO::CircularBuffer<T, StorageType>::setCapacity(const qsizetype capacity)
 {
   clear();
-  m_capacity = capacity;
-  m_buffer.resize(capacity);
+  m_capacity     = roundUpToPowerOfTwo(capacity);
+  m_capacityMask = m_capacity - 1;
+  m_buffer.resize(m_capacity);
 }
 
 /**
@@ -224,7 +256,7 @@ T IO::CircularBuffer<T, StorageType>::read(qsizetype size)
   if (size > firstChunk) [[unlikely]]
     std::memcpy(result.data() + firstChunk, &m_buffer[0], size - firstChunk);
 
-  const qsizetype new_head = (head + size) % m_capacity;
+  const qsizetype new_head = (head + size) & m_capacityMask;
   m_head.store(new_head, std::memory_order_release);
 
   return result;
@@ -255,7 +287,7 @@ T IO::CircularBuffer<T, StorageType>::peekRange(qsizetype offset, qsizetype size
   result.resize(size);
 
   const qsizetype head       = m_head.load(std::memory_order_acquire);
-  const qsizetype start      = (head + offset) % m_capacity;
+  const qsizetype start      = (head + offset) & m_capacityMask;
   const qsizetype firstChunk = std::min(size, m_capacity - start);
   std::memcpy(result.data(), &m_buffer[start], firstChunk);
 
@@ -289,14 +321,14 @@ int IO::CircularBuffer<T, StorageType>::findPatternKMP(const T& pattern,
     return -1;
 
   const qsizetype head = m_head.load(std::memory_order_acquire);
-  qsizetype bufferIdx  = (head + pos) % m_capacity;
+  qsizetype bufferIdx  = (head + pos) & m_capacityMask;
   int i = pos, j = 0;
 
   while (i < current_size) {
     if (m_buffer[bufferIdx] == pattern[j]) {
       i++;
       j++;
-      bufferIdx = (bufferIdx + 1) % m_capacity;
+      bufferIdx = (bufferIdx + 1) & m_capacityMask;
 
       if (j == pattern.size()) [[unlikely]] {
         int matchStart = i - j;
@@ -309,7 +341,7 @@ int IO::CircularBuffer<T, StorageType>::findPatternKMP(const T& pattern,
 
     else {
       i++;
-      bufferIdx = (bufferIdx + 1) % m_capacity;
+      bufferIdx = (bufferIdx + 1) & m_capacityMask;
     }
   }
 
@@ -378,14 +410,14 @@ typename IO::CircularBuffer<T, StorageType>::MultiMatchResult IO::CircularBuffer
     return {};
 
   const qsizetype head    = m_head.load(std::memory_order_acquire);
-  const qsizetype cap     = m_capacity;
+  const qsizetype mask    = m_capacityMask;
   const qsizetype scanEnd = bufSize - minLen + 1;
 
   auto matchesAt = [&](qsizetype i, int p) -> bool {
     const auto pLen   = info[p].len;
     const auto* pData = info[p].data;
     for (qsizetype j = 0; j < pLen; ++j)
-      if (m_buffer[(head + i + j) % cap] != pData[j])
+      if (m_buffer[(head + i + j) & mask] != pData[j])
         return false;
 
     return true;

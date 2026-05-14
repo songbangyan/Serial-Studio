@@ -30,17 +30,16 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
-#include <stdexcept>
-
 #include <QMessageBox>
+#include <stdexcept>
 
 #include "API/Server.h"
 #include "AppState.h"
 #include "CSV/Export.h"
-#include "DataModel/Scripting/FrameParser.h"
-#include "DataModel/Scripting/LuaCompat.h"
 #include "DataModel/NotificationCenter.h"
 #include "DataModel/ProjectModel.h"
+#include "DataModel/Scripting/FrameParser.h"
+#include "DataModel/Scripting/LuaCompat.h"
 #include "IO/ConnectionManager.h"
 #include "MDF4/Export.h"
 #include "Misc/Utilities.h"
@@ -485,9 +484,8 @@ bool DataModel::FrameBuilder::parseBudgetSkipFrame()
   }
 
   // Roll the window forward once kParseBudgetWindowMs elapses.
-  const auto windowNs = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                          now - m_parseBudgetWindowStart)
-                          .count();
+  const auto windowNs =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(now - m_parseBudgetWindowStart).count();
   if (windowNs >= static_cast<qint64>(kParseBudgetWindowMs) * 1'000'000LL) {
     m_parseBudgetWindowStart = now;
     m_parseBudgetUsedNs      = 0;
@@ -502,9 +500,8 @@ bool DataModel::FrameBuilder::parseBudgetSkipFrame()
  */
 void DataModel::FrameBuilder::parseBudgetAccount(BudgetClock::time_point startedAt)
 {
-  const auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                         BudgetClock::now() - startedAt)
-                         .count();
+  const auto elapsed =
+    std::chrono::duration_cast<std::chrono::nanoseconds>(BudgetClock::now() - startedAt).count();
   m_parseBudgetUsedNs += elapsed;
 
   if (m_parseBudgetSkipping)
@@ -516,9 +513,8 @@ void DataModel::FrameBuilder::parseBudgetAccount(BudgetClock::time_point started
 
   // Over 80% of wall-clock window spent in parsing
   m_parseBudgetSkipping = true;
-  qWarning() << "[FrameBuilder] Parser load exceeded budget ("
-             << m_parseBudgetUsedNs / 1'000'000LL << "ms /"
-             << kParseBudgetWindowMs << "ms)"
+  qWarning() << "[FrameBuilder] Parser load exceeded budget (" << m_parseBudgetUsedNs / 1'000'000LL
+             << "ms /" << kParseBudgetWindowMs << "ms)"
              << "...dropping frames until the next window rolls.";
 
   // Warn the user

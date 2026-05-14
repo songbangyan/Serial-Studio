@@ -36,6 +36,8 @@
 #include <libusb.h>
 
 #include <atomic>
+#include <cstddef>
+#include <new>
 #include <QList>
 #include <QObject>
 #include <QSettings>
@@ -210,8 +212,13 @@ private:
 
   TransferMode m_transferMode;
 
-  std::atomic<bool> m_running;
-  std::atomic<bool> m_eventLoopRunning;
+#ifdef __cpp_lib_hardware_interference_size
+  static constexpr std::size_t kCacheLine = std::hardware_destructive_interference_size;
+#else
+  static constexpr std::size_t kCacheLine = 64;
+#endif
+  alignas(kCacheLine) std::atomic<bool> m_running;
+  alignas(kCacheLine) std::atomic<bool> m_eventLoopRunning;
 
   QThread m_readThread;
   QThread m_eventThread;

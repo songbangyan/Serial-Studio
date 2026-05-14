@@ -233,8 +233,7 @@ bool DataModel::JsScriptEngine::noteTimeoutAndCheckDisabled(int sourceId)
     return false;
 
   m_disabled = true;
-  qWarning() << "[JsScriptEngine] Source" << sourceId
-             << "disabled after" << kMaxConsecutiveTimeouts
+  qWarning() << "[JsScriptEngine] Source" << sourceId << "disabled after" << kMaxConsecutiveTimeouts
              << "consecutive watchdog timeouts.";
   Misc::Utilities::showMessageBox(
     QObject::tr("Frame Parser Disabled"),
@@ -310,8 +309,7 @@ QList<QStringList> DataModel::JsScriptEngine::parseString(const QString& frame)
   const auto jsResult = guardedCall(args);
 
   if (m_watchdog.lastCallTimedOut()) [[unlikely]] {
-    qWarning() << "[JsScriptEngine] parse() timed out after"
-               << kRuntimeWatchdogMs << "ms";
+    qWarning() << "[JsScriptEngine] parse() timed out after" << kRuntimeWatchdogMs << "ms";
     (void)noteTimeoutAndCheckDisabled(0);
     return {};
   }
@@ -361,8 +359,7 @@ QList<QStringList> DataModel::JsScriptEngine::parseBinary(const QByteArray& fram
   const auto jsResult = guardedCall(args);
 
   if (m_watchdog.lastCallTimedOut()) [[unlikely]] {
-    qWarning() << "[JsScriptEngine] parse() timed out after"
-               << kRuntimeWatchdogMs << "ms";
+    qWarning() << "[JsScriptEngine] parse() timed out after" << kRuntimeWatchdogMs << "ms";
     (void)noteTimeoutAndCheckDisabled(0);
     return {};
   }

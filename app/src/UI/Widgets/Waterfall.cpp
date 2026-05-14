@@ -89,6 +89,22 @@ static inline int floorPow2Bounded(int value)
 }
 
 /**
+ * @brief Integer-exponent 10^n via table lookup; falls back to std::pow if out of band.
+ */
+static inline double fastPow10(double exponent) noexcept
+{
+  static constexpr double kTable[] = {
+    1e-15, 1e-14, 1e-13, 1e-12, 1e-11, 1e-10, 1e-9, 1e-8, 1e-7, 1e-6, 1e-5,
+    1e-4,  1e-3,  1e-2,  1e-1,  1e0,   1e1,   1e2,  1e3,  1e4,  1e5,  1e6,
+    1e7,   1e8,   1e9,   1e10,  1e11,  1e12,  1e13, 1e14, 1e15,
+  };
+  const int idx = static_cast<int>(exponent) + 15;
+  if (idx < 0 || idx >= static_cast<int>(sizeof(kTable) / sizeof(kTable[0]))) [[unlikely]]
+    return std::pow(10.0, exponent);
+  return kTable[idx];
+}
+
+/**
  * @brief Linearly interpolates a color from per-channel LUT arrays of length n.
  */
 QRgb Widgets::Waterfall::interpolateLut(
@@ -661,18 +677,18 @@ void Widgets::Waterfall::updateData()
     return;
 
   // Window time-domain input + normalize against user-configured min/max
-  const double* in      = data.raw();
-  std::size_t idx       = data.frontIndex();
-  const std::size_t cap = data.capacity();
-  const double offset   = m_scaleIsValid ? -m_center : 0.0;
-  const double scale    = m_scaleIsValid ? (1.0 / m_halfRange) : 1.0;
+  const double* in       = data.raw();
+  std::size_t idx        = data.frontIndex();
+  const std::size_t mask = data.storageMask();
+  const double offset    = m_scaleIsValid ? -m_center : 0.0;
+  const double scale     = m_scaleIsValid ? (1.0 / m_halfRange) : 1.0;
 
   for (int i = 0; i < m_size; ++i) {
     const double raw = in[idx];
     const float v    = std::isfinite(raw) ? static_cast<float>((raw + offset) * scale) : 0.0f;
     m_samples[i].r   = v * m_window[i];
     m_samples[i].i   = 0.0f;
-    idx              = (idx + 1) % cap;
+    idx              = (idx + 1) & mask;
   }
 
   // Run FFT
@@ -681,10 +697,11 @@ void Widgets::Waterfall::updateData()
   // Convert to dB
   const int spectrumSize = m_size / 2;
   const float normFactor = static_cast<float>(m_size) * static_cast<float>(m_size);
+  const float invNorm    = 1.0f / normFactor;
   for (int i = 0; i < spectrumSize; ++i) {
     const float re    = m_fftOutput[i].r;
     const float im    = m_fftOutput[i].i;
-    const float power = std::max((re * re + im * im) / normFactor, kEpsSquared);
+    const float power = std::max((re * re + im * im) * invNorm, kEpsSquared);
     m_dbCache[i]      = std::max(10.0f * std::log10(power), kFloorDb);
   }
 
@@ -692,6 +709,15 @@ void Widgets::Waterfall::updateData()
   if (m_smoothed.size() < static_cast<size_t>(spectrumSize))
     m_smoothed.resize(spectrumSize);
 
+  // Precomputed reciprocals indexed by tap count (1..kSmoothingWindow); edges have fewer taps
+  static constexpr float kInvSmoothingTaps[] = {
+    0.0f,         // unused
+    1.0f / 1.0f,  // 1 tap
+    1.0f / 2.0f,  // 2 taps (edge)
+    1.0f / 3.0f,  // 3 taps (interior)
+    1.0f / 4.0f,
+    1.0f / 5.0f,  // larger windows in case kSmoothingWindow grows
+  };
   for (int i = 0; i < spectrumSize; ++i) {
     const int lo = std::max(0, i - kHalfSmoothWindow);
     const int hi = std::min(spectrumSize - 1, i + kHalfSmoothWindow);
@@ -699,7 +725,8 @@ void Widgets::Waterfall::updateData()
     for (int k = lo; k <= hi; ++k)
       sum += m_dbCache[k];
 
-    m_smoothed[i] = sum / static_cast<float>(hi - lo + 1);
+    const int taps = hi - lo + 1;
+    m_smoothed[i]  = sum * kInvSmoothingTaps[taps];
   }
 
   // Push the new row (time mode scrolls; Campbell mode writes by Y value)
@@ -710,7 +737,8 @@ void Widgets::Waterfall::updateData()
       const double v     = it->numericValue;
       const double range = m_yMax - m_yMin;
       if (range > 0.0) {
-        const double t = qBound(0.0, (v - m_yMin) / range, 1.0);
+        const double invRange = 1.0 / range;
+        const double t        = qBound(0.0, (v - m_yMin) * invRange, 1.0);
         const int row =
           qBound(0, static_cast<int>((1.0 - t) * (m_image.height() - 1)), m_image.height() - 1);
         writeRowAt(row, m_smoothed.data(), spectrumSize);
@@ -913,11 +941,14 @@ void Widgets::Waterfall::drawXAxis(QPainter* painter, const QRectF& plotRect) co
   const double labelY   = tickBotY + kAxisLabelPad;
 
   // Pick a starting tick value aligned to the grid (snap to nearest step)
-  const double step  = ticks.step;
-  const double first = std::ceil(xMinHz / step - 1e-9) * step;
+  const double step      = ticks.step;
+  const double invStep   = 1.0 / step;
+  const double first     = std::ceil(xMinHz * invStep - 1e-9) * step;
+  const double xRange    = xMaxHz - xMinHz;
+  const double invXRange = xRange > 0.0 ? 1.0 / xRange : 0.0;
 
   for (double v = first; v <= xMaxHz + 1e-6; v += step) {
-    const double t = (v - xMinHz) / (xMaxHz - xMinHz);
+    const double t = (v - xMinHz) * invXRange;
     if (t < 0.0 || t > 1.0)
       continue;
 
@@ -974,11 +1005,14 @@ void Widgets::Waterfall::drawYAxis(QPainter* painter, const QRectF& plotRect) co
   const double tickLeftX  = plotRect.left() - kAxisTickPx;
   const double labelRight = tickLeftX - kAxisLabelPad;
 
-  const double step  = ticks.step;
-  const double first = std::ceil(yMin / step - 1e-9) * step;
+  const double step      = ticks.step;
+  const double invStep   = 1.0 / step;
+  const double first     = std::ceil(yMin * invStep - 1e-9) * step;
+  const double yRange    = yMax - yMin;
+  const double invYRange = yRange > 0.0 ? 1.0 / yRange : 0.0;
 
   for (double v = first; v <= yMax + 1e-6; v += step) {
-    const double t = (v - yMin) / (yMax - yMin);
+    const double t = (v - yMin) * invYRange;
     if (t < 0.0 || t > 1.0)
       continue;
 
@@ -1174,7 +1208,7 @@ Widgets::Waterfall::AxisTicks Widgets::Waterfall::computeFreqTicks(double maxFre
 
   const double target  = std::max(2, targetCount);
   const double raw     = maxFreq / target;
-  const double base    = std::pow(10.0, std::floor(std::log10(raw)));
+  const double base    = fastPow10(std::floor(std::log10(raw)));
   const double cands[] = {1.0, 2.0, 5.0, 10.0};
 
   double step = base;
@@ -1424,9 +1458,10 @@ void Widgets::Waterfall::wheelEvent(QWheelEvent* event)
 
   const bool isTouchpad =
     !event->pixelDelta().isNull() || event->source() == Qt::MouseEventSynthesizedBySystem;
-  const double zoomBase = isTouchpad ? 1.05 : 1.15;
-  const double delta    = event->angleDelta().y() / 120.0;
-  const double factor   = std::pow(zoomBase, delta);
+  const double zoomBase    = isTouchpad ? 1.05 : 1.15;
+  constexpr double kInv120 = 1.0 / 120.0;
+  const double delta       = event->angleDelta().y() * kInv120;
+  const double factor      = std::pow(zoomBase, delta);
 
   const QPointF p = event->position();
   const double w  = qMax(1.0, width());

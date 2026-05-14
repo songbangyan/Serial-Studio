@@ -543,7 +543,8 @@ API::CommandResponse API::Handlers::ModbusHandler::addRegisterGroup(const QStrin
     return CommandResponse::makeError(
       id,
       ErrorCode::InvalidParam,
-      QStringLiteral("Invalid type: %1. Valid range: 0-%2").arg(type).arg(typeList.count() - 1));
+      QStringLiteral("Invalid type: %1. Valid range: 0-%2")
+        .arg(QString::number(type), QString::number(typeList.count() - 1)));
   }
 
   if (startAddress < 0 || startAddress > 65535) {
