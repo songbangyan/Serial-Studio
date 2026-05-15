@@ -358,12 +358,18 @@ def test_quickplot_session_project_json_embeds_source(
     serializer doesn't have to fall back to inventing one — and other
     exporters (CSV, MDF4) reading the frame see a real source.
     """
+    # Ensure no stale session/db state survives from prior tests sharing the path.
+    _enable_export(api_client, False)
+    _close_session(api_client)
+
     api_client.set_operation_mode("quickplot")
     time.sleep(0.2)
 
     db_path = _db_path_for(api_client, QUICK_PLOT_TITLE)
-    if db_path.exists():
-        db_path.unlink()
+    for suffix in ("", "-wal", "-shm"):
+        sibling = db_path.with_name(db_path.name + suffix)
+        if sibling.exists():
+            sibling.unlink()
 
     _enable_export(api_client, True)
     api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
@@ -379,15 +385,21 @@ def test_quickplot_session_project_json_embeds_source(
     api_client.disconnect_device()
     time.sleep(0.2)
     _close_session(api_client)
+    _enable_export(api_client, False)
 
     assert db_path.exists()
+    # Schema check first so we get a clear failure if the worker never finished init.
+    tables = _sqlite_tables(db_path)
+    assert "sessions" in tables, f"sessions table missing -- found: {sorted(tables)}"
 
     import json
 
     with sqlite3.connect(str(db_path)) as conn:
-        project_json_text = conn.execute(
+        row = conn.execute(
             "SELECT project_json FROM sessions ORDER BY session_id DESC LIMIT 1"
-        ).fetchone()[0]
+        ).fetchone()
+    assert row, "no session row was written to the DB"
+    project_json_text = row[0]
 
     project = json.loads(project_json_text)
     sources = project.get("sources", [])
@@ -399,7 +411,6 @@ def test_quickplot_session_project_json_embeds_source(
 
     if db_path.exists():
         db_path.unlink()
-    _enable_export(api_client, False)
 
 
 # ---------------------------------------------------------------------------

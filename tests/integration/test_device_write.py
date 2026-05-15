@@ -139,8 +139,14 @@ def _send_and_capture(
     device_simulator,
     payloads: list[bytes],
     settle_seconds: float = 1.0,
+    dashboard_out: dict | None = None,
 ) -> bytes:
-    """Connect, stream payloads, return bytes Serial Studio wrote back."""
+    """Connect, stream payloads, return bytes Serial Studio wrote back.
+
+    If ``dashboard_out`` is provided, the dashboard data snapshot captured just
+    before the disconnect is merged into it -- Dashboard::resetData fires on
+    disconnect and erases the parsed frame state otherwise.
+    """
     assert api_client.command("project.activate").get("loaded")
 
     api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
@@ -155,6 +161,11 @@ def _send_and_capture(
         time.sleep(settle_seconds)
         return recorder.captured()
     finally:
+        if dashboard_out is not None:
+            try:
+                dashboard_out.update(api_client.get_dashboard_data())
+            except Exception:
+                pass
         recorder.stop()
         api_client.disconnect_device()
         time.sleep(0.2)
@@ -317,15 +328,19 @@ def test_lua_parser_empty_payload_returns_error(
     survives several frames in a row.
     """
     _setup_project(api_client, LUA_PARSER_EMPTY, parser_language=1, dataset_count=2)
+    data: dict = {}
     captured = _send_and_capture(
-        api_client, device_simulator, [b"1,2", b"3,4", b"5,6"], settle_seconds=1.0
+        api_client,
+        device_simulator,
+        [b"1,2", b"3,4", b"5,6"],
+        settle_seconds=1.0,
+        dashboard_out=data,
     )
     # Nothing should be written back -- the parser only attempts empty writes.
     assert b"ACK" not in captured
     assert b"ALARM" not in captured
 
     # Parser kept producing values: dashboard.getData should show the last frame.
-    data = api_client.get_dashboard_data()
     groups = data.get("frame", {}).get("groups", [])
     assert groups, "parser stopped producing frames"
 
@@ -346,12 +361,16 @@ def test_js_parser_invalid_source_id_returns_error(
 ):
     """Non-numeric sourceId produces {ok:false, error:...} without writing or throwing."""
     _setup_project(api_client, JS_PARSER_BAD_SOURCE, parser_language=0, dataset_count=2)
+    data: dict = {}
     captured = _send_and_capture(
-        api_client, device_simulator, [b"7,8"], settle_seconds=0.8
+        api_client,
+        device_simulator,
+        [b"7,8"],
+        settle_seconds=0.8,
+        dashboard_out=data,
     )
     assert b"PING" not in captured
 
-    data = api_client.get_dashboard_data()
     groups = data.get("frame", {}).get("groups", [])
     assert groups, "parser stopped producing frames"
 
@@ -495,11 +514,15 @@ def test_js_transform_action_fire_invalid_id_returns_error(
     )
     _set_transform(api_client, 0, 0, transform_code)
 
+    data: dict = {}
     captured = _send_and_capture(
-        api_client, device_simulator, [b"1"], settle_seconds=0.8
+        api_client,
+        device_simulator,
+        [b"1"],
+        settle_seconds=0.8,
+        dashboard_out=data,
     )
     assert captured == b"", f"unknown action should not write, captured={captured!r}"
 
-    data = api_client.get_dashboard_data()
     groups = data.get("frame", {}).get("groups", [])
     assert groups, "transform stopped producing frames"

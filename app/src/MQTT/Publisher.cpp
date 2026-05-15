@@ -1273,7 +1273,13 @@ void MQTT::Publisher::applyProjectConfig(const QJsonObject& cfg)
   setPeerVerifyMode(static_cast<quint8>(cfg.value(kKeyPeerVerifyMode).toInt(3)));
   setPeerVerifyDepth(cfg.value(kKeyPeerVerifyDepth).toInt(10));
 
-  m_inApply      = false;
+  m_inApply = false;
+
+  // Normalize the project's stored config so missing fields are filled with defaults.
+  m_savingToProjectModel = true;
+  DataModel::ProjectModel::instance().setMqttPublisher(toJson());
+  m_savingToProjectModel = false;
+
   m_skipNextSync = true;
   Q_EMIT configurationChanged();
   m_skipNextSync = false;

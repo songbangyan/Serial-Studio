@@ -383,6 +383,7 @@ API::CommandResponse API::Handlers::SourceHandler::sourceConfigure(const QString
     for (auto it = settings.constBegin(); it != settings.constEnd(); ++it)
       IO::ConnectionManager::instance().setUiDriverProperty(it.key(), it.value().toVariant());
 
+    DataModel::ProjectModel::instance().captureSourceSettings(sourceId);
     return CommandResponse::makeSuccess(id);
   }
 

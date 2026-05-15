@@ -924,8 +924,15 @@ void IO::ConnectionManager::setChecksumAlgorithm(const QString& algorithm)
  */
 void IO::ConnectionManager::setBusType(SerialStudio::BusType type)
 {
-  if (m_busType == type && m_devices.find(0) != m_devices.end())
+  // Fast path: reconcile source[0].busType so project.new resets stay in sync
+  if (m_busType == type && m_devices.find(0) != m_devices.end()) {
+    const auto opMode = AppState::instance().operationMode();
+    auto& model       = DataModel::ProjectModel::instance();
+    if (opMode == SerialStudio::ProjectFile && model.sources().size() == 1
+        && model.sources()[0].busType != static_cast<int>(type))
+      model.setSource0BusType(static_cast<int>(type));
     return;
+  }
 
   disconnectDevice(0);
 

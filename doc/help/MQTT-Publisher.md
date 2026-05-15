@@ -1,17 +1,17 @@
 # MQTT Publisher (Pro)
 
-The MQTT Publisher pushes the data Serial Studio is already processing out to an MQTT broker, so other applications — dashboards on different machines, time-series databases, alerting services, downstream analytics — can consume it without speaking directly to the device. It is the outbound side of Serial Studio's MQTT support: where the [MQTT subscriber driver](Drivers-MQTT.md) makes the broker a *source*, the Publisher makes the broker a *sink*.
+The MQTT Publisher pushes the data Serial Studio is already processing out to an MQTT broker, so other applications (dashboards on different machines, time-series databases, alerting services, downstream analytics) can consume it without speaking directly to the device. It is the outbound side of Serial Studio's MQTT support: where the [MQTT subscriber driver](Drivers-MQTT.md) makes the broker a *source*, the Publisher makes the broker a *sink*.
 
 The Publisher is a per-project singleton, not a per-source driver. One Serial Studio instance has exactly one Publisher; what it broadcasts depends on the project, not on which physical bus the data came in on.
 
-Broker I/O lives entirely on a dedicated worker thread (the same `FrameConsumer` pattern used by CSV / MDF4 / Session-DB export), so a slow or unreliable network never blocks frame parsing, the dashboard, or the UI. The configured **Publish Rate** caps how often the worker drains its queue — at 30 Hz the worker publishes at most thirty times per second regardless of how fast frames arrive. Everything that landed in the queue during the tick is aggregated and pushed as one bulk MQTT message, not one publish per frame.
+Broker I/O lives entirely on a dedicated worker thread (the same `FrameConsumer` pattern used by CSV / MDF4 / Session-DB export), so a slow or unreliable network never blocks frame parsing, the dashboard, or the UI. The configured **Publish Rate** caps how often the worker drains its queue. At 30 Hz the worker publishes at most thirty times per second regardless of how fast frames arrive. Everything that landed in the queue during the tick is aggregated and pushed as one bulk MQTT message, not one publish per frame.
 
 Use this when:
 
 - A serial-only device should be visible to a remote dashboard or another tool without re-flashing the firmware.
 - A parsed-and-validated frame stream is more useful to downstream consumers than the raw bytes.
 - Dashboard notifications need to fan out to an external alerting pipeline.
-- You want full control over the wire format — sending one CSV row per frame, building Home Assistant discovery payloads, or formatting InfluxDB line protocol — from a script that lives next to the project.
+- You want full control over the wire format (sending one CSV row per frame, building Home Assistant discovery payloads, or formatting InfluxDB line protocol) from a script that lives next to the project.
 
 If you have never used MQTT before, read [MQTT Topics & Semantics](MQTT-Topics.md) first; this page assumes the protocol vocabulary.
 
@@ -24,7 +24,7 @@ Project
 ├─ Devices
 │   ├─ Device 1 (UART)
 │   └─ Device 2 (MQTT Subscriber)
-├─ MQTT Publisher          ←── here
+├─ MQTT Publisher          <-- here
 ├─ Actions
 ├─ Groups
 └─ ...
@@ -81,12 +81,12 @@ For brokers using a private CA, click **Load CA Certs** in the header bar after 
 
 The **Payload** dropdown has four options:
 
-1. **Raw RX Data** — republish device bytes unchanged.
-2. **Custom Script** — let a user script format the payload.
-3. **Dashboard Data (CSV)** — one CSV row per frame, with a retained header.
-4. **Dashboard Data (JSON)** — one aggregated JSON document per tick.
+1. **Raw RX Data**: republish device bytes unchanged.
+2. **Custom Script**: let a user script format the payload.
+3. **Dashboard Data (CSV)**: one CSV row per frame, with a retained header.
+4. **Dashboard Data (JSON)**: one aggregated JSON document per tick.
 
-The four modes are mutually exclusive — switching changes which queue the worker drains and which topic layout the broker sees.
+The four modes are mutually exclusive. Switching changes which queue the worker drains and which topic layout the broker sees.
 
 ### Raw RX Data
 
@@ -96,7 +96,7 @@ Use this when the consumer wants to apply its own decoding, when you are tee-ing
 
 ### Custom Script
 
-You write a `mqtt(frame)` function — in JavaScript or Lua — that receives the raw bytes of one parsed frame (the same bytes the [Frame Parser](JavaScript-API.md) script sees) and returns the payload to publish, or `nil` / `null` to skip the frame.
+You write a `mqtt(frame)` function (in JavaScript or Lua) that receives the raw bytes of one parsed frame (the same bytes the [Frame Parser](JavaScript-API.md) script sees) and returns the payload to publish, or `nil` / `null` to skip the frame.
 
 ```javascript
 // JavaScript
@@ -123,12 +123,12 @@ Click **Edit Script** in the header to open the editor dialog. It has the same l
 
 - **Language** dropdown: JavaScript or Lua. The selection is stored in the project file.
 - **Template** dropdown: ready-made starters for common integrations:
-  - **Home Assistant Discovery + State** — publishes the auto-discovery config message and per-frame state updates.
-  - **InfluxDB Line Protocol** — formats `measurement,tag=value field=value timestamp` lines suitable for a Telegraf `mqtt_consumer` input.
-  - **Sparkplug B (NDATA)** — Eclipse Sparkplug B-shaped JSON surrogate; swap the body for a protobuf encoder in production.
-  - **AWS IoT / Azure IoT Shadow** — `{"state":{"reported":{...}}}` payload accepted by both clouds.
+  - **Home Assistant Discovery + State**: publishes the auto-discovery config message and per-frame state updates.
+  - **InfluxDB Line Protocol**: formats `measurement,tag=value field=value timestamp` lines suitable for a Telegraf `mqtt_consumer` input.
+  - **Sparkplug B (NDATA)**: Eclipse Sparkplug B-shaped JSON surrogate; swap the body for a protobuf encoder in production.
+  - **AWS IoT / Azure IoT Shadow**: `{"state":{"reported":{...}}}` payload accepted by both clouds.
 - Code editor with syntax highlighting, Ctrl-I to format the selection, Ctrl-Shift-I to format the document.
-- Test row at the bottom: paste sample bytes in **Frame**, tick **Hex** if they are hex-encoded, click **Test**, and the dialog shows the string the script would publish (or the error). This runs in a disposable engine on the editor thread — it never touches the live broker session.
+- Test row at the bottom: paste sample bytes in **Frame**, tick **Hex** if they are hex-encoded, click **Test**, and the dialog shows the string the script would publish (or the error). This runs in a disposable engine on the editor thread and never touches the live broker session.
 - **Apply** saves the script into the project; **Cancel** discards changes.
 
 The script is compiled lazily on the worker thread the first time a frame arrives after a code change. Compile errors and runtime errors are surfaced as `scriptError` signals; you can wire them into your project's notification flow if needed.
@@ -165,7 +165,7 @@ Use this when the consumer is another dashboard, a Node-RED flow, or a time-seri
 
 ### Notifications
 
-When **Publish Notifications** is on, every event posted to the [Notification Center](Notifications.md) — alarm transitions, action confirmations, error messages — is also serialised to JSON and published to **Notification Topic** (or **Topic Base** if Notification Topic is blank). This is the fan-out point for alerting integrations and is independent of the **Payload** mode.
+When **Publish Notifications** is on, every event posted to the [Notification Center](Notifications.md) (alarm transitions, action confirmations, error messages) is also serialised to JSON and published to **Notification Topic** (or **Topic Base** if Notification Topic is blank). This is the fan-out point for alerting integrations and is independent of the **Payload** mode.
 
 ## Test Connection
 
@@ -180,7 +180,7 @@ Run this after editing broker credentials or TLS settings to catch authenticatio
 
 ## Publishing from frame parsers
 
-The Publisher also exposes a `mqttPublish(topic, payload, qos = 0, retain = false)` slot that can be called from any user script — not just from the Custom Script mode — on the data hotpath. From a frame parser, a dataset transform, or an action handler it lets you push computed values to arbitrary topics independent of the **Payload** radio:
+The Publisher also exposes a `mqttPublish(topic, payload, qos = 0, retain = false)` slot that can be called from any user script (not just from the Custom Script mode) on the data hotpath. From a frame parser, a dataset transform, or an action handler it lets you push computed values to arbitrary topics independent of the **Payload** radio:
 
 - Emitting derived metrics (a rolling average, a CRC-validated subset of fields) on their own topics.
 - Mirroring a small fraction of high-rate data to a low-rate topic for cheap remote dashboards.
@@ -202,7 +202,7 @@ Use **Custom Script** mode when the script's main job is shaping the publish pay
 
 ## See also
 
-- [MQTT Topics & Semantics](MQTT-Topics.md): the protocol vocabulary — topics, wildcards, QoS, retained messages, sessions.
+- [MQTT Topics & Semantics](MQTT-Topics.md): the protocol vocabulary (topics, wildcards, QoS, retained messages, sessions).
 - [MQTT Driver (Subscriber)](Drivers-MQTT.md): the inbound side, when Serial Studio is the consumer.
 - [Notifications](Notifications.md): the event source that feeds **Publish Notifications**.
 - [API Reference](API-Reference.md): the JSON frame schema used by `Dashboard Data (JSON)` mode.

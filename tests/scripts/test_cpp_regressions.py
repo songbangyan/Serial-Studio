@@ -206,24 +206,24 @@ def test_license_guard_present_in_serial_studio_activated():
 
 
 def test_license_guard_present_in_mqtt_connect():
-    """MQTT::Client::openConnection() must check SS_LICENSE_GUARD()."""
-    text = _read("app/src/MQTT/Client.cpp")
+    """IO::Drivers::MQTT::open() must check SS_LICENSE_GUARD()."""
+    text = _read("app/src/IO/Drivers/MQTT.cpp")
 
     assert "SS_LICENSE_GUARD()" in text
     assert re.search(
-        r"token\.isValid\(\)\s*\|\|\s*!SS_LICENSE_GUARD\(\)",
+        r"!token\.isValid\(\)\s*\|\|\s*!SS_LICENSE_GUARD\(\)",
         text,
-    ), "SS_LICENSE_GUARD() missing from MQTT openConnection guard"
+    ), "SS_LICENSE_GUARD() missing from MQTT input driver open() guard"
 
 
 def test_license_guard_present_in_mqtt_hotpath():
-    """MQTT::Client::hotpathTxFrame() must check SS_LICENSE_GUARD()."""
-    text = _read("app/src/MQTT/Client.cpp")
+    """MQTT::Publisher::licenseValid() must check SS_LICENSE_GUARD()."""
+    text = _read("app/src/MQTT/Publisher.cpp")
 
     assert re.search(
-        r"token\.isValid\(\)\s*\n?\s*&&\s*SS_LICENSE_GUARD\(\)\s*&&\s*token\.featureTier\(\)",
+        r"token\.isValid\(\)\s*\n?\s*&&\s*SS_LICENSE_GUARD\(\)\s*\n?\s*&&\s*token\.featureTier\(\)",
         text,
-    ), "SS_LICENSE_GUARD() missing from MQTT hotpathTxFrame"
+    ), "SS_LICENSE_GUARD() missing from MQTT publisher license check"
 
 
 def test_license_guard_present_in_mdf4_export():
@@ -375,9 +375,9 @@ def test_timestamp_pipeline_starts_in_driver_and_shares_parsed_frames():
         "void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);" in builder_h
     )
     assert "dashboard.hotpathRxFrame(frame);" in builder_cpp
+    assert "const auto frameTs = data->timestamp + step * i;" in builder_cpp
     assert (
-        "std::make_shared<DataModel::TimestampedFrame>(m_frame, data->timestamp + step * i)"
-        in builder_cpp
+        "std::make_shared<DataModel::TimestampedFrame>(m_frame, frameTs)" in builder_cpp
     )
     assert "updateTimestampedFramesEnabled" not in builder_cpp
     assert "nextTimestampedFrameTime" not in builder_cpp

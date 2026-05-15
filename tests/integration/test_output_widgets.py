@@ -103,6 +103,40 @@ def _make_project_with_output_widgets(output_widgets):
     }
 
 
+def _make_project_with_dedicated_output_group(output_widgets):
+    """Project layout that surfaces outputWidgets on the dashboard.
+
+    Output widgets render as a DashboardOutputPanel only when they live in a
+    group whose ``groupType`` is Output (1). The datagrid carries the dataset
+    so totalWidgetCount sees both buckets.
+    """
+    return {
+        "title": "Output Widget Dashboard Test",
+        "groups": [
+            {
+                "title": "Controls",
+                "widget": "datagrid",
+                "datasets": [
+                    {
+                        "title": "Sensor1",
+                        "value": "0",
+                        "index": 1,
+                        "widget": "",
+                    }
+                ],
+            },
+            {
+                "title": "Output Panel",
+                "widget": "",
+                "groupType": 1,
+                "datasets": [],
+                "outputWidgets": output_widgets,
+            },
+        ],
+        "actions": [],
+    }
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -275,7 +309,7 @@ def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
         pytest.skip("Pro license required for output widget dashboard tests")
 
     widgets = [_make_output_widget("Test Button", "button")]
-    project = _make_project_with_output_widgets(widgets)
+    project = _make_project_with_dedicated_output_group(widgets)
 
     api_client.load_project_from_json(project)
     time.sleep(0.3)
@@ -287,10 +321,10 @@ def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
     dashboard = api_client.get_dashboard_status()
     total_widgets = dashboard.get("totalWidgetCount", 0)
 
-    # Should have at least the data grid + the output button widget
+    # Should have at least the data grid + the output panel widget
     assert (
         total_widgets >= 2
-    ), f"Expected at least 2 widgets (datagrid + output button), got {total_widgets}"
+    ), f"Expected at least 2 widgets (datagrid + output panel), got {total_widgets}"
 
 
 # ---------------------------------------------------------------------------
