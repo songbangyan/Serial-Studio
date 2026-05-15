@@ -1288,9 +1288,12 @@ void Widgets::Terminal::removeStringFromCursor(const Direction direction, int le
   // Cap bytes to remove (right)
   int removeSize = 0;
   if (direction == RightDirection) {
-    qsizetype l1 = m_data[positionY].size() - positionX;
-    qsizetype l2 = static_cast<qsizetype>(len);
-    removeSize   = qMin(l1, l2);
+    const qsizetype lineLen = (positionY >= 0 && positionY < m_data.size())
+                                ? m_data[positionY].size()
+                                : qsizetype(0);
+    const qsizetype l1      = lineLen - positionX;
+    const qsizetype l2      = static_cast<qsizetype>(len);
+    removeSize              = static_cast<int>(qMin(qMax(l1, qsizetype(0)), l2));
   }
 
   // Cap bytes to remove (left)
