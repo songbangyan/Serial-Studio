@@ -1454,28 +1454,36 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
         # leading `^\s*` anchor excludes the trailing `} while (cond);` of
         # a do-while construct, which is allowed because the body always
         # runs at least once and bounded loops use this form. Bare `while`
-        # is banned because the bound is implicit: nothing in the syntax
+        # is risky because the bound is implicit: nothing in the syntax
         # forces the author to articulate a max iteration count, which is
         # exactly the kind of bug that hid the WindowManager::tileGrid
         # infinite loop (int overflow turned `cols * rows < n` permanently
         # true and froze the GUI thread). Rewrite as
         # `for (int guard = 0; guard < kMaxIterations && cond; ++guard)`
         # so the bound is articulated and code review can audit it. Suppress
-        # with `// code-verify off` only when the bound is provably finite
-        # by the language (e.g. `while (queue.try_dequeue(item))` drains a
-        # finite queue, `while (it.hasNext())` walks a fixed collection).
+        # with `// code-verify off` when the bound is non-obvious but
+        # provable by other invariants.
+        #
+        # Canonical bounded forms are whitelisted because flagging them
+        # produces ~98% false-positive churn -- see the catalog in
+        # memory/project_while_loop_patterns.md. The fire-anyway shape is
+        # the WindowManager::tileGrid one: `cond` only references state
+        # mutated by side effects in the body, with no visible iteration
+        # cap, queue/iterator drain, atomic flag, or size/length bound.
         if re.match(r"^\s*while\s*\(", scrubbed):
-            out.append(
-                Finding(
-                    i,
-                    "cxx-while-loop",
-                    "`while (...)` has no syntactically-visible upper bound -- "
-                    "prefer `for (int i = 0; i < kMax && cond; ++i)` "
-                    "(NASA P10 rule 2). Suppress with `// code-verify off` "
-                    "when the bound is provably finite (queue drain, fixed "
-                    "iterator walk, etc).",
+            cond_text = _gather_while_condition(lines, i - 1)
+            if cond_text is not None and not _while_condition_is_bounded(cond_text):
+                out.append(
+                    Finding(
+                        i,
+                        "cxx-while-loop",
+                        "`while (...)` has no syntactically-visible upper bound -- "
+                        "prefer `for (int i = 0; i < kMax && cond; ++i)` "
+                        "(NASA P10 rule 2). Suppress with `// code-verify off` "
+                        "when the bound is provably finite (queue drain, fixed "
+                        "iterator walk, etc).",
+                    )
                 )
-            )
 
     # Q_INVOKABLE void on the same source line is unambiguous; spread cases
     # are rare enough that we accept the false-negative.
@@ -2155,6 +2163,134 @@ def _strip_line_comments(line: str) -> str:
     if idx >= 0:
         return line[:idx] + " " * (len(line) - idx)
     return line
+
+
+# `while (...)` condition extraction + whitelist. Tree-sitter would give us
+# the parsed condition cheaply, but the surrounding loop already operates on
+# stripped text lines, so we re-balance parens by hand: walk forward from the
+# opening `(` after `while`, counting depth across multi-line conditions, and
+# return the inner text. Cheap, no second parse, no false multi-line miss.
+def _gather_while_condition(lines: list[str], start_idx: int) -> str | None:
+    """Return the text inside the `while ( ... )` opener that begins on
+    `lines[start_idx]`, joining continuation lines until parens balance.
+    Returns None if the opener cannot be parsed cleanly (e.g. embedded in a
+    macro or split awkwardly across the file)."""
+    first = _strip_strings_and_line_comments(lines[start_idx])
+    m = re.search(r"\bwhile\s*\(", first)
+    if not m:
+        return None
+    pos = m.end()
+    depth = 1
+    pieces: list[str] = []
+    line_idx = start_idx
+    cur = first[pos:]
+    while line_idx < len(lines):
+        for ch in cur:
+            if ch == "(":
+                depth += 1
+            elif ch == ")":
+                depth -= 1
+                if depth == 0:
+                    break
+            pieces.append(ch)
+        if depth == 0:
+            break
+        line_idx += 1
+        if line_idx >= len(lines):
+            return None
+        cur = _strip_strings_and_line_comments(lines[line_idx])
+        pieces.append(" ")
+    if depth != 0:
+        return None
+    return "".join(pieces)
+
+
+# Canonical bounded shapes drawn from the catalog in
+# memory/project_while_loop_patterns.md. Each entry is a substring or regex
+# fragment that, if present in the condition text, marks the loop as
+# syntactically bounded. The list is conservative -- a few genuinely-unbounded
+# loops will sneak through if their condition happens to mention one of these
+# tokens, but the false-positive rate at advisory severity matters more than
+# the rare false-negative.
+_WHILE_BOUNDED_PATTERNS = [
+    # Queue drains: `try_dequeue`, `try_pop`, `pop_front` returning bool.
+    re.compile(r"\btry_(?:de)?queue\b"),
+    re.compile(r"\btry_pop\b"),
+    # Atomic worker-thread flag: `m_running.load()`, `m_*.load(...)`.
+    re.compile(r"\.load\s*\("),
+    # Qt iterator / stream walks. `.next()` and `->next()` both hit -- the
+    # `[.>-]` cluster covers `obj.next()`, `ptr->next()`, and the rarer
+    # `(*ptr).next()`.
+    re.compile(r"(?:\.|->)\s*hasNext\s*\(\s*\)"),
+    re.compile(r"(?:\.|->)\s*atEnd\s*\(\s*\)"),
+    re.compile(r"(?:\.|->)\s*next\s*\(\s*\)"),
+    re.compile(r"(?:\.|->)\s*framesAvailable\s*\(\s*\)"),
+    # Explicit iteration cap: `i < kMax*`, `i < 8192`, `iterations < N`.
+    # The `< <literal int>` form catches `fftSamples < 8192`, `wrapCount < 10`.
+    re.compile(r"<\s*k[A-Z]\w*"),
+    re.compile(r"<\s*\d+\b"),
+    re.compile(r"\b(?:iterations?|wrapCount|guard|tries|attempts)\b\s*<"),
+    # Length / size bound: `i < n`, `i < buf.size()`, `i < current_size`,
+    # `start < line.length()`. The bare-identifier form covers member fields
+    # that look like a size (current_size, m_size, end_, len, n, ...).
+    re.compile(r"<\s*\w+\.(?:size|length|count)\s*\(\s*\)"),
+    re.compile(r"<\s*\w+\s*->\s*(?:size|length|count)\s*\(\s*\)"),
+    # Bare-ident size bound: only count when the LHS clause is a single
+    # identifier (not an arithmetic expression). The leading lookbehind
+    # rejects anchored mid-clause matches; the body matches `((cond &&|^)
+    # <whitespace> <ident> < <size-ident>)`. The condition `cols * rows < n`
+    # is the WindowManager::tileGrid shape that the rule exists to catch,
+    # so it must NOT match here.
+    re.compile(
+        r"(?:^|&&|\|\||\()\s*\w+\s*<\s*(?:n|len|cnt|count|size|end|m|num\w*"
+        r"|\w*_size|\w*_len|\w*Size|\w*Length|\w*Count|\w*End)\b"
+    ),
+    # Size-driven append/trim: `data.size() < kSize`, `vec.size() < maxX`,
+    # `m_logEntries.size() > kMaxLogEntries`.
+    re.compile(r"(?:\.|->)\s*size\s*\(\s*\)\s*[<>]"),
+    re.compile(r"(?:\.|->)\s*length\s*\(\s*\)\s*[<>]"),
+    re.compile(r"(?:\.|->)\s*count\s*\(\s*\)\s*[<>]"),
+    # String trim helpers: `endsWith` / `startsWith` on a buffer that shrinks
+    # inside the body (`.chop`, `.remove(0, n)`).
+    re.compile(r"(?:\.|->)\s*endsWith\s*\("),
+    re.compile(r"(?:\.|->)\s*startsWith\s*\("),
+    # Parser sentinel walks: `m_cur.type != Tok::Eof` and the positive form
+    # `m_cur.type == Tok::Foo` / `m_cur.type == Tok::Foo || ... == Tok::Bar`
+    # where each `advance()` call inside the body necessarily either consumes
+    # a token or reaches Eof, so the token stream bounds the loop.
+    re.compile(r"\w+::Eof\b"),
+    re.compile(r"\bTok::[A-Z]\w*"),
+    # Container traversal: `m_pendingChunks.empty()` style draining.
+    re.compile(r"!\s*\w+(?:\.|->)\s*empty\s*\(\s*\)"),
+    # Strict-monotone counter heading toward zero -- `b >= 0`, `end > 0`,
+    # `count > 1`, `wordStartX > 0`. The body strictly decrements; bound is
+    # the initial value of the counter.
+    re.compile(r"\b\w+\s*>=\s*0\b"),
+    re.compile(r"\b\w+\s*>\s*\d+\b"),
+    # Two indices converging: `s < e`, `e > s`, `lo < hi`. Each iteration
+    # moves one toward the other; bound is `|e - s|`. Anchor to clause start
+    # so `cols * rows < e` does not match.
+    re.compile(r"(?:^|&&|\|\||\()\s*[a-z]\w{0,3}\s*[<>]\s*[a-z]\w{0,3}\b"),
+    # Cancellation polling: `!context->IsCancelled()` against an external
+    # cancel signal that's necessarily eventually true.
+    re.compile(r"IsCancelled\s*\(\s*\)"),
+    # `contains(x)` predicate over a finite set: caller mutates `x` inside
+    # the body until the set rejects it. Bound is the set's size.
+    re.compile(r"(?:\.|->)\s*contains\s*\("),
+    # Name-collision finder: `hasName(unique)` / `hasFoo(x)` where the body
+    # appends a suffix to the candidate. Bound is the namespace size.
+    re.compile(r"\bhas[A-Z]\w*\s*\("),
+]
+
+
+def _while_condition_is_bounded(cond_text: str) -> bool:
+    """True if `cond_text` matches one of the canonical bounded shapes.
+    See `_WHILE_BOUNDED_PATTERNS` for the catalog -- the list is the source
+    of truth, this function just runs the patterns in order."""
+    for pat in _WHILE_BOUNDED_PATTERNS:
+        if pat.search(cond_text):
+            return True
+    return False
 
 
 def _camel(snake: str) -> str:

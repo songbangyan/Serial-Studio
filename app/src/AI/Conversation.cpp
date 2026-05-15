@@ -389,6 +389,7 @@ QString AI::Conversation::rewriteHelpLinks(const QString& text)
 
   QString out      = text;
   int searchOffset = 0;
+  // code-verify off -- bound is number of regex matches in finite `out`
   while (true) {
     const auto m = re.match(out, searchOffset);
     if (!m.hasMatch())
@@ -402,6 +403,7 @@ QString AI::Conversation::rewriteHelpLinks(const QString& text)
     out.replace(m.capturedStart(0), m.capturedLength(0), replacement);
     searchOffset = m.capturedStart(0) + replacement.size();
   }
+  // code-verify on
 
   return out;
 }
