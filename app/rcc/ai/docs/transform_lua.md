@@ -15,6 +15,15 @@ end
 - Return a finite number. NaN/Inf or non-numeric returns fall back to the
   raw value silently.
 
+## Virtual vs non-virtual
+
+Set `virtual: true` on the dataset **only** when the transform has no
+parser-supplied `value` — i.e. its output is built purely from peers,
+tables, or constants (e.g. `Power = Voltage * Current`). A transform
+that USES `value` (unit conversion like `km/h = m/s * 3.6`, EMA
+smoothing, calibration, deadband) stays non-virtual. Rule of thumb: if
+the body references the `value` argument, leave `virtual` alone.
+
 ## Isolation
 
 The runtime invokes `luaL_dostring(your_code)` once per dataset. Top-level

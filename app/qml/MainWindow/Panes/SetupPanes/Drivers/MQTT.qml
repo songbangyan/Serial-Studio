@@ -24,6 +24,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "../../../../Widgets" as Widgets
+
 Item {
   id: root
 
@@ -49,18 +51,13 @@ Item {
         text: qsTr("Hostname") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _hostname
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
+        externalValue: Cpp_IO_Mqtt.hostname
         placeholderText: qsTr("e.g. broker.hivemq.com")
-        Component.onCompleted: text = Cpp_IO_Mqtt.hostname
-        onTextChanged: {
-          if (Cpp_IO_Mqtt.hostname !== text)
-            Cpp_IO_Mqtt.hostname = text
-        }
+        onEdited: text => Cpp_IO_Mqtt.hostname = text
       }
 
       //
@@ -70,17 +67,15 @@ Item {
         text: qsTr("Port") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _port
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
         placeholderText: "1883"
-        Component.onCompleted: text = Cpp_IO_Mqtt.port
+        externalValue: Cpp_IO_Mqtt.port
         validator: IntValidator { bottom: 1; top: 65535 }
-        onTextChanged: {
-          if (text.length > 0 && Cpp_IO_Mqtt.port !== parseInt(text))
+        onEdited: text => {
+          if (text.length > 0)
             Cpp_IO_Mqtt.port = parseInt(text)
         }
       }
@@ -92,18 +87,13 @@ Item {
         text: qsTr("Topic Filter") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _topic
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
+        externalValue: Cpp_IO_Mqtt.topicFilter
         placeholderText: qsTr("e.g. sensors/#")
-        Component.onCompleted: text = Cpp_IO_Mqtt.topicFilter
-        onTextChanged: {
-          if (Cpp_IO_Mqtt.topicFilter !== text)
-            Cpp_IO_Mqtt.topicFilter = text
-        }
+        onEdited: text => Cpp_IO_Mqtt.topicFilter = text
       }
 
       //
@@ -117,17 +107,12 @@ Item {
         spacing: 4
         Layout.fillWidth: true
 
-        TextField {
-          id: _clientId
-
+        Widgets.BoundField {
           Layout.fillWidth: true
           enabled: app.ioEnabled
           opacity: enabled ? 1 : 0.5
-          text: Cpp_IO_Mqtt.clientId
-          onTextChanged: {
-            if (Cpp_IO_Mqtt.clientId !== text)
-              Cpp_IO_Mqtt.clientId = text
-          }
+          externalValue: Cpp_IO_Mqtt.clientId
+          onEdited: text => Cpp_IO_Mqtt.clientId = text
         }
 
         Button {
@@ -145,17 +130,12 @@ Item {
         text: qsTr("Username") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _user
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-        text: Cpp_IO_Mqtt.username
-        onTextChanged: {
-          if (Cpp_IO_Mqtt.username !== text)
-            Cpp_IO_Mqtt.username = text
-        }
+        externalValue: Cpp_IO_Mqtt.username
+        onEdited: text => Cpp_IO_Mqtt.username = text
       }
 
       //
@@ -165,18 +145,13 @@ Item {
         text: qsTr("Password") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _pwd
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-        text: Cpp_IO_Mqtt.password
         echoMode: TextInput.Password
-        onTextChanged: {
-          if (Cpp_IO_Mqtt.password !== text)
-            Cpp_IO_Mqtt.password = text
-        }
+        externalValue: Cpp_IO_Mqtt.password
+        onEdited: text => Cpp_IO_Mqtt.password = text
       }
 
       //
@@ -194,9 +169,14 @@ Item {
         opacity: enabled ? 1 : 0.5
         model: Cpp_IO_Mqtt.mqttVersions
         currentIndex: Cpp_IO_Mqtt.mqttVersion
-        onCurrentIndexChanged: {
-          if (currentIndex !== Cpp_IO_Mqtt.mqttVersion)
-            Cpp_IO_Mqtt.mqttVersion = currentIndex
+        onActivated: Cpp_IO_Mqtt.mqttVersion = currentIndex
+
+        Connections {
+          target: Cpp_IO_Mqtt
+          function onMqttConfigurationChanged() {
+            if (_version.currentIndex !== Cpp_IO_Mqtt.mqttVersion)
+              _version.currentIndex = Cpp_IO_Mqtt.mqttVersion
+          }
         }
       }
 
@@ -207,16 +187,14 @@ Item {
         text: qsTr("Keep Alive (s)") + ":"
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
-        id: _keepAlive
-
+      } Widgets.BoundField {
         Layout.fillWidth: true
         enabled: app.ioEnabled
         opacity: enabled ? 1 : 0.5
+        externalValue: Cpp_IO_Mqtt.keepAlive
         validator: IntValidator { bottom: 0; top: 65535 }
-        Component.onCompleted: text = Cpp_IO_Mqtt.keepAlive
-        onTextChanged: {
-          if (text.length > 0 && Cpp_IO_Mqtt.keepAlive !== parseInt(text))
+        onEdited: text => {
+          if (text.length > 0)
             Cpp_IO_Mqtt.keepAlive = parseInt(text)
         }
       }
@@ -236,9 +214,14 @@ Item {
         opacity: enabled ? 1 : 0.5
         Layout.alignment: Qt.AlignLeft
         checked: Cpp_IO_Mqtt.cleanSession
-        onCheckedChanged: {
-          if (Cpp_IO_Mqtt.cleanSession !== checked)
-            Cpp_IO_Mqtt.cleanSession = checked
+        onClicked: Cpp_IO_Mqtt.cleanSession = checked
+
+        Connections {
+          target: Cpp_IO_Mqtt
+          function onMqttConfigurationChanged() {
+            if (_clean.checked !== Cpp_IO_Mqtt.cleanSession)
+              _clean.checked = Cpp_IO_Mqtt.cleanSession
+          }
         }
       }
 
@@ -257,9 +240,14 @@ Item {
         opacity: enabled ? 1 : 0.5
         Layout.alignment: Qt.AlignLeft
         checked: Cpp_IO_Mqtt.sslEnabled
-        onCheckedChanged: {
-          if (Cpp_IO_Mqtt.sslEnabled !== checked)
-            Cpp_IO_Mqtt.sslEnabled = checked
+        onClicked: Cpp_IO_Mqtt.sslEnabled = checked
+
+        Connections {
+          target: Cpp_IO_Mqtt
+          function onSslConfigurationChanged() {
+            if (_ssl.checked !== Cpp_IO_Mqtt.sslEnabled)
+              _ssl.checked = Cpp_IO_Mqtt.sslEnabled
+          }
         }
       }
 
@@ -272,15 +260,25 @@ Item {
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
         opacity: enabled ? 1 : 0.5
       } ComboBox {
+        id: _sslProtocol
+
         Layout.fillWidth: true
         opacity: enabled ? 1 : 0.5
         visible: Cpp_IO_Mqtt.sslEnabled
         model: Cpp_IO_Mqtt.sslProtocols
         currentIndex: Cpp_IO_Mqtt.sslProtocol
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
-        onCurrentIndexChanged: {
-          if (Cpp_IO_Mqtt.sslEnabled && currentIndex !== Cpp_IO_Mqtt.sslProtocol)
+        onActivated: {
+          if (Cpp_IO_Mqtt.sslEnabled)
             Cpp_IO_Mqtt.sslProtocol = currentIndex
+        }
+
+        Connections {
+          target: Cpp_IO_Mqtt
+          function onSslConfigurationChanged() {
+            if (_sslProtocol.currentIndex !== Cpp_IO_Mqtt.sslProtocol)
+              _sslProtocol.currentIndex = Cpp_IO_Mqtt.sslProtocol
+          }
         }
       }
 
@@ -293,15 +291,25 @@ Item {
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
         opacity: enabled ? 1 : 0.5
       } ComboBox {
+        id: _peerVerifyMode
+
         Layout.fillWidth: true
         opacity: enabled ? 1 : 0.5
         visible: Cpp_IO_Mqtt.sslEnabled
         model: Cpp_IO_Mqtt.peerVerifyModes
         currentIndex: Cpp_IO_Mqtt.peerVerifyMode
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
-        onCurrentIndexChanged: {
-          if (Cpp_IO_Mqtt.sslEnabled && currentIndex !== Cpp_IO_Mqtt.peerVerifyMode)
+        onActivated: {
+          if (Cpp_IO_Mqtt.sslEnabled)
             Cpp_IO_Mqtt.peerVerifyMode = currentIndex
+        }
+
+        Connections {
+          target: Cpp_IO_Mqtt
+          function onSslConfigurationChanged() {
+            if (_peerVerifyMode.currentIndex !== Cpp_IO_Mqtt.peerVerifyMode)
+              _peerVerifyMode.currentIndex = Cpp_IO_Mqtt.peerVerifyMode
+          }
         }
       }
 
@@ -313,15 +321,15 @@ Item {
         visible: Cpp_IO_Mqtt.sslEnabled
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
         opacity: enabled ? 1 : 0.5
-      } TextField {
+      } Widgets.BoundField {
         Layout.fillWidth: true
         visible: Cpp_IO_Mqtt.sslEnabled
         enabled: app.ioEnabled && Cpp_IO_Mqtt.sslEnabled
         opacity: enabled ? 1 : 0.5
+        externalValue: Cpp_IO_Mqtt.peerVerifyDepth
         validator: IntValidator { bottom: 0; top: 100 }
-        Component.onCompleted: text = Cpp_IO_Mqtt.peerVerifyDepth
-        onTextChanged: {
-          if (text.length > 0 && Cpp_IO_Mqtt.peerVerifyDepth !== parseInt(text))
+        onEdited: text => {
+          if (text.length > 0)
             Cpp_IO_Mqtt.peerVerifyDepth = parseInt(text)
         }
       }

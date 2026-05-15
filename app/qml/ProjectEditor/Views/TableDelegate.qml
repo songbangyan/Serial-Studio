@@ -423,6 +423,43 @@ ColumnLayout {
         }
 
         //
+        // Password field value editor (masked input)
+        //
+        Loader {
+          id: passwordFieldLoader
+
+          Layout.fillWidth: true
+          Layout.alignment: Qt.AlignVCenter
+          active: model.widgetType === ProjectEditor.PasswordField
+          visible: model.widgetType === ProjectEditor.PasswordField
+
+          property int modelRow: row
+          property int modelColumn: column
+          property var modelActive: model.active
+          property var editableValue: model.editableValue
+          property var modelPlaceholder: model.placeholderValue
+
+          sourceComponent: TextField {
+            echoMode: TextInput.Password
+            text: passwordFieldLoader.editableValue
+            enabled: passwordFieldLoader.modelActive
+            opacity: passwordFieldLoader.modelActive ? 1 : 0.5
+            placeholderText: passwordFieldLoader.modelPlaceholder ?? ""
+
+            onTextEdited: {
+              root.modelPointer.setData(
+                    view.index(passwordFieldLoader.modelRow, passwordFieldLoader.modelColumn),
+                    text,
+                    ProjectEditor.EditableValue)
+            }
+            font: Cpp_Misc_CommonFonts.monoFont
+            color: Cpp_ThemeManager.colors["table_text"]
+
+            background: Item {}
+          }
+        }
+
+        //
         // Icon picker
         //
         Loader {

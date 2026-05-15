@@ -22,6 +22,8 @@
 
 #pragma once
 
+#ifdef BUILD_COMMERCIAL
+
 // clang-format off
 #include <QtMqtt>
 #include <QJsonObject>
@@ -34,10 +36,11 @@
 #include <QVariantMap>
 // clang-format on
 
-#include "DataModel/ExportSchema.h"
-#include "DataModel/Frame.h"
-#include "DataModel/FrameConsumer.h"
-#include "IO/HAL_Driver.h"
+#  include "DataModel/ExportSchema.h"
+#  include "DataModel/Frame.h"
+#  include "DataModel/FrameConsumer.h"
+#  include "IO/HAL_Driver.h"
+#  include "MQTT/CredentialVault.h"
 
 namespace MQTT {
 
@@ -410,6 +413,8 @@ private:
   void scheduleSyncToWorker();
   void syncToWorker();
   void applyTimerInterval();
+  void reloadCredentialsFromVault();
+  void persistCredentialsToVault();
   [[nodiscard]] BrokerConfig snapshotConfig() const;
 
 private:
@@ -444,6 +449,7 @@ private:
   int m_scriptLanguage;
 
   QList<QSslCertificate> m_caCertificates;
+  CredentialVault m_credentialVault;
 
   QMap<QString, QSsl::SslProtocol> m_sslProtocols;
   QMap<QString, QMqttClient::ProtocolVersion> m_mqttVersions;
@@ -476,8 +482,6 @@ private:
   static constexpr QLatin1StringView kKeyPort{"port"};
   static constexpr QLatin1StringView kKeyClientId{"clientId"};
   static constexpr QLatin1StringView kKeyCustomClientId{"customClientId"};
-  static constexpr QLatin1StringView kKeyUsername{"username"};
-  static constexpr QLatin1StringView kKeyPassword{"password"};
   static constexpr QLatin1StringView kKeyCleanSession{"cleanSession"};
   static constexpr QLatin1StringView kKeyKeepAlive{"keepAlive"};
   static constexpr QLatin1StringView kKeyMqttVersion{"mqttVersion"};
@@ -490,3 +494,5 @@ private:
 }  // namespace MQTT
 
 Q_DECLARE_METATYPE(MQTT::BrokerConfig)
+
+#endif  // BUILD_COMMERCIAL

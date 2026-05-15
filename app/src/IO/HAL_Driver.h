@@ -48,6 +48,7 @@ struct DriverProperty {
     FloatField,
     CheckBox,
     ComboBox,
+    Password,
   };
 
   QString key;

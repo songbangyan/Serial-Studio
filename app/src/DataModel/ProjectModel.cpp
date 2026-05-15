@@ -1493,6 +1493,9 @@ void DataModel::ProjectModel::newJsonFile()
   m_hiddenGroupIds.clear();
   m_customizeWorkspaces = false;
 
+  const bool hadMqttPublisher = !m_mqttPublisher.isEmpty();
+  m_mqttPublisher             = QJsonObject();
+
   // Clear the lock -- a fresh project starts unlocked with no password set
   const bool wasLocked = m_locked;
   m_passwordHash.clear();
@@ -1541,6 +1544,9 @@ void DataModel::ProjectModel::newJsonFile()
 
   if (wasLocked)
     Q_EMIT lockedChanged();
+
+  if (hadMqttPublisher)
+    Q_EMIT mqttPublisherChanged();
 
   if (!m_silentReload)
     Q_EMIT sourceStructureChanged();

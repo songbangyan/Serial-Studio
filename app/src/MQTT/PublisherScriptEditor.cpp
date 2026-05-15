@@ -9,30 +9,32 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "MQTT/PublisherScriptEditor.h"
+#ifdef BUILD_COMMERCIAL
 
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
+#  include "MQTT/PublisherScriptEditor.h"
 
-#include <QFile>
-#include <QHBoxLayout>
-#include <QJavascriptHighlighter>
-#include <QJSEngine>
-#include <QLuaCompleter>
-#include <QLuaHighlighter>
-#include <QMenu>
-#include <QRegularExpression>
-#include <QShortcut>
-#include <QTextCursor>
+#  include <lauxlib.h>
+#  include <lua.h>
+#  include <lualib.h>
 
-#include "DataModel/Editors/CodeFormatter.h"
-#include "DataModel/Scripting/LuaCompat.h"
-#include "DataModel/Scripting/ScriptTemplates.h"
-#include "Misc/CommonFonts.h"
-#include "Misc/ThemeManager.h"
-#include "Misc/Translator.h"
-#include "SerialStudio.h"
+#  include <QFile>
+#  include <QHBoxLayout>
+#  include <QJavascriptHighlighter>
+#  include <QJSEngine>
+#  include <QLuaCompleter>
+#  include <QLuaHighlighter>
+#  include <QMenu>
+#  include <QRegularExpression>
+#  include <QShortcut>
+#  include <QTextCursor>
+
+#  include "DataModel/Editors/CodeFormatter.h"
+#  include "DataModel/Scripting/LuaCompat.h"
+#  include "DataModel/Scripting/ScriptTemplates.h"
+#  include "Misc/CommonFonts.h"
+#  include "Misc/ThemeManager.h"
+#  include "Misc/Translator.h"
+#  include "SerialStudio.h"
 
 //--------------------------------------------------------------------------------------------------
 // Constructor
@@ -781,3 +783,5 @@ void MQTT::PublisherScriptEditor::buildTemplates()
   m_templateCombo->setCurrentIndex(selectedIndex);
   m_templateCombo->blockSignals(false);
 }
+
+#endif  // BUILD_COMMERCIAL

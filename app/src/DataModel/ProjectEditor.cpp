@@ -1865,7 +1865,7 @@ void DataModel::ProjectEditor::buildMqttBrokerCredentials(const MQTT::Publisher&
   auto* passItem = new QStandardItem();
   passItem->setEditable(true);
   passItem->setData(enabled, Active);
-  passItem->setData(TextField, WidgetType);
+  passItem->setData(PasswordField, WidgetType);
   passItem->setData(pub.password(), EditableValue);
   passItem->setData(kMqttPublisher_Password, ParameterType);
   passItem->setData(tr("Password"), ParameterName);
@@ -2556,6 +2556,8 @@ void DataModel::ProjectEditor::appendDriverPropertyRows(const DataModel::Source&
         return CheckBox;
       case IO::DriverProperty::ComboBox:
         return ComboBox;
+      case IO::DriverProperty::Password:
+        return PasswordField;
     }
     return TextField;
   };

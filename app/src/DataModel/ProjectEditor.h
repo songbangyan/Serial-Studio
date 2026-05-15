@@ -191,6 +191,7 @@ public:
     ComboBox,
     IconPicker,
     SectionHeader,
+    PasswordField,
   };
   Q_ENUM(EditorWidget)
 

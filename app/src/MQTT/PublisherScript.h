@@ -11,13 +11,15 @@
 
 #pragma once
 
-#include <memory>
-#include <QByteArray>
-#include <QJSEngine>
-#include <QJSValue>
-#include <QString>
+#ifdef BUILD_COMMERCIAL
 
-#include "DataModel/Scripting/JsWatchdog.h"
+#  include <memory>
+#  include <QByteArray>
+#  include <QJSEngine>
+#  include <QJSValue>
+#  include <QString>
+
+#  include "DataModel/Scripting/JsWatchdog.h"
 
 struct lua_State;
 
@@ -66,3 +68,5 @@ private:
 };
 
 }  // namespace MQTT
+
+#endif  // BUILD_COMMERCIAL

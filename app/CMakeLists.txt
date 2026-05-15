@@ -499,6 +499,7 @@ set(QML_SOURCES
   qml/Widgets/Dashboard/PlotCommon.qml
   qml/Widgets/Dashboard/Terminal.qml
   qml/Widgets/BigButton.qml
+  qml/Widgets/BoundField.qml
   qml/Widgets/InfoBullet.qml
   qml/Widgets/LedIndicator.qml
   qml/Widgets/FileDropArea.qml
@@ -545,6 +546,7 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/NotificationsHandler.h
     src/API/Handlers/ProcessHandler.h
     src/API/Handlers/SessionsHandler.h
+    src/MQTT/CredentialVault.h
     src/MQTT/Publisher.h
     src/MQTT/PublisherScript.h
     src/MQTT/PublisherScriptEditor.h
@@ -623,6 +625,7 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/LicensingHandler.cpp
     src/API/Handlers/NotificationsHandler.cpp
     src/API/Handlers/SessionsHandler.cpp
+    src/MQTT/CredentialVault.cpp
     src/MQTT/Publisher.cpp
     src/MQTT/PublisherScript.cpp
     src/MQTT/PublisherScriptEditor.cpp

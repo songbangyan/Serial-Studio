@@ -729,7 +729,7 @@ QList<IO::DriverProperty> IO::Drivers::MQTT::driverProperties() const
   IO::DriverProperty pass;
   pass.key   = QStringLiteral("password");
   pass.label = tr("Password");
-  pass.type  = IO::DriverProperty::Text;
+  pass.type  = IO::DriverProperty::Password;
   pass.value = m_password;
   props.append(pass);
 

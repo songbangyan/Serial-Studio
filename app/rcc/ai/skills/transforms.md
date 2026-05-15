@@ -21,37 +21,67 @@ project.dataset.setTransformCode {groupId, datasetId, code, language: 1}
 project.dataset.update            {groupId, datasetId, transformCode, transformLanguage: 1}
 ```
 
-## Adding a compute-only dataset (no parser slot)
+## Virtual vs non-virtual: when to flip the flag
 
-A dataset whose value is *computed* by a transform — derived from peers,
-table registers, or constants — is **virtual**. Set `virtual: true` on
-creation, otherwise the runtime tries to read `channels[index - 1]`
-from the parser output and the dataset ends up empty.
+`virtual: true` means **compute-only**: the dataset has no slot in the
+frame, the parser supplies no value for it, and its output is built
+entirely from peer datasets, table registers, or constants. **Do not**
+flip `virtual` on a regular dataset just because it has a transform.
+Most transforms — unit conversion, calibration, smoothing, deadband,
+hysteresis — operate on a parser-supplied `value` and stay
+**non-virtual**.
+
+**Rule of thumb.** If the transform USES its `value` argument, the
+dataset is non-virtual. If it ignores `value` and reads only from
+`datasetGetRaw` / `datasetGetFinal` / `tableGet`, it's virtual.
+
+**Virtual** — Power [W] = Voltage × Current. No parser slot; the value
+is computed from two peer datasets. Set `virtual: true`:
+
+```lua
+function transform(_v)
+  return datasetGetFinal(VOLTAGE_UID) * datasetGetFinal(CURRENT_UID)
+end
+```
+
+**Non-virtual** — km/h from a m/s sensor reading. The parser writes
+m/s into `value`, the transform converts units. Leave `virtual: false`
+(the default):
+
+```lua
+function transform(value)
+  return value * 3.6
+end
+```
+
+Same rule for EMA smoothing, ADC-counts → volts, gear-ratio applied
+to RPM, deadband filters — anything that touches `value` is a regular
+transform, not a virtual dataset.
 
 ```
-project.dataset.add {groupId, options: ["plot"]}  // creates dataset N
-project.dataset.update {
+project.dataset.add {groupId, options: ["plot"]}     -- creates dataset N
+project.dataset.update {                              -- flip ONLY for compute-only
   groupId, datasetId: N,
-  virtual: true,                                  // compute-only
-  title: "Speed",
-  units: "m/s",
-  transformLanguage: 1,                           // 1 = Lua
+  virtual: true,
+  title: "Power",
+  units: "W",
+  transformLanguage: 1,                              -- 1 = Lua
   transformCode: "..."
 }
 ```
 
-**Auto-detect**: when the project saves, the save path inspects each
-dataset's transform body. If `transformCode` is non-empty AND the body
-**never references `value`**, the dataset is auto-flagged `virtual:
-true`. So a transform like `function transform(_v) return
-datasetGetFinal(uid_speed) * 0.27778 end` is detected as virtual on
-save even if you forgot to set the flag. Manual setting is still
-recommended for clarity, because the auto-detect only fires at save
-time -- if you push the transform and run live before the next save,
-the dataset still misses its value.
+**Auto-detect on save.** The save path inspects each dataset's transform
+body. If `transformCode` is non-empty AND the body **never references
+`value`**, the dataset is auto-flagged `virtual: true`. So a Power-style
+transform is detected as virtual on save even if you forgot the flag,
+but the dataset stays empty until that save — set `virtual` explicitly
+when you push compute-only code.
 
 If `virtual=false` and `index<=0` after a `setTransformCode`, the API
-returns a `hint` field telling you to flip `virtual`. Listen to it.
+returns a `hint` field telling you to flip `virtual`. Listen to it — but
+only when the transform really is compute-only. If you wrote a regular
+`value`-using transform on a dataset that has no parser slot, the fix
+is usually to assign `index` (give it a slot), not to flip `virtual`.
 
 ### Why prefer virtual datasets over an extra parser slot
 

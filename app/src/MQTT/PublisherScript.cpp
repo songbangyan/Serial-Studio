@@ -9,13 +9,15 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "MQTT/PublisherScript.h"
+#ifdef BUILD_COMMERCIAL
 
-#include <lauxlib.h>
-#include <lua.h>
-#include <lualib.h>
+#  include "MQTT/PublisherScript.h"
 
-#include "DataModel/Scripting/LuaCompat.h"
+#  include <lauxlib.h>
+#  include <lua.h>
+#  include <lualib.h>
+
+#  include "DataModel/Scripting/LuaCompat.h"
 
 /**
  * @brief Constructs the script with no language loaded.
@@ -254,3 +256,5 @@ void MQTT::PublisherScript::resetJs()
   if (m_jsEngine)
     m_jsEngine->collectGarbage();
 }
+
+#endif  // BUILD_COMMERCIAL

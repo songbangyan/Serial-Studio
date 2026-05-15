@@ -11,15 +11,17 @@
 
 #pragma once
 
-#include <QCheckBox>
-#include <QCodeEditor>
-#include <QComboBox>
-#include <QDialog>
-#include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QSyntaxStyle>
-#include <QVBoxLayout>
+#ifdef BUILD_COMMERCIAL
+
+#  include <QCheckBox>
+#  include <QCodeEditor>
+#  include <QComboBox>
+#  include <QDialog>
+#  include <QLabel>
+#  include <QLineEdit>
+#  include <QPushButton>
+#  include <QSyntaxStyle>
+#  include <QVBoxLayout>
 
 namespace MQTT {
 
@@ -104,3 +106,5 @@ private:
 };
 
 }  // namespace MQTT
+
+#endif  // BUILD_COMMERCIAL

@@ -20,23 +20,25 @@
  * SPDX-License-Identifier: LicenseRef-SerialStudio-Commercial
  */
 
-#include "MQTT/Publisher.h"
+#ifdef BUILD_COMMERCIAL
 
-#include <algorithm>
-#include <QApplication>
-#include <QFileDialog>
-#include <QJsonDocument>
-#include <QLoggingCategory>
-#include <QPointer>
-#include <QRandomGenerator>
-#include <QStandardPaths>
+#  include "MQTT/Publisher.h"
 
-#include "DataModel/ExportSchema.h"
-#include "DataModel/NotificationCenter.h"
-#include "DataModel/ProjectModel.h"
-#include "Licensing/CommercialToken.h"
-#include "Misc/Utilities.h"
-#include "MQTT/PublisherScript.h"
+#  include <algorithm>
+#  include <QApplication>
+#  include <QFileDialog>
+#  include <QJsonDocument>
+#  include <QLoggingCategory>
+#  include <QPointer>
+#  include <QRandomGenerator>
+#  include <QStandardPaths>
+
+#  include "DataModel/ExportSchema.h"
+#  include "DataModel/NotificationCenter.h"
+#  include "DataModel/ProjectModel.h"
+#  include "Licensing/CommercialToken.h"
+#  include "Misc/Utilities.h"
+#  include "MQTT/PublisherScript.h"
 
 Q_LOGGING_CATEGORY(lcMqttPub, "serialstudio.mqtt.publisher", QtCriticalMsg)
 
@@ -1220,8 +1222,6 @@ QJsonObject MQTT::Publisher::toJson() const
   if (m_customClientId)
     obj.insert(kKeyClientId, m_clientId);
 
-  obj.insert(kKeyUsername, m_username);
-  obj.insert(kKeyPassword, m_password);
   obj.insert(kKeyCleanSession, m_cleanSession);
   obj.insert(kKeyKeepAlive, static_cast<int>(m_keepAlive));
   obj.insert(kKeyMqttVersion, static_cast<int>(mqttVersion()));
@@ -1262,8 +1262,9 @@ void MQTT::Publisher::applyProjectConfig(const QJsonObject& cfg)
   else
     regenerateClientId();
 
-  setUsername(cfg.value(kKeyUsername).toString());
-  setPassword(cfg.value(kKeyPassword).toString());
+  // Credentials are stored encrypted per host:port in QSettings, not in the project file.
+  reloadCredentialsFromVault();
+
   setCleanSession(cfg.value(kKeyCleanSession).toBool(true));
   setKeepAlive(static_cast<quint16>(cfg.value(kKeyKeepAlive).toInt(60)));
   setMqttVersion(static_cast<quint8>(cfg.value(kKeyMqttVersion).toInt(2)));
@@ -1597,6 +1598,10 @@ void MQTT::Publisher::setPort(const quint16 port)
     return;
 
   m_port = port;
+
+  if (!m_inApply)
+    reloadCredentialsFromVault();
+
   markConfigChanged();
 }
 
@@ -1653,6 +1658,10 @@ void MQTT::Publisher::setHostname(const QString& hostname)
     return;
 
   m_hostname = hostname;
+
+  if (!m_inApply)
+    reloadCredentialsFromVault();
+
   markConfigChanged();
 }
 
@@ -1665,6 +1674,7 @@ void MQTT::Publisher::setUsername(const QString& username)
     return;
 
   m_username = username;
+  persistCredentialsToVault();
   markConfigChanged();
 }
 
@@ -1677,6 +1687,7 @@ void MQTT::Publisher::setPassword(const QString& password)
     return;
 
   m_password = password;
+  persistCredentialsToVault();
   markConfigChanged();
 }
 
@@ -1992,3 +2003,26 @@ void MQTT::Publisher::applyTimerInterval()
   const int interval = 1000 / std::clamp(m_publishFrequencyHz, kMinPublishHz, kMaxPublishHz);
   setTimerIntervalMs(interval);
 }
+
+/**
+ * @brief Loads credentials for the current host:port from the vault into the in-memory fields.
+ */
+void MQTT::Publisher::reloadCredentialsFromVault()
+{
+  const auto creds = m_credentialVault.credentials(m_hostname, m_port);
+  m_username       = creds.username;
+  m_password       = creds.password;
+}
+
+/**
+ * @brief Writes the current in-memory credentials to the vault keyed by current host:port.
+ */
+void MQTT::Publisher::persistCredentialsToVault()
+{
+  if (m_hostname.isEmpty())
+    return;
+
+  m_credentialVault.setCredentials(m_hostname, m_port, m_username, m_password);
+}
+
+#endif  // BUILD_COMMERCIAL

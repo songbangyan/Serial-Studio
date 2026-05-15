@@ -41,7 +41,7 @@
     "hasProjectFile": true,
     "projectFileName": "Camera Telemetry.ssproj",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "CAN Bus Example",
@@ -52,7 +52,7 @@
     "hasProjectFile": true,
     "projectFileName": "ecu_simulator.ssproj",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "csv2wav",
@@ -63,7 +63,7 @@
     "hasProjectFile": false,
     "projectFileName": "",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "Dual Drone Telemetry",
@@ -85,7 +85,7 @@
     "hasProjectFile": true,
     "projectFileName": "EMWaveSimulator.ssproj",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "HexadecimalADC",
@@ -96,7 +96,7 @@
     "hasProjectFile": true,
     "projectFileName": "HexadecimalADC.ssproj",
     "hasScreenshot": true,
-    "requiresPro": true
+    "requiresPro": false
   },
   {
     "id": "Hydrogen",
@@ -107,7 +107,7 @@
     "hasProjectFile": true,
     "projectFileName": "Hydrogen.ssproj",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "IMU Simulator",
@@ -129,7 +129,7 @@
     "hasProjectFile": true,
     "projectFileName": "iss-tracker.ssproj",
     "hasScreenshot": true,
-    "requiresPro": true
+    "requiresPro": false
   },
   {
     "id": "LorenzAttractor",
@@ -140,7 +140,7 @@
     "hasProjectFile": true,
     "projectFileName": "LorenzAttractor.ssproj",
     "hasScreenshot": true,
-    "requiresPro": false
+    "requiresPro": true
   },
   {
     "id": "LTE modem",
@@ -186,6 +186,17 @@
     "projectFileName": "MPU6050.ssproj",
     "hasScreenshot": true,
     "requiresPro": false
+  },
+  {
+    "id": "MQTT Subscriber Example",
+    "title": "HSL Helsinki Public Transit",
+    "description": "Subscribes to Helsinki Regional Transport's public MQTT feed and visualizes the live GPS position, speed, and route data of a single bus, tram, or train.",
+    "category": "Networking",
+    "difficulty": "Intermediate",
+    "hasProjectFile": true,
+    "projectFileName": "HSL Helsinki Public Transit.ssproj",
+    "hasScreenshot": true,
+    "requiresPro": true
   },
   {
     "id": "NI DAQmx",
