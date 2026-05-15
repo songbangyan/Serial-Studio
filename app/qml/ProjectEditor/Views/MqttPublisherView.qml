@@ -91,16 +91,16 @@ Widgets.Pane {
           }
 
           //
-          // Status indicator
+          // Status indicator (LED with bloom glow, matches LED Panel widget)
           //
-          Rectangle {
-            width: 10
-            height: 10
-            radius: 5
+          Widgets.LedIndicator {
+            diameter: 14
+            Layout.leftMargin: 4
+            Layout.rightMargin: 4
             Layout.alignment: Qt.AlignVCenter
-            color: Cpp_MQTT_Publisher.isConnected
-                   ? Cpp_ThemeManager.colors["highlight"]
-                   : Cpp_ThemeManager.colors["alarm"]
+            on: Cpp_MQTT_Publisher.isConnected
+            onColor: "#15803d"
+            offColor: Cpp_ThemeManager.colors["alarm"]
           }
 
           Label {
@@ -129,6 +129,23 @@ Widgets.Pane {
                           ? qsTr("Probe the broker with the current settings")
                           : qsTr("Enable publishing first")
             onClicked: Cpp_MQTT_Publisher.testConnection()
+          }
+
+          //
+          // Edit script (only visible when mode == ScriptDriven == 1)
+          //
+          Widgets.ToolbarButton {
+            iconSize: 24
+            toolbarButton: false
+            text: qsTr("Edit Script")
+            Layout.alignment: Qt.AlignVCenter
+            visible: Cpp_MQTT_Publisher.mode === 1
+            enabled: Cpp_MQTT_Publisher.enabled
+            icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+            ToolTip.text: Cpp_MQTT_Publisher.enabled
+                          ? qsTr("Edit the publisher script (Lua or JavaScript)")
+                          : qsTr("Enable publishing first")
+            onClicked: Cpp_JSON_ProjectEditor.openMqttScriptEditor()
           }
 
           //

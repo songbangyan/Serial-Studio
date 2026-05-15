@@ -47,7 +47,7 @@ A common diagnostic trick is to temporarily subscribe to `#` (or `your/prefix/#`
 
 ## Recommended conventions for Serial Studio
 
-Topics are conventions, not contract, so any structure that disambiguates publishers will work. The shape below tends to hold up as projects grow:
+Topics are conventions, not contract, so any structure that disambiguates publishers will work. The shape below scales as projects grow:
 
 ```
 <project>/<device>/raw         # bytes off the wire, opaque to MQTT consumers
@@ -93,8 +93,8 @@ sequenceDiagram
 
 A publisher can mark a message as **retained**. The broker remembers the last retained message on each topic and delivers it immediately to any new subscriber. This is the way to signal "current state" rather than "events":
 
-- `home/heating/setpoint` retained — the current setpoint, available to anyone who subscribes.
-- `home/heating/events/setpoint-changed` non-retained — the change events, only seen by clients listening at the time.
+- `home/heating/setpoint` retained: the current setpoint, available to anyone who subscribes.
+- `home/heating/events/setpoint-changed` non-retained: the change events, only seen by clients listening at the time.
 
 Retained messages do not expire unless MQTT 5 message expiry is set. Publishing an empty payload to a topic with the retain flag clears the retained message.
 
@@ -126,16 +126,16 @@ If two clients connect to the same broker with the same client ID, the broker di
 
 **Public test brokers (development and testing only):**
 
-- `test.mosquitto.org` — port 1883 (plaintext), 8883 (TLS), 8080 (WebSocket).
-- `broker.hivemq.com` — port 1883 (plaintext).
+- `test.mosquitto.org`: port 1883 (plaintext), 8883 (TLS), 8080 (WebSocket).
+- `broker.hivemq.com`: port 1883 (plaintext).
 
 Do not use public brokers for anything that should stay private. They are public.
 
 **Self-hosted:**
 
-- [Eclipse Mosquitto](https://mosquitto.org/) — lightweight, single binary, easy to configure.
-- [EMQX](https://www.emqx.io/) — scalable, enterprise-grade, MQTT 5.0.
-- [VerneMQ](https://vernemq.com/) — distributed, fault-tolerant.
+- [Eclipse Mosquitto](https://mosquitto.org/): lightweight, single binary, easy to configure.
+- [EMQX](https://www.emqx.io/): scalable, enterprise-grade, MQTT 5.0.
+- [VerneMQ](https://vernemq.com/): distributed, fault-tolerant.
 
 **Managed cloud:**
 

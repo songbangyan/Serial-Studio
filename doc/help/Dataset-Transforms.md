@@ -227,9 +227,9 @@ Transforms are applied in order: groups in frame order, datasets in group order.
 
 If you need dataset B to consume dataset A's final value, make sure A comes before B in the Project Editor tree.
 
-## Frame metadata — the second `frameInfo` argument
+## Frame metadata: the second `frameInfo` argument
 
-Every transform also receives a second argument with metadata about the frame the value belongs to. Existing one-arg transforms keep working — both Lua and JavaScript silently ignore extra arguments.
+Every transform also receives a second argument with metadata about the frame the value belongs to. Existing one-arg transforms keep working (both Lua and JavaScript silently ignore extra arguments).
 
 ```lua
 function transform(value, info)
@@ -253,7 +253,7 @@ function transform(value, info) {
 
 `info.frameNumber` is per-source. Resets to 0 on disconnect / project reload.
 
-### Example — rate-limit a control update
+### Example: rate-limit a control update
 
 A transform that nudges the device's setpoint, but no more than ten times per second regardless of frame rate:
 
@@ -269,7 +269,7 @@ function transform(temperature, info)
 end
 ```
 
-### Example — request a status push every 50th frame
+### Example: request a status push every 50th frame
 
 ```javascript
 function transform(value, info) {
@@ -278,7 +278,7 @@ function transform(value, info) {
 }
 ```
 
-## Writing back to the device — `deviceWrite()`
+## Writing back to the device: `deviceWrite()`
 
 Transforms can send bytes back to the connected device with `deviceWrite(data, sourceId?)`. The intended use is **closed-loop control**: read a sensor value, compute a setpoint or correction, and push it back to the device in one step.
 
@@ -292,11 +292,11 @@ deviceWrite(data, sourceId?)
             { ok = false, error = "..." }  on failure
 ```
 
-`deviceWrite` is **synchronous and fire-and-forget**: it pushes the bytes to the driver immediately. It does not block waiting for a reply, and it does not throw — every failure becomes `{ ok = false, error = "..." }`.
+`deviceWrite` is **synchronous and fire-and-forget**: it pushes the bytes to the driver immediately. It does not block waiting for a reply, and it does not throw. Every failure becomes `{ ok = false, error = "..." }`.
 
 Every call is logged to the application log as `[deviceWrite] source=<id> bytes=<n> written=<n>` so you can verify control commands fired the way you expected.
 
-### Lua example — PWM controller
+### Lua example: PWM controller
 
 ```lua
 local kp = 4.0
@@ -312,7 +312,7 @@ end
 
 The transform returns the raw temperature unchanged (so the dashboard still shows the measured value) and writes the computed PWM duty cycle back on every frame.
 
-### JavaScript example — alarm latch
+### JavaScript example: alarm latch
 
 ```javascript
 let triggered = false;
@@ -346,20 +346,20 @@ end
 
 `deviceWrite` never throws. Possible `error` values:
 
-- `"device not connected or write failed"` — the target source has no live driver, or the driver's `write()` returned 0/negative.
-- `"deviceWrite: data is empty"` — the payload was zero bytes.
+- `"device not connected or write failed"`: the target source has no live driver, or the driver's `write()` returned 0/negative.
+- `"deviceWrite: data is empty"`: the payload was zero bytes.
 - `"deviceWrite: data must be a string"` (Lua) / `"... string or byte array"` (JS).
 - `"deviceWrite: sourceId must be a number"`.
 
 ### When NOT to use it
 
 - For a button or slider the user clicks, use an **Output Widget**. Transforms run on every frame; an Output Widget runs when the user acts.
-- Don't `deviceWrite` from a virtual dataset unless you understand its execution order — virtual datasets are processed after the regular ones, so they see *final* values, but they still fire every frame.
+- Don't `deviceWrite` from a virtual dataset unless you understand its execution order. Virtual datasets are processed after the regular ones, so they see *final* values, but they still fire every frame.
 - Don't write large payloads on every frame. The transform hotpath is shared with all datasets in the source; a noisy `deviceWrite` saturates the link.
 
-## Firing actions — `actionFire()`
+## Firing actions: `actionFire()`
 
-Transforms can also trigger any **Action** already defined in the project (see [Actions](Actions.md)). Reuse an existing action — with its prebuilt payload, encoding, and timer mode — instead of hardcoding bytes in a `deviceWrite`.
+Transforms can also trigger any **Action** already defined in the project (see [Actions](Actions.md)). Reuse an existing action (with its prebuilt payload, encoding, and timer mode) instead of hardcoding bytes in a `deviceWrite`.
 
 ```text
 actionFire(actionId)
@@ -367,7 +367,7 @@ actionFire(actionId)
   returns:  { ok = true } | { ok = false, error = "..." }
 ```
 
-`actionId` is the action's `actionId` field — the same persistent integer the project file stores and the API returns. It is **not** the position in the action list. Find it with `project.action.list` (MCP) or read it off the Actions panel in the Project Editor.
+`actionId` is the action's `actionId` field: the same persistent integer the project file stores and the API returns. It is **not** the position in the action list. Find it with `project.action.list` (MCP) or read it off the Actions panel in the Project Editor.
 
 ```lua
 local triggered = false
@@ -380,7 +380,7 @@ function transform(value, info)
 end
 ```
 
-Behaves like the user pressing the action's button — including running the action's timer (`AutoStart`, `RepeatNTimes`, ...). Calls are logged as `[actionFire] id=N index=M ok`.
+Behaves like the user pressing the action's button, including running the action's timer (`AutoStart`, `RepeatNTimes`, ...). Calls are logged as `[actionFire] id=N index=M ok`.
 
 `actionFire` is also available in frame parsers and painter scripts.
 
@@ -487,7 +487,7 @@ Serial Studio processes data in a clear pipeline. Knowing where transforms sit h
 |-----------------------|-------------------|--------------|---------|
 | **Frame parser**      | `parse(frame)`    | Per-source   | Decode raw bytes into an array of values |
 | **Dataset transform** | `transform(value)`| Per-dataset  | Convert raw values to engineering units |
-| **Dashboard**         | —                 | Per-widget   | Display the final values |
+| **Dashboard**         | (n/a)             | Per-widget   | Display the final values |
 
 **Rule of thumb:**
 

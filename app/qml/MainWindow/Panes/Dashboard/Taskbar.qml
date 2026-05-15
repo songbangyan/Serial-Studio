@@ -51,8 +51,7 @@ Item {
                                  || (startMenu && startMenu.visible)
 
   //
-  // Rebuilds the unified search list -- widget hits first, then start menu
-  // actions -- whenever the filter or widget index changes.
+  // Rebuilds the unified search list
   //
   function refreshCombinedSearchResults() {
     var widgetHits = taskBar ? taskBar.searchResults : []
@@ -892,12 +891,138 @@ Item {
       Layout.preferredWidth: 24
       Layout.preferredHeight: 24
       Layout.alignment: Qt.AlignVCenter
+      onClicked: root.newWorkspaceRequested()
       icon.source: "qrc:/icons/buttons/plus.svg"
       icon.color: Cpp_ThemeManager.colors["taskbar_text"]
-      onClicked: root.newWorkspaceRequested()
       visible: !(typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
     }
 
+    //
+    // MQTT status indicator (visible only when publisher enabled on a Pro build)
+    //
+    Button {
+      id: mqttIndicator
+
+      icon.width: 18
+      icon.height: 18
+      background: Item{}
+      Layout.preferredWidth: 24
+      Layout.preferredHeight: 24
+      Layout.alignment: Qt.AlignVCenter
+      visible: Cpp_CommercialBuild && Cpp_MQTT_Publisher.enabled
+      icon.source: Cpp_MQTT_Publisher.isConnected
+                   ? "qrc:/icons/taskbar/mqtt-on.svg"
+                   : "qrc:/icons/taskbar/mqtt-off.svg"
+      icon.color: "transparent"
+      ToolTip.visible: hovered && !mqttStatusPopup.opened
+      ToolTip.text: Cpp_MQTT_Publisher.isConnected
+                    ? qsTr("MQTT: Connected to %1").arg(Cpp_MQTT_Publisher.brokerEndpoint)
+                    : qsTr("MQTT: Not connected")
+      onClicked: mqttStatusPopup.opened ? mqttStatusPopup.close() : mqttStatusPopup.open()
+
+      Popup {
+        id: mqttStatusPopup
+
+        width: 280
+        padding: 10
+        x: mqttIndicator.width - width
+        y: -implicitHeight - mqttIndicator.y + 1
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        background: Rectangle {
+          border.width: 1
+          color: Cpp_ThemeManager.colors["start_menu_background"]
+          border.color: Cpp_ThemeManager.colors["start_menu_border"]
+        }
+
+        contentItem: ColumnLayout {
+          spacing: 6
+
+          Label {
+            font: Cpp_Misc_CommonFonts.boldUiFont
+            color: Cpp_ThemeManager.colors["start_menu_text"]
+            text: qsTr("MQTT Publisher")
+          }
+
+          GridLayout {
+            columns: 2
+            rowSpacing: 4
+            columnSpacing: 12
+            Layout.fillWidth: true
+
+            Label {
+              text: qsTr("Status:")
+              font: Cpp_Misc_CommonFonts.uiFont
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+            Label {
+              Layout.fillWidth: true
+              font: Cpp_Misc_CommonFonts.boldUiFont
+              text: Cpp_MQTT_Publisher.isConnected
+                    ? qsTr("Connected")
+                    : qsTr("Disconnected")
+              color: Cpp_MQTT_Publisher.isConnected
+                     ? Cpp_ThemeManager.colors["highlight"]
+                     : Cpp_ThemeManager.colors["alarm"]
+            }
+
+            Label {
+              text: qsTr("Broker:")
+              font: Cpp_Misc_CommonFonts.uiFont
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+            Label {
+              Layout.fillWidth: true
+              elide: Text.ElideRight
+              font: Cpp_Misc_CommonFonts.uiFont
+              text: Cpp_MQTT_Publisher.brokerEndpoint
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+
+            Label {
+              text: qsTr("Mode:")
+              font: Cpp_Misc_CommonFonts.uiFont
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+            Label {
+              Layout.fillWidth: true
+              elide: Text.ElideRight
+              font: Cpp_Misc_CommonFonts.uiFont
+              text: Cpp_MQTT_Publisher.modeLabel
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+
+            Label {
+              text: qsTr("Messages sent:")
+              font: Cpp_Misc_CommonFonts.uiFont
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+            Label {
+              Layout.fillWidth: true
+              font: Cpp_Misc_CommonFonts.uiFont
+              text: Cpp_MQTT_Publisher.messagesSent
+              color: Cpp_ThemeManager.colors["start_menu_text"]
+            }
+          }
+
+          Button {
+            Layout.fillWidth: true
+            text: qsTr("Open MQTT Settings")
+            font: Cpp_Misc_CommonFonts.uiFont
+            visible: !(typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
+            onClicked: {
+              mqttStatusPopup.close()
+              app.showProjectEditor()
+              Cpp_JSON_ProjectEditor.selectMqttPublisher()
+            }
+          }
+        }
+      }
+    }
+
+    //
+    // Spacer
+    //
     Item {
       implicitWidth: 4
     }

@@ -38,6 +38,7 @@
 
 #ifdef BUILD_COMMERCIAL
 #  include "MQTT/Publisher.h"
+#  include "MQTT/PublisherScriptEditor.h"
 #endif
 
 //--------------------------------------------------------------------------------------------------
@@ -135,10 +136,13 @@ typedef enum {
   kMqttPublisher_Mode,
   kMqttPublisher_PublishFrequency,
   kMqttPublisher_TopicBase,
+  kMqttPublisher_ScriptTopic,
+  kMqttPublisher_ScriptCode,
   kMqttPublisher_PublishNotifications,
   kMqttPublisher_NotificationTopic,
   kMqttPublisher_Hostname,
   kMqttPublisher_Port,
+  kMqttPublisher_CustomClientId,
   kMqttPublisher_ClientId,
   kMqttPublisher_Username,
   kMqttPublisher_Password,
@@ -597,6 +601,9 @@ DataModel::ProjectEditor::ProjectEditor()
   , m_outputWidgetModel(nullptr)
   , m_mqttPublisherModel(nullptr)
   , m_transformEditor(nullptr)
+#ifdef BUILD_COMMERCIAL
+  , m_mqttScriptEditor(nullptr)
+#endif
   , m_pendingSelectionKind(PendingSelectionKind::None)
   , m_pendingSelectionGroupId(-1)
   , m_pendingSelectionItemId(-1)
@@ -998,6 +1005,31 @@ void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId
   }
 
   m_transformEditor->displayDialog(dataset.title, dataset.transformCode, lang, groupId, datasetId);
+}
+
+/**
+ * @brief Opens the native MQTT publisher script editor dialog.
+ */
+void DataModel::ProjectEditor::openMqttScriptEditor()
+{
+#ifdef BUILD_COMMERCIAL
+  auto& pub = MQTT::Publisher::instance();
+
+  if (!m_mqttScriptEditor) {
+    m_mqttScriptEditor = new MQTT::PublisherScriptEditor(nullptr);
+
+    connect(m_mqttScriptEditor,
+            &MQTT::PublisherScriptEditor::scriptApplied,
+            this,
+            [](const QString& code, int language) {
+              auto& publisher = MQTT::Publisher::instance();
+              publisher.setScriptLanguage(language);
+              publisher.setScriptCode(code);
+            });
+  }
+
+  m_mqttScriptEditor->displayDialog(pub.scriptCode(), pub.scriptLanguage());
+#endif
 }
 
 /**
@@ -1683,6 +1715,20 @@ void DataModel::ProjectEditor::buildMqttPublishingSection(const MQTT::Publisher&
   topicItem->setData(tr("Base topic used for frame and raw-byte publishing"), ParameterDescription);
   m_mqttPublisherModel->appendRow(topicItem);
 
+  // Optional per-script topic override; visible only in ScriptDriven mode
+  if (pub.mode() == static_cast<int>(MQTT::Publisher::Mode::ScriptDriven)) {
+    auto* scriptTopicItem = new QStandardItem();
+    scriptTopicItem->setEditable(true);
+    scriptTopicItem->setData(enabled, Active);
+    scriptTopicItem->setData(TextField, WidgetType);
+    scriptTopicItem->setData(pub.scriptTopic(), EditableValue);
+    scriptTopicItem->setData(kMqttPublisher_ScriptTopic, ParameterType);
+    scriptTopicItem->setData(tr("Script Topic"), ParameterName);
+    scriptTopicItem->setData(tr("Defaults to Topic Base when empty"), PlaceholderValue);
+    scriptTopicItem->setData(tr("Topic the user script publishes to"), ParameterDescription);
+    m_mqttPublisherModel->appendRow(scriptTopicItem);
+  }
+
   auto* notifyItem = new QStandardItem();
   notifyItem->setEditable(true);
   notifyItem->setData(enabled, Active);
@@ -1742,36 +1788,31 @@ void DataModel::ProjectEditor::buildMqttBrokerSection(const MQTT::Publisher& pub
                     ParameterDescription);
   m_mqttPublisherModel->appendRow(portItem);
 
-  auto* clientIdItem = new QStandardItem();
-  clientIdItem->setEditable(true);
-  clientIdItem->setData(enabled, Active);
-  clientIdItem->setData(TextField, WidgetType);
-  clientIdItem->setData(pub.clientId(), EditableValue);
-  clientIdItem->setData(kMqttPublisher_ClientId, ParameterType);
-  clientIdItem->setData(tr("Client ID"), ParameterName);
-  clientIdItem->setData(tr("Identifier sent to the broker on CONNECT"), ParameterDescription);
-  m_mqttPublisherModel->appendRow(clientIdItem);
+  auto* customClientIdItem = new QStandardItem();
+  customClientIdItem->setEditable(true);
+  customClientIdItem->setData(enabled, Active);
+  customClientIdItem->setData(CheckBox, WidgetType);
+  customClientIdItem->setData(pub.customClientId(), EditableValue);
+  customClientIdItem->setData(kMqttPublisher_CustomClientId, ParameterType);
+  customClientIdItem->setData(tr("Custom Client ID"), ParameterName);
+  customClientIdItem->setData(
+    tr("Off: a fresh random id is generated on every project load. On: use the id below."),
+    ParameterDescription);
+  m_mqttPublisherModel->appendRow(customClientIdItem);
 
-  auto* userItem = new QStandardItem();
-  userItem->setEditable(true);
-  userItem->setData(enabled, Active);
-  userItem->setData(TextField, WidgetType);
-  userItem->setData(pub.username(), EditableValue);
-  userItem->setData(kMqttPublisher_Username, ParameterType);
-  userItem->setData(tr("Username"), ParameterName);
-  userItem->setData(tr("Username for broker authentication (leave empty for anonymous)"),
-                    ParameterDescription);
-  m_mqttPublisherModel->appendRow(userItem);
+  if (pub.customClientId()) {
+    auto* clientIdItem = new QStandardItem();
+    clientIdItem->setEditable(true);
+    clientIdItem->setData(enabled, Active);
+    clientIdItem->setData(TextField, WidgetType);
+    clientIdItem->setData(pub.clientId(), EditableValue);
+    clientIdItem->setData(kMqttPublisher_ClientId, ParameterType);
+    clientIdItem->setData(tr("Client ID"), ParameterName);
+    clientIdItem->setData(tr("Identifier sent to the broker on CONNECT"), ParameterDescription);
+    m_mqttPublisherModel->appendRow(clientIdItem);
+  }
 
-  auto* passItem = new QStandardItem();
-  passItem->setEditable(true);
-  passItem->setData(enabled, Active);
-  passItem->setData(TextField, WidgetType);
-  passItem->setData(pub.password(), EditableValue);
-  passItem->setData(kMqttPublisher_Password, ParameterType);
-  passItem->setData(tr("Password"), ParameterName);
-  passItem->setData(tr("Password for broker authentication"), ParameterDescription);
-  m_mqttPublisherModel->appendRow(passItem);
+  buildMqttBrokerCredentials(pub, enabled);
 
   auto* versionItem = new QStandardItem();
   versionItem->setEditable(true);
@@ -1803,6 +1844,33 @@ void DataModel::ProjectEditor::buildMqttBrokerSection(const MQTT::Publisher& pub
   cleanItem->setData(tr("Clean Session"), ParameterName);
   cleanItem->setData(tr("Discard any persistent session state on CONNECT"), ParameterDescription);
   m_mqttPublisherModel->appendRow(cleanItem);
+}
+
+/**
+ * @brief Appends the broker authentication rows (username, password).
+ */
+void DataModel::ProjectEditor::buildMqttBrokerCredentials(const MQTT::Publisher& pub, bool enabled)
+{
+  auto* userItem = new QStandardItem();
+  userItem->setEditable(true);
+  userItem->setData(enabled, Active);
+  userItem->setData(TextField, WidgetType);
+  userItem->setData(pub.username(), EditableValue);
+  userItem->setData(kMqttPublisher_Username, ParameterType);
+  userItem->setData(tr("Username"), ParameterName);
+  userItem->setData(tr("Username for broker authentication (leave empty for anonymous)"),
+                    ParameterDescription);
+  m_mqttPublisherModel->appendRow(userItem);
+
+  auto* passItem = new QStandardItem();
+  passItem->setEditable(true);
+  passItem->setData(enabled, Active);
+  passItem->setData(TextField, WidgetType);
+  passItem->setData(pub.password(), EditableValue);
+  passItem->setData(kMqttPublisher_Password, ParameterType);
+  passItem->setData(tr("Password"), ParameterName);
+  passItem->setData(tr("Password for broker authentication"), ParameterDescription);
+  m_mqttPublisherModel->appendRow(passItem);
 }
 
 /**
@@ -1885,12 +1953,19 @@ void DataModel::ProjectEditor::onMqttPublisherItemChanged(QStandardItem* item)
       return;
     case kMqttPublisher_Mode:
       pub.setMode(value.toInt());
-      break;
+      buildMqttPublisherModel();
+      return;
     case kMqttPublisher_PublishFrequency:
       pub.setPublishFrequency(value.toInt());
       break;
     case kMqttPublisher_TopicBase:
       pub.setTopicBase(value.toString());
+      break;
+    case kMqttPublisher_ScriptTopic:
+      pub.setScriptTopic(value.toString());
+      break;
+    case kMqttPublisher_ScriptCode:
+      pub.setScriptCode(value.toString());
       break;
     case kMqttPublisher_PublishNotifications:
       pub.setPublishNotifications(value.toBool());
@@ -1905,6 +1980,10 @@ void DataModel::ProjectEditor::onMqttPublisherItemChanged(QStandardItem* item)
     case kMqttPublisher_Port:
       pub.setPort(static_cast<quint16>(value.toInt()));
       break;
+    case kMqttPublisher_CustomClientId:
+      pub.setCustomClientId(value.toBool());
+      buildMqttPublisherModel();
+      return;
     case kMqttPublisher_ClientId:
       pub.setClientId(value.toString());
       break;

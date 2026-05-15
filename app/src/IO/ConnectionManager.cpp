@@ -1275,6 +1275,11 @@ void IO::ConnectionManager::onFrameReady(int deviceId, const IO::CapturedDataPtr
     frameBuilder.hotpathRxSourceFrame(deviceId, frame);
   else
     frameBuilder.hotpathRxFrame(frame);
+
+#ifdef BUILD_COMMERCIAL
+  static auto& mqttPublisher = MQTT::Publisher::instance();
+  mqttPublisher.hotpathTxRawFrame(deviceId, frame);
+#endif
 }
 
 /**

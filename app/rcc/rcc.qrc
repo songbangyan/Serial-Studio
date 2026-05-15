@@ -456,6 +456,8 @@
         <file>icons/start/tools.svg</file>
         <file>icons/taskbar/console.svg</file>
         <file>icons/taskbar/file-transmission.svg</file>
+        <file>icons/taskbar/mqtt-off.svg</file>
+        <file>icons/taskbar/mqtt-on.svg</file>
         <file>icons/taskbar/notifications.svg</file>
         <file>icons/taskbar/pause.svg</file>
         <file>icons/taskbar/resume.svg</file>
@@ -578,6 +580,15 @@
         <file>scripts/output/simple_command.js</file>
         <file>scripts/output/slcan_command.js</file>
         <file>scripts/output/templates.json</file>
+        <file>scripts/mqtt/js/aws_iot.js</file>
+        <file>scripts/mqtt/js/home_assistant.js</file>
+        <file>scripts/mqtt/js/influxdb.js</file>
+        <file>scripts/mqtt/js/sparkplug_b.js</file>
+        <file>scripts/mqtt/lua/aws_iot.lua</file>
+        <file>scripts/mqtt/lua/home_assistant.lua</file>
+        <file>scripts/mqtt/lua/influxdb.lua</file>
+        <file>scripts/mqtt/lua/sparkplug_b.lua</file>
+        <file>scripts/mqtt/templates.json</file>
         <file>scripts/painter/audio_meter.js</file>
         <file>scripts/painter/bar_peak_hold.js</file>
         <file>scripts/painter/clock_face.js</file>

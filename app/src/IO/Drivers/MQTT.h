@@ -189,10 +189,22 @@ private:
   void loadPersistedSettings();
   [[nodiscard]] QString settingsKey(const char* leaf) const;
   void appendMqttSslProperties(QList<IO::DriverProperty>& props) const;
+  void scheduleReconnectIfActive();
+  void applyPendingToClient();
 
 private:
   bool m_sslEnabled;
+  bool m_cleanSession;
+  bool m_autoKeepAlive;
+  bool m_userWantsOpen;
+  bool m_reconnectPending;
+  quint16 m_port;
+  quint16 m_keepAlive;
+  QMqttClient::ProtocolVersion m_protocolVersion;
   QString m_clientId;
+  QString m_hostname;
+  QString m_username;
+  QString m_password;
   QString m_topicFilter;
   QSettings m_settings;
   QMqttClient m_client;

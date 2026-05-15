@@ -32,7 +32,8 @@
 
 namespace MQTT {
 class Publisher;
-}
+class PublisherScriptEditor;
+}  // namespace MQTT
 
 namespace DataModel {
 class CustomModel;
@@ -284,6 +285,7 @@ public slots:
   void selectUserTable(const QString& tableName);
   void selectWorkspace(int workspaceId);
   void selectMqttPublisher();
+  void openMqttScriptEditor();
   void setTreeSearchQuery(const QString& query);
   void confirmCleanupUnresolvedWorkspaceWidgets();
 
@@ -298,6 +300,7 @@ public slots:
 #ifdef BUILD_COMMERCIAL
   void buildMqttPublishingSection(const MQTT::Publisher& pub, bool enabled);
   void buildMqttBrokerSection(const MQTT::Publisher& pub, bool enabled);
+  void buildMqttBrokerCredentials(const MQTT::Publisher& pub, bool enabled);
   void buildMqttSslSection(const MQTT::Publisher& pub, bool enabled);
 #endif
   void displayFrameParserView(int sourceId);
@@ -474,6 +477,9 @@ private:
   CustomModel* m_mqttPublisherModel;
 
   DatasetTransformEditor* m_transformEditor;
+#ifdef BUILD_COMMERCIAL
+  MQTT::PublisherScriptEditor* m_mqttScriptEditor;
+#endif
 
   QStringList m_fftSamples;
   QStringList m_timerModes;

@@ -500,6 +500,7 @@ set(QML_SOURCES
   qml/Widgets/Dashboard/Terminal.qml
   qml/Widgets/BigButton.qml
   qml/Widgets/InfoBullet.qml
+  qml/Widgets/LedIndicator.qml
   qml/Widgets/FileDropArea.qml
   qml/Widgets/MarkdownTextView.qml
   qml/Widgets/MenuButton.qml
@@ -545,6 +546,8 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/ProcessHandler.h
     src/API/Handlers/SessionsHandler.h
     src/MQTT/Publisher.h
+    src/MQTT/PublisherScript.h
+    src/MQTT/PublisherScriptEditor.h
     src/IO/Drivers/Audio.h
     src/IO/Drivers/CANBus.h
     src/IO/Drivers/Modbus.h
@@ -621,6 +624,8 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/NotificationsHandler.cpp
     src/API/Handlers/SessionsHandler.cpp
     src/MQTT/Publisher.cpp
+    src/MQTT/PublisherScript.cpp
+    src/MQTT/PublisherScriptEditor.cpp
     src/IO/Drivers/Audio.cpp
     src/IO/Drivers/CANBus.cpp
     src/IO/Drivers/Modbus.cpp

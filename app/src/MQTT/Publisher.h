@@ -34,6 +34,7 @@
 #include <QVariantMap>
 // clang-format on
 
+#include "DataModel/ExportSchema.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameConsumer.h"
 #include "IO/HAL_Driver.h"
@@ -49,6 +50,7 @@ struct BrokerConfig {
   bool cleanSession                         = true;
   bool publishNotifications                 = false;
   int mode                                  = 0;
+  int scriptLanguage                        = 0;
   int peerVerifyDepth                       = 10;
   quint16 port                              = 1883;
   quint16 keepAlive                         = 60;
@@ -61,6 +63,8 @@ struct BrokerConfig {
   QString password;
   QString topicBase;
   QString notificationTopic;
+  QString scriptCode;
+  QString scriptTopic;
   QList<QSslCertificate> caCertificates;
 };
 
@@ -73,6 +77,7 @@ struct TimestampedRawBytes {
 };
 
 class Publisher;
+class PublisherScript;
 
 /**
  * @brief Background worker that owns the QMqttClient and performs broker I/O off-main.
@@ -83,6 +88,7 @@ class PublisherWorker : public DataModel::FrameConsumerWorker<DataModel::Timesta
 signals:
   void brokerStateChanged(int state);
   void brokerErrorOccurred(const QString& message);
+  void scriptErrorOccurred(const QString& message);
   void testConnectionFinished(bool ok, const QString& detail);
 
 public:
@@ -90,7 +96,11 @@ public:
                   std::atomic<bool>* enabled,
                   std::atomic<size_t>* queueSize,
                   moodycamel::ReaderWriterQueue<TimestampedRawBytes>* rawQueue,
-                  std::atomic<int>* mode);
+                  moodycamel::ReaderWriterQueue<TimestampedRawBytes>* frameQueueBytes,
+                  std::atomic<int>* mode,
+                  std::atomic<int>* scriptLanguage,
+                  std::atomic<quint64>* messagesSent,
+                  std::atomic<quint64>* bytesSent);
   ~PublisherWorker() override;
 
   void processData() override;
@@ -114,10 +124,17 @@ protected:
 private slots:
   void onClientStateChanged(QMqttClient::ClientState state);
   void onClientErrorChanged(QMqttClient::ClientError error);
+  void finishPendingReconnect();
 
 private:
-  void publishFrameAsJson(const DataModel::Frame& frame);
+  void publishBatchAsJson(const std::vector<DataModel::TimestampedFramePtr>& items);
+  void publishBatchAsCsv(const std::vector<DataModel::TimestampedFramePtr>& items);
+  void rebuildCsvSchema(const DataModel::Frame& frame);
+  void recompileScriptIfNeeded();
+  void publishAndCount(const QMqttTopicName& topic, const QByteArray& payload);
+  void applyClientPropertiesUnsafe();
   static QString describeMqttError(QMqttClient::ClientError error);
+  static QString escapeCsvField(const QString& s);
 
 private:
   BrokerConfig m_cfg;
@@ -125,7 +142,23 @@ private:
   QSslConfiguration m_sslConfiguration;
   QByteArray m_rawBatchBuffer;
   moodycamel::ReaderWriterQueue<TimestampedRawBytes>* m_rawQueue;
+  moodycamel::ReaderWriterQueue<TimestampedRawBytes>* m_frameQueueBytes;
   std::atomic<int>* m_mode;
+  std::atomic<int>* m_scriptLanguage;
+  std::atomic<quint64>* m_messagesSent;
+  std::atomic<quint64>* m_bytesSent;
+
+  PublisherScript* m_script;
+  QString m_compiledScriptCode;
+  bool m_reconnectPending;
+  QMetaObject::Connection m_reconnectConn;
+
+  QString m_csvFrameTitle;
+  QByteArray m_csvHeaderPayload;
+  QByteArray m_csvRowBuffer;
+  bool m_csvHeaderDirty;
+  QMap<int, QString> m_csvLastFinal;
+  DataModel::ExportSchema m_csvSchema;
 };
 
 /**
@@ -189,6 +222,10 @@ class Publisher : public DataModel::FrameConsumer<DataModel::TimestampedFramePtr
              READ clientId
              WRITE setClientId
              NOTIFY configurationChanged)
+  Q_PROPERTY(bool customClientId
+             READ customClientId
+             WRITE setCustomClientId
+             NOTIFY configurationChanged)
   Q_PROPERTY(QString hostname
              READ hostname
              WRITE setHostname
@@ -209,6 +246,27 @@ class Publisher : public DataModel::FrameConsumer<DataModel::TimestampedFramePtr
              READ notificationTopic
              WRITE setNotificationTopic
              NOTIFY configurationChanged)
+  Q_PROPERTY(QString scriptCode
+             READ scriptCode
+             WRITE setScriptCode
+             NOTIFY configurationChanged)
+  Q_PROPERTY(QString scriptTopic
+             READ scriptTopic
+             WRITE setScriptTopic
+             NOTIFY configurationChanged)
+  Q_PROPERTY(int scriptLanguage
+             READ scriptLanguage
+             WRITE setScriptLanguage
+             NOTIFY configurationChanged)
+  Q_PROPERTY(QString modeLabel
+             READ modeLabel
+             NOTIFY configurationChanged)
+  Q_PROPERTY(QString brokerEndpoint
+             READ brokerEndpoint
+             NOTIFY configurationChanged)
+  Q_PROPERTY(quint64 messagesSent
+             READ messagesSent
+             NOTIFY statsChanged)
   Q_PROPERTY(QStringList modes
              READ modes
              CONSTANT)
@@ -228,8 +286,10 @@ public:
    * @brief Publisher output modes.
    */
   enum Mode {
-    DashboardData = 0,
-    RawRxData     = 1,
+    RawRxData         = 0,
+    ScriptDriven      = 1,
+    DashboardDataCsv  = 2,
+    DashboardDataJson = 3,
   };
   Q_ENUM(Mode)
 
@@ -240,6 +300,8 @@ public:
 signals:
   void connectedChanged();
   void configurationChanged();
+  void statsChanged();
+  void scriptError(const QString& message);
 
 private:
   explicit Publisher();
@@ -269,11 +331,20 @@ public:
   [[nodiscard]] quint16 keepAlive() const noexcept;
 
   [[nodiscard]] QString clientId() const;
+  [[nodiscard]] bool customClientId() const noexcept;
   [[nodiscard]] QString hostname() const;
   [[nodiscard]] QString username() const;
   [[nodiscard]] QString password() const;
   [[nodiscard]] QString topicBase() const;
   [[nodiscard]] QString notificationTopic() const;
+  [[nodiscard]] QString scriptCode() const;
+  [[nodiscard]] QString scriptTopic() const;
+  [[nodiscard]] int scriptLanguage() const noexcept;
+  [[nodiscard]] QString modeLabel() const;
+  [[nodiscard]] QString brokerEndpoint() const;
+  [[nodiscard]] quint64 messagesSent() const noexcept;
+
+  Q_INVOKABLE [[nodiscard]] static QString defaultScriptTemplate();
 
   [[nodiscard]] const QStringList& modes() const;
   [[nodiscard]] const QStringList& mqttVersions() const;
@@ -303,11 +374,16 @@ public slots:
   void setPort(const quint16 port);
   void setKeepAlive(const quint16 keepAlive);
   void setClientId(const QString& id);
+  void setCustomClientId(const bool custom);
   void setHostname(const QString& hostname);
   void setUsername(const QString& username);
   void setPassword(const QString& password);
   void setTopicBase(const QString& topic);
   void setNotificationTopic(const QString& topic);
+  void setScriptCode(const QString& code);
+  void setScriptTopic(const QString& topic);
+  void setScriptLanguage(const int language);
+  void hotpathTxRawFrame(int deviceId, const IO::CapturedDataPtr& data);
 
   void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
   void hotpathTxRawBytes(int deviceId, const IO::CapturedDataPtr& data);
@@ -324,7 +400,9 @@ protected:
 private slots:
   void onWorkerBrokerStateChanged(int state);
   void onWorkerBrokerError(const QString& message);
+  void onWorkerScriptError(const QString& message);
   void onWorkerTestConnectionFinished(bool ok, const QString& detail);
+  void emitStatsIfChanged();
 
 private:
   [[nodiscard]] bool licenseValid() const;
@@ -353,12 +431,17 @@ private:
   quint16 m_port;
   quint16 m_keepAlive;
 
+  bool m_customClientId;
   QString m_clientId;
+  QString m_autoClientId;
   QString m_hostname;
   QString m_username;
   QString m_password;
   QString m_topicBase;
   QString m_notificationTopic;
+  QString m_scriptCode;
+  QString m_scriptTopic;
+  int m_scriptLanguage;
 
   QList<QSslCertificate> m_caCertificates;
 
@@ -367,11 +450,18 @@ private:
   QMap<QString, QSslSocket::PeerVerifyMode> m_peerVerifyModes;
 
   QTimer m_syncTimer;
+  QTimer m_statsTimer;
   moodycamel::ReaderWriterQueue<TimestampedRawBytes> m_rawBytesQueue;
+  moodycamel::ReaderWriterQueue<TimestampedRawBytes> m_rawFramesQueue;
   alignas(64) std::atomic<int> m_workerMode;
+  alignas(64) std::atomic<int> m_workerScriptLanguage;
   alignas(64) std::atomic<bool> m_isConnected;
+  alignas(64) std::atomic<quint64> m_messagesSent;
+  alignas(64) std::atomic<quint64> m_bytesSent;
+  quint64 m_messagesSentSeen;
 
   static constexpr int kSyncDebounceMs = 200;
+  static constexpr int kStatsTickMs    = 500;
 
   static constexpr QLatin1StringView kKeyEnabled{"enabled"};
   static constexpr QLatin1StringView kKeyMode{"mode"};
@@ -379,9 +469,13 @@ private:
   static constexpr QLatin1StringView kKeyPublishFrequency{"publishFrequency"};
   static constexpr QLatin1StringView kKeyTopicBase{"topicBase"};
   static constexpr QLatin1StringView kKeyNotificationTopic{"notificationTopic"};
+  static constexpr QLatin1StringView kKeyScriptCode{"scriptCode"};
+  static constexpr QLatin1StringView kKeyScriptTopic{"scriptTopic"};
+  static constexpr QLatin1StringView kKeyScriptLanguage{"scriptLanguage"};
   static constexpr QLatin1StringView kKeyHostname{"hostname"};
   static constexpr QLatin1StringView kKeyPort{"port"};
   static constexpr QLatin1StringView kKeyClientId{"clientId"};
+  static constexpr QLatin1StringView kKeyCustomClientId{"customClientId"};
   static constexpr QLatin1StringView kKeyUsername{"username"};
   static constexpr QLatin1StringView kKeyPassword{"password"};
   static constexpr QLatin1StringView kKeyCleanSession{"cleanSession"};

@@ -381,9 +381,9 @@ For full documentation on output controls, see [Output Controls](Output-Controls
 
 > **Note:** Output widget transmit functions always use JavaScript. The Lua/JavaScript language selection applies only to the frame parser `parse()` function.
 
-## Writing back to the device — `deviceWrite()`
+## Writing back to the device: `deviceWrite()`
 
-Frame parsers (and dataset transforms) can send bytes back to the connected device from inside the script. This unblocks closed-loop control patterns: acknowledge a frame, raise an alarm setpoint, switch the device into a new mode, or pulse a request line — all decided by the script that just parsed the incoming frame.
+Frame parsers (and dataset transforms) can send bytes back to the connected device from inside the script. This unblocks closed-loop control patterns: acknowledge a frame, raise an alarm setpoint, switch the device into a new mode, or pulse a request line, all decided by the script that just parsed the incoming frame.
 
 ### Signature
 
@@ -438,7 +438,7 @@ function parse(frame) {
 
 ### Targeting a specific source
 
-In multi-source projects, omit `sourceId` to write back to the same source the parser owns. Pass an explicit `sourceId` to write to a different one — useful when one source is the command channel and another is the telemetry channel:
+In multi-source projects, omit `sourceId` to write back to the same source the parser owns. Pass an explicit `sourceId` to write to a different one. This is useful when one source is the command channel and another is the telemetry channel:
 
 ```lua
 function parse(frame)
@@ -450,20 +450,20 @@ end
 
 ### Failure modes
 
-`{ ok = false, error = ... }` covers all failure cases — `deviceWrite` never throws. The most common reasons:
+`{ ok = false, error = ... }` covers all failure cases (`deviceWrite` never throws). The most common reasons:
 
-- `"device not connected or write failed"` — no live driver for that source, or the driver's `write()` returned 0/negative.
-- `"deviceWrite: data is empty"` — the payload was zero bytes.
-- `"deviceWrite: data must be a string"` (Lua) / `"... string or byte array"` (JS) — wrong argument type.
-- `"deviceWrite: sourceId must be a number"` — the optional second argument was non-numeric.
+- `"device not connected or write failed"`: no live driver for that source, or the driver's `write()` returned 0/negative.
+- `"deviceWrite: data is empty"`: the payload was zero bytes.
+- `"deviceWrite: data must be a string"` (Lua) / `"... string or byte array"` (JS): wrong argument type.
+- `"deviceWrite: sourceId must be a number"`: the optional second argument was non-numeric.
 
 ### When NOT to use it
 
 - For one-shot user-triggered commands (button press, slider drag), use an **Output Widget** instead. Output widgets carry UI, validation, and protocol helpers (CRC, Modbus, NMEA, ...). `deviceWrite` is the right tool when the *parser itself* needs to react to incoming data.
-- Don't loop on `deviceWrite` inside a single `parse()` call — the parser hotpath runs on every frame, and runaway writes will saturate the link.
+- Don't loop on `deviceWrite` inside a single `parse()` call. The parser hotpath runs on every frame, and runaway writes will saturate the link.
 - Don't use it to broadcast unrelated state. The 1-second parser watchdog will fire if your script spends too long in I/O.
 
-## Firing actions — `actionFire()`
+## Firing actions: `actionFire()`
 
 Parsers can also trigger an existing project [Action](Actions.md) by its integer `actionId`. Same return shape as `deviceWrite`: `{ ok = true }` on success, `{ ok = false, error = "..." }` on failure. Calls are logged `[actionFire] id=N index=M ok`.
 

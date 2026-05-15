@@ -4,14 +4,14 @@ The MQTT Publisher pushes the data Serial Studio is already processing out to an
 
 The Publisher is a per-project singleton, not a per-source driver. One Serial Studio instance has exactly one Publisher; what it broadcasts depends on the project, not on which physical bus the data came in on.
 
-Broker I/O lives entirely on a dedicated worker thread (the same `FrameConsumer` pattern used by CSV / MDF4 / Session-DB export), so a slow or unreliable network never blocks frame parsing, the dashboard, or the UI. The configured **Publish Rate** caps how often the worker drains its queue — at 30 Hz the worker publishes at most thirty times per second regardless of how fast frames arrive.
+Broker I/O lives entirely on a dedicated worker thread (the same `FrameConsumer` pattern used by CSV / MDF4 / Session-DB export), so a slow or unreliable network never blocks frame parsing, the dashboard, or the UI. The configured **Publish Rate** caps how often the worker drains its queue — at 30 Hz the worker publishes at most thirty times per second regardless of how fast frames arrive. Everything that landed in the queue during the tick is aggregated and pushed as one bulk MQTT message, not one publish per frame.
 
 Use this when:
 
 - A serial-only device should be visible to a remote dashboard or another tool without re-flashing the firmware.
 - A parsed-and-validated frame stream is more useful to downstream consumers than the raw bytes.
 - Dashboard notifications need to fan out to an external alerting pipeline.
-- A user-supplied frame parser script wants to push computed values to arbitrary topics from inside the data hotpath.
+- You want full control over the wire format — sending one CSV row per frame, building Home Assistant discovery payloads, or formatting InfluxDB line protocol — from a script that lives next to the project.
 
 If you have never used MQTT before, read [MQTT Topics & Semantics](MQTT-Topics.md) first; this page assumes the protocol vocabulary.
 
@@ -30,11 +30,13 @@ Project
 └─ ...
 ```
 
-The header bar above the form exposes the live connection state and three actions:
+The header bar above the form shows the live connection state (green LED + "Connected to broker" when up, red LED + "Not connected" otherwise) and three actions:
 
 - **Test Connection.** Spins up a one-shot probe client with the current settings, waits up to five seconds, and reports the outcome in a message box. Independent of the long-lived publishing connection; safe to run while the Publisher is connected.
-- **Connect / Disconnect.** Opens or closes the publishing session. Enabled only when **Enable Publishing** is on.
+- **Edit Script.** Visible only when **Payload** is `Custom Script`. Opens the script editor dialog (see [Custom Script mode](#custom-script)).
 - **Load CA Certs.** Visible only when TLS is enabled. Adds PEM certificates from a folder to the per-project trust store.
+
+The Publisher connects automatically whenever **Enable Publishing** is on and a hostname / port / topic base are valid. Changing any broker setting while connected triggers an automatic disconnect-and-reconnect with the new values.
 
 ## Form fields
 
@@ -43,13 +45,12 @@ The header bar above the form exposes the live connection state and three action
 | Field | Effect |
 |-------|--------|
 | **Enable Publishing** | Master toggle. When off, nothing leaves the broker side regardless of what the rest of the project does. |
-| **Payload** | `Dashboard Data` publishes parsed frames as compact JSON. `Raw RX Data` publishes the bytes that arrived on the driver, unmodified. |
-| **Publish Rate (Hz)** | How many times per second the publisher drains its queue and pushes to the broker. Clamped to 1-30 Hz. The hotpath enqueues at full speed and the worker thread publishes at this cadence, so a slow broker or unreliable network never blocks frame parsing or the dashboard. In Dashboard Data mode each tick publishes only the most recent frame; in Raw RX Data mode all bytes queued during the tick are concatenated into one publish. |
-| **Topic Base** | Base topic for frame / raw-byte publishing. Required; when empty, the Publisher silently produces no traffic. |
+| **Payload** | Selects the wire format. See [Payload modes](#payload-modes) below for the four options. |
+| **Publish Rate (Hz)** | How many times per second the publisher drains its queues and pushes to the broker. Clamped to 1-30 Hz. The hotpath enqueues at full speed; the worker thread aggregates everything that arrived during the tick into one bulk publish at this cadence, so a slow broker or unreliable network never blocks frame parsing or the dashboard. |
+| **Topic Base** | Base topic for the published payload. Required; when empty, the Publisher silently produces no traffic. |
+| **Script Topic** | (Custom Script mode only) Topic the user script publishes to. Defaults to **Topic Base** when blank. |
 | **Publish Notifications** | When on, dashboard notifications are mirrored to MQTT. |
 | **Notification Topic** | Topic used for notifications. Defaults to **Topic Base** when blank. |
-
-The two payload modes are not mutually exclusive in spirit but the radio selects exactly one of them per project: choose `Dashboard Data` when downstream consumers want structured values they can index by dataset name, or `Raw RX Data` when they want to apply their own decoding to the original wire bytes.
 
 ### Broker
 
@@ -57,7 +58,8 @@ The two payload modes are not mutually exclusive in spirit but the radio selects
 |-------|--------|
 | **Hostname** | Broker address (IP or hostname). |
 | **Port** | TCP port. `1883` plaintext, `8883` TLS. |
-| **Client ID** | Identifier sent on CONNECT. Pre-populated with a random 16-char value. |
+| **Custom Client ID** | Off by default: a fresh random 16-char id is generated on every project load. Turn this on only if your broker requires a stable identifier (e.g. an ACL keyed by client ID, or session persistence with `Clean Session = no`). When on, the **Client ID** row appears below. |
+| **Client ID** | (Visible only when **Custom Client ID** is on.) Identifier sent on CONNECT. The value is persisted with the project; the auto-generated id is not. |
 | **Username / Password** | Optional authentication. |
 | **Protocol Version** | MQTT 3.1, 3.1.1, or 5.0. |
 | **Keep Alive (s)** | Seconds between PING packets when idle. |
@@ -75,23 +77,95 @@ The two payload modes are not mutually exclusive in spirit but the radio selects
 
 For brokers using a private CA, click **Load CA Certs** in the header bar after enabling TLS.
 
-## Payload formats
+## Payload modes
 
-### Dashboard Data
+The **Payload** dropdown has four options:
 
-Each parsed frame is serialised to a compact JSON document and published on **Topic Base**. The schema matches the one used by the [API Reference](API-Reference.md) `frame_now` payload: a top-level `groups` array with nested datasets, source IDs, timestamps, and values. One MQTT publish per frame.
+1. **Raw RX Data** — republish device bytes unchanged.
+2. **Custom Script** — let a user script format the payload.
+3. **Dashboard Data (CSV)** — one CSV row per frame, with a retained header.
+4. **Dashboard Data (JSON)** — one aggregated JSON document per tick.
 
-Use this when the consumer is another dashboard, a Node-RED flow, or a time-series store that already knows the project's dataset layout. The JSON is small but it is not the wire format the device sent; downstream cannot reconstruct delimiters or driver-specific framing from it.
+The four modes are mutually exclusive — switching changes which queue the worker drains and which topic layout the broker sees.
 
 ### Raw RX Data
 
-Each chunk of bytes received from any active driver is republished to **Topic Base** unchanged. One MQTT publish per chunk; the broker preserves payload boundaries so consumers see the same chunking the driver did.
+Every chunk of bytes received from any active driver is republished to **Topic Base** unchanged. All chunks that arrived during one publish-rate tick are concatenated into a single publish.
 
 Use this when the consumer wants to apply its own decoding, when you are tee-ing a serial device into existing MQTT infrastructure, or when the downstream tool is another Serial Studio instance subscribing to the topic.
 
+### Custom Script
+
+You write a `mqtt(frame)` function — in JavaScript or Lua — that receives the raw bytes of one parsed frame (the same bytes the [Frame Parser](JavaScript-API.md) script sees) and returns the payload to publish, or `nil` / `null` to skip the frame.
+
+```javascript
+// JavaScript
+function mqtt(frame) {
+  var parts = String(frame).split(",");
+  return JSON.stringify({
+    temperature: parseFloat(parts[0]),
+    humidity:    parseFloat(parts[1]),
+  }) + "\n";
+}
+```
+
+```lua
+-- Lua
+function mqtt(frame)
+  return string.format("temperature=%s,humidity=%s\n",
+                       string.match(tostring(frame), "([^,]+),([^,]+)"))
+end
+```
+
+Every frame that arrives during a publish-rate tick is run through the script; the returned payloads are concatenated end-to-end into a single MQTT publish on **Script Topic** (or **Topic Base** if Script Topic is blank).
+
+Click **Edit Script** in the header to open the editor dialog. It has the same layout as the dataset-transform editor:
+
+- **Language** dropdown: JavaScript or Lua. The selection is stored in the project file.
+- **Template** dropdown: ready-made starters for common integrations:
+  - **Home Assistant Discovery + State** — publishes the auto-discovery config message and per-frame state updates.
+  - **InfluxDB Line Protocol** — formats `measurement,tag=value field=value timestamp` lines suitable for a Telegraf `mqtt_consumer` input.
+  - **Sparkplug B (NDATA)** — Eclipse Sparkplug B-shaped JSON surrogate; swap the body for a protobuf encoder in production.
+  - **AWS IoT / Azure IoT Shadow** — `{"state":{"reported":{...}}}` payload accepted by both clouds.
+- Code editor with syntax highlighting, Ctrl-I to format the selection, Ctrl-Shift-I to format the document.
+- Test row at the bottom: paste sample bytes in **Frame**, tick **Hex** if they are hex-encoded, click **Test**, and the dialog shows the string the script would publish (or the error). This runs in a disposable engine on the editor thread — it never touches the live broker session.
+- **Apply** saves the script into the project; **Cancel** discards changes.
+
+The script is compiled lazily on the worker thread the first time a frame arrives after a code change. Compile errors and runtime errors are surfaced as `scriptError` signals; you can wire them into your project's notification flow if needed.
+
+### Dashboard Data (CSV)
+
+One CSV row per parsed frame, with columns matching the project's dataset layout (same column order as the CSV export). Every frame that arrived during a publish-rate tick is concatenated into a single multi-line publish on **Topic Base**.
+
+The CSV header is published once as a **retained** message on `<TopicBase>/header`, so any subscriber that joins later receives the schema immediately and can map column positions to dataset titles without having to know the project in advance. The header is automatically republished if the dataset layout changes or the broker reconnects.
+
+Use this when the consumer is a CSV-friendly tool (Telegraf, an `mqtt-csv` bridge, a logging script) and you want a stream of plain values with no JSON overhead.
+
+### Dashboard Data (JSON)
+
+One JSON document per publish-rate tick. Unlike the older one-frame-per-publish behavior, the document is *aggregated*: each dataset's `value` and `numericValue` are **arrays** that hold every sample collected during the tick, in arrival order. A `frameCount` field at the root records how many frames were aggregated.
+
+```json
+{
+  "title": "Audio Test",
+  "frameCount": 3,
+  "groups": [
+    {
+      "title": "Sensors",
+      "datasets": [
+        { "title": "Temperature", "value": ["21.4", "21.5", "21.5"], "numericValue": [21.4, 21.5, 21.5] },
+        { "title": "Humidity",    "value": ["43",   "43",   "44"  ], "numericValue": [43, 43, 44] }
+      ]
+    }
+  ]
+}
+```
+
+Use this when the consumer is another dashboard, a Node-RED flow, or a time-series store that already knows the project's dataset layout. The shape mirrors the [API Reference](API-Reference.md) `frame_now` payload but with array-valued samples for batch ingestion.
+
 ### Notifications
 
-When **Publish Notifications** is on, every event posted to the [Notification Center](Notifications.md) — alarm transitions, action confirmations, error messages — is also serialised to JSON and published to **Notification Topic** (or **Topic Base** if Notification Topic is blank). This is the fan-out point for alerting integrations.
+When **Publish Notifications** is on, every event posted to the [Notification Center](Notifications.md) — alarm transitions, action confirmations, error messages — is also serialised to JSON and published to **Notification Topic** (or **Topic Base** if Notification Topic is blank). This is the fan-out point for alerting integrations and is independent of the **Payload** mode.
 
 ## Test Connection
 
@@ -102,11 +176,11 @@ The **Test Connection** action probes the broker without disturbing the live pub
 3. Waits up to five seconds for the broker to either reach the **Connected** state or surface an error.
 4. Reports the outcome in a message box: an informational confirmation including hostname and port on success, a critical message with the broker error code on failure, or a timeout message if nothing happened.
 
-Run this after editing broker credentials or TLS settings to catch authentication and certificate-chain issues immediately, instead of toggling **Enable Publishing** and digging through the log.
+Run this after editing broker credentials or TLS settings to catch authentication and certificate-chain issues immediately.
 
 ## Publishing from frame parsers
 
-The Publisher exposes a `mqttPublish(topic, payload, qos = 0, retain = false)` slot that can be called from user scripts on the data hotpath. From a frame parser or transform that has access to the Publisher singleton it lets you push computed values to arbitrary topics — independent of **Payload** mode — without bouncing through an external bridge. This is useful for:
+The Publisher also exposes a `mqttPublish(topic, payload, qos = 0, retain = false)` slot that can be called from any user script — not just from the Custom Script mode — on the data hotpath. From a frame parser, a dataset transform, or an action handler it lets you push computed values to arbitrary topics independent of the **Payload** radio:
 
 - Emitting derived metrics (a rolling average, a CRC-validated subset of fields) on their own topics.
 - Mirroring a small fraction of high-rate data to a low-rate topic for cheap remote dashboards.
@@ -114,21 +188,24 @@ The Publisher exposes a `mqttPublish(topic, payload, qos = 0, retain = false)` s
 
 The slot returns the broker message ID on success, or `-1` if the publisher is not connected or the license check fails. QoS is clamped to `0..2`.
 
+Use **Custom Script** mode when the script's main job is shaping the publish payload; use `mqttPublish()` from a frame parser when the script's main job is parsing the frame and the publish is a side-effect.
+
 ## Common pitfalls
 
-- **Test Connection succeeds, Enable Publishing produces nothing.** The probe ignores **Enable Publishing**, the live session does not. Toggle **Enable Publishing** on first, then **Connect**.
+- **Test Connection succeeds, Enable Publishing produces nothing.** The probe ignores **Enable Publishing**, the live session does not. Toggle **Enable Publishing** on, then verify the LED is green.
 - **Connected but no traffic on the broker.** **Topic Base** is empty. The Publisher silently drops frames in that case; there is no error to surface.
-- **Frames publish, raw bytes do not (or vice versa).** **Payload** selects exactly one of the two modes. Switch the radio to the other mode if downstream expects the alternative form.
+- **Custom Script mode is selected but nothing publishes.** The script must define a function named exactly `mqtt(frame)` (not `parse`, not `publish`). The editor's Apply discards the code if no such function is detected. Use the **Test** button in the editor to verify a sample input produces the expected output.
 - **Duplicates between Publisher and Subscriber on the same project.** Publishing to a topic the project also subscribes to creates a loop: the broker echoes the publish back to the subscriber driver, which feeds it into the FrameReader, which is then published again. Use different base topics, or disable one side.
-- **Client ID collides with another Serial Studio instance.** Two Publishers on different machines must use different client IDs. Use **Regenerate** in the table to pick a fresh one.
+- **Two instances on different machines hit "Client ID rejected".** Two Publishers must use different client IDs. The default (Custom Client ID off) generates a fresh random id on every load, so this only happens when **Custom Client ID** is on with the same typed value across machines.
 - **TLS handshake fails after editing CA certificates.** **Load CA Certs** appends to the in-memory trust store but does not re-open the connection. Disconnect and reconnect (or run **Test Connection**) to apply the new chain.
+- **CSV consumers don't see the header.** They must subscribe to `<TopicBase>/header` in addition to `<TopicBase>`. The header is retained, so it is delivered immediately on subscribe.
 
 ## See also
 
 - [MQTT Topics & Semantics](MQTT-Topics.md): the protocol vocabulary — topics, wildcards, QoS, retained messages, sessions.
 - [MQTT Driver (Subscriber)](Drivers-MQTT.md): the inbound side, when Serial Studio is the consumer.
 - [Notifications](Notifications.md): the event source that feeds **Publish Notifications**.
-- [API Reference](API-Reference.md): the JSON frame schema used by `Dashboard Data` mode.
+- [API Reference](API-Reference.md): the JSON frame schema used by `Dashboard Data (JSON)` mode.
 - [Frame Parser Scripting](JavaScript-API.md): where `mqttPublish()` is callable from.
 - [Pro vs Free Features](Pro-vs-Free.md): MQTT publishing is a Pro feature.
 - [Troubleshooting](Troubleshooting.md): general troubleshooting guide.

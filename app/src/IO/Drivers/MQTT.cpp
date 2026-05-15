@@ -23,12 +23,16 @@
 #include "IO/Drivers/MQTT.h"
 
 #include <QApplication>
+#include <QDebug>
 #include <QFileDialog>
+#include <QLoggingCategory>
 #include <QRandomGenerator>
 #include <QStandardPaths>
 
 #include "Licensing/CommercialToken.h"
 #include "Misc/Utilities.h"
+
+Q_LOGGING_CATEGORY(lcMqttSub, "serialstudio.mqtt.subscriber", QtCriticalMsg)
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & destructor
@@ -37,7 +41,16 @@
 /**
  * @brief Constructs the MQTT input driver and restores persisted broker settings.
  */
-IO::Drivers::MQTT::MQTT() : m_sslEnabled(false)
+IO::Drivers::MQTT::MQTT()
+  : m_sslEnabled(false)
+  , m_cleanSession(true)
+  , m_autoKeepAlive(true)
+  , m_userWantsOpen(false)
+  , m_reconnectPending(false)
+  , m_port(1883)
+  , m_keepAlive(60)
+  , m_protocolVersion(QMqttClient::MQTT_5_0)
+  , m_hostname(QStringLiteral("127.0.0.1"))
 {
   // Populate MQTT protocol versions
   m_mqttVersions.insert(tr("MQTT 3.1"), QMqttClient::MQTT_3_1);
@@ -58,23 +71,23 @@ IO::Drivers::MQTT::MQTT() : m_sslEnabled(false)
   m_peerVerifyModes.insert(tr("Verify Peer"), QSslSocket::VerifyPeer);
   m_peerVerifyModes.insert(tr("Auto Verify Peer"), QSslSocket::AutoVerifyPeer);
 
-  // Defaults before persisted settings are applied
-  m_client.setProtocolVersion(QMqttClient::MQTT_5_0);
+  // SSL defaults are pushed to the configuration directly; safe at any state
   m_sslConfiguration.setProtocol(QSsl::SecureProtocols);
   m_sslConfiguration.setPeerVerifyMode(QSslSocket::AutoVerifyPeer);
   m_sslConfiguration.setPeerVerifyDepth(10);
-  m_client.setPort(1883);
-  m_client.setHostname(QStringLiteral("127.0.0.1"));
 
   // Wire QMqttClient signals
   connect(&m_client, &QMqttClient::stateChanged, this, &MQTT::onStateChanged);
   connect(&m_client, &QMqttClient::errorChanged, this, &MQTT::onErrorChanged);
   connect(&m_client, &QMqttClient::messageReceived, this, &MQTT::onMessageReceived);
 
-  // Restore persisted broker settings
+  // Restore persisted broker settings (writes only to mirror fields, never to m_client)
   loadPersistedSettings();
   if (m_clientId.isEmpty())
     regenerateClientId();
+
+  // Push the mirror state into m_client now (safe: client is Disconnected at construction)
+  applyPendingToClient();
 
   // Forward state/configuration signals as configurationChanged for ConnectionManager
   connect(this, &MQTT::mqttConfigurationChanged, this, &MQTT::configurationChanged);
@@ -102,6 +115,8 @@ IO::Drivers::MQTT::~MQTT()
  */
 void IO::Drivers::MQTT::close()
 {
+  m_userWantsOpen = false;
+
   if (m_client.state() != QMqttClient::Disconnected)
     m_client.disconnectFromHost();
 }
@@ -135,7 +150,7 @@ bool IO::Drivers::MQTT::isWritable() const noexcept
  */
 bool IO::Drivers::MQTT::configurationOk() const noexcept
 {
-  return !m_client.hostname().isEmpty() && m_client.port() > 0 && !m_topicFilter.isEmpty();
+  return !m_hostname.isEmpty() && m_port > 0 && !m_topicFilter.isEmpty();
 }
 
 /**
@@ -167,19 +182,33 @@ bool IO::Drivers::MQTT::open(const QIODevice::OpenMode mode)
   }
 
   // Validate configuration
-  if (m_client.hostname().isEmpty() || m_client.port() == 0)
+  if (m_hostname.isEmpty() || m_port == 0) {
+    qCWarning(lcMqttSub) << "open() rejected: missing hostname or port" << m_hostname << m_port;
     return false;
+  }
 
-  if (m_topicFilter.isEmpty())
+  if (m_topicFilter.isEmpty()) {
+    qCWarning(lcMqttSub) << "open() rejected: empty topic filter";
     return false;
+  }
 
   // Already connecting/connected
-  if (m_client.state() != QMqttClient::Disconnected)
+  if (m_client.state() != QMqttClient::Disconnected) {
+    qCInfo(lcMqttSub) << "open() no-op; state already" << m_client.state();
     return true;
+  }
 
   // Ensure client ID
   if (m_clientId.isEmpty())
     regenerateClientId();
+
+  // Push mirror -> client. Safe here because state is Disconnected.
+  applyPendingToClient();
+  m_userWantsOpen = true;
+
+  qCInfo(lcMqttSub).nospace() << "Connecting to " << (m_sslEnabled ? "mqtts://" : "mqtt://")
+                              << m_hostname << ":" << m_port << " clientId=" << m_clientId
+                              << " topic=" << m_topicFilter;
 
   // Connect to broker
   if (m_sslEnabled)
@@ -207,7 +236,7 @@ bool IO::Drivers::MQTT::sslEnabled() const noexcept
  */
 bool IO::Drivers::MQTT::autoKeepAlive() const noexcept
 {
-  return m_client.autoKeepAlive();
+  return m_autoKeepAlive;
 }
 
 /**
@@ -215,7 +244,7 @@ bool IO::Drivers::MQTT::autoKeepAlive() const noexcept
  */
 bool IO::Drivers::MQTT::cleanSession() const noexcept
 {
-  return m_client.cleanSession();
+  return m_cleanSession;
 }
 
 /**
@@ -223,7 +252,7 @@ bool IO::Drivers::MQTT::cleanSession() const noexcept
  */
 quint16 IO::Drivers::MQTT::port() const noexcept
 {
-  return m_client.port();
+  return m_port;
 }
 
 /**
@@ -231,7 +260,7 @@ quint16 IO::Drivers::MQTT::port() const noexcept
  */
 quint16 IO::Drivers::MQTT::keepAlive() const noexcept
 {
-  return m_client.keepAlive();
+  return m_keepAlive;
 }
 
 /**
@@ -241,7 +270,7 @@ quint8 IO::Drivers::MQTT::mqttVersion() const noexcept
 {
   quint8 index = 0;
   for (auto i = m_mqttVersions.begin(); i != m_mqttVersions.end(); ++i) {
-    if (i.value() == m_client.protocolVersion())
+    if (i.value() == m_protocolVersion)
       break;
 
     ++index;
@@ -303,7 +332,7 @@ QString IO::Drivers::MQTT::clientId() const
  */
 QString IO::Drivers::MQTT::hostname() const
 {
-  return m_client.hostname();
+  return m_hostname;
 }
 
 /**
@@ -311,7 +340,7 @@ QString IO::Drivers::MQTT::hostname() const
  */
 QString IO::Drivers::MQTT::username() const
 {
-  return m_client.username();
+  return m_username;
 }
 
 /**
@@ -319,7 +348,7 @@ QString IO::Drivers::MQTT::username() const
  */
 QString IO::Drivers::MQTT::password() const
 {
-  return m_client.password();
+  return m_password;
 }
 
 /**
@@ -430,11 +459,12 @@ void IO::Drivers::MQTT::addCaCertificates()
  */
 void IO::Drivers::MQTT::setPort(const quint16 port)
 {
-  if (m_client.port() == port)
+  if (m_port == port)
     return;
 
-  m_client.setPort(port);
+  m_port = port;
   m_settings.setValue(settingsKey("port"), port);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -443,11 +473,12 @@ void IO::Drivers::MQTT::setPort(const quint16 port)
  */
 void IO::Drivers::MQTT::setKeepAlive(const quint16 keepAlive)
 {
-  if (m_client.keepAlive() == keepAlive)
+  if (m_keepAlive == keepAlive)
     return;
 
-  m_client.setKeepAlive(keepAlive);
+  m_keepAlive = keepAlive;
   m_settings.setValue(settingsKey("keepAlive"), keepAlive);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -456,11 +487,12 @@ void IO::Drivers::MQTT::setKeepAlive(const quint16 keepAlive)
  */
 void IO::Drivers::MQTT::setAutoKeepAlive(const bool autoKeepAlive)
 {
-  if (m_client.autoKeepAlive() == autoKeepAlive)
+  if (m_autoKeepAlive == autoKeepAlive)
     return;
 
-  m_client.setAutoKeepAlive(autoKeepAlive);
+  m_autoKeepAlive = autoKeepAlive;
   m_settings.setValue(settingsKey("autoKeepAlive"), autoKeepAlive);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -469,11 +501,12 @@ void IO::Drivers::MQTT::setAutoKeepAlive(const bool autoKeepAlive)
  */
 void IO::Drivers::MQTT::setCleanSession(const bool cleanSession)
 {
-  if (m_client.cleanSession() == cleanSession)
+  if (m_cleanSession == cleanSession)
     return;
 
-  m_client.setCleanSession(cleanSession);
+  m_cleanSession = cleanSession;
   m_settings.setValue(settingsKey("cleanSession"), cleanSession);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -485,11 +518,12 @@ void IO::Drivers::MQTT::setMqttVersion(const quint8 version)
   quint8 index = 0;
   for (auto i = m_mqttVersions.begin(); i != m_mqttVersions.end(); ++i) {
     if (index == version) {
-      if (i.value() == m_client.protocolVersion())
+      if (i.value() == m_protocolVersion)
         return;
 
-      m_client.setProtocolVersion(i.value());
+      m_protocolVersion = i.value();
       m_settings.setValue(settingsKey("mqttVersion"), version);
+      scheduleReconnectIfActive();
       Q_EMIT mqttConfigurationChanged();
       return;
     }
@@ -508,6 +542,7 @@ void IO::Drivers::MQTT::setSslEnabled(const bool enabled)
 
   m_sslEnabled = enabled;
   m_settings.setValue(settingsKey("sslEnabled"), enabled);
+  scheduleReconnectIfActive();
   Q_EMIT sslConfigurationChanged();
 }
 
@@ -524,6 +559,7 @@ void IO::Drivers::MQTT::setSslProtocol(const quint8 protocol)
 
       m_sslConfiguration.setProtocol(i.value());
       m_settings.setValue(settingsKey("sslProtocol"), protocol);
+      scheduleReconnectIfActive();
       Q_EMIT sslConfigurationChanged();
       return;
     }
@@ -549,6 +585,7 @@ void IO::Drivers::MQTT::setPeerVerifyMode(const quint8 verifyMode)
 
       m_sslConfiguration.setPeerVerifyMode(i.value());
       m_settings.setValue(settingsKey("peerVerifyMode"), verifyMode);
+      scheduleReconnectIfActive();
       Q_EMIT sslConfigurationChanged();
       return;
     }
@@ -567,6 +604,7 @@ void IO::Drivers::MQTT::setPeerVerifyDepth(const int depth)
 
   m_sslConfiguration.setPeerVerifyDepth(depth);
   m_settings.setValue(settingsKey("peerVerifyDepth"), depth);
+  scheduleReconnectIfActive();
   Q_EMIT sslConfigurationChanged();
 }
 
@@ -579,8 +617,8 @@ void IO::Drivers::MQTT::setClientId(const QString& id)
     return;
 
   m_clientId = id;
-  m_client.setClientId(id);
   m_settings.setValue(settingsKey("clientId"), id);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -589,11 +627,12 @@ void IO::Drivers::MQTT::setClientId(const QString& id)
  */
 void IO::Drivers::MQTT::setHostname(const QString& hostname)
 {
-  if (m_client.hostname() == hostname)
+  if (m_hostname == hostname)
     return;
 
-  m_client.setHostname(hostname);
+  m_hostname = hostname;
   m_settings.setValue(settingsKey("hostname"), hostname);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -602,11 +641,12 @@ void IO::Drivers::MQTT::setHostname(const QString& hostname)
  */
 void IO::Drivers::MQTT::setUsername(const QString& username)
 {
-  if (m_client.username() == username)
+  if (m_username == username)
     return;
 
-  m_client.setUsername(username);
+  m_username = username;
   m_settings.setValue(settingsKey("username"), username);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -615,11 +655,12 @@ void IO::Drivers::MQTT::setUsername(const QString& username)
  */
 void IO::Drivers::MQTT::setPassword(const QString& password)
 {
-  if (m_client.password() == password)
+  if (m_password == password)
     return;
 
-  m_client.setPassword(password);
+  m_password = password;
   m_settings.setValue(settingsKey("password"), password);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -633,6 +674,7 @@ void IO::Drivers::MQTT::setTopicFilter(const QString& topic)
 
   m_topicFilter = topic;
   m_settings.setValue(settingsKey("topicFilter"), topic);
+  scheduleReconnectIfActive();
   Q_EMIT mqttConfigurationChanged();
 }
 
@@ -651,14 +693,14 @@ QList<IO::DriverProperty> IO::Drivers::MQTT::driverProperties() const
   host.key   = QStringLiteral("hostname");
   host.label = tr("Hostname");
   host.type  = IO::DriverProperty::Text;
-  host.value = m_client.hostname();
+  host.value = m_hostname;
   props.append(host);
 
   IO::DriverProperty p;
   p.key   = QStringLiteral("port");
   p.label = tr("Port");
   p.type  = IO::DriverProperty::IntField;
-  p.value = m_client.port();
+  p.value = m_port;
   p.min   = 1;
   p.max   = 65535;
   props.append(p);
@@ -681,14 +723,14 @@ QList<IO::DriverProperty> IO::Drivers::MQTT::driverProperties() const
   user.key   = QStringLiteral("username");
   user.label = tr("Username");
   user.type  = IO::DriverProperty::Text;
-  user.value = m_client.username();
+  user.value = m_username;
   props.append(user);
 
   IO::DriverProperty pass;
   pass.key   = QStringLiteral("password");
   pass.label = tr("Password");
   pass.type  = IO::DriverProperty::Text;
-  pass.value = m_client.password();
+  pass.value = m_password;
   props.append(pass);
 
   IO::DriverProperty ver;
@@ -703,14 +745,14 @@ QList<IO::DriverProperty> IO::Drivers::MQTT::driverProperties() const
   clean.key   = QStringLiteral("cleanSession");
   clean.label = tr("Clean Session");
   clean.type  = IO::DriverProperty::CheckBox;
-  clean.value = m_client.cleanSession();
+  clean.value = m_cleanSession;
   props.append(clean);
 
   IO::DriverProperty ka;
   ka.key   = QStringLiteral("keepAlive");
   ka.label = tr("Keep Alive (s)");
   ka.type  = IO::DriverProperty::IntField;
-  ka.value = m_client.keepAlive();
+  ka.value = m_keepAlive;
   ka.min   = 0;
   ka.max   = 65535;
   props.append(ka);
@@ -719,7 +761,7 @@ QList<IO::DriverProperty> IO::Drivers::MQTT::driverProperties() const
   autoKa.key   = QStringLiteral("autoKeepAlive");
   autoKa.label = tr("Auto Keep Alive");
   autoKa.type  = IO::DriverProperty::CheckBox;
-  autoKa.value = m_client.autoKeepAlive();
+  autoKa.value = m_autoKeepAlive;
   props.append(autoKa);
 
   appendMqttSslProperties(props);
@@ -851,6 +893,7 @@ void IO::Drivers::MQTT::setDriverProperty(const QString& key, const QVariant& va
  */
 void IO::Drivers::MQTT::onStateChanged(QMqttClient::ClientState state)
 {
+  qCInfo(lcMqttSub) << "state changed:" << state;
   Q_EMIT connectedChanged();
 
   if (state == QMqttClient::Connected && !m_topicFilter.isEmpty()) {
@@ -859,10 +902,18 @@ void IO::Drivers::MQTT::onStateChanged(QMqttClient::ClientState state)
 
     auto* sub = m_client.subscribe(filter, 0);
     if (!sub || sub->state() == QMqttSubscription::Error) {
+      qCCritical(lcMqttSub) << "subscribe failed for filter" << m_topicFilter;
       Misc::Utilities::showMessageBox(tr("MQTT Subscription Error"),
                                       tr("Failed to subscribe to topic \"%1\".").arg(m_topicFilter),
                                       QMessageBox::Critical);
+      return;
     }
+
+    qCInfo(lcMqttSub) << "subscribed to" << m_topicFilter << "initial state:" << sub->state();
+    connect(
+      sub, &QMqttSubscription::stateChanged, this, [this](QMqttSubscription::SubscriptionState s) {
+        qCInfo(lcMqttSub) << "subscription state for" << m_topicFilter << "->" << s;
+      });
   }
 }
 
@@ -871,6 +922,9 @@ void IO::Drivers::MQTT::onStateChanged(QMqttClient::ClientState state)
  */
 void IO::Drivers::MQTT::onErrorChanged(QMqttClient::ClientError error)
 {
+  if (error != QMqttClient::NoError)
+    qCWarning(lcMqttSub) << "client error" << error;
+
   QString title;
   QString message;
   switch (error) {
@@ -927,16 +981,26 @@ void IO::Drivers::MQTT::onMessageReceived(const QByteArray& message, const QMqtt
   // License gate
   const auto& token = Licensing::CommercialToken::current();
   if (!token.isValid() || !SS_LICENSE_GUARD()
-      || token.featureTier() < Licensing::FeatureTier::Hobbyist)
+      || token.featureTier() < Licensing::FeatureTier::Hobbyist) {
+    qCWarning(lcMqttSub) << "messageReceived dropped: no commercial license";
     return;
+  }
 
-  if (message.isEmpty())
+  if (message.isEmpty()) {
+    qCInfo(lcMqttSub) << "messageReceived: empty payload on" << topic.name() << "-- dropped";
     return;
+  }
 
   // Filter match (in case broker delivered an unexpected topic)
   QMqttTopicFilter filter(m_topicFilter);
-  if (!filter.match(topic))
+  if (!filter.match(topic)) {
+    qCInfo(lcMqttSub) << "messageReceived: topic" << topic.name() << "did not match filter"
+                      << m_topicFilter << "-- dropped";
     return;
+  }
+
+  qCDebug(lcMqttSub) << "messageReceived on" << topic.name() << "size=" << message.size()
+                     << "preview=" << message.left(80);
 
   // Inject into the standard capture pipeline; FrameReader handles the rest
   publishReceivedData(message);
@@ -952,26 +1016,24 @@ void IO::Drivers::MQTT::onMessageReceived(const QByteArray& message, const QMqtt
 void IO::Drivers::MQTT::loadPersistedSettings()
 {
   // Strings
-  const auto host = m_settings.value(settingsKey("hostname"), m_client.hostname()).toString();
+  const auto host = m_settings.value(settingsKey("hostname"), m_hostname).toString();
   const auto cid  = m_settings.value(settingsKey("clientId"), QString()).toString();
   const auto user = m_settings.value(settingsKey("username"), QString()).toString();
   const auto pwd  = m_settings.value(settingsKey("password"), QString()).toString();
   const auto top  = m_settings.value(settingsKey("topicFilter"), QString()).toString();
 
   // Numerics
-  const auto p    = m_settings.value(settingsKey("port"), m_client.port()).toUInt();
-  const auto ka   = m_settings.value(settingsKey("keepAlive"), m_client.keepAlive()).toUInt();
+  const auto p    = m_settings.value(settingsKey("port"), m_port).toUInt();
+  const auto ka   = m_settings.value(settingsKey("keepAlive"), m_keepAlive).toUInt();
   const auto ver  = m_settings.value(settingsKey("mqttVersion"), mqttVersion()).toUInt();
   const auto pvd  = m_settings.value(settingsKey("peerVerifyDepth"), 10).toInt();
   const auto sslP = m_settings.value(settingsKey("sslProtocol"), sslProtocol()).toUInt();
   const auto pvm  = m_settings.value(settingsKey("peerVerifyMode"), peerVerifyMode()).toUInt();
 
   // Bools
-  const auto autoKa =
-    m_settings.value(settingsKey("autoKeepAlive"), m_client.autoKeepAlive()).toBool();
-  const auto clean =
-    m_settings.value(settingsKey("cleanSession"), m_client.cleanSession()).toBool();
-  const auto ssl = m_settings.value(settingsKey("sslEnabled"), false).toBool();
+  const auto autoKa = m_settings.value(settingsKey("autoKeepAlive"), m_autoKeepAlive).toBool();
+  const auto clean  = m_settings.value(settingsKey("cleanSession"), m_cleanSession).toBool();
+  const auto ssl    = m_settings.value(settingsKey("sslEnabled"), false).toBool();
 
   setHostname(host);
   setPort(static_cast<quint16>(p));
@@ -995,4 +1057,61 @@ void IO::Drivers::MQTT::loadPersistedSettings()
 QString IO::Drivers::MQTT::settingsKey(const char* leaf) const
 {
   return QStringLiteral("MqttInputDriver/") + QLatin1String(leaf);
+}
+
+/**
+ * @brief Pushes the mirror snapshot into m_client. Caller must guarantee state == Disconnected.
+ */
+void IO::Drivers::MQTT::applyPendingToClient()
+{
+  Q_ASSERT(m_client.state() == QMqttClient::Disconnected);
+
+  m_client.setHostname(m_hostname);
+  m_client.setPort(m_port);
+  m_client.setClientId(m_clientId);
+  m_client.setUsername(m_username);
+  m_client.setPassword(m_password);
+  m_client.setKeepAlive(m_keepAlive);
+  m_client.setAutoKeepAlive(m_autoKeepAlive);
+  m_client.setCleanSession(m_cleanSession);
+  m_client.setProtocolVersion(m_protocolVersion);
+}
+
+/**
+ * @brief If the live connection is active, disconnect now and reopen once Disconnected.
+ */
+void IO::Drivers::MQTT::scheduleReconnectIfActive()
+{
+  if (m_client.state() == QMqttClient::Disconnected)
+    return;
+
+  // Already in the middle of a teardown -- the pending lambda will pick up the fresh mirror
+  if (m_reconnectPending) {
+    if (m_client.state() != QMqttClient::Disconnected)
+      m_client.disconnectFromHost();
+
+    return;
+  }
+
+  qCInfo(lcMqttSub) << "broker setting changed while connected -- scheduling reconnect";
+  m_reconnectPending = true;
+
+  auto* conn = new QMetaObject::Connection;
+  *conn =
+    connect(&m_client, &QMqttClient::stateChanged, this, [this, conn](QMqttClient::ClientState s) {
+      if (s != QMqttClient::Disconnected)
+        return;
+
+      disconnect(*conn);
+      delete conn;
+      m_reconnectPending = false;
+
+      // The user may have hit Disconnect during our async teardown -- honor that
+      if (!m_userWantsOpen)
+        return;
+
+      (void)open(QIODevice::ReadOnly);
+    });
+
+  m_client.disconnectFromHost();
 }
