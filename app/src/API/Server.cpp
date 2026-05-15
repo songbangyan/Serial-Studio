@@ -186,9 +186,6 @@ void API::ServerWorker::removeSocket(QTcpSocket* socket)
  */
 void API::ServerWorker::writeRawData(const QByteArray& data)
 {
-  Q_ASSERT(!m_sockets.isEmpty());
-
-  // Nothing to send if data is empty or no clients connected
   if (data.isEmpty() || m_sockets.isEmpty())
     return;
 
@@ -208,9 +205,7 @@ void API::ServerWorker::writeRawData(const QByteArray& data)
 void API::ServerWorker::broadcastEvent(const QJsonObject& event)
 {
   Q_ASSERT(!event.isEmpty());
-  Q_ASSERT(!m_sockets.isEmpty());
 
-  // No clients to notify
   if (m_sockets.isEmpty())
     return;
 
@@ -272,9 +267,7 @@ void API::ServerWorker::onSocketDisconnected()
 void API::ServerWorker::processItems(const std::vector<DataModel::TimestampedFramePtr>& items)
 {
   Q_ASSERT(!items.empty());
-  Q_ASSERT(!m_sockets.isEmpty());
 
-  // Nothing to process if queue or client list is empty
   if (items.empty() || m_sockets.isEmpty())
     return;
 

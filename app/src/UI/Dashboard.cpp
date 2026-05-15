@@ -2029,8 +2029,6 @@ void UI::Dashboard::configureMultiLineSeries()
  */
 void UI::Dashboard::configureActions(const DataModel::Frame& frame)
 {
-  Q_ASSERT(!frame.groups.empty());
-
   // Stop if frame is not valid
   if (frame.groups.size() <= 0)
     return;

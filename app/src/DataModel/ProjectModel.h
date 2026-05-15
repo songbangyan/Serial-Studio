@@ -351,8 +351,14 @@ public slots:
 
   void deleteWorkspace(int workspaceId);
   void renameWorkspace(int workspaceId, const QString& title);
-  void updateWorkspace(
-    int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon);
+  void updateWorkspace(int workspaceId,
+                       const QString& title,
+                       const QString& icon,
+                       const QString& description,
+                       bool setTitle,
+                       bool setIcon,
+                       bool setDescription);
+  void reorderWorkspaces(const QList<int>& userWorkspaceIds);
   void addWidgetToWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
   void removeWidgetFromWorkspace(int workspaceId, int widgetType, int groupId, int relativeIndex);
   int cleanupWorkspaceWidgetRefs(const QSet<qint64>& validKeys);

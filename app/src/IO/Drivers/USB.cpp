@@ -99,10 +99,12 @@ IO::Drivers::USB::USB()
     timer->start();
   }
 
-  // Start the event thread for hotplug and transfer completion
-  m_eventLoopRunning = true;
-  connect(&m_eventThread, &QThread::started, this, &USB::eventLoop, Qt::DirectConnection);
-  m_eventThread.start();
+  // Start the event thread only if libusb_init succeeded
+  if (m_ctx) {
+    m_eventLoopRunning = true;
+    connect(&m_eventThread, &QThread::started, this, &USB::eventLoop, Qt::DirectConnection);
+    m_eventThread.start();
+  }
 }
 
 /**
@@ -110,19 +112,8 @@ IO::Drivers::USB::USB()
  */
 IO::Drivers::USB::~USB()
 {
-  // Signal both threads to stop
-  m_running          = false;
-  m_eventLoopRunning = false;
-
-  // Deregister hotplug and cancel pending transfers
-  if (m_ctx && m_hotplugHandle) {
-    libusb_hotplug_deregister_callback(m_ctx, m_hotplugHandle);
-    m_hotplugHandle = 0;
-  }
-
-  for (auto* t : std::as_const(m_isoTransfers))
-    libusb_cancel_transfer(t);
-
+  // Stop the read thread before touching libusb
+  m_running = false;
   if (m_readThread.isRunning()) {
     if (!m_readThread.wait(2000))
       m_readThread.terminate();
@@ -130,11 +121,23 @@ IO::Drivers::USB::~USB()
     m_readThread.wait();
   }
 
+  // Cancel in-flight iso transfers so the event loop can drain them
+  for (auto* t : std::as_const(m_isoTransfers))
+    libusb_cancel_transfer(t);
+
+  // Join the event thread before touching hotplug or libusb context state
+  m_eventLoopRunning = false;
   if (m_eventThread.isRunning()) {
     if (!m_eventThread.wait(2000))
       m_eventThread.terminate();
 
     m_eventThread.wait();
+  }
+
+  // libusb state is now owned by this thread exclusively
+  if (m_ctx && m_hotplugHandle) {
+    libusb_hotplug_deregister_callback(m_ctx, m_hotplugHandle);
+    m_hotplugHandle = 0;
   }
 
   for (auto* t : std::as_const(m_isoTransfers))
@@ -149,8 +152,10 @@ IO::Drivers::USB::~USB()
     m_handle = nullptr;
   }
 
-  if (m_ctx)
+  if (m_ctx) {
     libusb_exit(m_ctx);
+    m_ctx = nullptr;
+  }
 }
 
 //--------------------------------------------------------------------------------------------------

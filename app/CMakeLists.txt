@@ -543,6 +543,7 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/MDF4PlayerHandler.h
     src/API/Handlers/HIDHandler.h
     src/API/Handlers/USBHandler.h
+    src/API/Handlers/MqttHandler.h
     src/API/Handlers/NotificationsHandler.h
     src/API/Handlers/ProcessHandler.h
     src/API/Handlers/SessionsHandler.h
@@ -621,6 +622,7 @@ if(BUILD_COMMERCIAL)
     src/API/Handlers/MDF4PlayerHandler.cpp
     src/API/Handlers/HIDHandler.cpp
     src/API/Handlers/USBHandler.cpp
+    src/API/Handlers/MqttHandler.cpp
     src/API/Handlers/ProcessHandler.cpp
     src/API/Handlers/LicensingHandler.cpp
     src/API/Handlers/NotificationsHandler.cpp

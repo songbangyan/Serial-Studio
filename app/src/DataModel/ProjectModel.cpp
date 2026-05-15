@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QHash>
 #include <QInputDialog>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -4173,10 +4174,15 @@ void DataModel::ProjectModel::renameWorkspace(int workspaceId, const QString& ti
 }
 
 /**
- * @brief Patches title and/or icon on the workspace with the given ID.
+ * @brief Patches title, icon, and/or description on the workspace with the given ID.
  */
-void DataModel::ProjectModel::updateWorkspace(
-  int workspaceId, const QString& title, const QString& icon, bool setTitle, bool setIcon)
+void DataModel::ProjectModel::updateWorkspace(int workspaceId,
+                                              const QString& title,
+                                              const QString& icon,
+                                              const QString& description,
+                                              bool setTitle,
+                                              bool setIcon,
+                                              bool setDescription)
 {
   if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
     return;
@@ -4192,12 +4198,58 @@ void DataModel::ProjectModel::updateWorkspace(
       if (setIcon)
         ws.icon = SerialStudio::normalizeIconPath(icon);
 
+      if (setDescription)
+        ws.description = description;
+
       setModified(true);
       Q_EMIT editorWorkspacesChanged();
       Q_EMIT activeWorkspacesChanged();
       return;
     }
   }
+}
+
+/**
+ * @brief Reorders user-defined workspaces (id >= UserStart) by the given id sequence.
+ */
+void DataModel::ProjectModel::reorderWorkspaces(const QList<int>& userWorkspaceIds)
+{
+  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  // Collect user workspaces keyed by id; system slots keep their order
+  QHash<int, DataModel::Workspace> userById;
+  std::vector<DataModel::Workspace> systemSlots;
+  for (auto& ws : m_workspaces)
+    if (ws.workspaceId >= WorkspaceIds::UserStart)
+      userById.insert(ws.workspaceId, std::move(ws));
+    else
+      systemSlots.push_back(std::move(ws));
+
+  // Reject mismatched sets -- partial reorder is a silent corruption hazard
+  if (userWorkspaceIds.size() != userById.size())
+    return;
+
+  for (int id : userWorkspaceIds)
+    if (!userById.contains(id))
+      return;
+
+  std::vector<DataModel::Workspace> rebuilt;
+  rebuilt.reserve(systemSlots.size() + userById.size());
+  for (auto& ws : systemSlots)
+    rebuilt.push_back(std::move(ws));
+
+  for (int id : userWorkspaceIds)
+    rebuilt.push_back(std::move(userById[id]));
+
+  m_workspaces = std::move(rebuilt);
+
+  if (!m_customizeWorkspaces)
+    setCustomizeWorkspaces(true);
+
+  setModified(true);
+  Q_EMIT editorWorkspacesChanged();
+  Q_EMIT activeWorkspacesChanged();
 }
 
 //--------------------------------------------------------------------------------------------------

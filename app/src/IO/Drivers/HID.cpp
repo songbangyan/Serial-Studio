@@ -88,6 +88,10 @@ void IO::Drivers::HID::cleanupDevice()
  */
 IO::Drivers::HID::~HID()
 {
+  // Stop the hotplug timer before tearing down hidapi state
+  m_enumTimer.stop();
+  disconnect(&m_enumTimer, nullptr, this, nullptr);
+
   cleanupDevice();
 
   hid_free_enumeration(m_deviceInfoList);

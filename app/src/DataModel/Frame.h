@@ -157,6 +157,7 @@ inline constexpr KeyView WidgetRefs("widgetRefs");
 inline constexpr KeyView WidgetType("widgetType");
 inline constexpr KeyView RelativeIndex("relativeIndex");
 inline constexpr KeyView CustomizeWorkspaces("customizeWorkspaces");
+inline constexpr KeyView WorkspaceDescription("description");
 
 inline constexpr KeyView Virtual("virtual");
 
@@ -591,6 +592,7 @@ struct Workspace {
   int workspaceId = -1;
   QString title;
   QString icon;
+  QString description;
   std::vector<WidgetRef> widgetRefs;
 };
 
@@ -604,6 +606,9 @@ struct Workspace {
   obj.insert(Keys::Title, w.title.simplified());
   if (!w.icon.isEmpty())
     obj.insert(Keys::Icon, w.icon);
+
+  if (!w.description.isEmpty())
+    obj.insert(Keys::WorkspaceDescription, w.description);
 
   QJsonArray refs;
   for (const auto& ref : w.widgetRefs) {
@@ -629,6 +634,7 @@ struct Workspace {
   w.workspaceId = ss_jsr(obj, Keys::WorkspaceId, -1).toInt();
   w.title       = ss_jsr(obj, Keys::Title, "").toString().simplified();
   w.icon        = ss_jsr(obj, Keys::Icon, "").toString().simplified();
+  w.description = ss_jsr(obj, Keys::WorkspaceDescription, "").toString();
 
   w.widgetRefs.clear();
   const auto refs = obj.value(Keys::WidgetRefs).toArray();

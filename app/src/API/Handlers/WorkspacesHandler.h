@@ -37,6 +37,9 @@ private:
   static void registerWorkspaceCrudCommands();
   static void registerCustomizeCommands();
   static void registerWidgetRefCommands();
+  static void registerWidgetAddCommand();
+  static void registerWidgetRemoveCommand();
+  static void registerWidgetValidationCommands();
 
   static CommandResponse list(const QString& id, const QJsonObject& params);
   static CommandResponse get(const QString& id, const QJsonObject& params);
@@ -51,6 +54,10 @@ private:
 
   static CommandResponse widgetAdd(const QString& id, const QJsonObject& params);
   static CommandResponse widgetRemove(const QString& id, const QJsonObject& params);
+
+  static CommandResponse validate(const QString& id, const QJsonObject& params);
+  static CommandResponse cleanup(const QString& id, const QJsonObject& params);
+  static CommandResponse reorder(const QString& id, const QJsonObject& params);
 };
 
 }  // namespace Handlers

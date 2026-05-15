@@ -282,6 +282,18 @@ public:
 
   [[nodiscard]] const QString& treeSearchQuery() const noexcept;
 
+  /**
+   * @brief Resolved (groupTitle, datasetTitle) pair for a workspace widget reference.
+   */
+  struct ResolvedWidget {
+    QString groupTitle;
+    QString datasetTitle;
+  };
+
+  [[nodiscard]] static qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx);
+  [[nodiscard]] static QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
+    const DataModel::ProjectModel& pm);
+
 public slots:
   void selectUserTable(const QString& tableName);
   void selectWorkspace(int workspaceId);
@@ -420,18 +432,6 @@ private:
   void buildOutputWidgetCommonRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetValueRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetTransmitRow(const DataModel::OutputWidget& widget);
-
-  /**
-   * @brief Resolved (groupTitle, datasetTitle) pair for a workspace widget reference.
-   */
-  struct ResolvedWidget {
-    QString groupTitle;
-    QString datasetTitle;
-  };
-
-  [[nodiscard]] static qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx);
-  [[nodiscard]] static QHash<qint64, ResolvedWidget> buildResolvedWidgetLookup(
-    const DataModel::ProjectModel& pm);
 
 private:
   CurrentView m_currentView;
