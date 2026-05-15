@@ -184,17 +184,16 @@ void API::ServerWorker::removeSocket(QTcpSocket* socket)
 /**
  * @brief Writes raw data to all connected sockets (worker thread)
  */
-void API::ServerWorker::writeRawData(const IO::ByteArrayPtr& data)
+void API::ServerWorker::writeRawData(const QByteArray& data)
 {
-  Q_ASSERT(data);
   Q_ASSERT(!m_sockets.isEmpty());
 
   // Nothing to send if data is empty or no clients connected
-  if (!data || data->isEmpty() || m_sockets.isEmpty())
+  if (data.isEmpty() || m_sockets.isEmpty())
     return;
 
   QJsonObject object;
-  object.insert(QStringLiteral("data"), QString::fromUtf8(data->toBase64()));
+  object.insert(QStringLiteral("data"), QString::fromUtf8(data.toBase64()));
   const QJsonDocument document(object);
   const auto json = document.toJson(QJsonDocument::Compact) + "\n";
 
@@ -501,9 +500,8 @@ void API::Server::setExternalConnections(const bool enabled)
 /**
  * @brief Sends raw binary data to all connected clients.
  */
-void API::Server::hotpathTxData(const IO::ByteArrayPtr& data)
+void API::Server::hotpathTxData(const QByteArray& data)
 {
-  Q_ASSERT(data);
   Q_ASSERT(m_worker);
 
   // Server must be active to relay data
@@ -511,8 +509,7 @@ void API::Server::hotpathTxData(const IO::ByteArrayPtr& data)
     return;
 
   auto* worker = static_cast<ServerWorker*>(m_worker);
-  QMetaObject::invokeMethod(
-    worker, "writeRawData", Qt::QueuedConnection, Q_ARG(IO::ByteArrayPtr, data));
+  QMetaObject::invokeMethod(worker, "writeRawData", Qt::QueuedConnection, Q_ARG(QByteArray, data));
 }
 
 /**

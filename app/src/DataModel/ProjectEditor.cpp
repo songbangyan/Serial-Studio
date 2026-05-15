@@ -1585,7 +1585,9 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
 
     auto* wsItem = new QStandardItem(ws.title);
     wsItem->setData(ws.title, TreeViewText);
-    wsItem->setData(ws.icon.isEmpty() ? "qrc:/icons/project-editor/treeview/group.svg" : ws.icon,
+    wsItem->setData(ws.icon.isEmpty()
+                      ? QStringLiteral("qrc:/icons/project-editor/treeview/group.svg")
+                      : SerialStudio::normalizeIconPath(ws.icon),
                     TreeViewIcon);
     wsItem->setData(-1, TreeViewFrameIndex);
     wsItem->setData(KindWorkspace, TreeItemKind);
@@ -4962,7 +4964,7 @@ QVariantList DataModel::ProjectEditor::workspacesSummary() const
     QVariantMap row;
     row["id"]          = ws.workspaceId;
     row["title"]       = ws.title;
-    row["icon"]        = ws.icon;
+    row["icon"]        = SerialStudio::normalizeIconPath(ws.icon);
     row["widgetCount"] = static_cast<int>(ws.widgetRefs.size());
     result.append(row);
   }

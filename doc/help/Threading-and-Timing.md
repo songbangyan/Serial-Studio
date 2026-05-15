@@ -16,7 +16,7 @@ A short, honest description of what Serial Studio's hot path guarantees, what it
 - **Order preservation.** Frames are delivered to consumers in the order the driver produced them. The hot path uses a single-producer/single-consumer ring (`moodycamel::ReaderWriterQueue`) that's FIFO by construction.
 - **Source-derived timestamps.** Every parsed frame carries a `steady_clock` timestamp set at acquisition. Dashboard, CSV, MDF4, API, gRPC, MQTT, and the session database all see the same instant for the same frame. No consumer re-stamps.
 - **No frame loss in steady state.** If your CPU can keep up with the producer, the queue stays drained and nothing is dropped. If it can't, you'll see `[FrameReader] Frame queue full — frame dropped` in the log. That message is the canary; treat it as a real signal, not a warning.
-- **Zero allocation on the hot path.** No `new`, no `make_shared`, no `QByteArray::append` after init. A `TimestampedFramePtr` is created once per parsed frame in `FrameBuilder` and shared (refcounted) across every consumer.
+- **Zero allocation on the hot path.** No `new`, no `make_shared`, no `QByteArray::append` after init. Each `TimestampedFramePtr` comes from a fixed-size slot pool inside `FrameBuilder` and is shared (refcounted) across every consumer; the slot is recycled when the last consumer drops the pointer. The pool falls back to a one-shot `make_shared` and logs a single warning only if every slot is in flight at once, which means a downstream consumer is not draining.
 - **Crash isolation across consumers.** A slow MQTT publish or a failing CSV write won't block FrameBuilder or the dashboard. Each consumer has its own worker thread and its own queue.
 
 ### Not guaranteed

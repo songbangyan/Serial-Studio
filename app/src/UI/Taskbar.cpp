@@ -85,6 +85,10 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
   qmlRegisterUncreatableType<UI::TaskbarModel>(
     "SerialStudio.UI", 1, 0, "TaskbarModel", "TaskbarModel is exposed by Taskbar singleton");
 
+  // Focus-cycle animation -- ripples focus post-workspace-finalize to sync Z-order with layout.
+  m_focusCycleTimer.setSingleShot(false);
+  connect(&m_focusCycleTimer, &QTimer::timeout, this, &UI::Taskbar::onFocusCycleTick);
+
   // Connect to widget registry lifecycle signals
   connectToRegistry();
 
@@ -393,6 +397,10 @@ void UI::Taskbar::saveLayout()
  */
 void UI::Taskbar::setActiveGroupId(int groupId)
 {
+  // Stop any in-flight focus cycle; its queue references the about-to-die delegates
+  m_focusCycleTimer.stop();
+  m_focusCycleQueue.clear();
+
   // Persist current layout before switching
   saveLayout();
 
@@ -676,6 +684,9 @@ void UI::Taskbar::unregisterWindow(QQuickItem* window)
       m_windowConnections.erase(it);
     }
 
+    // Drop the about-to-die delegate from the focus cycle so the tick can't deref it
+    m_focusCycleQueue.removeAll(window);
+
     m_windowIDs.remove(window);
     if (m_windowManager)
       m_windowManager->unregisterWindow(window);
@@ -746,15 +757,78 @@ void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
     if (!restored)
       m_windowManager->loadLayout();
 
-    // Anchor focus to the visually-first tile, not taskbar row 0
-    const int firstTileId = m_windowManager->firstTileWindowId();
-    if (firstTileId >= 0) {
-      if (auto* firstTile = windowData(firstTileId))
-        setActiveWindow(firstTile);
+    m_restoringLayout = false;
+
+    // Ripple focus through tiles in visual order so auto-mode reorder gets a fresh Z stack.
+    startFocusCycle();
+  }
+}
+
+/**
+ * @brief Starts a brief focus-ripple across all registered tiles in visual order.
+ */
+void UI::Taskbar::startFocusCycle()
+{
+  // Stop any in-flight cycle so a rapid workspace switch doesn't double-fire
+  m_focusCycleTimer.stop();
+  m_focusCycleQueue.clear();
+
+  if (!m_windowManager)
+    return;
+
+  // Build the cycle from the visual window order (post-reconcile)
+  const auto& order = m_windowManager->windowOrder();
+  for (int id : order)
+    if (auto* win = windowData(id))
+      m_focusCycleQueue.append(win);
+
+  if (m_focusCycleQueue.isEmpty())
+    return;
+
+  // Single tile: focus it directly, no animation needed
+  if (m_focusCycleQueue.size() == 1) {
+    QQuickItem* only = m_focusCycleQueue.first();
+    m_focusCycleQueue.clear();
+    setActiveWindow(only);
+    return;
+  }
+
+  // Append the first tile (copied -- QVector reallocation invalidates references).
+  QQuickItem* firstTile = m_focusCycleQueue.first();
+  m_focusCycleQueue.append(firstTile);
+
+  // Spread ~200 ms across the cycle, clamped to a snappy 10-40 ms per tick
+  constexpr int kBudgetMs = 200;
+  constexpr int kMinMs    = 10;
+  constexpr int kMaxMs    = 40;
+  const int interval      = qBound(kMinMs, kBudgetMs / m_focusCycleQueue.size(), kMaxMs);
+  m_focusCycleTimer.setInterval(interval);
+  m_focusCycleTimer.start();
+}
+
+/**
+ * @brief Advances the focus-cycle by one tile, stopping when the queue drains.
+ */
+void UI::Taskbar::onFocusCycleTick()
+{
+  if (m_focusCycleQueue.isEmpty()) {
+    m_focusCycleTimer.stop();
+    return;
+  }
+
+  QQuickItem* win = m_focusCycleQueue.takeFirst();
+  if (win) {
+    // Force the Z-bump even when the active window doesn't change between ticks
+    if (m_activeWindow == win) {
+      m_activeWindow = nullptr;
+      Q_EMIT activeWindowChanged();
     }
 
-    m_restoringLayout = false;
+    setActiveWindow(win);
   }
+
+  if (m_focusCycleQueue.isEmpty())
+    m_focusCycleTimer.stop();
 }
 
 /**
@@ -799,6 +873,10 @@ void UI::Taskbar::rebuildModel()
   // Guard against re-entrant rebuilds
   if (m_rebuildInProgress)
     return;
+
+  // Stop any in-flight focus cycle; the queue is about to dangle
+  m_focusCycleTimer.stop();
+  m_focusCycleQueue.clear();
 
   m_rebuildInProgress = true;
   {
@@ -1551,8 +1629,9 @@ QVariantList UI::Taskbar::workspaceModel() const
     entry[QStringLiteral("id")]        = ws.workspaceId;
     entry[QStringLiteral("text")]      = ws.title;
     entry[QStringLiteral("separator")] = false;
-    entry[QStringLiteral("icon")] =
-      ws.icon.isEmpty() ? QStringLiteral("qrc:/icons/panes/dashboard.svg") : ws.icon;
+    entry[QStringLiteral("icon")]      = ws.icon.isEmpty()
+                                         ? QStringLiteral("qrc:/icons/panes/dashboard.svg")
+                                         : SerialStudio::normalizeIconPath(ws.icon);
     model.append(entry);
   }
 

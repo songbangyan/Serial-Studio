@@ -259,6 +259,8 @@ public:
   Q_INVOKABLE [[nodiscard]] static QString resolveEscapeSequences(const QString& str);
   Q_INVOKABLE [[nodiscard]] static QString escapeControlCharacters(const QString& str);
 
+  Q_INVOKABLE [[nodiscard]] static QString normalizeIconPath(const QString& path);
+
   // clang-format off
   Q_INVOKABLE [[nodiscard]] static QStringList textEncodings();
   Q_INVOKABLE [[nodiscard]] static QString textEncodingName(SerialStudio::TextEncoding enc);

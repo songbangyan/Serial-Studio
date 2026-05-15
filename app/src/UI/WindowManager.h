@@ -84,6 +84,7 @@ public:
   [[nodiscard]] Q_INVOKABLE QJsonObject serializeLayout() const;
   [[nodiscard]] Q_INVOKABLE bool restoreLayout(const QJsonObject& layout);
   [[nodiscard]] int firstTileWindowId() const;
+  [[nodiscard]] const QVector<int>& windowOrder() const;
 
   enum class ResizeEdge {
     None,

@@ -417,7 +417,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::list(const QString& id,
     QJsonObject entry;
     entry[QStringLiteral("id")]          = ws.workspaceId;
     entry[QStringLiteral("title")]       = ws.title;
-    entry[QStringLiteral("icon")]        = ws.icon;
+    entry[QStringLiteral("icon")]        = SerialStudio::normalizeIconPath(ws.icon);
     entry[QStringLiteral("widgetCount")] = static_cast<int>(ws.widgetRefs.size());
     arr.append(entry);
   }

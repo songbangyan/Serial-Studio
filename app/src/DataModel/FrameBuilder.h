@@ -23,8 +23,10 @@
 
 #include <lua.h>
 
+#include <atomic>
 #include <chrono>
 #include <map>
+#include <memory>
 #include <QDeadlineTimer>
 #include <QJSEngine>
 #include <QJSValue>
@@ -32,6 +34,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QVariant>
+#include <vector>
 
 #include "DataModel/DataTable.h"
 #include "DataModel/Frame.h"
@@ -100,11 +103,21 @@ private:
     qint64 timestampMs  = 0;
   };
 
+  struct LuaTransformRef {
+    int ref;
+    bool acceptsInfo;
+  };
+
+  struct JsTransformRef {
+    QJSValue fn;
+    bool acceptsInfo;
+  };
+
   struct TransformEngine {
     lua_State* luaState = nullptr;
     QJSEngine* jsEngine = nullptr;
-    std::map<int, int> luaRefs;
-    std::map<int, QJSValue> jsRefs;
+    std::map<int, LuaTransformRef> luaRefs;
+    std::map<int, JsTransformRef> jsRefs;
     QDeadlineTimer luaDeadline{QDeadlineTimer::Forever};
   };
 
@@ -122,6 +135,7 @@ private:
   bool m_quickPlotHasHeader;
   bool m_parseBudgetSkipping;
   bool m_parseBudgetWarned;
+  bool m_lastConnectedState;
   qint64 m_parseBudgetUsedNs;
   BudgetClock::time_point m_parseBudgetWindowStart;
 
@@ -136,6 +150,27 @@ private:
   QMap<int, DataModel::Frame> m_sourceFrames;
   std::map<int, quint64> m_sourceFrameCounters;
   std::map<EngineKey, TransformEngine> m_transformEngines;
+
+  int m_engineCacheSourceId;
+  TransformEngine* m_luaEngineForSource;
+  TransformEngine* m_jsEngineForSource;
+
+  /**
+   * @brief Recyclable pool slot holding one TimestampedFrame and its in-use flag.
+   */
+  struct PooledFrameSlot {
+    PooledFrameSlot();
+    DataModel::TimestampedFrame frame;
+    std::atomic<bool> inUse;
+  };
+
+  static constexpr int kFramePoolSize = 1024;
+  std::vector<std::shared_ptr<PooledFrameSlot>> m_framePool;
+  std::atomic<size_t> m_framePoolHint;
+
+  [[nodiscard]] DataModel::TimestampedFramePtr acquireFrame(const DataModel::Frame& src);
+  [[nodiscard]] DataModel::TimestampedFramePtr acquireFrame(
+    const DataModel::Frame& src, const DataModel::TimestampedFrame::SteadyTimePoint& ts);
 
 private:
   // code-verify off
@@ -187,6 +222,9 @@ private:
   void compileTransformsLua(TransformEngine& engine,
                             int sourceId,
                             const std::vector<TransformEntry>& entries);
+  void compileTransformsLuaEntry(lua_State* L,
+                                 TransformEngine& engine,
+                                 const TransformEntry& entry);
   void compileTransformsJS(TransformEngine& engine,
                            int sourceId,
                            const std::vector<TransformEntry>& entries);

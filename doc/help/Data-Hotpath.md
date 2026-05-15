@@ -16,7 +16,7 @@ allocations, copies, and cross-thread context switches.
 ```mermaid
 flowchart TD
     A["Driver<br/>(driver thread or main)"] -->|CapturedDataPtr| B["FrameReader<br/>(main thread)"]
-    B -->|enqueue| Q["Lock-free queue<br/>4096 slots"]
+    B -->|enqueue| Q["Lock-free queue<br/>65536 slots"]
     Q -->|dequeue| C["DeviceManager<br/>(main thread)"]
     C -->|frameReady<br/>DirectConnection| D["ConnectionManager<br/>(main thread)"]
     D --> E["FrameBuilder<br/>(main thread)"]
@@ -34,7 +34,8 @@ Drivers wrap one transport each (UART, TCP/UDP, BLE, Audio, Modbus, CAN Bus, USB
 Process I/O). They publish data through `HAL_Driver::publishReceivedData(...)`, which carries
 a shared `IO::CapturedData` payload:
 
-- `data` (shared byte buffer)
+- `data` (`QByteArray`; Qt's copy-on-write means consumers get an atomic refcount bump, not
+  a deep copy)
 - `timestamp` (steady-clock time of acquisition)
 - `frameStep` (cadence in nanoseconds, when the driver knows it)
 - `logicalFramesHint` (how many logical frames are encoded in the chunk, when known)
@@ -61,7 +62,7 @@ both, or none) and pulls out one logical frame at a time.
 - Optional CRC validation (CRC-8, CRC-16, CRC-32) runs immediately after extraction.
 
 Each completed frame is enqueued into a lock-free
-`moodycamel::ReaderWriterQueue<CapturedDataPtr>` with 4096 slots. When that queue is full,
+`moodycamel::ReaderWriterQueue<CapturedDataPtr>` with 65536 slots. When that queue is full,
 frames are dropped and a log line is emitted. That message is the canonical signal that a
 downstream stage is too slow.
 
@@ -101,9 +102,15 @@ When a single captured chunk expands into N logical frames, FrameBuilder publish
 collapse all the frames into a single instant.
 
 The parser and transforms are the only points on the hotpath where user code runs. Both run
-under a runtime watchdog (one second per call) and are wrapped so that a thrown error,
-infinite loop, or non-finite return value falls back to the safe path: the raw value, or an
-empty frame. Errors do not interrupt the data stream.
+under a runtime watchdog and are wrapped so that a thrown error, infinite loop, or non-finite
+return value falls back to the safe path: the raw value, or an empty frame. Errors do not
+interrupt the data stream. Transform watchdogs use a 100 ms budget; for JavaScript transforms
+the budget is armed once per frame in `applyDatasetValues` and covers all of that frame's
+transforms collectively, not per dataset call.
+
+Transforms that don't declare an `info` parameter (`function transform(value)`) pay no extra
+cost for it: the engine inspects each transform's parameter count at compile time and skips
+building the info table or object when it isn't used.
 
 #### Parser engine details
 
@@ -161,9 +168,11 @@ export or report. Patching a downstream stage to "fix" timing usually masks an e
 
 The hotpath is designed around three rules:
 
-1. **No allocations after init.** `FrameBuilder` reuses one `Frame` object and one
-   `TimestampedFramePtr` per call, the parser engines are compiled once, and the
-   `CircularBuffer` and lock-free queues are pre-sized.
+1. **No allocations after init.** `FrameBuilder` reuses one `Frame` per source and draws
+   each `TimestampedFramePtr` from a fixed-size slot pool (`acquireFrame`); slots are
+   recycled via a custom shared_ptr deleter when the last consumer releases the frame.
+   Parser engines are compiled once, `CircularBuffer` and lock-free queues are pre-sized,
+   and per-source transform engines are looked up once per source switch (not per dataset).
 2. **No copies of the frame.** Every consumer holds the same `TimestampedFramePtr`; there is
    no second ownership layer.
 3. **No queued connections between main-thread objects.** Direct connections turn signal

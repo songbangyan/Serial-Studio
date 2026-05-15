@@ -255,19 +255,31 @@ static void tileSix(const QList<QQuickItem*>& wins, const TileEnv& env)
  */
 static void tileGrid(const QList<QQuickItem*>& wins, const TileEnv& env)
 {
-  // Compute grid dimensions based on aspect ratio
   const int n = wins.size();
+  if (n <= 0)
+    return;
+
+  // Clamp degenerate availW/availH to 1 -- 0 denominator -> qSqrt(inf) -> INT_MIN on int cast.
+  const double safeW = qMax(1, env.availW);
+  const double safeH = qMax(1, env.availH);
+
+  // Compute grid dimensions based on aspect ratio
   int cols, rows;
   if (env.isLandscape) {
-    cols = qCeil(qSqrt(static_cast<double>(n) * env.availW / env.availH));
+    cols = qCeil(qSqrt(static_cast<double>(n) * safeW / safeH));
+    cols = qBound(1, cols, n);
     rows = qCeil(static_cast<double>(n) / cols);
   } else {
-    rows = qCeil(qSqrt(static_cast<double>(n) * env.availH / env.availW));
+    rows = qCeil(qSqrt(static_cast<double>(n) * safeH / safeW));
+    rows = qBound(1, rows, n);
     cols = qCeil(static_cast<double>(n) / rows);
   }
 
-  // Ensure enough cells for all windows
-  while (cols * rows < n)
+  cols = qBound(1, cols, n);
+  rows = qBound(1, rows, n);
+
+  // Grow grid until cells >= n; 2*n bound guards against inputs escaping the clamps above.
+  for (int guard = 0; guard < 2 * n && cols * rows < n; ++guard)
     if (env.isLandscape)
       cols++;
     else
@@ -483,6 +495,14 @@ int UI::WindowManager::firstTileWindowId() const
     return -1;
 
   return m_windowOrder.first();
+}
+
+/**
+ * @brief Returns the current visual window order (front-to-back tile sequence).
+ */
+const QVector<int>& UI::WindowManager::windowOrder() const
+{
+  return m_windowOrder;
 }
 
 //--------------------------------------------------------------------------------------------------

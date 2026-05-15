@@ -117,8 +117,9 @@ Dashboard / CSV / MDF4 / API / gRPC / Sessions  (shared parsed frame)
 Timing is stamped at the driver boundary and preserved downstream. Do not re-stamp in
 export or report workers.
 
-- `IO::CapturedData` (`HAL_Driver.h`): `data` (`ByteArrayPtr`), `timestamp` (steady_clock),
-  `frameStep` (ns cadence), `logicalFramesHint`. `CapturedDataPtr` is the hotpath transport.
+- `IO::CapturedData` (`HAL_Driver.h`): `data` (`QByteArray`, inline COW — no second
+  `shared_ptr` indirection), `timestamp` (steady_clock), `frameStep` (ns cadence),
+  `logicalFramesHint`. `CapturedDataPtr` is the hotpath transport.
 - Drivers publish via `HAL_Driver::publishReceivedData(...)`. When cadence is known, fill
   `frameStep`; when backdatable (e.g. audio: `timestamp = now - step * (totalFrames - 1)`),
   do so. Never emit timing-free `QByteArray`.
@@ -258,9 +259,17 @@ of `app/src/DataModel/Frame.h` as `inline constexpr QLatin1StringView` (alias `K
   `transform` closure, so two datasets sharing the same Lua state don't clobber each other.
 - **JS isolation**: user code is wrapped in an IIFE at compile time so top-level `var`s are
   closure-scoped per dataset.
-- **Hotpath**: `applyTransform(sourceId, uniqueId, rawValue)` → `std::map::find` +
-  `lua_pcall` / `QJSValue::call`. Non-finite results are rejected (`[[unlikely]]` guarded)
-  and `rawValue` is returned.
+- **Hotpath**: `applyTransform(language, uniqueId, rawValue, info)` → cached per-source
+  engine pointer (`m_luaEngineForSource` / `m_jsEngineForSource`, refreshed on `sourceId`
+  change in `applyDatasetValues`; **no `std::map::find` per dataset per frame**) →
+  `lua_pcall` / `QJSValue::call`. Single-arg transforms skip the info table / object
+  allocation: `acceptsInfo` is detected at compile time via `lua_getinfo(">u")` (Lua) and
+  `function.length` (JS) and stored on the per-dataset ref.
+- **JS watchdog is frame-level**, not per-call. `applyDatasetValues` arms
+  `m_jsTransformWatchdog` once if a JS engine exists for the source, runs the dataset loop,
+  and disarms it. The 100 ms budget covers the whole frame's transforms collectively.
+  `applyTransformJs` no longer touches the timer.
+- Non-finite numeric results are rejected (`[[unlikely]]` guarded) and `rawValue` is returned.
 - **Editor**: `DatasetTransformEditor` prefills a multiline-comment placeholder when the
   dataset has no transform; `onApply` discards code that doesn't define `transform()` via
   `definesTransformFunction()` so the placeholder never persists.
@@ -345,6 +354,9 @@ the style sections below — don't restate.
 | Mixing workspace IDs with group IDs | Workspace IDs are ≥ 1000; `Taskbar::deleteWorkspace()` branches on that. |
 | Stamping `current_writer_version()` on every live `Frame::serialize` | Only project saves (`ProjectModel::serializeToJson`) carry version metadata. Live frames keep `schemaVersion = 0`. |
 | `Per-dataset transformCode` with a leftover placeholder | `DatasetTransformEditor::onApply` discards code that doesn't define `transform()`. |
+| `std::make_shared<DataModel::TimestampedFrame>(...)` directly on the FrameBuilder hotpath | Use `acquireFrame(src)` / `acquireFrame(src, ts)`. Direct `make_shared` bypasses the slot pool and brings back per-frame heap allocs. |
+| Treating `CapturedData::data` as a smart pointer (`*data->data`, `data->data->size()`, `if (!data->data)`) | It's a `QByteArray` now. Use `data->data`, `data->data.size()`, `data->data.isEmpty()`. The shared_ptr indirection was removed because `QByteArray` is already COW with atomic refcount. |
+| Per-call `m_jsTransformWatchdog.start()/stop()` inside `applyTransformJs` | The watchdog is armed once per frame in `applyDatasetValues`. Don't reintroduce per-call timer churn. |
 
 ## Code Style
 
@@ -474,8 +486,12 @@ Mission-critical telemetry. Hotpath violations are blockers.
 2. **Loops have fixed upper bounds.** External-data loops use explicit `kMaxIterations`.
    `while(true)` only with a provable termination invariant — document it.
 3. **No allocation after init on the hotpath.** No `new`/`make_shared`/`.append()` on the
-   dashboard path. `FrameBuilder` makes one `TimestampedFramePtr` per parsed frame and
-   shares it; don't add a second ownership layer. The perf-* advisories (`code-verify.py`)
+   dashboard path. `FrameBuilder::acquireFrame()` draws each `TimestampedFramePtr` from a
+   fixed-size slot pool (`kFramePoolSize = 1024`); the slot is recycled when the last
+   consumer drops the shared_ptr (custom deleter flips `inUse` to false). Don't bypass the
+   pool with a direct `std::make_shared<TimestampedFrame>(...)` on the hotpath — that
+   re-introduces a per-frame heap alloc. Pool exhaustion logs once and falls back to
+   `make_shared` so the producer never blocks. The perf-* advisories (`code-verify.py`)
    catch accidental hot-path allocation, regex construction, locking, logging, throwing,
    large by-value params, `shared_ptr` by-value, runtime divide/modulo, `pow()`,
    `dynamic_cast`, virtual calls, large stack buffers, false-sharing, recursion in hot loops.

@@ -648,9 +648,9 @@ QString MQTT::PublisherScriptEditor::runScript(const QString& code,
 
     QString out;
     if (lua_isstring(L, -1)) {
-      size_t len       = 0;
-      const char* data = lua_tolstring(L, -1, &len);
-      out              = QString::fromUtf8(data, static_cast<int>(len));
+      size_t len    = 0;
+      const char* d = lua_tolstring(L, -1, &len);
+      out           = QString::fromUtf8(d, static_cast<int>(len));
     } else if (lua_isnoneornil(L, -1)) {
       out = tr("(nil -- frame skipped)");
     } else {

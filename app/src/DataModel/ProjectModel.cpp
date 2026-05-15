@@ -4190,7 +4190,7 @@ void DataModel::ProjectModel::updateWorkspace(
         ws.title = title.simplified();
 
       if (setIcon)
-        ws.icon = icon;
+        ws.icon = SerialStudio::normalizeIconPath(icon);
 
       setModified(true);
       Q_EMIT editorWorkspacesChanged();

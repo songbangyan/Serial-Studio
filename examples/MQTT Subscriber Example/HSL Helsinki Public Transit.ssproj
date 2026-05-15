@@ -271,7 +271,6 @@
         "mode": 0,
         "mqttVersion": 2,
         "notificationTopic": "",
-        "password": "",
         "peerVerifyDepth": 10,
         "peerVerifyMode": 3,
         "port": 1883,
@@ -282,8 +281,7 @@
         "scriptTopic": "",
         "sslEnabled": false,
         "sslProtocol": 5,
-        "topicBase": "",
-        "username": ""
+        "topicBase": ""
     },
     "pointCount": 100,
     "schemaVersion": 2,
@@ -443,32 +441,32 @@
         "layout:5000": {
             "data": {
                 "autoLayout": true,
-                "canvasHeight": 567,
-                "canvasWidth": 1008,
+                "canvasHeight": 477,
+                "canvasWidth": 950,
                 "geometries": [
                     {
-                        "height": 559,
+                        "height": 469,
                         "id": 1,
                         "state": "normal",
-                        "width": 500,
+                        "width": 471,
                         "x": 4,
                         "y": 4
                     },
                     {
-                        "height": 280,
+                        "height": 235,
                         "id": 0,
                         "state": "normal",
-                        "width": 501,
-                        "x": 503,
+                        "width": 472,
+                        "x": 474,
                         "y": 4
                     },
                     {
-                        "height": 280,
+                        "height": 235,
                         "id": 2,
                         "state": "normal",
-                        "width": 501,
-                        "x": 503,
-                        "y": 283
+                        "width": 472,
+                        "x": 474,
+                        "y": 238
                     }
                 ],
                 "userReordered": true,

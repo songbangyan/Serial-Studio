@@ -1385,6 +1385,7 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
         cxx-function-too-long    function definition over 100 lines
         cxx-nesting-too-deep     control-flow nesting > 3 levels
         cxx-goto-or-jmp          goto / setjmp / longjmp
+        cxx-while-loop           `while (cond)` (use bounded `for` instead)
         doc-missing-brief-cpp    .cpp function definition without /** @brief */
         doc-missing-brief-h      header type-level definition without /** @brief */
         doc-verbose-brief        doxygen block carries @param/@return/blank-`*`
@@ -1447,6 +1448,32 @@ def _cpp_rules(src: bytes, path: Path, fence_mask: list[bool]) -> list[Finding]:
                     i,
                     "cxx-goto-or-jmp",
                     "`setjmp`/`longjmp` are banned (NASA P10 rule 1)",
+                )
+            )
+        # `while (...)` loop opener at the start of a stripped line. The
+        # leading `^\s*` anchor excludes the trailing `} while (cond);` of
+        # a do-while construct, which is allowed because the body always
+        # runs at least once and bounded loops use this form. Bare `while`
+        # is banned because the bound is implicit: nothing in the syntax
+        # forces the author to articulate a max iteration count, which is
+        # exactly the kind of bug that hid the WindowManager::tileGrid
+        # infinite loop (int overflow turned `cols * rows < n` permanently
+        # true and froze the GUI thread). Rewrite as
+        # `for (int guard = 0; guard < kMaxIterations && cond; ++guard)`
+        # so the bound is articulated and code review can audit it. Suppress
+        # with `// code-verify off` only when the bound is provably finite
+        # by the language (e.g. `while (queue.try_dequeue(item))` drains a
+        # finite queue, `while (it.hasNext())` walks a fixed collection).
+        if re.match(r"^\s*while\s*\(", scrubbed):
+            out.append(
+                Finding(
+                    i,
+                    "cxx-while-loop",
+                    "`while (...)` has no syntactically-visible upper bound -- "
+                    "prefer `for (int i = 0; i < kMax && cond; ++i)` "
+                    "(NASA P10 rule 2). Suppress with `// code-verify off` "
+                    "when the bound is provably finite (queue drain, fixed "
+                    "iterator walk, etc).",
                 )
             )
 

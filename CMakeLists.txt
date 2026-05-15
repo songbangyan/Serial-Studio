@@ -745,6 +745,27 @@ if(DEBUG_SANITIZER)
 endif()
 
 #---------------------------------------------------------------------------------------------------
+# Debug build usability -- disable MSVC checked iterators
+#---------------------------------------------------------------------------------------------------
+#
+# MSVC's debug STL ships with _ITERATOR_DEBUG_LEVEL=2 by default, which wraps every iterator
+# operation in a checked iterator. On the FrameReader / FrameBuilder / Dashboard hotpath this
+# turns each QMap / std::map / std::vector access into a bounds-checked tree walk and drops
+# throughput by an order of magnitude under Debug. Disabling the checks restores usable Debug
+# performance while leaving Q_ASSERT, debug symbols, and stepping intact.
+#
+# ABI consequence: every translation unit (including lib/) must agree on the iterator macros,
+# so these are project-wide compile definitions rather than per-target.
+#---------------------------------------------------------------------------------------------------
+
+if(MSVC)
+   add_compile_definitions(
+      $<$<CONFIG:Debug>:_ITERATOR_DEBUG_LEVEL=0>
+      $<$<CONFIG:Debug>:_HAS_ITERATOR_DEBUGGING=0>
+   )
+endif()
+
+#---------------------------------------------------------------------------------------------------
 # Profile-Guided Optimization (PGO)
 #---------------------------------------------------------------------------------------------------
 #

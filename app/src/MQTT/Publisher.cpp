@@ -233,8 +233,8 @@ void MQTT::PublisherWorker::processData()
     m_rawBatchBuffer.resize(0);
     TimestampedRawBytes item;
     while (m_rawQueue->try_dequeue(item))
-      if (item.data && item.data->data)
-        m_rawBatchBuffer += *item.data->data;
+      if (item.data && !item.data->data.isEmpty())
+        m_rawBatchBuffer += item.data->data;
 
     if (!m_rawBatchBuffer.isEmpty())
       publishAndCount(topic, m_rawBatchBuffer);
@@ -258,12 +258,12 @@ void MQTT::PublisherWorker::processData()
 
     TimestampedRawBytes item;
     while (m_frameQueueBytes->try_dequeue(item)) {
-      if (!item.data || !item.data->data)
+      if (!item.data || item.data->data.isEmpty())
         continue;
 
       QByteArray payload;
       QString error;
-      if (!m_script->run(*item.data->data, payload, error)) {
+      if (!m_script->run(item.data->data, payload, error)) {
         Q_EMIT scriptErrorOccurred(error);
         continue;
       }
@@ -1786,7 +1786,7 @@ void MQTT::Publisher::hotpathTxRawBytes(int deviceId, const IO::CapturedDataPtr&
   if (m_mode != static_cast<int>(Mode::RawRxData))
     return;
 
-  if (!data || !data->data || m_topicBase.isEmpty())
+  if (!data || data->data.isEmpty() || m_topicBase.isEmpty())
     return;
 
   TimestampedRawBytes item{deviceId, data};
@@ -1804,7 +1804,7 @@ void MQTT::Publisher::hotpathTxRawFrame(int deviceId, const IO::CapturedDataPtr&
   if (m_mode != static_cast<int>(Mode::ScriptDriven))
     return;
 
-  if (!data || !data->data || m_topicBase.isEmpty())
+  if (!data || data->data.isEmpty() || m_topicBase.isEmpty())
     return;
 
   TimestampedRawBytes item{deviceId, data};

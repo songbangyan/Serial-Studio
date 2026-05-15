@@ -229,7 +229,7 @@ If you need dataset B to consume dataset A's final value, make sure A comes befo
 
 ## Frame metadata: the second `frameInfo` argument
 
-Every transform also receives a second argument with metadata about the frame the value belongs to. Existing one-arg transforms keep working (both Lua and JavaScript silently ignore extra arguments).
+Every transform may declare a second argument with metadata about the frame the value belongs to. One-arg transforms (`function transform(value)`) keep working and pay no extra cost: the engine inspects each transform's parameter count at compile time and skips building the info table or object entirely when it isn't used.
 
 ```lua
 function transform(value, info)

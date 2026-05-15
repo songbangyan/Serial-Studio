@@ -22,6 +22,7 @@
 #include "IO/ConnectionManager.h"
 
 #include <QApplication>
+#include <QSignalBlocker>
 
 #include "API/Server.h"
 #include "AppState.h"
@@ -1034,6 +1035,8 @@ void IO::ConnectionManager::syncUiDriverToLive()
   if (!liveDriver || liveDriver == uiDriver)
     return;
 
+  // Block live-driver fan-out -- UI driver's configurationChanged still notifies downstream.
+  QSignalBlocker blocker(liveDriver);
   for (const auto& prop : uiDriver->driverProperties())
     liveDriver->setDriverProperty(prop.key, prop.value);
 }
@@ -1270,8 +1273,7 @@ void IO::ConnectionManager::onFrameReady(int deviceId, const IO::CapturedDataPtr
 {
   Q_ASSERT(deviceId >= 0);
   Q_ASSERT(frame);
-  Q_ASSERT(frame->data);
-  Q_ASSERT(!frame->data->isEmpty());
+  Q_ASSERT(!frame->data.isEmpty());
 
   if (m_paused)
     return;
@@ -1295,7 +1297,7 @@ void IO::ConnectionManager::onFrameReady(int deviceId, const IO::CapturedDataPtr
 void IO::ConnectionManager::onRawDataReceived(int deviceId, const IO::CapturedDataPtr& data)
 {
   Q_ASSERT(data);
-  Q_ASSERT(data->data);
+  Q_ASSERT(!data->data.isEmpty());
   Q_ASSERT(deviceId >= 0);
 
   if (m_paused)
@@ -1310,7 +1312,7 @@ void IO::ConnectionManager::onRawDataReceived(int deviceId, const IO::CapturedDa
 
   // Route incoming data to file transfer protocols
   if (fileTx.active()) [[unlikely]]
-    fileTx.onRawDataReceived(*data->data);
+    fileTx.onRawDataReceived(data->data);
 
 #ifdef BUILD_COMMERCIAL
   static auto& sqliteExport = Sessions::Export::instance();

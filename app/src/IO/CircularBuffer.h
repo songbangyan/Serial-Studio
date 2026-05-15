@@ -73,6 +73,8 @@ public:
   [[nodiscard]] T peek(qsizetype size) const;
   [[nodiscard]] T peekRange(qsizetype offset, qsizetype size) const;
 
+  void discard(qsizetype size);
+
   [[nodiscard]] int findPatternKMP(const T& pattern, const int pos = 0);
   [[nodiscard]] int findPatternKMP(const T& pattern,
                                    const std::vector<int>& lps,
@@ -99,6 +101,18 @@ public:
 
 private:
   [[nodiscard]] std::vector<int> computeKMPTable(const T& p) const;
+  [[nodiscard]] static int kmpScanLinear(const StorageType* base,
+                                         qsizetype current_size,
+                                         int pos,
+                                         const typename T::value_type* pData,
+                                         qsizetype pSize,
+                                         const std::vector<int>& lps);
+  [[nodiscard]] int kmpScanWrap(qsizetype current_size,
+                                int pos,
+                                qsizetype head,
+                                const typename T::value_type* pData,
+                                qsizetype pSize,
+                                const std::vector<int>& lps) const;
 
 private:
   static constexpr std::size_t kCacheLine = 64;
@@ -259,6 +273,23 @@ T IO::CircularBuffer<T, StorageType>::read(qsizetype size)
 }
 
 /**
+ * @brief Advances the read head by N bytes without copying. Cheaper than
+ *        read() when the caller already has the data (e.g. via peek).
+ */
+template<typename T, Concepts::ByteLike StorageType>
+void IO::CircularBuffer<T, StorageType>::discard(qsizetype size)
+{
+  const qsizetype current_size = this->size();
+  if (size <= 0 || current_size <= 0) [[unlikely]]
+    return;
+
+  const qsizetype toAdvance = std::min(size, current_size);
+  const qsizetype head      = m_head.load(std::memory_order_relaxed);
+  const qsizetype new_head  = (head + toAdvance) & m_capacityMask;
+  m_head.store(new_head, std::memory_order_release);
+}
+
+/**
  * @brief Retrieves data from the buffer without removing it.
  */
 template<typename T, Concepts::ByteLike StorageType>
@@ -317,28 +348,70 @@ int IO::CircularBuffer<T, StorageType>::findPatternKMP(const T& pattern,
     return -1;
 
   const qsizetype head = m_head.load(std::memory_order_acquire);
-  qsizetype bufferIdx  = (head + pos) & m_capacityMask;
+  const auto pSize     = pattern.size();
+  const auto* pData    = pattern.constData();
+
+  // Linear region fast path -- no wrap-around, scan with plain pointers (no mask).
+  if ((head + current_size) <= m_capacity) [[likely]]
+    return kmpScanLinear(m_buffer.data() + head, current_size, pos, pData, pSize, lps);
+
+  return kmpScanWrap(current_size, pos, head, pData, pSize, lps);
+}
+
+template<typename T, Concepts::ByteLike StorageType>
+int IO::CircularBuffer<T, StorageType>::kmpScanLinear(const StorageType* base,
+                                                      qsizetype current_size,
+                                                      int pos,
+                                                      const typename T::value_type* pData,
+                                                      qsizetype pSize,
+                                                      const std::vector<int>& lps)
+{
   int i = pos, j = 0;
-
   while (i < current_size) {
-    if (m_buffer[bufferIdx] == pattern[j]) {
-      i++;
-      j++;
-      bufferIdx = (bufferIdx + 1) & m_capacityMask;
-
-      if (j == pattern.size()) [[unlikely]] {
-        int matchStart = i - j;
-        return matchStart;
-      }
-    }
-
-    else if (j != 0) [[likely]]
+    if (base[i] == static_cast<StorageType>(pData[j])) {
+      ++i;
+      ++j;
+    } else if (j != 0) [[likely]] {
       j = lps[j - 1];
-
-    else {
-      i++;
-      bufferIdx = (bufferIdx + 1) & m_capacityMask;
+      continue;
+    } else {
+      ++i;
+      continue;
     }
+
+    if (j == pSize) [[unlikely]]
+      return i - j;
+  }
+
+  return -1;
+}
+
+template<typename T, Concepts::ByteLike StorageType>
+int IO::CircularBuffer<T, StorageType>::kmpScanWrap(qsizetype current_size,
+                                                    int pos,
+                                                    qsizetype head,
+                                                    const typename T::value_type* pData,
+                                                    qsizetype pSize,
+                                                    const std::vector<int>& lps) const
+{
+  qsizetype bufferIdx = (head + pos) & m_capacityMask;
+  int i = pos, j = 0;
+  while (i < current_size) {
+    if (m_buffer[bufferIdx] == static_cast<StorageType>(pData[j])) {
+      ++i;
+      ++j;
+      bufferIdx = (bufferIdx + 1) & m_capacityMask;
+    } else if (j != 0) [[likely]] {
+      j = lps[j - 1];
+      continue;
+    } else {
+      ++i;
+      bufferIdx = (bufferIdx + 1) & m_capacityMask;
+      continue;
+    }
+
+    if (j == pSize) [[unlikely]]
+      return i - j;
   }
 
   return -1;
@@ -409,25 +482,43 @@ typename IO::CircularBuffer<T, StorageType>::MultiMatchResult IO::CircularBuffer
   const qsizetype mask    = m_capacityMask;
   const qsizetype scanEnd = bufSize - minLen + 1;
 
-  auto matchesAt = [&](qsizetype i, int p) -> bool {
-    const auto pLen   = info[p].len;
-    const auto* pData = info[p].data;
-    for (qsizetype j = 0; j < pLen; ++j)
-      if (m_buffer[(head + i + j) & mask] != pData[j])
-        return false;
-
-    return true;
-  };
-
-  for (qsizetype i = 0; i < scanEnd; ++i) {
+  auto matchAt = [&](qsizetype i, auto byteAt) -> int {
     for (int p = 0; p < patCount; ++p) {
-      if (i + info[p].len > bufSize)
+      const auto pLen = info[p].len;
+      if (i + pLen > bufSize)
         continue;
 
-      if (matchesAt(i, p))
-        return {static_cast<int>(i), p};
+      const auto* pData = info[p].data;
+      bool match        = true;
+      for (qsizetype j = 0; j < pLen; ++j)
+        if (byteAt(i + j) != pData[j]) {
+          match = false;
+          break;
+        }
+
+      if (match)
+        return p;
     }
+
+    return -1;
+  };
+
+  auto scan = [&](auto byteAt) -> MultiMatchResult {
+    for (qsizetype i = 0; i < scanEnd; ++i) {
+      const int hit = matchAt(i, byteAt);
+      if (hit >= 0)
+        return {static_cast<int>(i), hit};
+    }
+
+    return {};
+  };
+
+  // Linear region fast path -- pointer scan, no mask per byte.
+  if ((head + bufSize) <= m_capacity) [[likely]] {
+    const StorageType* base = m_buffer.data() + head;
+    return scan([base](qsizetype k) { return base[k]; });
   }
 
-  return {};
+  // Wrap-around path -- mask per byte
+  return scan([this, head, mask](qsizetype k) { return m_buffer[(head + k) & mask]; });
 }

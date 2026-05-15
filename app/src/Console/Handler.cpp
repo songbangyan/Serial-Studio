@@ -787,23 +787,23 @@ void Console::Handler::displayDebugData(const QString& data)
 /**
  * @brief Displays raw data from the playback path (no device routing).
  */
-void Console::Handler::hotpathRxData(const IO::ByteArrayPtr& data)
+void Console::Handler::hotpathRxData(const QByteArray& data)
 {
-  if (!data)
+  if (data.isEmpty())
     return;
 
-  append(dataToString(*data), showTimestamp());
+  append(dataToString(data), showTimestamp());
 }
 
 /**
  * @brief Routes incoming raw data to the per-device console buffer.
  */
-void Console::Handler::hotpathRxDeviceData(int deviceId, const IO::ByteArrayPtr& data)
+void Console::Handler::hotpathRxDeviceData(int deviceId, const QByteArray& data)
 {
-  if (!data)
+  if (data.isEmpty())
     return;
 
-  const auto str = dataToString(*data);
+  const auto str = dataToString(data);
   if (str.isEmpty())
     return;
 

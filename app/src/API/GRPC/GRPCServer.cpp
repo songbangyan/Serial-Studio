@@ -336,9 +336,9 @@ void API::GRPC::GRPCServer::hotpathTxFrame(const DataModel::TimestampedFramePtr&
 /**
  * @brief Enqueues raw device data for background writing to gRPC clients.
  */
-void API::GRPC::GRPCServer::hotpathTxData(const IO::ByteArrayPtr& data)
+void API::GRPC::GRPCServer::hotpathTxData(const QByteArray& data)
 {
-  if (!m_enabled || !data || data->isEmpty())
+  if (!m_enabled || data.isEmpty())
     return;
 
   m_rawQueue.try_enqueue(data);
@@ -505,11 +505,11 @@ void API::GRPC::GRPCServer::writerLoop()
     // Drain all queued raw data into a single RawBatch
     {
       serialstudio::RawBatch batch;
-      IO::ByteArrayPtr data;
+      QByteArray data;
       while (m_rawQueue.try_dequeue(data)) {
         did_work = true;
         auto* rd = batch.add_packets();
-        rd->set_data(data->constData(), data->size());
+        rd->set_data(data.constData(), data.size());
         rd->set_timestamp_ms(std::chrono::duration_cast<std::chrono::milliseconds>(
                                std::chrono::steady_clock::now().time_since_epoch())
                                .count());

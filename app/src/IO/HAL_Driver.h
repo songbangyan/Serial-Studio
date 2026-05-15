@@ -62,18 +62,13 @@ struct DriverProperty {
 };
 
 /**
- * @brief Shared immutable byte buffer.
- */
-typedef std::shared_ptr<const QByteArray> ByteArrayPtr;
-
-/**
  * @brief Represents a block of acquired raw data and its timing metadata.
  */
 struct CapturedData {
   using SteadyClock     = std::chrono::steady_clock;
   using SteadyTimePoint = SteadyClock::time_point;
 
-  IO::ByteArrayPtr data;
+  QByteArray data;
   SteadyTimePoint timestamp;
   std::chrono::nanoseconds frameStep = std::chrono::nanoseconds(1);
   qsizetype logicalFramesHint        = 0;
@@ -85,16 +80,6 @@ struct CapturedData {
  */
 typedef std::shared_ptr<const CapturedData> CapturedDataPtr;
 
-[[nodiscard]] inline ByteArrayPtr makeByteArray(const QByteArray& data) noexcept
-{
-  return std::make_shared<const QByteArray>(data);
-}
-
-[[nodiscard]] inline ByteArrayPtr makeByteArray(QByteArray&& data) noexcept
-{
-  return std::make_shared<const QByteArray>(std::move(data));
-}
-
 [[nodiscard]] inline CapturedDataPtr makeCapturedData(
   const QByteArray& data,
   CapturedData::SteadyTimePoint timestamp = CapturedData::SteadyClock::now(),
@@ -102,7 +87,7 @@ typedef std::shared_ptr<const CapturedData> CapturedDataPtr;
   qsizetype logicalFramesHint             = 0) noexcept
 {
   auto captured               = std::make_shared<CapturedData>();
-  captured->data              = makeByteArray(data);
+  captured->data              = data;
   captured->timestamp         = timestamp;
   captured->frameStep         = std::max(std::chrono::nanoseconds(1), frameStep);
   captured->logicalFramesHint = logicalFramesHint;
@@ -116,7 +101,7 @@ typedef std::shared_ptr<const CapturedData> CapturedDataPtr;
   qsizetype logicalFramesHint             = 0) noexcept
 {
   auto captured               = std::make_shared<CapturedData>();
-  captured->data              = makeByteArray(std::move(data));
+  captured->data              = std::move(data);
   captured->timestamp         = timestamp;
   captured->frameStep         = std::max(std::chrono::nanoseconds(1), frameStep);
   captured->logicalFramesHint = logicalFramesHint;

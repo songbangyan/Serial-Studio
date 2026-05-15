@@ -798,6 +798,27 @@ QString SerialStudio::escapeControlCharacters(const QString& str)
   return result;
 }
 
+/**
+ * @brief Rewrites legacy qrc:/rcc/... icon paths into the canonical qrc:/... form.
+ */
+QString SerialStudio::normalizeIconPath(const QString& path)
+{
+  if (path.isEmpty())
+    return path;
+
+  // Rewrite legacy qrc:/rcc/... paths to the current resource root.
+  if (path.startsWith(QStringLiteral("qrc:/rcc/")))
+    return QStringLiteral("qrc:/") + path.mid(9);
+
+  if (path.startsWith(QStringLiteral("qrc:///rcc/")))
+    return QStringLiteral("qrc:///") + path.mid(11);
+
+  if (path.startsWith(QStringLiteral(":/rcc/")))
+    return QStringLiteral(":/") + path.mid(6);
+
+  return path;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Text encoding helpers
 //--------------------------------------------------------------------------------------------------

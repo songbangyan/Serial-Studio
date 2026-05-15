@@ -94,7 +94,7 @@ public:
 public slots:
   void setEnabled(const bool enabled);
   void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
-  void hotpathTxData(const IO::ByteArrayPtr& data);
+  void hotpathTxData(const QByteArray& data);
 
   void exportProto(const QString& filePath);
 
@@ -121,7 +121,7 @@ private:
   std::thread m_writerThread;
 
   moodycamel::ReaderWriterQueue<DataModel::TimestampedFramePtr> m_frameQueue;
-  moodycamel::ReaderWriterQueue<IO::ByteArrayPtr> m_rawQueue;
+  moodycamel::ReaderWriterQueue<QByteArray> m_rawQueue;
 
   std::mutex m_frameStreamsMutex;
   std::vector<std::shared_ptr<FrameStreamContext>> m_frameStreams;

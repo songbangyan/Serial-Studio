@@ -55,7 +55,7 @@ void IO::FrameReader::processData(const CapturedDataPtr& data)
   Q_ASSERT(m_checksumLength >= 0);
 
   // Validate input
-  if (!data || !data->data || data->data->isEmpty())
+  if (!data || data->data.isEmpty())
     return;
 
   // ConsoleOnly mode skips frame extraction
@@ -119,16 +119,16 @@ void IO::FrameReader::processData(const CapturedDataPtr& data)
 void IO::FrameReader::appendChunk(const CapturedDataPtr& data)
 {
   Q_ASSERT(data);
-  Q_ASSERT(data->data);
+  Q_ASSERT(!data->data.isEmpty());
 
   // CircularBuffer is pre-sized SPSC; append is memcpy
   // code-verify off
-  m_circularBuffer.append(*data->data);
+  m_circularBuffer.append(data->data);
   // code-verify on
 
   PendingChunk chunk;
   chunk.chunk              = data;
-  chunk.bytesRemaining     = data->data->size();
+  chunk.bytesRemaining     = data->data.size();
   chunk.nextFrameTimestamp = data->timestamp;
   chunk.frameStep          = std::max(std::chrono::nanoseconds(1), data->frameStep);
   // per-chunk timing record; deque only grows by 1 per chunk
@@ -164,7 +164,7 @@ void IO::FrameReader::consumeBytes(qsizetype size)
   if (size <= 0)
     return;
 
-  (void)m_circularBuffer.read(size);
+  m_circularBuffer.discard(size);
   discardPendingBytes(size);
 }
 
@@ -277,17 +277,17 @@ void IO::FrameReader::readEndDelimitedFrames()
   while (iterations < kMaxFramesPerCall) {
     ++iterations;
 
-    int endIndex = -1;
-    QByteArray delimiter;
+    int endIndex                = -1;
+    const QByteArray* delimiter = nullptr;
 
     if (m_finishSequences.size() == 1) [[likely]] {
       endIndex  = m_circularBuffer.findPatternKMP(m_finishSequences[0], m_finishSequenceLps[0]);
-      delimiter = m_finishSequences[0];
+      delimiter = &m_finishSequences[0];
     } else {
       const auto match = m_circularBuffer.findFirstOfPatterns(m_finishSequences);
       if (match.position >= 0) {
         endIndex  = match.position;
-        delimiter = m_finishSequences[match.patternIndex];
+        delimiter = &m_finishSequences[match.patternIndex];
       }
     }
 
@@ -295,7 +295,7 @@ void IO::FrameReader::readEndDelimitedFrames()
       break;
 
     auto frame             = m_circularBuffer.peek(endIndex);
-    const auto crcPosition = endIndex + delimiter.size();
+    const auto crcPosition = endIndex + delimiter->size();
     const auto frameEndPos = crcPosition + m_checksumLength;
     if (frame.isEmpty()) {
       consumeBytes(frameEndPos);

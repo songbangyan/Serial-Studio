@@ -63,7 +63,7 @@ public slots:
   void closeResources() override;
   void addSocket(QTcpSocket* socket);
   void removeSocket(QTcpSocket* socket);
-  void writeRawData(const IO::ByteArrayPtr& data);
+  void writeRawData(const QByteArray& data);
   void broadcastEvent(const QJsonObject& event);
   void writeToSocket(QTcpSocket* socket, const QByteArray& data);
   void disconnectSocket(QTcpSocket* socket);
@@ -122,7 +122,7 @@ public slots:
   void removeConnection();
   void setEnabled(const bool enabled);
   void setExternalConnections(const bool enabled);
-  void hotpathTxData(const IO::ByteArrayPtr& data);
+  void hotpathTxData(const QByteArray& data);
   void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
   void broadcastLifecycleEvent(const QString& eventName);
 

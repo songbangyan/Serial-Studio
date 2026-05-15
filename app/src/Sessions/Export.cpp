@@ -526,8 +526,7 @@ void Sessions::ExportWorker::writeRawBytes()
     m_rawBytesQuery->bindValue(0, m_sessionId);
     m_rawBytesQuery->bindValue(1, ns);
     m_rawBytesQuery->bindValue(2, entry.deviceId);
-    m_rawBytesQuery->bindValue(3,
-                               entry.data && entry.data->data ? *entry.data->data : QByteArray());
+    m_rawBytesQuery->bindValue(3, entry.data ? entry.data->data : QByteArray());
 
     if (!m_rawBytesQuery->exec()) [[unlikely]]
       qWarning() << "[SQLite] Insert raw_bytes failed:" << m_rawBytesQuery->lastError().text();

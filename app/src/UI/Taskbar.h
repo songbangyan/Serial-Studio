@@ -24,6 +24,7 @@
 #include <QObject>
 #include <QQuickItem>
 #include <QStandardItemModel>
+#include <QTimer>
 #include <QVariantList>
 #include <QVector>
 
@@ -181,10 +182,12 @@ private slots:
   void onBatchUpdateCompleted();
   void onWidgetCreated(UI::WidgetID id, const UI::WidgetInfo& info);
   void onWidgetDestroyed(UI::WidgetID id);
+  void onFocusCycleTick();
 
 private:
   void rebuildModel();
   void connectToRegistry();
+  void startFocusCycle();
   void mapWidgetToWindow(UI::WidgetID wid, int windowId);
   void cloneSpecialOverviewRow(int widgetType);
   void populateTaskbarFromWorkspace(int groupId);
@@ -230,6 +233,9 @@ private:
   UI::WindowManager* m_windowManager;
   QMap<QQuickItem*, int> m_windowIDs;
   QMap<QQuickItem*, QMetaObject::Connection> m_windowConnections;
+
+  QTimer m_focusCycleTimer;
+  QVector<QQuickItem*> m_focusCycleQueue;
 
   QMap<UI::WidgetID, int> m_widgetIdToWindowId;
   QMap<int, UI::WidgetID> m_windowIdToWidgetId;

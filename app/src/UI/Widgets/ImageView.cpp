@@ -73,12 +73,12 @@ void Widgets::ImageFrameReader::processData(const IO::CapturedDataPtr& data)
   Q_ASSERT(data != nullptr);
   Q_ASSERT(m_mode == DetectionMode::Autodetect || m_mode == DetectionMode::Manual);
 
-  if (!data || !data->data || data->data->isEmpty())
+  if (!data || data->data.isEmpty())
     return;
 
   // image accumulator; QByteArray amortizes growth
   // code-verify off
-  m_accumulator.append(*data->data);
+  m_accumulator.append(data->data);
   // code-verify on
 
   if (m_mode == DetectionMode::Autodetect)

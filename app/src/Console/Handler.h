@@ -252,8 +252,8 @@ public slots:
   void displaySentData(QByteArrayView data);
   void displaySentData(int deviceId, QByteArrayView data);
   void displayDebugData(const QString& data);
-  void hotpathRxData(const IO::ByteArrayPtr& data);
-  void hotpathRxDeviceData(int deviceId, const IO::ByteArrayPtr& data);
+  void hotpathRxData(const QByteArray& data);
+  void hotpathRxDeviceData(int deviceId, const QByteArray& data);
 
 private slots:
   void updateFont();

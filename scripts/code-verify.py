@@ -1715,6 +1715,16 @@ _ADVISORY_KINDS = frozenset(
         "cxx-function-too-long",
         "cxx-nesting-too-deep",
         "cxx-anonymous-namespace",
+        # `while (cond)` has no syntactically-visible upper bound. NASA P10
+        # rule 2 requires every loop to articulate one. We shipped a hard
+        # GUI-thread freeze in WindowManager::tileGrid (May 2026) when
+        # `while (cols * rows < n)` wrapped around on int overflow -- the
+        # bound was implicit, the overflow was missed in review, the loop
+        # never terminated. Audit-only until the existing ~300 occurrences
+        # are migrated to `for (int i = 0; i < kMax && cond; ++i)` or
+        # explicitly fenced with `// code-verify off` once their bound is
+        # documented in a comment.
+        "cxx-while-loop",
         "qt-missing-nodiscard",
         "doc-missing-brief-cpp",
         "doc-missing-brief-h",
@@ -1884,6 +1894,19 @@ the kinds below are short labels.
 - `cxx-anonymous-namespace` — helpers/types/variables defined inside
   `namespace { ... }`. See "Anonymous-namespace helpers" below for why
   this is a problem and what the alternatives are.
+- `cxx-while-loop` — `while (cond)` opener. NASA P10 rule 2 requires
+  every loop to declare a fixed upper bound; `while` makes the bound
+  implicit. Real bug shipped May 2026 in `WindowManager::tileGrid`:
+  `while (cols * rows < n)` wrapped on signed-int overflow when the
+  canvas was 0-sized mid-resize, the product turned permanently
+  negative, and the GUI thread froze — no probe timer fired, no
+  debugger available, hard kill required. Rewrite as
+  `for (int i = 0; i < kMaxIterations && cond; ++i)` so the bound is
+  named and reviewable. Suppress with `// code-verify off` when the
+  bound is provably finite by construction (`while (queue.try_dequeue(x))`
+  drains a finite SPSC queue; `while (it.hasNext())` walks a fixed
+  collection). Do-while (`} while (cond);`) is exempt — the trailing
+  `while` is the loop closer, not a fresh opener.
 - `qt-missing-nodiscard` — non-void const member function in a header
   without `[[nodiscard]]`.
 - `doc-missing-brief-cpp` — `.cpp` function definition without a

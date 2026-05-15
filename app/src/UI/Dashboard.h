@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QFont>
+#include <QHash>
 #include <QObject>
 #include <QSettings>
 
@@ -263,7 +264,7 @@ private:
   SerialStudio::WidgetMap m_widgetMap;
   QMap<int, DataModel::Dataset> m_datasets;
 
-  QMap<int, QVector<DataModel::Dataset*>> m_datasetReferences;
+  QHash<int, QVector<DataModel::Dataset*>> m_datasetReferences;
   QMap<SerialStudio::DashboardWidget, QVector<DataModel::Group>> m_widgetGroups;
   QMap<SerialStudio::DashboardWidget, QVector<DataModel::Dataset>> m_widgetDatasets;
 

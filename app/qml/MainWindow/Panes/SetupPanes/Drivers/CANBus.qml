@@ -179,61 +179,53 @@ Item {
         model: Cpp_IO_CANBus.bitrateList
         visible: Cpp_IO_CANBus.interfaceList.length > 0
 
-        property bool _initializing: true
+        //
+        // _updating brackets internal writes so QML->C++ handlers can distinguish user input from echoes.
+        //
+        property bool _updating: true
 
         validator: IntValidator { bottom: 1 }
 
-        Component.onCompleted: {
-          Qt.callLater(() => {
-            const current = String(Cpp_IO_CANBus.bitrate)
-            const rates = Cpp_IO_CANBus.bitrateList
-
-            const idx = rates.indexOf(current)
-            if (idx !== -1) {
-              _bitrateCombo.currentIndex = idx
-            } else {
-              _bitrateCombo.currentIndex = -1
-              _bitrateCombo.editText = current
-            }
-
-            _initializing = false
-          })
+        function syncFromDriver() {
+          _updating = true
+          const current = String(Cpp_IO_CANBus.bitrate)
+          const rates = Cpp_IO_CANBus.bitrateList
+          const idx = rates.indexOf(current)
+          if (idx !== -1) {
+            _bitrateCombo.currentIndex = idx
+            _bitrateCombo.editText = current
+          } else {
+            _bitrateCombo.currentIndex = -1
+            _bitrateCombo.editText = current
+          }
+          _updating = false
         }
+
+        Component.onCompleted: Qt.callLater(syncFromDriver)
 
         Connections {
           target: Cpp_IO_CANBus
           function onBitrateChanged() {
-            if (!_bitrateCombo._initializing) {
-              const current = String(Cpp_IO_CANBus.bitrate)
-              const rates = Cpp_IO_CANBus.bitrateList
-              const idx = rates.indexOf(current)
-              if (idx !== -1 && idx !== _bitrateCombo.currentIndex) {
-                _bitrateCombo.currentIndex = idx
-              } else if (idx === -1) {
-                _bitrateCombo.editText = current
-              }
-            }
+            _bitrateCombo.syncFromDriver()
           }
         }
 
         onEditTextChanged: {
-          if (!_initializing) {
-            const value = parseInt(editText)
-            if (!isNaN(value) && value > 0) {
-              if (Cpp_IO_CANBus.bitrate !== value)
-                Cpp_IO_CANBus.bitrate = value
-            }
-          }
+          if (_updating)
+            return
+
+          const value = parseInt(editText)
+          if (!isNaN(value) && value > 0 && Cpp_IO_CANBus.bitrate !== value)
+            Cpp_IO_CANBus.bitrate = value
         }
 
         onCurrentIndexChanged: {
-          if (!_initializing && currentIndex >= 0 && currentIndex < model.length) {
-            const value = parseInt(model[currentIndex])
-            if (!isNaN(value) && Cpp_IO_CANBus.bitrate !== value) {
-              Cpp_IO_CANBus.bitrate = value
-              editText = String(value)
-            }
-          }
+          if (_updating || currentIndex < 0 || currentIndex >= model.length)
+            return
+
+          const value = parseInt(model[currentIndex])
+          if (!isNaN(value) && Cpp_IO_CANBus.bitrate !== value)
+            Cpp_IO_CANBus.bitrate = value
         }
       }
 
