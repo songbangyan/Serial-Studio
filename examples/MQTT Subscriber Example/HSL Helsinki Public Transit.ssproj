@@ -299,11 +299,11 @@
                 "hostname": "mqtt.hsl.fi",
                 "keepAlive": 60,
                 "mqttVersion": 2,
-                "password": "everyone",
+                "password": "",
                 "port": 1883,
                 "sslEnabled": false,
                 "topicFilter": "/hfp/v2/journey/ongoing/vp/#",
-                "username": "everyone"
+                "username": ""
             },
             "decoder": 0,
             "decoderMethod": 0,
@@ -319,7 +319,8 @@
     "title": "HSL Helsinki Public Transit",
     "widgetSettings": {
         "5:0:-1": {
-            "autoCenter": true
+            "autoCenter": true,
+            "mapType": 0
         },
         "activeGroup": 1001,
         "layout:1000": {
