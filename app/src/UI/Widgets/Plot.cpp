@@ -359,7 +359,7 @@ void Widgets::Plot::updateInterpolatedData()
 
   if (m_interpolationMode == SerialStudio::InterpolationStem) {
     constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
-    const double base     = m_minY;
+    const double base     = (m_minY < 0.0 && m_maxY > 0.0) ? 0.0 : m_minY;
 
     m_renderData.resize(3 * n);
     QPointF* out      = m_renderData.data();

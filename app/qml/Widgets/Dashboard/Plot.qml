@@ -131,9 +131,11 @@ Item {
           root.model.draw(upperSeries)
 
           if (root.showAreaUnderPlot) {
+            const baseline = (root.model.minY < 0 && root.model.maxY > 0)
+                             ? 0 : root.model.minY
             lowerSeries.clear()
-            lowerSeries.append(root.model.minX, root.model.minY)
-            lowerSeries.append(root.model.maxX, root.model.minY)
+            lowerSeries.append(root.model.minX, baseline)
+            lowerSeries.append(root.model.maxX, baseline)
           }
         }
       }
