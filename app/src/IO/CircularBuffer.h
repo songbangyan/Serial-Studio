@@ -180,8 +180,8 @@ void IO::CircularBuffer<T, StorageType>::append(const T& data)
 
   qsizetype copySize = dataSize;
   if (copySize > m_capacity) [[unlikely]] {
-    src += (copySize - m_capacity);
-    copySize = m_capacity;
+    src      += (copySize - m_capacity);
+    copySize  = m_capacity;
     m_overflowCount.fetch_add(dataSize - m_capacity, std::memory_order_relaxed);
   }
 

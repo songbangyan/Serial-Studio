@@ -812,7 +812,7 @@ void IO::Drivers::USB::collectEndpoint(const libusb_endpoint_descriptor& ep,
   info.interfaceNumber = ifNum;
   const QString epHex  = QString::number(ep.bEndpointAddress, 16).toUpper().rightJustified(2, '0');
   // code-verify off
-  info.label = QStringLiteral("EP 0x%1 – %2 %3  (IF%4, max %5 B)")
+  info.label           = QStringLiteral("EP 0x%1 – %2 %3  (IF%4, max %5 B)")
                  .arg(epHex, typeStr, dirStr)
                  .arg(ifNum)
                  .arg(ep.wMaxPacketSize);

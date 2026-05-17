@@ -31,10 +31,41 @@
 #include <QtMath>
 #include <QUrl>
 
+#include "UI/Dashboard.h"
 #include "UI/Taskbar.h"
 #include "UI/UISessionRegistry.h"
 
 namespace detail {
+
+/**
+ * @brief Stable (widgetType, relativeIndex) identity used as the on-disk key
+ *        for saved layouts.
+ */
+struct StableKey {
+  int widgetType    = -1;
+  int relativeIndex = -1;
+
+  /**
+   * @brief Whether the key references a real widget.
+   */
+  [[nodiscard]] bool isValid() const { return widgetType >= 0 && relativeIndex >= 0; }
+
+  /**
+   * @brief Value equality on the (widgetType, relativeIndex) pair.
+   */
+  [[nodiscard]] bool operator==(const StableKey& other) const
+  {
+    return widgetType == other.widgetType && relativeIndex == other.relativeIndex;
+  }
+};
+
+/**
+ * @brief QHash hook for StableKey so it can index QHash<StableKey, int>.
+ */
+[[nodiscard]] inline size_t qHash(const StableKey& k, size_t seed = 0) noexcept
+{
+  return ::qHashMulti(seed, k.widgetType, k.relativeIndex);
+}
 
 /**
  * @brief Tiling environment shared by every per-count auto-layout helper.
@@ -49,7 +80,74 @@ struct TileEnv {
 
 }  // namespace detail
 
+using detail::StableKey;
 using detail::TileEnv;
+
+/**
+ * @brief Builds a (widgetType, relativeIndex) -> windowId map from the live
+ *        Dashboard widget map.
+ */
+[[nodiscard]] static QHash<StableKey, int> buildStableKeyToWindowId()
+{
+  QHash<StableKey, int> out;
+  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  out.reserve(widgetMap.size());
+  for (auto it = widgetMap.cbegin(); it != widgetMap.cend(); ++it) {
+    const StableKey key{static_cast<int>(it.value().first), it.value().second};
+    out.insert(key, it.key());
+  }
+  return out;
+}
+
+/**
+ * @brief Reads the stable key from a serialized geometry entry. Returns an
+ *        invalid key for legacy entries that only carry the windowId.
+ */
+[[nodiscard]] static StableKey readStableKey(const QJsonObject& entry)
+{
+  if (!entry.contains("widgetType") || !entry.contains("relativeIndex"))
+    return {};
+
+  return {entry["widgetType"].toInt(-1), entry["relativeIndex"].toInt(-1)};
+}
+
+/**
+ * @brief Resolves a serialized geometry/order entry to the current session's
+ *        windowId, preferring the stable key over the legacy integer.
+ */
+[[nodiscard]] static int resolveSavedWindowId(const QJsonObject& entry,
+                                              const QHash<StableKey, int>& lookup,
+                                              const QMap<int, QQuickItem*>& liveWindows)
+{
+  const StableKey key = readStableKey(entry);
+  if (key.isValid()) {
+    const auto it = lookup.constFind(key);
+    if (it != lookup.cend())
+      return it.value();
+
+    return -1;
+  }
+
+  const int legacyId = entry.value("id").toInt(-1);
+  if (legacyId >= 0 && liveWindows.contains(legacyId))
+    return legacyId;
+
+  return -1;
+}
+
+/**
+ * @brief Returns the (widgetType, relativeIndex) identity for the given live
+ *        windowId, or an invalid key when the windowId is unknown.
+ */
+[[nodiscard]] static StableKey stableKeyForWindowId(int windowId)
+{
+  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  const auto it         = widgetMap.constFind(windowId);
+  if (it == widgetMap.cend())
+    return {};
+
+  return {static_cast<int>(it.value().first), it.value().second};
+}
 
 /**
  * @brief Returns the manual-mode snap rectangle for the dragged window's edges.
@@ -303,16 +401,16 @@ static void tileGrid(const QList<QQuickItem*>& wins, const TileEnv& env)
 
   int runningX = env.margin;
   for (int c = 0; c < cols; ++c) {
-    colWidths[c] = baseCellW + (c < extraW ? 1 : 0);
-    colXs[c]     = runningX;
-    runningX += colWidths[c] + env.spacing;
+    colWidths[c]  = baseCellW + (c < extraW ? 1 : 0);
+    colXs[c]      = runningX;
+    runningX     += colWidths[c] + env.spacing;
   }
 
   int runningY = env.margin;
   for (int r = 0; r < rows; ++r) {
-    rowHeights[r] = baseCellH + (r < extraH ? 1 : 0);
-    rowYs[r]      = runningY;
-    runningY += rowHeights[r] + env.spacing;
+    rowHeights[r]  = baseCellH + (r < extraH ? 1 : 0);
+    rowYs[r]       = runningY;
+    runningY      += rowHeights[r] + env.spacing;
   }
 
   // Stretch partial last row to fill full width
@@ -331,9 +429,9 @@ static void tileGrid(const QList<QQuickItem*>& wins, const TileEnv& env)
 
     int runningLastX = env.margin;
     for (int c = 0; c < windowsInLastRow; ++c) {
-      lastRowWidths[c] = baseLastW + (c < extraLastW ? 1 : 0);
-      lastRowXs[c]     = runningLastX;
-      runningLastX += lastRowWidths[c] + env.spacing;
+      lastRowWidths[c]  = baseLastW + (c < extraLastW ? 1 : 0);
+      lastRowXs[c]      = runningLastX;
+      runningLastX     += lastRowWidths[c] + env.spacing;
     }
   }
 
@@ -514,13 +612,15 @@ const QVector<int>& UI::WindowManager::windowOrder() const
  */
 QJsonObject UI::WindowManager::serializeLayout() const
 {
-  // Always capture geometries (caches positions for auto->manual flips)
+  // Each entry carries the stable (widgetType, relativeIndex) key and a legacy id
   QJsonObject layout;
   QJsonArray geometries;
   for (int id : m_windowOrder) {
     auto* win = m_windows.value(id);
     if (!win)
       continue;
+
+    const StableKey key = stableKeyForWindowId(id);
 
     QJsonObject winGeom;
     winGeom["id"]     = id;
@@ -529,6 +629,10 @@ QJsonObject UI::WindowManager::serializeLayout() const
     winGeom["width"]  = win->width();
     winGeom["height"] = win->height();
     winGeom["state"]  = win->state();
+    if (key.isValid()) {
+      winGeom["widgetType"]    = key.widgetType;
+      winGeom["relativeIndex"] = key.relativeIndex;
+    }
     geometries.append(winGeom);
   }
 
@@ -538,16 +642,105 @@ QJsonObject UI::WindowManager::serializeLayout() const
   layout["canvasWidth"]  = static_cast<int>(width());
   layout["canvasHeight"] = static_cast<int>(height());
 
-  // Save window order and layout mode
+  // windowOrder = legacy integer array; windowOrderTyped = authoritative stable form
   QJsonArray orderArray;
-  for (int id : m_windowOrder)
+  QJsonArray orderTypedArray;
+  for (int id : m_windowOrder) {
     orderArray.append(id);
 
-  layout["windowOrder"]   = orderArray;
-  layout["autoLayout"]    = m_autoLayoutEnabled;
-  layout["userReordered"] = m_userReordered;
+    const StableKey key = stableKeyForWindowId(id);
+    if (!key.isValid())
+      continue;
+
+    QJsonObject entry;
+    entry["widgetType"]    = key.widgetType;
+    entry["relativeIndex"] = key.relativeIndex;
+    orderTypedArray.append(entry);
+  }
+
+  layout["windowOrder"]      = orderArray;
+  layout["windowOrderTyped"] = orderTypedArray;
+  layout["autoLayout"]       = m_autoLayoutEnabled;
+  layout["userReordered"]    = m_userReordered;
 
   return layout;
+}
+
+/**
+ * @brief Resolves a saved window-order array into live windowIds.
+ */
+QVector<int> UI::WindowManager::resolveSavedOrder(const QJsonObject& layout,
+                                                  const QHash<StableKey, int>& stableLookup) const
+{
+  QVector<int> newOrder;
+  QSet<int> seen;
+  const bool typed     = layout.contains("windowOrderTyped");
+  const QJsonArray src = (typed ? layout["windowOrderTyped"] : layout["windowOrder"]).toArray();
+
+  for (const auto& val : std::as_const(src)) {
+    int id = -1;
+    if (typed)
+      id = resolveSavedWindowId(val.toObject(), stableLookup, m_windows);
+    else
+      id = val.toInt(-1);
+
+    if (id < 0 || seen.contains(id) || !m_windows.contains(id))
+      continue;
+
+    newOrder.append(id);
+    seen.insert(id);
+  }
+
+  // Append live windows not mentioned in the save (newly added widgets)
+  for (int id : std::as_const(m_windowOrder)) {
+    if (!seen.contains(id)) {
+      newOrder.append(id);
+      seen.insert(id);
+    }
+  }
+
+  return newOrder;
+}
+
+/**
+ * @brief Applies saved manual-mode geometries to live windows and stashes the
+ *        anchored rects for any window that hasn't registered yet.
+ */
+void UI::WindowManager::applySavedGeometries(const QJsonObject& layout,
+                                             const QHash<StableKey, int>& stableLookup,
+                                             int marginCanvasW,
+                                             int marginCanvasH)
+{
+  const int canvasW           = static_cast<int>(width());
+  const int canvasH           = static_cast<int>(height());
+  const QJsonArray geometries = layout["geometries"].toArray();
+
+  for (const auto& val : std::as_const(geometries)) {
+    const QJsonObject winGeom = val.toObject();
+    const int id              = resolveSavedWindowId(winGeom, stableLookup, m_windows);
+    if (id < 0)
+      continue;
+
+    const int x = static_cast<int>(winGeom["x"].toDouble(0));
+    const int y = static_cast<int>(winGeom["y"].toDouble(0));
+    const int w = static_cast<int>(winGeom["width"].toDouble(200));
+    const int h = static_cast<int>(winGeom["height"].toDouble(150));
+    const QRect geom(x, y, w, h);
+    const QMargins margins = manualMarginsForGeometry(geom, marginCanvasW, marginCanvasH);
+    const QRect anchored   = anchoredGeometry(geom, margins, canvasW, canvasH);
+
+    auto* win = m_windows.value(id);
+    if (win) {
+      win->setX(anchored.x());
+      win->setY(anchored.y());
+      win->setWidth(anchored.width());
+      win->setHeight(anchored.height());
+    }
+
+    m_manualGeometries.insert(id, geom);
+    m_manualMargins.insert(id, margins);
+    m_pendingGeometries.insert(id, anchored);
+  }
 }
 
 /**
@@ -555,7 +748,6 @@ QJsonObject UI::WindowManager::serializeLayout() const
  */
 bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
 {
-  // Validate input
   if (layout.isEmpty())
     return false;
 
@@ -564,25 +756,14 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
   const int savedCanvasH = layout["canvasHeight"].toInt(0);
   m_userReordered        = layout["userReordered"].toBool(false);
 
-  // Restore window order, appending any unsaved windows at the end
-  if (layout.contains("windowOrder")) {
-    QJsonArray orderArray = layout["windowOrder"].toArray();
-    QVector<int> newOrder;
+  // Translate saved (widgetType, relativeIndex) keys into current-session windowIds
+  const QHash<StableKey, int> stableLookup = buildStableKeyToWindowId();
 
-    for (const auto& val : std::as_const(orderArray)) {
-      int id = val.toInt(-1);
-      if (id >= 0 && m_windows.contains(id))
-        newOrder.append(id);
-    }
+  // Window order
+  if (layout.contains("windowOrderTyped") || layout.contains("windowOrder"))
+    m_windowOrder = resolveSavedOrder(layout, stableLookup);
 
-    for (int id : std::as_const(m_windowOrder))
-      if (!newOrder.contains(id))
-        newOrder.append(id);
-
-    m_windowOrder = newOrder;
-  }
-
-  // Restore window positions in manual mode; stash unregistered ones for first paint
+  // Manual-mode geometries (auto-mode recomputes them from scratch)
   m_manualGeometries.clear();
   m_manualMargins.clear();
   m_pendingGeometries.clear();
@@ -594,40 +775,7 @@ bool UI::WindowManager::restoreLayout(const QJsonObject& layout)
     m_manualCanvasWidth     = marginCanvasW;
     m_manualCanvasHeight    = marginCanvasH;
 
-    QJsonArray geometries = layout["geometries"].toArray();
-    for (const auto& val : std::as_const(geometries)) {
-      QJsonObject winGeom = val.toObject();
-      int id              = winGeom["id"].toInt(-1);
-      if (id < 0)
-        continue;
-
-      const int x = static_cast<int>(winGeom["x"].toDouble(0));
-      const int y = static_cast<int>(winGeom["y"].toDouble(0));
-      const int w = static_cast<int>(winGeom["width"].toDouble(200));
-      const int h = static_cast<int>(winGeom["height"].toDouble(150));
-      const QRect geom(x, y, w, h);
-      const QMargins margins = manualMarginsForGeometry(geom, marginCanvasW, marginCanvasH);
-      const QRect anchored   = anchoredGeometry(geom, margins, canvasW, canvasH);
-
-      auto* win = m_windows.value(id);
-      if (win) {
-        win->setX(anchored.x());
-        win->setY(anchored.y());
-        win->setWidth(anchored.width());
-        win->setHeight(anchored.height());
-      }
-
-      m_manualGeometries.insert(id, geom);
-      m_manualMargins.insert(id, margins);
-
-      if (!win) {
-        m_pendingGeometries.insert(id, anchored);
-        continue;
-      }
-
-      // Stash for late-arriving (or re-arriving) registrations
-      m_pendingGeometries.insert(id, anchored);
-    }
+    applySavedGeometries(layout, stableLookup, marginCanvasW, marginCanvasH);
 
     constrainWindows();
     Q_EMIT geometryChanged(nullptr);
@@ -673,10 +821,13 @@ void UI::WindowManager::preloadPendingGeometries(const QJsonObject& layout)
   m_manualCanvasWidth     = marginCanvasW;
   m_manualCanvasHeight    = marginCanvasH;
 
+  // Preload runs before delegates mount; m_windows is empty so resolution is purely via Dashboard
+  const QHash<StableKey, int> stableLookup = buildStableKeyToWindowId();
+
   const QJsonArray geometries = layout["geometries"].toArray();
   for (const auto& val : std::as_const(geometries)) {
     const QJsonObject winGeom = val.toObject();
-    const int id              = winGeom["id"].toInt(-1);
+    const int id              = resolveSavedWindowId(winGeom, stableLookup, m_windows);
     if (id < 0)
       continue;
 
@@ -764,11 +915,7 @@ void UI::WindowManager::clear()
   m_manualMargins.clear();
   m_pendingGeometries.clear();
 
-  // Re-enable auto layout if it was disabled
-  if (!m_autoLayoutEnabled) {
-    m_autoLayoutEnabled = true;
-    Q_EMIT autoLayoutEnabledChanged();
-  }
+  // m_autoLayoutEnabled is a user preference owned by restoreLayout(); don't touch it here
 
   // Notify listeners of reset
   Q_EMIT zCounterChanged();

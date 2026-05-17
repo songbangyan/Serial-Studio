@@ -1756,11 +1756,11 @@ static void boxBlurVertical(const QImage& src, QImage& dst, int radius)
       const int y0 = qMax(0, y - radius);
       const int y1 = qMin(h - 1, y + radius);
       for (int k = y0; k <= y1; ++k) {
-        const QRgb px = reinterpret_cast<const QRgb*>(src.constScanLine(k))[x];
-        r += qRed(px);
-        g += qGreen(px);
-        b += qBlue(px);
-        a += qAlpha(px);
+        const QRgb px  = reinterpret_cast<const QRgb*>(src.constScanLine(k))[x];
+        r             += qRed(px);
+        g             += qGreen(px);
+        b             += qBlue(px);
+        a             += qAlpha(px);
         ++n;
       }
       const int64_t recip = inv[n];

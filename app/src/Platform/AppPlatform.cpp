@@ -175,8 +175,8 @@ char** injectPlatformArg(int& argc, char** argv, const char* platform)
   for (int i = 1; i < argc; ++i)
     newArgv[i + 2] = argv[i];
 
-  newArgv[argc + 2] = nullptr;
-  argc += 2;
+  newArgv[argc + 2]  = nullptr;
+  argc              += 2;
   return newArgv;
 }
 

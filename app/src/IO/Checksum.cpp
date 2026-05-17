@@ -136,9 +136,9 @@ static constexpr uint16_t crc16(const char* data, const int length) noexcept
   uint16_t crc = 0xFFFF;
 
   for (int i = 0; i < length; ++i) {
-    x = crc >> 8 ^ static_cast<uint8_t>(data[i]);
-    x ^= x >> 4;
-    crc = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5)) ^ x;
+    x    = crc >> 8 ^ static_cast<uint8_t>(data[i]);
+    x   ^= x >> 4;
+    crc  = (crc << 8) ^ ((uint16_t)(x << 12)) ^ ((uint16_t)(x << 5)) ^ x;
   }
 
   return crc;

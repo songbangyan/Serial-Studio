@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
   while (1) {
     float values[num_functions];
     for (int i = 0; i < num_functions; i++) {
-      values[i] = generate_wave_value(wave_types[i], frequencies[i], phases[i]);
+      values[i]  = generate_wave_value(wave_types[i], frequencies[i], phases[i]);
       phases[i] += phase_increment[i];
       if (phases[i] > TWO_PI)
         phases[i] -= TWO_PI;

@@ -1014,9 +1014,9 @@ QString DataModel::ModbusMapImporter::emitParserEntry(const RegisterEntry& entry
   out += QStringLiteral("    -- %1\n").arg(entry.name);
 
   if (is_bit) {
-    const int byte_idx = reg_off / 8 + 1;
-    const int bit_idx  = reg_off % 8;
-    out += QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n")
+    const int byte_idx  = reg_off / 8 + 1;
+    const int bit_idx   = reg_off % 8;
+    out                += QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n")
              .arg(QString::number(idx), QString::number(byte_idx), QString::number(bit_idx));
     return out;
   }

@@ -1203,8 +1203,8 @@ void read_io_settings(QByteArray& frameStart,
   bool ok = true;
   for (qsizetype i = 0; i < groups.count(); ++i) {
     Group group;
-    group.groupId = i;
-    ok &= read(group, groups[i].toObject());
+    group.groupId  = i;
+    ok            &= read(group, groups[i].toObject());
     if (!ok)
       break;
 

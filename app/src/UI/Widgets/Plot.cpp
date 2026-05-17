@@ -537,8 +537,8 @@ void Widgets::Plot::applyAxisPadding(double& min, double& max, const bool addPad
 
   // If the min and max are not the same, set the range to 10% more
   if (addPadding) {
-    double range = max - min;
-    min -= range * 0.1;
-    max += range * 0.1;
+    double range  = max - min;
+    min          -= range * 0.1;
+    max          += range * 0.1;
   }
 }

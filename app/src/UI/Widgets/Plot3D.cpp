@@ -1248,10 +1248,10 @@ void Widgets::Plot3D::mouseMoveEvent(QMouseEvent* event)
 
   // Orbit mode
   if (m_orbitNavigation) {
-    m_cameraOffsetX = m_orbitOffsetX;
-    m_cameraOffsetY = m_orbitOffsetY;
-    m_cameraAngleZ += delta.x() * 0.5;
-    m_cameraAngleX += delta.y() * 0.5;
+    m_cameraOffsetX  = m_orbitOffsetX;
+    m_cameraOffsetY  = m_orbitOffsetY;
+    m_cameraAngleZ  += delta.x() * 0.5;
+    m_cameraAngleX  += delta.y() * 0.5;
 
     m_cameraAngleZ = fmod(m_cameraAngleZ, 360.0);
     if (m_cameraAngleZ < 0)

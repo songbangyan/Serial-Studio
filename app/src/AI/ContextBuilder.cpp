@@ -625,7 +625,7 @@ QString AI::ContextBuilder::scriptingDocsBlock()
 QString AI::ContextBuilder::liveProjectStateBlock()
 {
   ToolDispatcher dispatcher;
-  const auto state = dispatcher.getProjectState();
+  const auto state    = dispatcher.getProjectState();
   // Scrub key/token-shaped substrings (same scrubber used for tool results)
   const auto scrubbed = AI::Redactor::scrubObject(state);
   const auto pretty   = QJsonDocument(scrubbed).toJson(QJsonDocument::Indented);

@@ -338,7 +338,7 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
       }
 
       visualLineY += lineHeight;
-      start = end;
+      start        = end;
     }
 
     if (cursorDrawn)
@@ -416,8 +416,8 @@ void Widgets::Terminal::paintSelectionHighlights(QPainter* painter,
     while (start < line.length()) {
       const int lineEnd = qMin<int>(start + maxCharsPerLine(), line.length());
       drawSegmentSelection(painter, line, i, start, lineEnd, y);
-      y += lineHeight;
-      start = lineEnd;
+      y     += lineHeight;
+      start  = lineEnd;
     }
   }
 }
@@ -488,12 +488,12 @@ void Widgets::Terminal::paintTextContent(QPainter* painter,
     while (start < line.length()) {
       const int end         = qMin<int>(start + maxCharsPerLine(), line.length());
       const QString segment = line.mid(start, end - start);
-      const int x = rtlMode ? rightEdge - fm.horizontalAdvance(segment) : m_borderX;
+      const int x           = rtlMode ? rightEdge - fm.horizontalAdvance(segment) : m_borderX;
 
       paintSegment(painter, segment, start, colorLine, defaultTextColor, x, y, ascent, rtlMode);
 
-      y += lineHeight;
-      start = end;
+      y     += lineHeight;
+      start  = end;
     }
   }
 
@@ -2132,10 +2132,10 @@ void Widgets::Terminal::replaceData(int x, int y, const QChar& byte)
  */
 bool Widgets::Terminal::shouldEndSelection(const QChar& c)
 {
-  bool end = false;
-  end |= c.isSpace();
-  end |= c.isNonCharacter();
-  end |= (!c.isLetter() && !c.isNumber());
+  bool end  = false;
+  end      |= c.isSpace();
+  end      |= c.isNonCharacter();
+  end      |= (!c.isLetter() && !c.isNumber());
   return end;
 }
 

@@ -38,7 +38,7 @@
 
 namespace DataModel {
 struct Source;
-}
+}  // namespace DataModel
 
 #ifdef BUILD_COMMERCIAL
 #  include "IO/Drivers/Audio.h"

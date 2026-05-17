@@ -146,10 +146,10 @@ void IO::FrameReader::discardPendingBytes(qsizetype size)
     return;
 
   while (size > 0 && !m_pendingChunks.empty()) {
-    auto& chunk          = m_pendingChunks.front();
-    const auto toConsume = std::min(size, chunk.bytesRemaining);
+    auto& chunk           = m_pendingChunks.front();
+    const auto toConsume  = std::min(size, chunk.bytesRemaining);
     chunk.bytesRemaining -= toConsume;
-    size -= toConsume;
+    size                 -= toConsume;
 
     if (chunk.bytesRemaining == 0)
       m_pendingChunks.pop_front();
@@ -493,7 +493,7 @@ IO::CapturedData::SteadyTimePoint IO::FrameReader::frameTimestamp(qsizetype endO
   qsizetype offset = std::max<qsizetype>(0, endOffsetExclusive - 1);
   for (auto& chunk : m_pendingChunks) {
     if (offset < chunk.bytesRemaining) {
-      const auto timestamp = chunk.nextFrameTimestamp;
+      const auto timestamp      = chunk.nextFrameTimestamp;
       chunk.nextFrameTimestamp += chunk.frameStep;
       return timestamp;
     }
@@ -501,8 +501,8 @@ IO::CapturedData::SteadyTimePoint IO::FrameReader::frameTimestamp(qsizetype endO
     offset -= chunk.bytesRemaining;
   }
 
-  auto& chunk      = m_pendingChunks.back();
-  const auto stamp = chunk.nextFrameTimestamp;
+  auto& chunk               = m_pendingChunks.back();
+  const auto stamp          = chunk.nextFrameTimestamp;
   chunk.nextFrameTimestamp += chunk.frameStep;
   return stamp;
 }

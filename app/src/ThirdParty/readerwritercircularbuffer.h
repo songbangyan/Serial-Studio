@@ -70,7 +70,7 @@ public:
     swap(other);
   }
 
-  BlockingReaderWriterCircularBuffer(BlockingReaderWriterCircularBuffer const&) = delete;
+  BlockingReaderWriterCircularBuffer(const BlockingReaderWriterCircularBuffer&) = delete;
 
   // Note: The queue should not be accessed concurrently while it's
   // being deleted. It's up to the user to synchronize this.
@@ -87,7 +87,7 @@ public:
     return *this;
   }
 
-  BlockingReaderWriterCircularBuffer& operator=(BlockingReaderWriterCircularBuffer const&) = delete;
+  BlockingReaderWriterCircularBuffer& operator=(const BlockingReaderWriterCircularBuffer&) = delete;
 
   // Swaps the contents of this buffer with the contents of another.
   // Not thread-safe.
@@ -108,7 +108,7 @@ public:
   // Thread-safe when called by producer thread.
   // No exception guarantee (state will be corrupted) if constructor of T
   // throws.
-  bool try_enqueue(T const& item)
+  bool try_enqueue(const T& item)
   {
     if (!slots_->tryWait())
       return false;
@@ -133,7 +133,7 @@ public:
   // item, then enqueues it (via copy). Thread-safe when called by producer
   // thread. No exception guarantee (state will be corrupted) if constructor of
   // T throws.
-  void wait_enqueue(T const& item)
+  void wait_enqueue(const T& item)
   {
     while (!slots_->wait())
       ;
@@ -156,7 +156,7 @@ public:
   // the timeout expires, otherwise enqueues the item (via copy) and returns
   // true. Thread-safe when called by producer thread. No exception guarantee
   // (state will be corrupted) if constructor of T throws.
-  bool wait_enqueue_timed(T const& item, std::int64_t timeout_usecs)
+  bool wait_enqueue_timed(const T& item, std::int64_t timeout_usecs)
   {
     if (!slots_->wait(timeout_usecs))
       return false;
@@ -183,7 +183,7 @@ public:
   // true. Thread-safe when called by producer thread. No exception guarantee
   // (state will be corrupted) if constructor of T throws.
   template<typename Rep, typename Period>
-  inline bool wait_enqueue_timed(T const& item, std::chrono::duration<Rep, Period> const& timeout)
+  inline bool wait_enqueue_timed(const T& item, const std::chrono::duration<Rep, Period>& timeout)
   {
     return wait_enqueue_timed(
       item, std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
@@ -195,7 +195,7 @@ public:
   // and returns true. Thread-safe when called by producer thread. No exception
   // guarantee (state will be corrupted) if constructor of T throws.
   template<typename Rep, typename Period>
-  inline bool wait_enqueue_timed(T&& item, std::chrono::duration<Rep, Period> const& timeout)
+  inline bool wait_enqueue_timed(T&& item, const std::chrono::duration<Rep, Period>& timeout)
   {
     return wait_enqueue_timed(
       std::move(item), std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
@@ -248,7 +248,7 @@ public:
   // No exception guarantee (state will be corrupted) if assignment operator of
   // U throws.
   template<typename U, typename Rep, typename Period>
-  inline bool wait_dequeue_timed(U& item, std::chrono::duration<Rep, Period> const& timeout)
+  inline bool wait_dequeue_timed(U& item, const std::chrono::duration<Rep, Period>& timeout)
   {
     return wait_dequeue_timed(
       item, std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());

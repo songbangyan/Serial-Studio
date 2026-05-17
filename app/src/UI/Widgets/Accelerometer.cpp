@@ -237,12 +237,12 @@ void Widgets::Accelerometer::updateData()
     m_roll              = rollVal;
     m_filterInitialized = true;
   } else {
-    m_x += kAlpha * (gx - m_x);
-    m_y += kAlpha * (gy - m_y);
-    m_z += kAlpha * (gz - m_z);
-    m_g += kAlpha * (totalG - m_g);
-    m_roll += kAlpha * (rollVal - m_roll);
-    m_pitch += kAlpha * (pitchVal - m_pitch);
+    m_x         += kAlpha * (gx - m_x);
+    m_y         += kAlpha * (gy - m_y);
+    m_z         += kAlpha * (gz - m_z);
+    m_g         += kAlpha * (totalG - m_g);
+    m_roll      += kAlpha * (rollVal - m_roll);
+    m_pitch     += kAlpha * (pitchVal - m_pitch);
     m_magnitude += kAlpha * (mag - m_magnitude);
 
     // Angle-aware EMA for theta (handles wrapping at +/-180)

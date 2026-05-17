@@ -28,7 +28,7 @@
 
 namespace DataModel {
 struct Dataset;
-}
+}  // namespace DataModel
 
 namespace API {
 namespace Handlers {

@@ -508,11 +508,11 @@ bool Licensing::LemonSqueezy::checkValidationRules(const QJsonObject& json,
     return false;
   }
 
-  bool ok = true;
-  ok &= json.contains("meta");
-  ok &= json.contains("instance");
-  ok &= meta.contains("store_id");
-  ok &= meta.contains("product_id");
+  bool ok  = true;
+  ok      &= json.contains("meta");
+  ok      &= json.contains("instance");
+  ok      &= meta.contains("store_id");
+  ok      &= meta.contains("product_id");
   if (!ok)
     return false;
 

@@ -56,8 +56,7 @@ Widgets.MiniWindow {
   readonly property int minimumHeight: 320
 
   //
-  // Button events -- promote root to active before/after the action so the
-  // taskbar model never lags behind the window the user just acted on
+  // Button events
   //
   onCloseClicked: {
     taskBar.activeWindow = root
@@ -163,7 +162,6 @@ Widgets.MiniWindow {
 
   //
   // Update window state automatically
-  // Only update if layout restoration is complete to prevent reading stale states
   //
   Connections {
     target: taskBar
@@ -243,10 +241,13 @@ Widgets.MiniWindow {
   } Connections {
     target: Cpp_MDF4_Player
     function onOpenChanged() { root._refreshSourceConnection() }
-  } Connections {
-    target: Cpp_Sessions_Player
-    enabled: typeof Cpp_Sessions_Player !== "undefined"
-    function onOpenChanged() { root._refreshSourceConnection() }
+  }
+  Loader {
+    active: Cpp_CommercialBuild
+    sourceComponent: Connections {
+      target: Cpp_Sessions_Player
+      function onOpenChanged() { root._refreshSourceConnection() }
+    }
   }
 
   //
@@ -259,6 +260,8 @@ Widgets.MiniWindow {
     anchors.margins: 1
     anchors.fill: parent
     anchors.topMargin: root.captionHeight
+    LayoutMirroring.enabled: false
+    LayoutMirroring.childrenInherit: true
     Component.onCompleted: widgetLoader.createObject(container, {windowRoot: root})
 
     //
@@ -280,8 +283,7 @@ Widgets.MiniWindow {
   }
 
   //
-  // Disconnected overlay -- blocks input + shows a warning badge centered over
-  // the widget content. Sits above container so it isn't itself desaturated.
+  // Disconnected overlay
   //
   Item {
     id: disconnectedOverlay
@@ -485,6 +487,8 @@ Widgets.MiniWindow {
 
           Item {
             anchors.fill: parent
+            LayoutMirroring.enabled: false
+            LayoutMirroring.childrenInherit: true
             Component.onCompleted: {
               window.showNormal()
               widgetLoader.createObject(this, {windowRoot: window})

@@ -145,8 +145,8 @@ QJsonObject AI::ToolDispatcher::listCategories() const
     if (aiReg.safetyOf(it.value().name) == Safety::Blocked)
       continue;
 
-    const QString scope = it.value().name.section(QLatin1Char('.'), 0, 0);
-    counts[scope] += 1;
+    const QString scope  = it.value().name.section(QLatin1Char('.'), 0, 0);
+    counts[scope]       += 1;
   }
 
   // Always advertise the meta scope even if it isn't in the registry.

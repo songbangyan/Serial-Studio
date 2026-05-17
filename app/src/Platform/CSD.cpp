@@ -785,10 +785,10 @@ void Frame::regenerateShadow()
 
   const qreal invShadowRadius = m_shadowRadius > 0 ? 1.0 / m_shadowRadius : 0.0;
   for (int y = 0; y < m_shadowRadius; ++y) {
-    const qreal dist = static_cast<qreal>(m_shadowRadius - y - 1) * invShadowRadius;
-    qreal alpha      = 1.0 - dist;
-    alpha            = alpha * alpha * (3.0 - 2.0 * alpha);
-    alpha *= CSD::ShadowOpacity;
+    const qreal dist  = static_cast<qreal>(m_shadowRadius - y - 1) * invShadowRadius;
+    qreal alpha       = 1.0 - dist;
+    alpha             = alpha * alpha * (3.0 - 2.0 * alpha);
+    alpha            *= CSD::ShadowOpacity;
     m_shadowEdge.setPixelColor(0, y, QColor(0, 0, 0, qRound(alpha * 255)));
   }
 
@@ -799,10 +799,10 @@ void Frame::regenerateShadow()
   m_shadowEdgeVertical.fill(Qt::transparent);
 
   for (int x = 0; x < m_shadowRadius; ++x) {
-    const qreal dist = static_cast<qreal>(x) * invShadowRadius;
-    qreal alpha      = 1.0 - dist;
-    alpha            = alpha * alpha * (3.0 - 2.0 * alpha);
-    alpha *= CSD::ShadowOpacity;
+    const qreal dist  = static_cast<qreal>(x) * invShadowRadius;
+    qreal alpha       = 1.0 - dist;
+    alpha             = alpha * alpha * (3.0 - 2.0 * alpha);
+    alpha            *= CSD::ShadowOpacity;
     m_shadowEdgeVertical.setPixelColor(x, 0, QColor(0, 0, 0, qRound(alpha * 255)));
   }
 
@@ -824,9 +824,9 @@ QImage Frame::generateShadowCorner(int size)
       const qreal dy   = static_cast<qreal>(size - y - 1);
       const qreal dist = qSqrt(dx * dx + dy * dy);
 
-      qreal alpha = 1.0 - qMin(dist * invSize, 1.0);
-      alpha       = alpha * alpha * (3.0 - 2.0 * alpha);
-      alpha *= CSD::ShadowOpacity;
+      qreal alpha  = 1.0 - qMin(dist * invSize, 1.0);
+      alpha        = alpha * alpha * (3.0 - 2.0 * alpha);
+      alpha       *= CSD::ShadowOpacity;
       tile.setPixelColor(x, y, QColor(0, 0, 0, qRound(alpha * 255)));
     }
   }

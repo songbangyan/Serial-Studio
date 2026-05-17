@@ -1572,7 +1572,7 @@ void Misc::ExtensionManager::wirePluginProcessSignals(QProcess* process, const Q
   const auto pluginId = id;
 
   connect(process, &QProcess::readyRead, this, [this, pluginId, process]() {
-    const auto text = QString::fromUtf8(process->readAll());
+    const auto text           = QString::fromUtf8(process->readAll());
     m_pluginOutput[pluginId] += text;
 
     auto& buf = m_pluginOutput[pluginId];
@@ -1589,7 +1589,7 @@ void Misc::ExtensionManager::wirePluginProcessSignals(QProcess* process, const Q
 
   connect(process, &QProcess::errorOccurred, this, [this, pluginId](QProcess::ProcessError err) {
     Q_UNUSED(err)
-    const auto msg = QStringLiteral("[Error] Plugin failed to start or crashed.\n");
+    const auto msg            = QStringLiteral("[Error] Plugin failed to start or crashed.\n");
     m_pluginOutput[pluginId] += msg;
     Q_EMIT pluginOutputChanged(pluginId);
   });
@@ -1695,7 +1695,7 @@ void Misc::ExtensionManager::stopPlugin(const QString& id)
   if (UI::Dashboard::instance().available())
     m_userClosedPlugins.insert(id);
 
-  auto* process = it.value();
+  auto* process       = it.value();
   m_pluginOutput[id] += QStringLiteral("[Stopping...]\n");
   Q_EMIT pluginOutputChanged(id);
 
@@ -1824,8 +1824,8 @@ void Misc::ExtensionManager::onPluginFinished(const QString& id)
   if (!remaining.isEmpty())
     m_pluginOutput[id] += remaining;
 
-  const auto exitCode = process->exitCode();
-  m_pluginOutput[id] += QStringLiteral("[Exited with code %1]\n").arg(exitCode);
+  const auto exitCode  = process->exitCode();
+  m_pluginOutput[id]  += QStringLiteral("[Exited with code %1]\n").arg(exitCode);
   Q_EMIT pluginOutputChanged(id);
 
   // Clean up the process and remove from running list

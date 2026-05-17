@@ -232,7 +232,7 @@ public:
   // Enqueues a copy of element if there is room in the queue.
   // Returns true if the element was enqueued, false otherwise.
   // Does not allocate memory.
-  AE_FORCEINLINE bool try_enqueue(T const& element) AE_NO_TSAN
+  AE_FORCEINLINE bool try_enqueue(const T& element) AE_NO_TSAN
   {
     return inner_enqueue<CannotAlloc>(element);
   }
@@ -257,7 +257,7 @@ public:
   // Enqueues a copy of element on the queue.
   // Allocates an additional block of memory if needed.
   // Only fails (returns false) if memory allocation fails.
-  AE_FORCEINLINE bool enqueue(T const& element) AE_NO_TSAN
+  AE_FORCEINLINE bool enqueue(const T& element) AE_NO_TSAN
   {
     return inner_enqueue<CanAlloc>(element);
   }
@@ -495,10 +495,10 @@ public:
     Block* block       = frontBlock_;
     do {
       fence(memory_order_acquire);
-      size_t blockFront = block->front.load();
-      size_t blockTail  = block->tail.load();
-      result += (blockTail - blockFront) & block->sizeMask;
-      block = block->next.load();
+      size_t blockFront  = block->front.load();
+      size_t blockTail   = block->tail.load();
+      result            += (blockTail - blockFront) & block->sizeMask;
+      block              = block->next.load();
     } while (block != frontBlock_);
     return result;
   }
@@ -521,7 +521,7 @@ public:
     do {
       fence(memory_order_acquire);
       result += block->sizeMask;
-      block = block->next.load();
+      block   = block->next.load();
     } while (block != frontBlock_);
     return result;
   }
@@ -647,10 +647,10 @@ private:
   }
 
   // Disable copying
-  ReaderWriterQueue(ReaderWriterQueue const&) {}
+  ReaderWriterQueue(const ReaderWriterQueue&) {}
 
   // Disable assignment
-  ReaderWriterQueue& operator=(ReaderWriterQueue const&) {}
+  ReaderWriterQueue& operator=(const ReaderWriterQueue&) {}
 
   AE_FORCEINLINE static size_t ceilToPow2(size_t x)
   {
@@ -686,7 +686,7 @@ private:
     AE_NO_TSAN ~ReentrantGuard() { inSection = false; }
 
   private:
-    ReentrantGuard& operator=(ReentrantGuard const&);
+    ReentrantGuard& operator=(const ReentrantGuard&);
 
   private:
     weak_atomic<bool>& inSection;
@@ -715,7 +715,7 @@ private:
     const size_t sizeMask;
 
     // size must be a power of two (and greater than 0)
-    AE_NO_TSAN Block(size_t const& _size, char* _rawThis, char* _data)
+    AE_NO_TSAN Block(const size_t& _size, char* _rawThis, char* _data)
       : front(0UL)
       , localTail(0)
       , tail(0UL)
@@ -728,7 +728,7 @@ private:
 
   private:
     // C4512 - Assignment operator could not be generated
-    Block& operator=(Block const&);
+    Block& operator=(const Block&);
 
   public:
     char* rawThis;
@@ -738,9 +738,9 @@ private:
   {
     // Allocate enough memory for the block itself, as well as all the elements
     // it will contain
-    auto size = sizeof(Block) + std::alignment_of<Block>::value - 1;
-    size += sizeof(T) * capacity + std::alignment_of<T>::value - 1;
-    auto newBlockRaw = static_cast<char*>(std::malloc(size));
+    auto size         = sizeof(Block) + std::alignment_of<Block>::value - 1;
+    size             += sizeof(T) * capacity + std::alignment_of<T>::value - 1;
+    auto newBlockRaw  = static_cast<char*>(std::malloc(size));
     if (newBlockRaw == nullptr)
       return nullptr;
 
@@ -790,7 +790,7 @@ public:
   // Enqueues a copy of element if there is room in the queue.
   // Returns true if the element was enqueued, false otherwise.
   // Does not allocate memory.
-  AE_FORCEINLINE bool try_enqueue(T const& element) AE_NO_TSAN
+  AE_FORCEINLINE bool try_enqueue(const T& element) AE_NO_TSAN
   {
     if (inner.try_enqueue(element)) {
       sema->signal();
@@ -827,7 +827,7 @@ public:
   // Enqueues a copy of element on the queue.
   // Allocates an additional block of memory if needed.
   // Only fails (returns false) if memory allocation fails.
-  AE_FORCEINLINE bool enqueue(T const& element) AE_NO_TSAN
+  AE_FORCEINLINE bool enqueue(const T& element) AE_NO_TSAN
   {
     if (inner.enqueue(element)) {
       sema->signal();
@@ -916,7 +916,7 @@ public:
   // and is thus functionally equivalent to calling wait_dequeue.
   template<typename U, typename Rep, typename Period>
   inline bool wait_dequeue_timed(U& result,
-                                 std::chrono::duration<Rep, Period> const& timeout) AE_NO_TSAN
+                                 const std::chrono::duration<Rep, Period>& timeout) AE_NO_TSAN
   {
     return wait_dequeue_timed(
       result, std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
@@ -962,9 +962,9 @@ public:
 
 private:
   // Disable copying & assignment
-  BlockingReaderWriterQueue(BlockingReaderWriterQueue const&) {}
+  BlockingReaderWriterQueue(const BlockingReaderWriterQueue&) {}
 
-  BlockingReaderWriterQueue& operator=(BlockingReaderWriterQueue const&) {}
+  BlockingReaderWriterQueue& operator=(const BlockingReaderWriterQueue&) {}
 
 private:
   ReaderWriterQueue inner;

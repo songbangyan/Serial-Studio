@@ -1319,8 +1319,8 @@ void DataModel::ProtoImporter::emitDispatchTables(QString& code,
       if (!first)
         body += QStringLiteral(", ");
 
-      body += entry;
-      first = false;
+      body  += entry;
+      first  = false;
     }
 
     body += QStringLiteral(" }");

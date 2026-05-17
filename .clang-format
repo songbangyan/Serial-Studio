@@ -58,25 +58,46 @@ BraceWrapping:
   SplitEmptyNamespace:                 false
 
 # Alignment
+# AcrossComments lets `=` alignment survive a one-line `// section` header
+# in the middle of an init-list or assignment block (common in ctors).
+# AlignConsecutiveShortCaseStatements (clang-format 17+) tidies up dense
+# switch tables -- one space before the `:` and the body lines up.
 AlignAfterOpenBracket:                 Align
 AlignArrayOfStructures:                Right
-AlignConsecutiveAssignments:           Consecutive
+AlignConsecutiveAssignments:
+  Enabled:                             true
+  AcrossEmptyLines:                    false
+  AcrossComments:                      true
+  AlignCompound:                       true
+  AlignFunctionPointers:               true
+  PadOperators:                        true
 AlignConsecutiveBitFields:             Consecutive
 AlignConsecutiveDeclarations:          None
 AlignConsecutiveMacros:                Consecutive
+AlignConsecutiveShortCaseStatements:
+  Enabled:                             true
+  AcrossEmptyLines:                    false
+  AcrossComments:                      false
+  AlignCaseColons:                     false
 AlignEscapedNewlines:                  Left
 AlignOperands:                         AlignAfterOperator
-AlignTrailingComments:                 true
+AlignTrailingComments:
+  Kind:                                Always
+  OverEmptyLines:                      0
 
 # Pointer & Reference
+# QualifierAlignment: Left normalizes `const T*` over `T const*` so the
+# qualifier always sits on the same side -- removes a class of stylistic
+# drift across files written by different hands (and different LLMs).
 PointerAlignment:                      Left
 ReferenceAlignment:                    Left
 DerivePointerAlignment:                false
+QualifierAlignment:                    Left
 
 # Short Forms
 # These settings prevent AI-generated "slop code" patterns:
-# - Never allows "if (x) return y;" on one line → forces visibility
-# - Never allows short loops on one line → forces clarity
+# - Never allows "if (x) return y;" on one line -- forces visibility
+# - Never allows short loops on one line -- forces clarity
 # - RemoveBracesLLVM (above) removes braces from single statements
 # This combination makes deeply nested code painful to read/write,
 # naturally encouraging early returns and reduced complexity
@@ -90,13 +111,21 @@ AllowAllArgumentsOnNextLine:           true
 AllowAllParametersOfDeclarationOnNextLine: true
 
 # Breaking
+# BreakAfterAttributes: Leave keeps `[[nodiscard]]` on the same line as the
+# return type when authors put it there, but doesn't fight a deliberate
+# break -- matches the Christmas-tree ordering already used in headers.
 AlwaysBreakAfterReturnType:            None
 AlwaysBreakTemplateDeclarations:       Yes
+BreakAfterAttributes:                  Leave
 BreakBeforeBinaryOperators:            NonAssignment
+BreakBeforeConceptDeclarations:        Always
 BreakBeforeTernaryOperators:           true
 BreakConstructorInitializers:          BeforeComma
 BreakInheritanceList:                  BeforeComma
 BreakStringLiterals:                   false
+RequiresClausePosition:                OwnLine
+RequiresExpressionIndentation:         OuterScope
+IndentRequiresClause:                  true
 
 # Constructor Initializers
 ConstructorInitializerIndentWidth:     2
@@ -151,6 +180,12 @@ PenaltyReturnTypeOnItsOwnLine:         1000
 PenaltyIndentedWhitespace:             0
 
 # Misc
+# RemoveSemicolon strips stray `;` after function bodies (e.g. `void f() {};`).
+# ShortNamespaceLines: 0 means even one-line `namespace X { ... }` gets the
+# canonical `// namespace X` trailing comment from FixNamespaceComments.
+# IntegerLiteralSeparator is deliberately omitted: clang-format 20 rewrites
+# existing `1'000'000` literals into `1000000` even with Decimal: -1, which
+# fights the codebase convention. Defaults preserve literals as-written.
 BinPackArguments:                      false
 BinPackParameters:                     false
 CompactNamespaces:                     false
@@ -158,11 +193,15 @@ Cpp11BracedListStyle:                  true
 EmptyLineAfterAccessModifier:          Never
 EmptyLineBeforeAccessModifier:         Always
 FixNamespaceComments:                  true
+InsertBraces:                          false
+InsertNewlineAtEOF:                    true
 InsertTrailingCommas:                  None
 KeepEmptyLinesAtTheStartOfBlocks:      false
 MaxEmptyLinesToKeep:                   1
 ReflowComments:                        true
+RemoveSemicolon:                       true
 SeparateDefinitionBlocks:              Always
+ShortNamespaceLines:                   0
 
 # Pragmas & Macros
 CommentPragmas:                        "^!|^:"

@@ -976,8 +976,8 @@ void Widgets::GPS::renderTrajectoryPath(
   auto project = [&](double lat, double lon) -> QPointF {
     QPointF tile = latLonToTile(lat, lon, baseZoom);
 
-    double dx = tile.x() - cTile.x();
-    dx -= std::round(dx / world) * world;
+    double dx  = tile.x() - cTile.x();
+    dx        -= std::round(dx / world) * world;
 
     QPointF delta(dx, tile.y() - cTile.y());
     return {view.width() * 0.5 + delta.x() * tileSize * scale,
@@ -1070,7 +1070,7 @@ void Widgets::GPS::paintAttributionText(QPainter* painter, const QSize& view)
   }
 
   // Attribution string to display
-  const int margin = 6;
+  const int margin    = 6;
   // code-verify off
   QString attribution = "Copyright © Esri, Maxar, Earthstar Geographics";
   // code-verify on
@@ -1286,7 +1286,7 @@ void Widgets::GPS::mouseMoveEvent(QMouseEvent* event)
     m_lastMousePos     = event->pos();
 
     m_centerTile -= QPointF(delta.x() * kInvTile, delta.y() * kInvTile);
-    m_centerTile = clampCenterTile(m_centerTile);
+    m_centerTile  = clampCenterTile(m_centerTile);
 
     updateTiles();
     update();

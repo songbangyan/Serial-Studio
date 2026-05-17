@@ -1604,9 +1604,9 @@ void AI::Conversation::recordToolResult(const QString& callId,
   wrapped += QStringLiteral("\n</untrusted>");
 
   QJsonObject block;
-  block[QStringLiteral("type")]        = QStringLiteral("tool_result");
-  block[QStringLiteral("tool_use_id")] = callId;
-  block[QStringLiteral("content")]     = wrapped;
+  block[QStringLiteral("type")]                       = QStringLiteral("tool_result");
+  block[QStringLiteral("tool_use_id")]                = callId;
+  block[QStringLiteral("content")]                    = wrapped;
   // Structured payload for Gemini functionResponse.response
   QJsonObject geminiPayload                           = scrubbed;
   geminiPayload[QStringLiteral("__untrusted_source")] = sourceTag;

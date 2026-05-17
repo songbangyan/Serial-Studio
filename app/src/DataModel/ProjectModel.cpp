@@ -1967,20 +1967,20 @@ static bool tryEnterComment(const QString& code, int n, int& i, bool isLua, Tran
   const QChar next = (i + 1 < n) ? code[i + 1] : QChar();
 
   if (isLua && c == '-' && next == '-') {
-    const bool isBlock = (i + 3 < n && code[i + 2] == '[' && code[i + 3] == '[');
-    s.inBlockComment   = isBlock;
-    s.inLineComment    = !isBlock;
-    i += isBlock ? 4 : 2;
+    const bool isBlock  = (i + 3 < n && code[i + 2] == '[' && code[i + 3] == '[');
+    s.inBlockComment    = isBlock;
+    s.inLineComment     = !isBlock;
+    i                  += isBlock ? 4 : 2;
     return true;
   }
   if (!isLua && c == '/' && next == '/') {
-    s.inLineComment = true;
-    i += 2;
+    s.inLineComment  = true;
+    i               += 2;
     return true;
   }
   if (!isLua && c == '/' && next == '*') {
-    s.inBlockComment = true;
-    i += 2;
+    s.inBlockComment  = true;
+    i                += 2;
     return true;
   }
 
@@ -2007,8 +2007,8 @@ static bool advanceInsideToken(const QString& code, int n, int& i, bool isLua, T
     const bool luaEnd = (isLua && c == ']' && next == ']');
     const bool cEnd   = (!isLua && c == '*' && next == '/');
     if (luaEnd || cEnd) {
-      s.inBlockComment = false;
-      i += 2;
+      s.inBlockComment  = false;
+      i                += 2;
       return true;
     }
     ++i;
@@ -5392,9 +5392,9 @@ void DataModel::ProjectModel::shiftWorkspaceRefsAfterGroupDelete(
       if (r.groupId <= deletedGid)
         continue;
 
-      r.groupId -= 1;
-      const int lost  = deletedTypeCounts.value(r.widgetType, 0);
-      r.relativeIndex = std::max(0, r.relativeIndex - lost);
+      r.groupId       -= 1;
+      const int lost   = deletedTypeCounts.value(r.widgetType, 0);
+      r.relativeIndex  = std::max(0, r.relativeIndex - lost);
       Q_ASSERT(r.relativeIndex >= 0);
     }
   }
@@ -5721,10 +5721,10 @@ QVariantList DataModel::ProjectModel::groupsForDiagram() const
 
     for (const auto& ds : grp.datasets) {
       QVariantMap dsMap;
-      dsMap[Keys::DatasetId] = ds.datasetId;
-      dsMap[Keys::Title]     = ds.title;
-      dsMap[Keys::Units]     = ds.units;
-      dsMap[Keys::Widget]    = ds.widget;
+      dsMap[Keys::DatasetId]                = ds.datasetId;
+      dsMap[Keys::Title]                    = ds.title;
+      dsMap[Keys::Units]                    = ds.units;
+      dsMap[Keys::Widget]                   = ds.widget;
       // Diagram-only hint (not part of the .ssproj schema)
       dsMap[QStringLiteral("hasTransform")] = !ds.transformCode.trimmed().isEmpty();
       datasets.append(dsMap);

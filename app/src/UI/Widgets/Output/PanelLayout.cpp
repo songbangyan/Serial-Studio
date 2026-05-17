@@ -137,7 +137,7 @@ QVector<PanelLayout::Column> PanelLayout::buildColumns(const QVector<Item>& item
         break;
 
       col.itemIndices.append(idx);
-      col.minW = qMax(col.minW, items[idx].mw);
+      col.minW       = qMax(col.minW, items[idx].mw);
       col.totalMinH += items[idx].mh;
       si++;
       count++;
@@ -191,8 +191,8 @@ void PanelLayout::layoutRow(QVector<Rect>& result,
       if (i == n_items - 1)
         itemH = row_h - y;
 
-      result[idx] = {x, row_y + y, col_w, itemH};
-      y += itemH + gap;
+      result[idx]  = {x, row_y + y, col_w, itemH};
+      y           += itemH + gap;
     }
 
     // Stretch last column to fill remaining width
@@ -271,8 +271,8 @@ QVector<PanelLayout::Rect> PanelLayout::compute(const std::vector<DataModel::Out
 
     layoutRow(result, columns, items, col_idx, row_end, row_y, row_h, width, gap);
 
-    row_y += row_h + gap;
-    col_idx = row_end;
+    row_y   += row_h + gap;
+    col_idx  = row_end;
   }
 
   return result;

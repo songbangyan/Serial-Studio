@@ -550,11 +550,11 @@ QString Sessions::HtmlReport::buildSummarySection() const
     }
     row += QStringLiteral("<td class=\"numeric\" data-sort-value=\"%1\">%2</td>")
              .arg(QString::number(totalSamples), QString::number(totalSamples));
-    row += numCell(ds.minValue);
-    row += numCell(ds.maxValue);
-    row += numCell(ds.mean);
-    row += numCell(ds.stddev);
-    row += QStringLiteral("</tr>");
+    row  += numCell(ds.minValue);
+    row  += numCell(ds.maxValue);
+    row  += numCell(ds.mean);
+    row  += numCell(ds.stddev);
+    row  += QStringLiteral("</tr>");
     body += row;
   }
 

@@ -59,7 +59,7 @@
 #  if __cplusplus >= 201703L  // inline variables require C++17
 namespace moodycamel {
 inline int ae_tsan_global;
-}
+}  // namespace moodycamel
 
 #    define AE_TSAN_ANNOTATE_RELEASE() \
       AnnotateHappensBefore(__FILE__, __LINE__, (void*)(&::moodycamel::ae_tsan_global))
@@ -341,7 +341,7 @@ public:
     return *this;
   }
 
-  AE_FORCEINLINE weak_atomic const& operator=(weak_atomic const& other) AE_NO_TSAN
+  AE_FORCEINLINE const weak_atomic& operator=(const weak_atomic& other) AE_NO_TSAN
   {
     value = other.value;
     return *this;
@@ -353,10 +353,10 @@ public:
   {
 #  if defined(AE_ARCH_X64) || defined(AE_ARCH_X86)
     if (sizeof(T) == 4)
-      return _InterlockedExchangeAdd((long volatile*)&value, (long)increment);
+      return _InterlockedExchangeAdd((volatile long*)&value, (long)increment);
 #    if defined(_M_AMD64)
     else if (sizeof(T) == 8)
-      return _InterlockedExchangeAdd64((long long volatile*)&value, (long long)increment);
+      return _InterlockedExchangeAdd64((volatile long long*)&value, (long long)increment);
 #    endif
 #  else
 #    error Unsupported platform
@@ -369,10 +369,10 @@ public:
   {
 #  if defined(AE_ARCH_X64) || defined(AE_ARCH_X86)
     if (sizeof(T) == 4)
-      return _InterlockedExchangeAdd((long volatile*)&value, (long)increment);
+      return _InterlockedExchangeAdd((volatile long*)&value, (long)increment);
 #    if defined(_M_AMD64)
     else if (sizeof(T) == 8)
-      return _InterlockedExchangeAdd64((long long volatile*)&value, (long long)increment);
+      return _InterlockedExchangeAdd64((volatile long long*)&value, (long long)increment);
 #    endif
 #  else
 #    error Unsupported platform
@@ -388,7 +388,7 @@ public:
     return *this;
   }
 
-  AE_FORCEINLINE weak_atomic const& operator=(weak_atomic const& other) AE_NO_TSAN
+  AE_FORCEINLINE const weak_atomic& operator=(const weak_atomic& other) AE_NO_TSAN
   {
     value.store(other.value.load(std::memory_order_relaxed), std::memory_order_relaxed);
     return *this;
@@ -612,7 +612,7 @@ public:
     const int usecs_in_1_sec = 1000000;
     const int nsecs_in_1_sec = 1000000000;
     clock_gettime(CLOCK_REALTIME, &ts);
-    ts.tv_sec += static_cast<time_t>(usecs / usecs_in_1_sec);
+    ts.tv_sec  += static_cast<time_t>(usecs / usecs_in_1_sec);
     ts.tv_nsec += static_cast<long>(usecs % usecs_in_1_sec) * 1000;
     // sem_timedwait bombs if you have more than 1e9 in tv_nsec
     // so we have to clean things up before passing it in

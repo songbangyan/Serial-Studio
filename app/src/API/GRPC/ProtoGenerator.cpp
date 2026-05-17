@@ -226,8 +226,8 @@ QString API::GRPC::ProtoGenerator::sanitizeName(const QString& name)
     }
 
     if (capitalize) {
-      result += ch.toUpper();
-      capitalize = false;
+      result     += ch.toUpper();
+      capitalize  = false;
     } else {
       result += ch;
     }

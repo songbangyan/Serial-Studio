@@ -168,8 +168,8 @@ static int skipQuotedString(QStringView line, int i)
 static void advanceJsBlockComment(QStringView line, int& i, int n, ScanState& state)
 {
   if (i + 1 < n && line[i] == QLatin1Char('*') && line[i + 1] == QLatin1Char('/')) {
-    state.in = ScanIn::Code;
-    i += 2;
+    state.in  = ScanIn::Code;
+    i        += 2;
   } else
     ++i;
 }
@@ -199,9 +199,9 @@ static void advanceLuaLong(QStringView line, int& i, ScanState& state)
 {
   int consume = 0;
   if (tryLuaLongClose(line, i, state.luaLevel, consume)) {
-    state.in       = ScanIn::Code;
-    state.luaLevel = 0;
-    i += consume;
+    state.in        = ScanIn::Code;
+    state.luaLevel  = 0;
+    i              += consume;
   } else
     ++i;
 }
@@ -254,9 +254,9 @@ static bool tryEnterComment(
     int level   = 0;
     int consume = 0;
     if (i + 2 < n && tryLuaLongOpen(line, i + 2, level, consume)) {
-      state.in       = ScanIn::LuaBlockComment;
-      state.luaLevel = level;
-      i += 2 + consume;
+      state.in        = ScanIn::LuaBlockComment;
+      state.luaLevel  = level;
+      i              += 2 + consume;
       return true;
     }
     stop = true;
@@ -265,8 +265,8 @@ static bool tryEnterComment(
 
   if (lang == Language::JavaScript && c == QLatin1Char('/') && i + 1 < n
       && line[i + 1] == QLatin1Char('*')) {
-    state.in = ScanIn::JsBlockComment;
-    i += 2;
+    state.in  = ScanIn::JsBlockComment;
+    i        += 2;
     return true;
   }
 
@@ -296,9 +296,9 @@ static bool tryEnterStringLiteral(
     int level   = 0;
     int consume = 0;
     if (tryLuaLongOpen(line, i, level, consume)) {
-      state.in       = ScanIn::LuaLongString;
-      state.luaLevel = level;
-      i += consume;
+      state.in        = ScanIn::LuaLongString;
+      state.luaLevel  = level;
+      i              += consume;
       return true;
     }
   }

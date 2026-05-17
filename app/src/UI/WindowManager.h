@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <QHash>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QMap>
@@ -30,6 +31,10 @@
 #include <QRect>
 #include <QSettings>
 #include <QVector>
+
+namespace detail {
+struct StableKey;
+}  // namespace detail
 
 namespace UI {
 class Taskbar;
@@ -119,10 +124,16 @@ public slots:
 private:
   [[nodiscard]] int getIdForWindow(QQuickItem* item) const;
   [[nodiscard]] QQuickItem* findOverlapTarget(const QRect& dragRect) const;
+  [[nodiscard]] QVector<int> resolveSavedOrder(
+    const QJsonObject& layout, const QHash<detail::StableKey, int>& stableLookup) const;
 
   [[nodiscard]] QRect extractGeometry(QQuickItem* item) const;
   [[nodiscard]] ResizeEdge detectResizeEdge(QQuickItem* target, const QPointF& pos) const;
   QQuickItem* getWindow(const int x, const int y) const;
+  void applySavedGeometries(const QJsonObject& layout,
+                            const QHash<detail::StableKey, int>& stableLookup,
+                            int marginCanvasW,
+                            int marginCanvasH);
 
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);

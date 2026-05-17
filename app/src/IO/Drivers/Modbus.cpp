@@ -1018,17 +1018,17 @@ QString IO::Drivers::Modbus::buildFrameParser() const
 
     if (is_reg) {
       for (quint16 i = 0; i < reg_group.count; ++i) {
-        const int byte_off = i * 2 + 1;
-        code += QStringLiteral("    values[%1] = (data[%2] << 8) | data[%3]\n")
+        const int byte_off  = i * 2 + 1;
+        code               += QStringLiteral("    values[%1] = (data[%2] << 8) | data[%3]\n")
                   .arg(dataset_offset + i + 1)
                   .arg(byte_off)
                   .arg(byte_off + 1);
       }
     } else {
       for (quint16 i = 0; i < reg_group.count; ++i) {
-        const int byte_idx = i / 8 + 1;
-        const int bit_idx  = i % 8;
-        code += QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n")
+        const int byte_idx  = i / 8 + 1;
+        const int bit_idx   = i % 8;
+        code               += QStringLiteral("    values[%1] = (data[%2] >> %3) & 1\n")
                   .arg(dataset_offset + i + 1)
                   .arg(byte_idx)
                   .arg(bit_idx);

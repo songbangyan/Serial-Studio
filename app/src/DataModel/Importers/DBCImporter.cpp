@@ -404,9 +404,9 @@ QString DataModel::DBCImporter::generateFrameParser(const QList<QCanMessageDescr
     }
   }
 
-  const auto totalSignals = countTotalSignals(messages);
-  code += frameParserHeader(totalSignals);
-  code += frameParserExtractHelper();
+  const auto totalSignals  = countTotalSignals(messages);
+  code                    += frameParserHeader(totalSignals);
+  code                    += frameParserExtractHelper();
 
   int datasetIndex = 1;
   for (const auto& message : messages) {
@@ -538,8 +538,8 @@ QString DataModel::DBCImporter::frameParserDispatchTable(
   code += "  end\n\n";
   // clang-format on
 
-  code += "  -- Route CAN ID to the matching message decoder\n";
-  bool first = true;
+  code       += "  -- Route CAN ID to the matching message decoder\n";
+  bool first  = true;
   for (const auto& message : messages) {
     if (!hasImportableSignals(message))
       continue;
@@ -548,8 +548,8 @@ QString DataModel::DBCImporter::frameParserDispatchTable(
     const auto hex   = QString::number(msgId, 16).toUpper();
 
     if (first) {
-      code += QString("  if canId == 0x%1 then\n").arg(hex);
-      first = false;
+      code  += QString("  if canId == 0x%1 then\n").arg(hex);
+      first  = false;
     } else {
       code += QString("  elseif canId == 0x%1 then\n").arg(hex);
     }
@@ -580,13 +580,13 @@ QString DataModel::DBCImporter::generateMessageDecoder(const QCanMessageDescript
   const QCanSignalDescription* selector =
     selectorIndex >= 0 ? &signalList.at(selectorIndex) : nullptr;
 
-  QString code = generateDecoderHeader(message, selector, startIndex);
-  code += QString("local function decode_%1(data)\n").arg(QString::number(msgId, 16));
+  QString code  = generateDecoderHeader(message, selector, startIndex);
+  code         += QString("local function decode_%1(data)\n").arg(QString::number(msgId, 16));
 
   bool firstEmit = true;
   if (selector) {
-    code += emitSelectorExtraction(*selector, datasetIndex);
-    firstEmit = false;
+    code      += emitSelectorExtraction(*selector, datasetIndex);
+    firstEmit  = false;
   }
 
   code += emitPlainExtractions(message, datasetIndex, firstEmit);

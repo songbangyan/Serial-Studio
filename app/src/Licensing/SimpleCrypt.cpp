@@ -182,14 +182,14 @@ QByteArray Licensing::SimpleCrypt::encryptToByteArray(const QByteArray& plaintex
 
   CryptoFlags flags = CryptoFlagNone;
   if (m_compressionMode == CompressionAlways) {
-    ba = qCompress(ba, 9);
+    ba     = qCompress(ba, 9);
     flags |= CryptoFlagCompression;
   }
 
   else if (m_compressionMode == CompressionAuto) {
     QByteArray compressed = qCompress(ba, 9);
     if (compressed.size() < ba.size()) {
-      ba = compressed;
+      ba     = compressed;
       flags |= CryptoFlagCompression;
     }
   }

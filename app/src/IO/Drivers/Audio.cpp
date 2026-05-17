@@ -436,14 +436,14 @@ bool IO::Drivers::Audio::configurationOk() const noexcept
   if (!validateInput())
     return false;
 
-  bool ok       = true;
-  const auto& c = m_inputCapabilities[m_selectedInputDevice];
-  ok &= m_selectedSampleRate >= 0;
-  ok &= m_selectedInputSampleFormat >= 0;
-  ok &= m_selectedInputChannelConfiguration >= 0;
-  ok &= m_selectedInputSampleFormat < c.supportedFormats.size();
-  ok &= m_selectedSampleRate < c.supportedSampleRates.size();
-  ok &= m_selectedInputChannelConfiguration < c.supportedChannelCounts.size();
+  bool ok        = true;
+  const auto& c  = m_inputCapabilities[m_selectedInputDevice];
+  ok            &= m_selectedSampleRate >= 0;
+  ok            &= m_selectedInputSampleFormat >= 0;
+  ok            &= m_selectedInputChannelConfiguration >= 0;
+  ok            &= m_selectedInputSampleFormat < c.supportedFormats.size();
+  ok            &= m_selectedSampleRate < c.supportedSampleRates.size();
+  ok            &= m_selectedInputChannelConfiguration < c.supportedChannelCounts.size();
 
   return ok;
 }
