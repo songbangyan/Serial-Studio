@@ -133,11 +133,16 @@ def test_hotpath_byte_array_ptrs_are_null_guarded():
     server = _read("app/src/API/Server.cpp")
     console = _read("app/src/Console/Handler.cpp")
 
-    # FrameReader::processData receives an IO::CapturedDataPtr that wraps a
-    # ByteArrayPtr in `data->data`, so the null-guard checks both layers.
-    assert "if (!data || !data->data || data->data->isEmpty())" in frame_reader
-    assert "if (!data || data->isEmpty() || m_sockets.isEmpty())" in server
-    assert "if (!data)" in console
+    # FrameReader::processData receives an IO::CapturedDataPtr whose `data`
+    # field is now a QByteArray (the shared_ptr indirection was removed
+    # because QByteArray is already COW with an atomic refcount).
+    assert "if (!data || data->data.isEmpty())" in frame_reader
+    # ServerWorker::writeRawData takes a QByteArray directly; guard skips the
+    # broadcast if the payload or the client list is empty.
+    assert "if (data.isEmpty() || m_sockets.isEmpty())" in server
+    # Console::Handler::hotpathRxData accepts a QByteArray reference and
+    # short-circuits on an empty payload.
+    assert "if (data.isEmpty())" in console
 
 
 def test_window_manager_taskbar_access_is_guarded():
@@ -376,9 +381,13 @@ def test_timestamp_pipeline_starts_in_driver_and_shares_parsed_frames():
     )
     assert "dashboard.hotpathRxFrame(frame);" in builder_cpp
     assert "const auto frameTs = data->timestamp + step * i;" in builder_cpp
+    # Hotpath fan-out draws each TimestampedFramePtr from a fixed-size slot
+    # pool (acquireFrame) so we never heap-allocate per frame.
+    assert "hotpathTxFrame(acquireFrame(m_frame, frameTs));" in builder_cpp
     assert (
-        "std::make_shared<DataModel::TimestampedFrame>(m_frame, frameTs)" in builder_cpp
-    )
+        "std::make_shared<DataModel::TimestampedFrame>(m_frame, frameTs)"
+        not in builder_cpp
+    ), "FrameBuilder hotpath must use acquireFrame() pool, not std::make_shared"
     assert "updateTimestampedFramesEnabled" not in builder_cpp
     assert "nextTimestampedFrameTime" not in builder_cpp
 

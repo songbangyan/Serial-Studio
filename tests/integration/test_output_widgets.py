@@ -319,7 +319,9 @@ def test_output_widgets_visible_in_dashboard_with_pro(api_client, clean_state):
     time.sleep(0.3)
 
     dashboard = api_client.get_dashboard_status()
-    total_widgets = dashboard.get("totalWidgetCount", 0)
+    # dashboard.getStatus exposes the count under "widgetCount"; the legacy
+    # "totalWidgetCount" name was never on the wire.
+    total_widgets = dashboard.get("widgetCount", 0)
 
     # Should have at least the data grid + the output panel widget
     assert (

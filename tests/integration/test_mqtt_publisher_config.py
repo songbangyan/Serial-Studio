@@ -78,6 +78,9 @@ class TestMqttPublisherSerialization:
         if not _is_pro_build(api_client):
             pytest.skip("MQTT publisher requires a commercial build")
 
+        # clientId is only persisted when customClientId=True; auto-generated
+        # client IDs are intentionally regenerated on each load (see
+        # MQTT::Publisher::toJson + applyProjectConfig).
         publisher = {
             "enabled": True,
             "mode": 0,  # DashboardData
@@ -86,6 +89,7 @@ class TestMqttPublisherSerialization:
             "notificationTopic": "ss/test/notifications",
             "hostname": "broker.example.com",
             "port": 8883,
+            "customClientId": True,
             "clientId": "ss-test-client",
             "username": "tester",
             "password": "secret",
@@ -107,7 +111,12 @@ class TestMqttPublisherSerialization:
             isinstance(round_tripped, dict) and round_tripped
         ), "Loaded mqttPublisher section disappeared on export"
 
+        # Credentials (username/password) are stored encrypted in QSettings,
+        # not in the project file, so they intentionally drop out of toJson().
+        non_persistent = {"username", "password"}
         for key in publisher:
+            if key in non_persistent:
+                continue
             assert key in round_tripped, f"Missing key after round-trip: {key}"
 
         assert round_tripped["hostname"] == "broker.example.com"
@@ -186,6 +195,12 @@ class TestMqttPublisherDefaults:
         publisher = exported.get("mqttPublisher", {})
         assert publisher.get("hostname") == "192.0.2.10"
         assert "port" in publisher, "Default port should be filled in"
-        assert "clientId" in publisher, "Default client ID should be generated"
+        # Auto-generated client IDs are regenerated on every load and not
+        # persisted (toJson only emits clientId when customClientId=True).
+        # customClientId itself should always round-trip.
+        assert "customClientId" in publisher, "customClientId flag should be filled in"
+        assert (
+            bool(publisher.get("customClientId", True)) is False
+        ), "Default customClientId should be False (auto-generated)"
         # Default port for MQTT is 1883
         assert int(publisher.get("port", 0)) == 1883

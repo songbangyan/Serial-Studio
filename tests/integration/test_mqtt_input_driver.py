@@ -76,7 +76,7 @@ class TestMqttBusTypeRegistration:
 @pytest.mark.mqtt
 @pytest.mark.integration
 class TestMqttDriverProperties:
-    """Driver properties must round-trip through Source::connectionSettings."""
+    """Driver properties must round-trip through Source.connection (Keys::SourceConn)."""
 
     def _switch_source0_to_mqtt(self, api_client) -> None:
         """Configure source 0 to use the MQTT input driver."""
@@ -94,7 +94,7 @@ class TestMqttDriverProperties:
         time.sleep(0.2)
 
         config = api_client.source_get_configuration(0)
-        settings = config.get("connectionSettings", {})
+        settings = config.get("connection", {})
         assert settings.get("hostname") == "broker.example.com"
 
     def test_port_round_trip(self, api_client, clean_state):
@@ -108,7 +108,7 @@ class TestMqttDriverProperties:
         time.sleep(0.2)
 
         config = api_client.source_get_configuration(0)
-        settings = config.get("connectionSettings", {})
+        settings = config.get("connection", {})
         assert int(settings.get("port", 0)) == 8883
 
     def test_topic_filter_round_trip(self, api_client, clean_state):
@@ -122,7 +122,7 @@ class TestMqttDriverProperties:
         time.sleep(0.2)
 
         config = api_client.source_get_configuration(0)
-        settings = config.get("connectionSettings", {})
+        settings = config.get("connection", {})
         assert settings.get("topicFilter") == "sensors/#"
 
     def test_full_broker_config_via_source_configure(self, api_client, clean_state):
@@ -146,7 +146,7 @@ class TestMqttDriverProperties:
         time.sleep(0.3)
 
         config = api_client.source_get_configuration(0)
-        settings = config.get("connectionSettings", {})
+        settings = config.get("connection", {})
         assert settings.get("hostname") == "127.0.0.1"
         assert int(settings.get("port", 0)) == 1883
         assert settings.get("topicFilter") == "ss/test"
@@ -161,7 +161,7 @@ class TestMqttDriverProperties:
         self._switch_source0_to_mqtt(api_client)
 
         config = api_client.source_get_configuration(0)
-        settings = config.get("connectionSettings", {})
+        settings = config.get("connection", {})
         # sslEnabled may be missing from the JSON (default false) or explicitly false
         assert not settings.get("sslEnabled", False)
 
@@ -224,10 +224,8 @@ class TestMqttMultiSource:
         )
         time.sleep(0.3)
 
-        cfg0 = api_client.source_get_configuration(0).get("connectionSettings", {})
-        cfg1 = api_client.source_get_configuration(second_id).get(
-            "connectionSettings", {}
-        )
+        cfg0 = api_client.source_get_configuration(0).get("connection", {})
+        cfg1 = api_client.source_get_configuration(second_id).get("connection", {})
 
         assert cfg0.get("hostname") == "broker-a.example.com"
         assert cfg1.get("hostname") == "broker-b.example.com"
