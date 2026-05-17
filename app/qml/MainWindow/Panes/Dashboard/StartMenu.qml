@@ -39,6 +39,11 @@ Popup {
   closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
   height: Math.max(gradientHeight, _layout.implicitHeight + 16)
 
+  Component.onCompleted: {
+    contentItem.LayoutMirroring.enabled = Qt.binding(() => Cpp_Misc_Translator.rtl)
+    contentItem.LayoutMirroring.childrenInherit = true
+  }
+
   enter: Transition {
     NumberAnimation {
       duration: 200
@@ -342,7 +347,9 @@ Popup {
         _groups.popup.showCheckable = true
         _groups.popup.model = model
         _groups.popup.maximumHeight = root.height
-        _groups.popup.x = root.x + root.width - 1
+        _groups.popup.x = Cpp_Misc_Translator.rtl
+                          ? root.x - _groups.popup.width + 1
+                          : root.x + root.width - 1
         _groups.popup.currentValue = taskBar.activeGroupId
         _groups.popup.placeholderText = qsTr("No Workspaces Available")
 
@@ -396,7 +403,9 @@ Popup {
         // Update popup state
         _actions.popup.maximumHeight = root.height
         _actions.popup.model = Cpp_UI_Dashboard.actions
-        _actions.popup.x = root.x + root.width - 1
+        _actions.popup.x = Cpp_Misc_Translator.rtl
+                           ? root.x - _actions.popup.width + 1
+                           : root.x + root.width - 1
         _actions.popup.y = _actions.y + _layout.y + root.y + 4
         _actions.popup.placeholderText = qsTr("No Actions Available")
 
@@ -471,7 +480,9 @@ Popup {
 
         _plugins.popup.model = items
         _plugins.popup.maximumHeight = root.height
-        _plugins.popup.x = root.x + root.width - 1
+        _plugins.popup.x = Cpp_Misc_Translator.rtl
+                           ? root.x - _plugins.popup.width + 1
+                           : root.x + root.width - 1
         _plugins.popup.y = _plugins.y + _layout.y + root.y + 4
         _plugins.popup.placeholderText = qsTr("No Plugins Installed")
         _plugins.popup.open()
@@ -615,7 +626,9 @@ Popup {
         _export.popup.model = model
         _export.popup.showCheckable = true
         _export.popup.maximumHeight = root.height
-        _export.popup.x = root.x + root.width - 1
+        _export.popup.x = Cpp_Misc_Translator.rtl
+                          ? root.x - _export.popup.width + 1
+                          : root.x + root.width - 1
         _export.popup.y = _export.y + _layout.y + root.y + 4
         _export.popup.placeholderText = qsTr("No Export Formats Available")
 
@@ -749,7 +762,9 @@ Popup {
         _tools.popup.model = model
         _tools.popup.showCheckable = true
         _tools.popup.maximumHeight = root.height
-        _tools.popup.x = root.x + root.width - 1
+        _tools.popup.x = Cpp_Misc_Translator.rtl
+                         ? root.x - _tools.popup.width + 1
+                         : root.x + root.width - 1
         _tools.popup.y = _tools.y + _layout.y + root.y + 4
         _tools.popup.placeholderText = qsTr("No Tools Available")
 

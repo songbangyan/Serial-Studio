@@ -40,6 +40,9 @@ class Translator : public QObject {
   Q_PROPERTY(QStringList availableLanguages
              READ availableLanguages
              CONSTANT)
+  Q_PROPERTY(bool rtl
+             READ rtl
+             NOTIFY languageChanged)
   Q_PROPERTY(QString welcomeConsoleText
              READ welcomeConsoleText
              NOTIFY languageChanged)
@@ -79,11 +82,15 @@ public:
     Hindi,
     Dutch,
     Romanian,
-    Swedish
+    Swedish,
+    Arabic,
+    Hebrew,
+    Vietnamese
   };
 
   Q_ENUM(Language);
 
+  [[nodiscard]] bool rtl() const;
   [[nodiscard]] Language language() const;
   [[nodiscard]] Language systemLanguage() const;
   [[nodiscard]] static QStringList& availableLanguages();

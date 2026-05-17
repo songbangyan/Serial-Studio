@@ -18,5 +18,8 @@
         <file>qm/nl_NL.qm</file>
         <file>qm/ro_RO.qm</file>
         <file>qm/sv_SE.qm</file>
+        <file>qm/ar_SA.qm</file>
+        <file>qm/he_IL.qm</file>
+        <file>qm/vi_VN.qm</file>
     </qresource>
 </RCC>

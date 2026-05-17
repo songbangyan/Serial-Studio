@@ -109,6 +109,11 @@ Window {
   }
 
   //
+  // Mirror entire scene graph when active language is right-to-left
+  //
+  WindowMirror {}
+
+  //
   // Enable window dragging via titlebar
   //
   Item {

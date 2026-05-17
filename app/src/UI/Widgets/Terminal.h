@@ -176,6 +176,7 @@ private:
   void processOsc(const QChar& byte);
   void processIgnoreSeq(const QChar& byte);
   static int scanPrintableRun(const QString& data, int pos);
+  static bool lineHasRtlChar(QStringView line);
   void handleCsiCursorMove(char final);
   void handleCsiCursorAbsolute(char final);
   void handleCsiEraseDisplay();
@@ -209,6 +210,15 @@ private:
                          const QColor& defaultFg,
                          int x,
                          int y);
+  void paintSegment(QPainter* painter,
+                    const QString& segment,
+                    int segStart,
+                    const QList<CharColor>* colorLine,
+                    const QColor& defaultFg,
+                    int x,
+                    int y,
+                    int ascent,
+                    bool rtlMode);
 
   void paintSelectionHighlights(QPainter* painter, int firstLine, int lastVLine, int lineHeight);
   void paintTextContent(QPainter* painter, int firstLine, int lastVLine, int lineHeight);

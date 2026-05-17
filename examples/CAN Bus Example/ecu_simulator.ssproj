@@ -1244,7 +1244,7 @@
         "sslProtocol": 5,
         "topicBase": ""
     },
-    "pointCount": 5000,
+    "pointCount": 4000,
     "schemaVersion": 2,
     "sources": [
         {
@@ -1252,16 +1252,17 @@
             "checksum": "",
             "checksumAlgorithm": "",
             "connection": {
+                "autoReconnect": true,
+                "baudRate": 110,
+                "dataBitsIndex": 3,
                 "deviceId": {
-                    "channelCount": 1,
-                    "formatName": "Float 32-bit",
-                    "inputDeviceName": "MacBook Pro Microphone",
-                    "sampleRateValue": 44100
+                    "portName": "cu.Bluetooth-Incoming-Port"
                 },
-                "inputChannels": 0,
-                "inputDevice": 0,
-                "inputFormat": 0,
-                "sampleRate": 0
+                "dtr": true,
+                "flowControlIndex": 0,
+                "parityIndex": 0,
+                "portIndex": 2,
+                "stopBitsIndex": 0
             },
             "decoder": 3,
             "decoderMethod": 3,
@@ -1280,88 +1281,88 @@
         "layout:1000": {
             "data": {
                 "autoLayout": true,
-                "canvasHeight": 871,
-                "canvasWidth": 1922,
+                "canvasHeight": 504,
+                "canvasWidth": 1053,
                 "geometries": [
                     {
-                        "height": 432,
+                        "height": 248,
                         "id": 5,
                         "state": "normal",
-                        "width": 383,
+                        "width": 209,
                         "x": 4,
                         "y": 4
                     },
                     {
-                        "height": 432,
+                        "height": 248,
                         "id": 6,
                         "state": "normal",
-                        "width": 383,
-                        "x": 386,
+                        "width": 209,
+                        "x": 212,
                         "y": 4
                     },
                     {
-                        "height": 432,
+                        "height": 248,
                         "id": 0,
                         "state": "normal",
-                        "width": 383,
-                        "x": 768,
+                        "width": 209,
+                        "x": 420,
                         "y": 4
                     },
                     {
-                        "height": 432,
+                        "height": 248,
                         "id": 1,
                         "state": "normal",
-                        "width": 383,
-                        "x": 1150,
+                        "width": 209,
+                        "x": 628,
                         "y": 4
                     },
                     {
-                        "height": 432,
+                        "height": 248,
                         "id": 2,
                         "state": "normal",
-                        "width": 382,
-                        "x": 1532,
+                        "width": 209,
+                        "x": 836,
                         "y": 4
                     },
                     {
-                        "height": 431,
+                        "height": 248,
                         "id": 3,
                         "state": "normal",
-                        "width": 383,
+                        "width": 209,
                         "x": 4,
-                        "y": 435
+                        "y": 251
                     },
                     {
-                        "height": 431,
+                        "height": 248,
                         "id": 7,
                         "state": "normal",
-                        "width": 383,
-                        "x": 386,
-                        "y": 435
+                        "width": 209,
+                        "x": 212,
+                        "y": 251
                     },
                     {
-                        "height": 431,
+                        "height": 248,
                         "id": 4,
                         "state": "normal",
-                        "width": 383,
-                        "x": 768,
-                        "y": 435
+                        "width": 209,
+                        "x": 420,
+                        "y": 251
                     },
                     {
-                        "height": 431,
+                        "height": 248,
                         "id": 8,
                         "state": "normal",
-                        "width": 383,
-                        "x": 1150,
-                        "y": 435
+                        "width": 209,
+                        "x": 628,
+                        "y": 251
                     },
                     {
-                        "height": 431,
+                        "height": 248,
                         "id": 9,
                         "state": "normal",
-                        "width": 382,
-                        "x": 1532,
-                        "y": 435
+                        "width": 209,
+                        "x": 836,
+                        "y": 251
                     }
                 ],
                 "userReordered": false,
@@ -1382,11 +1383,11 @@
         "layout:1001": {
             "data": {
                 "autoLayout": true,
-                "canvasHeight": 477,
-                "canvasWidth": 950,
+                "canvasHeight": 504,
+                "canvasWidth": 1053,
                 "geometries": [
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 5,
                         "state": "normal",
                         "width": 105,
@@ -1394,7 +1395,7 @@
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 20,
                         "state": "normal",
                         "width": 105,
@@ -1402,7 +1403,7 @@
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 21,
                         "state": "normal",
                         "width": 105,
@@ -1410,7 +1411,7 @@
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 6,
                         "state": "normal",
                         "width": 105,
@@ -1418,7 +1419,7 @@
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 12,
                         "state": "normal",
                         "width": 105,
@@ -1426,276 +1427,276 @@
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 13,
                         "state": "normal",
-                        "width": 105,
+                        "width": 104,
                         "x": 524,
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 0,
                         "state": "normal",
                         "width": 104,
-                        "x": 628,
+                        "x": 627,
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 22,
                         "state": "normal",
                         "width": 104,
-                        "x": 731,
+                        "x": 730,
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 14,
                         "state": "normal",
                         "width": 104,
-                        "x": 834,
+                        "x": 833,
                         "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 1,
                         "state": "normal",
-                        "width": 105,
-                        "x": 4,
-                        "y": 97
+                        "width": 104,
+                        "x": 936,
+                        "y": 4
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 15,
                         "state": "normal",
                         "width": 105,
-                        "x": 108,
-                        "y": 97
+                        "x": 4,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 23,
                         "state": "normal",
                         "width": 105,
-                        "x": 212,
-                        "y": 97
+                        "x": 108,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 16,
                         "state": "normal",
                         "width": 105,
-                        "x": 316,
-                        "y": 97
+                        "x": 212,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 2,
                         "state": "normal",
                         "width": 105,
-                        "x": 420,
-                        "y": 97
+                        "x": 316,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 24,
                         "state": "normal",
                         "width": 105,
-                        "x": 524,
-                        "y": 97
+                        "x": 420,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 25,
                         "state": "normal",
                         "width": 104,
-                        "x": 628,
-                        "y": 97
+                        "x": 524,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 3,
                         "state": "normal",
                         "width": 104,
-                        "x": 731,
-                        "y": 97
+                        "x": 627,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 17,
                         "state": "normal",
                         "width": 104,
-                        "x": 834,
-                        "y": 97
+                        "x": 730,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 18,
                         "state": "normal",
-                        "width": 105,
-                        "x": 4,
-                        "y": 190
+                        "width": 104,
+                        "x": 833,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 7,
                         "state": "normal",
-                        "width": 105,
-                        "x": 108,
-                        "y": 190
+                        "width": 104,
+                        "x": 936,
+                        "y": 127
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 26,
                         "state": "normal",
                         "width": 105,
-                        "x": 212,
-                        "y": 190
+                        "x": 4,
+                        "y": 250
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 27,
                         "state": "normal",
                         "width": 105,
-                        "x": 316,
-                        "y": 190
+                        "x": 108,
+                        "y": 250
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 28,
                         "state": "normal",
                         "width": 105,
-                        "x": 420,
-                        "y": 190
+                        "x": 212,
+                        "y": 250
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 29,
                         "state": "normal",
                         "width": 105,
-                        "x": 524,
-                        "y": 190
-                    },
-                    {
-                        "height": 94,
-                        "id": 30,
-                        "state": "normal",
-                        "width": 104,
-                        "x": 628,
-                        "y": 190
-                    },
-                    {
-                        "height": 94,
-                        "id": 31,
-                        "state": "normal",
-                        "width": 104,
-                        "x": 731,
-                        "y": 190
-                    },
-                    {
-                        "height": 94,
-                        "id": 32,
-                        "state": "normal",
-                        "width": 104,
-                        "x": 834,
-                        "y": 190
-                    },
-                    {
-                        "height": 94,
-                        "id": 33,
-                        "state": "normal",
-                        "width": 105,
-                        "x": 4,
-                        "y": 283
-                    },
-                    {
-                        "height": 94,
-                        "id": 4,
-                        "state": "normal",
-                        "width": 105,
-                        "x": 108,
-                        "y": 283
-                    },
-                    {
-                        "height": 94,
-                        "id": 8,
-                        "state": "normal",
-                        "width": 105,
-                        "x": 212,
-                        "y": 283
-                    },
-                    {
-                        "height": 94,
-                        "id": 34,
-                        "state": "normal",
-                        "width": 105,
                         "x": 316,
-                        "y": 283
+                        "y": 250
                     },
                     {
-                        "height": 94,
-                        "id": 19,
+                        "height": 124,
+                        "id": 30,
                         "state": "normal",
                         "width": 105,
                         "x": 420,
-                        "y": 283
+                        "y": 250
                     },
                     {
-                        "height": 94,
+                        "height": 124,
+                        "id": 31,
+                        "state": "normal",
+                        "width": 104,
+                        "x": 524,
+                        "y": 250
+                    },
+                    {
+                        "height": 124,
+                        "id": 32,
+                        "state": "normal",
+                        "width": 104,
+                        "x": 627,
+                        "y": 250
+                    },
+                    {
+                        "height": 124,
+                        "id": 33,
+                        "state": "normal",
+                        "width": 104,
+                        "x": 730,
+                        "y": 250
+                    },
+                    {
+                        "height": 124,
+                        "id": 4,
+                        "state": "normal",
+                        "width": 104,
+                        "x": 833,
+                        "y": 250
+                    },
+                    {
+                        "height": 124,
+                        "id": 8,
+                        "state": "normal",
+                        "width": 104,
+                        "x": 936,
+                        "y": 250
+                    },
+                    {
+                        "height": 124,
+                        "id": 34,
+                        "state": "normal",
+                        "width": 117,
+                        "x": 4,
+                        "y": 373
+                    },
+                    {
+                        "height": 124,
+                        "id": 19,
+                        "state": "normal",
+                        "width": 116,
+                        "x": 120,
+                        "y": 373
+                    },
+                    {
+                        "height": 124,
                         "id": 9,
                         "state": "normal",
-                        "width": 105,
-                        "x": 524,
-                        "y": 283
+                        "width": 116,
+                        "x": 235,
+                        "y": 373
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 35,
                         "state": "normal",
-                        "width": 104,
-                        "x": 628,
-                        "y": 283
+                        "width": 116,
+                        "x": 350,
+                        "y": 373
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 36,
                         "state": "normal",
-                        "width": 104,
-                        "x": 731,
-                        "y": 283
+                        "width": 116,
+                        "x": 465,
+                        "y": 373
                     },
                     {
-                        "height": 94,
+                        "height": 124,
                         "id": 37,
                         "state": "normal",
-                        "width": 104,
-                        "x": 834,
-                        "y": 283
+                        "width": 116,
+                        "x": 580,
+                        "y": 373
                     },
                     {
-                        "height": 93,
+                        "height": 124,
                         "id": 38,
                         "state": "normal",
-                        "width": 314,
-                        "x": 4,
-                        "y": 376
+                        "width": 116,
+                        "x": 695,
+                        "y": 373
                     },
                     {
-                        "height": 93,
+                        "height": 124,
                         "id": 39,
                         "state": "normal",
-                        "width": 314,
-                        "x": 317,
-                        "y": 376
+                        "width": 116,
+                        "x": 810,
+                        "y": 373
                     },
                     {
-                        "height": 93,
+                        "height": 124,
                         "id": 40,
                         "state": "normal",
-                        "width": 314,
-                        "x": 630,
-                        "y": 376
+                        "width": 116,
+                        "x": 925,
+                        "y": 373
                     }
                 ],
                 "userReordered": false,
@@ -1838,6 +1839,63 @@
                 "userReordered": false,
                 "windowOrder": [
                     4
+                ]
+            }
+        },
+        "layout:1011": {
+            "data": {
+                "autoLayout": true,
+                "canvasHeight": 501,
+                "canvasWidth": 1027,
+                "geometries": [
+                    {
+                        "height": 247,
+                        "id": 9,
+                        "state": "normal",
+                        "width": 510,
+                        "x": 4,
+                        "y": 4
+                    },
+                    {
+                        "height": 247,
+                        "id": 35,
+                        "state": "normal",
+                        "width": 510,
+                        "x": 513,
+                        "y": 4
+                    },
+                    {
+                        "height": 247,
+                        "id": 36,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 4,
+                        "y": 250
+                    },
+                    {
+                        "height": 247,
+                        "id": 37,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 343,
+                        "y": 250
+                    },
+                    {
+                        "height": 247,
+                        "id": 38,
+                        "state": "normal",
+                        "width": 340,
+                        "x": 682,
+                        "y": 250
+                    }
+                ],
+                "userReordered": false,
+                "windowOrder": [
+                    9,
+                    35,
+                    36,
+                    37,
+                    38
                 ]
             }
         },

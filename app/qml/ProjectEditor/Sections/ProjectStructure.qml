@@ -132,14 +132,20 @@ Widgets.Pane {
       }
 
       //
-      // Override default scroll speed -- TreeView's small delegate heights
-      // (18 px) make the built-in scroll feel sluggish on all platforms.
+      // Override default scroll speed (trackpad pixelDelta vs mouse angleDelta).
       //
       WheelHandler {
+        property real wheelStep: 60
+
         onWheel: (event) => {
           const maxY = Math.max(0, treeView.contentHeight - treeView.height)
-          treeView.contentY = Math.max(0, Math.min(
-            treeView.contentY - event.angleDelta.y / 120 * 60, maxY))
+          let dy = 0
+          if (event.pixelDelta.y !== 0)
+            dy = event.pixelDelta.y
+          else
+            dy = event.angleDelta.y / 15 * (wheelStep / 8)
+
+          treeView.contentY = Math.max(0, Math.min(treeView.contentY - dy, maxY))
           event.accepted = true
         }
       }
@@ -449,6 +455,9 @@ Widgets.Pane {
             elide: Label.ElideRight
             text: model.treeViewText
             Layout.alignment: Qt.AlignVCenter
+            LayoutMirroring.enabled: false
+            horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                         : Text.AlignLeft
             font: depth === 0 ? Cpp_Misc_CommonFonts.boldUiFont :
                                 Cpp_Misc_CommonFonts.uiFont
             color: current ? Cpp_ThemeManager.colors["highlighted_text"] :

@@ -458,6 +458,7 @@ Widgets.Pane {
       taskBar: root.taskBar
       isExternalWindow: root.isExternalWindow
       y: parent.height - height - _taskbar.height + 1
+      x: Cpp_Misc_Translator.rtl ? parent.width - width : 0
       onExternalWindowClicked: root.externalWindowClicked()
       onNewWorkspaceRequested: _wsDialog.openNew(root.taskBar)
       onRenameWorkspaceRequested: (wsId, name) => _wsDialog.openEdit(root.taskBar, wsId, name)

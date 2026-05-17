@@ -124,6 +124,11 @@ Window {
   }
 
   //
+  // Mirror entire scene graph when active language is right-to-left
+  //
+  WindowMirror {}
+
+  //
   // Ensure that window size stays within minimum size
   //
   Component.onCompleted: {

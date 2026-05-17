@@ -181,17 +181,17 @@
 <context>
     <name>API::Server</name>
     <message>
-        <location filename="../../src/API/Server.cpp" line="415"/>
+        <location filename="../../src/API/Server.cpp" line="408"/>
         <source>Unable to start API TCP server</source>
         <translation>API TCP sunucusu başlatılamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/API/Server.cpp" line="460"/>
+        <location filename="../../src/API/Server.cpp" line="453"/>
         <source>Allow External API Connections?</source>
         <translation>Harici API Bağlantılarına İzin Verilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/API/Server.cpp" line="461"/>
+        <location filename="../../src/API/Server.cpp" line="454"/>
         <source>Exposing the API server to external hosts allows other devices on your network to connect to Serial Studio on port 7777.
 
 Only enable this on trusted networks. Untrusted clients may read live data or send commands to your device.</source>
@@ -200,17 +200,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canlı verileri okuyabilir veya cihazınıza komut gönderebilir.</translation>
     </message>
     <message>
-        <location filename="../../src/API/Server.cpp" line="492"/>
+        <location filename="../../src/API/Server.cpp" line="485"/>
         <source>Unable to restart API TCP server</source>
         <translation>API TCP sunucusu yeniden başlatılamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/API/Server.cpp" line="1035"/>
+        <location filename="../../src/API/Server.cpp" line="1028"/>
         <source>API server</source>
         <translation>API sunucusu</translation>
     </message>
     <message>
-        <location filename="../../src/API/Server.cpp" line="1035"/>
+        <location filename="../../src/API/Server.cpp" line="1028"/>
         <source>Invalid pending connection</source>
         <translation>Geçersiz bekleyen bağlantı</translation>
     </message>
@@ -219,26 +219,31 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>About</name>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="39"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="39"/>
         <source>About</source>
         <translation>Hakkında</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="96"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="96"/>
         <source>Version %1</source>
         <translation>Sürüm %1</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="106"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="106"/>
         <source>Copyright © %1 %2</source>
         <translation>Telif Hakkı © %1 %2</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="112"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="112"/>
         <source>All Rights Reserved</source>
         <translation>Tüm Hakları Saklıdır</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="127"/>
         <source>%1 is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
 %1 is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</source>
@@ -248,56 +253,67 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="146"/>
         <source>This configuration is licensed for commercial and proprietary use. It may be used in closed-source and commercial applications, subject to the terms of the commercial license.</source>
         <translation>Bu yapılandırma ticari ve özel kullanım için lisanslanmıştır. Ticari lisans koşullarına tabi olmak üzere kapalı kaynak ve ticari uygulamalarda kullanılabilir.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="160"/>
         <source>This configuration is for personal and evaluation purposes only. Commercial use is prohibited unless a valid commercial license is activated.</source>
         <translation>Bu yapılandırma yalnızca kişisel ve değerlendirme amaçlıdır. Geçerli bir ticari lisans etkinleştirilmedikçe ticari kullanım yasaktır.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="174"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="174"/>
         <source>This software is provided 'as is' without warranty of any kind, express or implied, including but not limited to the warranties of merchantability or fitness for a particular purpose. In no event shall the author be liable for any damages arising from the use of this software.</source>
         <translation>Bu yazılım, satılabilirlik veya belirli bir amaca uygunluk garantileri de dahil olmak üzere ancak bunlarla sınırlı olmamak üzere, açık veya zımni herhangi bir garanti olmaksızın 'olduğu gibi' sağlanmaktadır. Yazar hiçbir durumda bu yazılımın kullanımından kaynaklanan herhangi bir zarardan sorumlu tutulamaz.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="195"/>
         <source>Manage License</source>
         <translation>Lisansı Yönet</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="203"/>
         <source>Donate</source>
         <translation>Bağış Yap</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="214"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="214"/>
         <source>Check for Updates</source>
         <translation>Güncellemeleri Denetle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="223"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="223"/>
         <source>License Agreement</source>
         <translation>Lisans Sözleşmesi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="232"/>
         <source>Report Bug</source>
         <translation>Hata Bildir</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="241"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="241"/>
         <source>Acknowledgements</source>
         <translation>Teşekkürler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="249"/>
         <source>Website</source>
         <translation>Web Sitesi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/About.qml" line="265"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/About.qml" line="265"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -307,21 +323,26 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <message>
         <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="168"/>
         <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Accelerometer.qml" line="168"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Accelerometer.qml" line="169"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="227"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Accelerometer.qml" line="227"/>
         <source>G-FORCE</source>
         <translation>G-KUVVET</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Accelerometer.qml" line="263"/>
         <source>PITCH ↕</source>
         <translation>YUNUSLAMA ↕</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="298"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Accelerometer.qml" line="298"/>
         <source>ROLL ↔</source>
         <translation>YALPA ↔</translation>
     </message>
@@ -330,41 +351,49 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>AccelerometerConfigDialog</name>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="35"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="35"/>
         <source>Accelerometer Configuration</source>
         <translation>İvmeölçer Yapılandırması</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="95"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="95"/>
         <source>Configure the accelerometer display range and input units.</source>
         <translation>İvmeölçer görüntüleme aralığını ve giriş birimlerini yapılandırın.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="109"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="109"/>
         <source>Display Range</source>
         <translation>Görüntüleme Aralığı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="130"/>
         <source>Max G:</source>
         <translation>Maks. G:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="144"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="144"/>
         <source>Enter max G value</source>
         <translation>Maksimum G değerini girin</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="164"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="164"/>
         <source>Input Configuration</source>
         <translation>Giriş Yapılandırması</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="184"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="184"/>
         <source>Input already in G</source>
         <translation>Giriş zaten G cinsinden</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AccelerometerConfigDialog.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AccelerometerConfigDialog.qml" line="220"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -373,16 +402,19 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>Acknowledgements</name>
     <message>
         <location filename="../../qml/Dialogs/Acknowledgements.qml" line="34"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Acknowledgements.qml" line="34"/>
         <source>Acknowledgements</source>
         <translation>Teşekkürler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Acknowledgements.qml" line="77"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Acknowledgements.qml" line="77"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Acknowledgements.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Acknowledgements.qml" line="91"/>
         <source>About Qt…</source>
         <translation>QT Hakkında…</translation>
     </message>
@@ -391,31 +423,37 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>ActionView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="136"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="136"/>
         <source>Change Icon</source>
         <translation>Simgeyi Değiştir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="138"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="138"/>
         <source>Change the icon used for this action</source>
         <translation>Bu eylem için kullanılan simgeyi değiştir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="156"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="160"/>
         <source>Duplicate this action with all its settings</source>
         <translation>Bu eylemi tüm ayarlarıyla birlikte çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="169"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="171"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ActionView.qml" line="171"/>
         <source>Delete this action from the project</source>
         <translation>Bu eylemi projeden sil</translation>
     </message>
@@ -423,77 +461,92 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>AddWidgetDialog</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="42"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="44"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="44"/>
         <source>Add Widget</source>
         <translation>Widget Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="211"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="211"/>
         <source>Available Widgets</source>
         <translation>Kullanılabilir Widget'lar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="218"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="220"/>
         <source>Click a row to add it to the workspace.</source>
         <translation>Çalışma alanına eklemek için bir satıra tıklayın.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="226"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="245"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="246"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="248"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="248"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="249"/>
         <source>Name</source>
         <translation>Ad</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="314"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="316"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="316"/>
         <source>(entire group)</source>
         <translation>(tüm grup)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="349"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="351"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="351"/>
         <source>Already in workspace</source>
         <translation>Çalışma alanında mevcut</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="350"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="352"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="352"/>
         <source>Add to workspace</source>
         <translation>Çalışma alanına ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="379"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="381"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="381"/>
         <source>No widgets available.</source>
         <translation>Kullanılabilir widget yok.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="380"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="382"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="382"/>
         <source>No widgets match.</source>
         <translation>Eşleşen widget yok.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="397"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="399"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="399"/>
         <source>%1 widgets</source>
         <translation>%1 widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="398"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="400"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="400"/>
         <source>%1 of %2 widgets</source>
         <translation>%2 widget'tan %1'i</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="406"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/AddWidgetDialog.qml" line="406"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -502,71 +555,85 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>AssistantPanel</name>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="31"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="31"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="128"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="128"/>
         <source>CSV vs MDF4 export - what is the difference?</source>
         <translation>CSV ve MDF4 dışa aktarma - fark nedir?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="131"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="131"/>
         <source>Plot, Bar, and Gauge - when to use each?</source>
         <translation>Plot, Bar ve Gauge - her birini ne zaman kullanmalı?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="203"/>
         <source>How can I help with your project?</source>
         <translation>Projenizle nasıl yardımcı olabilirim?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="204"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="204"/>
         <source>Set up your API key to get started</source>
         <translation>Başlamak için API anahtarınızı ayarlayın</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="216"/>
         <source>Describe what you would like to build, and I will configure the sources, groups, datasets, frame parsers, and transforms for you.</source>
         <translation>Ne oluşturmak istediğinizi açıklayın, kaynakları, grupları, veri kümelerini, çerçeve ayrıştırıcılarını ve dönüşümleri sizin için yapılandırayım.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="219"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="219"/>
         <source>To start chatting, paste an API key for the selected provider. Keys are encrypted on this machine and never leave your computer except to talk to the provider you choose.</source>
         <translation>Sohbete başlamak için seçilen sağlayıcı için bir API anahtarı yapıştırın. Anahtarlar bu makinede şifrelenir ve seçtiğiniz sağlayıcıyla iletişim kurmak dışında bilgisayarınızdan asla ayrılmaz.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="242"/>
         <source>Open API Key Setup</source>
         <translation>API Anahtarı Kurulumunu Aç</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="252"/>
         <source>Get a key from %1</source>
         <translation>%1 adresinden bir anahtar edinin</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="124"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="124"/>
         <source>List the sources in this project</source>
         <translation>Bu projedeki kaynakları listele</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="121"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="121"/>
         <source>Help me discover Serial Studio's features</source>
         <translation>Serial Studio'nun özelliklerini keşfetmeme yardım et</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="122"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="122"/>
         <source>What can this app do for my telemetry?</source>
         <translation>Bu uygulama telemetrim için ne yapabilir?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="123"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="123"/>
         <source>Walk me through what this project already contains</source>
         <translation>Bu projenin zaten neleri içerdiğini adım adım göster</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="127"/>
         <source>What is a session database, and why would I use one?</source>
         <translation>Oturum veritabanı nedir ve neden kullanmalıyım?</translation>
     </message>
@@ -576,11 +643,13 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="129"/>
         <source>What is a frame parser, and when do I need one?</source>
         <translation>Frame ayrıştırıcı nedir ve ne zaman ihtiyacım olur?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="130"/>
         <source>When should I use Lua vs JavaScript for the parser?</source>
         <translation>Ayrıştırıcı için Lua ve JavaScript'ten hangisini ne zaman kullanmalıyım?</translation>
     </message>
@@ -590,151 +659,181 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="132"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="132"/>
         <source>What is the difference between a transform and a frame parser?</source>
         <translation>Transform ile frame ayrıştırıcı arasındaki fark nedir?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="135"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="135"/>
         <source>Add a UART source for an Arduino</source>
         <translation>Arduino için bir UART kaynağı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="136"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="136"/>
         <source>Set up an IMU project from scratch</source>
         <translation>Sıfırdan bir IMU projesi kur</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="137"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="137"/>
         <source>Configure an MQTT subscriber</source>
         <translation>MQTT abonesi yapılandır</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="138"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="138"/>
         <source>Add a CAN bus source</source>
         <translation>CAN Bus kaynağı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="139"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="139"/>
         <source>Set up a Modbus poller</source>
         <translation>Modbus yoklayıcı kur</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="140"/>
         <source>Add a network (TCP/UDP) source</source>
         <translation>Ağ (TCP/UDP) kaynağı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="141"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="141"/>
         <source>Write a CSV frame parser for me</source>
         <translation>Benim için bir CSV çerçeve ayrıştırıcı yaz</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="142"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="142"/>
         <source>Help me parse a JSON frame</source>
         <translation>JSON frame ayrıştırmama yardım et</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="143"/>
         <source>Add an EMA smoothing transform to a dataset</source>
         <translation>Veri kümesine EMA yumuşatma dönüşümü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="144"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="144"/>
         <source>Decode hexadecimal frames</source>
         <translation>Onaltılık frame'leri çöz</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="145"/>
         <source>Calibrate a sensor with a linear transform</source>
         <translation>Doğrusal dönüşümle sensör kalibre et</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="148"/>
         <source>Suggest dashboard widgets for my data</source>
         <translation>Verilerim için gösterge paneli widget'ları öner</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="149"/>
         <source>Build an executive overview workspace</source>
         <translation>Yönetici özet çalışma alanı oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="150"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="150"/>
         <source>Add a painter widget for a custom visualization</source>
         <translation>Özel görselleştirme için çizici widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="151"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="151"/>
         <source>Show Plot, FFT, and Waterfall for one dataset</source>
         <translation>Bir Veri Kümesi için Grafik, FFT ve Şelale Göster</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="152"/>
         <source>Group my datasets into useful workspaces</source>
         <translation>Veri Kümelerimi Kullanışlı Çalışma Alanlarına Grupla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="448"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="448"/>
         <source>Ask Serial Studio anything…</source>
         <translation>Serial Studio'ya herhangi bir şey sorun…</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="468"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="468"/>
         <source>Clear conversation</source>
         <translation>Konuşmayı temizle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="513"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="513"/>
         <source>Stop generating</source>
         <translation>Oluşturmayı durdur</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="514"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="514"/>
         <source>Send message (Enter)</source>
         <translation>Mesaj gönder (Enter)</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="556"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="556"/>
         <source>Provider</source>
         <translation>Sağlayıcı</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="589"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="589"/>
         <source>Model selection</source>
         <translation>Model seçimi</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="635"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="635"/>
         <source>Run editing actions without asking each time. Blocked actions stay blocked.</source>
         <translation>Düzenleme eylemlerini her seferinde sormadan çalıştır. Engellenen eylemler engellenmiş kalır.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="637"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="637"/>
         <source>Auto-approve edits</source>
         <translation>Düzenlemeleri otomatik onayla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="656"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="656"/>
         <source>Manage API keys</source>
         <translation>API anahtarlarını yönet</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="677"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="677"/>
         <source>Working</source>
         <translation>Çalışıyor</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="678"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="678"/>
         <source>Ready</source>
         <translation>Hazır</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="679"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="679"/>
         <source>  •  cache %1k tok</source>
         <translation>•  önbellek %1k tok</translation>
     </message>
     <message>
         <location filename="../../qml/AI/AssistantPanel.qml" line="680"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/AssistantPanel.qml" line="680"/>
         <source>  •  cache write %1k tok</source>
         <translation>önbellek yazma %1k tok</translation>
     </message>
@@ -743,38 +842,47 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>Audio</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="87"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="87"/>
         <source>No Microphone Detected</source>
         <translation>Mikrofon Algılanmadı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="96"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="96"/>
         <source>Connect a mic or check your settings</source>
         <translation>Mikrofon bağlayın veya ayarlarınızı kontrol edin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="121"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="121"/>
         <source>Input Device</source>
         <translation>Giriş Aygıtı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="146"/>
         <source>Sample Rate</source>
         <translation>Örnekleme Hızı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="171"/>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="171"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="258"/>
         <source>Sample Format</source>
         <translation>Örnek Biçimi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="196"/>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="196"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="283"/>
         <source>Channels</source>
         <translation>Kanallar</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="233"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Audio.qml" line="233"/>
         <source>Output Device</source>
         <translation>Çıkış Aygıtı</translation>
     </message>
@@ -782,75 +890,93 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>AuthenticateDialog</name>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_AuthenticateDialog.h" line="100"/>
         <source>Dialog</source>
-        <translation type="vanished">İletişim Kutusu</translation>
+        <translation>İletişim Kutusu</translation>
     </message>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_AuthenticateDialog.h" line="101"/>
         <source>Please provide the user name and password for the download location.</source>
-        <translation type="vanished">İndirme konumu için kullanıcı adı ve parola sağlayın.</translation>
+        <translation>İndirme konumu için kullanıcı adı ve parola sağlayın.</translation>
     </message>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_AuthenticateDialog.h" line="102"/>
         <source>&amp;User name:</source>
-        <translation type="vanished">&amp;Kullanıcı adı:</translation>
+        <translation>&amp;Kullanıcı adı:</translation>
     </message>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_AuthenticateDialog.h" line="103"/>
         <source>&amp;Password:</source>
-        <translation type="vanished">&amp;Parola:</translation>
+        <translation>&amp;Parola:</translation>
     </message>
 </context>
 <context>
     <name>AxisRangeDialog</name>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="46"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="46"/>
         <source>Axis Range Configuration</source>
         <translation>Eksen Aralığı Yapılandırması</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="152"/>
         <source>Configure the visible range for the plot axes. Values update in real-time as you type.</source>
         <translation>Grafik eksenleri için görünür aralığı yapılandırın. Değerler yazarken gerçek zamanlı güncellenir.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="160"/>
         <source>X Axis</source>
         <translation>X Ekseni</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="183"/>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="254"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="183"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="254"/>
         <source>Minimum:</source>
         <translation>Minimum:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="195"/>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="266"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="266"/>
         <source>Enter min value</source>
         <translation>Minimum değeri girin</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="204"/>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="275"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="204"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="275"/>
         <source>Maximum:</source>
         <translation>Maksimum:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="216"/>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="287"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="287"/>
         <source>Enter max value</source>
         <translation>Maksimum değeri girin</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="231"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="231"/>
         <source>Y Axis</source>
         <translation>Y Ekseni</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="308"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="308"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/AxisRangeDialog.qml" line="321"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/AxisRangeDialog.qml" line="321"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -859,41 +985,49 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>BluetoothLE</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="52"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="52"/>
         <source>Device</source>
         <translation>Cihaz</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="106"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="106"/>
         <source>Service</source>
         <translation>Servis</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="142"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="142"/>
         <source>Characteristic</source>
         <translation>Karakteristik</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="200"/>
         <source>Scanning…</source>
         <translation>Taranıyor…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="236"/>
         <source>No Bluetooth Adapter Detected</source>
         <translation>Bluetooth Adaptörü Algılanmadı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="247"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="247"/>
         <source>Connect a Bluetooth adapter or check your system settings</source>
         <translation>Bluetooth adaptörü bağlayın veya sistem ayarlarınızı kontrol edin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="274"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="274"/>
         <source>This OS is not Supported Yet.</source>
         <translation>Bu İşletim Sistemi Henüz Desteklenmiyor.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="285"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml" line="285"/>
         <source>We'll update Serial Studio to work with this operating system as soon as Qt officially supports it</source>
         <translation>QT resmi olarak desteklediğinde Serial Studio'yu bu işletim sistemiyle çalışacak şekilde güncelleyeceğiz</translation>
     </message>
@@ -902,46 +1036,55 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>CANBus</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="55"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="55"/>
         <source>No CAN Drivers Found</source>
         <translation>CAN Sürücüsü Bulunamadı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="68"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="68"/>
         <source>Install CAN hardware drivers for your system</source>
         <translation>Sisteminiz için CAN donanım sürücülerini yükleyin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="95"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="95"/>
         <source>CAN Driver</source>
         <translation>CAN Sürücüsü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="140"/>
         <source>Interface</source>
         <translation>Arayüz</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="172"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="172"/>
         <source>Bitrate</source>
         <translation>Bit Hızı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="236"/>
         <source>Flexible Data-Rate</source>
         <translation>Esnek Veri Hızı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="268"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="268"/>
         <source>DBC Database</source>
         <translation>DBC Veritabanı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="272"/>
         <source>Import DBC File…</source>
         <translation>DBC Dosyası İçe Aktar…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/CANBus.qml" line="305"/>
         <source>No CAN Interfaces Found</source>
         <translation>CAN Arayüzü Bulunamadı</translation>
     </message>
@@ -1054,6 +1197,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>Console</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Console.qml" line="32"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Console.qml" line="32"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
@@ -1127,240 +1271,302 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>ConstantsLibraryDialog</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="42"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="44"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="44"/>
         <source>Insert Constant</source>
         <translation>Sabit Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="124"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="125"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="126"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="127"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="128"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="130"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="128"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
         <source>Fundamental</source>
         <translation>Temel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="124"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="126"/>
         <source>Speed of light in vacuum</source>
         <translation>Vakumdaki ışık hızı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="125"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="127"/>
         <source>Planck constant</source>
         <translation>Planck sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="126"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="128"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="128"/>
         <source>Elementary charge</source>
         <translation>Elementel yük</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="127"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="129"/>
         <source>Avogadro constant</source>
         <translation>Avogadro sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="128"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="130"/>
         <source>Boltzmann constant</source>
         <translation>Boltzmann sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
         <source>Stefan-Boltzmann constant</source>
         <translation>Stefan-Boltzmann sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="132"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="133"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="133"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
         <source>Mechanics</source>
         <translation>Mekanik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="131"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="133"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="133"/>
         <source>Standard gravity</source>
         <translation>Standart yerçekimi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="132"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
         <source>Gravitational constant</source>
         <translation>Yerçekimi sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="135"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="136"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="136"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
         <source>Pressure</source>
         <translation>Basınç</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="134"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="136"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="136"/>
         <source>Standard atmosphere</source>
         <translation>Standart atmosfer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="135"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
         <source>Sea-level barometric pressure</source>
         <translation>Deniz seviyesi barometrik basıncı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="138"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="139"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="140"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="139"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
         <source>Temperature</source>
         <translation>Sıcaklık</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="137"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="139"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="139"/>
         <source>Absolute zero (Celsius)</source>
         <translation>Mutlak sıfır (Celsius)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="138"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="140"/>
         <source>Water freezing point</source>
         <translation>Suyun donma noktası</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="139"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
         <source>Water boiling point (1 atm)</source>
         <translation>Suyun kaynama noktası (1 atm)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="142"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="143"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="144"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="145"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="146"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="148"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="144"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
         <source>Gases &amp; Fluids</source>
         <translation>Gazlar ve Sıvılar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="141"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="143"/>
         <source>Universal gas constant</source>
         <translation>Evrensel gaz sabiti</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="142"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="144"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="144"/>
         <source>Specific gas constant (dry air)</source>
         <translation>Özgül gaz sabiti (kuru hava)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="145"/>
         <source>Specific gas constant (water vapor)</source>
         <translation>Özgül gaz sabiti (su buharı)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="144"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="146"/>
         <source>Air density (sea level, 15°C)</source>
         <translation>Hava yoğunluğu (deniz seviyesi, 15°C)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="145"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="147"/>
         <source>Water density (4°C)</source>
         <translation>Su yoğunluğu (4°C)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="146"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="148"/>
         <source>Speed of sound in air (20°C)</source>
         <translation>Havada ses hızı (20°C)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
         <source>Heat capacity ratio (dry air)</source>
         <translation>Isı kapasitesi oranı (kuru hava)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="150"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="151"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
         <source>Electromagnetism</source>
         <translation>Elektromanyetizma</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="149"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="151"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="151"/>
         <source>Vacuum permittivity</source>
         <translation>Vakum geçirgenliği</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="150"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
         <source>Vacuum permeability</source>
         <translation>Vakum manyetik geçirgenliği</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="153"/>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="154"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="155"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="154"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="155"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="156"/>
         <source>Math</source>
         <translation>Matematik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="152"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="154"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="154"/>
         <source>Pi</source>
         <translation>Pi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="153"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="155"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="155"/>
         <source>Euler's number</source>
         <translation>Euler sayısı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="154"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="156"/>
         <source>Golden ratio</source>
         <translation>Altın oran</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="210"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="212"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="212"/>
         <source>Physics Constants</source>
         <translation>Fizik Sabitleri</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="219"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="221"/>
         <source>SI-unit preset values. Click a row to insert it into %1.</source>
         <translation>SI-birim önceden ayarlanmış değerler. %1 içine eklemek için bir satıra tıklayın.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="229"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="248"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="250"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="250"/>
         <source>Symbol</source>
         <translation>Sembol</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="249"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="251"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="251"/>
         <source>Name</source>
         <translation>Ad</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="252"/>
         <source>Value</source>
         <translation>Değer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="253"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="253"/>
         <source>Category</source>
         <translation>Kategori</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="355"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="357"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="357"/>
         <source>No constants match.</source>
         <translation>Eşleşen sabit yok.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="376"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="378"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="378"/>
         <source>%1 constants</source>
         <translation>%1 sabit</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="377"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="379"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="379"/>
         <source>%1 of %2 constants</source>
         <translation>%2 sabitten %1 tanesi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="383"/>
+        <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="385"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="385"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -1369,6 +1575,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>CsvPlayer</name>
     <message>
         <location filename="../../qml/Dialogs/CsvPlayer.qml" line="35"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/CsvPlayer.qml" line="35"/>
         <source>CSV Player</source>
         <translation>CSV Oynatıcı</translation>
     </message>
@@ -1376,62 +1583,74 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>DBCPreviewDialog</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="40"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="44"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="44"/>
         <source>DBC File Preview</source>
         <translation>DBC Dosya Önizlemesi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="165"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="169"/>
         <source>DBC File: %1</source>
         <translation>DBC Dosyası: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="173"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="177"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="177"/>
         <source>Review the CAN messages and signals to import into a new Serial Studio project.</source>
         <translation>Yeni bir Serial Studio projesine aktarılacak CAN mesajlarını ve sinyallerini inceleyin.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="181"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="185"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="185"/>
         <source>Messages</source>
         <translation>Mesajlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="215"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="219"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="219"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="225"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="229"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="229"/>
         <source>Message Name</source>
         <translation>Mesaj Adı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="231"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="235"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="235"/>
         <source>CAN ID</source>
         <translation>CAN ID</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="238"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="242"/>
         <source>Signals</source>
         <translation>Sinyaller</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="319"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="323"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="323"/>
         <source>No messages found in DBC file.</source>
         <translation>DBC dosyasında mesaj bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="337"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="341"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="341"/>
         <source>Total: %1 messages, %2 signals</source>
         <translation>Toplam: %1 mesaj, %2 sinyal</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="346"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="350"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="350"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="360"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="364"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/DBCPreviewDialog.qml" line="364"/>
         <source>Create Project</source>
         <translation>Proje Oluştur</translation>
     </message>
@@ -1440,6 +1659,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>Dashboard</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard.qml" line="127"/>
         <source>Dashboard %1</source>
         <translation>Gösterge Paneli %1</translation>
     </message>
@@ -1448,11 +1668,13 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardButton</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardButton.qml" line="40"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardButton.qml" line="40"/>
         <source>Send</source>
         <translation>Gönder</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardButton.qml" line="64"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardButton.qml" line="64"/>
         <source>No transmit function defined</source>
         <translation>İletim fonksiyonu tanımlanmamış</translation>
     </message>
@@ -1461,41 +1683,49 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardCanvas</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="56"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="56"/>
         <source>Set Wallpaper…</source>
         <translation>Duvar Kağıdı Ayarla…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="62"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="62"/>
         <source>Clear Wallpaper</source>
         <translation>Duvar Kağıdını Temizle</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="72"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="72"/>
         <source>Tile Windows</source>
         <translation>Pencereleri Döşe</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="91"/>
         <source>Pro features detected in this project.</source>
         <translation>Bu projede Pro özellikleri tespit edildi.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="93"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="93"/>
         <source>Fallback widgets are active. Purchase a license for full functionality.</source>
         <translation>Yedek widget'lar etkin. Tam işlevsellik için lisans satın alın.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="197"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="197"/>
         <source>Empty Workspace</source>
         <translation>Boş Çalışma Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="211"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="211"/>
         <source>Use the search bar to find and add widgets, or right-click a widget in another workspace to add it here.</source>
         <translation>Widget bulmak ve eklemek için arama çubuğunu kullanın veya başka bir çalışma alanındaki widget'a sağ tıklayarak buraya ekleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="225"/>
         <source>Search Widgets</source>
         <translation>Widget'ları Ara</translation>
     </message>
@@ -1504,21 +1734,25 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardLayout</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="37"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="37"/>
         <source>Dashboard</source>
         <translation>Gösterge Paneli</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="204"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="204"/>
         <source>API Server Active (%1)</source>
         <translation>API Sunucusu Etkin (%1)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="205"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="205"/>
         <source>API Server Ready</source>
         <translation>API Sunucusu Hazır</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="206"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="206"/>
         <source>API Server Off</source>
         <translation>API Sunucusu Kapalı</translation>
     </message>
@@ -1528,11 +1762,14 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="121"/>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="121"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="272"/>
         <source>Send</source>
         <translation>Gönder</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="261"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardOutputPanel.qml" line="261"/>
         <source>Enter command…</source>
         <translation>Komut girin…</translation>
     </message>
@@ -1541,6 +1778,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardSlider</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardSlider.qml" line="90"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardSlider.qml" line="90"/>
         <source>No transmit function defined</source>
         <translation>İletim fonksiyonu tanımlanmamış</translation>
     </message>
@@ -1549,16 +1787,19 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardTextField</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="46"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="46"/>
         <source>Enter command…</source>
         <translation>Komut girin…</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="56"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="56"/>
         <source>Send</source>
         <translation>Gönder</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="75"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardTextField.qml" line="75"/>
         <source>No transmit function defined</source>
         <translation>İletim fonksiyonu tanımlanmamış</translation>
     </message>
@@ -1567,16 +1808,19 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <name>DashboardToggle</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="57"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="57"/>
         <source>ON</source>
         <translation>AÇIK</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="59"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="59"/>
         <source>OFF</source>
         <translation>KAPALI</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="70"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Output/DashboardToggle.qml" line="70"/>
         <source>No transmit function defined</source>
         <translation>İletim fonksiyonu tanımlanmamış</translation>
     </message>
@@ -1586,12 +1830,16 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     <message>
         <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="91"/>
         <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="92"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/DataGrid.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/DataGrid.qml" line="92"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="91"/>
         <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="92"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/DataGrid.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/DataGrid.qml" line="92"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
@@ -1691,87 +1939,87 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation>Veri Kümesi Değer Dönüşümü</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="94"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="95"/>
         <source>Lua</source>
         <translation>Lua</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="94"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="95"/>
         <source>JavaScript</source>
         <translation>Javascript</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="118"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="119"/>
         <source>Language:</source>
         <translation>Dil:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="121"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="122"/>
         <source>Template:</source>
         <translation>Şablon:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="100"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="101"/>
         <source>Enter raw value (e.g., 1024)</source>
         <translation>Ham değeri girin (örn. 1024)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="105"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="106"/>
         <source>Test</source>
         <translation>Test</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="106"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="107"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="132"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="133"/>
         <source>Input:</source>
         <translation>Giriş:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="135"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="136"/>
         <source>Output:</source>
         <translation>Çıkış:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="108"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="109"/>
         <source>Apply</source>
         <translation>Uygula</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="109"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="110"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="215"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="216"/>
         <source>Transform — %1</source>
         <translation>Dönüşüm — %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="305"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="306"/>
         <source>Enter a value</source>
         <translation>Bir değer girin</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="312"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="313"/>
         <source>Invalid number</source>
         <translation>Geçersiz sayı</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="382"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="383"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>Belgeyi Biçimlendir	ctrl+shift+i</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="383"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="384"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>Seçimi Biçimlendir	ctrl+i</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="489"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="490"/>
         <source>--
 -- Define a transform(value) function that receives the live
 -- dataset reading and returns a transformed number. If no
@@ -1830,7 +2078,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 --</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="517"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="518"/>
         <source>/*
  * Define a transform(value) function that receives the live
  * dataset reading and returns a transformed number. If no
@@ -1887,7 +2135,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
  * fonksiyonunuzu denemek için Test'e tıklayın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="787"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="788"/>
         <source>Select Template…</source>
         <translation>Şablon Seç…</translation>
     </message>
@@ -1948,26 +2196,26 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
  * fonksiyonunuzu denemek için Test'e tıklayın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="664"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="665"/>
         <source>Engine error</source>
         <translation>Motor hatası</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="690"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="705"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="725"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="736"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="691"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="706"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="726"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="737"/>
         <source>Error: %1</source>
         <translation>Hata: %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="697"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="729"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="698"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="730"/>
         <source>Error: transform() not defined</source>
         <translation>Hata: transform() tanımlanmamış</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="711"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="712"/>
         <source>Error: transform() must return a number</source>
         <translation>Hata: transform() bir sayı döndürmelidir</translation>
     </message>
@@ -2099,12 +2347,12 @@ Example (HEX):  48 65 6C 6C 6F</source>
 <context>
     <name>DataModel::JsCodeEditor</name>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="210"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="211"/>
         <source>Change Scripting Language?</source>
         <translation>Betik Dili Değiştirilsin Mi?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="211"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="212"/>
         <source>Switching the scripting language replaces the current parser code with the equivalent template in the new language.
 
 Any unsaved changes are lost. Continue?</source>
@@ -2113,32 +2361,32 @@ Any unsaved changes are lost. Continue?</source>
 Kaydedilmemiş değişiklikler kaybolur. Devam edilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="337"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="338"/>
         <source>Select Javascript file to import</source>
         <translation>İçe aktarılacak Javascript dosyasını seçin</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="337"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="338"/>
         <source>Select Lua file to import</source>
         <translation>İçe aktarılacak Lua dosyasını seçin</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="364"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="365"/>
         <source>Code Validation Successful</source>
         <translation>Kod Doğrulama Başarılı</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="365"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="366"/>
         <source>No syntax errors detected in the parser code.</source>
         <translation>Ayrıştırıcı kodunda sözdizimi hatası algılanmadı.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="478"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="479"/>
         <source>Select Frame Parser Template</source>
         <translation>Çerçeve Ayrıştırıcı Şablonu Seç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="479"/>
+        <location filename="../../src/DataModel/Editors/JsCodeEditor.cpp" line="480"/>
         <source>Choose a template to load:</source>
         <translation>Yüklenecek bir şablon seçin:</translation>
     </message>
@@ -2213,17 +2461,17 @@ Kaydedilmemiş değişiklikler kaybolur. Devam edilsin mi?</translation>
 <context>
     <name>DataModel::OutputCodeEditor</name>
     <message>
-        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="289"/>
+        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="290"/>
         <source>Select Javascript file to import</source>
         <translation>İçe aktarılacak Javascript dosyasını seç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="343"/>
+        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="344"/>
         <source>Select Output Widget Template</source>
         <translation>Çıkış Widget Şablonu Seç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="344"/>
+        <location filename="../../src/DataModel/Editors/OutputCodeEditor.cpp" line="345"/>
         <source>Choose a template to load:</source>
         <translation>Yüklenecek bir şablon seç:</translation>
     </message>
@@ -2231,27 +2479,27 @@ Kaydedilmemiş değişiklikler kaybolur. Devam edilsin mi?</translation>
 <context>
     <name>DataModel::PainterCodeEditor</name>
     <message>
-        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="297"/>
+        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="298"/>
         <source>Select Javascript file to import</source>
         <translation>İçe Aktarılacak Javascript Dosyasını Seç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="378"/>
+        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="379"/>
         <source>Select Painter Widget Template</source>
         <translation>Painter Widget Şablonu Seç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="379"/>
+        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="380"/>
         <source>Choose a template to load:</source>
         <translation>Yüklenecek bir şablon seç:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="424"/>
+        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="425"/>
         <source>Add datasets for this template?</source>
         <translation>Bu şablon için veri kümeleri eklensin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="425"/>
+        <location filename="../../src/DataModel/Editors/PainterCodeEditor.cpp" line="426"/>
         <source>"%1" expects %2 dataset(s); the current group has %3.
 
 Add %4 dataset(s) using the template's defaults?</source>
@@ -4272,46 +4520,55 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>DataTablesView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="33"/>
         <source>Shared Memory</source>
         <translation>Paylaşımlı Bellek</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="147"/>
         <source>Add Shared Table</source>
         <translation>Paylaşımlı Tablo Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="149"/>
         <source>Add shared table</source>
         <translation>Paylaşımlı tablo ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="158"/>
         <source>Help</source>
         <translation>Yardım</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="163"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="163"/>
         <source>Open help documentation for shared memory</source>
         <translation>Paylaşımlı bellek için yardım belgelerini aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="172"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="172"/>
         <source>Name</source>
         <translation>Ad</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="173"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="173"/>
         <source>Description</source>
         <translation>Açıklama</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="174"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="174"/>
         <source>Entries</source>
         <translation>Girişler</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="265"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DataTablesView.qml" line="265"/>
         <source>No shared tables.</source>
         <translation>Paylaşımlı tablo yok.</translation>
     </message>
@@ -4320,111 +4577,133 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>DatabaseExplorer</name>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="35"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="35"/>
         <source>Sessions</source>
         <translation>Oturumlar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="218"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="218"/>
         <source>Open</source>
         <translation>Aç</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="220"/>
         <source>Open a session file</source>
         <translation>Bir oturum dosyası aç</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="226"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="226"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="229"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="229"/>
         <source>Close session file</source>
         <translation>Oturum dosyasını kapat</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="242"/>
         <source>Replay</source>
         <translation>Yeniden Oynat</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="246"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="246"/>
         <source>Replay selected session on the dashboard</source>
         <translation>Seçili oturumu panoda yeniden oynat</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="252"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="258"/>
         <source>Unlock the session file to delete sessions</source>
         <translation>Oturumları silmek için oturum dosyasının kilidini açın</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="259"/>
         <source>Delete the selected session</source>
         <translation>Seçili oturumu sil</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="276"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="276"/>
         <source>Unlock</source>
         <translation>Kilidi Aç</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="277"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="277"/>
         <source>Lock</source>
         <translation>Kilitle</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="282"/>
         <source>Unlock the session file to allow deletions</source>
         <translation>Silme işlemlerine izin vermek için oturum dosyasının kilidini açın</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="283"/>
         <source>Set a password to prevent session deletions</source>
         <translation>Oturum silme işlemlerini önlemek için bir parola belirleyin</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="298"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="298"/>
         <source>Export CSV</source>
         <translation>CSV Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="303"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="303"/>
         <source>Export selected session to CSV</source>
         <translation>Seçili oturumu CSV'ye aktar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="310"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="310"/>
         <source>Export PDF</source>
         <translation>PDF Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="315"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="315"/>
         <source>Generate a PDF report for the selected session</source>
         <translation>Seçili oturum için PDF raporu oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="329"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="329"/>
         <source>Restore Project</source>
         <translation>Projeyi Geri Yükle</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="333"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="333"/>
         <source>Restore the project file from this session file</source>
         <translation>Bu oturum dosyasından proje dosyasını geri yükle</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="402"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="402"/>
         <source>Loading session…</source>
         <translation>Oturum yükleniyor…</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="403"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/DatabaseExplorer.qml" line="403"/>
         <source>Working…</source>
         <translation>Çalışıyor…</translation>
     </message>
@@ -4433,111 +4712,133 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>DatasetView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="83"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="83"/>
         <source>Pro features detected in this project.</source>
         <translation>Bu projede Pro özellikleri algılandı.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="85"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="85"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Yedek widget'lar kullanılıyor. Tüm işlevselliğin kilidini açmak için lisans satın alın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="148"/>
         <source>Plot</source>
         <translation>Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="152"/>
         <source>Toggle 2D plot visualization for this dataset</source>
         <translation>Bu veri kümesi için 2D grafik görselleştirmesini aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="167"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="167"/>
         <source>FFT Plot</source>
         <translation>FFT Grafiği</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="170"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="170"/>
         <source>Toggle FFT plot to visualize frequency content</source>
         <translation>Frekans içeriğini görselleştirmek için FFT grafiğini aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="180"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="180"/>
         <source>Waterfall</source>
         <translation>Waterfall</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="184"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="184"/>
         <source>Toggle waterfall (spectrogram) plot — uses the FFT settings</source>
         <translation>FFT ayarlarını kullanan şelale (spektrogram) grafiğini aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="203"/>
         <source>Bar/Level</source>
         <translation>Çubuk/seviye</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="207"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="207"/>
         <source>Toggle bar/level indicator for this dataset</source>
         <translation>Bu veri kümesi için çubuk/seviye göstergesini aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="221"/>
         <source>Gauge</source>
         <translation>Gösterge</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="226"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="226"/>
         <source>Toggle gauge widget for analog-style display</source>
         <translation>Analog tarzı görüntüleme için gösterge widget'ını aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="241"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="241"/>
         <source>Compass</source>
         <translation>Pusula</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="245"/>
         <source>Toggle compass widget for directional data</source>
         <translation>Yönsel veriler için pusula widget'ını aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="259"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="264"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="264"/>
         <source>Toggle LED indicator for binary or thresholded values</source>
         <translation>İkili veya eşikli değerler için LED göstergesini aç/kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="281"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="281"/>
         <source>Transform</source>
         <translation>Dönüşüm</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="285"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="285"/>
         <source>Edit a value transform expression for calibration, filtering, or unit conversion</source>
         <translation>Kalibrasyon, filtreleme veya birim dönüşümü için bir değer dönüştürme ifadesi düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="305"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="310"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="310"/>
         <source>Duplicate this dataset with the same configuration</source>
         <translation>Bu veri kümesini aynı yapılandırmayla çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="318"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="318"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="321"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/DatasetView.qml" line="321"/>
         <source>Delete this dataset from the group</source>
         <translation>Bu veri kümesini gruptan sil</translation>
     </message>
@@ -4546,36 +4847,43 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>Donate</name>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="36"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="36"/>
         <source>Support Serial Studio</source>
         <translation>Serial Studio'yu Destekle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="85"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="85"/>
         <source>Support the development of %1!</source>
         <translation>%1 geliştirmesini destekle!</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="96"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="96"/>
         <source>Serial Studio is free &amp; open-source software supported by volunteers. Consider donating or obtaining a Pro license to support development efforts :)</source>
         <translation>Serial Studio, gönüllüler tarafından desteklenen ücretsiz ve açık kaynaklı bir yazılımdır. Geliştirme çalışmalarını desteklemek için bağış yapmayı veya Pro lisansı almayı düşünün :)</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="109"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="109"/>
         <source>You can also support this project by sharing it, reporting bugs and proposing new features!</source>
         <translation>Bu projeyi paylaşarak, hata bildirerek ve yeni özellikler önererek de destekleyebilirsiniz!</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="125"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="125"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="139"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="139"/>
         <source>Donate</source>
         <translation>Bağış Yap</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Donate.qml" line="157"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Donate.qml" line="157"/>
         <source>Get Serial Studio Pro</source>
         <translation>Serial Studio Pro Edinin</translation>
     </message>
@@ -4584,12 +4892,14 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>Downloader</name>
     <message>
         <location filename="../../../lib/QSimpleUpdater/src/Downloader.cpp" line="127"/>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_Downloader.h" line="137"/>
         <source>Stop</source>
         <translation>Durdur</translation>
     </message>
     <message>
         <location filename="../../../lib/QSimpleUpdater/src/Downloader.cpp" line="128"/>
         <location filename="../../../lib/QSimpleUpdater/src/Downloader.cpp" line="362"/>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_Downloader.h" line="134"/>
         <source>Downloading updates</source>
         <translation>Güncellemeler indiriliyor</translation>
     </message>
@@ -4651,6 +4961,7 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     </message>
     <message>
         <location filename="../../../lib/QSimpleUpdater/src/Downloader.cpp" line="288"/>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_Downloader.h" line="132"/>
         <source>Updater</source>
         <translation>Güncelleyici</translation>
     </message>
@@ -4733,113 +5044,135 @@ Geçerli biçim: 01 A2 FF 3C</translation>
         <translation>1 saniye</translation>
     </message>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_Downloader.h" line="135"/>
         <source>Time remaining: 0 minutes</source>
-        <translation type="vanished">Kalan süre: 0 dakika</translation>
+        <translation>Kalan süre: 0 dakika</translation>
     </message>
     <message>
+        <location filename="../../../build/pro-debug/lib/QSimpleUpdater/QSimpleUpdater_autogen/include/ui_Downloader.h" line="136"/>
         <source>Open</source>
-        <translation type="vanished">Aç</translation>
+        <translation>Aç</translation>
     </message>
 </context>
 <context>
     <name>ExamplesBrowser</name>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="33"/>
         <source>Examples Browser</source>
         <translation>Örnek Tarayıcı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="147"/>
         <source>Back</source>
         <translation>Geri</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="179"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="179"/>
         <source>Pro</source>
         <translation>Pro</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="200"/>
         <source>Download &amp;&amp; Open</source>
         <translation>İndir ve Aç</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="215"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="215"/>
         <source>View on GitHub</source>
         <translation>GitHub'da Görüntüle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="104"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="104"/>
         <source>Search in Examples…</source>
         <translation>Örneklerde Ara…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="271"/>
         <source>Fetching examples…</source>
         <translation>Örnekler getiriliyor…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="592"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="592"/>
         <source>Loading...</source>
         <translation>Yükleniyor...</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="593"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="593"/>
         <source>No README available.</source>
         <translation>README mevcut değil.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="633"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="633"/>
         <source>Copied to Clipboard</source>
         <translation>Panoya Kopyalandı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="696"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="696"/>
         <source>No screenshot available</source>
         <translation>Ekran görüntüsü mevcut değil</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="728"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="728"/>
         <source>Details</source>
         <translation>Detaylar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="757"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="757"/>
         <source>Info</source>
         <translation>Bilgi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="780"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="780"/>
         <source>Category:</source>
         <translation>Kategori:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="793"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="793"/>
         <source>Difficulty:</source>
         <translation>Zorluk:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="811"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="811"/>
         <source>Project:</source>
         <translation>Proje:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="853"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="853"/>
         <source>No Results Found</source>
         <translation>Sonuç Bulunamadı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="864"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="864"/>
         <source>Check the spelling or try a different search term.</source>
         <translation>Yazımı kontrol edin veya farklı bir arama terimi deneyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="879"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="879"/>
         <source>%1 examples</source>
         <translation>%1 örnek</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExamplesBrowser.qml" line="890"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExamplesBrowser.qml" line="890"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -4848,191 +5181,229 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>ExtensionManager</name>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="31"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="31"/>
         <source>Extension Manager</source>
         <translation>Eklenti Yöneticisi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="158"/>
         <source>Refresh</source>
         <translation>Yenile</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="172"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="172"/>
         <source>Repos</source>
         <translation>Depolar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="203"/>
         <source>Repository Settings</source>
         <translation>Depo Ayarları</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="215"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="215"/>
         <source>Back</source>
         <translation>Geri</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="256"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="256"/>
         <source>Install</source>
         <translation>Yükle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="273"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="273"/>
         <source>Uninstall</source>
         <translation>Kaldır</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="300"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="300"/>
         <source>Run</source>
         <translation>Çalıştır</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="324"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="324"/>
         <source>Stop</source>
         <translation>Durdur</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="358"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="358"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="101"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="101"/>
         <source>Search extensions…</source>
         <translation>Eklentilerde ara…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="408"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="408"/>
         <source>Fetching extensions…</source>
         <translation>Eklentiler getiriliyor…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="645"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="645"/>
         <source>Running</source>
         <translation>Çalışıyor</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="667"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="667"/>
         <source>Update</source>
         <translation>Güncelle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="667"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="667"/>
         <source>Installed</source>
         <translation>Yüklü</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="684"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="684"/>
         <source>Unavailable</source>
         <translation>Kullanılamıyor</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="863"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="863"/>
         <source>No description available.</source>
         <translation>Açıklama mevcut değil.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="904"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="904"/>
         <source>Details</source>
         <translation>Ayrıntılar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="925"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="925"/>
         <source>Type:</source>
         <translation>Tür:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="938"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="938"/>
         <source>Author:</source>
         <translation>Yazar:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="950"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="950"/>
         <source>Version:</source>
         <translation>Sürüm:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="962"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="962"/>
         <source>License:</source>
         <translation>Lisans:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1023"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1023"/>
         <source>No preview</source>
         <translation>Önizleme yok</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1051"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1051"/>
         <source>  PLUGIN OUTPUT</source>
         <translation>EKLENTİ ÇIKTISI</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1081"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1081"/>
         <source>No output yet. Run the plugin to see its log here.</source>
         <translation>Henüz çıktı yok. Eklentiyi çalıştırarak günlüğünü burada görüntüleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1116"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1116"/>
         <source>No preview available</source>
         <translation>Önizleme mevcut değil</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1160"/>
         <source>Repositories</source>
         <translation>Depolar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1173"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1173"/>
         <source>Add URLs to remote repositories or local folder paths.</source>
         <translation>Uzak depolara URL'ler veya yerel klasör yolları ekleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1210"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1210"/>
         <source>LOCAL</source>
         <translation>YEREL</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1267"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1267"/>
         <source>URL or local path…</source>
         <translation>URL veya yerel yol…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1298"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1298"/>
         <source>Browse…</source>
         <translation>Gözat…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1275"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1275"/>
         <source>Add</source>
         <translation>Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1335"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1335"/>
         <source>No Results Found</source>
         <translation>Sonuç Bulunamadı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1346"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1346"/>
         <source>Check the spelling or try a different search term.</source>
         <translation>Yazımı kontrol edin veya farklı bir arama terimi deneyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1370"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1370"/>
         <source>No Extensions Available</source>
         <translation>Kullanılabilir Eklenti Yok</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1381"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1381"/>
         <source>Add a repository URL or local path in the Repos settings, then refresh.</source>
         <translation>Depolar ayarlarına bir depo URL'si veya yerel yol ekleyin, ardından yenileyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1396"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1396"/>
         <source>%1 extensions</source>
         <translation>%1 eklenti</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ExtensionManager.qml" line="1407"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ExtensionManager.qml" line="1407"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -5041,56 +5412,67 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>FFTPlot</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="155"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="155"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="183"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="183"/>
         <source>Show Area Under Plot</source>
         <translation>Grafik Altındaki Alanı Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="201"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="201"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="231"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="231"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="257"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="257"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="263"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="292"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="292"/>
         <source>Magnitude (dB)</source>
         <translation>Genlik (dB)</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="293"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/FFTPlot.qml" line="293"/>
         <source>Frequency (Hz)</source>
         <translation>Frekans (Hz)</translation>
     </message>
@@ -5099,6 +5481,7 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>FileDropArea</name>
     <message>
         <location filename="../../qml/Widgets/FileDropArea.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/FileDropArea.qml" line="130"/>
         <source>Drop Projects and CSV files here</source>
         <translation>Proje ve CSV dosyalarını buraya bırakın</translation>
     </message>
@@ -5107,97 +5490,117 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>FileTransmission</name>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="33"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="101"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="101"/>
         <source>Transfer Protocol:</source>
         <translation>İletim Protokolü:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="134"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="134"/>
         <source>File Selection:</source>
         <translation>Dosya Seçimi:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="151"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="151"/>
         <source>Select File…</source>
         <translation>Dosya Seç…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="169"/>
         <source>Transmission Interval:</source>
         <translation>İletim Aralığı:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="195"/>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="271"/>
         <source>msecs</source>
         <translation>ms</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="205"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="205"/>
         <source>Block Size:</source>
         <translation>Blok Boyutu:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="233"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="233"/>
         <source>bytes</source>
         <translation>bayt</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="243"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="243"/>
         <source>Timeout:</source>
         <translation>Zaman Aşımı:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="281"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="281"/>
         <source>Max Retries:</source>
         <translation>Maksimum Yeniden Deneme:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="339"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="339"/>
         <source>Progress: %1%</source>
         <translation>İlerleme: %1%</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="372"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="372"/>
         <source>%1 / %2 bytes</source>
         <translation>%1 / %2 bayt</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="380"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="380"/>
         <source>Errors: %1</source>
         <translation>Hatalar: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="460"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="460"/>
         <source>Activity Log</source>
         <translation>Etkinlik Günlüğü</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="464"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="464"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="418"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="418"/>
         <source>Pause Transmission</source>
         <translation>İletimi Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="419"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="419"/>
         <source>Resume Transmission</source>
         <translation>İletimi Sürdür</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="422"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="422"/>
         <source>Stop Transmission</source>
         <translation>İletimi Durdur</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FileTransmission.qml" line="423"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/FileTransmission.qml" line="423"/>
         <source>Begin Transmission</source>
         <translation>İletimi Başlat</translation>
     </message>
@@ -5206,282 +5609,371 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>FlowDiagram</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="159"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="159"/>
         <source>Frame Parser</source>
         <translation>Frame Ayrıştırıcı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="166"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="166"/>
         <source>Device %1</source>
         <translation>Cihaz %1</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="390"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1360"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1382"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="390"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1382"/>
         <source>Output Panel</source>
         <translation>Çıkış Paneli</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="434"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="434"/>
         <source>Control</source>
         <translation>Kontrol</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="457"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="457"/>
         <source>Table</source>
         <translation>Tablo</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="473"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="473"/>
         <source>%1 regs</source>
         <translation>%1 kayıt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="474"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="474"/>
         <source>empty</source>
         <translation>boş</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="499"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="499"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Yayıncı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="876"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="898"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="898"/>
         <source>Open the transform code editor for this dataset.</source>
         <translation>Bu veri kümesi için dönüşüm kod düzenleyicisini aç.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1155"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1158"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1177"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1180"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1177"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1180"/>
         <source>Dataset Container</source>
         <translation>Veri Kümesi Kapsayıcısı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1167"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1189"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1189"/>
         <source>Multi-Plot</source>
         <translation>Çoklu Grafik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1170"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1192"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1192"/>
         <source>Multiple Plot</source>
         <translation>Çoklu Grafik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1179"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1182"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1201"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1204"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1201"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1204"/>
         <source>Accelerometer</source>
         <translation>İvmeölçer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1191"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1194"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1213"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1216"/>
         <source>Gyroscope</source>
         <translation>Jiroskop</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1203"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1206"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1225"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1228"/>
         <source>GPS Map</source>
         <translation>GPS Haritası</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1214"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1217"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1236"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1239"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1239"/>
         <source>3D Plot</source>
         <translation>3D Grafik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1225"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1228"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1247"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1250"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1247"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1250"/>
         <source>Image View</source>
         <translation>Görüntü Görünümü</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1237"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1240"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1259"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1262"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1262"/>
         <source>Painter Widget</source>
         <translation>Painter Widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1249"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1252"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1271"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1274"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1274"/>
         <source>Data Grid</source>
         <translation>Veri Tablosu</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1265"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1287"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1287"/>
         <source>Generic</source>
         <translation>Genel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1278"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1300"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1300"/>
         <source>Plot</source>
         <translation>Grafik</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1291"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1313"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1313"/>
         <source>FFT Plot</source>
         <translation>FFT Grafiği</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1304"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1326"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1326"/>
         <source>Gauge</source>
         <translation>Gösterge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1317"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1339"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1339"/>
         <source>Level Indicator</source>
         <translation>Seviye Göstergesi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1330"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1352"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1352"/>
         <source>Compass</source>
         <translation>Pusula</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1343"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1365"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1365"/>
         <source>LED Indicator</source>
         <translation>LED Göstergesi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1372"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1394"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1394"/>
         <source>Slider</source>
         <translation>Kaydırıcı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1385"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1407"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1407"/>
         <source>Toggle</source>
         <translation>Anahtar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1398"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1420"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1420"/>
         <source>Knob</source>
         <translation>Düğme</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1411"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1433"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1433"/>
         <source>Text Field</source>
         <translation>Metin Alanı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1424"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1446"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1446"/>
         <source>Button</source>
         <translation>Düğme</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1448"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1522"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1608"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1470"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1544"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1630"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1470"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1544"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1630"/>
         <source>Add Group</source>
         <translation>Grup Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1463"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1537"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1623"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1667"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1485"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1559"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1645"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1689"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1485"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1559"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1645"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1689"/>
         <source>Add Dataset</source>
         <translation>Veri Kümesi Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1476"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1550"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1636"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1680"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1887"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1498"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1572"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1658"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1702"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1909"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1498"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1572"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1658"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1702"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1909"/>
         <source>Add Output</source>
         <translation>Çıkış Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1492"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1563"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1514"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1585"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1514"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1585"/>
         <source>Add Action</source>
         <translation>Eylem Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1501"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1523"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1523"/>
         <source>Add Data Source</source>
         <translation>Veri Kaynağı Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1508"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1530"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1530"/>
         <source>Add Data Table</source>
         <translation>Veri Tablosu Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1574"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1707"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1774"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1902"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1936"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1992"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1596"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1729"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1796"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1924"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1958"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2014"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1596"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1729"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1796"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1924"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1958"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="2014"/>
         <source>Rename…</source>
         <translation>Yeniden Adlandır…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1582"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1737"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1807"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1859"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1910"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1966"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1604"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1759"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1829"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1881"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1932"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1988"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1604"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1759"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1829"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1881"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1932"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1988"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1593"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1748"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1819"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1871"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1921"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1977"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2003"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1615"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1770"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1841"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1893"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1943"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1999"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2025"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1615"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1770"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1841"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1893"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1943"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1999"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="2025"/>
         <source>Delete…</source>
         <translation>Sil…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1652"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1674"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1674"/>
         <source>Edit Frame Parser…</source>
         <translation>Çerçeve Ayrıştırıcısını Düzenle…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1693"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1715"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1715"/>
         <source>Edit Painter Code…</source>
         <translation>Painter Kodunu Düzenle…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1715"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1783"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1835"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1944"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1737"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1805"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1857"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1966"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1737"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1805"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1857"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1966"/>
         <source>Move Up</source>
         <translation>Yukarı Taşı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1726"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1795"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1847"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1955"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1748"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1817"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1869"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1977"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1748"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1817"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1869"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1977"/>
         <source>Move Down</source>
         <translation>Aşağı Taşı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1763"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1785"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="1785"/>
         <source>Edit Transform Code…</source>
         <translation>Transform Kodunu Düzenle…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2018"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2040"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="2040"/>
         <source>Edit Code…</source>
         <translation>Kodu Düzenle…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="222"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="222"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="340"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FlowDiagram.qml" line="340"/>
         <source>Action</source>
         <translation>Eylem</translation>
     </message>
@@ -5495,120 +5987,148 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="102"/>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="102"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="249"/>
         <source>Undo</source>
         <translation>Geri Al</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="109"/>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="109"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="263"/>
         <source>Redo</source>
         <translation>Yinele</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="118"/>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="288"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="118"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="288"/>
         <source>Cut</source>
         <translation>Kes</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="123"/>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="123"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="301"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="128"/>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="314"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="128"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="314"/>
         <source>Paste</source>
         <translation>Yapıştır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="135"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="135"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="145"/>
         <source>Format Document</source>
         <translation>Belgeyi Biçimlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="152"/>
         <source>Format Selection</source>
         <translation>Seçimi Biçimlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="223"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="223"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="228"/>
         <source>Reset to the default parsing script</source>
         <translation>Varsayılan ayrıştırma betiğine sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="236"/>
         <source>Open</source>
         <translation>Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="241"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="241"/>
         <source>Import a script file for data parsing</source>
         <translation>Veri ayrıştırma için bir betik dosyası içe aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="343"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="343"/>
         <source>Open help documentation for data parsing</source>
         <translation>Veri ayrıştırma için yardım belgelerini aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="365"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="365"/>
         <source>Language:</source>
         <translation>Dil:</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="421"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="421"/>
         <source>Select Template…</source>
         <translation>Şablon Seç…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="437"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="437"/>
         <source>Test With Sample Data</source>
         <translation>Örnek Veriyle Test Et</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="447"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="447"/>
         <source>Evaluate</source>
         <translation>Değerlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="254"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="254"/>
         <source>Undo the last code edit</source>
         <translation>Son kod düzenlemesini geri al</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="269"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="269"/>
         <source>Redo the previously undone edit</source>
         <translation>Geri alınan düzenlemeyi yinele</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="293"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="293"/>
         <source>Cut selected code to clipboard</source>
         <translation>Seçili kodu panoya kes</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="306"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="306"/>
         <source>Copy selected code to clipboard</source>
         <translation>Seçili kodu panoya kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="318"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="318"/>
         <source>Paste code from clipboard</source>
         <translation>Panodan kod yapıştır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FrameParserView.qml" line="338"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/FrameParserView.qml" line="338"/>
         <source>Help</source>
         <translation>Yardım</translation>
     </message>
@@ -5617,36 +6137,43 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>GPS</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="102"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="102"/>
         <source>Auto Center</source>
         <translation>Otomatik Ortala</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="118"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="118"/>
         <source>Plot Trajectory</source>
         <translation>Yörüngeyi Çiz</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="135"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="135"/>
         <source>Zoom In</source>
         <translation>Yakınlaştır</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="146"/>
         <source>Zoom Out</source>
         <translation>Uzaklaştır</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="170"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="170"/>
         <source>Show Weather</source>
         <translation>Hava Durumunu Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="188"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="188"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA Hava Durumu Katmanı</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/GPS.qml" line="220"/>
         <source>Base Map: %1</source>
         <translation>Temel Harita: %1</translation>
     </message>
@@ -5655,161 +6182,193 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>GroupView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="97"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="97"/>
         <source>Pro features detected in this project.</source>
         <translation>Bu projede Pro özellikleri algılandı.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="99"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="99"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Yedek widget'lar kullanılıyor. Tam işlevselliğin kilidini açmak için lisans satın alın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="158"/>
         <source>Dataset</source>
         <translation>Veri Kümesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="162"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="162"/>
         <source>Add a generic dataset to the current group</source>
         <translation>Mevcut gruba genel bir veri kümesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="169"/>
         <source>Plot</source>
         <translation>Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="174"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="174"/>
         <source>Add a 2D plot to visualize numeric data</source>
         <translation>Sayısal verileri görselleştirmek için 2D grafik ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="182"/>
         <source>FFT Plot</source>
         <translation>FFT Grafiği</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="188"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="188"/>
         <source>Add an FFT plot for frequency domain visualization</source>
         <translation>Frekans alanı görselleştirmesi için FFT grafiği ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="194"/>
         <source>Bar/Level</source>
         <translation>Çubuk/seviye</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="199"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="199"/>
         <source>Add a bar or level indicator for scaled values</source>
         <translation>Ölçekli değerler için çubuk veya seviye göstergesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="205"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="205"/>
         <source>Gauge</source>
         <translation>Gösterge</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="211"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="211"/>
         <source>Add a gauge widget for analog-style visualization</source>
         <translation>Analog tarzı görselleştirme için gösterge widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="218"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="218"/>
         <source>Compass</source>
         <translation>Pusula</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="223"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="223"/>
         <source>Add a compass to display directional or angular data</source>
         <translation>Yönsel veya açısal verileri görüntülemek için pusula ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="229"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="229"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="235"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="235"/>
         <source>Add an LED indicator for binary status signals</source>
         <translation>İkili durum sinyalleri için LED göstergesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="245"/>
         <source>Button</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="249"/>
         <source>Add a button that sends a command on click</source>
         <translation>Tıklandığında komut gönderen düğme ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="256"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="256"/>
         <source>Slider</source>
         <translation>Kaydırıcı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="260"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="260"/>
         <source>Add a slider for sending scaled numeric values</source>
         <translation>Ölçeklendirilmiş sayısal değerler göndermek için kaydırıcı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="267"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="267"/>
         <source>Toggle</source>
         <translation>Anahtar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="271"/>
         <source>Add a toggle switch for on/off commands</source>
         <translation>Açma/kapama komutları için anahtar ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="278"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="278"/>
         <source>Text Field</source>
         <translation>Metin Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="282"/>
         <source>Add a text field for typing and sending commands</source>
         <translation>Komut yazma ve gönderme için metin alanı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="288"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="288"/>
         <source>Knob</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="293"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="293"/>
         <source>Add a rotary knob for setpoint control</source>
         <translation>Ayar noktası kontrolü için döner düğme ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="303"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="303"/>
         <source>Edit Code</source>
         <translation>Kodu Düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="308"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="308"/>
         <source>Edit the JavaScript that draws this painter widget</source>
         <translation>Bu painter widget'ını çizen JavaScript kodunu düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="325"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="325"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="329"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="329"/>
         <source>Duplicate the current group and its contents</source>
         <translation>Mevcut grubu ve içeriğini çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="338"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="338"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="342"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/GroupView.qml" line="342"/>
         <source>Delete the current group and all contained datasets</source>
         <translation>Mevcut grubu ve içindeki tüm veri kümelerini sil</translation>
     </message>
@@ -5818,16 +6377,19 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>Gyroscope</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Gyroscope.qml" line="370"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Gyroscope.qml" line="370"/>
         <source>ROLL ↔</source>
         <translation>YALPA ↔</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Gyroscope.qml" line="398"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Gyroscope.qml" line="398"/>
         <source>YAW ↻</source>
         <translation>SAPMA ↻</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Gyroscope.qml" line="426"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Gyroscope.qml" line="426"/>
         <source>PITCH ↕</source>
         <translation>YUNUSLAMA ↕</translation>
     </message>
@@ -5836,26 +6398,31 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>HID</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="48"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="48"/>
         <source>HID Device</source>
         <translation>HID Cihazı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="78"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="78"/>
         <source>Usage Page</source>
         <translation>Kullanım Sayfası</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="94"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="94"/>
         <source>Usage</source>
         <translation>Kullanım</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="135"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="135"/>
         <source>Connect gamepads, joysticks, steering wheels, flight controllers, and other HID-class USB devices.</source>
         <translation>Oyun kumandaları, joystick'ler, direksiyon simidleri, uçuş kontrolcüleri ve diğer HID sınıfı USB cihazlarını bağlayın.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml" line="143"/>
         <source>HID Usage Tables (USB.org)</source>
         <translation>HID Kullanım Tabloları (USB.org)</translation>
     </message>
@@ -5864,46 +6431,55 @@ Geçerli biçim: 01 A2 FF 3C</translation>
     <name>HelpCenter</name>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="32"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="32"/>
         <source>Help Center</source>
         <translation>Yardım Merkezi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="94"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="94"/>
         <source>Fetching help pages…</source>
         <translation>Yardım sayfaları getiriliyor…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="128"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="128"/>
         <source>Search…</source>
         <translation>Ara…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="240"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="240"/>
         <source>Loading…</source>
         <translation>Yükleniyor…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="282"/>
         <source>Select a page from the sidebar</source>
         <translation>Kenar çubuğundan bir sayfa seçin</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="312"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="312"/>
         <source>Copied to Clipboard</source>
         <translation>Panoya Kopyalandı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="346"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="346"/>
         <source>View Online</source>
         <translation>Çevrimiçi Görüntüle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="366"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="366"/>
         <source>%1 pages</source>
         <translation>%1 sayfa</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/HelpCenter.qml" line="377"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/HelpCenter.qml" line="377"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -7707,21 +8283,25 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     <name>IconPicker</name>
     <message>
         <location filename="../../qml/Dialogs/IconPicker.qml" line="41"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/IconPicker.qml" line="41"/>
         <source>Select Icon</source>
         <translation>Simge Seç</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/IconPicker.qml" line="119"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/IconPicker.qml" line="119"/>
         <source>Search Online…</source>
         <translation>Çevrimiçi Ara…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/IconPicker.qml" line="137"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/IconPicker.qml" line="137"/>
         <source>OK</source>
         <translation>TAMAM</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/IconPicker.qml" line="150"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/IconPicker.qml" line="150"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
@@ -7730,71 +8310,85 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     <name>ImageView</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="67"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="67"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="68"/>
         <source>Grayscale</source>
         <translation>Gri Tonlama</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="69"/>
         <source>High Contrast</source>
         <translation>Yüksek Kontrast</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="70"/>
         <source>Vivid</source>
         <translation>Canlı</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="71"/>
         <source>Night Vision</source>
         <translation>Gece Görüşü</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="72"/>
         <source>Infrared</source>
         <translation>Kızılötesi</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="73"/>
         <source>Deep Blue</source>
         <translation>Koyu Mavi</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="74"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="74"/>
         <source>Amber</source>
         <translation>Kehribar</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="169"/>
         <source>Export Images</source>
         <translation>Görselleri Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="179"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="179"/>
         <source>Open Export Folder</source>
         <translation>Dışa Aktarma Klasörünü Aç</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="195"/>
         <source>Zoom In</source>
         <translation>Yakınlaştır</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="208"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="208"/>
         <source>Zoom Out</source>
         <translation>Uzaklaştır</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="228"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="551"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/ImageView.qml" line="551"/>
         <source>Waiting for Image…</source>
         <translation>Görsel Bekleniyor…</translation>
     </message>
@@ -7803,11 +8397,13 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     <name>KeyManagerDialog</name>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="24"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="24"/>
         <source>API Keys</source>
         <translation>API Anahtarları</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="48"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="48"/>
         <source>Anthropic Claude. The default is Claude Haiku 4.5 ($1 input / $5 output per million tokens). Sonnet 4.6 and Opus 4.7 are also available. Supports streaming, tool use, extended thinking, and prompt caching.</source>
         <translation>Anthropic Claude. Varsayılan Claude Haiku 4.5'tir (milyon token başına $1 giriş / $5 çıkış). Sonnet 4.6 ve OPUS 4.7 de mevcuttur. Akış, araç kullanımı, genişletilmiş düşünme ve önbellek istemi destekler.</translation>
     </message>
@@ -7817,21 +8413,25 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="58"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="58"/>
         <source>Google Gemini. The default is Gemini 2.0 Flash, which has a generous free tier (subject to rate limits). Gemini 1.5 Pro and Gemini 1.5 Flash are also available.</source>
         <translation>Google Gemini. Varsayılan Gemini 2.0 Flash'tır ve cömert bir ücretsiz katmana sahiptir (hız limitlerine tabidir). Gemini 1.5 Pro ve Gemini 1.5 Flash de mevcuttur.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="101"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="101"/>
         <source>Bring your own API keys. They are encrypted at rest with a per-machine key and never leave your computer except to communicate with the provider you select.</source>
         <translation>Kendi API anahtarlarınızı getirin. Makineye özel bir anahtarla şifrelenmiş olarak saklanır ve seçtiğiniz sağlayıcıyla iletişim kurmak dışında bilgisayarınızdan asla ayrılmaz.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="167"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="167"/>
         <source>Key set</source>
         <translation>Anahtar ayarlandı</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="168"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="168"/>
         <source>No key</source>
         <translation>Anahtar yok</translation>
     </message>
@@ -7841,101 +8441,121 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="53"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="53"/>
         <source>OpenAI Chat Completions. The default is GPT-5 mini for fast, cost-conscious agentic work. GPT-5.2 is the stronger general-purpose option, and GPT-5.2 Chat tracks the model currently used in ChatGPT.</source>
         <translation>OpenAI Chat Completions. Varsayılan, hızlı ve maliyet odaklı ajantik çalışma için GPT-5 mini'dir. GPT-5.2 daha güçlü genel amaçlı seçenektir ve GPT-5.2 Chat, ChatGPT'de şu anda kullanılan modeli takip eder.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="62"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="62"/>
         <source>DeepSeek. OpenAI-compatible API. The default is deepseek-chat (V3). deepseek-reasoner (R1) is also available. Often the cheapest cloud option for tool use.</source>
         <translation>DeepSeek. OpenAI uyumlu API. Varsayılan deepseek-chat (V3)'tür. deepseek-reasoner (R1) de mevcuttur. Araç kullanımı için genellikle en ucuz bulut seçeneğidir.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="66"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="66"/>
         <source>OpenRouter. One key, ~200 models from Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen, and others. Free-tier models (suffixed :free) are rate-limited but require no additional billing. Pay-as-you-go for the rest.</source>
         <translation>OpenRouter. Tek anahtar, Anthropic, OpenAI, Google, Meta, Mistral, DeepSeek, Qwen ve diğerlerinden ~200 model. Ücretsiz katman modelleri (:free son ekli) hız sınırlıdır ancak ek faturalandırma gerektirmez. Geri kalanı için kullandıkça öde.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="71"/>
         <source>Groq. Hardware-accelerated inference (LPUs) for very fast Llama, Mixtral, Gemma, DeepSeek-R1 distill, and Qwen models. Generous free tier with daily token limits.</source>
         <translation>Groq. Çok hızlı Llama, Mixtral, Gemma, DeepSeek-R1 distill ve Qwen modelleri için donanım hızlandırmalı çıkarım (LPU'lar). Günlük token limitleriyle cömert ücretsiz katman.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="75"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="75"/>
         <source>Mistral. The default is Mistral Large. Codestral targets code completion, Pixtral handles vision, and the Ministral models are tuned for edge / low-latency use.</source>
         <translation>Mistral. Varsayılan Mistral Large'dır. Codestral kod tamamlamayı hedefler, Pixtral görüntü işler ve Ministral modelleri kenar / düşük gecikme kullanımı için ayarlanmıştır.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="79"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="79"/>
         <source>Local model server. Works with any OpenAI-compatible endpoint -- Ollama, llama.cpp's llama-server, LM Studio, or vLLM. Nothing leaves your machine. The model list is queried live from the server.</source>
         <translation>Yerel model sunucusu. Herhangi bir OpenAI uyumlu uç nokta ile çalışır -- Ollama, llama.cpp'nin llama-server'ı, LM Studio veya vLLM. Hiçbir şey makinenizden çıkmaz. Model listesi sunucudan canlı olarak sorgulanır.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="205"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="205"/>
         <source>A key is on file -- paste a new one to replace it</source>
         <translation>Kayıtlı bir anahtar mevcut -- değiştirmek için yeni bir anahtar yapıştırın</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="206"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="206"/>
         <source>Paste your API key here</source>
         <translation>API anahtarınızı buraya yapıştırın</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="213"/>
         <source>Hide key</source>
         <translation>Anahtarı Gizle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="214"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="214"/>
         <source>Show key while typing</source>
         <translation>Yazarken Anahtarı Göster</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="225"/>
         <source>Get key</source>
         <translation>Anahtar Al</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="226"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="226"/>
         <source>Open the provider's console to create a new key</source>
         <translation>Yeni anahtar oluşturmak için sağlayıcının konsolunu açın</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="237"/>
         <source>Save</source>
         <translation>Kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="255"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="255"/>
         <source>Remove the stored key for %1</source>
         <translation>%1 için saklanan anahtarı kaldır</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="279"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="279"/>
         <source>http://localhost:11434/v1</source>
         <translation>http://localhost:11434/v1</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="283"/>
         <source>Install Ollama</source>
         <translation>Ollama'yı Yükle</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="284"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="284"/>
         <source>Open the Ollama download page</source>
         <translation>Ollama indirme sayfasını aç</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="295"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="295"/>
         <source>Apply</source>
         <translation>Uygula</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="310"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="310"/>
         <source>Re-query the model list</source>
         <translation>Model listesini yeniden sorgula</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="358"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="358"/>
         <source>No API keys configured yet. Add a key to get started.</source>
         <translation>Henüz API anahtarı yapılandırılmadı. Başlamak için bir anahtar ekleyin.</translation>
     </message>
@@ -7945,11 +8565,13 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="361"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="361"/>
         <source>One provider is ready.</source>
         <translation>Bir sağlayıcı hazır.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/KeyManagerDialog.qml" line="363"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/KeyManagerDialog.qml" line="363"/>
         <source>%1 providers are ready.</source>
         <translation>%1 sağlayıcı hazır.</translation>
     </message>
@@ -7958,26 +8580,31 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
     <name>LicenseManagement</name>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="36"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="36"/>
         <source>Licensing</source>
         <translation>Lisanslama</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="83"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="83"/>
         <source>Please wait…</source>
         <translation>Lütfen bekleyin…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="123"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="123"/>
         <source>Activate Serial Studio Pro</source>
         <translation>Serial Studio Pro'yu Etkinleştir</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="130"/>
         <source>Paste your license key below to unlock Pro features like MQTT, 3D plotting, and more.</source>
         <translation>MQTT, 3D çizim ve daha fazlası gibi Pro özelliklerinin kilidini açmak için lisans anahtarınızı aşağıya yapıştırın.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="137"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="137"/>
         <source>Your license includes 5 device activations.
 Plans include Monthly, Yearly, and Lifetime options.</source>
         <translation>Lisansınız 5 cihaz etkinleştirmesi içerir.
@@ -7985,6 +8612,7 @@ Planlar Aylık, Yıllık ve Ömür Boyu seçeneklerini içerir.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="150"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="150"/>
         <source>Paste your license key here…</source>
         <translation>Lisans anahtarınızı buraya yapıştırın…</translation>
     </message>
@@ -7992,11 +8620,15 @@ Planlar Aylık, Yıllık ve Ömür Boyu seçeneklerini içerir.</translation>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="169"/>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="330"/>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="379"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="330"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="379"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="175"/>
         <source>Paste</source>
         <translation>Yapıştır</translation>
     </message>
@@ -8004,71 +8636,87 @@ Planlar Aylık, Yıllık ve Ömür Boyu seçeneklerini içerir.</translation>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="181"/>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="336"/>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="385"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="336"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="385"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="232"/>
         <source>Product</source>
         <translation>Ürün</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="239"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="239"/>
         <source>Serial Studio %1</source>
         <translation>Serial Studio %1</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="250"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="250"/>
         <source>Licensee</source>
         <translation>Lisans Sahibi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="269"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="269"/>
         <source>Licensee E-Mail</source>
         <translation>Lisans Sahibi E-posta</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="286"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="286"/>
         <source>Device Usage</source>
         <translation>Cihaz Kullanımı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="294"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="294"/>
         <source>%1 devices in use (Unlimited plan)</source>
         <translation>%1 cihaz kullanımda (Sınırsız plan)</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="295"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="295"/>
         <source>%1 of %2 devices used</source>
         <translation>%2 cihazdan %1 tanesi kullanılıyor</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="305"/>
         <source>Device ID</source>
         <translation>Cihaz ID</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="352"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="352"/>
         <source>License Key</source>
         <translation>Lisans Anahtarı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="409"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="409"/>
         <source>Customer Portal</source>
         <translation>Müşteri Portalı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="423"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="423"/>
         <source>Buy License</source>
         <translation>Lisans Satın Al</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="433"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="433"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="446"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/LicenseManagement.qml" line="446"/>
         <source>Deactivate</source>
         <translation>Devre Dışı Bırak</translation>
     </message>
@@ -8275,91 +8923,109 @@ Serial Studio'yu desteklediğiniz için tekrar teşekkür ederiz!</translation>
     <name>MQTT</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="51"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="51"/>
         <source>Hostname</source>
         <translation>Sunucu Adı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="59"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="59"/>
         <source>e.g. broker.hivemq.com</source>
         <translation>örn. broker.hivemq.com</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="67"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="67"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="87"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="87"/>
         <source>Topic Filter</source>
         <translation>Konu Filtresi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="95"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="95"/>
         <source>e.g. sensors/#</source>
         <translation>örn. sensors/#</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="103"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="103"/>
         <source>Client ID</source>
         <translation>İstemci ID</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="120"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="120"/>
         <source>Regenerate</source>
         <translation>Yeniden Oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="130"/>
         <source>Username</source>
         <translation>Kullanıcı Adı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="145"/>
         <source>Password</source>
         <translation>Parola</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="161"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="161"/>
         <source>Version</source>
         <translation>Sürüm</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="187"/>
         <source>Keep Alive (s)</source>
         <translation>Canlı Tut (s)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="206"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="206"/>
         <source>Clean Session</source>
         <translation>Temiz Oturum</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="232"/>
         <source>Use SSL/TLS</source>
         <translation>SSL/TLS Kullan</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="258"/>
         <source>SSL Protocol</source>
         <translation>SSL Protokolü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="289"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="289"/>
         <source>Peer Verify</source>
         <translation>Eş Doğrulama</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="320"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="320"/>
         <source>Verify Depth</source>
         <translation>Doğrulama Derinliği</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="341"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="341"/>
         <source>CA Certificates</source>
         <translation>CA Sertifikaları</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="349"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml" line="349"/>
         <source>Load From Folder…</source>
         <translation>Klasörden Yükle…</translation>
     </message>
@@ -8744,87 +9410,87 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <translation>MQTT Yayıncı Betiği</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="85"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="86"/>
         <source>JavaScript</source>
         <translation>Javascript</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="85"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="86"/>
         <source>Lua</source>
         <translation>Lua</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="91"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="92"/>
         <source>Sample frame bytes (text or hex)</source>
         <translation>Örnek çerçeve baytları (metin veya hex)</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="96"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="97"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="97"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="98"/>
         <source>Test</source>
         <translation>Test</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="98"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="99"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="100"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="101"/>
         <source>Apply</source>
         <translation>Uygula</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="101"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="102"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="110"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="111"/>
         <source>Language:</source>
         <translation>Dil:</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="113"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="114"/>
         <source>Template:</source>
         <translation>Şablon:</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="124"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="125"/>
         <source>Frame:</source>
         <translation>Çerçeve:</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="128"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="129"/>
         <source>Output:</source>
         <translation>Çıkış:</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="268"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="269"/>
         <source>Enter a frame</source>
         <translation>Bir çerçeve girin</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="275"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="276"/>
         <source>Invalid hex</source>
         <translation>Geçersiz onaltılık</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="358"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="359"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>Belgeyi Biçimlendir	ctrl+shift+i</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="359"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="360"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>Seçimi Biçimlendir	ctrl+i</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="487"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="488"/>
         <source>--
 -- Define a mqtt(frame) function that receives the raw bytes
 -- of one parsed frame and returns the payload to publish to
@@ -8861,7 +9527,7 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
 --</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="504"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="505"/>
         <source>/*
  * Define a mqtt(frame) function that receives the raw bytes
  * of one parsed frame and returns the payload to publish to
@@ -8896,46 +9562,46 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
  * Hazır örnekler için Şablon açılır menüsünü kullanın.</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="601"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="602"/>
         <source>Script is empty</source>
         <translation>Betik boş</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="608"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="609"/>
         <source>Lua engine error</source>
         <translation>Lua motor hatası</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="630"/>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="644"/>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="668"/>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="682"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="631"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="645"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="669"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="683"/>
         <source>Error: %1</source>
         <translation>Hata: %1</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="638"/>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="674"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="639"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="675"/>
         <source>mqtt() is not defined</source>
         <translation>mqtt() tanımlanmamış</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="655"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="656"/>
         <source>(nil -- frame skipped)</source>
         <translation>(nil -- çerçeve atlandı)</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="657"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="658"/>
         <source>(non-string return)</source>
         <translation>(dize olmayan dönüş)</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="687"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="688"/>
         <source>(null -- frame skipped)</source>
         <translation>(null -- çerçeve atlandı)</translation>
     </message>
     <message>
-        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="765"/>
+        <location filename="../../src/MQTT/PublisherScriptEditor.cpp" line="766"/>
         <source>Select Template…</source>
         <translation>Şablon Seç…</translation>
     </message>
@@ -9097,31 +9763,37 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
     <name>MainWindow</name>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="184"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="184"/>
         <source>Console Only Mode</source>
         <translation>Yalnızca Konsol Modu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="187"/>
         <source>Quick Plot Mode</source>
         <translation>Hızlı Grafik Modu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="194"/>
         <source>Empty Project</source>
         <translation>Boş Proje</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="659"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="659"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="667"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="667"/>
         <source>Waiting for data…</source>
         <translation>Veri bekleniyor…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindow.qml" line="668"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/MainWindow.qml" line="668"/>
         <source>Connecting to device…</source>
         <translation>Cihaza bağlanılıyor…</translation>
     </message>
@@ -9155,6 +9827,7 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
     <name>MarkdownWebView</name>
     <message>
         <location filename="../../qml/Widgets/MarkdownWebView.qml" line="35"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/MarkdownWebView.qml" line="35"/>
         <source>Copied to Clipboard</source>
         <translation>Panoya Kopyalandı</translation>
     </message>
@@ -9163,6 +9836,7 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
     <name>Mdf4Player</name>
     <message>
         <location filename="../../qml/Dialogs/Mdf4Player.qml" line="23"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Mdf4Player.qml" line="23"/>
         <source>MDF4 Player</source>
         <translation>MDF4 Oynatıcı</translation>
     </message>
@@ -9171,46 +9845,55 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
     <name>MessageBubble</name>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="97"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="97"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="98"/>
         <source>You</source>
         <translation>Sen</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="98"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="208"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="208"/>
         <source>Discovery</source>
         <translation>Keşif</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="209"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="209"/>
         <source>Execution</source>
         <translation>Yürütme</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="239"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="239"/>
         <source>Approve %1 actions in %2?</source>
         <translation>%2 içinde %1 eylem onaylansın mı?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="249"/>
         <source>These calls will run together. Expand each card below to inspect arguments.</source>
         <translation>Bu çağrılar birlikte çalışacak. Argümanları incelemek için her kartı genişletin.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="260"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="260"/>
         <source>Approve all</source>
         <translation>Tümünü Onayla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="266"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="266"/>
         <source>Deny all</source>
         <translation>Tümünü Reddet</translation>
     </message>
@@ -9218,6 +9901,9 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <location filename="../../qml/AI/MessageBubble.qml" line="332"/>
         <location filename="../../qml/AI/MessageBubble.qml" line="384"/>
         <location filename="../../qml/AI/MessageBubble.qml" line="436"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="332"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="384"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="436"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
@@ -9225,12 +9911,17 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <location filename="../../qml/AI/MessageBubble.qml" line="337"/>
         <location filename="../../qml/AI/MessageBubble.qml" line="389"/>
         <location filename="../../qml/AI/MessageBubble.qml" line="441"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="337"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="389"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="441"/>
         <source>Copy All</source>
         <translation>Tümünü Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageBubble.qml" line="345"/>
         <location filename="../../qml/AI/MessageBubble.qml" line="397"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="345"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageBubble.qml" line="397"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
@@ -9239,97 +9930,117 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
     <name>MessageWebView</name>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="53"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="53"/>
         <source>You</source>
         <translation>Sen</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="54"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="54"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="55"/>
         <location filename="../../qml/AI/MessageWebView.qml" line="61"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="55"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="61"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="56"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="56"/>
         <source>Discovery</source>
         <translation>Keşif</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="57"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="57"/>
         <source>Execution</source>
         <translation>Yürütme</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="58"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="58"/>
         <source>Running</source>
         <translation>Çalışıyor</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="59"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="59"/>
         <source>Awaiting approval</source>
         <translation>Onay bekleniyor</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="60"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="60"/>
         <source>Done</source>
         <translation>Tamamlandı</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="62"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="62"/>
         <source>Denied</source>
         <translation>Reddedildi</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="63"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="63"/>
         <source>Blocked</source>
         <translation>Engellendi</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="64"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="64"/>
         <source>Approve</source>
         <translation>Onayla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="65"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="65"/>
         <source>Deny</source>
         <translation>Reddet</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="66"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="66"/>
         <source>Approve all</source>
         <translation>Tümünü Onayla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="67"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="67"/>
         <source>Deny all</source>
         <translation>Tümünü Reddet</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="68"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="68"/>
         <source>Arguments</source>
         <translation>Argümanlar</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="69"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="69"/>
         <source>Result</source>
         <translation>Sonuç</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="70"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="70"/>
         <source>Approve {n} actions in {family}?</source>
         <translation>{family} içindeki {n} eylemi onaylansın mı?</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="71"/>
         <source>These calls will run together. Expand each card to inspect arguments.</source>
         <translation>Bu çağrılar birlikte çalışacak. Argümanları incelemek için her kartı genişletin.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/MessageWebView.qml" line="72"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/MessageWebView.qml" line="72"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
@@ -9756,91 +10467,109 @@ Would you like to open the download page?</source>
     <name>Modbus</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="47"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="47"/>
         <source>Protocol</source>
         <translation>Protokol</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="70"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="70"/>
         <source>Serial Port</source>
         <translation>Seri Port</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="95"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="95"/>
         <source>Baud Rate</source>
         <translation>Baud Hızı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="199"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="199"/>
         <source>Parity</source>
         <translation>Eşlik</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="222"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="222"/>
         <source>Data Bits</source>
         <translation>Veri Bitleri</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="245"/>
         <source>Stop Bits</source>
         <translation>Dur Bitleri</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="268"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="268"/>
         <source>Host</source>
         <translation>Host</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="278"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="278"/>
         <source>IP Address</source>
         <translation>IP Adresi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="292"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="292"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="301"/>
         <source>TCP Port</source>
         <translation>TCP Portu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="329"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="329"/>
         <source>Slave Address</source>
         <translation>Slave Adresi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="334"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="334"/>
         <source>1-247</source>
         <translation>1-247</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="382"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="382"/>
         <source>Configure Register Groups…</source>
         <translation>Kayıt Gruplarını Yapılandır…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="392"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="392"/>
         <source>Import Register Map…</source>
         <translation>Kayıt Haritasını İçe Aktar…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="407"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="407"/>
         <source>%1 group(s) configured</source>
         <translation>%1 grup yapılandırıldı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="408"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="408"/>
         <source>No groups configured</source>
         <translation>Grup yapılandırılmadı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="349"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="349"/>
         <source>Poll Interval (ms)</source>
         <translation>Yoklama Aralığı (ms)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="354"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml" line="354"/>
         <source>Polling interval</source>
         <translation>Yoklama aralığı</translation>
     </message>
@@ -9848,109 +10577,130 @@ Would you like to open the download page?</source>
 <context>
     <name>ModbusGroupsDialog</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="41"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="45"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="45"/>
         <source>Modbus Register Groups</source>
         <translation>Modbus Kayıt Grupları</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="162"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="166"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="166"/>
         <source>Configure multiple register groups to poll different register types in sequence.</source>
         <translation>Farklı kayıt türlerini sırayla yoklamak için birden fazla kayıt grubu yapılandırın.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="170"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="174"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="174"/>
         <source>Add New Group</source>
         <translation>Yeni Grup Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="194"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="198"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="198"/>
         <source>Register Type:</source>
         <translation>Kayıt Türü:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="206"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="210"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="210"/>
         <source>Start Address:</source>
         <translation>Başlangıç Adresi:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="213"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="217"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="217"/>
         <source>0-65535</source>
         <translation>0-65535</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="219"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="223"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="223"/>
         <source>Register Count:</source>
         <translation>Kayıt Sayısı:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="230"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="234"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="234"/>
         <source>1-125</source>
         <translation>1-125</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="235"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="239"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="239"/>
         <source>Add Group</source>
         <translation>Grup Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="258"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="262"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="262"/>
         <source>Configured Groups</source>
         <translation>Yapılandırılmış Gruplar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="292"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="296"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="296"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="299"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="303"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="303"/>
         <source>Type</source>
         <translation>Tür</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="307"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="311"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="311"/>
         <source>Start</source>
         <translation>Başlangıç</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="314"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="318"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="318"/>
         <source>Count</source>
         <translation>Sayı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="321"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="325"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="325"/>
         <source>Action</source>
         <translation>Eylem</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="396"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="400"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="400"/>
         <source>Remove</source>
         <translation>Kaldır</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="408"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="412"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="412"/>
         <source>No groups configured.
 Add groups above to poll multiple register types.</source>
         <translation>Grup yapılandırılmadı.
 Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="426"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="430"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="430"/>
         <source>Total groups: %1</source>
         <translation>Toplam grup: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="430"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="434"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="434"/>
         <source>Generate Project</source>
         <translation>Proje Oluştur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="436"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="440"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="440"/>
         <source>Clear All</source>
         <translation>Tümünü Temizle</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="442"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="446"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusGroupsDialog.qml" line="446"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -9958,72 +10708,86 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
 <context>
     <name>ModbusPreviewDialog</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="28"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="33"/>
         <source>Modbus Register Map Preview</source>
         <translation>Modbus Kayıt Haritası Önizlemesi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="150"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="155"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="155"/>
         <source>File: %1</source>
         <translation>Dosya: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="158"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="163"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="163"/>
         <source>Review the registers to import into a new Serial Studio project.</source>
         <translation>Yeni bir Serial Studio projesine aktarılacak kayıtları gözden geçirin.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="166"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="171"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="171"/>
         <source>Registers</source>
         <translation>Kayıtlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="200"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="205"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="205"/>
         <source>#</source>
         <translation>#</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="207"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="212"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="212"/>
         <source>Name</source>
         <translation>Ad</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="216"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="221"/>
         <source>Address</source>
         <translation>Adres</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="222"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="227"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="227"/>
         <source>Type</source>
         <translation>Tür</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="230"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="235"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="235"/>
         <source>Data Type</source>
         <translation>Veri Tipi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="237"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="242"/>
         <source>Units</source>
         <translation>Birimler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="338"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="343"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="343"/>
         <source>No registers found in file.</source>
         <translation>Dosyada kayıt bulunamadı.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="356"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="361"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="361"/>
         <source>Total: %1 registers in %2 groups</source>
         <translation>Toplam: %2 grupta %1 kayıt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="364"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="369"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="369"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="379"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="384"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ModbusPreviewDialog.qml" line="384"/>
         <source>Create Project</source>
         <translation>Proje Oluştur</translation>
     </message>
@@ -10032,26 +10796,31 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>MqttPublisherView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="33"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Yayıncı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="110"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="110"/>
         <source>Connected to broker</source>
         <translation>Broker'a bağlandı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="111"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="111"/>
         <source>Not connected</source>
         <translation>Bağlı değil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="124"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="124"/>
         <source>Test Connection</source>
         <translation>Bağlantıyı Test Et</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="129"/>
         <source>Probe the broker with the current settings</source>
         <translation>Mevcut ayarlarla broker'ı sına</translation>
     </message>
@@ -10059,31 +10828,39 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="130"/>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="147"/>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="162"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="162"/>
         <source>Enable publishing first</source>
         <translation>Önce yayınlamayı etkinleştirin</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="140"/>
         <source>Edit Script</source>
         <translation>Betiği Düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="146"/>
         <source>Edit the publisher script (Lua or JavaScript)</source>
         <translation>Yayıncı betiğini düzenleyin (Lua veya JavaScript)</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="158"/>
         <source>Load CA Certs</source>
         <translation>CA Sertifikalarını Yükle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="164"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="164"/>
         <source>Add PEM certificates from a folder</source>
         <translation>Bir klasörden PEM sertifikaları ekleyin</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="165"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/MqttPublisherView.qml" line="165"/>
         <source>Enable SSL/TLS first</source>
         <translation>Önce SSL/TLS'yi etkinleştirin</translation>
     </message>
@@ -10096,51 +10873,61 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="176"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="176"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="198"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="198"/>
         <source>Show Legends</source>
         <translation>Lejantları Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="215"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="226"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="226"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="264"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="270"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
         <source>Samples</source>
         <translation>Örnekler</translation>
     </message>
@@ -10149,32 +10936,39 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>Network</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="76"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="76"/>
         <source>Socket Type</source>
         <translation>Soket Türü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="130"/>
         <source>Remote Address</source>
         <translation>Uzak Adres</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="97"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="97"/>
         <source>Local Port</source>
         <translation>Yerel Port</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="104"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="104"/>
         <source>Type 0 for automatic port</source>
         <translation>Otomatik port için 0 yazın</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="154"/>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="154"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="187"/>
         <source>Remote Port</source>
         <translation>Uzak Port</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="217"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml" line="217"/>
         <source>Multicast</source>
         <translation>Multicast</translation>
     </message>
@@ -10183,21 +10977,25 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>NotificationLog</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/NotificationLog.qml" line="161"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/NotificationLog.qml" line="161"/>
         <source>Filter by channel…</source>
         <translation>Kanala göre filtrele…</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/NotificationLog.qml" line="186"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/NotificationLog.qml" line="186"/>
         <source>Clear all notifications</source>
         <translation>Tüm bildirimleri temizle</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/NotificationLog.qml" line="270"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/NotificationLog.qml" line="270"/>
         <source>(no title)</source>
         <translation>(başlık yok)</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/NotificationLog.qml" line="328"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/NotificationLog.qml" line="328"/>
         <source>No notifications yet</source>
         <translation>Henüz bildirim yok</translation>
     </message>
@@ -10210,36 +11008,43 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>OnlineIconPicker</name>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="41"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="41"/>
         <source>Search Online Icons</source>
         <translation>Çevrimiçi İkonları Ara</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="71"/>
         <source>Download failed: %1</source>
         <translation>İndirme başarısız: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="96"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="96"/>
         <source>Search icons (e.g. temperature, arrow, play)…</source>
         <translation>İkon ara (örn. sıcaklık, ok, oynat)…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="110"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="110"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="149"/>
         <source>Search for icons above to get started</source>
         <translation>Başlamak için yukarıda simge arayın</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="252"/>
         <source>OK</source>
         <translation>TAMAM</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="265"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/OnlineIconPicker.qml" line="265"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
@@ -10248,156 +11053,187 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>OutputWidgetView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="91"/>
         <source>Output widgets require a Pro license.</source>
         <translation>Çıkış widget'ları Pro lisansı gerektirir.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="125"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="125"/>
         <source>Button</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="129"/>
         <source>Send a command on click</source>
         <translation>Tıklamada komut gönder</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="134"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="134"/>
         <source>Slider</source>
         <translation>Kaydırıcı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="138"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="138"/>
         <source>Send scaled numeric values</source>
         <translation>Ölçeklendirilmiş sayısal değerler gönder</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="143"/>
         <source>Toggle</source>
         <translation>Anahtar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="147"/>
         <source>Send on/off commands</source>
         <translation>Açık/kapalı komutları gönder</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="152"/>
         <source>Text Field</source>
         <translation>Metin Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="156"/>
         <source>Type and send arbitrary commands</source>
         <translation>Rastgele komutlar yaz ve gönder</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="160"/>
         <source>Knob</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="165"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="165"/>
         <source>Rotary input for setpoints</source>
         <translation>Ayar noktaları için döner giriş</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="93"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="93"/>
         <source>You can configure output widgets, but they only appear on the dashboard with a Pro license.</source>
         <translation>Çıkış widget'larını yapılandırabilirsiniz, ancak bunlar panoda yalnızca Pro lisansıyla görünür.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="182"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="185"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="185"/>
         <source>Duplicate this output widget</source>
         <translation>Bu çıkış widget'ını çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="195"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="197"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="197"/>
         <source>Delete this output widget</source>
         <translation>Bu çıkış widget'ını sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="274"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="274"/>
         <source>Transmit Function</source>
         <translation>İletim Fonksiyonu</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="284"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="284"/>
         <source>Import</source>
         <translation>İçe Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="290"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="290"/>
         <source>Import transmit function from a .js file</source>
         <translation>.js dosyasından iletim fonksiyonu içe aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="297"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="297"/>
         <source>Template</source>
         <translation>Şablon</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="301"/>
         <source>Select a pre-built transmit function template</source>
         <translation>Önceden hazırlanmış iletim fonksiyonu şablonu seç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="306"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="306"/>
         <source>Test</source>
         <translation>Test</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="312"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="312"/>
         <source>Test the transmit function with sample input</source>
         <translation>İletim fonksiyonunu örnek girdi ile test et</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="353"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="353"/>
         <source>Undo</source>
         <translation>Geri Al</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="359"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="359"/>
         <source>Redo</source>
         <translation>Yinele</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="367"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="367"/>
         <source>Cut</source>
         <translation>Kes</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="372"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="372"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="377"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="377"/>
         <source>Paste</source>
         <translation>Yapıştır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="384"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="384"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="391"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="391"/>
         <source>Format Document</source>
         <translation>Belgeyi Biçimlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="396"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/OutputWidgetView.qml" line="396"/>
         <source>Format Selection</source>
         <translation>Seçimi Biçimlendir</translation>
     </message>
@@ -10406,6 +11242,7 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>Painter</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Painter.qml" line="56"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Painter.qml" line="56"/>
         <source>Painter Widget Error</source>
         <translation>Painter Widget Hatası</translation>
     </message>
@@ -10413,102 +11250,122 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
 <context>
     <name>PainterCodeDialog</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="28"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="30"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="30"/>
         <source>Painter Widget Code Editor</source>
         <translation>Painter Widget Kod Düzenleyici</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="74"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="76"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="76"/>
         <source>paint(ctx, w, h)</source>
         <translation>paint(ctx, w, h)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="84"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="86"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="86"/>
         <source>Import</source>
         <translation>İçe Aktar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="90"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="92"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="92"/>
         <source>Import painter code from a .js file</source>
         <translation>Bir .js dosyasından painter kodunu içe aktar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="97"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="99"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="99"/>
         <source>Template</source>
         <translation>Şablon</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="101"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="103"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="103"/>
         <source>Select a built-in painter template</source>
         <translation>Yerleşik bir çizici şablonu seç</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="106"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="108"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="108"/>
         <source>Format</source>
         <translation>Biçimlendir</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="111"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="113"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="113"/>
         <source>Reformat the painter code</source>
         <translation>Çizici kodunu yeniden biçimlendir</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="117"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="119"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="119"/>
         <source>Test</source>
         <translation>Test</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="122"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="124"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="124"/>
         <source>Open a live preview with simulated dataset values</source>
         <translation>Simüle edilmiş veri kümesi değerleriyle canlı önizleme aç</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="125"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="127"/>
         <source>Preview</source>
         <translation>Önizleme</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="180"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="182"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="189"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="191"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="191"/>
         <source>Cut</source>
         <translation>Kes</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="190"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="192"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="192"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="191"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="193"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="193"/>
         <source>Paste</source>
         <translation>Yapıştır</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="192"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="194"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="194"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="196"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="196"/>
         <source>Undo</source>
         <translation>Geri Al</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="195"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="197"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="197"/>
         <source>Redo</source>
         <translation>Yinele</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="197"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="199"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="199"/>
         <source>Format Document</source>
         <translation>Belgeyi Biçimlendir</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="198"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="200"/>
         <source>Format Selection</source>
         <translation>Seçimi Biçimlendir</translation>
     </message>
@@ -10516,43 +11373,52 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
 <context>
     <name>PainterTestDialog</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="26"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="28"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="28"/>
         <source>Painter Live Preview</source>
         <translation>Painter Canlı Önizleme</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="30"/>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="35"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="32"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="37"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="32"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="37"/>
         <source>Preview</source>
         <translation>Önizleme</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="111"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="113"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="113"/>
         <source>Simulated datasets</source>
         <translation>Simüle edilmiş veri kümeleri</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="178"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="180"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="180"/>
         <source>Runtime OK</source>
         <translation>Çalışma Zamanı Tamam</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="181"/>
         <source>Awaiting first frame...</source>
         <translation>İlk çerçeve bekleniyor...</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="192"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="194"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="234"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="236"/>
         <source>Clear console</source>
         <translation>Konsolu temizle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="243"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="245"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -10565,46 +11431,55 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="177"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="177"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="190"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="190"/>
         <source>Show Area Under Plot</source>
         <translation>Grafik Altındaki Alanı Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="208"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="208"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="219"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="219"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="231"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="231"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="238"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="238"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="257"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="257"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot.qml" line="263"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
@@ -10613,51 +11488,61 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>Plot3D</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="201"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="201"/>
         <source>Interpolate</source>
         <translation>Enterpolasyon Yap</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="219"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="219"/>
         <source>Orbit Navigation</source>
         <translation>Yörünge Navigasyonu</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="229"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="229"/>
         <source>Pan Navigation</source>
         <translation>Kaydırma Navigasyonu</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="240"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="240"/>
         <source>Orthogonal View</source>
         <translation>Ortogonal Görünüm</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="246"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="246"/>
         <source>Top View</source>
         <translation>Üstten Görünüm</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="252"/>
         <source>Left View</source>
         <translation>Soldan Görünüm</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="258"/>
         <source>Front View</source>
         <translation>Önden Görünüm</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="275"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="275"/>
         <source>Auto Center</source>
         <translation>Otomatik Ortala</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="291"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="291"/>
         <source>Anaglyph 3D</source>
         <translation>Anaglyph 3D</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Plot3D.qml" line="305"/>
         <source>Invert Eye Positions</source>
         <translation>Göz Konumlarını Ters Çevir</translation>
     </message>
@@ -10666,21 +11551,25 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>PlotCommon</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="59"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/PlotCommon.qml" line="59"/>
         <source>None</source>
         <translation>Yok</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="62"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/PlotCommon.qml" line="62"/>
         <source>ZOH</source>
         <translation>ZOH</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="65"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/PlotCommon.qml" line="65"/>
         <source>Stem</source>
         <translation>Stem</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/PlotCommon.qml" line="67"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/PlotCommon.qml" line="67"/>
         <source>Linear</source>
         <translation>Doğrusal</translation>
     </message>
@@ -10689,16 +11578,19 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>PlotWidget</name>
     <message>
         <location filename="../../qml/Widgets/PlotWidget.qml" line="1238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/PlotWidget.qml" line="1238"/>
         <source>ΔX: %1  ΔY: %2 — Drag to move, right-click to clear</source>
         <translation>ΔX: %1  ΔY: %2 — Taşımak için sürükleyin, temizlemek için sağ tıklayın</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/PlotWidget.qml" line="1240"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/PlotWidget.qml" line="1240"/>
         <source>Click to place cursor</source>
         <translation>İmleç yerleştirmek için tıklayın</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/PlotWidget.qml" line="1242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/PlotWidget.qml" line="1242"/>
         <source>Click to place second cursor — Drag to move</source>
         <translation>İkinci imleci yerleştirmek için tıklayın — Taşımak için sürükleyin</translation>
     </message>
@@ -10707,16 +11599,19 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>ProNotice</name>
     <message>
         <location filename="../../qml/Widgets/ProNotice.qml" line="121"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/ProNotice.qml" line="121"/>
         <source>Visit Website</source>
         <translation>Web Sitesini Ziyaret Et</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/ProNotice.qml" line="132"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/ProNotice.qml" line="132"/>
         <source>Buy License</source>
         <translation>Lisans Satın Al</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/ProNotice.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/ProNotice.qml" line="148"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
@@ -10725,21 +11620,25 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>ProUpgradeNotice</name>
     <message>
         <location filename="../../qml/AI/ProUpgradeNotice.qml" line="26"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ProUpgradeNotice.qml" line="26"/>
         <source>Assistant — Pro feature</source>
         <translation>Asistan — Pro Özelliği</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ProUpgradeNotice.qml" line="44"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ProUpgradeNotice.qml" line="44"/>
         <source>The Assistant is a Serial Studio Pro feature. Activate your license to unlock it.</source>
         <translation>Asistan, Serial Studio Pro özelliğidir. Kilidi açmak için lisansınızı etkinleştirin.</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ProUpgradeNotice.qml" line="52"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ProUpgradeNotice.qml" line="52"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ProUpgradeNotice.qml" line="66"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ProUpgradeNotice.qml" line="66"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -10748,26 +11647,31 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
     <name>Process</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="67"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="67"/>
         <source>Mode</source>
         <translation>Mod</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="75"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="75"/>
         <source>Launch Process</source>
         <translation>İşlemi Başlat</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="75"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="75"/>
         <source>Named Pipe</source>
         <translation>Adlandırılmış Kanal</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="99"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="99"/>
         <source>Executable</source>
         <translation>Çalıştırılabilir Dosya</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="114"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="114"/>
         <source>/path/to/executable</source>
         <translation>/yol/çalıştırılabilir/dosya</translation>
     </message>
@@ -10775,46 +11679,57 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="131"/>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="207"/>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="255"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="131"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="207"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="255"/>
         <source>Browse</source>
         <translation>Gözat</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="143"/>
         <source>Arguments</source>
         <translation>Argümanlar</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="154"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="154"/>
         <source>--arg1 value1 --arg2 value2</source>
         <translation>--arg1 değer1 --arg2 değer2</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="175"/>
         <source>Working Dir</source>
         <translation>Çalışma Dizini</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="190"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="190"/>
         <source>(optional) /working/directory</source>
         <translation>(isteğe bağlı) /çalışma/dizini</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="221"/>
         <source>Pipe Path</source>
         <translation>Kanal Yolu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="271"/>
         <source>Pick Running Process…</source>
         <translation>Çalışan İşlem Seç…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="309"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="309"/>
         <source>Launch a child process and capture its stdout, or connect to a named pipe written by an existing process.</source>
         <translation>Bir alt işlem başlatıp stdout çıktısını yakala veya mevcut bir işlem tarafından yazılan adlandırılmış kanala bağlan.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="317"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml" line="317"/>
         <source>Learn about named pipes</source>
         <translation>Adlandırılmış kanallar hakkında bilgi edinin</translation>
     </message>
@@ -10822,69 +11737,82 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
 <context>
     <name>ProcessPicker</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="51"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="55"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="55"/>
         <source>Select Running Process</source>
         <translation>Çalışan İşlemi Seç</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="202"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="206"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="206"/>
         <source>Select a running process to derive a named-pipe path suggestion.</source>
         <translation>Adlandırılmış kanal yolu önerisi türetmek için çalışan bir işlem seçin.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="208"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="212"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="212"/>
         <source>Filter Processes</source>
         <translation>İşlemleri Filtrele</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="222"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="226"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="226"/>
         <source>Type to filter by name…</source>
         <translation>Ada göre filtrelemek için yazın…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="226"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="230"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="230"/>
         <source>Refresh</source>
         <translation>Yenile</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="234"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="238"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="238"/>
         <source>Running Processes</source>
         <translation>Çalışan İşlemler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="272"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="276"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="276"/>
         <source>Process</source>
         <translation>İşlem</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="278"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="282"/>
         <source>PID</source>
         <translation>PID</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="371"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="375"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="375"/>
         <source>No processes match the filter.</source>
         <translation>Filtreyle eşleşen işlem yok.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="372"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="376"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="376"/>
         <source>No running processes found.
 Click Refresh to update the list.</source>
         <translation>Çalışan işlem bulunamadı.
 Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="388"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="392"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="392"/>
         <source>%1 process(es)</source>
         <translation>%1 işlem</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="392"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="396"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="396"/>
         <source>Select</source>
         <translation>Seç</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="398"/>
+        <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="402"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml" line="402"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
@@ -10893,51 +11821,61 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     <name>ProjectEditor</name>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="42"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="42"/>
         <source>modified</source>
         <translation>değiştirildi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="288"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="288"/>
         <source>This project is password protected</source>
         <translation>Bu proje parola ile korunuyor</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="289"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="289"/>
         <source>Editing is available in Project mode</source>
         <translation>Düzenleme Proje modunda kullanılabilir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="300"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="300"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Değişiklik yapmak için parolayı girin veya farklı bir proje açın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="301"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Bir proje yüklemek ve düzenlemek için Proje moduna geçin.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="325"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="325"/>
         <source>Unlock</source>
         <translation>Kilidi Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="326"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="326"/>
         <source>Switch to Project Mode</source>
         <translation>Proje Moduna Geç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="347"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="347"/>
         <source>Open Other Project</source>
         <translation>Başka Proje Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="348"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="348"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="366"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/ProjectEditor.qml" line="366"/>
         <source>Create New Project</source>
         <translation>Yeni Proje Oluştur</translation>
     </message>
@@ -10946,31 +11884,37 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     <name>ProjectStructure</name>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="32"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="32"/>
         <source>Project Structure</source>
         <translation>Proje Yapısı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="340"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="340"/>
         <source>Move Up</source>
         <translation>Yukarı Taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="345"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="345"/>
         <source>Move Down</source>
         <translation>Aşağı Taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="352"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="352"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="370"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectStructure.qml" line="370"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
@@ -10979,41 +11923,49 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     <name>ProjectToolbar</name>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="142"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="142"/>
         <source>New</source>
         <translation>Yeni</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="145"/>
         <source>Create a new JSON project</source>
         <translation>Yeni bir JSON projesi oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="158"/>
         <source>Open</source>
         <translation>Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="162"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="162"/>
         <source>Open an existing JSON project</source>
         <translation>Mevcut bir JSON projesini aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="168"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="168"/>
         <source>Save</source>
         <translation>Kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="175"/>
         <source>Save the current project</source>
         <translation>Mevcut projeyi kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="181"/>
         <source>Save As</source>
         <translation>Farklı Kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="188"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="188"/>
         <source>Save the current project under a new name</source>
         <translation>Mevcut projeyi yeni bir adla kaydet</translation>
     </message>
@@ -11023,6 +11975,7 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="217"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="217"/>
         <source>Lock</source>
         <translation>Kilitle</translation>
     </message>
@@ -11032,318 +11985,387 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="200"/>
         <source>Import</source>
         <translation>İçe Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="204"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="204"/>
         <source>Protobuf</source>
         <translation>Protobuf</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="208"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="208"/>
         <source>Generate a project from a Protocol Buffers (.proto) schema</source>
         <translation>Protocol Buffers (.proto) şemasından proje oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="221"/>
         <source>Set a password and lock the Project Editor</source>
         <translation>Bir Parola Belirleyin ve Proje Düzenleyiciyi Kilitleyin</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="232"/>
         <source>Add Device</source>
         <translation>Cihaz Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="236"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="236"/>
         <source>Add a new data source (device) to the project</source>
         <translation>Projeye yeni bir veri kaynağı (cihaz) ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="245"/>
         <source>Action</source>
         <translation>Eylem</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="248"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="248"/>
         <source>Add a new action to the project</source>
         <translation>Projeye yeni bir eylem ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="259"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="263"/>
         <source>Output</source>
         <translation>Çıkış</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="266"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="266"/>
         <source>Add a new output control panel with a button</source>
         <translation>Düğme içeren yeni bir çıkış kontrol paneli ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="279"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="279"/>
         <source>Slider</source>
         <translation>Kaydırıcı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="282"/>
         <source>Add an output slider control</source>
         <translation>Çıkış kaydırıcı kontrolü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="289"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="289"/>
         <source>Toggle</source>
         <translation>Anahtar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="292"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="292"/>
         <source>Add an output toggle control</source>
         <translation>Çıkış anahtar kontrolü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="299"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="299"/>
         <source>Knob</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="302"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="302"/>
         <source>Add an output knob control</source>
         <translation>Çıkış düğme kontrolü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="310"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="310"/>
         <source>Text Field</source>
         <translation>Metin Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="312"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="312"/>
         <source>Add an output text field control</source>
         <translation>Çıkış metin alanı kontrolü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="319"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="319"/>
         <source>Button</source>
         <translation>Düğme</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="322"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="322"/>
         <source>Add an output button control</source>
         <translation>Çıkış düğme kontrolü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="335"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="339"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="335"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="339"/>
         <source>Dataset</source>
         <translation>Veri Kümesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="341"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="341"/>
         <source>Add a generic dataset</source>
         <translation>Genel veri kümesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="355"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="355"/>
         <source>Plot</source>
         <translation>Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="358"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="358"/>
         <source>Add a 2D plot dataset</source>
         <translation>2D grafik veri kümesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="365"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="365"/>
         <source>FFT Plot</source>
         <translation>FFT Grafiği</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="368"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="368"/>
         <source>Add a Fast Fourier Transform plot</source>
         <translation>Hızlı Fourier Dönüşümü grafiği ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="375"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="375"/>
         <source>Gauge</source>
         <translation>Gösterge</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="378"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="378"/>
         <source>Add a gauge widget for numeric data</source>
         <translation>Sayısal veri için gösterge widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="386"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="386"/>
         <source>Level Indicator</source>
         <translation>Seviye Göstergesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="388"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="388"/>
         <source>Add a vertical bar level indicator</source>
         <translation>Dikey çubuk seviye göstergesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="395"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="395"/>
         <source>Compass</source>
         <translation>Pusula</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="398"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="398"/>
         <source>Add a compass widget for directional data</source>
         <translation>Yönsel veriler için pusula widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="406"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="406"/>
         <source>LED Indicator</source>
         <translation>LED Göstergesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="408"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="408"/>
         <source>Add an LED-style status indicator</source>
         <translation>LED tarzı durum göstergesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="421"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="425"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="421"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="425"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="427"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="427"/>
         <source>Add a dataset container group</source>
         <translation>Veri kümesi kapsayıcı grubu ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="429"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="429"/>
         <source>Dataset Container</source>
         <translation>Veri Kümesi Kapsayıcısı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="433"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="433"/>
         <source>Image</source>
         <translation>Görsel</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="435"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="435"/>
         <source>Add an image/video stream viewer</source>
         <translation>Görüntü/video akışı görüntüleyici ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="437"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="437"/>
         <source>Image View</source>
         <translation>Görüntü Görünümü</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="445"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="445"/>
         <source>Painter</source>
         <translation>Çizici</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="449"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="449"/>
         <source>Add a custom JavaScript-rendered painter widget</source>
         <translation>Özel JavaScript tabanlı çizici widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="450"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="450"/>
         <source>Painter widgets require a Pro license — adding one will fall back to a data grid</source>
         <translation>Çizici widget'ları Pro lisansı gerektirir — eklenmesi durumunda veri ızgarasına dönüşecektir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="451"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="451"/>
         <source>Painter Widget</source>
         <translation>Çizici Widget'ı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="463"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="463"/>
         <source>Table</source>
         <translation>Tablo</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="466"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="466"/>
         <source>Add a data table view</source>
         <translation>Veri tablosu görünümü ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="468"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="468"/>
         <source>Data Grid</source>
         <translation>Veri Tablosu</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="474"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="474"/>
         <source>Multi-Plot</source>
         <translation>Çoklu Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="476"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="476"/>
         <source>Add a 2D plot with multiple signals</source>
         <translation>Birden fazla sinyalli 2D grafik ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="478"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="478"/>
         <source>Multiple Plot</source>
         <translation>Çoklu Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="483"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="488"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="483"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="488"/>
         <source>3D Plot</source>
         <translation>3D Grafik</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="486"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="486"/>
         <source>Add a 3D plot visualization</source>
         <translation>3D grafik görselleştirmesi ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="494"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="498"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="494"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="498"/>
         <source>Accelerometer</source>
         <translation>İvmeölçer</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="496"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="496"/>
         <source>Add a group for 3-axis accelerometer data</source>
         <translation>3 eksenli ivmeölçer verisi için bir grup ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="504"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="507"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="504"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="507"/>
         <source>Gyroscope</source>
         <translation>Jiroskop</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="508"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="508"/>
         <source>Add a group for 3-axis gyroscope data</source>
         <translation>3 eksenli jiroskop verisi için bir grup ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="513"/>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="518"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="513"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="518"/>
         <source>GPS Map</source>
         <translation>GPS Haritası</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="516"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="516"/>
         <source>Add a map widget for GPS data</source>
         <translation>GPS verisi için bir harita widget'ı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="532"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="532"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="535"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="535"/>
         <source>Open the Assistant</source>
         <translation>Asistanı Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="541"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="541"/>
         <source>Help Center</source>
         <translation>Yardım Merkezi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="545"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Sections/ProjectToolbar.qml" line="545"/>
         <source>Open the Project Editor documentation</source>
         <translation>Proje Düzenleyici belgelerini aç</translation>
     </message>
@@ -11352,76 +12374,91 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
     <name>ProjectView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="34"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="34"/>
         <source>Project Summary</source>
         <translation>Proje Özeti</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="81"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="81"/>
         <source>Pro features detected in this project.</source>
         <translation>Bu projede Pro özellikleri algılandı.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="83"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="83"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Yedek widget'lar kullanılıyor. Tüm işlevselliğin kilidini açmak için lisans satın alın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="118"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="118"/>
         <source>Project Title:</source>
         <translation>Proje Başlığı:</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="129"/>
         <source>Untitled Project</source>
         <translation>Adsız Proje</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="149"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="149"/>
         <source>Points:</source>
         <translation>Noktalar:</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="209"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="209"/>
         <source>Source</source>
         <translation>Kaynak</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="210"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="210"/>
         <source>Sources</source>
         <translation>Kaynaklar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="215"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="215"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="216"/>
         <source>Groups</source>
         <translation>Gruplar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
         <source>Dataset</source>
         <translation>Veri Kümesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
         <source>Datasets</source>
         <translation>Veri Kümeleri</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="227"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="227"/>
         <source>Action</source>
         <translation>Eylem</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="228"/>
         <source>Actions</source>
         <translation>Eylemler</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>Düzenlemek için bir bloğa çift tıklayın. Grup, veri kümesi, eylem, veri tablosu veya cihaz eklemek için herhangi bir yere sağ tıklayın.</translation>
     </message>
@@ -11429,62 +12466,74 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
 <context>
     <name>ProtoPreviewDialog</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="37"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="41"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="41"/>
         <source>Protocol Buffers File Preview</source>
         <translation>Protocol Buffers Dosya Önizlemesi</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="161"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="165"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="165"/>
         <source>Proto File: %1</source>
         <translation>Proto Dosyası: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="169"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="173"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="173"/>
         <source>Browse the messages below, then create the project. Every message becomes a dashboard group; matching-type channel blocks get a MultiPlot and mixed-type messages get a DataGrid.</source>
         <translation>Aşağıdaki mesajlara göz atın, ardından projeyi oluşturun. Her mesaj bir gösterge paneli grubu haline gelir; eşleşen türdeki kanal blokları MultiPlot, karışık türdeki mesajlar ise DataGrid alır.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="183"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="183"/>
         <source>Show fields for</source>
         <translation>Alanları göster:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="209"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="209"/>
         <source>Fields</source>
         <translation>Alanlar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="239"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="243"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="243"/>
         <source>Tag</source>
         <translation>Etiket</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="249"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="253"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="253"/>
         <source>Field Name</source>
         <translation>Alan Adı</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="254"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="258"/>
         <source>Type</source>
         <translation>Tür</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="341"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="345"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="345"/>
         <source>No fields in the selected message.</source>
         <translation>Seçilen mesajda alan yok.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="359"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="363"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="363"/>
         <source>Total: %1 messages, %2 fields</source>
         <translation>Toplam: %1 mesaj, %2 alan</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="368"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="372"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="372"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="382"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="386"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml" line="386"/>
         <source>Create Project</source>
         <translation>Proje Oluştur</translation>
     </message>
@@ -11550,7 +12599,7 @@ Listeyi güncellemek için Yenile'ye tıklayın.</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../src/Misc/Translator.cpp" line="208"/>
+        <location filename="../../src/Misc/Translator.cpp" line="234"/>
         <source>Failed to load welcome text :(</source>
         <translation>Hoş geldiniz metni yüklenemedi :(</translation>
     </message>
@@ -12026,247 +13075,297 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>ReportOptionsDialog</name>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="24"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="24"/>
         <source>Generate PDF Report</source>
         <translation>PDF Raporu Oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="24"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="24"/>
         <source>Generate Report</source>
         <translation>Rapor Oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="61"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="61"/>
         <source>Solid</source>
         <translation>Düz</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="62"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="62"/>
         <source>Dashed</source>
         <translation>Kesikli</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="63"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="63"/>
         <source>Dotted</source>
         <translation>Noktalı</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="80"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="80"/>
         <source>A4 (210 × 297 mm)</source>
         <translation>A4 (210 × 297 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="81"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="81"/>
         <source>A3 (297 × 420 mm)</source>
         <translation>A3 (297 × 420 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="82"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="82"/>
         <source>A2 (420 × 594 mm)</source>
         <translation>A2 (420 × 594 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="83"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="83"/>
         <source>A1 (594 × 841 mm)</source>
         <translation>A1 (594 × 841 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="84"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="84"/>
         <source>A0 (841 × 1189 mm)</source>
         <translation>A0 (841 × 1189 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="85"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="85"/>
         <source>A5 (148 × 210 mm)</source>
         <translation>A5 (148 × 210 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="86"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="86"/>
         <source>A6 (105 × 148 mm)</source>
         <translation>A6 (105 × 148 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="87"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="87"/>
         <source>B4 (250 × 353 mm)</source>
         <translation>B4 (250 × 353 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="88"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="88"/>
         <source>B5 (176 × 250 mm)</source>
         <translation>B5 (176 × 250 mm)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="89"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="89"/>
         <source>Letter (8.5 × 11 in)</source>
         <translation>Letter (8,5 × 11 inç)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="90"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="90"/>
         <source>Legal (8.5 × 14 in)</source>
         <translation>Legal (8,5 × 14 inç)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="91"/>
         <source>Executive (7.25 × 10.5 in)</source>
         <translation>Executive (7,25 × 10,5 inç)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="92"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="92"/>
         <source>Tabloid (11 × 17 in)</source>
         <translation>Tabloid (11 × 17 inç)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="93"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="93"/>
         <source>Ledger (17 × 11 in)</source>
         <translation>Ledger (17 × 11 inç)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="103"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="103"/>
         <source>%1 — Session Report</source>
         <translation>%1 — Oturum Raporu</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="105"/>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="279"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="105"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="279"/>
         <source>Session Report</source>
         <translation>Oturum Raporu</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="187"/>
         <source>Branding</source>
         <translation>Markalaşma</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="193"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="193"/>
         <source>Page</source>
         <translation>Sayfa</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="199"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="199"/>
         <source>Sections</source>
         <translation>Bölümler</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="247"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="247"/>
         <source>Identity</source>
         <translation>Kimlik</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="261"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="261"/>
         <source>Company</source>
         <translation>Şirket</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="268"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="268"/>
         <source>e.g. Acme Test Systems</source>
         <translation>örn. Acme Test Sistemleri</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="272"/>
         <source>Document title</source>
         <translation>Belge başlığı</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="283"/>
         <source>Author</source>
         <translation>Yazar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="290"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="290"/>
         <source>Prepared by (optional)</source>
         <translation>Hazırlayan (isteğe bağlı)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="299"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="299"/>
         <source>Logo</source>
         <translation>Logo</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="312"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="312"/>
         <source>File</source>
         <translation>Dosya</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="323"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="323"/>
         <source>PNG, JPG or SVG (optional)</source>
         <translation>PNG, JPG veya SVG (isteğe bağlı)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="325"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="325"/>
         <source>Browse…</source>
         <translation>Gözat…</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="328"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="328"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="369"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="369"/>
         <source>Paper</source>
         <translation>Kağıt</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="381"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="381"/>
         <source>Page size</source>
         <translation>Sayfa boyutu</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="509"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="509"/>
         <source>Annotate min, max, and mean values on plots</source>
         <translation>Grafiklerde minimum, maksimum ve ortalama değerleri açıkla</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="560"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="560"/>
         <source>Export HTML</source>
         <translation>HTML Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="497"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="497"/>
         <source>Cover page (logo, document title, test subtitle)</source>
         <translation>Kapak sayfası (logo, belge başlığı, test alt başlığı)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="500"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="500"/>
         <source>Test information (project, timestamps, classification and notes)</source>
         <translation>Test bilgileri (proje, zaman damgaları, sınıflandırma ve notlar)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="503"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="503"/>
         <source>Measurement summary (min, max, mean, std. deviation per parameter)</source>
         <translation>Ölçüm özeti (parametre başına min, maks, ortalama, std. sapma)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="506"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="506"/>
         <source>Parameter trends (time-series chart per numeric parameter)</source>
         <translation>Parametre eğilimleri (sayısal parametre başına zaman serisi grafiği)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="396"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="396"/>
         <source>Plot appearance</source>
         <translation>Grafik görünümü</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="410"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="410"/>
         <source>Line width</source>
         <translation>Çizgi kalınlığı</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="442"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="442"/>
         <source>Line style</source>
         <translation>Çizgi stili</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="482"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="482"/>
         <source>Include</source>
         <translation>Dahil Et</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="533"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="533"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportOptionsDialog.qml" line="560"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportOptionsDialog.qml" line="560"/>
         <source>Export PDF</source>
         <translation>PDF Aktar</translation>
     </message>
@@ -12275,16 +13374,19 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>ReportProgressDialog</name>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportProgressDialog.qml" line="20"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportProgressDialog.qml" line="20"/>
         <source>Generating Report</source>
         <translation>Rapor Oluşturuluyor</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportProgressDialog.qml" line="69"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportProgressDialog.qml" line="69"/>
         <source>Working…</source>
         <translation>Çalışıyor…</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/ReportProgressDialog.qml" line="86"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/ReportProgressDialog.qml" line="86"/>
         <source>This can take a few seconds for sessions with many parameters. The window closes automatically when the report is ready.</source>
         <translation>Çok sayıda parametreye sahip oturumlar için bu işlem birkaç saniye sürebilir. Rapor hazır olduğunda pencere otomatik olarak kapanır.</translation>
     </message>
@@ -12293,42 +13395,51 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>RuntimeReconfigure</name>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="41"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="41"/>
         <source>Connection Lost</source>
         <translation>Bağlantı Kesildi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="42"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="42"/>
         <source>Device Unavailable</source>
         <translation>Cihaz Kullanılamıyor</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="96"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="96"/>
         <source>The connection to your device was lost.</source>
         <translation>Cihazınıza olan bağlantı kesildi.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="97"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="97"/>
         <source>Serial Studio couldn't reach your device.</source>
         <translation>Serial Studio cihazınıza ulaşamadı.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="105"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="105"/>
         <source>Check the cable, power, and that no other application has taken over the device. You can try reconnecting, switch to a different device, or quit.</source>
         <translation>Kabloyu, gücü ve başka bir uygulamanın cihazı ele geçirmediğini kontrol edin. Yeniden bağlanmayı deneyebilir, farklı bir cihaza geçebilir veya çıkabilirsiniz.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="108"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="108"/>
         <source>Make sure it's plugged in, powered on, and not already in use by another app. You can try again, pick a different device, or quit.</source>
         <translation>Cihazın takılı, açık ve başka bir uygulama tarafından kullanılmadığından emin olun. Yeniden deneyebilir, farklı bir cihaz seçebilir veya çıkabilirsiniz.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="122"/>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="122"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="200"/>
         <source>Quit</source>
         <translation>Çık</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="135"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="135"/>
         <source>Pick Different Device</source>
         <translation>Farklı Cihaz Seç</translation>
     </message>
@@ -12338,26 +13449,31 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="146"/>
         <source>Try Again</source>
         <translation>Tekrar Dene</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="146"/>
         <source>Reconnect</source>
         <translation>Yeniden Bağlan</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="166"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="166"/>
         <source>Pick the correct device, then press Connect.</source>
         <translation>Doğru cihazı seçin, ardından Bağlan'a basın.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="175"/>
         <source>I/O Interface: %1</source>
         <translation>G/ç Arayüzü: %1</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/RuntimeReconfigure.qml" line="213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/RuntimeReconfigure.qml" line="213"/>
         <source>Connect</source>
         <translation>Bağlan</translation>
     </message>
@@ -12514,91 +13630,109 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>SessionDetail</name>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="19"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="19"/>
         <source>Session Details</source>
         <translation>Oturum Ayrıntıları</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="88"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="88"/>
         <source>Select a session to view details.</source>
         <translation>Ayrıntıları görüntülemek için bir oturum seçin.</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="130"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="130"/>
         <source>Project:</source>
         <translation>Proje:</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="143"/>
         <source>Started:</source>
         <translation>Başlatıldı:</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="156"/>
         <source>Ended:</source>
         <translation>Sonlandırıldı:</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="162"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="162"/>
         <source>(in progress)</source>
         <translation>(devam ediyor)</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="169"/>
         <source>Frames:</source>
         <translation>Frame'ler:</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="185"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="185"/>
         <source>Notes</source>
         <translation>Notlar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="200"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="200"/>
         <source>Add session notes…</source>
         <translation>Oturum notu ekle…</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="201"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="201"/>
         <source>Notes are read-only for completed sessions.</source>
         <translation>Tamamlanmış oturumlar için notlar salt okunurdur.</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="286"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="286"/>
         <source>New tag…</source>
         <translation>Yeni etiket…</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="370"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="370"/>
         <source>Unlock the session file to delete sessions</source>
         <translation>Oturumları silmek için oturum dosyasının kilidini açın</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="222"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="222"/>
         <source>Tags</source>
         <translation>Etiketler</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="293"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="293"/>
         <source>Add</source>
         <translation>Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="332"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="332"/>
         <source>Replay</source>
         <translation>Yeniden Oynat</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="342"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="342"/>
         <source>Export CSV</source>
         <translation>CSV Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="351"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="351"/>
         <source>Generate Report</source>
         <translation>Rapor Oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionDetail.qml" line="364"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionDetail.qml" line="364"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
@@ -12607,36 +13741,43 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>SessionList</name>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="19"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="19"/>
         <source>Sessions</source>
         <translation>Oturumlar</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="71"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="71"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="91"/>
         <source>Date</source>
         <translation>Tarih</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="92"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="92"/>
         <source>Frames</source>
         <translation>Çerçeveler</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="93"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="93"/>
         <source>Tags</source>
         <translation>Etiketler</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="193"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="193"/>
         <source>No sessions found.</source>
         <translation>Oturum bulunamadı.</translation>
     </message>
     <message>
         <location filename="../../qml/DatabaseExplorer/SessionList.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/DatabaseExplorer/SessionList.qml" line="194"/>
         <source>No session file open.</source>
         <translation>Açık oturum dosyası yok.</translation>
     </message>
@@ -13211,235 +14352,285 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <name>Settings</name>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="49"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="49"/>
         <source>Preferences</source>
         <translation>Tercihler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="76"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="76"/>
         <source>General</source>
         <translation>Genel</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="174"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="174"/>
         <source>Language</source>
         <translation>Dil</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="190"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="190"/>
         <source>Theme</source>
         <translation>Tema</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="225"/>
         <source>Workspace Folder</source>
         <translation>Çalışma Alanı Klasörü</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="255"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="255"/>
         <source>Automatically Check for Updates</source>
         <translation>Güncellemeleri Otomatik Denetle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="82"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="82"/>
         <source>Dashboard</source>
         <translation>Gösterge Paneli</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="344"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="344"/>
         <source>Export…</source>
         <translation>Dışa Aktar…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="390"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="390"/>
         <source>Data Plotting</source>
         <translation>Veri Çizimi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="405"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="405"/>
         <source>Point Count</source>
         <translation>Nokta Sayısı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="430"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="430"/>
         <source>UI Refresh Rate (Hz)</source>
         <translation>Arayüz Yenileme Hızı (Hz)</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="667"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="667"/>
         <source>Always Show Taskbar Buttons</source>
         <translation>Görev Çubuğu Düğmelerini Her Zaman Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="554"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="554"/>
         <source>Show Actions Panel</source>
         <translation>Eylemler Panelini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="305"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="305"/>
         <source>Enable API Server (Port 7777)</source>
         <translation>API Sunucusunu Etkinleştir (Port 7777)</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="94"/>
         <location filename="../../qml/Dialogs/Settings.qml" line="779"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="94"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="779"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="159"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="159"/>
         <source>Appearance</source>
         <translation>Görünüm</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="209"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="209"/>
         <source>Files &amp; Updates</source>
         <translation>Dosyalar ve Güncellemeler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="273"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="273"/>
         <source>Advanced</source>
         <translation>Gelişmiş</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="323"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="323"/>
         <source>Allow External API Connections</source>
         <translation>Harici API Bağlantılarına İzin Ver</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="288"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="288"/>
         <source>Auto-Hide Toolbar</source>
         <translation>Araç Çubuğunu Otomatik Gizle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="88"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="88"/>
         <source>Taskbar</source>
         <translation>Görev Çubuğu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="492"/>
         <source>Small</source>
         <translation>Küçük</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="492"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="492"/>
         <source>Large</source>
         <translation>Büyük</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="492"/>
         <source>Extra Large</source>
         <translation>Çok Büyük</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="492"/>
         <source>Custom</source>
         <translation>Özel</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="539"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="539"/>
         <source>Layout</source>
         <translation>Düzen</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="577"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="577"/>
         <source>Video Export</source>
         <translation>Video Dışa Aktarma</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="595"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="595"/>
         <source>Save Videos by Default</source>
         <translation>Videoları Varsayılan Olarak Kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="646"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="646"/>
         <source>Behavior</source>
         <translation>Davranış</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="682"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="682"/>
         <source>Show Search Field</source>
         <translation>Arama Alanını Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="697"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="697"/>
         <source>Auto-hide Taskbar</source>
         <translation>Görev Çubuğunu Otomatik Gizle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="715"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="715"/>
         <source>Hide Delay (ms)</source>
         <translation>Gizleme Gecikmesi (ms)</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="739"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="739"/>
         <source>Pinned Buttons</source>
         <translation>Sabitlenmiş Düğmeler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="757"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="757"/>
         <source>Drag a pinned button on the taskbar to reorder it.</source>
         <translation>Görev çubuğundaki sabitlenmiş bir düğmeyi sırasını değiştirmek için sürükleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="778"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="778"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="781"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="781"/>
         <source>Pause / Resume</source>
         <translation>Duraklat / Devam Et</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="782"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="782"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="783"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="783"/>
         <source>AI Assistant</source>
         <translation>Yapay Zeka Asistanı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="910"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="910"/>
         <source>Display</source>
         <translation>Görüntüleme</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="925"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="925"/>
         <source>Display Mode</source>
         <translation>Görüntüleme Modu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="467"/>
         <location filename="../../qml/Dialogs/Settings.qml" line="938"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="467"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="938"/>
         <source>Font Family</source>
         <translation>Yazı Tipi Ailesi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="101"/>
         <location filename="../../qml/Dialogs/Settings.qml" line="780"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="101"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="780"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="342"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="342"/>
         <source>Export Protobuf File</source>
         <translation>Protobuf Dosyasını Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="452"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="452"/>
         <source>Dashboard Font</source>
         <translation>Gösterge Paneli Yazı Tipi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="482"/>
         <location filename="../../qml/Dialogs/Settings.qml" line="953"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="482"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="953"/>
         <source>Font Size</source>
         <translation>Yazı Tipi Boyutu</translation>
     </message>
@@ -13453,96 +14644,115 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="970"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="970"/>
         <source>Show Timestamps</source>
         <translation>Zaman Damgalarını Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="989"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="989"/>
         <source>Data Transmission</source>
         <translation>Veri İletimi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1004"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1004"/>
         <source>Line Ending</source>
         <translation>Satır Sonu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1017"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1017"/>
         <source>Input Mode</source>
         <translation>Giriş Modu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1030"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1030"/>
         <source>Text Encoding</source>
         <translation>Metin Kodlaması</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1043"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1043"/>
         <source>Checksum</source>
         <translation>Sağlama Toplamı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1056"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1056"/>
         <source>Echo Sent Data</source>
         <translation>Gönderilen Veriyi Yankıla</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1075"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1075"/>
         <source>Escape Codes</source>
         <translation>Kaçış Kodları</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1090"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1090"/>
         <source>VT100 Emulation</source>
         <translation>VT100 Emülasyonu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1109"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1109"/>
         <source>ANSI Colors</source>
         <translation>ANSI Renkleri</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1167"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1167"/>
         <source>Delivery</source>
         <translation>Teslimat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1182"/>
         <source>System Notifications</source>
         <translation>Sistem Bildirimleri</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1203"/>
         <source>Show Warning/Critical events as OS desktop notifications when Serial Studio is not the foreground window.</source>
         <translation>Serial Studio ön planda olmadığında Uyarı/Kritik olayları işletim sistemi masaüstü bildirimleri olarak göster.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1213"/>
         <source>Application Logs</source>
         <translation>Uygulama Günlükleri</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1228"/>
         <source>Route Warnings to Notifications</source>
         <translation>Uyarıları Bildirimlere Yönlendir</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1249"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1249"/>
         <source>Off by default — Qt and QML emit warnings frequently and enabling this can drown out real alarms. Critical messages are always routed regardless of this setting.</source>
         <translation>Varsayılan olarak kapalı — QT ve QML sık sık uyarı yayar ve bunu etkinleştirmek gerçek alarmları bastırabilir. Kritik mesajlar bu ayardan bağımsız olarak her zaman yönlendirilir.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1271"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1308"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1308"/>
         <source>Close</source>
         <translation>Kapat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="1319"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Settings.qml" line="1319"/>
         <source>Apply</source>
         <translation>Uygula</translation>
     </message>
@@ -13552,76 +14762,92 @@ Ayırıcı parametresine artık gerek yok.</translation>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="35"/>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="378"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="35"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="378"/>
         <source>Device Setup</source>
         <translation>Cihaz Kurulumu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="124"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="124"/>
         <source>API Server Active (%1)</source>
         <translation>API Sunucusu Etkin (%1)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="125"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="125"/>
         <source>API Server Ready</source>
         <translation>API Sunucusu Hazır</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="126"/>
         <source>API Server Off</source>
         <translation>API Sunucusu Kapalı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="186"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="186"/>
         <source>Frame Parsing</source>
         <translation>Frame Ayrıştırma</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="196"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="196"/>
         <source>Console Only (No Parsing)</source>
         <translation>Yalnızca Konsol (Ayrıştırma Yok)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="209"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="209"/>
         <source>Quick Plot (Comma Separated Values)</source>
         <translation>Hızlı Çizim (Virgülle Ayrılmış Değerler)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="220"/>
         <source>Parse via Project File</source>
         <translation>Proje Dosyası ile Ayrıştır</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="243"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="243"/>
         <source>Change Project File (%1)</source>
         <translation>Proje Dosyasını Değiştir (%1)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="244"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="244"/>
         <source>Select Project File</source>
         <translation>Proje Dosyası Seç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="259"/>
         <source>Data Export</source>
         <translation>Veri Dışa Aktarımı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="283"/>
         <source>CSV Spreadsheet</source>
         <translation>CSV Elektronik Tablosu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="301"/>
         <source>Session Recording</source>
         <translation>Oturum Kaydı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="322"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="322"/>
         <source>MDF4 Recording</source>
         <translation>MDF4 Kaydı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="338"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="338"/>
         <source>Console Log</source>
         <translation>Konsol Günlüğü</translation>
     </message>
@@ -13659,26 +14885,31 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="390"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="390"/>
         <source>I/O Interface: %1</source>
         <translation>G/ç Arayüzü: %1</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="459"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="459"/>
         <source>Multi-Device Project</source>
         <translation>Çok Cihazlı Proje</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="472"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="472"/>
         <source>This project streams data from %1 independent devices.</source>
         <translation>Bu proje %1 bağımsız cihazdan veri akışı yapar.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="485"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="485"/>
         <source>Each device has its own connection settings. Configure them in the Project Editor under the Sources tab.</source>
         <translation>Her cihazın kendi bağlantı ayarları vardır. Bunları Proje Düzenleyici'de Kaynaklar sekmesi altında yapılandırın.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Setup.qml" line="506"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Setup.qml" line="506"/>
         <source>Open Project Editor</source>
         <translation>Proje Düzenleyiciyi Aç</translation>
     </message>
@@ -13691,6 +14922,7 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="93"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="93"/>
         <source>Choose an Icon</source>
         <translation>Simge Seç</translation>
     </message>
@@ -13700,137 +14932,165 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="24"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="24"/>
         <source>New Deployment</source>
         <translation>Yeni Dağıtım</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="106"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="106"/>
         <source>Save Deployment</source>
         <translation>Dağıtımı Kaydet</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="146"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="146"/>
         <source>General</source>
         <translation>Genel</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="152"/>
         <source>Taskbar</source>
         <translation>Görev Çubuğu</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="158"/>
         <source>Logging</source>
         <translation>Günlükleme</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="215"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="215"/>
         <source>Identity</source>
         <translation>Kimlik</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="271"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="271"/>
         <source>Click to choose an icon</source>
         <translation>Simge seçmek için tıklayın</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="280"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="280"/>
         <source>Name:</source>
         <translation>Ad:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="289"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="289"/>
         <source>Deployment Name</source>
         <translation>Dağıtım Adı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="383"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="383"/>
         <source>Theme</source>
         <translation>Tema</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="393"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="393"/>
         <source>Same as Serial Studio</source>
         <translation>Serial Studio ile Aynı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="415"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="415"/>
         <source>Actions Panel</source>
         <translation>Eylemler Paneli</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="426"/>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="607"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="426"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="607"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="442"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="442"/>
         <source>Double-clicking this deployment takes someone straight to the live dashboard for this project. There's no toolbar or setup pane, just the data, and Serial Studio quits as soon as the device disconnects.</source>
         <translation>Bu dağıtıma çift tıklamak, kullanıcıyı doğrudan bu proje için canlı gösterge paneline götürür. Araç çubuğu veya kurulum bölmesi yoktur, yalnızca veri vardır ve Serial Studio cihaz bağlantısı kesilir kesilmez kapanır.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="488"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="488"/>
         <source>Visibility</source>
         <translation>Görünürlük</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="503"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="503"/>
         <source>Mode</source>
         <translation>Mod</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="512"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="512"/>
         <source>Always shown</source>
         <translation>Her zaman göster</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="513"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="513"/>
         <source>Auto-hide</source>
         <translation>Otomatik Gizle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="514"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="514"/>
         <source>Hidden</source>
         <translation>Gizli</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="529"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="529"/>
         <source>Hiding the taskbar removes window minimize/maximize/close buttons and forces auto-layout, so the dashboard always fills the available area.</source>
         <translation>Görev çubuğunu gizlemek pencere simge durumuna küçültme/büyütme/kapatma düğmelerini kaldırır ve otomatik düzeni zorlar, böylece gösterge paneli her zaman kullanılabilir alanı doldurur.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="533"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="533"/>
         <source>The taskbar slides in when the user moves the cursor near the bottom edge.</source>
         <translation>Görev çubuğu, kullanıcı imleci alt kenara yaklaştırdığında kayarak açılır.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="535"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="535"/>
         <source>The taskbar is permanently visible at the bottom of the dashboard.</source>
         <translation>Görev çubuğu gösterge panelinin altında kalıcı olarak görünür.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="548"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="548"/>
         <source>Pinned Buttons</source>
         <translation>Sabitlenmiş Düğmeler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="565"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="565"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="579"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="579"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="593"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="593"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="718"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="718"/>
         <source>Recordings are saved in the Serial Studio workspace folder</source>
         <translation>Kayıtlar Serial Studio çalışma alanı klasörüne kaydedilir</translation>
     </message>
@@ -13840,27 +15100,33 @@ Ayırıcı parametresine artık gerek yok.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="298"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="298"/>
         <source>Change Icon…</source>
         <translation>Simgeyi Değiştir…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="315"/>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="333"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="315"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="333"/>
         <source>Project</source>
         <translation>Proje</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="343"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="343"/>
         <source>Choose a project file to begin</source>
         <translation>Başlamak için bir proje dosyası seçin</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="368"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="368"/>
         <source>Behavior</source>
         <translation>Davranış</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="405"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="405"/>
         <source>Fullscreen</source>
         <translation>Tam Ekran</translation>
     </message>
@@ -13882,26 +15148,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="657"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="657"/>
         <source>Recorders</source>
         <translation>Kaydediciler</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="672"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="672"/>
         <source>CSV File</source>
         <translation>CSV Dosyası</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="682"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="682"/>
         <source>MDF4 File</source>
         <translation>MDF4 Dosyası</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="692"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="692"/>
         <source>Session Database</source>
         <translation>Oturum Veritabanı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="702"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="702"/>
         <source>Console Log</source>
         <translation>Konsol Günlüğü</translation>
     </message>
@@ -13911,11 +15182,13 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="749"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="749"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/ShortcutGenerator.qml" line="761"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/ShortcutGenerator.qml" line="761"/>
         <source>Save</source>
         <translation>Kaydet</translation>
     </message>
@@ -13925,120 +15198,148 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="110"/>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="110"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="242"/>
         <source>Undo</source>
         <translation>Geri Al</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="117"/>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="253"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="117"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="253"/>
         <source>Redo</source>
         <translation>Yinele</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="126"/>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="272"/>
         <source>Cut</source>
         <translation>Kes</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="131"/>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="131"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="282"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="136"/>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="292"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="136"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="292"/>
         <source>Paste</source>
         <translation>Yapıştır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="143"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="153"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="153"/>
         <source>Format Document</source>
         <translation>Belgeyi Biçimlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="160"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="160"/>
         <source>Format Selection</source>
         <translation>Seçimi Biçimlendir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="222"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="222"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="227"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="227"/>
         <source>Reset to the default parsing script</source>
         <translation>Varsayılan ayrıştırma betiğine sıfırla</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="232"/>
         <source>Open</source>
         <translation>Aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="237"/>
         <source>Import a script file for data parsing</source>
         <translation>Veri ayrıştırma için betik dosyası içe aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="315"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="315"/>
         <source>Open help documentation for data parsing</source>
         <translation>Veri ayrıştırma için yardım belgelerini aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="352"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="352"/>
         <source>Language:</source>
         <translation>Dil:</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="380"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="380"/>
         <source>Select Template…</source>
         <translation>Şablon Seç…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="247"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="247"/>
         <source>Undo the last code edit</source>
         <translation>Son kod düzenlemesini geri al</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="259"/>
         <source>Redo the previously undone edit</source>
         <translation>Geri alınan düzenlemeyi yinele</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="277"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="277"/>
         <source>Cut selected code to clipboard</source>
         <translation>Seçili kodu panoya kes</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="287"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="287"/>
         <source>Copy selected code to clipboard</source>
         <translation>Seçili Kodu Panoya Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="296"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="296"/>
         <source>Paste code from clipboard</source>
         <translation>Panodan Kod Yapıştır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="310"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="310"/>
         <source>Help</source>
         <translation>Yardım</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="392"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="392"/>
         <source>Test With Sample Data</source>
         <translation>Örnek Veriyle Test Et</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="402"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceFrameParserView.qml" line="402"/>
         <source>Evaluate</source>
         <translation>Değerlendir</translation>
     </message>
@@ -14047,26 +15348,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>SourceView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="107"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceView.qml" line="107"/>
         <source>Duplicate</source>
         <translation>Çoğalt</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="109"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceView.qml" line="109"/>
         <source>Create a copy of this data source</source>
         <translation>Bu Veri Kaynağının Bir Kopyasını Oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="121"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceView.qml" line="121"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceView.qml" line="126"/>
         <source>Remove this data source</source>
         <translation>Bu Veri Kaynağını Kaldır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SourceView.qml" line="127"/>
         <source>The primary data source cannot be removed</source>
         <translation>Birincil veri kaynağı kaldırılamaz</translation>
     </message>
@@ -14075,11 +15381,13 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>SqlitePlayer</name>
     <message>
         <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="24"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/SqlitePlayer.qml" line="24"/>
         <source>Session Player</source>
         <translation>Oturum Oynatıcı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="91"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/SqlitePlayer.qml" line="91"/>
         <source>Loading session…</source>
         <translation>Oturum yükleniyor…</translation>
     </message>
@@ -14087,177 +15395,220 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>StartMenu</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="255"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="260"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="260"/>
         <source>Workspaces</source>
         <translation>Çalışma Alanları</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="381"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="388"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="388"/>
         <source>Actions</source>
         <translation>Eylemler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="401"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="410"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="410"/>
         <source>No Actions Available</source>
         <translation>Kullanılabilir Eylem Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="431"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="440"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="440"/>
         <source>Plugins</source>
         <translation>Eklentiler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="476"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="487"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="487"/>
         <source>No Plugins Installed</source>
         <translation>Yüklü Eklenti Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="94"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="512"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="99"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="523"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="99"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="523"/>
         <source>Auto Layout</source>
         <translation>Otomatik Düzen</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="102"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="524"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="107"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="535"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="107"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="535"/>
         <source>Full Screen</source>
         <translation>Tam Ekran</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="108"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="113"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="548"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="113"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="548"/>
         <source>Add External Window</source>
         <translation>Harici Pencere Ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="134"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="794"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="139"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="809"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="139"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="809"/>
         <source>Help Center</source>
         <translation>Yardım Merkezi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="650"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="663"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="663"/>
         <source>Tools</source>
         <translation>Araçlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="754"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="769"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="769"/>
         <source>No Tools Available</source>
         <translation>Kullanılabilir Araç Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="822"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="837"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="837"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="843"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="858"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="858"/>
         <source>Quit</source>
         <translation>Çık</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="880"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="895"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="895"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="881"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="896"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="896"/>
         <source>Hide</source>
         <translation>Gizle</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="334"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="339"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="339"/>
         <source>New Workspace…</source>
         <translation>Yeni Çalışma Alanı…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="140"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="724"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="145"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="737"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="737"/>
         <source>Sessions</source>
         <translation>Oturumlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="147"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="733"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="152"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="746"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="746"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="154"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="741"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="159"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="754"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="159"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="754"/>
         <source>AI Assistant</source>
         <translation>Yapay Zeka Asistanı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="320"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="325"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="325"/>
         <source>Show "%1"</source>
         <translation>"%1" Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="325"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="330"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="330"/>
         <source>Show All Hidden Workspaces</source>
         <translation>Tüm Gizli Çalışma Alanlarını Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="347"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="354"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="354"/>
         <source>No Workspaces Available</source>
         <translation>Kullanılabilir Çalışma Alanı Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="468"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="477"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="477"/>
         <source>Manage Plugins…</source>
         <translation>Eklentileri Yönet…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="557"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="568"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="568"/>
         <source>Export</source>
         <translation>Dışa Aktar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="587"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="598"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="598"/>
         <source>CSV File</source>
         <translation>CSV Dosyası</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="593"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="604"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="604"/>
         <source>MDF4 File</source>
         <translation>MDF4 Dosyası</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="599"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="610"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="610"/>
         <source>Console Transcript</source>
         <translation>Konsol Kaydı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="608"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="619"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="619"/>
         <source>Session Database</source>
         <translation>Oturum Veritabanı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="620"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="633"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="633"/>
         <source>No Export Formats Available</source>
         <translation>Kullanılabilir Dışa Aktarma Formatı Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="114"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="697"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="119"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="710"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="119"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="710"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="120"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="706"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="719"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="125"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="719"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="128"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="715"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="133"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="728"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="133"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="728"/>
         <source>Preferences</source>
         <translation>Tercihler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="869"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="884"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="884"/>
         <source>Edit…</source>
         <translation>Düzenle…</translation>
     </message>
@@ -14266,17 +15617,20 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="815"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="830"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="830"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="816"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="831"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="831"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="843"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="858"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="858"/>
         <source>Disconnect</source>
         <translation>Bağlantıyı Kes</translation>
     </message>
@@ -14284,7 +15638,8 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>SubMenuCombo</name>
     <message>
-        <location filename="../../qml/Widgets/SubMenuCombo.qml" line="81"/>
+        <location filename="../../qml/Widgets/SubMenuCombo.qml" line="86"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/SubMenuCombo.qml" line="86"/>
         <source>No Data Available</source>
         <translation>Kullanılabilir Veri Yok</translation>
     </message>
@@ -14293,56 +15648,67 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>SystemDatasetsView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="33"/>
         <source>Dataset Values</source>
         <translation>Veri Kümesi Değerleri</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="158"/>
         <source>Search</source>
         <translation>Ara</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="179"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="179"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="180"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="180"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="181"/>
         <source>Dataset</source>
         <translation>Veri Kümesi</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="182"/>
         <source>Units</source>
         <translation>Birimler</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="252"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="252"/>
         <source>(virtual)</source>
         <translation>(sanal)</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="298"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="298"/>
         <source>Copy access code %1 to clipboard</source>
         <translation>Erişim kodu %1 panoya kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="374"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="374"/>
         <source>Dataset access code copied</source>
         <translation>Veri kümesi erişim kodu kopyalandı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="323"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="323"/>
         <source>No datasets defined in this project.</source>
         <translation>Bu projede tanımlı veri kümesi yok.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="324"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/SystemDatasetsView.qml" line="324"/>
         <source>No datasets match your search.</source>
         <translation>Aramanızla eşleşen veri seti yok.</translation>
     </message>
@@ -14351,26 +15717,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>TableDelegate</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/TableDelegate.qml" line="126"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/TableDelegate.qml" line="126"/>
         <source>Parameter</source>
         <translation>Parametre</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/TableDelegate.qml" line="147"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/TableDelegate.qml" line="147"/>
         <source>Value</source>
         <translation>Değer</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/TableDelegate.qml" line="500"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/TableDelegate.qml" line="500"/>
         <source>(Custom Icon)</source>
         <translation>(Özel Simge)</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/TableDelegate.qml" line="701"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/TableDelegate.qml" line="701"/>
         <source>No</source>
         <translation>Hayır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/TableDelegate.qml" line="701"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/TableDelegate.qml" line="701"/>
         <source>Yes</source>
         <translation>Evet</translation>
     </message>
@@ -14379,101 +15750,121 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>Taskbar</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="66"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="66"/>
         <source>Start Menu</source>
         <translation>Başlangıç Menüsü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="194"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="194"/>
         <source>Menu</source>
         <translation>Menü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="228"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="228"/>
         <source>Search…</source>
         <translation>Ara…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="486"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="491"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="486"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="487"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="487"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="488"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="493"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="488"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="490"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="495"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="490"/>
         <source>AI Assistant</source>
         <translation>Yapay Zeka Asistanı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="491"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="496"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="491"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="491"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="496"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="491"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="919"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="927"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="919"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1 adresine bağlandı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="920"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="928"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="920"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Bağlı değil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="944"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="952"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="944"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Yayıncı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="954"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="954"/>
         <source>Status:</source>
         <translation>Durum:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="970"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
         <source>Connected</source>
         <translation>Bağlı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="963"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="971"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="963"/>
         <source>Disconnected</source>
         <translation>Bağlantı Kesildi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="970"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="978"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="970"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="983"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="991"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="983"/>
         <source>Mode:</source>
         <translation>Mod:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
         <source>Messages sent:</source>
         <translation>Gönderilen mesajlar:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1018"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT Ayarlarını Aç</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="489"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="494"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="489"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
@@ -14490,46 +15881,55 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>Terminal</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="140"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="148"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="148"/>
         <source>Select all</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="154"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="154"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="254"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="254"/>
         <source>Send Data to Device</source>
         <translation>Cihaza Veri Gönder</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="431"/>
         <source>Show Timestamp</source>
         <translation>Zaman Damgasını Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="439"/>
         <source>Echo</source>
         <translation>Yankı</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="456"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="456"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 Emülasyonu</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="469"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="469"/>
         <source>ANSI Colors</source>
         <translation>ANSI Renkleri</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="489"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Terminal.qml" line="489"/>
         <source>Display: %1</source>
         <translation>Görüntüleme: %1</translation>
     </message>
@@ -14538,69 +15938,85 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>ToolCallCard</name>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="47"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="47"/>
         <source>Awaiting approval</source>
         <translation>Onay bekleniyor</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="48"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="48"/>
         <source>Done</source>
         <translation>Tamamlandı</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="49"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="49"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="50"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="50"/>
         <source>Denied</source>
         <translation>Reddedildi</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="51"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="51"/>
         <source>Blocked</source>
         <translation>Engellendi</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="52"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="52"/>
         <source>Running</source>
         <translation>Çalışıyor</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="152"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="152"/>
         <source>Approve</source>
         <translation>Onayla</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="158"/>
         <source>Deny</source>
         <translation>Reddet</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="175"/>
         <source>Arguments</source>
         <translation>Argümanlar</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="212"/>
         <location filename="../../qml/AI/ToolCallCard.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="212"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="272"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="217"/>
         <location filename="../../qml/AI/ToolCallCard.qml" line="277"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="217"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="277"/>
         <source>Copy All</source>
         <translation>Tümünü Kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="225"/>
         <location filename="../../qml/AI/ToolCallCard.qml" line="285"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="285"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
         <location filename="../../qml/AI/ToolCallCard.qml" line="233"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/AI/ToolCallCard.qml" line="233"/>
         <source>Result</source>
         <translation>Sonuç</translation>
     </message>
@@ -14609,27 +16025,33 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>Toolbar</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="196"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="196"/>
         <source>Project Editor</source>
         <translation>Proje Düzenleyici</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="199"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="199"/>
         <source>Open the Project Editor to create or modify your JSON layout</source>
         <translation>JSON düzeninizi oluşturmak veya değiştirmek için Proje Düzenleyici'yi açın</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="231"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="231"/>
         <source>Play a CSV file as if it were live sensor data</source>
         <translation>CSV dosyasını canlı sensör verisi gibi oynat</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="318"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="322"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="318"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="322"/>
         <source>Preferences</source>
         <translation>Tercihler</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="326"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="326"/>
         <source>Open application settings and preferences</source>
         <translation>Uygulama ayarlarını ve tercihlerini aç</translation>
     </message>
@@ -14639,21 +16061,25 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="225"/>
         <source>Open CSV</source>
         <translation>CSV Aç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="237"/>
         <source>Open MDF4</source>
         <translation>MDF4 Aç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="291"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="291"/>
         <source>Sessions</source>
         <translation>Oturumlar</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="295"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="295"/>
         <source>Browse, replay, and export recorded sessions</source>
         <translation>Kayıtlı oturumları gözat, tekrar oynat ve dışa aktar</translation>
     </message>
@@ -14669,12 +16095,17 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="253"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="259"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="253"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="301"/>
         <source>Extensions</source>
         <translation>Eklentiler</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="264"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="304"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="264"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="304"/>
         <source>Browse and install extensions</source>
         <translation>Eklentileri gözat ve yükle</translation>
     </message>
@@ -14684,6 +16115,7 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="280"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="280"/>
         <source>Deploy</source>
         <translation>Dağıt</translation>
     </message>
@@ -14693,184 +16125,223 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="344"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="344"/>
         <source>UART</source>
         <translation>UART</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="350"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="350"/>
         <source>Select Serial port (UART) communication</source>
         <translation>Seri port (UART) iletişimini seç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="361"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="361"/>
         <source>Audio</source>
         <translation>Ses</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="365"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="365"/>
         <source>Select audio input device (Pro)</source>
         <translation>Ses giriş cihazını seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="380"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="380"/>
         <source>USB</source>
         <translation>USB</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="385"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="385"/>
         <source>Select raw USB communication (Pro)</source>
         <translation>Ham USB iletişimini seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="394"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="394"/>
         <source>Network</source>
         <translation>Ağ</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="399"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="399"/>
         <source>Select TCP/UDP network communication</source>
         <translation>TCP/UDP ağ iletişimini seç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="416"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="416"/>
         <source>Select MODBUS communication (Pro)</source>
         <translation>MODBUS iletişimini seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="430"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="430"/>
         <source>HID</source>
         <translation>HID</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="435"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="435"/>
         <source>Select HID device communication (Pro)</source>
         <translation>HID cihaz iletişimini seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="445"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="445"/>
         <source>Bluetooth</source>
         <translation>Bluetooth</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="449"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="449"/>
         <source>Select Bluetooth Low Energy communication</source>
         <translation>Bluetooth Low Energy iletişimini seç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="461"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="461"/>
         <source>CAN Bus</source>
         <translation>CAN Bus</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="466"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="466"/>
         <source>Select CAN Bus communication (Pro)</source>
         <translation>CAN Bus iletişimini seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="480"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="480"/>
         <source>Process</source>
         <translation>Süreç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="485"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="485"/>
         <source>Select process pipe communication (Pro)</source>
         <translation>Süreç borusu iletişimini seç (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="521"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="521"/>
         <source>Examples</source>
         <translation>Örnekler</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="524"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="524"/>
         <source>Browse example projects</source>
         <translation>Örnek projelere göz at</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="532"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="532"/>
         <source>Help Center</source>
         <translation>Yardım Merkezi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="536"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="536"/>
         <source>Browse documentation, FAQ, and wiki</source>
         <translation>Dokümantasyon, SSS ve wiki'ye göz atın</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="545"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="545"/>
         <source>View detailed documentation and ask questions on DeepWiki</source>
         <translation>DeepWiki'de detaylı dokümantasyonu görüntüleyin ve sorular sorun</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="601"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="601"/>
         <source>Connect or disconnect from the configured device</source>
         <translation>Yapılandırılmış cihaza bağlan veya bağlantıyı kes</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="501"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="505"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="501"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="505"/>
         <source>About</source>
         <translation>Hakkında</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="213"/>
         <source>Open Project</source>
         <translation>Proje Aç</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="216"/>
         <source>Open an existing JSON project</source>
         <translation>Mevcut bir JSON projesini açın</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="242"/>
         <source>Play an MDF4 file as if it were live sensor data (Pro)</source>
         <translation>Bir MDF4 dosyasını canlı sensör verisi gibi oynatın (Pro)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="253"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="259"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="253"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="259"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="263"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="263"/>
         <source>Chat with an AI to build and edit your project</source>
         <translation>Projenizi oluşturmak ve düzenlemek için bir yapay zeka ile sohbet edin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="285"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="285"/>
         <source>Build an operator app for the current project</source>
         <translation>Mevcut proje için bir operatör uygulaması oluştur</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="411"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="411"/>
         <source>Modbus</source>
         <translation>Modbus</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="509"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="509"/>
         <source>Show application info and license details</source>
         <translation>Uygulama bilgilerini ve lisans detaylarını gösterin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="542"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="542"/>
         <source>AI Wiki &amp; Chat</source>
         <translation>AI Wiki ve Sohbet</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="584"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="584"/>
         <source>Manage license and activate Serial Studio Pro</source>
         <translation>Lisansı yönet ve Serial Studio Pro'yu etkinleştir</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="599"/>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="621"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="599"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="621"/>
         <source>Disconnect</source>
         <translation>Bağlantıyı Kes</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="599"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="599"/>
         <source>Connect</source>
         <translation>Bağlan</translation>
     </message>
@@ -14880,6 +16351,7 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="580"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Toolbar.qml" line="580"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
@@ -14888,41 +16360,49 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>UART</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="73"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="73"/>
         <source>COM Port</source>
         <translation>COM Portu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="102"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="102"/>
         <source>Baud Rate</source>
         <translation>İletim Hızı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="195"/>
         <source>Data Bits</source>
         <translation>Veri Bitleri</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="216"/>
         <source>Parity</source>
         <translation>Eşlik</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="237"/>
         <source>Stop Bits</source>
         <translation>Durma Bitleri</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="258"/>
         <source>Flow Control</source>
         <translation>Akış Kontrolü</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="290"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="290"/>
         <source>Auto Reconnect</source>
         <translation>Otomatik Yeniden Bağlan</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="308"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml" line="308"/>
         <source>Send DTR Signal</source>
         <translation>DTR Sinyali Gönder</translation>
     </message>
@@ -14978,71 +16458,85 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>USB</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="48"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="48"/>
         <source>USB Device</source>
         <translation>USB Cihazı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="78"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="78"/>
         <source>Transfer Mode</source>
         <translation>Transfer Modu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="87"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="87"/>
         <source>Bulk Stream</source>
         <translation>Toplu Akış</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="88"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="88"/>
         <source>Advanced (Bulk + Control)</source>
         <translation>Gelişmiş (Toplu + Kontrol)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="89"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="89"/>
         <source>Isochronous</source>
         <translation>Eşzamanlı</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="141"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="141"/>
         <source>Connect to USB devices using bulk, control, or isochronous transfers. Suitable for data loggers, custom firmware devices, and USB instruments.</source>
         <translation>Toplu, kontrol veya eşzamanlı transferler kullanarak USB cihazlara bağlanın. Veri kaydediciler, özel donanım yazılımı cihazları ve USB enstrümanları için uygundur.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="150"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="150"/>
         <source>USB specifications (USB.org)</source>
         <translation>USB spesifikasyonları (USB.org)</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="167"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="167"/>
         <source>IN Endpoint</source>
         <translation>IN Uç Noktası</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="203"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="203"/>
         <source>OUT Endpoint</source>
         <translation>OUT Uç Noktası</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="239"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="239"/>
         <source>Max Packet Size</source>
         <translation>Maksimum Paket Boyutu</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="299"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="299"/>
         <source>Control Transfers Enabled</source>
         <translation>Kontrol Transferleri Etkinleştirildi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="308"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="308"/>
         <source>Sending incorrect control requests may crash or damage connected hardware. Use with caution.</source>
         <translation>Yanlış kontrol istekleri göndermek bağlı donanımı çökertebilir veya zarar verebilir. Dikkatli kullanın.</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="315"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="315"/>
         <source>Learn about USB control transfers</source>
         <translation>USB kontrol transferleri hakkında bilgi edinin</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="349"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml" line="349"/>
         <source>Packet size should match the maximum transfer size reported by the endpoint. Typical values: 192 B (FS audio), 1024 B (HS).</source>
         <translation>Paket boyutu, uç nokta tarafından bildirilen maksimum transfer boyutuyla eşleşmelidir. Tipik değerler: 192 B (FS ses), 1024 B (HS).</translation>
     </message>
@@ -15084,116 +16578,139 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>UserTableView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="165"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="165"/>
         <source>Add Register</source>
         <translation>Kayıt Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="168"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="168"/>
         <source>Add register</source>
         <translation>Kayıt ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="175"/>
         <source>Insert Constant</source>
         <translation>Sabit Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="178"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="178"/>
         <source>Insert constant</source>
         <translation>Sabit ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="185"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="185"/>
         <source>Import</source>
         <translation>İçe Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="188"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="188"/>
         <source>Import registers from CSV</source>
         <translation>CSV'den kayıtları içe aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="195"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="195"/>
         <source>Export</source>
         <translation>Dışa Aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="198"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="198"/>
         <source>Export registers to CSV</source>
         <translation>Kayıtları CSV'ye dışa aktar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="210"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="210"/>
         <source>Rename</source>
         <translation>Yeniden Adlandır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="213"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="213"/>
         <source>Rename table</source>
         <translation>Tabloyu yeniden adlandır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="220"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="220"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="223"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="223"/>
         <source>Delete table</source>
         <translation>Tabloyu sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="237"/>
         <source>Help</source>
         <translation>Yardım</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="242"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="242"/>
         <source>Open help documentation for shared memory</source>
         <translation>Paylaşımlı bellek için yardım belgelerini aç</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="282"/>
         <source>Permissions</source>
         <translation>İzinler</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="283"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="283"/>
         <source>Register Name</source>
         <translation>Kayıt Adı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="284"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="284"/>
         <source>Default Value</source>
         <translation>Varsayılan Değer</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="321"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="321"/>
         <source>Read-Only</source>
         <translation>Salt Okunur</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="321"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="321"/>
         <source>Read/Write</source>
         <translation>Okuma/yazma</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="459"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="459"/>
         <source>Copy access code %1 to clipboard</source>
         <translation>%1 erişim kodunu panoya kopyala</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="492"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="492"/>
         <source>Delete register</source>
         <translation>Kaydı sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="509"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="509"/>
         <source>No registers.</source>
         <translation>Kayıt yok.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="559"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/UserTableView.qml" line="559"/>
         <source>Register access code copied</source>
         <translation>Kayıt erişim kodu kopyalandı</translation>
     </message>
@@ -15202,26 +16719,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>Waterfall</name>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="232"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Waterfall.qml" line="232"/>
         <source>Show Colorbar</source>
         <translation>Renk Çubuğunu Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="245"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Waterfall.qml" line="245"/>
         <source>Show Axes &amp; Grid</source>
         <translation>Eksenleri ve Izgarayı Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="258"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Waterfall.qml" line="258"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
@@ -15234,38 +16756,47 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     <name>Welcome</name>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="176"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="176"/>
         <source>Welcome to %1!</source>
         <translation>%1 Uygulamasına Hoş Geldiniz!</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="187"/>
         <source>Serial Studio is a powerful real-time visualization tool, built for engineers, students, and makers.</source>
         <translation>Serial Studio, mühendisler, öğrenciler ve yapımcılar için geliştirilmiş güçlü bir gerçek zamanlı görselleştirme aracıdır.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="198"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="198"/>
         <source>You can start a fully-functional 14-day trial, activate it with your license key, or download and compile the GPLv3 source code yourself.</source>
         <translation>Tam işlevli 14 günlük deneme sürümünü başlatabilir, lisans anahtarınızla etkinleştirebilir veya GPLv3 kaynak kodunu indirip kendiniz derleyebilirsiniz.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="208"/>
         <location filename="../../qml/Dialogs/Welcome.qml" line="390"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="208"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="390"/>
         <source>Buying Pro supports the author directly and helps fund future development.</source>
         <translation>Pro satın almak, yazarı doğrudan destekler ve gelecekteki geliştirmelerin finansmanına yardımcı olur.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="216"/>
         <location filename="../../qml/Dialogs/Welcome.qml" line="398"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="216"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="398"/>
         <source>Building the GPLv3 version yourself helps grow the community and encourages technical contributions.</source>
         <translation>GPLv3 sürümünü kendiniz derlemek, topluluğun büyümesine yardımcı olur ve teknik katkıları teşvik eder.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="237"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="237"/>
         <source>Please wait…</source>
         <translation>Lütfen bekleyin…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="272"/>
         <source>%1 days remaining in your trial.</source>
         <translation>Deneme sürenizde %1 gün kaldı.</translation>
     </message>
@@ -15275,26 +16806,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="282"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="282"/>
         <source>You're currently using the fully-featured trial of %1 Pro. It's valid for 14 days of personal, non-commercial use.</source>
         <translation>Şu anda %1 Pro'nun tam özellikli deneme sürümünü kullanıyorsunuz. 14 gün boyunca kişisel, ticari olmayan kullanım için geçerlidir.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="293"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="293"/>
         <source>Upgrade to a paid plan to keep using Serial Studio Pro.</source>
         <translation>Serial Studio Pro'yu kullanmaya devam etmek için ücretli bir plana yükseltin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="301"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="301"/>
         <source>Or, compile the GPLv3 source code to use it for free.</source>
         <translation>Veya ücretsiz kullanmak için GPLv3 kaynak kodunu derleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="309"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="309"/>
         <source>To see available subscription plans, click "Upgrade Now" below.</source>
         <translation>Mevcut abonelik planlarını görmek için aşağıdaki "Şimdi Yükselt" seçeneğine tıklayın.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="330"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="330"/>
         <source>Don't nag me about the trial.
 I understand that when it ends, I'll need to buy a license or build the GPLv3 version.</source>
         <translation>Deneme hakkında beni uyarma.
@@ -15302,46 +16838,55 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="360"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="360"/>
         <source>Your %1 trial has expired.</source>
         <translation>%1 deneme süreniz sona erdi.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="370"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="370"/>
         <source>Your trial period has ended. To continue using %1 with all Pro features, please upgrade to a paid plan.</source>
         <translation>Deneme süreniz sona erdi. Tüm Pro özellikleriyle %1 kullanmaya devam etmek için lütfen ücretli bir plana yükseltin.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="381"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="381"/>
         <source>If you prefer, you can also compile the open-source version under the GPLv3 license.</source>
         <translation>İsterseniz, GPLv3 lisansı altında açık kaynak sürümünü de derleyebilirsiniz.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="409"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="409"/>
         <source>Thank you for trying %1!</source>
         <translation>%1 denediğiniz için teşekkür ederiz!</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="453"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="453"/>
         <source>Upgrade Now</source>
         <translation>Şimdi Yükselt</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="465"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="465"/>
         <source>Activate</source>
         <translation>Etkinleştir</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="484"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="484"/>
         <source>Open in Limited Mode</source>
         <translation>Sınırlı Modda Aç</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="484"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="484"/>
         <source>Continue</source>
         <translation>Devam Et</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Welcome.qml" line="484"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/Welcome.qml" line="484"/>
         <source>Start Trial</source>
         <translation>Deneme Sürümünü Başlat</translation>
     </message>
@@ -15354,6 +16899,7 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="329"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="329"/>
         <source>Device Disconnected</source>
         <translation>Cihaz Bağlantısı Kesildi</translation>
     </message>
@@ -15555,41 +17101,49 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     <name>WorkspaceDialog</name>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="51"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="51"/>
         <source>Edit Workspace</source>
         <translation>Çalışma Alanını Düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="52"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="52"/>
         <source>New Workspace</source>
         <translation>Yeni Çalışma Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="157"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="157"/>
         <source>Name:</source>
         <translation>Ad:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="166"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="166"/>
         <source>My Workspace</source>
         <translation>Çalışma Alanım</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="181"/>
         <source>Select widgets to include:</source>
         <translation>Dahil edilecek widget'ları seçin:</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="187"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="187"/>
         <source>Filter widgets…</source>
         <translation>Widget'ları filtrele…</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="304"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="304"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/WorkspaceDialog.qml" line="313"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/Dialogs/WorkspaceDialog.qml" line="313"/>
         <source>OK</source>
         <translation>TAMAM</translation>
     </message>
@@ -15598,70 +17152,87 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     <name>WorkspaceView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="39"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="39"/>
         <source>Workspace</source>
         <translation>Çalışma Alanı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="127"/>
         <source>Add Widget</source>
         <translation>Widget Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="129"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="129"/>
         <source>Add widget to workspace</source>
         <translation>Çalışma alanına widget ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="140"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="140"/>
         <source>Rename</source>
         <translation>Yeniden Adlandır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="142"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="142"/>
         <source>Rename workspace</source>
         <translation>Çalışma alanını yeniden adlandır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="151"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="151"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="153"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="153"/>
         <source>Delete workspace</source>
         <translation>Çalışma alanını sil</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="175"/>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="181"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="175"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="181"/>
         <source>Group</source>
         <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="176"/>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="182"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="176"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="182"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="177"/>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="183"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="177"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="183"/>
         <source>Type</source>
         <translation>Tür</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="225"/>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="262"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="225"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="262"/>
         <source>(unknown)</source>
         <translation>(bilinmeyen)</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="243"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="243"/>
         <source>(group widget)</source>
         <translation>(grup widget'ı)</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="292"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="292"/>
         <source>Remove widget from workspace</source>
         <translation>Widget'ı çalışma alanından kaldır</translation>
     </message>
@@ -15671,6 +17242,7 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="312"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspaceView.qml" line="312"/>
         <source>No widgets in this workspace.</source>
         <translation>Bu çalışma alanında widget yok.</translation>
     </message>
@@ -15679,86 +17251,103 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
     <name>WorkspacesView</name>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="33"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="33"/>
         <source>Workspaces</source>
         <translation>Çalışma Alanları</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="125"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="125"/>
         <source>Customize</source>
         <translation>Özelleştir</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="127"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="127"/>
         <source>Edit workspaces manually</source>
         <translation>Çalışma alanlarını manuel olarak düzenle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="143"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="143"/>
         <source>Move Up</source>
         <translation>Yukarı Taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="145"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="145"/>
         <source>Move the selected workspace up</source>
         <translation>Seçili çalışma alanını yukarı taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="156"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="156"/>
         <source>Move Down</source>
         <translation>Aşağı Taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="158"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="158"/>
         <source>Move the selected workspace down</source>
         <translation>Seçili çalışma alanını aşağı taşı</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="169"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="169"/>
         <source>Add Workspace</source>
         <translation>Çalışma Alanı Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="171"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="171"/>
         <source>Add workspace</source>
         <translation>Çalışma alanı ekle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="180"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="180"/>
         <source>Cleanup</source>
         <translation>Temizle</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="183"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="183"/>
         <source>Remove %1 widget reference(s) whose target group or dataset no longer exists</source>
         <translation>Hedef grubu veya veri seti artık mevcut olmayan %1 widget referansını kaldır</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="186"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="186"/>
         <source>No stale widget references in any workspace</source>
         <translation>Hiçbir çalışma alanında eski widget referansı yok</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="201"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="201"/>
         <source>Title</source>
         <translation>Başlık</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="202"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="202"/>
         <source>Widgets</source>
         <translation>Widget'lar</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="272"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="272"/>
         <source>No workspaces. Add one with the toolbar above, or reset to the auto layout.</source>
         <translation>Çalışma alanı yok. Yukarıdaki araç çubuğuyla bir tane ekleyin veya otomatik düzene sıfırlayın.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="274"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="274"/>
         <source>Project has no eligible groups -- add a group with widgets to populate workspaces.</source>
         <translation>Projede uygun grup yok -- çalışma alanlarını doldurmak için widget'lı bir grup ekleyin.</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="280"/>
+        <location filename="../../../build/pro-debug/app/gui/qml/ProjectEditor/Views/WorkspacesView.qml" line="280"/>
         <source>Reset to Auto Layout</source>
         <translation>Otomatik Düzene Sıfırla</translation>
     </message>

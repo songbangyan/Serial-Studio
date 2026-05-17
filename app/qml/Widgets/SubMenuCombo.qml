@@ -35,6 +35,11 @@ Popup {
   closePolicy: Popup.CloseOnPressOutside
   height: Math.max(minimumHeight, Math.min(_listView.contentHeight + 16, maximumHeight))
 
+  Component.onCompleted: {
+    contentItem.LayoutMirroring.enabled = Qt.binding(() => Cpp_Misc_Translator.rtl)
+    contentItem.LayoutMirroring.childrenInherit = true
+  }
+
   //
   // External data
   //

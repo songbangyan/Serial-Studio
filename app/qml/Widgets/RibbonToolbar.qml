@@ -53,7 +53,7 @@ Item {
     contentHeight: height
     boundsBehavior: Flickable.StopAtBounds
     flickableDirection: Flickable.HorizontalFlick
-    contentWidth: sectionLayout.implicitWidth + 16
+    contentWidth: Math.max(width, sectionLayout.implicitWidth + 16)
 
     ScrollBar.horizontal: ScrollBar {
       height: 3
@@ -65,6 +65,7 @@ Item {
       id: sectionLayout
 
       width: implicitWidth
+      anchors.left: parent.left
       anchors.verticalCenter: parent.verticalCenter
 
       Item {

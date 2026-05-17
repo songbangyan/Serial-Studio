@@ -344,7 +344,7 @@ Widgets.MiniWindow {
     asynchronous: true
 
     sourceComponent: Component {
-      Window {
+      Widgets.SmartWindow {
         id: window
 
         width: 640
@@ -354,22 +354,88 @@ Widgets.MiniWindow {
         objectName: "ExternalWindow"
         minimumWidth: root.minimumWidth
         minimumHeight: root.minimumHeight
+        category: "ExternalWidget_" + root.widgetId
         onClosing: externalWindowLoader.active = false
-
-        Component.onCompleted: {
-          var screen = Screen
-          if (screen) {
-            x = Math.round(screen.virtualX + (screen.width - width) / 2)
-            y = Math.round(screen.virtualY + (screen.height - height) / 2)
-          }
-        }
 
         property int deviceIndex: 0
         property bool hasToolbar: false
         readonly property bool focused: true
 
+        //
+        // Titlebar height reported by native window.
+        //
+        property int titlebarHeight: 0
+
+        //
+        // Caption color blends with toolbar or window background.
+        //
+        readonly property color captionColor: hasToolbar
+          ? Cpp_ThemeManager.colors["window_toolbar_background"]
+          : Cpp_ThemeManager.colors["window"]
+
+        onVisibleChanged: {
+          if (visible)
+            Cpp_NativeWindow.addWindow(window, captionColor)
+          else
+            Cpp_NativeWindow.removeWindow(window)
+
+          window.titlebarHeight = Cpp_NativeWindow.titlebarHeight(window)
+        }
+
+        onCaptionColorChanged: {
+          if (visible)
+            Cpp_NativeWindow.addWindow(window, captionColor)
+        }
+
+        Connections {
+          target: Cpp_ThemeManager
+          function onThemeChanged() {
+            if (window.visible)
+              Cpp_NativeWindow.addWindow(window, window.captionColor)
+          }
+        }
+
+        //
+        // Titlebar background + window drag handler.
+        //
+        Rectangle {
+          anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
+          }
+
+          color: window.captionColor
+          height: window.titlebarHeight
+
+          DragHandler {
+            target: null
+            onActiveChanged: {
+              if (active)
+                window.startSystemMove()
+            }
+          }
+        }
+
+        //
+        // Titlebar text
+        //
+        Label {
+          anchors {
+            topMargin: 6
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+          }
+
+          text: window.title
+          visible: window.titlebarHeight > 0
+          color: Cpp_ThemeManager.colors["text"]
+          font: Cpp_Misc_CommonFonts.customUiFont(1.07, true)
+        }
+
         Page {
           anchors.fill: parent
+          anchors.topMargin: window.titlebarHeight
           palette.mid: Cpp_ThemeManager.colors["mid"]
           palette.dark: Cpp_ThemeManager.colors["dark"]
           palette.text: Cpp_ThemeManager.colors["text"]
@@ -393,18 +459,28 @@ Widgets.MiniWindow {
           palette.highlightedText: Cpp_ThemeManager.colors["highlighted_text"]
 
           Rectangle {
+            id: toolbarBackground
+
             anchors {
-              margins: -1
               top: parent.top
               left: parent.left
               right: parent.right
             }
 
             height: 48
-            border.width: 1
+            border.width: 0
             visible: window.hasToolbar
-            border.color: Cpp_ThemeManager.colors["window_border"]
             color: Cpp_ThemeManager.colors["window_toolbar_background"]
+
+            Rectangle {
+              height: 1
+              color: Cpp_ThemeManager.colors["window_border"]
+              anchors {
+                left: parent.left
+                right: parent.right
+                bottom: parent.bottom
+              }
+            }
           }
 
           Item {

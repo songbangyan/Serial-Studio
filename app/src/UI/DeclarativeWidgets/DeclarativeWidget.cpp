@@ -77,7 +77,7 @@ QWidget* DeclarativeWidget::widget() const
  * @brief Returns the palette currently used by the embedded widget, or an empty palette when
  * absent.
  */
-QPalette DeclarativeWidget::palette() const
+QPalette DeclarativeWidget::widgetPalette() const
 {
   if (m_widget)
     return m_widget->palette();
@@ -207,13 +207,13 @@ void DeclarativeWidget::setContentHeight(const int height)
 /**
  * @brief Applies the given palette to the embedded widget and triggers a redraw.
  */
-void DeclarativeWidget::setPalette(const QPalette& palette)
+void DeclarativeWidget::setWidgetPalette(const QPalette& palette)
 {
   if (m_widget != nullptr) {
     m_widget->setPalette(palette);
     requestUpdate();
     redraw();
 
-    Q_EMIT paletteChanged();
+    Q_EMIT widgetPaletteChanged();
   }
 }

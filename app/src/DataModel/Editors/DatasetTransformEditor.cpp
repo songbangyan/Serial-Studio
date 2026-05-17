@@ -89,6 +89,7 @@ void DataModel::DatasetTransformEditor::buildEditorWidgets()
   m_editor->setAutoIndentation(true);
   m_editor->setFont(Misc::CommonFonts::instance().monoFont());
   m_editor->setMinimumHeight(200);
+  m_editor->setLayoutDirection(Qt::LeftToRight);
 
   m_languageCombo = new QComboBox(this);
   m_languageCombo->addItems({tr("Lua"), tr("JavaScript")});

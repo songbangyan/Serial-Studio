@@ -25,8 +25,12 @@ import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls
 
+import "../../Widgets" as Widgets
+
 Window {
   id: root
+
+  Widgets.WindowMirror {}
 
   property int titlebarHeight: 0
 

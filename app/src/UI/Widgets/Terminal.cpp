@@ -188,19 +188,33 @@ void Widgets::Terminal::drawSegmentSelection(
   if (selStartX >= selEndX)
     return;
 
-  int startX         = m_borderX;
+  // Compute selection geometry in LTR order; mirror later for RTL.
+  int leadingOffset  = 0;
   int selectionWidth = 0;
-  const int maxWidth = width() - 2 * m_borderX;
-
   for (int j = segStart; j < selEndX; ++j) {
     const int charWidth = painter->fontMetrics().horizontalAdvance(line[j]);
     if (j < selStartX)
-      startX += charWidth;
+      leadingOffset += charWidth;
     else
       selectionWidth += charWidth;
   }
 
-  selectionWidth = qMin(selectionWidth, maxWidth - (startX - m_borderX));
+  const bool rtl     = Misc::Translator::instance().rtl();
+  const int maxWidth = width() - 2 * m_borderX;
+  int startX         = 0;
+
+  // Mirror within the segment's visual box for RTL.
+  if (rtl) {
+    const int rightEdge = width() - m_borderX;
+    startX              = rightEdge - leadingOffset - selectionWidth;
+    selectionWidth      = qMin(selectionWidth, maxWidth);
+  }
+
+  else {
+    startX         = m_borderX + leadingOffset;
+    selectionWidth = qMin(selectionWidth, maxWidth - leadingOffset);
+  }
+
   painter->fillRect(QRect(startX, y, selectionWidth, m_cHeight),
                     m_palette.color(QPalette::Highlight));
 }
@@ -285,6 +299,10 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
   // Walk visible lines to find the cursor's visual row and draw it
   const int cursorLine = m_cursorPosition.y();
   const int cursorCol  = m_cursorPosition.x();
+  const bool rtl       = Misc::Translator::instance().rtl();
+  const int emptyCursorX =
+    rtl ? (width() - m_borderX - painter->fontMetrics().horizontalAdvance(QChar(0x2588)))
+        : m_borderX;
 
   int visualLineY  = m_borderY;
   bool cursorDrawn = false;
@@ -296,7 +314,7 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
       if (i == cursorLine) {
         painter->setPen(m_palette.color(QPalette::Text));
         // code-verify off
-        painter->drawText(m_borderX, visualLineY + m_cHeight, QStringLiteral("█"));
+        painter->drawText(emptyCursorX, visualLineY + m_cHeight, QStringLiteral("█"));
         // code-verify on
         cursorDrawn = true;
         break;
@@ -330,7 +348,7 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
   if (!cursorDrawn && cursorLine >= m_data.size()) {
     painter->setPen(m_palette.color(QPalette::Text));
     // code-verify off
-    painter->drawText(m_borderX, visualLineY + m_cHeight, QStringLiteral("█"));
+    painter->drawText(emptyCursorX, visualLineY + m_cHeight, QStringLiteral("█"));
     // code-verify on
   }
 }
@@ -405,6 +423,33 @@ void Widgets::Terminal::paintSelectionHighlights(QPainter* painter,
 }
 
 /**
+ * @brief Dispatches one text segment to the ANSI/fast/RTL painter helper.
+ */
+void Widgets::Terminal::paintSegment(QPainter* painter,
+                                     const QString& segment,
+                                     int segStart,
+                                     const QList<CharColor>* colorLine,
+                                     const QColor& defaultFg,
+                                     int x,
+                                     int y,
+                                     int ascent,
+                                     bool rtlMode)
+{
+  if (colorLine) {
+    renderAnsiSegment(painter, segment, segStart, colorLine, defaultFg, x, y);
+    return;
+  }
+
+  if (rtlMode) {
+    painter->setPen(defaultFg);
+    painter->drawText(QPointF(x, y + ascent), segment);
+    return;
+  }
+
+  renderFastSegment(painter, segment, defaultFg, x, y);
+}
+
+/**
  * @brief Renders the text content for the visible line range, ANSI-colored or not.
  */
 void Widgets::Terminal::paintTextContent(QPainter* painter,
@@ -414,12 +459,25 @@ void Widgets::Terminal::paintTextContent(QPainter* painter,
 {
   int y                         = m_borderY;
   const QColor defaultTextColor = m_palette.color(QPalette::Text);
+  const bool rtlMode            = Misc::Translator::instance().rtl();
+  const int rightEdge           = width() - m_borderX;
+  const int ascent              = painter->fontMetrics().ascent();
+  const auto& fm                = painter->fontMetrics();
+
+  const auto savedDir = painter->layoutDirection();
+
   for (int i = firstLine; i <= lastVLine && y < height() - m_borderY; ++i) {
     const QString& line = m_data[i];
 
     if (line.isEmpty()) {
       y += lineHeight;
       continue;
+    }
+
+    // Per-line direction: LTR for pure-ASCII lines, RTL when any Arabic/Hebrew char present.
+    if (rtlMode) {
+      const bool lineHasRtl = lineHasRtlChar(line);
+      painter->setLayoutDirection(lineHasRtl ? Qt::RightToLeft : Qt::LeftToRight);
     }
 
     const QList<CharColor>* colorLine = nullptr;
@@ -430,17 +488,16 @@ void Widgets::Terminal::paintTextContent(QPainter* painter,
     while (start < line.length()) {
       const int end         = qMin<int>(start + maxCharsPerLine(), line.length());
       const QString segment = line.mid(start, end - start);
-      int x                 = m_borderX;
+      const int x = rtlMode ? rightEdge - fm.horizontalAdvance(segment) : m_borderX;
 
-      if (!colorLine)
-        renderFastSegment(painter, segment, defaultTextColor, x, y);
-      else
-        renderAnsiSegment(painter, segment, start, colorLine, defaultTextColor, x, y);
+      paintSegment(painter, segment, start, colorLine, defaultTextColor, x, y, ascent, rtlMode);
 
       y += lineHeight;
       start = end;
     }
   }
+
+  painter->setLayoutDirection(savedDir);
 }
 
 /**
@@ -457,8 +514,10 @@ void Widgets::Terminal::paintScrollbar(QPainter* painter)
   if (scrollbarHeight > availableHeight / 2)
     scrollbarHeight = availableHeight / 2;
 
-  const int x = width() - scrollbarWidth - m_borderX;
-  int y       = (m_scrollOffsetY / static_cast<float>(lineCount() - linesPerPage()))
+  // Scrollbar sits opposite the text's leading edge: right in LTR, left in RTL
+  const bool rtl = Misc::Translator::instance().rtl();
+  const int x    = rtl ? m_borderX : (width() - scrollbarWidth - m_borderX);
+  int y          = (m_scrollOffsetY / static_cast<float>(lineCount() - linesPerPage()))
           * (availableHeight - scrollbarHeight)
         - m_borderY;
   y = qMax(m_borderY, y);
@@ -864,18 +923,24 @@ QPoint Widgets::Terminal::positionToCursor(const QPoint& pos) const
         return QPoint(0, i);
 
       remainingY--;
+      continue;
     }
 
-    else {
-      int lines = (line.length() + maxCharsPerLine() - 1) / maxCharsPerLine();
-      if (remainingY < lines) {
-        int segmentStart = qMax(0, remainingY) * maxCharsPerLine();
-        int segmentEnd   = qMin(segmentStart + maxCharsPerLine(), line.length());
-        return QPoint(findCharAtPixelX(line, segmentStart, segmentEnd, pos.x() - m_borderX), i);
-      }
-
+    const int lines = (line.length() + maxCharsPerLine() - 1) / maxCharsPerLine();
+    if (remainingY >= lines) {
       remainingY -= lines;
+      continue;
     }
+
+    const int segmentStart = qMax(0, remainingY) * maxCharsPerLine();
+    const int segmentEnd   = qMin(segmentStart + maxCharsPerLine(), line.length());
+
+    // Measure click X from the segment's leading edge (right side in RTL).
+    int relX = pos.x() - m_borderX;
+    if (Misc::Translator::instance().rtl())
+      relX = (width() - m_borderX) - pos.x();
+
+    return QPoint(findCharAtPixelX(line, segmentStart, segmentEnd, relX), i);
   }
 
   if (!m_data.isEmpty()) {
@@ -1155,6 +1220,20 @@ int Widgets::Terminal::scanPrintableRun(const QString& data, int pos)
 }
 
 /**
+ * @brief Returns true when @p line contains any RTL-direction character.
+ */
+bool Widgets::Terminal::lineHasRtlChar(QStringView line)
+{
+  for (const QChar c : line) {
+    const auto dir = c.direction();
+    if (dir == QChar::DirR || dir == QChar::DirAL)
+      return true;
+  }
+
+  return false;
+}
+
+/**
  * @brief Appends data to the terminal, processing it through the VT-100 state machine.
  */
 void Widgets::Terminal::append(const QString& data)
@@ -1288,12 +1367,11 @@ void Widgets::Terminal::removeStringFromCursor(const Direction direction, int le
   // Cap bytes to remove (right)
   int removeSize = 0;
   if (direction == RightDirection) {
-    const qsizetype lineLen = (positionY >= 0 && positionY < m_data.size())
-                                ? m_data[positionY].size()
-                                : qsizetype(0);
-    const qsizetype l1      = lineLen - positionX;
-    const qsizetype l2      = static_cast<qsizetype>(len);
-    removeSize              = static_cast<int>(qMin(qMax(l1, qsizetype(0)), l2));
+    const qsizetype lineLen =
+      (positionY >= 0 && positionY < m_data.size()) ? m_data[positionY].size() : qsizetype(0);
+    const qsizetype l1 = lineLen - positionX;
+    const qsizetype l2 = static_cast<qsizetype>(len);
+    removeSize         = static_cast<int>(qMin(qMax(l1, qsizetype(0)), l2));
   }
 
   // Cap bytes to remove (left)

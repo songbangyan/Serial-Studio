@@ -63,6 +63,7 @@ DataModel::PainterCodeEditor::PainterCodeEditor(QQuickItem* parent)
   m_widget.setAutoIndentation(true);
   m_widget.setHighlighter(new QJavascriptHighlighter());
   m_widget.setFont(Misc::CommonFonts::instance().monoFont());
+  m_widget.setLayoutDirection(Qt::LeftToRight);
 
   onThemeChanged();
   connect(&Misc::ThemeManager::instance(),

@@ -80,6 +80,7 @@ void MQTT::PublisherScriptEditor::buildEditorWidgets()
   m_editor->setAutoIndentation(true);
   m_editor->setFont(Misc::CommonFonts::instance().monoFont());
   m_editor->setMinimumHeight(220);
+  m_editor->setLayoutDirection(Qt::LeftToRight);
 
   m_languageCombo = new QComboBox(this);
   m_languageCombo->addItems({tr("JavaScript"), tr("Lua")});

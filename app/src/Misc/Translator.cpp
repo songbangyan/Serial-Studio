@@ -64,6 +64,14 @@ Misc::Translator::Language Misc::Translator::language() const
 }
 
 /**
+ * @brief Returns true if the active language uses a right-to-left script.
+ */
+bool Misc::Translator::rtl() const
+{
+  return m_language == Arabic || m_language == Hebrew;
+}
+
+/**
  * @brief Returns the language enum that matches the host operating system locale.
  */
 Misc::Translator::Language Misc::Translator::systemLanguage() const
@@ -124,6 +132,15 @@ Misc::Translator::Language Misc::Translator::systemLanguage() const
       break;
     case QLocale::Swedish:
       lang = Swedish;
+      break;
+    case QLocale::Arabic:
+      lang = Arabic;
+      break;
+    case QLocale::Hebrew:
+      lang = Hebrew;
+      break;
+    case QLocale::Vietnamese:
+      lang = Vietnamese;
       break;
     default:
       lang = English;
@@ -199,6 +216,15 @@ QString Misc::Translator::welcomeConsoleText() const
     case Swedish:
       lang = QStringLiteral("SV");
       break;
+    case Arabic:
+      lang = QStringLiteral("AR");
+      break;
+    case Hebrew:
+      lang = QStringLiteral("HE");
+      break;
+    case Vietnamese:
+      lang = QStringLiteral("VI");
+      break;
     default:
       lang = QStringLiteral("EN");
       break;
@@ -273,6 +299,9 @@ QStringList& Misc::Translator::availableLanguages()
     list.append(QStringLiteral("Nederlands"));
     list.append(QStringLiteral("Română"));
     list.append(QStringLiteral("Svenska"));
+    list.append(QStringLiteral("العربية"));
+    list.append(QStringLiteral("עברית"));
+    list.append(QStringLiteral("Tiếng Việt"));
     // code-verify on
   }
 
@@ -360,6 +389,18 @@ void Misc::Translator::setLanguage(const Language language)
       langName = QStringLiteral("sv_SE");
       locale   = QLocale(QLocale::Swedish);
       break;
+    case Arabic:
+      langName = QStringLiteral("ar_SA");
+      locale   = QLocale(QLocale::Arabic, QLocale::SaudiArabia);
+      break;
+    case Hebrew:
+      langName = QStringLiteral("he_IL");
+      locale   = QLocale(QLocale::Hebrew, QLocale::Israel);
+      break;
+    case Vietnamese:
+      langName = QStringLiteral("vi_VN");
+      locale   = QLocale(QLocale::Vietnamese, QLocale::Vietnam);
+      break;
     default:
       langName = QStringLiteral("en_US");
       locale   = QLocale(QLocale::English);
@@ -381,6 +422,7 @@ void Misc::Translator::setLanguage(const QLocale& locale, const QString& languag
   const auto qmPath = QStringLiteral(":/qm/%1.qm").arg(language);
   if (m_translator.load(locale, qmPath)) {
     qApp->installTranslator(&m_translator);
+    qApp->setLayoutDirection(rtl() ? Qt::RightToLeft : Qt::LeftToRight);
     Q_EMIT languageChanged();
   }
 }

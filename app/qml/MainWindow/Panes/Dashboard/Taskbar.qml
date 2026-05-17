@@ -315,6 +315,7 @@ Item {
 
         width: 320
         padding: 4
+        x: Cpp_Misc_Translator.rtl ? searchContainer.width - width : 0
         y: -height - searchContainer.y + 1
         visible: searchField.activeFocus
                  && root.combinedSearchResults.length > 0
@@ -371,6 +372,9 @@ Item {
                 Layout.fillWidth: true
                 text: searchDelegate.modelData["widgetName"]
                 font: Cpp_Misc_CommonFonts.uiFont
+                LayoutMirroring.enabled: false
+                horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                             : Text.AlignLeft
                 color: searchDelegate.hovered
                        ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
                        : Cpp_ThemeManager.colors["start_menu_text"]
@@ -382,6 +386,9 @@ Item {
                 Layout.maximumWidth: 120
                 text: searchDelegate.modelData["groupName"]
                 font: Cpp_Misc_CommonFonts.uiFont
+                LayoutMirroring.enabled: false
+                horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                             : Text.AlignLeft
                 color: searchDelegate.hovered
                        ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
                        : Cpp_ThemeManager.colors["start_menu_text"]
@@ -707,8 +714,8 @@ Item {
       }
 
       popup.width: 240
-      popup.x: _switcher.width - popup.width
       popup.y: -popup.height - _switcher.y + 1
+      popup.x: Cpp_Misc_Translator.rtl ? 0 : _switcher.width - popup.width
 
       popup.background: Rectangle {
         border.width: 1
@@ -758,6 +765,9 @@ Item {
             elide: Text.ElideRight
             Layout.fillWidth: true
             verticalAlignment: Text.AlignVCenter
+            LayoutMirroring.enabled: false
+            horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                         : Text.AlignLeft
             font: text === _switcher.currentText
                   ? Cpp_Misc_CommonFonts.boldUiFont
                   : Cpp_Misc_CommonFonts.uiFont
@@ -781,7 +791,9 @@ Item {
         Label {
           Layout.fillWidth: true
           text: _switcher.currentText
-          horizontalAlignment: Text.AlignRight
+          LayoutMirroring.enabled: false
+          horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignLeft
+                                                       : Text.AlignRight
           font: Cpp_Misc_CommonFonts.boldUiFont
           verticalAlignment: Text.AlignVCenter
           color: Cpp_ThemeManager.colors["pane_caption_foreground"]
@@ -925,8 +937,8 @@ Item {
 
         width: 280
         padding: 10
-        x: mqttIndicator.width - width
         y: -implicitHeight - mqttIndicator.y + 1
+        x: Cpp_Misc_Translator.rtl ? 0 : mqttIndicator.width - width
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
         background: Rectangle {

@@ -152,6 +152,9 @@ LANGUAGE_MAP = {
     "ro_RO": "Romanian",
     "nl_NL": "Dutch",
     "sv_SE": "Swedish",
+    "ar_SA": "Arabic",
+    "he_IL": "Hebrew",
+    "vi_VN": "Vietnamese",
 }
 
 # Languages that use scripts WITHOUT uppercase/lowercase distinction
@@ -161,7 +164,8 @@ CASELESS_SCRIPTS = {
     "ko_KR",  # Korean (Hangul)
     "zh_CN",  # Simplified Chinese (Hanzi)
     "hi_IN",  # Hindi (Devanagari)
-    # Add more as needed: "ar_SA" (Arabic), "th_TH" (Thai), "he_IL" (Hebrew)
+    "ar_SA",  # Arabic (RTL, no case distinction)
+    "he_IL",  # Hebrew (RTL, no case distinction)
 }
 
 # Language-specific "small words" that should be lowercase in title case
@@ -365,6 +369,22 @@ TITLE_CASE_SMALL_WORDS = {
         "till",
         "från",
         "om",
+    },
+    "vi_VN": {  # Vietnamese
+        "và",
+        "hoặc",
+        "của",
+        "với",
+        "trong",
+        "từ",
+        "đến",
+        "cho",
+        "tại",
+        "trên",
+        "dưới",
+        "về",
+        "theo",
+        "bằng",
     },
 }
 

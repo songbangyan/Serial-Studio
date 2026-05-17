@@ -518,6 +518,20 @@ Item {
       maxY = Math.max(maxY, n.y + n.h)
     }
 
+    //
+    // Mirror X coordinates for right-to-left languages.
+    //
+    if (Cpp_Misc_Translator.rtl) {
+      const totalW = maxX + pad
+      for (const n of newNodes)
+        n.x = totalW - n.x - n.w
+
+      for (const a of newArrows) {
+        a.x1 = totalW - a.x1
+        a.x2 = totalW - a.x2
+      }
+    }
+
     root.contentW = maxX + pad
     root.contentH = maxY + pad
     root.nodes    = newNodes
@@ -605,6 +619,12 @@ Item {
       target: Cpp_MQTT_Publisher
       function onConfigurationChanged() { root.reloadDiagram() }
     }
+  }
+
+  // Re-flow the diagram when the active language toggles RTL/LTR.
+  Connections {
+    target: Cpp_Misc_Translator
+    function onLanguageChanged() { root.reloadDiagram() }
   }
 
   Component.onCompleted: reloadDiagram()

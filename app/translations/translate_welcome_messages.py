@@ -21,7 +21,9 @@
 # THE SOFTWARE.
 #
 
+import argparse
 import os
+import sys
 import time
 import openai
 
@@ -60,14 +62,22 @@ LANGUAGE_MAP = {
     "RO": "Romanian",
     "NL": "Dutch",
     "SV": "Swedish",
+    "AR": "Arabic",
+    "HE": "Hebrew",
+    "VI": "Vietnamese",
 }
+
+# Languages that use a right-to-left script. The terminal renders these lines
+# right-anchored, so the LLM must reorder the leading arrow glyph to point
+# leftward (←) and place bullets at the visual start of the line.
+RTL_LANGUAGES = {"AR", "HE"}
 
 # ------------------------------------------------------------------------------
 # Translation Function
 # ------------------------------------------------------------------------------
 
 
-def translate_welcome_message(source_text, target_language, context):
+def translate_welcome_message(source_text, target_language, context, lang_code):
     """
     Translate a Welcome message file to the target language using OpenAI.
 
@@ -75,10 +85,29 @@ def translate_welcome_message(source_text, target_language, context):
         source_text (str): The English source text.
         target_language (str): Human-readable name (e.g., "French").
         context (str): Context about which version (gpl3, pro, trial).
+        lang_code (str): Locale suffix code (e.g., "FR", "AR"). Used to switch
+            on script-specific rules (RTL arrow glyph, etc.).
 
     Returns:
         str: Translated text.
     """
+    rtl_rules = ""
+    if lang_code in RTL_LANGUAGES:
+        rtl_rules = (
+            "\n"
+            "RIGHT-TO-LEFT SCRIPT RULES (applies because the target language uses a\n"
+            "right-to-left writing system):\n"
+            "- The terminal renders each line right-anchored. Lines that begin with\n"
+            "  a bullet arrow in the source MUST use the leftward arrow ← instead\n"
+            "  of the rightward arrow →. The arrow visually marks the START of the\n"
+            "  RTL line, which sits at the visual right edge of the terminal.\n"
+            "- Keep URLs and email addresses in their original LTR form, but write\n"
+            "  the surrounding label text in the target language with natural RTL\n"
+            "  reading order (label first in source order, colon, then the URL).\n"
+            "- Do NOT insert Unicode bidi control characters (LRM, RLM, LRO, RLO,\n"
+            "  etc.). Rely on the natural bidirectional algorithm of the text.\n"
+        )
+
     prompt = f"""Translate the following welcome message from Serial Studio to {target_language}.
 
 Context: This is the welcome message for Serial Studio {context} version.
@@ -87,13 +116,14 @@ IMPORTANT RULES:
 1. Keep the ASCII art header (first 3 lines) EXACTLY as-is. Do not translate or modify it.
 2. Preserve all URLs exactly as they appear (do not translate).
 3. Preserve all placeholders like %1 exactly as they appear.
-4. Preserve all special characters like arrows (→) and bullet points.
+4. Preserve bullet points and other special characters from the source. Arrows
+   (→) follow the script-direction rule below; do not change them otherwise.
 5. Translate only the actual text content, maintaining the same structure and line breaks.
 6. Keep technical terms like "MQTT", "XY", "3D", "GPLv3", "GPL" untranslated.
 7. Maintain the professional tone appropriate for software licensing and product descriptions.
 8. Keep email addresses and URLs on the same lines as in the original.
 9. Keep each line to at most 73 characters (preferred) or 80 characters maximum to ensure proper text wrapping. Break longer lines naturally at word boundaries.
-
+{rtl_rules}
 Source text:
 {source_text}
 
@@ -127,12 +157,13 @@ Provide ONLY the translated text, with no additional commentary or explanation."
 # ------------------------------------------------------------------------------
 
 
-def translate_welcome_files_in_subdir(subdir):
+def translate_welcome_files_in_subdir(subdir, languages):
     """
-    Translate all Welcome files in a given subdirectory.
+    Translate Welcome files in a given subdirectory.
 
     Args:
         subdir (str): Subdirectory name (gpl3, pro, or trial).
+        languages (dict): Mapping of language codes to human-readable names.
     """
     subdir_path = os.path.join(MESSAGES_DIR, subdir)
 
@@ -150,13 +181,15 @@ def translate_welcome_files_in_subdir(subdir):
     print(f"{'='*60}\n")
 
     # Translate to each language
-    for lang_code, lang_name in LANGUAGE_MAP.items():
+    for lang_code, lang_name in languages.items():
         output_file = os.path.join(subdir_path, f"Welcome_{lang_code}.txt")
 
         print(f"Translating to {lang_name} ({lang_code})...")
 
         try:
-            translated_text = translate_welcome_message(source_text, lang_name, subdir)
+            translated_text = translate_welcome_message(
+                source_text, lang_name, subdir, lang_code
+            )
 
             # Ensure the file ends with a newline
             if not translated_text.endswith("\n"):
@@ -182,12 +215,37 @@ def translate_welcome_files_in_subdir(subdir):
 
 
 def main():
-    """Translate all Welcome message files in all subdirectories."""
+    """Translate Welcome message files in all subdirectories."""
+    parser = argparse.ArgumentParser(
+        description="Translate Serial Studio welcome messages via OpenAI.",
+    )
+    parser.add_argument(
+        "-l",
+        "--lang",
+        metavar="CODE",
+        help=(
+            "Translate only this language code (case-insensitive), e.g. AR, DE, JA. "
+            "When omitted, all languages in LANGUAGE_MAP are translated."
+        ),
+    )
+    args = parser.parse_args()
+
+    languages = LANGUAGE_MAP
+    if args.lang:
+        code = args.lang.upper()
+        if code not in LANGUAGE_MAP:
+            available = ", ".join(sorted(LANGUAGE_MAP.keys()))
+            print(f"Error: unknown language code '{args.lang}'. Available: {available}")
+            sys.exit(1)
+        languages = {code: LANGUAGE_MAP[code]}
+
     print("Serial Studio Welcome Message Translator")
     print("Using OpenAI model:", OPENAI_MODEL)
+    if args.lang:
+        print(f"Target language: {languages[code]} ({code})")
 
     for subdir in SUBDIRS:
-        translate_welcome_files_in_subdir(subdir)
+        translate_welcome_files_in_subdir(subdir, languages)
 
     print("\n" + "=" * 60)
     print("Translation complete!")

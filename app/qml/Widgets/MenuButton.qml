@@ -87,8 +87,11 @@ Item {
       background: Item{}
       Layout.alignment: Qt.AlignVCenter
       opacity: root.expandable || root.checked ? 1 : 0
-      icon.source: root.checked ? "qrc:/icons/buttons/apply.svg" :
-                                  "qrc:/icons/buttons/forward.svg"
+      icon.source: root.checked
+                   ? "qrc:/icons/buttons/apply.svg"
+                   : (Cpp_Misc_Translator.rtl
+                      ? "qrc:/icons/buttons/backward.svg"
+                      : "qrc:/icons/buttons/forward.svg")
       icon.color: _mouseArea.containsMouse ? Cpp_ThemeManager.colors["start_menu_highlighted_text"] :
                                              Cpp_ThemeManager.colors["start_menu_text"]
     }

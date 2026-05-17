@@ -522,6 +522,7 @@ set(QML_SOURCES
   qml/Widgets/TaskbarButton.qml
   qml/Widgets/ToolbarButton.qml
   qml/Widgets/VisualRange.qml
+  qml/Widgets/WindowMirror.qml
   qml/DialogLoader.qml
   qml/main.qml
 )

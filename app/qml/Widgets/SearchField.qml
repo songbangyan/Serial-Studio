@@ -33,17 +33,26 @@ Rectangle {
   border.color: textField.activeFocus ? Cpp_ThemeManager.colors["highlight"]
                                       : Cpp_ThemeManager.colors["groupbox_border"]
 
+  LayoutMirroring.enabled: false
+  LayoutMirroring.childrenInherit: true
+
   property alias text: textField.text
   property alias placeholderText: textField.placeholderText
+
+  readonly property bool rtl: Cpp_Misc_Translator.rtl
 
   TextField {
     id: textField
 
     background: Item {}
     anchors.fill: parent
-    anchors.leftMargin: 4
     font: Cpp_Misc_CommonFonts.uiFont
+
+    anchors.rightMargin: 4
+    leftPadding: root.rtl ? 0 : 0
+    anchors.leftMargin: root.rtl ? 4 : 4
     rightPadding: actionButton.width + 16
+    horizontalAlignment: root.rtl ? TextInput.AlignRight : TextInput.AlignLeft
 
     Button {
       id: actionButton

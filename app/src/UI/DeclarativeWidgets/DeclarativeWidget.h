@@ -33,10 +33,10 @@
 class DeclarativeWidget : public QuickPaintedItemCompat {
   // clang-format off
   Q_OBJECT
-  Q_PROPERTY(QPalette palette
-             READ palette
-             WRITE setPalette
-             NOTIFY paletteChanged)
+  Q_PROPERTY(QPalette widgetPalette
+             READ widgetPalette
+             WRITE setWidgetPalette
+             NOTIFY widgetPaletteChanged)
   Q_PROPERTY(QWidget *widget
              READ widget
              WRITE setWidget
@@ -50,7 +50,7 @@ class DeclarativeWidget : public QuickPaintedItemCompat {
   // clang-format on
 
 signals:
-  void paletteChanged();
+  void widgetPaletteChanged();
   void widgetChanged();
   void geometryChanged();
 
@@ -58,7 +58,7 @@ public:
   explicit DeclarativeWidget(QQuickItem* parent = nullptr);
 
   [[nodiscard]] QWidget* widget() const;
-  [[nodiscard]] QPalette palette() const;
+  [[nodiscard]] QPalette widgetPalette() const;
 
   [[nodiscard]] int contentWidth() const;
   [[nodiscard]] int contentHeight() const;
@@ -72,7 +72,7 @@ public slots:
   void setWidget(QWidget* widget);
   void setContentWidth(const int width);
   void setContentHeight(const int height);
-  void setPalette(const QPalette& palette);
+  void setWidgetPalette(const QPalette& palette);
 
 private:
   QImage m_image;

@@ -19,6 +19,8 @@ import "../../Widgets" as Widgets
 Window {
   id: root
 
+  Widgets.WindowMirror {}
+
   width: 1024
   height: 720
   minimumWidth: 720

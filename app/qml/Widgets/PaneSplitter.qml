@@ -58,50 +58,58 @@ SplitView {
   }
 
   //
-  // Persist user-chosen width
+  // Persist user-chosen width of the logical "left" panel (Project Structure
+  // etc.), independent of which physical loader hosts it under RTL.
   //
   Settings {
     id: settings
 
-    property alias panelWidth: leftLoader.preferredWidth
+    property int panelWidth: root.minLeftWidth
     category: (root.settingsKey !== "" ? root.settingsKey : "PaneSplitter")
   }
 
   //
   // Internal: track preferred width for persistence
   //
-  property int _defaultLeftWidth: root.minLeftWidth
+  property int _defaultLeftWidth: settings.panelWidth
 
   //
-  // Left pane
+  // Physical first slot: holds logical "right" panel in RTL, "left" in LTR
   //
   Loader {
-    id: leftLoader
-
-    property int preferredWidth: root._defaultLeftWidth
+    id: firstLoader
 
     SplitView.fillHeight: true
-    SplitView.preferredWidth: preferredWidth
-    SplitView.minimumWidth: root.minLeftWidth
+    SplitView.fillWidth: Cpp_Misc_Translator.rtl
+    SplitView.preferredWidth: Cpp_Misc_Translator.rtl ? -1 : settings.panelWidth
+    SplitView.minimumWidth: Cpp_Misc_Translator.rtl ? root.minRightWidth
+                                                    : root.minLeftWidth
 
-    sourceComponent: root.leftPanel
+    sourceComponent: Cpp_Misc_Translator.rtl ? root.rightPanel : root.leftPanel
 
     onWidthChanged: {
-      if (root.width > 0)
-        preferredWidth = width
+      if (root.width > 0 && !Cpp_Misc_Translator.rtl)
+        settings.panelWidth = width
     }
   }
 
   //
-  // Right pane
+  // Physical second slot: holds logical "left" panel in RTL, "right" in LTR
   //
   Loader {
-    id: rightLoader
+    id: secondLoader
 
-    SplitView.fillWidth: true
     SplitView.fillHeight: true
-    SplitView.minimumWidth: root.minRightWidth
+    SplitView.fillWidth: !Cpp_Misc_Translator.rtl
+    SplitView.preferredWidth: Cpp_Misc_Translator.rtl ? settings.panelWidth : -1
+    SplitView.minimumWidth: Cpp_Misc_Translator.rtl ? root.minLeftWidth
+                                                    : root.minRightWidth
 
-    sourceComponent: root.rightPanel
+    sourceComponent: Cpp_Misc_Translator.rtl ? root.leftPanel : root.rightPanel
+
+    onWidthChanged: {
+      if (root.width > 0 && Cpp_Misc_Translator.rtl)
+        settings.panelWidth = width
+    }
   }
 }

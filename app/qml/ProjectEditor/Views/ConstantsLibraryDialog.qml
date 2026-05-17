@@ -30,6 +30,8 @@ import "../../Widgets" as Widgets
 Window {
   id: root
 
+  Widgets.WindowMirror {}
+
   //
   // Custom properties
   //
