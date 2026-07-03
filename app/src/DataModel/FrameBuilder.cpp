@@ -565,8 +565,8 @@ void DataModel::FrameBuilder::syncFromProjectModel()
 
   finalize_frame(m_frame);
   invalidateFramePool();
-  compileTransforms();
   initializeTableStore();
+  compileTransforms();
   parseBudgetReset();
 
   Q_ASSERT(!m_frame.title.isEmpty());
@@ -864,9 +864,9 @@ void DataModel::FrameBuilder::onConnectedChanged()
     return;
 
   Q_ASSERT(!m_frame.title.isEmpty());
+  initializeTableStore();
   DataModel::FrameParser::instance().readCode();
   compileTransforms();
-  initializeTableStore();
 
   const auto& actions = m_frame.actions;
   for (const auto& action : actions)
@@ -1953,8 +1953,8 @@ void DataModel::FrameBuilder::rebuildTransformsForPlayback()
   if (AppState::instance().operationMode() != SerialStudio::ProjectFile || m_frame.title.isEmpty())
     return;
 
-  compileTransforms();
   initializeTableStore();
+  compileTransforms();
 }
 
 /**
@@ -2399,7 +2399,9 @@ QVariant DataModel::FrameBuilder::applyTransformJs(TransformEngine& engine,
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Initializes the DataTableStore from the project model and current frame.
+ * @brief Initializes the DataTableStore from the project model and current frame. Must run
+ *        BEFORE scripts (re)load: evaluation resolves table handles (top level or the load-time
+ *        parse() probe), and a later rebuild would bump the generation and stale them all.
  */
 void DataModel::FrameBuilder::initializeTableStore()
 {
@@ -2449,7 +2451,8 @@ static int luaTableGet(lua_State* L)
 }
 
 /**
- * @brief Lua C closure for tableSet(table, reg, value). Cache-aware like tableGet.
+ * @brief Lua C closure for tableSet(table, reg, value). Cache-aware like tableGet. A nil value
+ *        (e.g. a failed tonumber()) is a safe no-op for parity with JS, which never raises here.
  */
 static int luaTableSet(lua_State* L)
 {
@@ -2458,6 +2461,9 @@ static int luaTableSet(lua_State* L)
 
   const char* table = luaL_checkstring(L, 1);
   const char* reg   = luaL_checkstring(L, 2);
+
+  if (lua_isnoneornil(L, 3))
+    return 0;
 
   DataModel::RegisterValue rv;
   if (lua_isnumber(L, 3)) {
@@ -2540,6 +2546,8 @@ static int luaTableGetH(lua_State* L)
 
 /**
  * @brief Lua C closure for tableSetH(handle, value); ignores non-computed/stale/invalid handles.
+ *        A nil value (e.g. a failed tonumber()) is a safe no-op for parity with JS, which never
+ *        raises here; a raise would fail the load-time parse() probe and reject the script.
  */
 static int luaTableSetH(lua_State* L)
 {
@@ -2547,6 +2555,9 @@ static int luaTableSetH(lua_State* L)
   Q_ASSERT(store);
 
   const qint64 handle = static_cast<qint64>(luaL_checknumber(L, 1));
+
+  if (lua_isnoneornil(L, 2))
+    return 0;
 
   DataModel::RegisterValue rv;
   if (lua_isnumber(L, 2)) {
