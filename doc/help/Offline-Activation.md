@@ -10,9 +10,9 @@ occasional internet access does not need this: normal
 [online activation](Pro-vs-Free.md#upgrading-from-free-to-pro) covers brief
 disconnections with a 30-day offline grace period.
 
-Offline activation is available in the Pro (commercial) build only, and is
-offered for lifetime and test-stand licenses. Monthly and yearly subscriptions
-use online activation with the 30-day offline grace period instead.
+Offline activation is available only for lifetime and test-stand commercial
+licenses. Monthly and yearly subscriptions use online activation with the
+30-day offline grace period instead.
 
 > **Warning:** activating an offline device permanently consumes one license
 > seat. An air-gapped machine cannot report a deactivation, so there is no way
@@ -79,11 +79,8 @@ Pro features unlock immediately, and no network request is made on this machine.
   long as its machine ID has not changed. The machine ID is derived from the
   operating system, not Serial Studio, and may change after an OS reinstall or
   a hardware replacement. Keep the license file somewhere safe.
-- A lifetime license file does not expire. It keeps working on that machine with
-  no further steps.
-- A test-stand license file carries an expiry that follows your license term. Run
-  the three steps again after a renewal to refresh it. Serial Studio shows the
-  remaining days and warns before the file lapses.
+- Lifetime and test-stand license files do not expire. They keep working on
+  that machine with no further steps.
 - The activation persists across restarts and needs no network on the offline
   machine.
 
@@ -108,8 +105,6 @@ alex@serial-studio.com.
 - **"This certificate was issued for a different device."** The license file was
   generated from another machine's device file. Export a new device file on the
   machine you are activating, then repeat the steps.
-- **"This certificate has expired."** The subscription period covered by the file
-  has ended. Renew the subscription and run the three steps again.
 - **The import reports a malformed file.** Confirm you selected the `.sslic` file
   returned by the activation site, not the `.ssmachine` device file.
 
