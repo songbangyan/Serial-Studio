@@ -1584,17 +1584,31 @@ jobs:
 
         Add-Type -AssemblyName System.Drawing
         $icon = [System.Drawing.Image]::FromFile("$PWD/app/deploy/PackageIcon.png")
-        foreach ($asset in @(
-          @{ Name = 'Square44x44Logo.png';   Size = 44  },
-          @{ Name = 'Square150x150Logo.png'; Size = 150 },
-          @{ Name = 'StoreLogo.png';         Size = 50  })) {
-          $bmp = New-Object System.Drawing.Bitmap($asset.Size, $asset.Size)
+
+        # Render the transparent source logo onto a square canvas of the given
+        # size; the canvas stays transparent so no plate bleeds behind the icon.
+        function Save-Logo($size, $name) {
+          $bmp = New-Object System.Drawing.Bitmap($size, $size)
           $gfx = [System.Drawing.Graphics]::FromImage($bmp)
           $gfx.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
-          $gfx.DrawImage($icon, 0, 0, $asset.Size, $asset.Size)
-          $bmp.Save("$PWD/$staging/Assets/$($asset.Name)", [System.Drawing.Imaging.ImageFormat]::Png)
+          $gfx.SmoothingMode     = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+          $gfx.DrawImage($icon, 0, 0, $size, $size)
+          $bmp.Save("$PWD/$staging/Assets/$name", [System.Drawing.Imaging.ImageFormat]::Png)
           $gfx.Dispose()
           $bmp.Dispose()
+        }
+
+        Save-Logo 50  'StoreLogo.png'
+        Save-Logo 150 'Square150x150Logo.png'
+        Save-Logo 44  'Square44x44Logo.png'
+
+        # The taskbar and Start "all apps" list read the target-size variants.
+        # Ship the unplated forms so Windows draws the bare icon instead of
+        # stamping it on the accent-colour plate (the blue rectangle behind the
+        # taskbar icon on Microsoft Store installs).
+        foreach ($s in 16, 24, 32, 48, 256) {
+          Save-Logo $s "Square44x44Logo.targetsize-$s.png"
+          Save-Logo $s "Square44x44Logo.targetsize-${s}_altform-unplated.png"
         }
         $icon.Dispose()
 
@@ -1637,6 +1651,18 @@ jobs:
         </Package>
         "@
         Set-Content -Path "$staging/AppxManifest.xml" -Value $manifest -Encoding utf8
+
+        # Build resources.pri so the qualified logo variants (targetsize /
+        # altform-unplated) resolve at runtime; without the resource index
+        # Windows only sees the neutral logo and plates it in the taskbar.
+        $makepri = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makepri.exe" -ErrorAction SilentlyContinue |
+          Sort-Object FullName -Descending | Select-Object -First 1
+        if (-not $makepri) { throw 'makepri.exe not found in any installed Windows SDK' }
+        & $makepri.FullName createconfig /cf "build/priconfig.xml" /dq en-US /o
+        if ($LASTEXITCODE -ne 0) { throw "makepri createconfig failed with exit code $LASTEXITCODE" }
+        & $makepri.FullName new /pr "$staging" /mn "$staging/AppxManifest.xml" /cf "build/priconfig.xml" /of "$staging/resources.pri" /o
+        if ($LASTEXITCODE -ne 0) { throw "makepri new failed with exit code $LASTEXITCODE" }
+        Remove-Item "build/priconfig.xml" -Force
 
         $makeappx = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\10.*\x64\makeappx.exe" -ErrorAction SilentlyContinue |
           Sort-Object FullName -Descending | Select-Object -First 1
