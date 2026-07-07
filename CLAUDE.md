@@ -172,10 +172,11 @@ benchmark mechanics) in [doc/claude/architecture.md](doc/claude/architecture.md)
 - **JS scripts**: always `IScriptEngine::guardedCall()`, never `parseFunction.call()`.
   `setInterrupted(true)` only in `JsWatchdogThread.cpp`.
 - **256 kHz is a CI gate, not a slogan.** `--benchmark-hotpath` (`Benchmark::HotpathBenchmark`)
-  drives the real parse pipeline with seven gates tiered off `--min-fps` (default 256000), from
-  data pipeline + Native numeric at 4x (1.024 MHz) down to JS mixed at 64 kHz (full tier table
-  in the `ss-hotpath` skill); `test.yml` runs it per PR, `deploy.yml` gates the shipped PGO
-  binary. Don't regress it.
+  drives the real parse pipeline with nine gates tiered off `--min-fps` (default 256000): seven
+  parser gates from data pipeline + Native numeric at 4x (1.024 MHz) down to JS mixed at 64 kHz,
+  plus 0.5x floors on the Lua exporter/dashboard reference rows so a consumer-path collapse
+  can't ship silently (full tier table in the `ss-hotpath` skill); `test.yml` runs it per PR,
+  `deploy.yml` gates the shipped PGO binary. Don't regress it.
 - **Hotpath optimization macros live in `app/src/DataModel/HotpathOptimization.h`** (`SS_FORCE_INLINE`,
   `SS_FLATTEN`, `SS_HOT`/`SS_COLD`, `SS_RESTRICT`, `SS_ASSUME`, `SS_NO_UNROLL`, ...): cross-toolchain
   spellings with a `__clang__`-first cascade (clang-cl/IntelLLVM take the GNU branch). Annotate the

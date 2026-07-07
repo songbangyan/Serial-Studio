@@ -95,9 +95,15 @@ endif()
 # bitcode the flag never reaches the LTO backend, which is why the previous
 # compile-only belt failed. DWARF-only unwind means no compact-unwind fallback
 # for the linker bug to mishandle.
+#
+# -fno-whole-program-vtables must ride along with -fno-lto: the production flags
+# (cmake/Optimization.cmake) pass -fwhole-program-vtables at directory scope, and
+# clang hard-errors on that flag when LTO is disabled. Lua has no vtables, so
+# nothing is lost.
 if(APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|AppleClang)$")
   target_compile_options(lua54 PRIVATE
     -fno-lto
+    -fno-whole-program-vtables
     -femit-dwarf-unwind=no-compact-unwind
   )
 endif()

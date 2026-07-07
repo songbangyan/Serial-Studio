@@ -204,6 +204,8 @@ void BenchmarkRunner::copyResults()
                  QSysInfo::currentCpuArchitecture(),
                  formatCount(static_cast<double>(m_frames)),
                  QString::number(m_seconds, 'f', 0));
+  text += QStringLiteral("\n");
+  text += tr("Build: %1").arg(HotpathBenchmark::buildProvenance());
   text += QStringLiteral("\n\n");
   text += QStringLiteral("| %1 | %2 | %3 | %4 | %5 |\n")
             .arg(tr("Pipeline"), tr("Throughput"), tr("Target"), tr("Time"), tr("Result"));

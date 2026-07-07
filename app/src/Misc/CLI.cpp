@@ -103,6 +103,7 @@ void CLI::registerOptions()
   m_parser.addOption(m_opts.benchmarkFramesOpt);
   m_parser.addOption(m_opts.benchmarkSecondsOpt);
   m_parser.addOption(m_opts.benchmarkOutputOpt);
+  m_parser.addOption(m_opts.exitAfterOpt);
 #ifdef BUILD_COMMERCIAL
   m_parser.addOption(m_opts.noToolbarOpt);
   m_parser.addOption(m_opts.runtimeOpt);
@@ -243,7 +244,27 @@ CLI::ProcessResult CLI::process(QApplication& app)
   }
 #endif
 
+  scheduleExitAfter(app);
+
   return ProcessResult::Continue;
+}
+
+/**
+ * @brief Schedules a graceful quit N seconds after startup when --exit-after is set. Exiting
+ *        through the event loop (not a kill) is what lets PGO training runs flush their profile.
+ */
+void CLI::scheduleExitAfter(QApplication& app)
+{
+  if (!m_parser.isSet(m_opts.exitAfterOpt))
+    return;
+
+  bool ok          = false;
+  const double val = SerialStudio::toDouble(m_parser.value(m_opts.exitAfterOpt), &ok);
+  if (!ok || val <= 0.0)
+    return;
+
+  const int msec = static_cast<int>(qMin(val, 86400.0) * 1000.0);
+  QTimer::singleShot(msec, &app, &QCoreApplication::quit);
 }
 
 /**

@@ -8,7 +8,7 @@ It can also feed an analog signal into Serial Studio when no dedicated driver fi
 
 Digital audio is the discrete-time, discrete-amplitude representation of an analog sound waveform. Three numbers describe it:
 
-- **Sample rate.** How many times per second the analog waveform is measured. Typical values are 44100, 48000, 96000, and 192000 Hz.
+- **Sample rate.** How many times per second the analog waveform is measured. Typical values are 44100, 48000, 96000, and 192000 Hz; Serial Studio lists device rates from 8000 Hz up to 384000 Hz.
 - **Bit depth.** How many bits each sample uses. Typical values are 16-bit signed integer, 24-bit signed integer, and 32-bit float.
 - **Channels.** How many independent waveforms are bundled together. 1 is mono, 2 is stereo, more for surround formats.
 
@@ -28,7 +28,7 @@ The Nyquist-Shannon sampling theorem states that, to faithfully reconstruct a si
 Higher sample rates (96 and 192 kHz) are common in studio work, mostly to provide headroom during processing rather than to capture sound above 22 kHz. For Serial Studio's purposes:
 
 - **44.1 / 48 kHz** is sufficient for general acoustic capture, vibration analysis up to about 20 kHz, and audio fingerprinting.
-- **96 / 192 kHz** provides ultrasonic headroom — useful for some non-destructive testing, bat detectors, and ultrasound transducers.
+- **96 kHz and above** (Serial Studio supports up to 384 kHz on hardware that offers it) provides ultrasonic headroom — useful for some non-destructive testing, bat detectors, and ultrasound transducers.
 - **Below 44.1 kHz** is rare on PC audio hardware. A few interfaces support 22, 16, or 8 kHz for legacy compatibility.
 
 Sampling below twice the highest signal frequency causes aliasing: high frequencies fold back into the audible band as ghost signals at the wrong pitch. Most audio hardware filters out high frequencies before sampling to prevent this. Custom hardware feeding Serial Studio should bandwidth-limit its input the same way.

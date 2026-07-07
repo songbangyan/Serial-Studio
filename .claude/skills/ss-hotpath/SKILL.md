@@ -71,10 +71,11 @@ It loads a project via `ProjectModel::loadFromJsonDocument` and drives the real 
 `FrameReader` extraction → `FrameBuilder` → frame parser → per-dataset transforms. The exit
 code (the release gate) fails if any gated tier misses.
 
-**Seven gated runs**, all tiered off `--min-fps` (so a `--min-fps 1` PGO training run stays
-effectively ungated). Gated runs disable the parse-budget guard (an interactive throttle a
-100%-duty benchmark would trip every window) and run no exporters/dashboard, so the gate is
-pure parse capacity:
+**Nine gated runs**, all tiered off `--min-fps` (so a `--min-fps 1` PGO training run stays
+effectively ungated). The seven parser gates disable the parse-budget guard (an interactive
+throttle a 100%-duty benchmark would trip every window) and run no exporters/dashboard, so
+they measure pure parse capacity; the two Lua reference floors run with consumers on and
+exist to catch a consumer-path collapse, not to measure parsing:
 
 | Run | Tier | Default gate |
 |-----|------|--------------|
@@ -84,6 +85,7 @@ pure parse capacity:
 | lua(numeric) | 1x | 256 kHz |
 | js(numeric), lua(mixed) | 0.5x | 128 kHz |
 | js(mixed) | 0.25x | 64 kHz |
+| lua+exporters, lua+dashboard (floors) | 0.5x | 128 kHz |
 
 Mechanics and readouts:
 
@@ -93,14 +95,14 @@ Mechanics and readouts:
 - A Native stage breakdown prints as `hotpath-stage[native]` (extract / tokenize /
   datasets+publish). `datasets+publish` is ~70-80% of per-frame time — gate any change there
   with this benchmark.
-- Three ungated Lua reference rows follow: `lua+exporters` (CSV/MDF4/Sessions/API/gRPC, mixed
+- Three Lua reference rows follow: `lua+exporters` (CSV/MDF4/Sessions/API/gRPC, mixed
   workload; prints `hotpath: exporters cost N.NNx throughput`), `lua+dashboard` (loads an
   all-widget-types project, flips `HotpathBenchmark::active()` so `Dashboard::streamAvailable()`
   accepts headless frames, arms every plot/FFT/multiplot/waterfall/GPS/3D widget; prints
   `hotpath: dashboard costs N.NNx`), and `lua+dashboard(off)` (same project, dashboard ingest
   off; prints the ingest on-vs-off cost). Exporter/dashboard workers can't keep up with a
-  flat-out producer, so the pool exhausts into heap fallback — that penalty is the readout,
-  not a gate.
+  flat-out producer, so the pool exhausts into heap fallback — that penalty is the readout.
+  The first two carry the 0.5x floor gates; `lua+dashboard(off)` stays ungated.
 - An ungated engine × {numeric, mixed} × {exporters, dashboard} coverage matrix runs last so
   CI and PGO training exercise every consumer/engine combination.
 - `--benchmark-frames N` sets the minimum workload; `--benchmark-seconds N` the minimum

@@ -90,6 +90,8 @@ endif()
 if(ENABLE_HARDENING)
    message(STATUS "Enabling security hardening flags for production builds")
 
+   add_compile_definitions(SS_HARDENED)
+
    if(MSVC)
       add_compile_options(
          /GS

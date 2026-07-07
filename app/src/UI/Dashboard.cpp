@@ -180,7 +180,6 @@ UI::Dashboard::Dashboard()
     m_sourceRawFrames.clear();
     m_datasetReferences.clear();
     m_valuePushes.clear();
-    m_plotClocks.clear();
   }, Qt::QueuedConnection);
   connect(&AppState::instance(), &AppState::operationModeChanged, this, [=, this] {
     const auto mode = AppState::instance().operationMode();

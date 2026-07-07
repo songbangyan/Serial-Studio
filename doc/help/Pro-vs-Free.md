@@ -476,7 +476,6 @@ commercial products, and enterprise deployments.
   (20 device activations), and Enterprise (100 device activations)
 - Monthly and yearly licenses renew until cancelled; the lifetime license
   is a one-time perpetual purchase (currently offered for individual use)
-- Educational discounts available (institutional email required)
 
 **Free Trial:**
 - 14-day trial included with official binary download
@@ -513,19 +512,12 @@ A machine that can never reach the internet can be activated with a signed
 license file instead of connecting online. This is offered for lifetime and
 test-stand licenses. See [Offline Activation](Offline-Activation.md).
 
-## Educational Discounts
+## Academic use
 
-Students and educators can get discounted Pro licenses:
-
-**Requirements:**
-- Valid institutional email address (.edu or your institution's equivalent)
-- Proof of enrollment/employment
-- Academic use only
-
-**How to apply:**
-- Email: alex@serial-studio.com
-- Include: institutional email, institution name, use case
-- Response within 2 business days
+There is no separate academic discount. Students and educators working on
+personal, non-commercial projects can use the GPLv3 source build for free;
+it covers coursework, thesis work, and personal research. Universities and
+research institutions buy commercial licenses like any other organization.
 
 ## Earning a license through contributions
 

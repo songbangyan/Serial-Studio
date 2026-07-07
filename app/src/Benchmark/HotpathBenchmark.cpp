@@ -36,6 +36,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLocale>
+#include <QStringList>
 #include <vector>
 
 #include "API/Server.h"
@@ -91,7 +92,7 @@ static constexpr double kSpinIntervalSec = 0.016;
 // Constants
 //--------------------------------------------------------------------------------------------------
 
-// Named rows: gated parser tiers plus the three lua reference rows the HOTPATH_* tokens read.
+// Named rows: gated parser tiers, floor-gated lua exporter/dashboard rows, ungated dashboard(off).
 enum ReportIndex {
   kReportData,
   kReportNative,
@@ -732,6 +733,49 @@ HotpathBenchmark::StageBreakdown HotpathBenchmark::measureNativeStages(const Res
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Summarizes the build configuration (flags + compiler) so two reports are always
+ *        distinguishable; identical control flow in every configuration keeps PGO profiles valid.
+ */
+QString HotpathBenchmark::buildProvenance()
+{
+  QStringList parts;
+#ifdef SS_OPT_PRODUCTION
+  parts.append(QStringLiteral("production"));
+#endif
+#ifdef SS_OPT_LTO
+  parts.append(QStringLiteral("lto"));
+#endif
+#ifdef SS_PGO_INSTRUMENT
+  parts.append(QStringLiteral("pgo-generate"));
+#elif defined(SS_PGO_USE)
+  parts.append(QStringLiteral("pgo-use"));
+#endif
+#ifdef SS_HARDENED
+  parts.append(QStringLiteral("hardened"));
+#endif
+#ifdef BUILD_COMMERCIAL
+  parts.append(QStringLiteral("commercial"));
+#endif
+#ifdef ENABLE_GRPC
+  parts.append(QStringLiteral("grpc"));
+#endif
+  if (parts.isEmpty())
+    parts.append(QStringLiteral("default-flags"));
+
+#if defined(__clang_version__)
+  const auto compiler = QStringLiteral("clang %1").arg(QStringLiteral(__clang_version__));
+#elif defined(__GNUC__)
+  const auto compiler = QStringLiteral("gcc %1").arg(QStringLiteral(__VERSION__));
+#elif defined(_MSC_VER)
+  const auto compiler = QStringLiteral("msvc %1").arg(_MSC_VER);
+#else
+  const auto compiler = QStringLiteral("unknown compiler");
+#endif
+
+  return QStringLiteral("%1 [%2]").arg(parts.join(QLatin1Char('+')), compiler);
+}
+
+/**
  * @brief Formats a count with thousands separators (fixed English grouping for stable CI logs).
  */
 [[nodiscard]] static QString groupedCount(double value)
@@ -841,6 +885,7 @@ bool HotpathBenchmark::printReport(const Result* results,
       file.write(line);
   };
 
+  printData("build: %s\n", buildProvenance().toUtf8().constData());
   printRunTable(results, coverage, printData);
 
   const Result& data      = results[kReportData];
@@ -877,7 +922,7 @@ bool HotpathBenchmark::printReport(const Result* results,
             dashIngest);
 
   const bool allPassed = data.passed && native.passed && nativeMix.passed && lua.passed && js.passed
-                      && luaMix.passed && jsMix.passed;
+                      && luaMix.passed && jsMix.passed && luaX.passed && luaD.passed;
   printData("HOTPATH_FPS=%.0f HOTPATH_TARGET=%.0f HOTPATH_JS_FPS=%.0f HOTPATH_JS_TARGET=%.0f "
             "HOTPATH_PASS=%d HOTPATH_EXPORTER_FPS=%.0f HOTPATH_DASHBOARD_FPS=%.0f "
             "HOTPATH_DATA_FPS=%.0f HOTPATH_DATA_TARGET=%.0f\n",
@@ -922,8 +967,10 @@ bool HotpathBenchmark::printReport(const Result* results,
 }
 
 /**
- * @brief Runs the gated data + parser tiers, then the full ungated export x dashboard x engine
- *        coverage matrix so PGO training and CI exercise every consumer/engine combination.
+ * @brief Runs the gated data + parser tiers (plus 0.5x floors on the lua exporter/dashboard
+ *        reference rows, so a consumer-path collapse can't ship silently), then the ungated
+ *        export x dashboard x engine coverage matrix so PGO training and CI exercise every
+ *        consumer/engine combination.
  */
 SS_NO_PGO
 int HotpathBenchmark::runAndReport(quint64 targetFrames,
@@ -951,8 +998,9 @@ int HotpathBenchmark::runAndReport(quint64 targetFrames,
   results[kReportLuaMix] = run(targetFrames, minFps * 0.5, minSeconds, SerialStudio::Lua, false);
   results[kReportJsMix] =
     run(targetFrames, minFps * 0.25, minSeconds, SerialStudio::JavaScript, false);
-  results[kReportLuaX] = run(targetFrames, 1.0, minSeconds, SerialStudio::Lua, true);
-  results[kReportLuaD] = run(targetFrames, 1.0, minSeconds, SerialStudio::Lua, false, false, true);
+  results[kReportLuaX] = run(targetFrames, minFps * 0.5, minSeconds, SerialStudio::Lua, true);
+  results[kReportLuaD] =
+    run(targetFrames, minFps * 0.5, minSeconds, SerialStudio::Lua, false, false, true);
 
   results[kReportLuaDoff] =
     run(targetFrames, 1.0, minSeconds, SerialStudio::Lua, false, false, true, false);

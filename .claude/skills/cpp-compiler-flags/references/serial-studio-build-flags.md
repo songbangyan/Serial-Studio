@@ -32,12 +32,20 @@ add_compile_definitions(NDEBUG)
 **GCC/Clang (Linux), AppleClang (macOS), Clang/GCC MinGW, IntelLLVM** (the "-O3 family"):
 ```
 -O3 -funroll-loops -fomit-frame-pointer                   # macOS keeps FP: -fno-omit-frame-pointer (arm64 ABI)
+-momit-leaf-frame-pointer                                 # macOS only: leaf frames may drop x29 (ABI-legal)
+-fvisibility=hidden -fvisibility-inlines-hidden           # macOS + Linux-Clang only
+-fwhole-program-vtables                                   # macOS + Linux-Clang, needs LTO; lua54 negates it
 -fno-fast-math -fno-unsafe-math-optimizations            # IEEE-stable, non-negotiable
 -ffunction-sections -fdata-sections                       # paired with --gc-sections / -dead_strip
 -flto=auto                                                # unless DISABLE_LTO
 -fno-semantic-interposition                               # GCC and IntelLLVM only
 # link: -Wl,--gc-sections   (macOS: -Wl,-dead_strip)   + -flto=auto unless DISABLE_LTO
 ```
+Hidden visibility + `-fwhole-program-vtables` mirror the clang-cl branch (whole-program
+devirtualization of app-internal interfaces; safe because the app is one monolithic executable
+with no in-tree shared libs). lua54 compiles `-fno-lto` on macOS, and clang hard-errors on
+`-fwhole-program-vtables` without LTO, so `lib/lua/CMakeLists.txt` appends
+`-fno-whole-program-vtables` there.
 Arch baseline appended by platform: x86-64 -> `-march=x86-64-v2`; aarch64 -> `-march=armv8-a`
 + link `-latomic`; armv7l -> `-march=armv7-a -mfpu=neon -mfloat-abi=hard` + `-latomic`.
 IntelLLVM also adds `-static`.
@@ -71,14 +79,22 @@ cl.exe-only).
 ### PGO (ENABLE_PGO, staged by PGO_STAGE)
 Profile data dir: `PGO_PROFILE_DIR` (default `${CMAKE_BINARY_DIR}/pgo-profiles`). Needs
 `PRODUCTION_OPTIMIZATION` for meaningful results (warns otherwise). Defines
-`SS_PGO_INSTRUMENT` in the GENERATE stage.
+`SS_PGO_INSTRUMENT` in the GENERATE stage and `SS_PGO_USE` in the USE stage (the benchmark
+report's provenance line reads them). Counter updates are atomic everywhere
+(`-fprofile-update=atomic` / `/GENPROFILE:EXACT`): the training workload is heavily
+multithreaded and racy increments tear counts, making worker-side hot code look cold.
 
 | Toolchain | GENERATE | USE | Data |
 |-----------|----------|-----|------|
-| MSVC cl.exe | `/GL` + link `/LTCG /GENPROFILE /PGD:.../profile.pgd` | `/GL` + link `/LTCG /USEPROFILE:PGD=...` | `profile.pgd` |
-| clang-cl | `/clang:-fprofile-generate=<dir>` (compile only) | `/clang:-fprofile-use=<merged.profdata>` (compile only) | `*.profraw` -> `merged.profdata` |
-| Clang/AppleClang | `-fprofile-generate=<dir>` on **compile AND link** | `-fprofile-use=<merged.profdata>` on **compile AND link** | `*.profraw` -> `merged.profdata` (via `llvm-profdata merge`) |
-| GCC | `-fprofile-generate -fprofile-dir=<dir>` (compile+link) | `-fprofile-use -fprofile-dir=<dir> -fprofile-correction` (compile+link) | `*.gcda` |
+| MSVC cl.exe | `/GL` + link `/LTCG /GENPROFILE:EXACT /PGD:.../profile.pgd` | `/GL` + link `/LTCG /USEPROFILE:PGD=...` | `profile.pgd` |
+| clang-cl | `/clang:-fprofile-generate=<dir>` + `/clang:-fprofile-update=atomic` (compile only) | `/clang:-fprofile-use=<merged.profdata>` (compile only) | `*.profraw` -> `merged.profdata` |
+| Clang/AppleClang | `-fprofile-generate=<dir>` on **compile AND link**, `-fprofile-update=atomic` (compile) | `-fprofile-use=<merged.profdata>` on **compile AND link** | `*.profraw` -> `merged.profdata` (via `llvm-profdata merge`) |
+| GCC | `-fprofile-generate -fprofile-dir=<dir>` (compile+link), `-fprofile-update=atomic` (compile) | `-fprofile-use -fprofile-dir=<dir> -fprofile-correction` (compile+link) | `*.gcda` |
+
+The Clang USE stages also pass `-Werror=profile-instr-out-of-date` as a GENERATE/USE drift
+tripwire (a function whose control flow changed between stages would otherwise silently lose
+its profile), and the `llvm-profdata merge` now always re-runs so a stale `merged.profdata`
+can't shadow fresh `.profraw` files in an incremental build dir.
 
 Why the link-side differs: Clang/AppleClang link through the clang **driver**, so `-fprofile-*`
 must be on both compile and link (the driver links `clang_rt.profile` and feeds the profile into
@@ -91,11 +107,16 @@ step needs no PGO flag. The USE stage validates that the expected profile artifa
 `-DLLVM_PROFDATA=$(xcrun -f llvm-profdata)` on macOS).
 
 ### The CI two-pass (`ci.yml`)
-For each release platform: configure `PGO_STAGE=GENERATE` -> build instrumented -> run the
-training workload (`--headless --benchmark-hotpath --min-fps 1`, a representative hotpath run)
--> reconfigure `PGO_STAGE=USE` -> rebuild optimized -> **gate** (`--benchmark-hotpath --min-fps
-256000`). The training run *is* the representative workload that makes PGO help instead of hurt;
-the 256 kHz gate is a hard release gate on the shipped PGO binary. See [[ss-hotpath]].
+For each release platform: configure `PGO_STAGE=GENERATE` -> build instrumented -> run two
+training workloads -> reconfigure `PGO_STAGE=USE` -> rebuild optimized -> **gate**
+(`--benchmark-hotpath --min-fps 256000`). The training workloads: the hotpath benchmark
+(`--headless --benchmark-hotpath --min-fps 1`) which hard-exits through an explicit profile
+flush, and the big-project load run (`tests/benchmarks/big_db_test/run_load.sh|.ps1`), which
+passes `--exit-after <seconds>` so the app quits through its own event loop — profile
+runtimes only flush on a normal exit, and the scripts treat having to kill the app as a
+failure precisely because a killed run writes no profile. The training runs *are* the
+representative workload that makes PGO help instead of hurt; the 256 kHz gate is a hard
+release gate on the shipped PGO binary. See [[ss-hotpath]].
 
 ### DISABLE_LTO / sandboxed builds
 `PRODUCTION_OPTIMIZATION` + Flatpak (`FLATPAK_ID` env or `FLATPAK_BUILD`) -> `DISABLE_LTO=ON`

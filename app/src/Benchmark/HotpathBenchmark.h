@@ -74,6 +74,8 @@ public:
                                         double minSeconds,
                                         const QString& outputFile = QString());
 
+  [[nodiscard]] static QString buildProvenance();
+
   [[nodiscard]] static bool active() noexcept;
   static void setActive(bool active) noexcept;
 

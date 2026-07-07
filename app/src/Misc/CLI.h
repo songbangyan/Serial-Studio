@@ -89,6 +89,10 @@ struct CliOptions {
     "benchmark-output",
     "File to write the hotpath benchmark report to (default: stdout only, no file)",
     "file"};
+  QCommandLineOption exitAfterOpt{
+    "exit-after",
+    "Quit gracefully after the given number of seconds (CI runs, PGO training)",
+    "seconds"};
 #ifdef BUILD_COMMERCIAL
   QCommandLineOption noToolbarOpt{"no-toolbar", "Hides the main window toolbar at startup (Pro)"};
   QCommandLineOption runtimeOpt{"runtime",
@@ -190,6 +194,7 @@ public:
 
 private:
   void registerOptions();
+  void scheduleExitAfter(QApplication& app);
 
   ProcessResult runHotpathBenchmark();
   ProcessResult dumpApiSchema(const QString& path);

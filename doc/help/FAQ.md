@@ -26,7 +26,7 @@ It works with any device that sends data via serial port, Bluetooth LE, MQTT, Mo
 The core is open source, with two flavors:
 
 1. **GPL version (open source).** Built from source under GPL-3.0. Includes core features, but leaves out Pro modules like MQTT, Modbus, CAN Bus, 3D and XY plotting, and the Waterfall widget.
-2. **Pro version (proprietary).** Official binary with everything, plus a 14-day trial. A license runs about $9.99 to $179.00 (check current pricing at [store.serial-studio.com](https://store.serial-studio.com/)).
+2. **Pro version (proprietary).** Official binary with everything, plus a 14-day trial. Individual licenses start at $9.99 per month, with a $349 one-time Lifetime option; team and test-stand plans cost more (check current pricing at [serial-studio.com/pricing](https://serial-studio.com/pricing)).
 
 Pro features are proprietary. They're not open source. See the [License Agreement](License-Agreement.md) and [Pro vs GPL](#pro-vs-gpl) for details.
 
@@ -72,7 +72,7 @@ Use the DOI if there is one (check the GitHub repository).
 
 ### How do I install Serial Studio on Windows?
 
-1. Download `SerialStudio-Pro-3.x.x-Windows-x64.exe` from [GitHub releases](https://github.com/Serial-Studio/Serial-Studio/releases).
+1. Download `Serial-Studio-Pro-4.x.x-Windows.msi` from [GitHub releases](https://github.com/Serial-Studio/Serial-Studio/releases). A portable build (`Serial-Studio-Pro-4.x.x-Windows-Portable.zip`) is also published if you prefer no installer.
 2. Install the [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist) if prompted.
 3. Run the installer.
 4. On first launch, Windows may show an "Unknown developer" warning. Click "More Info → Run Anyway".
@@ -81,7 +81,7 @@ Use the DOI if there is one (check the GitHub repository).
 
 **Option 1: official DMG (recommended).**
 
-1. Download `SerialStudio-Pro-3.x.x-macOS-Universal.dmg` from [GitHub releases](https://github.com/Serial-Studio/Serial-Studio/releases).
+1. Download `Serial-Studio-Pro-4.x.x-macOS.dmg` (universal binary) from [GitHub releases](https://github.com/Serial-Studio/Serial-Studio/releases).
 2. Open the DMG.
 3. Drag Serial Studio into Applications.
 4. Open it from Spotlight or Finder.
@@ -98,8 +98,8 @@ brew install --cask serial-studio
 
 ```bash
 # Download from GitHub releases
-chmod +x SerialStudio-Pro-3.x.x-Linux-x64.AppImage
-./SerialStudio-Pro-3.x.x-Linux-x64.AppImage
+chmod +x Serial-Studio-Pro-4.x.x-Linux-x64.AppImage
+./Serial-Studio-Pro-4.x.x-Linux-x64.AppImage
 ```
 
 If it fails to launch, install `libfuse2`:
@@ -548,13 +548,7 @@ After 14 days:
 
 ### I'm a student or educator. Is there a discount?
 
-Email alex@serial-studio.com with:
-
-- Your educational institution email.
-- Proof of enrollment or employment.
-- Your intended use case.
-
-Educational discounts are considered case by case.
+There is no separate academic discount. For personal, non-commercial coursework and research, the GPLv3 source build is free and covers that use. Universities and research institutions buy commercial licenses like any other organization.
 
 ### Can I use Pro features in open source projects?
 

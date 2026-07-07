@@ -80,6 +80,7 @@ if(PRODUCTION_OPTIMIZATION)
    message("Enabling production optimization flags...")
 
    add_compile_definitions(NDEBUG)
+   add_compile_definitions(SS_OPT_PRODUCTION)
 
    if(NOT MSVC)
       add_compile_options(
@@ -222,18 +223,29 @@ if(PRODUCTION_OPTIMIZATION)
       # drops DWARF exception unwind under -flto for compact-unwind fallback functions
       # (llvm/llvm-project#135888), and without PACIASP signing the app rides compact unwind.
       # The Lua throw path stays out of LTO entirely (lib/lua/CMakeLists.txt). Frame pointers
-      # stay on: the Apple arm64 ABI walks x29 chains.
+      # stay on: the Apple arm64 ABI walks x29 chains — but only non-leaf frames must keep
+      # them, so -momit-leaf-frame-pointer frees x29 in leaf loops (tokenizer/DSP). Hidden
+      # visibility + -fwhole-program-vtables mirror the clang-cl branch: the app is a single
+      # monolithic executable (no in-tree shared libs, no dlsym on own symbols), so LTO can
+      # devirtualize app-internal interfaces; lua54 negates -fwhole-program-vtables because
+      # it compiles -fno-lto (lib/lua/CMakeLists.txt) and the flag errors without LTO.
       add_compile_options(
          -O3
          -funroll-loops
          -fno-omit-frame-pointer
+         -momit-leaf-frame-pointer
+         -fvisibility=hidden
+         -fvisibility-inlines-hidden
          -fno-fast-math
          -fno-unsafe-math-optimizations
          -ffunction-sections
          -fdata-sections
       )
       if(NOT DISABLE_LTO)
-         add_compile_options(-flto=auto)
+         add_compile_options(
+            -flto=auto
+            -fwhole-program-vtables
+         )
       endif()
       add_link_options(
          -Wl,-dead_strip
@@ -284,6 +296,18 @@ if(PRODUCTION_OPTIMIZATION)
       if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
          add_compile_options(-fno-semantic-interposition)
       endif()
+      # Clang parity with the clang-cl/AppleClang branches: hidden visibility plus
+      # -fwhole-program-vtables devirtualizes app-internal interfaces under LTO (safe: single
+      # monolithic executable). GCC has no equivalent flag, so its branch is unchanged.
+      if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+         add_compile_options(
+            -fvisibility=hidden
+            -fvisibility-inlines-hidden
+         )
+         if(NOT DISABLE_LTO)
+            add_compile_options(-fwhole-program-vtables)
+         endif()
+      endif()
       if(NOT DISABLE_LTO)
          add_compile_options(-flto=auto)
       endif()
@@ -308,6 +332,7 @@ if(PRODUCTION_OPTIMIZATION)
    if(DISABLE_LTO)
       message(STATUS "LTO: DISABLED")
    else()
+      add_compile_definitions(SS_OPT_LTO)
       message(STATUS "LTO: ENABLED")
    endif()
 else()
@@ -378,18 +403,26 @@ if(ENABLE_PGO)
 
       add_compile_definitions(SS_PGO_INSTRUMENT)
 
+      # Counter updates are atomic on every toolchain (-fprofile-update=atomic /
+      # /GENPROFILE:EXACT): the training workload is heavily multithreaded (CSV/MDF4/Sessions/
+      # API/gRPC export workers next to the producer), and the default racy increments tear
+      # counts, making worker-side hot code look cold to the USE stage.
       if(MSVC AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
          add_compile_options(/GL)
          add_link_options(
             /LTCG
-            /GENPROFILE
+            /GENPROFILE:EXACT
             /PGD:${PGO_PROFILE_DIR}/profile.pgd
          )
       elseif(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-         add_compile_options(/clang:-fprofile-generate=${PGO_PROFILE_DIR})
+         add_compile_options(
+            /clang:-fprofile-generate=${PGO_PROFILE_DIR}
+            /clang:-fprofile-update=atomic
+         )
       elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
          add_compile_options(
             -fprofile-generate=${PGO_PROFILE_DIR}
+            -fprofile-update=atomic
          )
          add_link_options(
             -fprofile-generate=${PGO_PROFILE_DIR}
@@ -398,6 +431,7 @@ if(ENABLE_PGO)
          add_compile_options(
             -fprofile-generate
             -fprofile-dir=${PGO_PROFILE_DIR}
+            -fprofile-update=atomic
          )
          add_link_options(
             -fprofile-generate
@@ -410,6 +444,8 @@ if(ENABLE_PGO)
    elseif(PGO_STAGE STREQUAL "USE")
       message(STATUS "PGO: USE stage - building with profile optimization")
       message(STATUS "PGO: Using profile data from: ${PGO_PROFILE_DIR}")
+
+      add_compile_definitions(SS_PGO_USE)
 
       if(MSVC AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
          if(NOT EXISTS "${PGO_PROFILE_DIR}/profile.pgd")
@@ -426,16 +462,16 @@ if(ENABLE_PGO)
             message(FATAL_ERROR "llvm-profdata not found. Install LLVM tools to use PGO with Clang")
          endif()
 
+         # Always re-merge: a stale merged.profdata from an earlier configure would otherwise
+         # silently win over freshly written .profraw files in an incremental build dir.
          set(PROFDATA_FILE "${PGO_PROFILE_DIR}/merged.profdata")
-         if(NOT EXISTS ${PROFDATA_FILE})
-            message(STATUS "Merging profile data: ${PROFRAW_FILES}")
-            execute_process(
-               COMMAND ${LLVM_PROFDATA} merge -output=${PROFDATA_FILE} ${PROFRAW_FILES}
-               RESULT_VARIABLE MERGE_RESULT
-            )
-            if(NOT MERGE_RESULT EQUAL 0)
-               message(FATAL_ERROR "Failed to merge profile data")
-            endif()
+         message(STATUS "Merging profile data: ${PROFRAW_FILES}")
+         execute_process(
+            COMMAND ${LLVM_PROFDATA} merge -output=${PROFDATA_FILE} ${PROFRAW_FILES}
+            RESULT_VARIABLE MERGE_RESULT
+         )
+         if(NOT MERGE_RESULT EQUAL 0)
+            message(FATAL_ERROR "Failed to merge profile data")
          endif()
       elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
          file(GLOB GCDA_FILES "${PGO_PROFILE_DIR}/*.gcda")
@@ -451,10 +487,18 @@ if(ENABLE_PGO)
             /USEPROFILE:PGD=${PGO_PROFILE_DIR}/profile.pgd
          )
       elseif(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-         add_compile_options(/clang:-fprofile-use=${PROFDATA_FILE})
+         # -Werror=profile-instr-out-of-date is the GENERATE/USE drift tripwire: a function
+         # whose control flow changed between the two configures gets its profile silently
+         # dropped; failing the build surfaces that instead. (SS_NO_PGO-excluded functions
+         # fall under -Wprofile-instr-unprofiled, which stays a warning.)
+         add_compile_options(
+            /clang:-fprofile-use=${PROFDATA_FILE}
+            /clang:-Werror=profile-instr-out-of-date
+         )
       elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang|AppleClang")
          add_compile_options(
             -fprofile-use=${PROFDATA_FILE}
+            -Werror=profile-instr-out-of-date
          )
          add_link_options(
             -fprofile-use=${PROFDATA_FILE}

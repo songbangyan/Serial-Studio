@@ -125,7 +125,7 @@ Captures audio samples from system input devices through the miniaudio library. 
 | Parameter           | Options                                                     |
 |---------------------|-------------------------------------------------------------|
 | Input device        | System audio inputs (microphone, line-in, and so on)        |
-| Sample rate         | Device-dependent (common: 8, 22.05, 44.1, 48, 96, 192 kHz)  |
+| Sample rate         | Device-dependent, 8 kHz up to 384 kHz (common: 44.1, 48, 96, 192) |
 | Sample format       | PCM unsigned 8-bit, signed 16/24/32-bit, float 32-bit       |
 | Channel config      | Mono, stereo, or any layout the device supports             |
 | Output device       | System audio outputs (optional, for loopback)               |
