@@ -27,12 +27,21 @@
 
 // clang-format off
 
+/**
+ * @brief Identifies the project-root tree item.
+ */
 typedef enum { kRootItem } TopLevelItem;
 
+/**
+ * @brief Form-field identifiers for the project configuration view.
+ */
 typedef enum {
   kProjectView_Title
 } ProjectItem;
 
+/**
+ * @brief Form-field identifiers for the dataset view.
+ */
 typedef enum {
   kDatasetView_Title,
   kDatasetView_Index,
@@ -62,6 +71,9 @@ typedef enum {
   kDatasetView_DecimalPoints,
 } DatasetItem;
 
+/**
+ * @brief Form-field identifiers for the action view.
+ */
 typedef enum {
   kActionView_Title,
   kActionView_Icon,
@@ -76,6 +88,9 @@ typedef enum {
   kActionView_RepeatCount
 } ActionItem;
 
+/**
+ * @brief Form-field identifiers for the group view.
+ */
 typedef enum {
   kGroupView_Title,
   kGroupView_Widget,
@@ -88,6 +103,9 @@ typedef enum {
   kGroupView_Columns
 } GroupItem;
 
+/**
+ * @brief Form-field identifiers for the source view.
+ */
 typedef enum {
   kSourceView_Title,
   kSourceView_BusType,
@@ -100,6 +118,9 @@ typedef enum {
   kSourceView_ChecksumFunction
 } SourceItem;
 
+/**
+ * @brief Form-field identifiers for the output-widget view.
+ */
 typedef enum {
   kOutputWidget_Title,
   kOutputWidget_Icon,
@@ -113,6 +134,9 @@ typedef enum {
   kOutputWidget_TxEncoding
 } OutputWidgetItem;
 
+/**
+ * @brief Form-field identifiers for the MQTT publisher view.
+ */
 typedef enum {
   kMqttPublisher_Enabled,
   kMqttPublisher_Mode,

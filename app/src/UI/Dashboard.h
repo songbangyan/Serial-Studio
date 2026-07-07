@@ -259,6 +259,7 @@ private:
   void configureGpsSeries();
   void configureFftSeries();
   void configureLineSeries();
+  void buildLinePushes();
   void configurePlot3DSeries();
   void configureMultiLineSeries();
   void buildMultiplotPushes();

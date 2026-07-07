@@ -74,6 +74,19 @@ static void accumulateFolderEnabled(const std::vector<DataModel::GroupFolder>& f
   }
 }
 
+/**
+ * @brief Returns the first tree item in @p map whose mapped value satisfies @p pred.
+ */
+template<typename Map, typename Pred>
+static QStandardItem* findMappedItem(const Map& map, Pred&& pred)
+{
+  for (auto it = map.begin(); it != map.end(); ++it)
+    if (pred(it.value()))
+      return it.key();
+
+  return nullptr;
+}
+
 }  // namespace DataModel
 
 //--------------------------------------------------------------------------------------------------
@@ -827,109 +840,118 @@ void DataModel::ProjectEditor::buildTreeItems(QStandardItem* root,
 }
 
 /**
- * @brief Restores the tree selection by matching IDs against the current view.
+ * @brief Resolves the tree item for ID-keyed entity views (dataset, group, action, source,
+ *        output widget, frame parser); returns nullptr when another view is active.
  */
-void DataModel::ProjectEditor::restoreTreeSelection()
+QStandardItem* DataModel::ProjectEditor::entitySelectionItem() const
 {
-  const auto findKey = [](const auto& map, auto&& pred) -> QStandardItem* {
-    for (auto it = map.begin(); it != map.end(); ++it)
-      if (pred(it.value()))
-        return it.key();
-
-    return nullptr;
-  };
-
-  QStandardItem* toSelect = nullptr;
-
   if (m_currentView == DatasetView) {
     const auto gid = m_selectedDataset.groupId;
     const auto did = m_selectedDataset.datasetId;
-    toSelect       = findKey(
+    return findMappedItem(
       m_datasetItems, [gid, did](const auto& v) { return v.groupId == gid && v.datasetId == did; });
   }
 
-  if (!toSelect && m_currentView == GroupView) {
+  if (m_currentView == GroupView) {
     const auto gid = m_selectedGroup.groupId;
-    toSelect       = findKey(m_groupItems, [gid](const auto& v) { return v.groupId == gid; });
+    return findMappedItem(m_groupItems, [gid](const auto& v) { return v.groupId == gid; });
   }
 
-  if (!toSelect && m_currentView == ActionView) {
+  if (m_currentView == ActionView) {
     const auto aid = m_selectedAction.actionId;
-    toSelect       = findKey(m_actionItems, [aid](const auto& v) { return v.actionId == aid; });
+    return findMappedItem(m_actionItems, [aid](const auto& v) { return v.actionId == aid; });
   }
 
-  if (!toSelect && m_currentView == SourceView) {
+  if (m_currentView == SourceView) {
     const auto sid = m_selectedSource.sourceId;
-    toSelect       = findKey(m_sourceItems, [sid](const auto& v) { return v.sourceId == sid; });
+    return findMappedItem(m_sourceItems, [sid](const auto& v) { return v.sourceId == sid; });
   }
 
-  if (!toSelect && m_currentView == OutputWidgetView) {
+  if (m_currentView == OutputWidgetView) {
     const auto gid = m_selectedOutputWidget.groupId;
     const auto wid = m_selectedOutputWidget.widgetId;
-    toSelect       = findKey(m_outputWidgetItems,
-                       [gid, wid](const auto& v) { return v.groupId == gid && v.widgetId == wid; });
+    return findMappedItem(m_outputWidgetItems, [gid, wid](const auto& v) {
+      return v.groupId == gid && v.widgetId == wid;
+    });
   }
 
+  if (m_currentView == SourceFrameParserView) {
+    const auto sid = m_selectedSource.sourceId;
+    return findMappedItem(m_sourceParserItems, [sid](const auto& v) { return v.sourceId == sid; });
+  }
+
+  return nullptr;
+}
+
+/**
+ * @brief Resolves the tree item for container and singleton views (tables, workspaces, folders,
+ *        MQTT publisher, control loop), falling back to the owning subtree root when the
+ *        selected entry no longer exists; returns nullptr when another view is active.
+ */
+QStandardItem* DataModel::ProjectEditor::containerSelectionItem() const
+{
   if (m_currentView == DataTablesView)
-    toSelect = m_tablesRootItem;
+    return m_tablesRootItem;
 
   if (m_currentView == SystemDatasetsView)
-    toSelect = m_systemDatasetsItem;
+    return m_systemDatasetsItem;
 
   if (m_currentView == UserTableView) {
     const auto name = m_selectedUserTable;
-    toSelect        = findKey(m_userTableItems, [&name](const auto& v) { return v == name; });
-    if (!toSelect)
-      toSelect = m_tablesRootItem;
+    auto* item = findMappedItem(m_userTableItems, [&name](const auto& v) { return v == name; });
+    return item ? item : m_tablesRootItem;
   }
 
   if (m_currentView == WorkspacesView)
-    toSelect = m_workspacesRootItem;
+    return m_workspacesRootItem;
 
   if (m_currentView == WorkspaceView) {
     const int wid = m_selectedWorkspaceId;
-    toSelect      = findKey(m_workspaceItems, [wid](const auto& v) { return v == wid; });
-    if (!toSelect)
-      toSelect = m_workspacesRootItem;
+    auto* item    = findMappedItem(m_workspaceItems, [wid](const auto& v) { return v == wid; });
+    return item ? item : m_workspacesRootItem;
   }
 
   if (m_currentView == GroupsView)
-    toSelect = m_groupsRootItem;
+    return m_groupsRootItem;
 
   if (m_currentView == GroupFolderView) {
     const int fid = m_selectedGroupFolderId;
-    toSelect      = findKey(m_groupFolderItems, [fid](const auto& v) { return v == fid; });
-    if (!toSelect)
-      toSelect = m_groupsRootItem;
+    auto* item    = findMappedItem(m_groupFolderItems, [fid](const auto& v) { return v == fid; });
+    return item ? item : m_groupsRootItem;
   }
 
   if (m_currentView == TableFolderView) {
     const int fid = m_selectedTableFolderId;
-    toSelect      = findKey(m_tableFolderItems, [fid](const auto& v) { return v == fid; });
-    if (!toSelect)
-      toSelect = m_tablesRootItem;
+    auto* item    = findMappedItem(m_tableFolderItems, [fid](const auto& v) { return v == fid; });
+    return item ? item : m_tablesRootItem;
   }
 
   if (m_currentView == WorkspaceFolderView) {
     const int fid = m_selectedFolderId;
-    toSelect      = findKey(m_workspaceFolderItems, [fid](const auto& v) { return v == fid; });
-    if (!toSelect)
-      toSelect = m_workspacesRootItem;
+    auto* item = findMappedItem(m_workspaceFolderItems, [fid](const auto& v) { return v == fid; });
+    return item ? item : m_workspacesRootItem;
   }
 
-  if (!toSelect && m_currentView == SourceFrameParserView) {
-    const auto sid = m_selectedSource.sourceId;
-    toSelect = findKey(m_sourceParserItems, [sid](const auto& v) { return v.sourceId == sid; });
-  }
+  if (m_currentView == MqttPublisherView)
+    return m_mqttPublisherItem;
 
-  if (!toSelect && m_currentView == MqttPublisherView)
-    toSelect = m_mqttPublisherItem;
+  if (m_currentView == ControlScriptView)
+    return m_controlScriptItem;
 
-  if (!toSelect && m_currentView == ControlScriptView)
-    toSelect = m_controlScriptItem;
+  return nullptr;
+}
+
+/**
+ * @brief Restores the tree selection by matching IDs against the current view.
+ */
+void DataModel::ProjectEditor::restoreTreeSelection()
+{
+  QStandardItem* toSelect = entitySelectionItem();
+  if (!toSelect)
+    toSelect = containerSelectionItem();
 
   if (!toSelect)
-    toSelect = findKey(m_rootItems, [](const auto& v) { return v == kRootItem; });
+    toSelect = findMappedItem(m_rootItems, [](const auto& v) { return v == kRootItem; });
 
   if (toSelect)
     m_selectionModel->setCurrentIndex(toSelect->index(), QItemSelectionModel::ClearAndSelect);

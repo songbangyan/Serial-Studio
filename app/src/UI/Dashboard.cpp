@@ -2545,9 +2545,6 @@ void UI::Dashboard::configureLineSeries()
   m_pltValues.clear();
   m_pltValues.squeeze();
   m_activePlots.clear();
-  m_yLinePushes.clear();
-  m_xLinePushes.clear();
-  m_timePushes.clear();
 
   m_pltXAxis = DSP::AxisData(points() + 1);
   m_pltXAxis.fillRange(0, 1);
@@ -2602,6 +2599,19 @@ void UI::Dashboard::configureLineSeries()
 
     m_activePlots.insert(i, true);
   }
+
+  buildLinePushes();
+}
+
+/**
+ * @brief Resolves the per-plot y/x/time push tables from the configured buffers, deduplicating
+ *        shared Y and X sources so each buffer is pushed once per frame.
+ */
+void UI::Dashboard::buildLinePushes()
+{
+  m_yLinePushes.clear();
+  m_xLinePushes.clear();
+  m_timePushes.clear();
 
   QHash<int, std::size_t> yByUid;
   QHash<int, std::size_t> xByXAxisId;

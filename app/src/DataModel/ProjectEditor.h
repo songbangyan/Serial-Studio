@@ -438,6 +438,8 @@ private:
 
   void buildTreeItems(QStandardItem* root, QHash<QString, bool>& expandedStates);
   void restoreTreeSelection();
+  [[nodiscard]] QStandardItem* entitySelectionItem() const;
+  [[nodiscard]] QStandardItem* containerSelectionItem() const;
   bool selectSourceParserItem(QStandardItem* item);
   bool selectSourceItem(QStandardItem* item);
   bool selectGroupItem(QStandardItem* item);
