@@ -92,9 +92,11 @@ QString DataModel::readTextResource(const QString& path)
  */
 QString DataModel::localizedTemplateName(const QJsonObject& object, const char* translationContext)
 {
+  static auto& translator = Misc::Translator::instance();
+
   QString fallback        = object.value(QStringLiteral("name")).toString();
   const auto translations = object.value(QStringLiteral("translations")).toObject();
-  const QString localeKey = localeKeyForLanguage(Misc::Translator::instance().language());
+  const QString localeKey = localeKeyForLanguage(translator.language());
 
   if (!localeKey.isEmpty()) {
     QString localized = translations.value(localeKey).toString();

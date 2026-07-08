@@ -25,8 +25,19 @@
 #  include "Sessions/HtmlReport.h"
 
 class QThread;
+class AppState;
+
+namespace Misc {
+class WorkspaceManager;
+}  // namespace Misc
+
+namespace DataModel {
+class ProjectModel;
+}  // namespace DataModel
 
 namespace Sessions {
+
+class Player;
 
 /**
  * @brief Owns the session database file and backs the Database Explorer UI.
@@ -238,6 +249,11 @@ private:
   // Outstanding mutation tokens awaiting worker confirmation
   quint64 m_nextToken;
   int m_outstandingMutations;
+
+  Misc::WorkspaceManager* m_workspaceManager;
+  Sessions::Player* m_player;
+  DataModel::ProjectModel* m_projectModel;
+  AppState* m_appState;
 };
 
 }  // namespace Sessions

@@ -271,7 +271,7 @@ public:
     if (!m_worker || !m_workerThread.isRunning())
       return;
 
-    if (QCoreApplication::instance())
+    if (qApp)
       QMetaObject::invokeMethod(
         m_worker, &FrameConsumerWorkerBase::flush, Qt::BlockingQueuedConnection);
   }
@@ -285,7 +285,7 @@ public:
     if (!m_worker || !m_workerThread.isRunning())
       return;
 
-    if (QCoreApplication::instance())
+    if (qApp)
       QMetaObject::invokeMethod(
         m_worker, &FrameConsumerWorkerBase::close, Qt::BlockingQueuedConnection);
 

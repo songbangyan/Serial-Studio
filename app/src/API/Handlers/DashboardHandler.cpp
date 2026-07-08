@@ -52,7 +52,7 @@ void API::Handlers::DashboardHandler::registerCommands()
  */
 void API::Handlers::DashboardHandler::registerModeAndFpsCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -111,7 +111,7 @@ void API::Handlers::DashboardHandler::registerModeAndFpsCommands()
  */
 void API::Handlers::DashboardHandler::registerTimeRangeCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -159,7 +159,7 @@ void API::Handlers::DashboardHandler::registerTimeRangeCommands()
  */
 void API::Handlers::DashboardHandler::registerQueryCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -262,7 +262,8 @@ API::CommandResponse API::Handlers::DashboardHandler::setOperationMode(const QSt
   }
 
   const auto operationMode = static_cast<SerialStudio::OperationMode>(mode);
-  AppState::instance().setOperationMode(operationMode);
+  static auto& appState    = AppState::instance();
+  appState.setOperationMode(operationMode);
 
   QJsonObject result;
   result[QStringLiteral("mode")] = mode;
@@ -286,8 +287,9 @@ API::CommandResponse API::Handlers::DashboardHandler::getOperationMode(const QSt
 {
   Q_UNUSED(params)
 
-  const auto mode     = AppState::instance().operationMode();
-  const int modeIndex = static_cast<int>(mode);
+  static auto& appState = AppState::instance();
+  const auto mode       = appState.operationMode();
+  const int modeIndex   = static_cast<int>(mode);
 
   QJsonObject result;
   result[QStringLiteral("mode")] = modeIndex;
@@ -319,7 +321,8 @@ API::CommandResponse API::Handlers::DashboardHandler::setFPS(const QString& id,
       id, ErrorCode::InvalidParam, QStringLiteral("Invalid fps: %1. Valid range: 1-240").arg(fps));
   }
 
-  Misc::TimerEvents::instance().setFPS(fps);
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  timerEvents.setFPS(fps);
 
   QJsonObject result;
   result[QStringLiteral("fps")] = fps;
@@ -335,7 +338,8 @@ API::CommandResponse API::Handlers::DashboardHandler::getFPS(const QString& id,
 {
   Q_UNUSED(params)
 
-  const int fps = Misc::TimerEvents::instance().fps();
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  const int fps            = timerEvents.fps();
 
   QJsonObject result;
   result[QStringLiteral("fps")] = fps;
@@ -363,10 +367,11 @@ API::CommandResponse API::Handlers::DashboardHandler::setTimeRange(const QString
       QStringLiteral("Invalid seconds: %1. Valid range: 0.001-300").arg(seconds));
   }
 
-  UI::Dashboard::instance().setPlotTimeRange(seconds);
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.setPlotTimeRange(seconds);
 
   QJsonObject result;
-  result[QStringLiteral("seconds")] = UI::Dashboard::instance().plotTimeRange();
+  result[QStringLiteral("seconds")] = dashboard.plotTimeRange();
 
   return CommandResponse::makeSuccess(id, result);
 }
@@ -379,7 +384,8 @@ API::CommandResponse API::Handlers::DashboardHandler::getTimeRange(const QString
 {
   Q_UNUSED(params)
 
-  const double seconds = UI::Dashboard::instance().plotTimeRange();
+  static auto& dashboard = UI::Dashboard::instance();
+  const double seconds   = dashboard.plotTimeRange();
 
   QJsonObject result;
   result[QStringLiteral("seconds")] = seconds;
@@ -395,13 +401,17 @@ API::CommandResponse API::Handlers::DashboardHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  const auto mode        = AppState::instance().operationMode();
+  static auto& appState    = AppState::instance();
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  static auto& dashboard   = UI::Dashboard::instance();
+
+  const auto mode        = appState.operationMode();
   const int modeIndex    = static_cast<int>(mode);
-  const int fps          = Misc::TimerEvents::instance().fps();
-  const double timeRange = UI::Dashboard::instance().plotTimeRange();
-  const int widgetCnt    = UI::Dashboard::instance().totalWidgetCount();
-  const int datasetCnt   = static_cast<int>(UI::Dashboard::instance().datasets().size());
-  const bool running     = UI::Dashboard::instance().streamAvailable();
+  const int fps          = timerEvents.fps();
+  const double timeRange = dashboard.plotTimeRange();
+  const int widgetCnt    = dashboard.totalWidgetCount();
+  const int datasetCnt   = static_cast<int>(dashboard.datasets().size());
+  const bool running     = dashboard.streamAvailable();
 
   QJsonObject result;
   result[QStringLiteral("operationMode")]      = modeIndex;
@@ -441,7 +451,7 @@ API::CommandResponse API::Handlers::DashboardHandler::getData(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto& dashboard = UI::Dashboard::instance();
+  static auto& dashboard = UI::Dashboard::instance();
 
   QJsonObject result;
   result[QStringLiteral("widgetCount")]  = dashboard.totalWidgetCount();
@@ -471,8 +481,8 @@ API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& 
     filterActive = !filterUids.isEmpty();
   }
 
-  auto& dashboard     = UI::Dashboard::instance();
-  const int plotCount = dashboard.widgetCount(SerialStudio::DashboardPlot);
+  static auto& dashboard = UI::Dashboard::instance();
+  const int plotCount    = dashboard.widgetCount(SerialStudio::DashboardPlot);
   QJsonArray seriesArr;
 
   for (int i = 0; i < plotCount; ++i) {
@@ -528,7 +538,8 @@ API::CommandResponse API::Handlers::DashboardHandler::reprocess(const QString& i
 {
   Q_UNUSED(params)
 
-  const bool published = DataModel::FrameBuilder::instance().reprocessFrames();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const bool published      = frameBuilder.reprocessFrames();
 
   QJsonObject result;
   result[QStringLiteral("published")] = published;
@@ -548,7 +559,8 @@ API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
 {
   Q_UNUSED(params)
 
-  const bool published = DataModel::FrameBuilder::instance().dashboardTick();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const bool published      = frameBuilder.dashboardTick();
 
   QJsonObject result;
   result[QStringLiteral("published")] = published;

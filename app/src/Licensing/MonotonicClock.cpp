@@ -58,7 +58,8 @@ QDateTime Licensing::MonotonicClock::nowFloored(QSettings& settings, SimpleCrypt
 QDateTime Licensing::MonotonicClock::now()
 {
   QSettings settings;
-  SimpleCrypt crypt(MachineID::instance().machineSpecificKey());
+  static auto& machineId = MachineID::instance();
+  SimpleCrypt crypt(machineId.machineSpecificKey());
   crypt.setIntegrityProtectionMode(SimpleCrypt::ProtectionHash);
   return nowFloored(settings, crypt);
 }

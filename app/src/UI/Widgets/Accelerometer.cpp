@@ -46,9 +46,10 @@ Widgets::Accelerometer::Accelerometer(const int index, QQuickItem* parent)
   , m_maxG(16.0)
   , m_inputInG(false)
   , m_filterInitialized(false)
+  , m_dashboard(UI::Dashboard::instance())
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardAccelerometer, m_index))
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Accelerometer::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Accelerometer::updateData);
 }
 
 //--------------------------------------------------------------------------------------------------

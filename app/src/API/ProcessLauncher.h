@@ -29,6 +29,14 @@
 
 class QProcess;
 
+namespace IO {
+class ConnectionManager;
+}  // namespace IO
+
+namespace DataModel {
+class ProjectModel;
+}  // namespace DataModel
+
 namespace API {
 /**
  * @brief Owns helper processes spawned by the project control script. Every launched process
@@ -80,5 +88,7 @@ private:
   bool m_wasConnected;
   QString m_lastProjectPath;
   QHash<int, QProcess*> m_processes;
+  IO::ConnectionManager* m_connectionManager;
+  DataModel::ProjectModel* m_projectModel;
 };
 }  // namespace API

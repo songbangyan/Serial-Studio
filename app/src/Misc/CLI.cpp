@@ -310,8 +310,10 @@ CLI::ProcessResult CLI::runHotpathBenchmark()
  */
 CLI::ProcessResult CLI::dumpApiSchema(const QString& path)
 {
-  (void)API::CommandHandler::instance();
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& commandHandler = API::CommandHandler::instance();
+  (void)commandHandler;
+  static auto& commandRegistry = API::CommandRegistry::instance();
+  const auto& commands         = commandRegistry.commands();
 
   QJsonArray array;
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
@@ -412,28 +414,37 @@ QString CLI::projectPath() const
  */
 void CLI::applyProjectAndAutoConnect(QApplication& app)
 {
-  if (apiServerEnabled())
-    API::Server::instance().setEnabled(true);
+  if (apiServerEnabled()) {
+    static auto& apiServer = API::Server::instance();
+    apiServer.setEnabled(true);
+  }
 
   const QString project = projectPath();
   if (!project.isEmpty()) {
-    AppState::instance().setOperationMode(SerialStudio::ProjectFile);
-    DataModel::ProjectModel::instance().openJsonFile(project);
+    static auto& appState = AppState::instance();
+    appState.setOperationMode(SerialStudio::ProjectFile);
+    static auto& projectModel = DataModel::ProjectModel::instance();
+    projectModel.openJsonFile(project);
   }
 
-  else if (quickPlot())
-    AppState::instance().setOperationMode(SerialStudio::QuickPlot);
+  else if (quickPlot()) {
+    static auto& appState = AppState::instance();
+    appState.setOperationMode(SerialStudio::QuickPlot);
+  }
 
   if (!runtimeMode())
     return;
 
   QTimer::singleShot(0, &app, []() {
 #ifdef BUILD_COMMERCIAL
-    if (!Licensing::LemonSqueezy::instance().isActivated()
-        && !Licensing::Trial::instance().trialEnabled())
-      return;
+    static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+    if (!lemonSqueezy.isActivated()) {
+      static auto& trial = Licensing::Trial::instance();
+      if (!trial.trialEnabled())
+        return;
+    }
 #endif
-    auto& cm = IO::ConnectionManager::instance();
+    static auto& cm = IO::ConnectionManager::instance();
     if (cm.configurationOk() && !cm.isConnected())
       cm.connectDevice();
   });
@@ -447,15 +458,19 @@ void CLI::applyVisualizationOptions()
   if (m_parser.isSet(m_opts.fpsOpt)) {
     bool ok;
     auto fps = m_parser.value(m_opts.fpsOpt).toUInt(&ok);
-    if (ok)
-      Misc::TimerEvents::instance().setFPS(fps);
+    if (ok) {
+      static auto& timerEvents = Misc::TimerEvents::instance();
+      timerEvents.setFPS(fps);
+    }
   }
 
   if (m_parser.isSet(m_opts.pointsOpt)) {
     bool ok;
     auto points = m_parser.value(m_opts.pointsOpt).toUInt(&ok);
-    if (ok)
-      UI::Dashboard::instance().setPoints(points);
+    if (ok) {
+      static auto& dashboard = UI::Dashboard::instance();
+      dashboard.setPoints(points);
+    }
   }
 }
 
@@ -489,11 +504,12 @@ void CLI::applyBusConfiguration()
  */
 void CLI::setupUartConnection()
 {
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::UART);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.setBusType(SerialStudio::BusType::UART);
 
   if (m_parser.isSet(m_opts.uartOpt)) {
     const QString device = m_parser.value(m_opts.uartOpt);
-    IO::ConnectionManager::instance().uart()->registerDevice(device);
+    connectionManager.uart()->registerDevice(device);
   }
 
   if (m_parser.isSet(m_opts.baudOpt)) {
@@ -502,10 +518,10 @@ void CLI::setupUartConnection()
     if (!ok)
       qWarning() << "Invalid baud rate:" << m_parser.value(m_opts.baudOpt);
     else
-      IO::ConnectionManager::instance().uart()->setBaudRate(baudRate);
+      connectionManager.uart()->setBaudRate(baudRate);
   }
 
-  IO::ConnectionManager::instance().connectDevice();
+  connectionManager.connectDevice();
 }
 
 /**
@@ -526,11 +542,12 @@ void CLI::setupTcpConnection(const QString& tcpAddress)
     return;
   }
 
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::Network);
-  IO::ConnectionManager::instance().network()->setTcpSocket();
-  IO::ConnectionManager::instance().network()->setRemoteAddress(parts[0]);
-  IO::ConnectionManager::instance().network()->setTcpPort(port);
-  IO::ConnectionManager::instance().connectDevice();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.setBusType(SerialStudio::BusType::Network);
+  connectionManager.network()->setTcpSocket();
+  connectionManager.network()->setRemoteAddress(parts[0]);
+  connectionManager.network()->setTcpPort(port);
+  connectionManager.connectDevice();
 }
 
 /**
@@ -551,8 +568,9 @@ static void applyUdpRemote(const QString& udpRemote)
     return;
   }
 
-  IO::ConnectionManager::instance().network()->setRemoteAddress(parts[0]);
-  IO::ConnectionManager::instance().network()->setUdpRemotePort(remotePort);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.network()->setRemoteAddress(parts[0]);
+  connectionManager.network()->setUdpRemotePort(remotePort);
 }
 
 /**
@@ -567,17 +585,18 @@ void CLI::setupUdpConnection()
     return;
   }
 
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::Network);
-  IO::ConnectionManager::instance().network()->setUdpSocket();
-  IO::ConnectionManager::instance().network()->setUdpLocalPort(localPort);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.setBusType(SerialStudio::BusType::Network);
+  connectionManager.network()->setUdpSocket();
+  connectionManager.network()->setUdpLocalPort(localPort);
 
   if (m_parser.isSet(m_opts.udpMulticastOpt))
-    IO::ConnectionManager::instance().network()->setUdpMulticast(true);
+    connectionManager.network()->setUdpMulticast(true);
 
   if (m_parser.isSet(m_opts.udpRemoteOpt))
     applyUdpRemote(m_parser.value(m_opts.udpRemoteOpt));
 
-  IO::ConnectionManager::instance().connectDevice();
+  connectionManager.connectDevice();
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -616,8 +635,10 @@ bool CLI::verifyShortcutProject() const
   box.addButton(QObject::tr("Quit"), QMessageBox::RejectRole);
   box.exec();
 
-  if (deleteBtn != nullptr && box.clickedButton() == deleteBtn)
-    Misc::ShortcutGenerator::instance().deleteShortcut(shortcutPath);
+  if (deleteBtn != nullptr && box.clickedButton() == deleteBtn) {
+    static auto& shortcutGenerator = Misc::ShortcutGenerator::instance();
+    shortcutGenerator.deleteShortcut(shortcutPath);
+  }
 
   return false;
 }
@@ -641,7 +662,7 @@ static QStringList splitTaskbarButtonIds(const QString& raw)
  */
 void CLI::applyOperatorTaskbarSettings()
 {
-  auto& tbs = UI::TaskbarSettings::instance();
+  static auto& tbs = UI::TaskbarSettings::instance();
   if (m_parser.isSet(m_opts.taskbarModeOpt)) {
     const QString mode = m_parser.value(m_opts.taskbarModeOpt).toLower();
     tbs.setTaskbarHidden(mode == QStringLiteral("hidden"));
@@ -669,7 +690,7 @@ void CLI::applyThemeOverride()
   if (name.isEmpty())
     return;
 
-  auto& tm                  = Misc::ThemeManager::instance();
+  static auto& tm           = Misc::ThemeManager::instance();
   const QStringList& themes = tm.availableThemes();
   const int idx             = themes.indexOf(name);
   if (idx < 0) {
@@ -690,24 +711,32 @@ void CLI::applyThemeOverride()
  */
 void CLI::applyOperatorRuntimeSettings()
 {
-  CSV::Export::instance().setSettingsPersistent(false);
-  MDF4::Export::instance().setSettingsPersistent(false);
-  Sessions::Export::instance().setSettingsPersistent(false);
-  Console::Export::instance().setSettingsPersistent(false);
-  UI::Dashboard::instance().setSettingsPersistent(false);
-  UI::TaskbarSettings::instance().setSettingsPersistent(false);
-  Misc::ThemeManager::instance().setSettingsPersistent(false);
+  static auto& csvExport        = CSV::Export::instance();
+  static auto& mdf4Export       = MDF4::Export::instance();
+  static auto& sessionsExport   = Sessions::Export::instance();
+  static auto& consoleExport    = Console::Export::instance();
+  static auto& dashboard        = UI::Dashboard::instance();
+  static auto& taskbarSettings  = UI::TaskbarSettings::instance();
+  static auto& themeManager     = Misc::ThemeManager::instance();
+  static auto& fileTransmission = IO::FileTransmission::instance();
 
-  CSV::Export::instance().setExportEnabled(m_parser.isSet(m_opts.csvExportOpt));
-  MDF4::Export::instance().setExportEnabled(m_parser.isSet(m_opts.mdfExportOpt));
-  Sessions::Export::instance().setExportEnabled(m_parser.isSet(m_opts.sessionExportOpt));
-  Console::Export::instance().setExportEnabled(m_parser.isSet(m_opts.consoleExportOpt));
+  csvExport.setSettingsPersistent(false);
+  mdf4Export.setSettingsPersistent(false);
+  sessionsExport.setSettingsPersistent(false);
+  consoleExport.setSettingsPersistent(false);
+  dashboard.setSettingsPersistent(false);
+  taskbarSettings.setSettingsPersistent(false);
+  themeManager.setSettingsPersistent(false);
 
-  UI::Dashboard::instance().setTerminalEnabled(false);
-  UI::Dashboard::instance().setNotificationLogEnabled(false);
-  UI::Dashboard::instance().setShowActionPanel(m_parser.isSet(m_opts.actionsPanelOpt));
-  IO::FileTransmission::instance().setRuntimeAccessAllowed(
-    m_parser.isSet(m_opts.fileTransmissionOpt));
+  csvExport.setExportEnabled(m_parser.isSet(m_opts.csvExportOpt));
+  mdf4Export.setExportEnabled(m_parser.isSet(m_opts.mdfExportOpt));
+  sessionsExport.setExportEnabled(m_parser.isSet(m_opts.sessionExportOpt));
+  consoleExport.setExportEnabled(m_parser.isSet(m_opts.consoleExportOpt));
+
+  dashboard.setTerminalEnabled(false);
+  dashboard.setNotificationLogEnabled(false);
+  dashboard.setShowActionPanel(m_parser.isSet(m_opts.actionsPanelOpt));
+  fileTransmission.setRuntimeAccessAllowed(m_parser.isSet(m_opts.fileTransmissionOpt));
 
   applyOperatorTaskbarSettings();
 }
@@ -717,17 +746,25 @@ void CLI::applyOperatorRuntimeSettings()
  */
 void CLI::applyExportToggles()
 {
-  if (m_parser.isSet(m_opts.csvExportOpt))
-    CSV::Export::instance().setExportEnabled(true);
+  if (m_parser.isSet(m_opts.csvExportOpt)) {
+    static auto& csvExport = CSV::Export::instance();
+    csvExport.setExportEnabled(true);
+  }
 
-  if (m_parser.isSet(m_opts.mdfExportOpt))
-    MDF4::Export::instance().setExportEnabled(true);
+  if (m_parser.isSet(m_opts.mdfExportOpt)) {
+    static auto& mdf4Export = MDF4::Export::instance();
+    mdf4Export.setExportEnabled(true);
+  }
 
-  if (m_parser.isSet(m_opts.sessionExportOpt))
-    Sessions::Export::instance().setExportEnabled(true);
+  if (m_parser.isSet(m_opts.sessionExportOpt)) {
+    static auto& sessionsExport = Sessions::Export::instance();
+    sessionsExport.setExportEnabled(true);
+  }
 
-  if (m_parser.isSet(m_opts.consoleExportOpt))
-    Console::Export::instance().setExportEnabled(true);
+  if (m_parser.isSet(m_opts.consoleExportOpt)) {
+    static auto& consoleExport = Console::Export::instance();
+    consoleExport.setExportEnabled(true);
+  }
 }
 
 //---------------------------------------------------------------------------------------------------
@@ -739,7 +776,7 @@ void CLI::applyExportToggles()
  */
 int CLI::activateLicense(QApplication& app, const QString& licenseKey)
 {
-  auto& ls = Licensing::LemonSqueezy::instance();
+  static auto& ls = Licensing::LemonSqueezy::instance();
 
   ls.setLicense(licenseKey);
   if (!ls.canActivate()) {
@@ -780,7 +817,7 @@ int CLI::activateLicense(QApplication& app, const QString& licenseKey)
  */
 int CLI::deactivateLicense(QApplication& app)
 {
-  auto& ls = Licensing::LemonSqueezy::instance();
+  static auto& ls = Licensing::LemonSqueezy::instance();
 
   if (!ls.isActivated()) {
     qInfo() << "License is not active on this machine; nothing to deactivate.";
@@ -854,7 +891,8 @@ static void applyModbusRegister(const QString& spec)
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->addRegisterGroup(registerType, start, count);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.modbus()->addRegisterGroup(registerType, start, count);
 }
 
 /**
@@ -870,14 +908,15 @@ static void applyModbusParity(const QString& parity)
     { QStringLiteral("mark"), 4},
   };
 
-  const auto it = kParity.constFind(parity);
+  const auto it                  = kParity.constFind(parity);
+  static auto& connectionManager = IO::ConnectionManager::instance();
   if (it == kParity.cend()) {
     qWarning() << "Invalid ModBus parity (none/even/odd/space/mark):" << parity;
-    IO::ConnectionManager::instance().modbus()->setParityIndex(0);
+    connectionManager.modbus()->setParityIndex(0);
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setParityIndex(it.value());
+  connectionManager.modbus()->setParityIndex(it.value());
 }
 
 /**
@@ -892,14 +931,15 @@ static void applyModbusDataBits(const QString& dataBits)
     {QStringLiteral("8"), 3},
   };
 
-  const auto it = kDataBits.constFind(dataBits);
+  const auto it                  = kDataBits.constFind(dataBits);
+  static auto& connectionManager = IO::ConnectionManager::instance();
   if (it == kDataBits.cend()) {
     qWarning() << "Invalid ModBus data bits (5/6/7/8):" << dataBits;
-    IO::ConnectionManager::instance().modbus()->setDataBitsIndex(3);
+    connectionManager.modbus()->setDataBitsIndex(3);
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setDataBitsIndex(it.value());
+  connectionManager.modbus()->setDataBitsIndex(it.value());
 }
 
 /**
@@ -913,14 +953,15 @@ static void applyModbusStopBits(const QString& stopBits)
     {  QStringLiteral("2"), 2},
   };
 
-  const auto it = kStopBits.constFind(stopBits);
+  const auto it                  = kStopBits.constFind(stopBits);
+  static auto& connectionManager = IO::ConnectionManager::instance();
   if (it == kStopBits.cend()) {
     qWarning() << "Invalid ModBus stop bits (1/1.5/2):" << stopBits;
-    IO::ConnectionManager::instance().modbus()->setStopBitsIndex(0);
+    connectionManager.modbus()->setStopBitsIndex(0);
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setStopBitsIndex(it.value());
+  connectionManager.modbus()->setStopBitsIndex(it.value());
 }
 
 /**
@@ -938,7 +979,8 @@ static void applyModbusSlave(const QCommandLineParser& parser, const QCommandLin
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setSlaveAddress(static_cast<quint8>(slave_val));
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.modbus()->setSlaveAddress(static_cast<quint8>(slave_val));
 }
 
 /**
@@ -956,7 +998,8 @@ static void applyModbusPoll(const QCommandLineParser& parser, const QCommandLine
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setPollInterval(interval);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.modbus()->setPollInterval(interval);
 }
 
 /**
@@ -974,7 +1017,8 @@ static void applyModbusBaud(const QCommandLineParser& parser, const QCommandLine
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setBaudRate(baudRate);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.modbus()->setBaudRate(baudRate);
 }
 
 /**
@@ -982,7 +1026,8 @@ static void applyModbusBaud(const QCommandLineParser& parser, const QCommandLine
  */
 static void applyModbusRegisters(const QCommandLineParser& parser, const QCommandLineOption& opt)
 {
-  IO::ConnectionManager::instance().modbus()->clearRegisterGroups();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.modbus()->clearRegisterGroups();
   if (!parser.isSet(opt)) {
     qWarning() << "No register groups specified. Use --modbus-register to add registers.";
     return;
@@ -1023,11 +1068,12 @@ static bool parseModbusTcpAddress(const QString& tcpAddress, QString& host, quin
  */
 void CLI::setupModbusRtuConnection()
 {
-  const QString portPath = m_parser.value(m_opts.modbusRtuOpt);
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::ModBus);
-  IO::ConnectionManager::instance().modbus()->setProtocolIndex(0);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const QString portPath         = m_parser.value(m_opts.modbusRtuOpt);
+  connectionManager.setBusType(SerialStudio::BusType::ModBus);
+  connectionManager.modbus()->setProtocolIndex(0);
 
-  const QStringList ports = IO::ConnectionManager::instance().modbus()->serialPortList();
+  const QStringList ports = connectionManager.modbus()->serialPortList();
   const int portIndex     = ports.indexOf(portPath);
   if (portIndex < 0) {
     qWarning() << "ModBus serial port not found:" << portPath;
@@ -1035,7 +1081,7 @@ void CLI::setupModbusRtuConnection()
     return;
   }
 
-  IO::ConnectionManager::instance().modbus()->setSerialPortIndex(portIndex);
+  connectionManager.modbus()->setSerialPortIndex(portIndex);
   applyModbusSlave(m_parser, m_opts.modbusSlaveOpt);
   applyModbusPoll(m_parser, m_opts.modbusPollOpt);
   applyModbusBaud(m_parser, m_opts.modbusBaudOpt);
@@ -1050,7 +1096,7 @@ void CLI::setupModbusRtuConnection()
     applyModbusStopBits(m_parser.value(m_opts.modbusStopBitsOpt));
 
   applyModbusRegisters(m_parser, m_opts.modbusRegisterOpt);
-  IO::ConnectionManager::instance().connectDevice();
+  connectionManager.connectDevice();
 }
 
 /**
@@ -1065,15 +1111,16 @@ void CLI::setupModbusTcpConnection()
     return;
   }
 
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::ModBus);
-  IO::ConnectionManager::instance().modbus()->setProtocolIndex(1);
-  IO::ConnectionManager::instance().modbus()->setHost(host);
-  IO::ConnectionManager::instance().modbus()->setPort(port);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.setBusType(SerialStudio::BusType::ModBus);
+  connectionManager.modbus()->setProtocolIndex(1);
+  connectionManager.modbus()->setHost(host);
+  connectionManager.modbus()->setPort(port);
 
   applyModbusSlave(m_parser, m_opts.modbusSlaveOpt);
   applyModbusPoll(m_parser, m_opts.modbusPollOpt);
   applyModbusRegisters(m_parser, m_opts.modbusRegisterOpt);
-  IO::ConnectionManager::instance().connectDevice();
+  connectionManager.connectDevice();
 }
 
 /**
@@ -1090,9 +1137,10 @@ void CLI::setupCanbusConnection()
   const QString plugin        = parts[0].toLower();
   const QString interfaceName = parts[1];
 
-  IO::ConnectionManager::instance().setBusType(SerialStudio::BusType::CanBus);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.setBusType(SerialStudio::BusType::CanBus);
 
-  const QStringList availablePlugins = IO::ConnectionManager::instance().canBus()->pluginList();
+  const QStringList availablePlugins = connectionManager.canBus()->pluginList();
   const int pluginIndex              = availablePlugins.indexOf(plugin);
   if (pluginIndex < 0) {
     qWarning() << "CAN plugin" << plugin << "not found";
@@ -1100,10 +1148,9 @@ void CLI::setupCanbusConnection()
     return;
   }
 
-  IO::ConnectionManager::instance().canBus()->setPluginIndex(pluginIndex);
-  const QStringList availableInterfaces =
-    IO::ConnectionManager::instance().canBus()->interfaceList();
-  const int interfaceIndex = availableInterfaces.indexOf(interfaceName);
+  connectionManager.canBus()->setPluginIndex(pluginIndex);
+  const QStringList availableInterfaces = connectionManager.canBus()->interfaceList();
+  const int interfaceIndex              = availableInterfaces.indexOf(interfaceName);
 
   if (interfaceIndex < 0) {
     qWarning() << "CAN interface" << interfaceName << "not found for plugin" << plugin;
@@ -1111,21 +1158,21 @@ void CLI::setupCanbusConnection()
     return;
   }
 
-  IO::ConnectionManager::instance().canBus()->setInterfaceIndex(interfaceIndex);
+  connectionManager.canBus()->setInterfaceIndex(interfaceIndex);
 
   if (m_parser.isSet(m_opts.canbusBitrateOpt)) {
     bool ok;
     quint32 bitrate = m_parser.value(m_opts.canbusBitrateOpt).toUInt(&ok);
     if (ok && bitrate > 0)
-      IO::ConnectionManager::instance().canBus()->setBitrate(bitrate);
+      connectionManager.canBus()->setBitrate(bitrate);
     else
       qWarning() << "Invalid CAN bus bitrate:" << m_parser.value(m_opts.canbusBitrateOpt);
   }
 
   if (m_parser.isSet(m_opts.canbusFdOpt))
-    IO::ConnectionManager::instance().canBus()->setCanFD(true);
+    connectionManager.canBus()->setCanFD(true);
 
-  IO::ConnectionManager::instance().connectDevice();
+  connectionManager.connectDevice();
 }
 
 #else

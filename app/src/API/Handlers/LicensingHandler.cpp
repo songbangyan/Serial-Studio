@@ -37,7 +37,7 @@
  */
 void API::Handlers::LicensingHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   {
     QJsonObject props;
@@ -134,7 +134,7 @@ void API::Handlers::LicensingHandler::registerCommands()
  */
 void API::Handlers::LicensingHandler::registerOfflineCommand()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject props;
   props[QStringLiteral("path")] = QJsonObject{
@@ -169,8 +169,8 @@ API::CommandResponse API::Handlers::LicensingHandler::setLicense(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: licenseKey"));
   }
 
-  Licensing::LemonSqueezy::instance().setLicense(
-    params.value(QStringLiteral("licenseKey")).toString());
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  lemonSqueezy.setLicense(params.value(QStringLiteral("licenseKey")).toString());
 
   return CommandResponse::makeSuccess(id, {});
 }
@@ -186,7 +186,7 @@ API::CommandResponse API::Handlers::LicensingHandler::activateOffline(const QStr
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: path"));
   }
 
-  auto& offline = Licensing::OfflineLicense::instance();
+  static auto& offline = Licensing::OfflineLicense::instance();
   if (!offline.activateFromFile(params.value(QStringLiteral("path")).toString()))
     return CommandResponse::makeError(id, ErrorCode::ExecutionError, offline.lastError());
 
@@ -199,7 +199,7 @@ API::CommandResponse API::Handlers::LicensingHandler::activateOffline(const QStr
 API::CommandResponse API::Handlers::LicensingHandler::activate(const QString& id,
                                                                const QJsonObject&)
 {
-  auto& ls = Licensing::LemonSqueezy::instance();
+  static auto& ls = Licensing::LemonSqueezy::instance();
 
   if (!ls.canActivate()) {
     return CommandResponse::makeError(
@@ -221,7 +221,7 @@ API::CommandResponse API::Handlers::LicensingHandler::activate(const QString& id
 API::CommandResponse API::Handlers::LicensingHandler::deactivate(const QString& id,
                                                                  const QJsonObject&)
 {
-  auto& ls = Licensing::LemonSqueezy::instance();
+  static auto& ls = Licensing::LemonSqueezy::instance();
 
   if (!ls.isActivated()) {
     return CommandResponse::makeError(
@@ -243,7 +243,7 @@ API::CommandResponse API::Handlers::LicensingHandler::deactivate(const QString& 
 API::CommandResponse API::Handlers::LicensingHandler::validate(const QString& id,
                                                                const QJsonObject&)
 {
-  auto& ls = Licensing::LemonSqueezy::instance();
+  static auto& ls = Licensing::LemonSqueezy::instance();
 
   if (ls.busy()) {
     return CommandResponse::makeError(
@@ -260,9 +260,9 @@ API::CommandResponse API::Handlers::LicensingHandler::validate(const QString& id
 API::CommandResponse API::Handlers::LicensingHandler::getStatus(const QString& id,
                                                                 const QJsonObject&)
 {
-  const auto& ls = Licensing::LemonSqueezy::instance();
-  const auto& ol = Licensing::OfflineLicense::instance();
-  const auto& tk = Licensing::CommercialToken::current();
+  static const auto& ls = Licensing::LemonSqueezy::instance();
+  static const auto& ol = Licensing::OfflineLicense::instance();
+  const auto& tk        = Licensing::CommercialToken::current();
 
   QString tierName;
   switch (tk.featureTier()) {
@@ -346,7 +346,7 @@ API::CommandResponse API::Handlers::LicensingHandler::guardStatus(const QString&
 API::CommandResponse API::Handlers::LicensingHandler::trialGetStatus(const QString& id,
                                                                      const QJsonObject&)
 {
-  const auto& trial = Licensing::Trial::instance();
+  static const auto& trial = Licensing::Trial::instance();
 
   QJsonObject result;
   result[QStringLiteral("busy")]           = trial.busy();
@@ -365,7 +365,7 @@ API::CommandResponse API::Handlers::LicensingHandler::trialGetStatus(const QStri
 API::CommandResponse API::Handlers::LicensingHandler::trialEnable(const QString& id,
                                                                   const QJsonObject&)
 {
-  auto& trial = Licensing::Trial::instance();
+  static auto& trial = Licensing::Trial::instance();
 
   if (!trial.trialAvailable()) {
     return CommandResponse::makeError(

@@ -32,6 +32,12 @@
 #include "DataModel/Frame.h"
 #include "DataModel/FrameConsumer.h"
 
+class AppState;
+
+namespace DataModel {
+class FrameBuilder;
+}  // namespace DataModel
+
 namespace mdf {
 class MdfWriter;
 class IChannel;
@@ -171,5 +177,9 @@ private:
   std::atomic<bool> m_isOpen;
   std::atomic<bool> m_exportEnabled;
   bool m_persistSettings;
+#ifdef BUILD_COMMERCIAL
+  AppState* m_appState;
+  DataModel::FrameBuilder* m_frameBuilder;
+#endif
 };
 }  // namespace MDF4

@@ -399,9 +399,10 @@ void MDF4::Player::toggle()
  */
 void MDF4::Player::openFile()
 {
-  auto* dialog = new QFileDialog(qApp->activeWindow(),
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  auto* dialog                  = new QFileDialog(qApp->activeWindow(),
                                  tr("Select MDF4 file"),
-                                 Misc::WorkspaceManager::instance().path("MDF4"),
+                                 workspaceManager.path("MDF4"),
                                  tr("MDF4 files (*.mf4 *.dat)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
@@ -437,7 +438,8 @@ void MDF4::Player::openFile(const QString& filePath)
     return;
   }
 
-  if (IO::ConnectionManager::instance().isConnected()) {
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  if (connectionManager.isConnected()) {
     int response = Misc::Utilities::showMessageBox(
       tr("Disconnect from device?"),
       tr("You must disconnect from the current device before opening a MDF4 file."),
@@ -446,7 +448,7 @@ void MDF4::Player::openFile(const QString& filePath)
       QMessageBox::Yes | QMessageBox::No);
 
     if (response == QMessageBox::Yes)
-      IO::ConnectionManager::instance().disconnectDevice();
+      connectionManager.disconnectDevice();
     else
       return;
   }
@@ -520,8 +522,9 @@ void MDF4::Player::closeFile()
   m_masterTimeChannel  = nullptr;
   m_sourceChannelsByIndex.clear();
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(QStringList());
-  DataModel::FrameBuilder::instance().setReplayColumnMap({});
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(QStringList());
+  frameBuilder.setReplayColumnMap({});
 
   Q_EMIT openChanged();
   Q_EMIT playerStateChanged();
@@ -541,9 +544,10 @@ void MDF4::Player::nextFrame()
   if (m_framePos < frameCount() - 1) {
     ++m_framePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(0, m_framePos - framesToLoad);
     int endFrame     = std::min(frameCount() - 1, m_framePos);
 
@@ -566,9 +570,10 @@ void MDF4::Player::previousFrame()
   if (m_framePos > 0) {
     --m_framePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(0, m_framePos - framesToLoad);
     int endFrame     = std::min(frameCount() - 1, m_framePos);
 
@@ -597,9 +602,10 @@ void MDF4::Player::setProgress(const double progress)
   if (newFramePos != m_framePos) {
     m_framePos = newFramePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(0, m_framePos - framesToLoad);
     int endFrame     = std::min(frameCount() - 1, m_framePos);
 
@@ -991,7 +997,8 @@ void MDF4::Player::sendHeaderFrame()
   if (!isOpen() || m_channels.empty())
     return;
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
     buildReplayLayout();
     if (m_multiSource)
       return;
@@ -1012,7 +1019,8 @@ void MDF4::Player::sendHeaderFrame()
       headers.append(QString("Channel_%1").arg(i + 1));
   }
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(headers);
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(headers);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1092,7 +1100,8 @@ void MDF4::Player::buildReplayLayout()
   };
 
   QVector<ChMeta> chs;
-  for (const auto& g : DataModel::ProjectModel::instance().groups()) {
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  for (const auto& g : projectModel.groups()) {
     if (g.widget == QLatin1String("image"))
       continue;
 
@@ -1123,7 +1132,8 @@ void MDF4::Player::buildReplayLayout()
     }
   }
 
-  DataModel::FrameBuilder::instance().setReplayColumnMap(std::move(replay));
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.setReplayColumnMap(std::move(replay));
 }
 
 /**
@@ -1135,7 +1145,8 @@ void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
     return;
 
   if (!m_multiSource) {
-    IO::ConnectionManager::instance().processPayload(frame);
+    static auto& connectionManager = IO::ConnectionManager::instance();
+    connectionManager.processPayload(frame);
     return;
   }
 
@@ -1176,8 +1187,10 @@ void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
     sourcePayloads[it.key()] = DataModel::joinReplayRow(it.value()) + '\n';
   }
 
-  if (!sourcePayloads.isEmpty())
-    IO::ConnectionManager::instance().processMultiSourcePayload(frame, sourcePayloads);
+  if (!sourcePayloads.isEmpty()) {
+    static auto& connectionManager = IO::ConnectionManager::instance();
+    connectionManager.processMultiSourcePayload(frame, sourcePayloads);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------

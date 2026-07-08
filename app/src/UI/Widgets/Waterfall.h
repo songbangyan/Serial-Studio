@@ -28,6 +28,11 @@
 #include <QQuickPaintedItem>
 #include <QVector>
 
+#include "Misc/CommonFonts.h"
+#include "Misc/ThemeManager.h"
+#include "Misc/TimerEvents.h"
+#include "UI/Dashboard.h"
+
 namespace Widgets {
 
 /**
@@ -277,6 +282,11 @@ private:
   std::vector<kiss_fft_cpx> m_samples;
   std::vector<kiss_fft_cpx> m_fftOutput;
   kiss_fft_cfg m_plan;
+
+  UI::Dashboard& m_dashboard;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  Misc::TimerEvents& m_timerEvents;
 };
 
 }  // namespace Widgets

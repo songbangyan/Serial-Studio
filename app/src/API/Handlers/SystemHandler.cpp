@@ -40,7 +40,8 @@ API::CommandResponse API::Handlers::SystemHandler::projectDir(const QString& id,
 {
   Q_UNUSED(params)
 
-  const auto& path = DataModel::ProjectModel::instance().jsonFilePath();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& path          = projectModel.jsonFilePath();
   if (path.isEmpty()) {
     return CommandResponse::makeError(
       id, ErrorCode::ExecutionError, QStringLiteral("No project file is loaded"));
@@ -72,13 +73,15 @@ API::CommandResponse API::Handlers::SystemHandler::exec(const QString& id,
 
   auto workingDir = params.value(QStringLiteral("workingDir")).toString();
   if (workingDir.isEmpty()) {
-    const auto& projectPath = DataModel::ProjectModel::instance().jsonFilePath();
+    static auto& projectModel = DataModel::ProjectModel::instance();
+    const auto& projectPath   = projectModel.jsonFilePath();
     if (!projectPath.isEmpty())
       workingDir = QFileInfo(projectPath).absolutePath();
   }
 
   QString error;
-  const int processId = ProcessLauncher::instance().launch(program, arguments, workingDir, error);
+  static auto& processLauncher = ProcessLauncher::instance();
+  const int processId          = processLauncher.launch(program, arguments, workingDir, error);
   if (processId < 0)
     return CommandResponse::makeError(id, ErrorCode::OperationFailed, error);
 
@@ -97,8 +100,9 @@ API::CommandResponse API::Handlers::SystemHandler::kill(const QString& id,
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing 'processId'"));
 
-  const int processId = params.value(QStringLiteral("processId")).toInt(-1);
-  if (!ProcessLauncher::instance().kill(processId)) {
+  const int processId          = params.value(QStringLiteral("processId")).toInt(-1);
+  static auto& processLauncher = ProcessLauncher::instance();
+  if (!processLauncher.kill(processId)) {
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("No running process with id %1").arg(processId));
   }
@@ -114,9 +118,11 @@ API::CommandResponse API::Handlers::SystemHandler::runningProcesses(const QStrin
 {
   Q_UNUSED(params)
 
+  static auto& processLauncher = ProcessLauncher::instance();
+
   QJsonObject result;
   result[QStringLiteral("processes")] =
-    QJsonArray::fromVariantList(ProcessLauncher::instance().runningProcesses());
+    QJsonArray::fromVariantList(processLauncher.runningProcesses());
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -128,12 +134,14 @@ API::CommandResponse API::Handlers::SystemHandler::startDemo(const QString& id,
 {
   Q_UNUSED(params)
 
-  if (AppState::instance().ephemeralSession()) {
+  static auto& appState = AppState::instance();
+  if (appState.ephemeralSession()) {
     return CommandResponse::makeError(
       id, ErrorCode::ExecutionError, QStringLiteral("Demo is unavailable in operator mode"));
   }
 
-  if (!Misc::DemoLauncher::instance().startDemo()) {
+  static auto& demoLauncher = Misc::DemoLauncher::instance();
+  if (!demoLauncher.startDemo()) {
     return CommandResponse::makeError(
       id, ErrorCode::OperationFailed, QStringLiteral("Failed to start the demo project"));
   }
@@ -146,7 +154,7 @@ API::CommandResponse API::Handlers::SystemHandler::startDemo(const QString& id,
  */
 void API::Handlers::SystemHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("system.projectDir"),

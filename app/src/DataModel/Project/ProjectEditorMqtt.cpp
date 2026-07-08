@@ -51,7 +51,7 @@
 void DataModel::ProjectEditor::openMqttScriptEditor()
 {
 #ifdef BUILD_COMMERCIAL
-  auto& pub = MQTT::Publisher::instance();
+  auto& pub = m_mqttPublisher;
 
   if (!m_mqttScriptEditor) {
     m_mqttScriptEditor = new MQTT::PublisherScriptEditor(nullptr);
@@ -59,8 +59,8 @@ void DataModel::ProjectEditor::openMqttScriptEditor()
     connect(m_mqttScriptEditor,
             &MQTT::PublisherScriptEditor::scriptApplied,
             this,
-            [](const QString& code, int language) {
-              auto& publisher = MQTT::Publisher::instance();
+            [this](const QString& code, int language) {
+              auto& publisher = m_mqttPublisher;
               publisher.setScriptLanguage(language);
               publisher.setScriptCode(code);
             });
@@ -84,7 +84,7 @@ void DataModel::ProjectEditor::buildMqttPublisherModel()
   m_mqttPublisherModel = new CustomModel(this);
 
 #ifdef BUILD_COMMERCIAL
-  const auto& pub    = MQTT::Publisher::instance();
+  const auto& pub    = m_mqttPublisher;
   const bool enabled = pub.enabled();
 
   buildMqttPublishingSection(pub, enabled);
@@ -391,7 +391,7 @@ void DataModel::ProjectEditor::onMqttPublisherItemChanged(QStandardItem* item)
     return;
 
 #ifdef BUILD_COMMERCIAL
-  auto& pub        = MQTT::Publisher::instance();
+  auto& pub        = m_mqttPublisher;
   const auto type  = item->data(ParameterType).toInt();
   const auto value = item->data(EditableValue);
 

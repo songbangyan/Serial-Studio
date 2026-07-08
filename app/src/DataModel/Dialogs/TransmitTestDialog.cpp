@@ -32,12 +32,15 @@
 /**
  * @brief Constructs the transmit function test dialog.
  */
-DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent) : QDialog(parent)
+DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent)
+  : QDialog(parent)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_frameBuilder(DataModel::FrameBuilder::instance())
 {
   resize(640, 480);
   setMinimumSize(640, 480);
-
-  auto* commonFonts = &Misc::CommonFonts::instance();
 
   m_inputTitle     = new QLabel(this);
   m_outputTitle    = new QLabel(this);
@@ -61,13 +64,13 @@ DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent) : QDialog(par
 
   m_rawOutput->setReadOnly(true);
   m_hexOutput->setReadOnly(true);
-  m_rawOutput->setFont(commonFonts->monoFont());
-  m_hexOutput->setFont(commonFonts->monoFont());
+  m_rawOutput->setFont(m_commonFonts.monoFont());
+  m_hexOutput->setFont(m_commonFonts.monoFont());
 
-  m_byteCountLabel->setFont(commonFonts->boldUiFont());
+  m_byteCountLabel->setFont(m_commonFonts.boldUiFont());
   m_byteCountLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 
-  auto titleFont = commonFonts->customUiFont(0.8, true);
+  auto titleFont = m_commonFonts.customUiFont(0.8, true);
   titleFont.setCapitalization(QFont::AllUppercase);
   m_inputTitle->setFont(titleFont);
   m_outputTitle->setFont(titleFont);
@@ -98,11 +101,9 @@ DataModel::TransmitTestDialog::TransmitTestDialog(QWidget* parent) : QDialog(par
   connect(m_userInput, &QLineEdit::returnPressed, this, &TransmitTestDialog::evaluate);
   connect(m_userInput, &QLineEdit::textChanged, this, &TransmitTestDialog::onInputDataChanged);
 
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &TransmitTestDialog::onThemeChanged);
-  connect(&Misc::Translator::instance(),
+  connect(
+    &m_themeManager, &Misc::ThemeManager::themeChanged, this, &TransmitTestDialog::onThemeChanged);
+  connect(&m_translator,
           &Misc::Translator::languageChanged,
           this,
           &TransmitTestDialog::onLanguageChanged);
@@ -161,13 +162,13 @@ void DataModel::TransmitTestDialog::evaluate()
     return;
   }
 
-  DataModel::FrameBuilder::instance().refreshTableStoreFromProjectModel();
+  m_frameBuilder.refreshTableStoreFromProjectModel();
 
   QJSEngine engine;
 #ifdef BUILD_COMMERCIAL
   Widgets::Output::Base::installProtocolHelpers(engine);
 #endif
-  DataModel::FrameBuilder::instance().injectTableApiJS(&engine);
+  m_frameBuilder.injectTableApiJS(&engine);
 
   const auto wrapped =
     QStringLiteral("(function() { %1; return transmit; })()").arg(m_transmitCode);
@@ -216,15 +217,14 @@ void DataModel::TransmitTestDialog::evaluate()
  */
 void DataModel::TransmitTestDialog::onThemeChanged()
 {
-  setPalette(Misc::ThemeManager::instance().palette());
+  setPalette(m_themeManager.palette());
   onInputModeChanged(m_hexCheckBox->checkState());
 
-  const auto* tm = &Misc::ThemeManager::instance();
   const auto groupBoxStyle =
     QStringLiteral(
       "QGroupBox {  border: 1px solid %1;  border-radius: 2px;  background-color: %2;}")
-      .arg(tm->getColor("groupbox_border").name())
-      .arg(tm->getColor("groupbox_background").name());
+      .arg(m_themeManager.getColor("groupbox_border").name())
+      .arg(m_themeManager.getColor("groupbox_background").name());
 
   m_inputGroup->setStyleSheet(groupBoxStyle);
   m_outputGroup->setStyleSheet(groupBoxStyle);
@@ -352,10 +352,8 @@ bool DataModel::TransmitTestDialog::validateHexInput(const QString& text)
  */
 void DataModel::TransmitTestDialog::displayOutput(const QByteArray& result, const QString& errorMsg)
 {
-  auto* commonFonts = &Misc::CommonFonts::instance();
-
   if (!errorMsg.isEmpty()) {
-    m_rawOutput->setFont(commonFonts->uiFont());
+    m_rawOutput->setFont(m_commonFonts.uiFont());
     m_rawOutput->setPlainText(errorMsg);
     m_hexOutput->clear();
     m_byteCountLabel->clear();
@@ -363,7 +361,7 @@ void DataModel::TransmitTestDialog::displayOutput(const QByteArray& result, cons
   }
 
   if (result.isEmpty()) {
-    m_rawOutput->setFont(commonFonts->uiFont());
+    m_rawOutput->setFont(m_commonFonts.uiFont());
     m_rawOutput->setPlainText(tr("(empty) No data returned"));
     m_hexOutput->clear();
     m_byteCountLabel->setText(tr("0 bytes"));
@@ -402,7 +400,7 @@ void DataModel::TransmitTestDialog::displayOutput(const QByteArray& result, cons
       QStringLiteral("%1").arg(static_cast<unsigned char>(result.at(i)), 2, 16, QLatin1Char('0'));
   }
 
-  m_rawOutput->setFont(commonFonts->monoFont());
+  m_rawOutput->setFont(m_commonFonts.monoFont());
   m_rawOutput->setPlainText(rawStr);
   m_hexOutput->setPlainText(hexStr.toUpper());
   m_byteCountLabel->setText(tr("%1 byte(s)").arg(result.size()));

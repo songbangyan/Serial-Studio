@@ -46,7 +46,7 @@ Widgets::Gauge::Gauge(const int index, QQuickItem* parent) : Bar(index, parent, 
     m_maxValue         = qMax(dataset.wgtMin, dataset.wgtMax);
     buildBands(dataset.alarmBands);
 
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Gauge::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Gauge::updateData);
   }
 }
 

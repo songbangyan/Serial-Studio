@@ -1246,8 +1246,9 @@ void MQTT::Publisher::applyProjectConfig(const QJsonObject& cfg)
 
   m_inApply = false;
 
-  m_savingToProjectModel = true;
-  DataModel::ProjectModel::instance().setMqttPublisher(toJson());
+  m_savingToProjectModel    = true;
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setMqttPublisher(toJson());
   m_savingToProjectModel = false;
 
   m_skipNextSync = true;

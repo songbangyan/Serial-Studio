@@ -254,7 +254,8 @@ void Misc::GraphicsBackend::promptRestartAndQuit()
   if (choice != QMessageBox::Yes)
     return;
 
-  Misc::CrashTracker::instance().markCleanExit();
+  static auto& crashTracker = Misc::CrashTracker::instance();
+  crashTracker.markCleanExit();
   Misc::Utilities::rebootApplication();
 }
 

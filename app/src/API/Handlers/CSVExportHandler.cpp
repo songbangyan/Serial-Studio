@@ -36,7 +36,7 @@
  */
 void API::Handlers::CSVExportHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   {
     QJsonObject props;
@@ -84,8 +84,9 @@ API::CommandResponse API::Handlers::CSVExportHandler::setEnabled(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
   }
 
-  const bool enabled = params.value(QStringLiteral("enabled")).toBool();
-  CSV::Export::instance().setExportEnabled(enabled);
+  const bool enabled     = params.value(QStringLiteral("enabled")).toBool();
+  static auto& csvExport = CSV::Export::instance();
+  csvExport.setExportEnabled(enabled);
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = enabled;
@@ -100,7 +101,8 @@ API::CommandResponse API::Handlers::CSVExportHandler::close(const QString& id,
 {
   Q_UNUSED(params)
 
-  CSV::Export::instance().closeFile();
+  static auto& csvExport = CSV::Export::instance();
+  csvExport.closeFile();
 
   QJsonObject result;
   result[QStringLiteral("closed")] = true;
@@ -119,7 +121,7 @@ API::CommandResponse API::Handlers::CSVExportHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  auto& csvExport = CSV::Export::instance();
+  static auto& csvExport = CSV::Export::instance();
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = csvExport.exportEnabled();

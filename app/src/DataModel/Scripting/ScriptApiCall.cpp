@@ -425,7 +425,9 @@ static API::CommandResponse dispatchApiCall(const QString& method, const QJsonOb
   request.id      = QUuid::createUuid().toString(QUuid::WithoutBraces);
   request.command = method;
   request.params  = params;
-  return API::CommandHandler::instance().processCommand(request);
+
+  static auto& commandHandler = API::CommandHandler::instance();
+  return commandHandler.processCommand(request);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -469,7 +471,8 @@ QVariantMap DataModel::ScriptApiCallBridge::call(const QJSValue& methodVal,
     return out;
   }
 
-  if (!API::CommandRegistry::instance().hasCommand(method)) {
+  static auto& registry = API::CommandRegistry::instance();
+  if (!registry.hasCommand(method)) {
     const auto unknown = dispatchApiCall(method, QJsonObject());
     out.insert(QStringLiteral("ok"), false);
     out.insert(QStringLiteral("error"), unknown.errorMessage);
@@ -559,7 +562,8 @@ QVariantMap DataModel::ScriptApiCallBridge::call(const QJSValue& methodVal,
 QVariantList DataModel::ScriptApiCallBridge::listCommands()
 {
   QVariantList result;
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& registry = API::CommandRegistry::instance();
+  const auto& commands  = registry.commands();
   result.reserve(commands.size());
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it)
     result.append(it.key());
@@ -642,7 +646,8 @@ static int luaApiCall(lua_State* L)
     return 1;
   }
 
-  if (!API::CommandRegistry::instance().hasCommand(method)) {
+  static auto& registry = API::CommandRegistry::instance();
+  if (!registry.hasCommand(method)) {
     pushApiResult(L, dispatchApiCall(method, QJsonObject()));
     return 1;
   }
@@ -705,7 +710,8 @@ static int luaApiCall(lua_State* L)
  */
 static int luaApiCallList(lua_State* L)
 {
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& registry = API::CommandRegistry::instance();
+  const auto& commands  = registry.commands();
   lua_createtable(L, commands.size(), 0);
 
   int i = 1;
@@ -798,8 +804,10 @@ void DataModel::ScriptApiCall::installHelperBridgesJS(QJSEngine* js, int sourceI
 {
   Q_ASSERT(js);
 
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+
   DataModel::NotificationCenter::installScriptApi(js);
-  DataModel::FrameBuilder::instance().injectTableApiJS(js);
+  frameBuilder.injectTableApiJS(js);
   DataModel::DeviceWriteApi::installJS(js, sourceId);
   DataModel::ActionFireApi::installJS(js);
   DataModel::DashboardApi::installJS(js);
@@ -823,8 +831,10 @@ void DataModel::ScriptApiCall::installAll(lua_State* L, int sourceId)
 {
   Q_ASSERT(L);
 
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+
   DataModel::NotificationCenter::installScriptApi(L);
-  DataModel::FrameBuilder::instance().injectTableApiLua(L);
+  frameBuilder.injectTableApiLua(L);
   DataModel::DeviceWriteApi::installLua(L, sourceId);
   DataModel::ActionFireApi::installLua(L);
   DataModel::DashboardApi::installLua(L);

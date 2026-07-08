@@ -29,7 +29,8 @@ static const char* kEndpoint                   = "https://api.anthropic.com/v1/m
  */
 static QString resolveCanonicalToolName(const QString& sanitized)
 {
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& commandRegistry = API::CommandRegistry::instance();
+  const auto& commands         = commandRegistry.commands();
 
   if (commands.contains(sanitized))
     return sanitized;

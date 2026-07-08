@@ -3172,7 +3172,10 @@ def _qml_rules(src: str, path: Path, fence_mask: list[bool]) -> list[Finding]:
 # dependency as a member instead; this advisory rule keeps the surface from
 # growing while the migration proceeds. Sanctioned sites carry no finding:
 # the root files, the accessor's own `instance()` body, `setupExternalConnections()`
-# wiring bodies, and the interim `static auto& x = X::instance()` hotpath cache.
+# wiring bodies, the interim `static auto& x = X::instance()` hotpath cache,
+# constructor member-initializer captures (the rule's own prescribed fix --
+# the composition-root spec governs which classes may ctor-capture what), and
+# single-line `Q_ASSERT(...)` expressions (debug-only, no release-build edge).
 
 # Qualified accessor call: `X::instance()`, `A::B::instance()`, etc.
 _SINGLETON_INSTANCE_RE = re.compile(r"\b[A-Za-z_][\w:]*::instance\(\)")
@@ -3182,6 +3185,10 @@ _SINGLETON_CACHE_RE = re.compile(
     r"^\s*static\s+(?:const\s+)?auto\s*[&*]\s*\w+\s*=\s*&?\s*"
     r"[A-Za-z_][\w:]*::instance\(\)"
 )
+
+# Debug-only assertion: compiled out of release builds, so it introduces no
+# construction-order edge. Single-line form only; hoist multi-line asserts.
+_SINGLETON_ASSERT_RE = re.compile(r"^\s*Q_ASSERT(?:_X)?\s*\(")
 
 # Files that ARE the composition root / process entry: instance() here is
 # intentional wiring, matched on the repo-relative path tail.
@@ -3232,6 +3239,9 @@ def _singleton_instance_findings(
     tree = _CPP_PARSER.parse(src)
     sanctioned_spans: list[tuple[int, int]] = []
     for n in _walk(tree.root_node):
+        if n.type == "field_initializer_list":
+            sanctioned_spans.append((n.start_point[0] + 1, n.end_point[0] + 1))
+            continue
         if n.type != "function_definition":
             continue
         if _enclosing_def_name(n, src) in _SINGLETON_SANCTIONED_FUNCS:
@@ -3248,6 +3258,8 @@ def _singleton_instance_findings(
         if not _SINGLETON_INSTANCE_RE.search(scrubbed):
             continue
         if _SINGLETON_CACHE_RE.search(scrubbed):
+            continue
+        if _SINGLETON_ASSERT_RE.match(scrubbed):
             continue
         if sanctioned(i):
             continue

@@ -1118,7 +1118,8 @@ void Misc::ExtensionManager::rebuildInstalledPlugins()
  */
 QString Misc::ExtensionManager::extensionsPath() const
 {
-  return Misc::WorkspaceManager::instance().path("Extensions");
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  return workspaceManager.path("Extensions");
 }
 
 /**
@@ -1381,7 +1382,8 @@ bool Misc::ExtensionManager::ensureApiServerForLaunch(const QString& id, bool us
   }
 #endif
 
-  if (API::Server::instance().enabled())
+  static auto& server = API::Server::instance();
+  if (server.enabled())
     return true;
 
   const auto msg = usesGrpc ? tr("This plugin uses gRPC for high-performance data streaming. "
@@ -1398,7 +1400,7 @@ bool Misc::ExtensionManager::ensureApiServerForLaunch(const QString& id, bool us
                                                       QMessageBox::Yes);
 
   if (result == QMessageBox::Yes) {
-    API::Server::instance().setEnabled(true);
+    server.setEnabled(true);
     return true;
   }
 
@@ -1651,7 +1653,8 @@ void Misc::ExtensionManager::stopPlugin(const QString& id)
   if (it == m_plugins.end())
     return;
 
-  if (UI::Dashboard::instance().available())
+  static auto& dashboard = UI::Dashboard::instance();
+  if (dashboard.available())
     m_userClosedPlugins.insert(id);
 
   auto* process       = it.value();
@@ -1744,7 +1747,8 @@ void Misc::ExtensionManager::restoreRunningPlugins()
  */
 void Misc::ExtensionManager::onDashboardAvailableChanged()
 {
-  const bool available = UI::Dashboard::instance().available();
+  static auto& dashboard = UI::Dashboard::instance();
+  const bool available   = dashboard.available();
 
   if (available && !m_dashboardWasAvailable)
     restoreRunningPlugins();
@@ -1764,7 +1768,8 @@ void Misc::ExtensionManager::onPluginFinished(const QString& id)
   if (it == m_plugins.end())
     return;
 
-  if (UI::Dashboard::instance().available())
+  static auto& dashboard = UI::Dashboard::instance();
+  if (dashboard.available())
     m_userClosedPlugins.insert(id);
 
   auto* process        = it.value();

@@ -146,7 +146,7 @@ QHash<int, QVariant> DataModel::ProjectEditor::datasetEditValues(const DataModel
  */
 void DataModel::ProjectEditor::buildMultiDatasetModel()
 {
-  auto& pm           = DataModel::ProjectModel::instance();
+  auto& pm           = m_projectModelRef;
   const auto& groups = pm.groups();
 
   QVector<DataModel::Dataset> sel;
@@ -252,7 +252,7 @@ void DataModel::ProjectEditor::onMultiSelectionItemChanged(QStandardItem* item)
   if (idInt == kDatasetView_FFT_Samples && (vIdx < 0 || vIdx >= m_fftSamples.size()))
     return;
 
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   QVector<DataModel::Dataset> sel;
   QVector<QPair<int, int>> ids;
@@ -301,7 +301,7 @@ void DataModel::ProjectEditor::changeDatasetOptionForSelection(int option, bool 
     return;
 
   const auto opt = static_cast<SerialStudio::DatasetOption>(option);
-  auto& pm       = DataModel::ProjectModel::instance();
+  auto& pm       = m_projectModelRef;
 
   QVector<DataModel::Dataset> sel;
   QVector<QPair<int, int>> ids;

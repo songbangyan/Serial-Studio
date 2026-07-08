@@ -60,7 +60,8 @@ NativeWindow::NativeWindow(QObject *parent)
   : QObject(parent)
   , m_csdEnabled(m_settings.value("Window/CSDEnabled", true).toBool())
 {
-  connect(&Misc::ThemeManager::instance(), &Misc::ThemeManager::themeChanged,
+  static auto& themeManager = Misc::ThemeManager::instance();
+  connect(&themeManager, &Misc::ThemeManager::themeChanged,
           this, &NativeWindow::onThemeChanged);
 }
 

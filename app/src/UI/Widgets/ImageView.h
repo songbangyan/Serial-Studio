@@ -27,6 +27,14 @@
 
 #include "IO/HAL_Driver.h"
 
+namespace IO {
+class ConnectionManager;
+}  // namespace IO
+
+namespace UI {
+class Dashboard;
+}  // namespace UI
+
 namespace Widgets {
 
 /**
@@ -135,6 +143,9 @@ private slots:
 
 private:
   static QString detectFormat(const QByteArray& data);
+
+  IO::ConnectionManager& m_connectionManager;
+  UI::Dashboard& m_dashboard;
 
   int m_index;
   int m_groupId;

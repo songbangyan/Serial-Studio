@@ -33,6 +33,7 @@ Widgets::Output::Base::Base(const DataModel::OutputWidget& config, QQuickItem* p
   , m_txEncoding(static_cast<SerialStudio::TextEncoding>(config.txEncoding))
   , m_hasFn(false)
   , m_watchdog(&m_jsEngine, kTransmitWatchdogMs, QStringLiteral("transmit"))
+  , m_connectionManager(IO::ConnectionManager::instance())
 {
   m_rateLimiter.start();
   DataModel::ScriptApiCall::installAll(&m_jsEngine, m_sourceId);
@@ -149,7 +150,7 @@ void Widgets::Output::Base::sendValue(const QVariant& value)
 
   const auto data = evaluateTransmitFunction(value);
   if (!data.isEmpty())
-    (void)IO::ConnectionManager::instance().writeDataToDevice(m_sourceId, data);
+    (void)m_connectionManager.writeDataToDevice(m_sourceId, data);
 }
 
 /**

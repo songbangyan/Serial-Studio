@@ -254,7 +254,8 @@ void DataModel::ProjectModel::updateSourceFrameParser(int sourceId, const QStrin
     return;
 
   m_sources[sourceId].frameParserCode = code;
-  DataModel::FrameParser::instance().setSourceCode(sourceId, code);
+  static auto& parser                 = DataModel::FrameParser::instance();
+  parser.setSourceCode(sourceId, code);
   setModified(true);
 
   Q_EMIT sourceFrameParserCodeChanged(sourceId);
@@ -270,7 +271,8 @@ void DataModel::ProjectModel::captureSourceSettings(int sourceId)
     return;
 
   const auto busType     = static_cast<SerialStudio::BusType>(m_sources[sourceId].busType);
-  IO::HAL_Driver* driver = IO::ConnectionManager::instance().uiDriverForBusType(busType);
+  static auto& ioManager = IO::ConnectionManager::instance();
+  IO::HAL_Driver* driver = ioManager.uiDriverForBusType(busType);
   if (!driver)
     return;
 
@@ -298,7 +300,8 @@ void DataModel::ProjectModel::restoreSourceSettings(int sourceId)
   if (source.connectionSettings.isEmpty())
     return;
 
-  IO::HAL_Driver* driver = IO::ConnectionManager::instance().driverForEditing(sourceId);
+  static auto& ioManager = IO::ConnectionManager::instance();
+  IO::HAL_Driver* driver = ioManager.driverForEditing(sourceId);
   if (!driver)
     return;
 

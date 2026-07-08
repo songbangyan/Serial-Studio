@@ -136,10 +136,12 @@ void Titlebar::paint(QPainter* painter)
 
 #if defined(Q_OS_WIN)
   rect.setX(CSD::IconSize + CSD::IconMargin * 2);
-  painter->setFont(Misc::CommonFonts::instance().uiFont());
+  static auto& commonFonts = Misc::CommonFonts::instance();
+  painter->setFont(commonFonts.uiFont());
   painter->drawText(rect, Qt::AlignVCenter | Qt::AlignLeft, title());
 #else
-  painter->setFont(Misc::CommonFonts::instance().boldUiFont());
+  static auto& commonFonts = Misc::CommonFonts::instance();
+  painter->setFont(commonFonts.boldUiFont());
   painter->drawText(rect, Qt::AlignCenter, title());
 #endif
 
@@ -200,7 +202,7 @@ QColor Titlebar::foregroundColor() const
 
   m_fgCacheKey = m_backgroundColor;
 
-  const auto& theme       = Misc::ThemeManager::instance();
+  static auto& theme      = Misc::ThemeManager::instance();
   const QColor toolbarTop = theme.getColor(QStringLiteral("toolbar_top"));
 
   if (m_backgroundColor == toolbarTop) {
@@ -388,7 +390,7 @@ QColor Titlebar::buttonIconColor(Button button, bool hovered, bool pressed) cons
   return foregroundColor();
 #else
   Q_UNUSED(button)
-  const auto& theme = Misc::ThemeManager::instance();
+  static auto& theme = Misc::ThemeManager::instance();
 
   if (pressed)
     return theme.getColor(QStringLiteral("highlight")).darker(120);
@@ -696,8 +698,8 @@ Window::Window(QWindow* window, const QString& color, QObject* parent)
   connect(m_window, &QWindow::minimumWidthChanged, this, &Window::onMinimumSizeChanged);
   connect(m_window, &QWindow::minimumHeightChanged, this, &Window::onMinimumSizeChanged);
 
-  connect(
-    &Misc::ThemeManager::instance(), &Misc::ThemeManager::themeChanged, this, &Window::updateTheme);
+  static auto& themeManager = Misc::ThemeManager::instance();
+  connect(&themeManager, &Misc::ThemeManager::themeChanged, this, &Window::updateTheme);
   updateTheme();
   updateMinimumSize();
 }
@@ -1046,7 +1048,7 @@ QSize Window::preferredSize() const
  */
 void Window::updateTheme()
 {
-  const auto& theme = Misc::ThemeManager::instance();
+  static auto& theme = Misc::ThemeManager::instance();
 
   if (m_titleBar) {
     const QString color =

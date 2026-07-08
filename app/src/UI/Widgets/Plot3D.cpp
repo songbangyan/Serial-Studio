@@ -78,6 +78,10 @@ Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   , m_dirtyCameraIndicator(true)
   , m_targetWorldScale(1.0)
   , m_centerInitialized(false)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
 {
   setOpaquePainting(true);
   setAcceptHoverEvents(true);
@@ -91,24 +95,22 @@ Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   setMipmap(true);
   setAntialiasing(false);
 
-  connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Widgets::Plot3D::updateData);
+  connect(&m_dashboard, &UI::Dashboard::updated, this, &Widgets::Plot3D::updateData);
 
   connect(this, &Widgets::Plot3D::widthChanged, this, &Widgets::Plot3D::updateSize);
   connect(this, &Widgets::Plot3D::heightChanged, this, &Widgets::Plot3D::updateSize);
   connect(this, &Widgets::Plot3D::scaleChanged, this, &Widgets::Plot3D::updateSize);
 
   if (VALIDATE_WIDGET(SerialStudio::DashboardPlot3D, m_index)) {
-    connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [=, this] {
+    connect(&m_timerEvents, &Misc::TimerEvents::uiTimeout, this, [=, this] {
       if (isVisible() && dirty())
         update();
     });
   }
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &Widgets::Plot3D::onThemeChanged);
+  connect(
+    &m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::Plot3D::onThemeChanged);
 
   connect(
     this, &Widgets::Plot3D::rangeChanged, this, [this] { m_targetWorldScale = idealWorldScale(); });
@@ -556,15 +558,15 @@ void Widgets::Plot3D::onThemeChanged()
   m_lineTailColor.setAlpha(156);
 
   // clang-format off
-  m_textColor = Misc::ThemeManager::instance().getColor("widget_text");
-  m_xAxisColor = Misc::ThemeManager::instance().getColor("plot3d_x_axis");
-  m_yAxisColor = Misc::ThemeManager::instance().getColor("plot3d_y_axis");
-  m_zAxisColor = Misc::ThemeManager::instance().getColor("plot3d_z_axis");
-  m_axisTextColor = Misc::ThemeManager::instance().getColor("plot3d_axis_text");
-  m_gridMinorColor = Misc::ThemeManager::instance().getColor("plot3d_grid_minor");
-  m_gridMajorColor = Misc::ThemeManager::instance().getColor("plot3d_grid_major");
-  m_innerBackgroundColor = Misc::ThemeManager::instance().getColor("widget_base");
-  m_outerBackgroundColor = Misc::ThemeManager::instance().getColor("widget_window");
+  m_textColor = m_themeManager.getColor("widget_text");
+  m_xAxisColor = m_themeManager.getColor("plot3d_x_axis");
+  m_yAxisColor = m_themeManager.getColor("plot3d_y_axis");
+  m_zAxisColor = m_themeManager.getColor("plot3d_z_axis");
+  m_axisTextColor = m_themeManager.getColor("plot3d_axis_text");
+  m_gridMinorColor = m_themeManager.getColor("plot3d_grid_minor");
+  m_gridMajorColor = m_themeManager.getColor("plot3d_grid_major");
+  m_innerBackgroundColor = m_themeManager.getColor("widget_base");
+  m_outerBackgroundColor = m_themeManager.getColor("widget_window");
   // clang-format on
 
   markDirty();
@@ -613,7 +615,7 @@ void Widgets::Plot3D::updateSize()
  */
 void Widgets::Plot3D::drawData()
 {
-  const auto& data = UI::Dashboard::instance().plotData3D(m_index);
+  const auto& data = m_dashboard.plotData3D(m_index);
   if (data.size() <= 0)
     return;
 
@@ -943,7 +945,7 @@ QImage Widgets::Plot3D::renderGrid(const QMatrix4x4& matrix)
 
   const QString stepLabel = tr("Grid Interval: %1 unit(s)").arg(step);
   painter.setPen(m_textColor);
-  painter.setFont(Misc::CommonFonts::instance().monoFont());
+  painter.setFont(m_commonFonts.monoFont());
   painter.drawText(QPoint(8, height() - 8), stepLabel);
 
   return img;
@@ -997,7 +999,7 @@ QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
               return a.transformed.z() < b.transformed.z();
             });
 
-  painter.setFont(Misc::CommonFonts::instance().customMonoFont(0.8));
+  painter.setFont(m_commonFonts.customMonoFont(0.8));
   QFontMetrics fm(painter.font());
   int textWidth      = fm.horizontalAdvance("X");
   int textHeight     = fm.height();

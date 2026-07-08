@@ -25,7 +25,9 @@
 #include <QVector>
 #include <QXYSeries>
 
+#include "Misc/ThemeManager.h"
 #include "SerialStudio.h"
+#include "UI/Dashboard.h"
 
 namespace Widgets {
 /**
@@ -224,5 +226,8 @@ private:
   int m_triggerSource;
   SerialStudio::SweepMode m_sweepMode;
   SerialStudio::TriggerEdge m_triggerEdge;
+
+  UI::Dashboard& m_dashboard;
+  Misc::ThemeManager& m_themeManager;
 };
 }  // namespace Widgets

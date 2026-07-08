@@ -15,7 +15,17 @@
 #  include <QQuickPaintedItem>
 #  include <QSyntaxStyle>
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+class TimerEvents;
+class Translator;
+}  // namespace Misc
+
 namespace DataModel {
+
+class ProjectEditor;
+class ProjectModel;
 
 /**
  * @brief QML-embeddable code editor for painter-widget paint() / onFrame() scripts.
@@ -86,6 +96,12 @@ public:
 private:
   void loadTemplates();
   bool m_readingCode;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  DataModel::ProjectEditor& m_projectEditor;
+  Misc::TimerEvents& m_timerEvents;
+  Misc::Translator& m_translator;
+  DataModel::ProjectModel& m_projectModel;
   QPixmap m_pixmap;
   QSyntaxStyle m_style;
   QCodeEditor m_widget;

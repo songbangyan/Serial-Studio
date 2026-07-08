@@ -25,6 +25,9 @@
 #include <QVector>
 #include <vector>
 
+#include "Misc/ThemeManager.h"
+#include "UI/Dashboard.h"
+
 namespace Widgets {
 /**
  * @brief Multi-LED status indicator panel widget. Each LED renders the alarm band its dataset
@@ -101,6 +104,9 @@ private:
   QStringList m_colors;
   QStringList m_labels;
   std::vector<Led> m_leds;
+
+  UI::Dashboard& m_dashboard;
+  Misc::ThemeManager& m_themeManager;
 };
 
 }  // namespace Widgets

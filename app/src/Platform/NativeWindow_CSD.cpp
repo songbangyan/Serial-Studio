@@ -173,10 +173,8 @@ static void enableNativeShadow(QWindow* window)
 NativeWindow::NativeWindow(QObject* parent)
   : QObject(parent), m_csdEnabled(m_settings.value("Window/CSDEnabled", true).toBool())
 {
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &NativeWindow::onThemeChanged);
+  static auto& themeManager = Misc::ThemeManager::instance();
+  connect(&themeManager, &Misc::ThemeManager::themeChanged, this, &NativeWindow::onThemeChanged);
 }
 
 /**
@@ -394,7 +392,8 @@ void NativeWindow::onActiveChanged()
   if (!window || !m_windows.contains(window))
     return;
 
-  const auto& colors = Misc::ThemeManager::instance().colors();
+  static auto& themeManager = Misc::ThemeManager::instance();
+  const auto& colors        = themeManager.colors();
   QString colorName;
 
   if (m_colors.contains(window) && !m_colors[window].isEmpty())

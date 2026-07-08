@@ -25,7 +25,7 @@
  */
 void API::Handlers::MDF4PlayerHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject openSchema;
   {
@@ -139,11 +139,12 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::open(const QString& id,
       id, ErrorCode::InvalidParam, QStringLiteral("filePath is not allowed"));
   }
 
-  MDF4::Player::instance().openFile(file_path);
+  static auto& player = MDF4::Player::instance();
+  player.openFile(file_path);
 
   QJsonObject result;
   result[QStringLiteral("filePath")] = file_path;
-  result[QStringLiteral("isOpen")]   = MDF4::Player::instance().isOpen();
+  result[QStringLiteral("isOpen")]   = player.isOpen();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -155,7 +156,8 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::close(const QString& id,
 {
   Q_UNUSED(params)
 
-  MDF4::Player::instance().closeFile();
+  static auto& player = MDF4::Player::instance();
+  player.closeFile();
 
   QJsonObject result;
   result[QStringLiteral("closed")] = true;
@@ -173,14 +175,16 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::setPaused(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: paused"));
   }
 
+  static auto& player = MDF4::Player::instance();
+
   const bool paused = params.value(QStringLiteral("paused")).toBool();
   if (paused)
-    MDF4::Player::instance().pause();
+    player.pause();
   else
-    MDF4::Player::instance().play();
+    player.play();
 
   QJsonObject result;
-  result[QStringLiteral("isPlaying")] = MDF4::Player::instance().isPlaying();
+  result[QStringLiteral("isPlaying")] = player.isPlaying();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -193,7 +197,7 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::step(const QString& id,
   const int delta =
     params.contains(QStringLiteral("delta")) ? params.value(QStringLiteral("delta")).toInt() : 1;
 
-  auto& player = MDF4::Player::instance();
+  static auto& player = MDF4::Player::instance();
   if (delta == 0) {
     QJsonObject result;
     result[QStringLiteral("framePosition")] = player.framePosition();
@@ -238,11 +242,12 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::setProgress(const QString
       id, ErrorCode::InvalidParam, QStringLiteral("progress must be between 0.0 and 1.0"));
   }
 
-  MDF4::Player::instance().setProgress(progress);
+  static auto& player = MDF4::Player::instance();
+  player.setProgress(progress);
 
   QJsonObject result;
-  result[QStringLiteral("progress")]      = MDF4::Player::instance().progress();
-  result[QStringLiteral("framePosition")] = MDF4::Player::instance().framePosition();
+  result[QStringLiteral("progress")]      = player.progress();
+  result[QStringLiteral("framePosition")] = player.framePosition();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -258,7 +263,7 @@ API::CommandResponse API::Handlers::MDF4PlayerHandler::getStatus(const QString& 
 {
   Q_UNUSED(params)
 
-  auto& player = MDF4::Player::instance();
+  static auto& player = MDF4::Player::instance();
 
   QJsonObject result;
   result[QStringLiteral("isOpen")]        = player.isOpen();

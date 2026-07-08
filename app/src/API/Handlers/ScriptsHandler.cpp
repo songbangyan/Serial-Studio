@@ -131,7 +131,7 @@ static QJsonObject summarizeEntry(const detail::Kind& kind, const QJsonObject& e
  */
 void API::Handlers::ScriptsHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("scripts.list"),

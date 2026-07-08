@@ -207,10 +207,11 @@ void Misc::Examples::downloadExample()
   if (m_selectedIndex < 0 || m_selectedIndex >= m_filteredExamples.count())
     return;
 
-  const auto example = m_filteredExamples.at(m_selectedIndex).toMap();
-  const auto id      = example.value("id").toString();
-  const auto dir     = Misc::WorkspaceManager::instance().path("Examples");
-  m_downloadPath     = dir + "/" + id;
+  const auto example            = m_filteredExamples.at(m_selectedIndex).toMap();
+  const auto id                 = example.value("id").toString();
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto dir                = workspaceManager.path("Examples");
+  m_downloadPath                = dir + "/" + id;
   QDir().mkpath(m_downloadPath);
 
   m_loading          = true;

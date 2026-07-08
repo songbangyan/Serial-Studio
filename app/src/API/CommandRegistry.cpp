@@ -186,10 +186,11 @@ static void scheduleProjectApply()
 
   pending = true;
   QMetaObject::invokeMethod(
-    QCoreApplication::instance(),
+    qApp,
     [] {
-      pending = false;
-      DataModel::FrameBuilder::instance().syncFromProjectModel();
+      pending                   = false;
+      static auto& frameBuilder = DataModel::FrameBuilder::instance();
+      frameBuilder.syncFromProjectModel();
     },
     Qt::QueuedConnection);
 }
@@ -206,18 +207,20 @@ API::CommandResponse API::CommandRegistry::execute(const QString& name,
 
   const bool isDryRun = params.value(QStringLiteral("dryRun")).toBool(false);
   QString preMutationBackup;
-  if (!isDryRun && destructiveCommandSet().contains(name))
-    preMutationBackup = Misc::BackupManager::instance().snapshot(QStringLiteral("pre-") + name);
+  if (!isDryRun && destructiveCommandSet().contains(name)) {
+    static auto& backupManager = Misc::BackupManager::instance();
+    preMutationBackup          = backupManager.snapshot(QStringLiteral("pre-") + name);
+  }
 
-  const qint64 epochBefore = DataModel::ProjectModel::instance().mutationEpoch();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const qint64 epochBefore  = projectModel.mutationEpoch();
 
   try {
     auto response = m_commands[name].handler(id, params);
     attachErrorMetadata(name, response);
 
-    if (!isDryRun && response.success
-        && DataModel::ProjectModel::instance().mutationEpoch() != epochBefore) {
-      DataModel::ProjectModel::instance().scheduleAutoSave();
+    if (!isDryRun && response.success && projectModel.mutationEpoch() != epochBefore) {
+      projectModel.scheduleAutoSave();
       scheduleProjectApply();
     }
 

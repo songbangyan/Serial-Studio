@@ -60,8 +60,8 @@ DataModel::NotificationCenter::NotificationCenter()
   , m_routeWarningsToNotifications(false)
   , m_tray(nullptr)
 {
-  if (QCoreApplication::instance())
-    moveToThread(QCoreApplication::instance()->thread());
+  if (qApp)
+    moveToThread(qApp->thread());
 
   QSettings settings;
   m_systemNotificationsEnabled   = settings.value(kSettingsKeySysNotify, false).toBool();
@@ -497,7 +497,8 @@ static int luaNotify(lua_State* L)
   QString subtitle;
   resolveLuaArgs(L, 2, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().post(level, channel, title, subtitle);
+  static auto& nc = DataModel::NotificationCenter::instance();
+  nc.post(level, channel, title, subtitle);
   return 0;
 }
 
@@ -511,7 +512,8 @@ static int luaNotifyInfo(lua_State* L)
   QString subtitle;
   resolveLuaArgs(L, 1, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().postInfo(channel, title, subtitle);
+  static auto& nc = DataModel::NotificationCenter::instance();
+  nc.postInfo(channel, title, subtitle);
   return 0;
 }
 
@@ -525,7 +527,8 @@ static int luaNotifyWarning(lua_State* L)
   QString subtitle;
   resolveLuaArgs(L, 1, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().postWarning(channel, title, subtitle);
+  static auto& nc = DataModel::NotificationCenter::instance();
+  nc.postWarning(channel, title, subtitle);
   return 0;
 }
 
@@ -539,7 +542,8 @@ static int luaNotifyCritical(lua_State* L)
   QString subtitle;
   resolveLuaArgs(L, 1, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().postCritical(channel, title, subtitle);
+  static auto& nc = DataModel::NotificationCenter::instance();
+  nc.postCritical(channel, title, subtitle);
   return 0;
 }
 
@@ -553,7 +557,8 @@ static int luaNotifyClear(lua_State* L)
   QString subtitle;
   resolveLuaArgs(L, 1, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().resolve(channel, title, subtitle);
+  static auto& nc = DataModel::NotificationCenter::instance();
+  nc.resolve(channel, title, subtitle);
   return 0;
 }
 

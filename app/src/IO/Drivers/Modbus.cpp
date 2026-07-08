@@ -856,8 +856,9 @@ void IO::Drivers::Modbus::generateProject()
 
   const auto project = buildProject();
 
-  auto& pm = DataModel::ProjectModel::instance();
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& pm       = DataModel::ProjectModel::instance();
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
   if (!pm.loadFromJsonDocument(QJsonDocument(project), QString())) {
     Misc::Utilities::showMessageBox(tr("Failed to load generated project"),
                                     tr("The generated project JSON could not be loaded."),

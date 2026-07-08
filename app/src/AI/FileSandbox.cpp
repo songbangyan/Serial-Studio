@@ -81,7 +81,8 @@ static QString displayPath(const QString& absolute, const QString& root)
  */
 QString AI::FileSandbox::workspaceRoot() const
 {
-  const auto base = Misc::WorkspaceManager::instance().path();
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto base               = workspaceManager.path();
   QDir dir(base);
   if (!dir.exists())
     dir.mkpath(QStringLiteral("."));
@@ -94,8 +95,8 @@ QString AI::FileSandbox::workspaceRoot() const
  */
 QString AI::FileSandbox::writeRoot() const
 {
-  return QFileInfo(Misc::WorkspaceManager::instance().path(QStringLiteral("AI")))
-    .canonicalFilePath();
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  return QFileInfo(workspaceManager.path(QStringLiteral("AI"))).canonicalFilePath();
 }
 
 /**

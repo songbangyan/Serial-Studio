@@ -86,7 +86,7 @@ bool DataModel::ProjectEditor::selectSourceParserItem(QStandardItem* item)
     return false;
 
   const auto cached      = m_sourceParserItems.value(item);
-  const auto& srcs       = DataModel::ProjectModel::instance().sources();
+  const auto& srcs       = m_projectModelRef.sources();
   DataModel::Source live = cached;
   for (const auto& s : srcs) {
     if (s.sourceId == cached.sourceId) {
@@ -110,7 +110,7 @@ bool DataModel::ProjectEditor::selectSourceItem(QStandardItem* item)
     return false;
 
   const auto cached      = m_sourceItems.value(item);
-  const auto& srcs       = DataModel::ProjectModel::instance().sources();
+  const auto& srcs       = m_projectModelRef.sources();
   DataModel::Source live = cached;
   for (const auto& s : srcs) {
     if (s.sourceId == cached.sourceId) {
@@ -135,7 +135,7 @@ bool DataModel::ProjectEditor::selectGroupItem(QStandardItem* item)
   if (!m_groupItems.contains(item))
     return false;
 
-  auto& pm              = DataModel::ProjectModel::instance();
+  auto& pm              = m_projectModelRef;
   const auto cached     = m_groupItems.value(item);
   const auto& groups    = pm.groups();
   DataModel::Group live = cached;
@@ -179,7 +179,7 @@ bool DataModel::ProjectEditor::selectDatasetItem(QStandardItem* item)
   if (!m_datasetItems.contains(item))
     return false;
 
-  auto& pm                = DataModel::ProjectModel::instance();
+  auto& pm                = m_projectModelRef;
   const auto cached       = m_datasetItems.value(item);
   const auto& groups      = pm.groups();
   DataModel::Dataset live = cached;
@@ -206,7 +206,7 @@ bool DataModel::ProjectEditor::selectActionItem(QStandardItem* item)
   if (!m_actionItems.contains(item))
     return false;
 
-  auto& pm               = DataModel::ProjectModel::instance();
+  auto& pm               = m_projectModelRef;
   const auto cached      = m_actionItems.value(item);
   const auto& actions    = pm.actions();
   DataModel::Action live = cached;
@@ -231,7 +231,7 @@ bool DataModel::ProjectEditor::selectOutputWidgetItem(QStandardItem* item)
   if (!m_outputWidgetItems.contains(item))
     return false;
 
-  auto& pm                     = DataModel::ProjectModel::instance();
+  auto& pm                     = m_projectModelRef;
   const auto cached            = m_outputWidgetItems.value(item);
   const auto& groups           = pm.groups();
   DataModel::OutputWidget live = cached;

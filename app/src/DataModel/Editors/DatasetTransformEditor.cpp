@@ -58,7 +58,14 @@
  * @brief Constructs the dataset value-transform editor dialog.
  */
 DataModel::DatasetTransformEditor::DatasetTransformEditor(QWidget* parent)
-  : QDialog(parent), m_language(SerialStudio::Lua), m_targetGroupId(-1), m_targetDatasetId(-1)
+  : QDialog(parent)
+  , m_language(SerialStudio::Lua)
+  , m_targetGroupId(-1)
+  , m_targetDatasetId(-1)
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_frameBuilder(DataModel::FrameBuilder::instance())
 {
   setWindowTitle(tr("Dataset Value Transform"));
   setMinimumSize(640, 520);
@@ -92,7 +99,7 @@ void DataModel::DatasetTransformEditor::buildEditorWidgets()
   m_editor->setTabReplace(true);
   m_editor->setTabReplaceSize(2);
   m_editor->setAutoIndentation(true);
-  m_editor->setFont(Misc::CommonFonts::instance().monoFont());
+  m_editor->setFont(m_commonFonts.monoFont());
   m_editor->setMinimumHeight(200);
   m_editor->setLayoutDirection(Qt::LeftToRight);
 
@@ -179,11 +186,11 @@ void DataModel::DatasetTransformEditor::wireSignals()
           QOverload<int>::of(&QComboBox::activated),
           this,
           &DatasetTransformEditor::onLanguageChanged);
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &DatasetTransformEditor::onThemeChanged);
-  connect(&Misc::Translator::instance(),
+  connect(&m_translator,
           &Misc::Translator::languageChanged,
           this,
           &DatasetTransformEditor::buildTemplates);
@@ -600,7 +607,8 @@ DataModel::DatasetTransformEditor::TransformStatus DataModel::DatasetTransformEd
   if (code.trimmed().isEmpty())
     return TransformStatus::NoFunction;
 
-  DataModel::FrameBuilder::instance().refreshTableStoreFromProjectModel();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.refreshTableStoreFromProjectModel();
 
   if (language == SerialStudio::Lua) {
     lua_State* L = luaL_newstate();
@@ -624,7 +632,7 @@ DataModel::DatasetTransformEditor::TransformStatus DataModel::DatasetTransformEd
 
     DataModel::installLuaCompat(L);
     DataModel::NotificationCenter::installScriptApi(L);
-    DataModel::FrameBuilder::instance().injectTableApiLua(L);
+    frameBuilder.injectTableApiLua(L);
 
     const QByteArray utf8 = code.toUtf8();
     if (luaL_dostring(L, utf8.constData()) != LUA_OK) {
@@ -683,7 +691,7 @@ QString DataModel::DatasetTransformEditor::testTransform(const QString& code,
   if (code.trimmed().isEmpty())
     return QString::number(inputValue, 'g', 15);
 
-  DataModel::FrameBuilder::instance().refreshTableStoreFromProjectModel();
+  m_frameBuilder.refreshTableStoreFromProjectModel();
 
   if (language == SerialStudio::Lua) {
     lua_State* L = luaL_newstate();
@@ -705,7 +713,7 @@ QString DataModel::DatasetTransformEditor::testTransform(const QString& code,
 
     DataModel::installLuaCompat(L);
     DataModel::NotificationCenter::installScriptApi(L);
-    DataModel::FrameBuilder::instance().injectTableApiLua(L);
+    m_frameBuilder.injectTableApiLua(L);
 
     const QByteArray utf8 = code.toUtf8();
     if (luaL_dostring(L, utf8.constData()) != LUA_OK) {

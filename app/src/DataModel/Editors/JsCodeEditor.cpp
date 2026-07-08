@@ -54,7 +54,16 @@
  * @brief Constructs the QML-side frame parser code editor.
  */
 DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
-  : QQuickPaintedItem(parent), m_sourceId(0), m_language(0), m_readingCode(false)
+  : QQuickPaintedItem(parent)
+  , m_sourceId(0)
+  , m_language(0)
+  , m_readingCode(false)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
+  , m_projectModel(DataModel::ProjectModel::instance())
+  , m_projectEditor(DataModel::ProjectEditor::instance())
+  , m_frameParser(DataModel::FrameParser::instance())
 {
   setMipmap(false);
   setAntialiasing(false);
@@ -64,19 +73,19 @@ DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
   setFlag(ItemIsFocusScope, true);
   setFlag(ItemAcceptsInputMethod, true);
   setAcceptedMouseButtons(Qt::AllButtons);
-  setFillColor(Misc::ThemeManager::instance().getColor(QStringLiteral("base")));
+  setFillColor(m_themeManager.getColor(QStringLiteral("base")));
 
   m_widget.setTabReplace(true);
   m_widget.setTabReplaceSize(2);
   m_widget.setAutoIndentation(true);
   m_widget.setHighlighter(new QJavascriptHighlighter());
-  m_widget.setFont(Misc::CommonFonts::instance().monoFont());
+  m_widget.setFont(m_commonFonts.monoFont());
   m_widget.setLayoutDirection(Qt::LeftToRight);
   m_widget.setLanguageHint(QCodeEditor::LanguageHint::JavaScript);
   m_widget.setCompleter(new DataModel::SerialStudioCompleter(false, &m_widget));
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &DataModel::JsCodeEditor::onThemeChanged);
@@ -86,20 +95,20 @@ DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
 
   connect(&m_widget, &QCodeEditor::textChanged, this, [this] {
     if (!m_readingCode)
-      ProjectModel::instance().storeFrameParserCode(m_sourceId, text());
+      m_projectModel.storeFrameParserCode(m_sourceId, text());
   });
 
-  connect(&DataModel::ProjectModel::instance(),
+  connect(&m_projectModel,
           &DataModel::ProjectModel::frameParserCodeChanged,
           this,
           &DataModel::JsCodeEditor::readCode);
 
-  connect(&DataModel::ProjectModel::instance(),
+  connect(&m_projectModel,
           &DataModel::ProjectModel::frameParserLanguageChanged,
           this,
           &DataModel::JsCodeEditor::readCode);
 
-  connect(&DataModel::ProjectModel::instance(),
+  connect(&m_projectModel,
           &DataModel::ProjectModel::sourceFrameParserLanguageChanged,
           this,
           [this](int sourceId) {
@@ -107,7 +116,7 @@ DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
               readCode();
           });
 
-  connect(&DataModel::ProjectModel::instance(),
+  connect(&m_projectModel,
           &DataModel::ProjectModel::sourceFrameParserCodeChanged,
           this,
           [this](int sourceId) {
@@ -115,7 +124,7 @@ DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
               readCode();
           });
 
-  connect(&DataModel::ProjectEditor::instance(),
+  connect(&m_projectEditor,
           &DataModel::ProjectEditor::selectedSourceFrameParserCodeChanged,
           this,
           &DataModel::JsCodeEditor::readCode);
@@ -123,10 +132,8 @@ DataModel::JsCodeEditor::JsCodeEditor(QQuickItem* parent)
   connect(this, &QQuickPaintedItem::widthChanged, this, &DataModel::JsCodeEditor::resizeWidget);
   connect(this, &QQuickPaintedItem::heightChanged, this, &DataModel::JsCodeEditor::resizeWidget);
 
-  connect(&Misc::TimerEvents::instance(),
-          &Misc::TimerEvents::uiTimeout,
-          this,
-          &DataModel::JsCodeEditor::renderWidget);
+  connect(
+    &m_timerEvents, &Misc::TimerEvents::uiTimeout, this, &DataModel::JsCodeEditor::renderWidget);
 
   readCode();
 }
@@ -228,17 +235,14 @@ void DataModel::JsCodeEditor::switchLanguage(const int language)
       return;
   }
 
-  auto& parser = DataModel::FrameParser::instance();
-  auto& model  = DataModel::ProjectModel::instance();
+  const int tmplIdx = m_frameParser.detectTemplate(text());
 
-  const int tmplIdx = parser.detectTemplate(text());
-
-  model.updateSourceFrameParserLanguage(m_sourceId, language);
+  m_projectModel.updateSourceFrameParserLanguage(m_sourceId, language);
 
   if (tmplIdx >= 0)
-    parser.setTemplateIdx(m_sourceId, tmplIdx);
+    m_frameParser.setTemplateIdx(m_sourceId, tmplIdx);
   else
-    parser.loadDefaultTemplate(m_sourceId, true);
+    m_frameParser.loadDefaultTemplate(m_sourceId, true);
 }
 
 /**
@@ -248,37 +252,34 @@ void DataModel::JsCodeEditor::switchNativeLanguage(const int language)
 {
   Q_ASSERT(language == SerialStudio::Native || m_language == SerialStudio::Native);
 
-  auto& model  = DataModel::ProjectModel::instance();
-  auto& parser = DataModel::FrameParser::instance();
-
   if (language == SerialStudio::Native) {
-    const int tmplIdx = parser.detectTemplate(text());
-    model.updateSourceFrameParserLanguage(m_sourceId, language);
+    const int tmplIdx = m_frameParser.detectTemplate(text());
+    m_projectModel.updateSourceFrameParserLanguage(m_sourceId, language);
 
     QString template_id;
     QJsonObject template_params;
     if (tmplIdx >= 0
         && DataModel::FrameParser::nativeEquivalentForFile(
-          parser.templateFiles().at(tmplIdx), template_id, template_params)) {
-      model.updateSourceFrameParserParams(m_sourceId, template_params);
-      model.updateSourceFrameParserTemplate(m_sourceId, template_id);
-    } else if (model.frameParserTemplate(m_sourceId).isEmpty()) {
-      parser.loadDefaultTemplate(m_sourceId, true);
+          m_frameParser.templateFiles().at(tmplIdx), template_id, template_params)) {
+      m_projectModel.updateSourceFrameParserParams(m_sourceId, template_params);
+      m_projectModel.updateSourceFrameParserTemplate(m_sourceId, template_id);
+    } else if (m_projectModel.frameParserTemplate(m_sourceId).isEmpty()) {
+      m_frameParser.loadDefaultTemplate(m_sourceId, true);
     }
 
-    parser.readCode();
+    m_frameParser.readCode();
     return;
   }
 
   const QString file = DataModel::FrameParser::fileForNativeTemplate(
-    model.frameParserTemplate(m_sourceId), model.frameParserParams(m_sourceId));
-  model.updateSourceFrameParserLanguage(m_sourceId, language);
+    m_projectModel.frameParserTemplate(m_sourceId), m_projectModel.frameParserParams(m_sourceId));
+  m_projectModel.updateSourceFrameParserLanguage(m_sourceId, language);
 
-  const int idx = static_cast<int>(parser.templateFiles().indexOf(file));
+  const int idx = static_cast<int>(m_frameParser.templateFiles().indexOf(file));
   if (idx >= 0)
-    parser.setTemplateIdx(m_sourceId, idx);
+    m_frameParser.setTemplateIdx(m_sourceId, idx);
   else
-    parser.loadDefaultTemplate(m_sourceId, true);
+    m_frameParser.loadDefaultTemplate(m_sourceId, true);
 }
 
 /**
@@ -369,7 +370,7 @@ void DataModel::JsCodeEditor::paste()
  */
 void DataModel::JsCodeEditor::apply()
 {
-  (void)DataModel::FrameParser::instance().loadScript(m_sourceId, text(), true);
+  (void)m_frameParser.loadScript(m_sourceId, text(), true);
 }
 
 /**
@@ -409,8 +410,7 @@ void DataModel::JsCodeEditor::import()
  */
 void DataModel::JsCodeEditor::evaluate()
 {
-  auto& parser = DataModel::FrameParser::instance();
-  if (parser.loadScript(m_sourceId, text(), true)) {
+  if (m_frameParser.loadScript(m_sourceId, text(), true)) {
     Misc::Utilities::showMessageBox(tr("Code Validation Successful"),
                                     tr("No syntax errors detected in the parser code."),
                                     QMessageBox::Information);
@@ -429,7 +429,7 @@ void DataModel::JsCodeEditor::readCode()
 
   QString code;
   int lang            = 0;
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  const auto& sources = m_projectModel.sources();
   for (const auto& src : sources) {
     if (src.sourceId == m_sourceId) {
       code = src.frameParserCode;
@@ -439,7 +439,7 @@ void DataModel::JsCodeEditor::readCode()
   }
 
   if (code.isEmpty())
-    code = DataModel::ProjectModel::instance().frameParserCode();
+    code = m_projectModel.frameParserCode();
 
   setLanguage(lang);
 
@@ -518,13 +518,11 @@ void DataModel::JsCodeEditor::formatSelection()
  */
 void DataModel::JsCodeEditor::selectTemplate()
 {
-  auto& parser = DataModel::FrameParser::instance();
-
   bool ok;
   const auto name = QInputDialog::getItem(nullptr,
                                           tr("Select Frame Parser Template"),
                                           tr("Choose a template to load:"),
-                                          parser.templateNames(),
+                                          m_frameParser.templateNames(),
                                           0,
                                           false,
                                           &ok);
@@ -532,13 +530,13 @@ void DataModel::JsCodeEditor::selectTemplate()
   if (!ok)
     return;
 
-  const int idx = parser.templateNames().indexOf(name);
+  const int idx = m_frameParser.templateNames().indexOf(name);
   if (idx < 0)
     return;
 
   if (m_sourceId > 0) {
-    parser.setTemplateIdx(m_sourceId, idx);
-    const QString code = parser.templateCode(m_sourceId);
+    m_frameParser.setTemplateIdx(m_sourceId, idx);
+    const QString code = m_frameParser.templateCode(m_sourceId);
     m_widget.setPlainText(code);
     m_widget.document()->clearUndoRedoStacks();
     m_widget.document()->setModified(false);
@@ -546,7 +544,7 @@ void DataModel::JsCodeEditor::selectTemplate()
     return;
   }
 
-  parser.setTemplateIdx(0, idx);
+  m_frameParser.setTemplateIdx(0, idx);
 }
 
 /**
@@ -554,8 +552,7 @@ void DataModel::JsCodeEditor::selectTemplate()
  */
 bool DataModel::JsCodeEditor::prepareParserTest()
 {
-  auto& parser = DataModel::FrameParser::instance();
-  return parser.loadScript(m_sourceId, text(), true);
+  return m_frameParser.loadScript(m_sourceId, text(), true);
 }
 
 /**
@@ -571,7 +568,7 @@ void DataModel::JsCodeEditor::reload(const bool guiTrigger)
  */
 void DataModel::JsCodeEditor::loadDefaultTemplate(const bool guiTrigger)
 {
-  DataModel::FrameParser::instance().loadDefaultTemplate(m_sourceId, guiTrigger);
+  m_frameParser.loadDefaultTemplate(m_sourceId, guiTrigger);
 }
 
 /**

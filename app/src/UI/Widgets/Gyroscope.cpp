@@ -40,9 +40,10 @@ Widgets::Gyroscope::Gyroscope(const int index, QQuickItem* parent)
   , m_roll(0)
   , m_pitch(0)
   , m_displayFilterInitialized(false)
+  , m_dashboard(UI::Dashboard::instance())
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardGyroscope, m_index))
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Gyroscope::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Gyroscope::updateData);
 }
 
 //--------------------------------------------------------------------------------------------------

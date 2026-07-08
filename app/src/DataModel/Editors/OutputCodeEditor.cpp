@@ -38,7 +38,15 @@
  * @brief Constructs the QML-side output widget transmit-function editor.
  */
 DataModel::OutputCodeEditor::OutputCodeEditor(QQuickItem* parent)
-  : QQuickPaintedItem(parent), m_readingCode(false), m_testDialog(nullptr)
+  : QQuickPaintedItem(parent)
+  , m_readingCode(false)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_projectEditor(DataModel::ProjectEditor::instance())
+  , m_projectModel(DataModel::ProjectModel::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_testDialog(nullptr)
 {
   setMipmap(false);
   setAntialiasing(false);
@@ -48,19 +56,19 @@ DataModel::OutputCodeEditor::OutputCodeEditor(QQuickItem* parent)
   setFlag(ItemIsFocusScope, true);
   setFlag(ItemAcceptsInputMethod, true);
   setAcceptedMouseButtons(Qt::AllButtons);
-  setFillColor(Misc::ThemeManager::instance().getColor(QStringLiteral("base")));
+  setFillColor(m_themeManager.getColor(QStringLiteral("base")));
 
   m_widget.setTabReplace(true);
   m_widget.setTabReplaceSize(2);
   m_widget.setAutoIndentation(true);
   m_widget.setHighlighter(new QJavascriptHighlighter());
-  m_widget.setFont(Misc::CommonFonts::instance().monoFont());
+  m_widget.setFont(m_commonFonts.monoFont());
   m_widget.setLayoutDirection(Qt::LeftToRight);
   m_widget.setLanguageHint(QCodeEditor::LanguageHint::JavaScript);
   m_widget.setCompleter(new DataModel::SerialStudioCompleter(false, &m_widget));
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &DataModel::OutputCodeEditor::onThemeChanged);
@@ -72,55 +80,52 @@ DataModel::OutputCodeEditor::OutputCodeEditor(QQuickItem* parent)
     if (m_readingCode)
       return;
 
-    auto& editor = DataModel::ProjectEditor::instance();
-    if (editor.currentView() != DataModel::ProjectEditor::OutputWidgetView)
+    if (m_projectEditor.currentView() != DataModel::ProjectEditor::OutputWidgetView)
       return;
 
-    const auto& sel = editor.selectedOutputWidget();
+    const auto& sel = m_projectEditor.selectedOutputWidget();
     if (sel.groupId < 0 || sel.widgetId < 0)
       return;
 
-    editor.setSelectedOutputWidgetTransmitFunction(text());
+    m_projectEditor.setSelectedOutputWidgetTransmitFunction(text());
   });
 
-  connect(&DataModel::ProjectEditor::instance(),
+  connect(&m_projectEditor,
           &DataModel::ProjectEditor::outputWidgetModelChanged,
           this,
           &DataModel::OutputCodeEditor::readCode);
 
-  connect(
-    &DataModel::ProjectModel::instance(), &DataModel::ProjectModel::groupDataChanged, this, [this] {
-      if (m_readingCode)
+  connect(&m_projectModel, &DataModel::ProjectModel::groupDataChanged, this, [this] {
+    if (m_readingCode)
+      return;
+
+    const auto& sel = m_projectEditor.selectedOutputWidget();
+    if (sel.groupId < 0 || sel.widgetId < 0)
+      return;
+
+    const auto& groups = m_projectModel.groups();
+    if (sel.groupId < 0 || static_cast<size_t>(sel.groupId) >= groups.size())
+      return;
+
+    for (const auto& w : groups[sel.groupId].outputWidgets) {
+      if (w.widgetId == sel.widgetId) {
+        if (w.transmitFunction != m_widget.toPlainText())
+          readCode();
+
         return;
-
-      auto& editor    = DataModel::ProjectEditor::instance();
-      const auto& sel = editor.selectedOutputWidget();
-      if (sel.groupId < 0 || sel.widgetId < 0)
-        return;
-
-      const auto& groups = DataModel::ProjectModel::instance().groups();
-      if (sel.groupId < 0 || static_cast<size_t>(sel.groupId) >= groups.size())
-        return;
-
-      for (const auto& w : groups[sel.groupId].outputWidgets) {
-        if (w.widgetId == sel.widgetId) {
-          if (w.transmitFunction != m_widget.toPlainText())
-            readCode();
-
-          return;
-        }
       }
-    });
+    }
+  });
 
   connect(this, &QQuickPaintedItem::widthChanged, this, &DataModel::OutputCodeEditor::resizeWidget);
   connect(
     this, &QQuickPaintedItem::heightChanged, this, &DataModel::OutputCodeEditor::resizeWidget);
-  connect(&Misc::TimerEvents::instance(),
+  connect(&m_timerEvents,
           &Misc::TimerEvents::uiTimeout,
           this,
           &DataModel::OutputCodeEditor::renderWidget);
 
-  connect(&Misc::Translator::instance(),
+  connect(&m_translator,
           &Misc::Translator::languageChanged,
           this,
           &DataModel::OutputCodeEditor::loadTemplates);
@@ -318,8 +323,7 @@ void DataModel::OutputCodeEditor::readCode()
 
   m_readingCode = true;
 
-  auto& editor    = DataModel::ProjectEditor::instance();
-  const auto& sel = editor.selectedOutputWidget();
+  const auto& sel = m_projectEditor.selectedOutputWidget();
 
   QString code = sel.transmitFunction;
   if (code.isEmpty())

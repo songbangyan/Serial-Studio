@@ -67,6 +67,9 @@ bool Widgets::GPS::s_cacheInitialized = false;
  */
 Widgets::GPS::GPS(const int index, QQuickItem* parent)
   : QQuickPaintedItem(parent)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_dashboard(UI::Dashboard::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
   , m_zoom(MIN_ZOOM)
   , m_index(index)
   , m_mapType(0)
@@ -134,14 +137,11 @@ Widgets::GPS::GPS(const int index, QQuickItem* parent)
   }
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &Widgets::GPS::onThemeChanged);
+  connect(&m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::GPS::onThemeChanged);
 
   if (VALIDATE_WIDGET(SerialStudio::DashboardGPS, m_index)) {
     updateData();
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Widgets::GPS::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Widgets::GPS::updateData);
     center();
   }
 }
@@ -513,7 +513,7 @@ void Widgets::GPS::updateData()
   if (!VALIDATE_WIDGET(SerialStudio::DashboardGPS, m_index))
     return;
 
-  const auto& series = UI::Dashboard::instance().gpsSeries(m_index);
+  const auto& series = m_dashboard.gpsSeries(m_index);
   if (series.latitudes.empty() || series.longitudes.empty() || series.altitudes.empty())
     return;
 
@@ -881,7 +881,7 @@ void Widgets::GPS::paintPathData(QPainter* painter, const QSize& view)
   if (!VALIDATE_WIDGET(SerialStudio::DashboardGPS, m_index))
     return;
 
-  const auto& series = UI::Dashboard::instance().gpsSeries(m_index);
+  const auto& series = m_dashboard.gpsSeries(m_index);
   if (series.latitudes.empty() || series.longitudes.empty() || series.altitudes.empty())
     return;
 
@@ -904,7 +904,7 @@ void Widgets::GPS::paintPathData(QPainter* painter, const QSize& view)
 void Widgets::GPS::renderTrajectoryPath(
   QPainter* painter, const QSize& view, int baseZoom, double scale, const QPointF& centerTileBase)
 {
-  const auto& series  = UI::Dashboard::instance().gpsSeries(m_index);
+  const auto& series  = m_dashboard.gpsSeries(m_index);
   const int tileSize  = 256;
   const double world  = qPow(2.0, baseZoom);
   const QPointF cTile = centerTileBase;
@@ -1009,7 +1009,7 @@ void Widgets::GPS::paintAttributionText(QPainter* painter, const QSize& view)
   else if (m_showWeather && m_zoom <= WEATHER_MAX_ZOOM)
     attribution += " | Matt Eason";
 
-  const QFont font = Misc::CommonFonts::instance().customUiFont(0.85);
+  const QFont font = m_commonFonts.customUiFont(0.85);
   painter->setFont(font);
 
   const QFontMetrics metrics(font);

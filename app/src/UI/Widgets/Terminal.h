@@ -27,6 +27,26 @@
 #include <QQuickPaintedItem>
 #include <QTimer>
 
+namespace Console {
+class Handler;
+}  // namespace Console
+
+namespace IO {
+class ConnectionManager;
+}  // namespace IO
+
+#ifdef BUILD_COMMERCIAL
+namespace Licensing {
+class LemonSqueezy;
+}  // namespace Licensing
+#endif
+
+namespace Misc {
+class ThemeManager;
+class Translator;
+class TimerEvents;
+}  // namespace Misc
+
 namespace Widgets {
 /**
  * @brief Stores foreground and background colors for a character.
@@ -238,6 +258,15 @@ protected:
   void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
 
 private:
+  Console::Handler& m_consoleHandler;
+  Misc::ThemeManager& m_themeManager;
+  IO::ConnectionManager& m_connectionManager;
+#ifdef BUILD_COMMERCIAL
+  Licensing::LemonSqueezy& m_lemonSqueezy;
+#endif
+  Misc::Translator& m_translator;
+  Misc::TimerEvents& m_timerEvents;
+
   QPalette m_palette;
   QStringList m_data;
   QList<QList<CharColor>> m_colorData;

@@ -30,6 +30,10 @@
 #include "DSP.h"
 #include "SerialStudio.h"
 
+namespace UI {
+class Dashboard;
+}  // namespace UI
+
 namespace Widgets {
 /**
  * @brief Fast Fourier Transform visualization widget for frequency analysis.
@@ -106,6 +110,8 @@ private slots:
 private:
   bool rebuildFftPlan(int newSize);
   void computeSmoothedSpectrum(int spectrumSize);
+
+  UI::Dashboard& m_dashboard;
 
   int m_size;
   int m_index;

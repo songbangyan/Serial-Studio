@@ -50,7 +50,14 @@
  * @brief Constructs the ProjectEditor singleton and wires its ProjectModel signals.
  */
 DataModel::ProjectEditor::ProjectEditor()
-  : m_currentView(ProjectView)
+  : m_projectModelRef(DataModel::ProjectModel::instance())
+  , m_connectionManager(IO::ConnectionManager::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_frameBuilder(DataModel::FrameBuilder::instance())
+#ifdef BUILD_COMMERCIAL
+  , m_mqttPublisher(MQTT::Publisher::instance())
+#endif
+  , m_currentView(ProjectView)
   , m_suppressViewChange(false)
   , m_batchKind(KindNone)
   , m_batchApplying(false)
@@ -217,7 +224,7 @@ bool DataModel::ProjectEditor::currentGroupIsEditable() const
 bool DataModel::ProjectEditor::currentDatasetIsEditable() const
 {
   if (m_currentView == DatasetView) {
-    const auto& groups = DataModel::ProjectModel::instance().groups();
+    const auto& groups = m_projectModelRef.groups();
     const auto groupId = m_selectedDataset.groupId;
     if (groups.size() > static_cast<size_t>(groupId)) {
       const auto& widget = groups[groupId].widget;
@@ -235,7 +242,7 @@ bool DataModel::ProjectEditor::currentDatasetIsEditable() const
  */
 bool DataModel::ProjectEditor::selectedGroupEnabled() const
 {
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
   const auto groupId = m_selectedGroup.groupId;
   if (groupId >= 0 && static_cast<size_t>(groupId) < groups.size())
     return groups[groupId].enabled;
@@ -250,7 +257,7 @@ bool DataModel::ProjectEditor::selectedGroupEnabled() const
  */
 bool DataModel::ProjectEditor::selectedDatasetEnabled() const
 {
-  const auto& groups   = DataModel::ProjectModel::instance().groups();
+  const auto& groups   = m_projectModelRef.groups();
   const auto groupId   = m_selectedDataset.groupId;
   const auto datasetId = m_selectedDataset.datasetId;
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
@@ -365,7 +372,7 @@ void DataModel::ProjectEditor::setSelectedSourceFrameParserCode(const QString& c
     return;
 
   m_selectedSource.frameParserCode = code;
-  DataModel::ProjectModel::instance().updateSourceFrameParser(m_selectedSource.sourceId, code);
+  m_projectModelRef.updateSourceFrameParser(m_selectedSource.sourceId, code);
   Q_EMIT selectedSourceFrameParserCodeChanged();
 }
 
@@ -375,7 +382,7 @@ void DataModel::ProjectEditor::setSelectedSourceFrameParserCode(const QString& c
 QString DataModel::ProjectEditor::currentGroupPainterCode() const
 {
   const int gid      = m_selectedGroup.groupId;
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
   if (gid >= 0 && static_cast<size_t>(gid) < groups.size())
     return groups[gid].painterCode;
 
@@ -428,7 +435,7 @@ void DataModel::ProjectEditor::setCurrentGroupPainterCode(const QString& code)
     return;
 
   m_selectedGroup.painterCode = code;
-  DataModel::ProjectModel::instance().updateGroup(m_selectedGroup.groupId, m_selectedGroup, false);
+  m_projectModelRef.updateGroup(m_selectedGroup.groupId, m_selectedGroup, false);
   Q_EMIT currentGroupPainterCodeChanged();
 }
 
@@ -450,7 +457,7 @@ void DataModel::ProjectEditor::setSelectedOutputWidgetTransmitFunction(const QSt
     }
   }
 
-  DataModel::ProjectModel::instance().updateOutputWidget(
+  m_projectModelRef.updateOutputWidget(
     m_selectedOutputWidget.groupId, m_selectedOutputWidget.widgetId, m_selectedOutputWidget, false);
 }
 
@@ -467,7 +474,7 @@ void DataModel::ProjectEditor::openTransformEditor()
  */
 void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId)
 {
-  auto& pm           = DataModel::ProjectModel::instance();
+  auto& pm           = m_projectModelRef;
   const auto& groups = pm.groups();
 
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
@@ -494,7 +501,7 @@ void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId
             &DatasetTransformEditor::transformApplied,
             this,
             [this](const QString& code, int lang, int gId, int dId) {
-              auto& pm     = DataModel::ProjectModel::instance();
+              auto& pm     = m_projectModelRef;
               auto& groups = pm.groups();
               if (gId < 0 || static_cast<size_t>(gId) >= groups.size())
                 return;
@@ -520,7 +527,7 @@ void DataModel::ProjectEditor::openTransformEditorFor(int groupId, int datasetId
                 }
               }
 
-              DataModel::FrameBuilder::instance().syncFromProjectModel();
+              m_frameBuilder.syncFromProjectModel();
             });
   }
 

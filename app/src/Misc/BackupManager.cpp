@@ -74,7 +74,8 @@ static QString sanitiseLabel(const QString& label)
 /**
  * @brief Construct the singleton. Debounce timer + initial state.
  */
-Misc::BackupManager::BackupManager() : m_enabled(true), m_debounceTimer(new QTimer(this))
+Misc::BackupManager::BackupManager()
+  : m_enabled(true), m_debounceTimer(new QTimer(this)), m_projectModel(nullptr)
 {
   m_debounceTimer->setSingleShot(true);
   m_debounceTimer->setInterval(kDebounceMs);
@@ -95,6 +96,8 @@ Misc::BackupManager& Misc::BackupManager::instance()
  */
 void Misc::BackupManager::setupExternalConnections()
 {
+  m_projectModel = &DataModel::ProjectModel::instance();
+
   auto& pm = DataModel::ProjectModel::instance();
   connect(
     &pm, &DataModel::ProjectModel::jsonFileChanged, this, &BackupManager::onProjectFileChanged);
@@ -114,10 +117,12 @@ void Misc::BackupManager::setupExternalConnections()
  */
 QString Misc::BackupManager::snapshot(const QString& label)
 {
+  Q_ASSERT(m_projectModel);
+
   if (!m_enabled)
     return {};
 
-  auto& pm        = DataModel::ProjectModel::instance();
+  auto& pm        = *m_projectModel;
   const auto stem = currentProjectStem();
   const auto dir  = resolveBackupDir(stem);
   if (dir.isEmpty())
@@ -173,6 +178,8 @@ QString Misc::BackupManager::snapshot(const QString& label)
  */
 bool Misc::BackupManager::restore(const QString& path)
 {
+  Q_ASSERT(m_projectModel);
+
   if (path.isEmpty())
     return false;
 
@@ -201,7 +208,7 @@ bool Misc::BackupManager::restore(const QString& path)
   }
   const QJsonDocument projectDoc(obj);
 
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = *m_projectModel;
 
   const auto originalPath = pm.jsonFilePath();
 
@@ -335,7 +342,9 @@ QVariantMap Misc::BackupManager::summarize(const QString& path) const
  */
 QVariantMap Misc::BackupManager::currentSummary() const
 {
-  const auto& pm = DataModel::ProjectModel::instance();
+  Q_ASSERT(m_projectModel);
+
+  const auto& pm = *m_projectModel;
   QVariantMap out;
   out.insert(QStringLiteral("title"), pm.title());
   out.insert(QStringLiteral("groupCount"), pm.groupCount());
@@ -397,10 +406,12 @@ void Misc::BackupManager::onProjectFileChanged()
  */
 void Misc::BackupManager::onProjectModifiedChanged()
 {
+  Q_ASSERT(m_projectModel);
+
   if (!m_enabled)
     return;
 
-  if (!DataModel::ProjectModel::instance().modified())
+  if (!m_projectModel->modified())
     return;
 
   m_debounceTimer->start();
@@ -435,7 +446,9 @@ void Misc::BackupManager::flushDebounced()
  */
 QString Misc::BackupManager::currentProjectStem() const
 {
-  const auto path = DataModel::ProjectModel::instance().jsonFilePath();
+  Q_ASSERT(m_projectModel);
+
+  const auto path = m_projectModel->jsonFilePath();
   if (path.isEmpty())
     return QStringLiteral("untitled");
 

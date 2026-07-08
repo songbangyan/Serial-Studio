@@ -55,7 +55,8 @@
  */
 [[nodiscard]] static bool inProjectFileMode()
 {
-  return AppState::instance().operationMode() == SerialStudio::ProjectFile;
+  static auto& appState = AppState::instance();
+  return appState.operationMode() == SerialStudio::ProjectFile;
 }
 
 /**
@@ -437,8 +438,8 @@ void API::Handlers::WorkspacesHandler::registerCommands()
  */
 void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = API::emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = API::emptySchema();
 
   registry.registerCommand(QStringLiteral("project.workspace.list"),
                            QStringLiteral("List all workspaces with widget counts"),
@@ -538,7 +539,7 @@ void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
  */
 void API::Handlers::WorkspacesHandler::registerCustomizeCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(QStringLiteral("project.workspace.getCustomizeMode"),
                            QStringLiteral("Return the customizeWorkspaces flag"),
@@ -569,7 +570,7 @@ void API::Handlers::WorkspacesHandler::registerWidgetRefCommands()
  */
 void API::Handlers::WorkspacesHandler::registerWidgetAddCommand()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   const auto addSchema = API::makeSchema(
     {
@@ -634,7 +635,7 @@ void API::Handlers::WorkspacesHandler::registerWidgetAddCommand()
  */
 void API::Handlers::WorkspacesHandler::registerWidgetRemoveCommand()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   const auto removeSchema = API::makeSchema(
     {
@@ -673,7 +674,7 @@ void API::Handlers::WorkspacesHandler::registerWidgetRemoveCommand()
  */
 void API::Handlers::WorkspacesHandler::registerWidgetValidationCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.workspace.validate"),
@@ -721,7 +722,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::list(const QString& id,
 {
   Q_UNUSED(params)
 
-  const auto& pm         = DataModel::ProjectModel::instance();
+  static auto& pm        = DataModel::ProjectModel::instance();
   const auto& workspaces = pm.activeWorkspaces();
 
   QJsonArray arr;
@@ -754,7 +755,8 @@ API::CommandResponse API::Handlers::WorkspacesHandler::get(const QString& id,
 
   const int wid = params.value(QStringLiteral("id")).toInt();
 
-  const auto& workspaces = DataModel::ProjectModel::instance().activeWorkspaces();
+  static auto& pm        = DataModel::ProjectModel::instance();
+  const auto& workspaces = pm.activeWorkspaces();
   const auto it          = findWorkspace(workspaces, wid);
   if (it == workspaces.end())
     return CommandResponse::makeError(
@@ -785,7 +787,8 @@ API::CommandResponse API::Handlers::WorkspacesHandler::add(const QString& id,
 
   const QString title = params.value(QStringLiteral("title")).toString(QStringLiteral("Workspace"));
 
-  const int newId = DataModel::ProjectModel::instance().addWorkspace(title);
+  static auto& pm = DataModel::ProjectModel::instance();
+  const int newId = pm.addWorkspace(title);
 
   QJsonObject result;
   result[QStringLiteral("id")]    = newId;
@@ -810,7 +813,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::remove(const QString& id,
 
   const bool isDryRun = params.value(QStringLiteral("dryRun")).toBool(false);
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!pm.customizeWorkspaces())
     return CommandResponse::makeError(
       id,
@@ -858,7 +861,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::clearAll(const QString& i
 
   const bool isDryRun = params.value(QStringLiteral("dryRun")).toBool(false);
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
 
   const auto& active = pm.activeWorkspaces();
   QJsonArray wouldDelete;
@@ -914,7 +917,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::rename(const QString& id,
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: title"));
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!pm.customizeWorkspaces())
     return CommandResponse::makeError(
       id,
@@ -950,7 +953,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::update(const QString& id,
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: id"));
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!pm.customizeWorkspaces())
     return CommandResponse::makeError(
       id,
@@ -1011,7 +1014,8 @@ API::CommandResponse API::Handlers::WorkspacesHandler::autoGenerate(const QStrin
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
 
-  const int firstId = DataModel::ProjectModel::instance().autoGenerateWorkspaces();
+  static auto& pm   = DataModel::ProjectModel::instance();
+  const int firstId = pm.autoGenerateWorkspaces();
 
   QJsonObject result;
   result[QStringLiteral("firstWorkspaceId")] = firstId;
@@ -1031,8 +1035,9 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeGet(const QStrin
 {
   Q_UNUSED(params)
 
+  static auto& pm = DataModel::ProjectModel::instance();
   QJsonObject result;
-  result[QStringLiteral("enabled")] = DataModel::ProjectModel::instance().customizeWorkspaces();
+  result[QStringLiteral("enabled")] = pm.customizeWorkspaces();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -1051,7 +1056,8 @@ API::CommandResponse API::Handlers::WorkspacesHandler::customizeSet(const QStrin
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
 
   const bool enabled = params.value(QStringLiteral("enabled")).toBool();
-  DataModel::ProjectModel::instance().setCustomizeWorkspaces(enabled);
+  static auto& pm    = DataModel::ProjectModel::instance();
+  pm.setCustomizeWorkspaces(enabled);
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = enabled;
@@ -1084,7 +1090,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
       return CommandResponse::makeError(
         id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: %1").arg(key));
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!pm.customizeWorkspaces())
     return CommandResponse::makeError(
       id,
@@ -1106,7 +1112,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetAdd(const QString& 
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace not found: %1").arg(wid));
 
-  const auto& groups  = DataModel::ProjectModel::instance().groups();
+  const auto& groups  = pm.groups();
   const auto group_it = std::find_if(
     groups.begin(), groups.end(), [gid](const DataModel::Group& g) { return g.uniqueId == gid; });
   if (group_it == groups.end())
@@ -1170,7 +1176,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetRemove(const QStrin
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!pm.customizeWorkspaces())
     return CommandResponse::makeError(
       id,
@@ -1250,7 +1256,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::widgetRemove(const QStrin
 API::CommandResponse API::Handlers::WorkspacesHandler::validate(const QString& id,
                                                                 const QJsonObject& params)
 {
-  const auto& pm     = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& wsList = pm.editorWorkspaces();
   const auto lookup  = DataModel::ProjectEditor::buildResolvedWidgetLookup(pm);
 
@@ -1334,7 +1340,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::cleanup(const QString& id
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Workspace mutations require ProjectFile mode"));
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& wsList = pm.editorWorkspaces();
   const auto lookup  = DataModel::ProjectEditor::buildResolvedWidgetLookup(pm);
 
@@ -1422,7 +1428,7 @@ API::CommandResponse API::Handlers::WorkspacesHandler::reorder(const QString& id
                      "Rejected ids: [%1]")
         .arg(rejected.join(QStringLiteral(", "))));
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& wsList = pm.editorWorkspaces();
   QSet<int> currentUserIds;
   for (const auto& ws : wsList)

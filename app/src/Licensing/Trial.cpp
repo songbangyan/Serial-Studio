@@ -40,9 +40,11 @@
  */
 static void installTrialToken(int daysRemaining)
 {
+  static auto& machineId = Licensing::MachineID::instance();
+
   Licensing::CommercialToken token;
   token.setVariantName(QStringLiteral("Trial"));
-  token.setInstanceName(Licensing::MachineID::instance().machineId());
+  token.setInstanceName(machineId.machineId());
   token.setGraceDaysRemaining(daysRemaining);
   token.setFeatureTier(Licensing::FeatureTier::Trial);
   token.seal();
@@ -62,21 +64,24 @@ Licensing::Trial::Trial()
   , m_deviceRegistered(false)
   , m_trialExpiry(QDateTime::currentDateTimeUtc())
 {
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  static auto& machineId    = Licensing::MachineID::instance();
+
   connect(this,
           &Licensing::Trial::enabledChanged,
-          &Licensing::LemonSqueezy::instance(),
+          &lemonSqueezy,
           &Licensing::LemonSqueezy::activatedChanged);
-  connect(&Licensing::LemonSqueezy::instance(),
+  connect(&lemonSqueezy,
           &Licensing::LemonSqueezy::activatedChanged,
           this,
           &Licensing::Trial::availableChanged);
 
   connect(&m_manager, &QNetworkAccessManager::finished, this, &Licensing::Trial::onServerReply);
 
-  m_crypt.setKey(MachineID::instance().machineSpecificKey());
+  m_crypt.setKey(machineId.machineSpecificKey());
   m_crypt.setIntegrityProtectionMode(Licensing::SimpleCrypt::ProtectionHash);
 
-  if (!Licensing::LemonSqueezy::instance().isActivated())
+  if (!lemonSqueezy.isActivated())
     readSettings();
 }
 
@@ -130,7 +135,8 @@ bool Licensing::Trial::trialExpired() const
  */
 bool Licensing::Trial::trialAvailable() const
 {
-  return !LemonSqueezy::instance().isActivated();
+  static auto& lemonSqueezy = LemonSqueezy::instance();
+  return !lemonSqueezy.isActivated();
 }
 
 /**
@@ -223,9 +229,10 @@ void Licensing::Trial::fetchTrialState()
   const QString nonce    = QUuid::createUuid().toString(QUuid::WithoutBraces);
 
   QJsonObject payload;
-  payload["machine_id"] = MachineID::instance().appVerMachineId();
-  payload["timestamp"]  = QString::number(timestamp);
-  payload["nonce"]      = nonce;
+  static auto& machineId = MachineID::instance();
+  payload["machine_id"]  = machineId.appVerMachineId();
+  payload["timestamp"]   = QString::number(timestamp);
+  payload["nonce"]       = nonce;
 
   const auto payloadData = QJsonDocument(payload).toJson(QJsonDocument::Compact);
 

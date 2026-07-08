@@ -27,6 +27,15 @@
 #include <QQuickPaintedItem>
 #include <QSettings>
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+}  // namespace Misc
+
+namespace UI {
+class Dashboard;
+}  // namespace UI
+
 namespace Widgets {
 /**
  * @brief Custom QML widget for displaying GPS position on a tile-based map.
@@ -160,6 +169,10 @@ protected:
   void mouseReleaseEvent(QMouseEvent* event) override;
 
 private:
+  Misc::ThemeManager& m_themeManager;
+  UI::Dashboard& m_dashboard;
+  Misc::CommonFonts& m_commonFonts;
+
   double m_zoom;
   int m_index;
   int m_mapType;

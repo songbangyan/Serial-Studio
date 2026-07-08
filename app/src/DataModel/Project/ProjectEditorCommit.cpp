@@ -55,7 +55,7 @@ void DataModel::ProjectEditor::handleSourceTitleChange(QStandardItem* item)
     return;
 
   m_selectedSource.title = newTitle;
-  DataModel::ProjectModel::instance().updateSourceTitle(m_selectedSource.sourceId, newTitle, false);
+  m_projectModelRef.updateSourceTitle(m_selectedSource.sourceId, newTitle, false);
 
   for (auto it = m_sourceItems.begin(); it != m_sourceItems.end(); ++it) {
     if (it.value().sourceId != m_selectedSource.sourceId)
@@ -77,11 +77,11 @@ void DataModel::ProjectEditor::handleSourceTitleChange(QStandardItem* item)
 void DataModel::ProjectEditor::handleSourceBusTypeChange(QStandardItem* item)
 {
   const int busType = item->data(EditableValue).toInt();
-  DataModel::ProjectModel::instance().updateSourceBusType(m_selectedSource.sourceId, busType);
+  m_projectModelRef.updateSourceBusType(m_selectedSource.sourceId, busType);
   m_selectedSource.busType = busType;
   auto conn                = std::make_shared<QMetaObject::Connection>();
   *conn                    = connect(
-    &IO::ConnectionManager::instance(),
+    &m_connectionManager,
     &IO::ConnectionManager::contextsRebuilt,
     this,
     [this, conn] {
@@ -96,14 +96,13 @@ void DataModel::ProjectEditor::handleSourceBusTypeChange(QStandardItem* item)
  */
 void DataModel::ProjectEditor::handleSourcePropertyChange(QStandardItem* item)
 {
-  const QString key  = item->data(ParameterKey).toString();
-  const QVariant val = item->data(EditableValue);
-  IO::HAL_Driver* drv =
-    IO::ConnectionManager::instance().driverForEditing(m_selectedSource.sourceId);
+  const QString key   = item->data(ParameterKey).toString();
+  const QVariant val  = item->data(EditableValue);
+  IO::HAL_Driver* drv = m_connectionManager.driverForEditing(m_selectedSource.sourceId);
   if (drv)
     drv->setDriverProperty(key, val);
 
-  DataModel::ProjectModel::instance().captureSourceSettings(m_selectedSource.sourceId);
+  m_projectModelRef.captureSourceSettings(m_selectedSource.sourceId);
 
   static const QStringList kModeKeys = {
     QStringLiteral("socketTypeIndex"),
@@ -176,7 +175,7 @@ void DataModel::ProjectEditor::handleSourceFrameDetectionChange(QStandardItem* i
     updated.hexadecimalDelimiters = item->data(EditableValue).toBool();
   }
 
-  DataModel::ProjectModel::instance().updateSource(sid, updated);
+  m_projectModelRef.updateSource(sid, updated);
   m_selectedSource = updated;
 
   buildSourceModel(m_selectedSource);
@@ -196,7 +195,7 @@ void DataModel::ProjectEditor::handleSourceFrameStartEndChange(QStandardItem* it
   else
     updated.frameEnd = item->data(EditableValue).toString();
 
-  DataModel::ProjectModel::instance().updateSource(sid, updated, false);
+  m_projectModelRef.updateSource(sid, updated, false);
   m_selectedSource = updated;
 }
 
@@ -211,7 +210,7 @@ void DataModel::ProjectEditor::handleSourceDecoderChecksumChange(QStandardItem* 
 
   if (id == kSourceView_FrameDecoder) {
     updated.decoderMethod = item->data(EditableValue).toInt();
-    DataModel::ProjectModel::instance().updateSource(sid, updated);
+    m_projectModelRef.updateSource(sid, updated);
     m_selectedSource = updated;
     return;
   }
@@ -222,7 +221,7 @@ void DataModel::ProjectEditor::handleSourceDecoderChecksumChange(QStandardItem* 
     return;
 
   updated.checksumAlgorithm = checksums.at(checksumId);
-  DataModel::ProjectModel::instance().updateSource(sid, updated);
+  m_projectModelRef.updateSource(sid, updated);
   m_selectedSource = updated;
 }
 
@@ -240,7 +239,7 @@ void DataModel::ProjectEditor::onGroupItemChanged(QStandardItem* item)
 
   const auto id      = static_cast<GroupItem>(item->data(ParameterType).toInt());
   const auto value   = item->data(EditableValue);
-  auto& pm           = DataModel::ProjectModel::instance();
+  auto& pm           = m_projectModelRef;
   const auto groupId = m_selectedGroup.groupId;
 
   if (id == kGroupView_Title) {
@@ -314,7 +313,7 @@ bool DataModel::ProjectEditor::applyGroupTitleEdit(const QString& newTitle, int 
     return false;
 
   m_selectedGroup.title = newTitle;
-  DataModel::ProjectModel::instance().updateGroup(groupId, m_selectedGroup, false);
+  m_projectModelRef.updateGroup(groupId, m_selectedGroup, false);
 
   for (auto it = m_groupItems.begin(); it != m_groupItems.end(); ++it) {
     if (it.value().groupId != groupId)
@@ -336,7 +335,7 @@ bool DataModel::ProjectEditor::applyGroupTitleEdit(const QString& newTitle, int 
  */
 void DataModel::ProjectEditor::applyGroupSourceEdit(int srcIdx, int groupId)
 {
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  const auto& sources = m_projectModelRef.sources();
   if (srcIdx < 0 || srcIdx >= static_cast<int>(sources.size()))
     return;
 
@@ -344,7 +343,7 @@ void DataModel::ProjectEditor::applyGroupSourceEdit(int srcIdx, int groupId)
   for (auto& ds : m_selectedGroup.datasets)
     ds.sourceId = m_selectedGroup.sourceId;
 
-  DataModel::ProjectModel::instance().updateGroup(groupId, m_selectedGroup, true);
+  m_projectModelRef.updateGroup(groupId, m_selectedGroup, true);
 }
 
 /**
@@ -372,7 +371,7 @@ bool DataModel::ProjectEditor::applyGroupWidgetEdit(int widgetIdx, int groupId)
   };
 
   const auto widget = kWidgetEnumMap.value(widgetStr, SerialStudio::NoGroupWidget);
-  if (DataModel::ProjectModel::instance().setGroupWidget(groupId, widget)) {
+  if (m_projectModelRef.setGroupWidget(groupId, widget)) {
     m_selectedGroup.widget = widgetStr;
     return true;
   }
@@ -404,7 +403,7 @@ bool DataModel::ProjectEditor::applyGroupImgModeEdit(int modeIdx, int groupId)
     return false;
 
   m_selectedGroup.imgDetectionMode = kImgModeValues.at(modeIdx);
-  DataModel::ProjectModel::instance().updateGroup(groupId, m_selectedGroup);
+  m_projectModelRef.updateGroup(groupId, m_selectedGroup);
   buildGroupModel(m_selectedGroup);
   return true;
 }
@@ -453,7 +452,7 @@ void DataModel::ProjectEditor::onActionItemChanged(QStandardItem* item)
       m_selectedAction.txEncoding = value.toInt();
       break;
     case kActionView_SourceId: {
-      const auto& sources = DataModel::ProjectModel::instance().sources();
+      const auto& sources = m_projectModelRef.sources();
       const int srcIdx    = value.toInt();
       if (srcIdx >= 0 && srcIdx < static_cast<int>(sources.size()))
         m_selectedAction.sourceId = sources[srcIdx].sourceId;
@@ -477,7 +476,7 @@ void DataModel::ProjectEditor::onActionItemChanged(QStandardItem* item)
       break;
   }
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  auto& pm            = m_projectModelRef;
   const auto actionId = m_selectedAction.actionId;
   pm.setSelectedAction(m_selectedAction);
   pm.updateAction(actionId, m_selectedAction, false);
@@ -516,7 +515,7 @@ void DataModel::ProjectEditor::onProjectItemChanged(QStandardItem* item)
 
   const auto id    = item->data(ParameterType);
   const auto value = item->data(EditableValue);
-  auto& pm         = DataModel::ProjectModel::instance();
+  auto& pm         = m_projectModelRef;
 
   switch (static_cast<ProjectItem>(id.toInt())) {
     case kProjectView_Title:
@@ -653,7 +652,7 @@ void DataModel::ProjectEditor::onDatasetRangeItemChanged(QStandardItem* item,
 
   switch (id) {
     case kDatasetView_xAxis: {
-      const auto xUids = DataModel::ProjectModel::instance().xDataSourceUniqueIds();
+      const auto xUids = m_projectModelRef.xDataSourceUniqueIds();
       const int pos    = value.toInt();
       dataset.xAxisId  = (pos >= 0 && pos < xUids.size()) ? xUids.at(pos) : kXAxisTime;
       break;
@@ -698,7 +697,7 @@ void DataModel::ProjectEditor::onDatasetFftItemChanged(QStandardItem* item,
       dataset.fftMax = SerialStudio::toDouble(value);
       break;
     case kDatasetView_WaterfallYAxis: {
-      const auto yUids       = DataModel::ProjectModel::instance().yWaterfallSourceUniqueIds();
+      const auto yUids       = m_projectModelRef.yWaterfallSourceUniqueIds();
       const int pos          = value.toInt();
       dataset.waterfallYAxis = (pos >= 0 && pos < yUids.size()) ? yUids.at(pos) : 0;
       break;
@@ -779,7 +778,7 @@ void DataModel::ProjectEditor::commitAlarmBands(const QVariantList& bands)
       m_selectedDataset.alarmBands.push_back(std::move(band));
   }
 
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
   pm.updateDataset(
     m_selectedDataset.groupId, m_selectedDataset.datasetId, m_selectedDataset, false);
   buildDatasetModel(m_selectedDataset);
@@ -818,7 +817,7 @@ void DataModel::ProjectEditor::onDatasetItemChanged(QStandardItem* item)
   onDatasetFftItemChanged(item, m_selectedDataset);
   onDatasetFlagItemChanged(item, m_selectedDataset);
 
-  auto& pm             = DataModel::ProjectModel::instance();
+  auto& pm             = m_projectModelRef;
   const auto groupId   = m_selectedDataset.groupId;
   const auto datasetId = m_selectedDataset.datasetId;
 
@@ -936,6 +935,6 @@ void DataModel::ProjectEditor::onOutputWidgetItemChanged(QStandardItem* item)
     }
   }
 
-  DataModel::ProjectModel::instance().updateOutputWidget(
+  m_projectModelRef.updateOutputWidget(
     m_selectedOutputWidget.groupId, m_selectedOutputWidget.widgetId, m_selectedOutputWidget, false);
 }

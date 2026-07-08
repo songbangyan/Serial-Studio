@@ -70,8 +70,7 @@ DataModel::ControlScript::ControlScript()
 
   connect(&m_thread, &QThread::finished, m_worker, &QObject::deleteLater);
   connect(m_worker, &ControlScriptWorker::scriptError, this, &ControlScript::onWorkerError);
-  connect(
-    QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this, &ControlScript::shutdown);
+  connect(qApp, &QCoreApplication::aboutToQuit, this, &ControlScript::shutdown);
 
   m_thread.start();
 }
@@ -141,7 +140,7 @@ void DataModel::ControlScript::shutdown()
     if (m_thread.wait(kShutdownWaitSliceMs))
       break;
 
-    if (QCoreApplication::instance())
+    if (qApp)
       QCoreApplication::sendPostedEvents(m_marshaller);
   }
 
@@ -209,8 +208,9 @@ void DataModel::ControlScript::setCode(const QString& code)
  */
 void DataModel::ControlScript::runOnConnect()
 {
+  static auto& appState = AppState::instance();
   if (m_shutdown || m_code.trimmed().isEmpty() || SerialStudio::isAnyPlayerOpen()
-      || AppState::instance().operationMode() != SerialStudio::ProjectFile)
+      || appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   QJSEngine engine;
@@ -252,8 +252,9 @@ bool DataModel::ControlScript::shouldRun() const
   if (!m_ready || m_shutdown || SerialStudio::isAnyPlayerOpen())
     return false;
 
-  return IO::ConnectionManager::instance().isConnected()
-      && AppState::instance().operationMode() == SerialStudio::ProjectFile;
+  static auto& ioManager = IO::ConnectionManager::instance();
+  static auto& appState  = AppState::instance();
+  return ioManager.isConnected() && appState.operationMode() == SerialStudio::ProjectFile;
 }
 
 /**

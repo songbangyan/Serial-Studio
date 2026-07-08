@@ -91,7 +91,8 @@ using detail::TileEnv;
 [[nodiscard]] static QHash<StableKey, int> buildStableKeyToWindowId()
 {
   QHash<StableKey, int> out;
-  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  static auto& dashboard = UI::Dashboard::instance();
+  const auto& widgetMap  = dashboard.widgetMap();
   out.reserve(widgetMap.size());
   for (auto it = widgetMap.cbegin(); it != widgetMap.cend(); ++it) {
     const StableKey key{static_cast<int>(it.value().first), it.value().second};
@@ -142,8 +143,9 @@ using detail::TileEnv;
  */
 [[nodiscard]] static StableKey stableKeyForWindowId(int windowId)
 {
-  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
-  const auto it         = widgetMap.constFind(windowId);
+  static auto& dashboard = UI::Dashboard::instance();
+  const auto& widgetMap  = dashboard.widgetMap();
+  const auto it          = widgetMap.constFind(windowId);
   if (it == widgetMap.cend())
     return {};
 
@@ -492,6 +494,8 @@ static void dispatchTile(const QList<QQuickItem*>& wins, const TileEnv& env)
  */
 UI::WindowManager::WindowManager(QQuickItem* parent)
   : QQuickItem(parent)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_sessionRegistry(UISessionRegistry::instance())
   , m_zCounter(1)
   , m_layoutRestored(false)
   , m_autoLayoutEnabled(true)
@@ -520,7 +524,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   connect(this, &UI::WindowManager::widthChanged, this, &UI::WindowManager::triggerLayoutUpdate);
   connect(this, &UI::WindowManager::heightChanged, this, &UI::WindowManager::triggerLayoutUpdate);
 
-  UISessionRegistry::instance().registerWindowManager(this);
+  m_sessionRegistry.registerWindowManager(this);
 }
 
 /**
@@ -528,7 +532,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
  */
 UI::WindowManager::~WindowManager()
 {
-  UISessionRegistry::instance().unregisterWindowManager(this);
+  m_sessionRegistry.unregisterWindowManager(this);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -943,8 +947,8 @@ void UI::WindowManager::autoLayout()
     return;
 
   TileEnv env;
-  env.margin      = qMax(0, UI::Dashboard::instance().autoLayoutMargin());
-  env.spacing     = qMax(-1, UI::Dashboard::instance().autoLayoutSpacing());
+  env.margin      = qMax(0, m_dashboard.autoLayoutMargin());
+  env.spacing     = qMax(-1, m_dashboard.autoLayoutSpacing());
   env.availW      = canvasW - 2 * env.margin;
   env.availH      = canvasH - 2 * env.margin;
   env.isLandscape = env.availW >= env.availH;

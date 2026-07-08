@@ -73,6 +73,11 @@ QHash<int, QByteArray> UI::TaskbarModel::roleNames() const
  */
 UI::Taskbar::Taskbar(QQuickItem* parent)
   : QQuickItem(parent)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_projectModel(DataModel::ProjectModel::instance())
+  , m_uiSessionRegistry(UISessionRegistry::instance())
+  , m_widgetRegistry(WidgetRegistry::instance())
+  , m_appState(AppState::instance())
   , m_activeGroupId(-1)
   , m_desiredGroupId(-1)
   , m_rebuildInProgress(false)
@@ -92,13 +97,10 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
 
   connectToRegistry();
 
-  connect(&UI::Dashboard::instance(), &UI::Dashboard::dataReset, this, &UI::Taskbar::rebuildModel);
-  connect(&UI::Dashboard::instance(),
-          &UI::Dashboard::widgetCountChanged,
-          this,
-          &UI::Taskbar::rebuildModel);
+  connect(&m_dashboard, &UI::Dashboard::dataReset, this, &UI::Taskbar::rebuildModel);
+  connect(&m_dashboard, &UI::Dashboard::widgetCountChanged, this, &UI::Taskbar::rebuildModel);
 
-  auto* pm = &DataModel::ProjectModel::instance();
+  auto* pm = &m_projectModel;
   connect(pm, &DataModel::ProjectModel::activeGroupIdChanged, this, [this, pm] {
     if (m_independentWorkspace)
       return;
@@ -123,7 +125,7 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
   rebuildModel();
   refreshWorkspaceSwitcherModel();
 
-  UISessionRegistry::instance().registerTaskbar(this);
+  m_uiSessionRegistry.registerTaskbar(this);
 }
 
 /**
@@ -131,7 +133,7 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
  */
 UI::Taskbar::~Taskbar()
 {
-  UISessionRegistry::instance().unregisterTaskbar(this);
+  m_uiSessionRegistry.unregisterTaskbar(this);
 }
 
 /**
@@ -139,11 +141,9 @@ UI::Taskbar::~Taskbar()
  */
 void UI::Taskbar::connectToRegistry()
 {
-  auto& registry = WidgetRegistry::instance();
-
-  connect(&registry, &WidgetRegistry::widgetCreated, this, &Taskbar::onWidgetCreated);
-  connect(&registry, &WidgetRegistry::widgetDestroyed, this, &Taskbar::onWidgetDestroyed);
-  connect(&registry, &WidgetRegistry::registryCleared, this, &Taskbar::onRegistryCleared);
+  connect(&m_widgetRegistry, &WidgetRegistry::widgetCreated, this, &Taskbar::onWidgetCreated);
+  connect(&m_widgetRegistry, &WidgetRegistry::widgetDestroyed, this, &Taskbar::onWidgetDestroyed);
+  connect(&m_widgetRegistry, &WidgetRegistry::registryCleared, this, &Taskbar::onRegistryCleared);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -366,11 +366,11 @@ void UI::Taskbar::saveLayout()
   if (m_restoringLayout)
     return;
 
-  const auto opMode = AppState::instance().operationMode();
+  const auto opMode = m_appState.operationMode();
   if (opMode != SerialStudio::ProjectFile)
     return;
 
-  auto* model = &DataModel::ProjectModel::instance();
+  auto* model = &m_projectModel;
   if (model->jsonFilePath().isEmpty())
     return;
 
@@ -397,7 +397,7 @@ void UI::Taskbar::setActiveGroupId(int groupId)
   saveLayout();
 
   if (!m_rebuildInProgress && !m_independentWorkspace)
-    DataModel::ProjectModel::instance().setActiveGroupId(groupId);
+    m_projectModel.setActiveGroupId(groupId);
 
   for (auto it = m_windowConnections.begin(); it != m_windowConnections.end(); ++it)
     disconnect(*it);
@@ -412,8 +412,8 @@ void UI::Taskbar::setActiveGroupId(int groupId)
   m_activeWindow  = nullptr;
   m_activeGroupId = groupId;
 
-  if (m_windowManager && AppState::instance().operationMode() == SerialStudio::ProjectFile) {
-    const auto layout = DataModel::ProjectModel::instance().groupLayout(m_layoutScope, groupId);
+  if (m_windowManager && m_appState.operationMode() == SerialStudio::ProjectFile) {
+    const auto layout = m_projectModel.groupLayout(m_layoutScope, groupId);
     m_windowManager->preloadPendingGeometries(layout);
   }
 
@@ -444,7 +444,7 @@ void UI::Taskbar::setActiveGroupId(int groupId)
  */
 void UI::Taskbar::populateTaskbarFromWorkspace(int groupId)
 {
-  const auto& workspaces = DataModel::ProjectModel::instance().activeWorkspaces();
+  const auto& workspaces = m_projectModel.activeWorkspaces();
   for (const auto& ws : workspaces) {
     if (ws.workspaceId != groupId)
       continue;
@@ -454,7 +454,7 @@ void UI::Taskbar::populateTaskbarFromWorkspace(int groupId)
       if (windowId < 0)
         continue;
 
-      const int refGid = UI::Dashboard::instance().groupIdForUniqueId(ref.groupUniqueId);
+      const int refGid = m_dashboard.groupIdForUniqueId(ref.groupUniqueId);
       auto* item       = findItemByWindowId(windowId);
       if (!item || item->data(TaskbarModel::GroupIdRole).toInt() != refGid)
         continue;
@@ -522,7 +522,7 @@ void UI::Taskbar::populateTaskbarFromGroup(int groupId)
  */
 int UI::Taskbar::findWindowIdByGroupAndIndex(int widgetType, int relativeIndex) const
 {
-  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  const auto& widgetMap = m_dashboard.widgetMap();
   for (auto it = widgetMap.begin(); it != widgetMap.end(); ++it) {
     if (static_cast<int>(it.value().first) != widgetType || it.value().second != relativeIndex)
       continue;
@@ -538,7 +538,7 @@ int UI::Taskbar::findWindowIdByGroupAndIndex(int widgetType, int relativeIndex) 
  */
 int UI::Taskbar::relativeIndexForWindow(int windowId) const
 {
-  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  const auto& widgetMap = m_dashboard.widgetMap();
   for (auto it = widgetMap.begin(); it != widgetMap.end(); ++it)
     if (it.key() == windowId)
       return it.value().second;
@@ -745,11 +745,10 @@ void UI::Taskbar::registerWindow(const int id, QQuickItem* window)
 
   if (m_windowIDs.count() >= m_taskbarButtons->rowCount() && m_windowManager) {
     m_restoringLayout = true;
-    const auto opMode = AppState::instance().operationMode();
+    const auto opMode = m_appState.operationMode();
     bool restored     = false;
     if (opMode == SerialStudio::ProjectFile) {
-      const auto layout =
-        DataModel::ProjectModel::instance().groupLayout(m_layoutScope, m_activeGroupId);
+      const auto layout = m_projectModel.groupLayout(m_layoutScope, m_activeGroupId);
       if (!layout.isEmpty() && m_windowManager->restoreLayout(layout))
         restored = true;
     }
@@ -888,7 +887,7 @@ void UI::Taskbar::rebuildModel()
       m_windowManager->clear();
   }
 
-  auto* db = &UI::Dashboard::instance();
+  auto* db = &m_dashboard;
 
   const auto& frame = db->processedFrame();
   if (frame.title.isEmpty() || frame.groups.size() <= 0) {
@@ -979,10 +978,9 @@ void UI::Taskbar::mapMainGroupWidgetId(SerialStudio::DashboardWidget groupType,
   if (groupType == SerialStudio::DashboardNoWidget || mainWindowId < 0)
     return;
 
-  auto& registry       = WidgetRegistry::instance();
-  const auto widgetIds = registry.widgetIdsByType(groupType);
+  const auto widgetIds = m_widgetRegistry.widgetIdsByType(groupType);
   for (const auto& wid : std::as_const(widgetIds)) {
-    const auto info = registry.widgetInfo(wid);
+    const auto info = m_widgetRegistry.widgetInfo(wid);
     if (info.groupId != groupId || !info.isGroupWidget)
       continue;
 
@@ -1000,7 +998,7 @@ void UI::Taskbar::collectGroupWidgetIds(int groupId,
                                         QList<int>& relativeIds,
                                         QList<SerialStudio::DashboardWidget>& widgetTypes) const
 {
-  auto* db              = &UI::Dashboard::instance();
+  auto* db              = &m_dashboard;
   const auto& widgetMap = db->widgetMap();
   for (auto it = widgetMap.begin(); it != widgetMap.end(); ++it) {
     const auto windowId      = it.key();
@@ -1036,8 +1034,7 @@ void UI::Taskbar::appendGroupChildItem(QStandardItem* groupItem,
                                        SerialStudio::DashboardWidget widgetType,
                                        int relativeIndex)
 {
-  auto* db       = &UI::Dashboard::instance();
-  auto& registry = WidgetRegistry::instance();
+  auto* db = &m_dashboard;
 
   const auto icon = SerialStudio::dashboardWidgetIcon(widgetType, true);
   auto* child     = new QStandardItem();
@@ -1052,13 +1049,13 @@ void UI::Taskbar::appendGroupChildItem(QStandardItem* groupItem,
   if (SerialStudio::isGroupWidget(widgetType)) {
     const auto& dbGroup = db->getGroupWidget(widgetType, relativeIndex);
     child->setData(dbGroup.title, TaskbarModel::WidgetNameRole);
-    mapWidgetToWindow(registry.widgetIdByTypeAndIndex(widgetType, relativeIndex), windowId);
+    mapWidgetToWindow(m_widgetRegistry.widgetIdByTypeAndIndex(widgetType, relativeIndex), windowId);
   }
 
   else if (SerialStudio::isDatasetWidget(widgetType)) {
     const auto& dbDataset = db->getDatasetWidget(widgetType, relativeIndex);
     child->setData(dbDataset.title, TaskbarModel::WidgetNameRole);
-    mapWidgetToWindow(registry.widgetIdByTypeAndIndex(widgetType, relativeIndex), windowId);
+    mapWidgetToWindow(m_widgetRegistry.widgetIdByTypeAndIndex(widgetType, relativeIndex), windowId);
   }
 
   groupItem->appendRow(child);
@@ -1116,9 +1113,9 @@ void UI::Taskbar::selectGroupAfterRebuild()
     }
   }
 
-  const auto opMode = AppState::instance().operationMode();
+  const auto opMode = m_appState.operationMode();
   if (opMode == SerialStudio::ProjectFile && !m_independentWorkspace) {
-    auto* pm          = &DataModel::ProjectModel::instance();
+    auto* pm          = &m_projectModel;
     const int savedId = pm->activeGroupId();
     const bool found =
       savedId >= 0 && std::any_of(model.begin(), model.end(), [savedId](const QVariant& v) {
@@ -1405,7 +1402,7 @@ QVariantList UI::Taskbar::allWidgets() const
  */
 QVariantList UI::Taskbar::workspaceModel() const
 {
-  const auto& pm = DataModel::ProjectModel::instance();
+  const auto& pm = m_projectModel;
   QVariantList model;
   const auto& workspaces = pm.activeWorkspaces();
   for (const auto& ws : workspaces) {
@@ -1475,11 +1472,11 @@ static QVariantList buildWorkspaceTreeLevel(int parentFolderId,
  */
 QVariantList UI::Taskbar::workspaceTree() const
 {
-  const auto& pm         = DataModel::ProjectModel::instance();
+  const auto& pm         = m_projectModel;
   const auto& workspaces = pm.activeWorkspaces();
 
   const std::vector<DataModel::WorkspaceFolder> noFolders;
-  const bool projectMode = AppState::instance().operationMode() == SerialStudio::ProjectFile;
+  const bool projectMode = m_appState.operationMode() == SerialStudio::ProjectFile;
   const auto& folders    = projectMode ? pm.editorWorkspaceFolders() : noFolders;
   return buildWorkspaceTreeLevel(-1, workspaces, folders);
 }
@@ -1611,7 +1608,7 @@ void UI::Taskbar::navigateToWidget(int windowId, int groupId)
  */
 void UI::Taskbar::createWorkspace(const QString& name)
 {
-  auto* pm = &DataModel::ProjectModel::instance();
+  auto* pm = &m_projectModel;
   pm->addWorkspace(name);
 
   const auto& workspaces = pm->activeWorkspaces();
@@ -1626,7 +1623,7 @@ void UI::Taskbar::createWorkspace(const QString& name)
  */
 void UI::Taskbar::deleteWorkspace(int workspaceId)
 {
-  auto* pm = &DataModel::ProjectModel::instance();
+  auto* pm = &m_projectModel;
 
   if (pm->customizeWorkspaces())
     if (workspaceId >= WorkspaceIds::AutoStart)
@@ -1655,7 +1652,7 @@ void UI::Taskbar::renameWorkspace(int workspaceId, const QString& name)
   if (workspaceId < WorkspaceIds::AutoStart)
     return;
 
-  DataModel::ProjectModel::instance().renameWorkspace(workspaceId, name);
+  m_projectModel.renameWorkspace(workspaceId, name);
   Q_EMIT workspaceModelChanged();
 }
 
@@ -1674,7 +1671,7 @@ void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
   const auto widgetType = item->data(TaskbarModel::WidgetTypeRole).toInt();
   const auto groupId    = item->data(TaskbarModel::GroupIdRole).toInt();
 
-  auto& db        = UI::Dashboard::instance();
+  auto& db        = m_dashboard;
   const auto& map = db.widgetMap();
   int relIdx      = -1;
   for (auto it = map.begin(); it != map.end(); ++it) {
@@ -1687,9 +1684,8 @@ void UI::Taskbar::addWidgetToActiveWorkspace(int windowId)
   if (relIdx < 0)
     return;
 
-  const int groupUid = UI::Dashboard::instance().groupUniqueIdForGroupId(groupId);
-  DataModel::ProjectModel::instance().addWidgetToWorkspace(
-    m_activeGroupId, widgetType, groupUid, relIdx);
+  const int groupUid = m_dashboard.groupUniqueIdForGroupId(groupId);
+  m_projectModel.addWidgetToWorkspace(m_activeGroupId, widgetType, groupUid, relIdx);
 
   auto clone = item->clone();
   setWindowState(clone->data(TaskbarModel::WindowIdRole).toInt(), TaskbarModel::WindowNormal);
@@ -1715,13 +1711,13 @@ void UI::Taskbar::removeWidgetFromActiveWorkspace(int windowId)
   if (relIdx < 0)
     return;
 
-  auto* pm               = &DataModel::ProjectModel::instance();
+  auto* pm               = &m_projectModel;
   const auto& workspaces = pm->activeWorkspaces();
   for (const auto& ws : workspaces) {
     if (ws.workspaceId != m_activeGroupId)
       continue;
 
-    const int targetUid = UI::Dashboard::instance().groupUniqueIdForGroupId(groupId);
+    const int targetUid = m_dashboard.groupUniqueIdForGroupId(groupId);
     for (size_t i = 0; i < ws.widgetRefs.size(); ++i) {
       const auto& ref = ws.widgetRefs[i];
       if (ref.widgetType != widgetType || ref.groupUniqueId != targetUid
@@ -1765,7 +1761,7 @@ QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
   if (workspaceId < WorkspaceIds::AutoStart)
     return ids;
 
-  const auto& workspaces = DataModel::ProjectModel::instance().activeWorkspaces();
+  const auto& workspaces = m_projectModel.activeWorkspaces();
   for (const auto& ws : workspaces) {
     if (ws.workspaceId != workspaceId)
       continue;
@@ -1775,7 +1771,7 @@ QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
       if (windowId < 0)
         continue;
 
-      const int refGid = UI::Dashboard::instance().groupIdForUniqueId(ref.groupUniqueId);
+      const int refGid = m_dashboard.groupIdForUniqueId(ref.groupUniqueId);
       auto* item       = findItemByWindowId(windowId);
       if (!item || item->data(TaskbarModel::GroupIdRole).toInt() != refGid)
         continue;
@@ -1797,7 +1793,7 @@ void UI::Taskbar::setWorkspaceWidgets(int workspaceId, const QVariantList& windo
   if (workspaceId < WorkspaceIds::AutoStart)
     return;
 
-  auto* pm = &DataModel::ProjectModel::instance();
+  auto* pm = &m_projectModel;
 
   const auto& workspaces = pm->activeWorkspaces();
   bool found             = false;
@@ -1815,7 +1811,7 @@ void UI::Taskbar::setWorkspaceWidgets(int workspaceId, const QVariantList& windo
   if (!found)
     return;
 
-  const auto& widgetMap = UI::Dashboard::instance().widgetMap();
+  const auto& widgetMap = m_dashboard.widgetMap();
   for (const auto& idVar : windowIds) {
     const int windowId = idVar.toInt();
     auto* item         = findItemByWindowId(windowId);
@@ -1834,7 +1830,7 @@ void UI::Taskbar::setWorkspaceWidgets(int workspaceId, const QVariantList& windo
     }
 
     if (relIdx >= 0) {
-      const int groupUid = UI::Dashboard::instance().groupUniqueIdForGroupId(groupId);
+      const int groupUid = m_dashboard.groupUniqueIdForGroupId(groupId);
       pm->addWidgetToWorkspace(workspaceId, widgetType, groupUid, relIdx);
     }
   }

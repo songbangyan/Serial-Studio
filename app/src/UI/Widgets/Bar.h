@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "DSP.h"
+#include "UI/Dashboard.h"
 
 namespace DataModel {
 struct AlarmBand;
@@ -160,5 +161,7 @@ protected:
   QString m_emptyLabel;
   int m_activeBandIndex;
   int m_lastBandHint;
+
+  UI::Dashboard& m_dashboard;
 };
 }  // namespace Widgets

@@ -121,7 +121,7 @@ void Sessions::DatabaseWorker::closeDatabase()
   m_passwordHash.clear();
   m_locked = false;
 
-  if (QCoreApplication::instance()) {
+  if (qApp) {
     if (m_db.isOpen()) {
       QSqlQuery checkpoint(m_db);
       checkpoint.exec("PRAGMA wal_checkpoint(RESTART)");

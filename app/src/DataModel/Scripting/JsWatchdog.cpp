@@ -55,7 +55,8 @@ DataModel::JsWatchdog::JsWatchdog(QJSEngine* engine, int budgetMs, QString tag)
 {
   Q_ASSERT(engine != nullptr);
   Q_ASSERT(budgetMs > 0);
-  JsWatchdogThread::instance().registerWatchdog(this);
+  static auto& watchdogThread = JsWatchdogThread::instance();
+  watchdogThread.registerWatchdog(this);
 }
 
 /**
@@ -63,7 +64,8 @@ DataModel::JsWatchdog::JsWatchdog(QJSEngine* engine, int budgetMs, QString tag)
  */
 DataModel::JsWatchdog::~JsWatchdog()
 {
-  JsWatchdogThread::instance().unregisterWatchdog(this);
+  static auto& watchdogThread = JsWatchdogThread::instance();
+  watchdogThread.unregisterWatchdog(this);
 }
 
 //--------------------------------------------------------------------------------------------------

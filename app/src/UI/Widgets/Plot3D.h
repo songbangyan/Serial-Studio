@@ -27,6 +27,10 @@
 #include <QVector3D>
 
 #include "DSP.h"
+#include "Misc/CommonFonts.h"
+#include "Misc/ThemeManager.h"
+#include "Misc/TimerEvents.h"
+#include "UI/Dashboard.h"
 
 namespace Widgets {
 /**
@@ -232,5 +236,10 @@ private:
   bool m_centerInitialized;
 
   QSize m_size;
+
+  UI::Dashboard& m_dashboard;
+  Misc::TimerEvents& m_timerEvents;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
 };
 }  // namespace Widgets

@@ -206,7 +206,7 @@ void DataModel::DBCImporter::confirmImport()
   const int signalCount   = countTotalSignals(m_messages);
   const int skippedExtMux = m_skippedExtendedMuxSignals;
 
-  auto& pm = ProjectModel::instance();
+  static auto& pm = ProjectModel::instance();
   QObject::connect(
     &pm,
     &ProjectModel::importCompleted,

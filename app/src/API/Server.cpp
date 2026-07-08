@@ -349,7 +349,8 @@ API::Server::Server()
 
   connect(&m_server, &QTcpServer::newConnection, this, &Server::acceptConnection);
 
-  (void)API::CommandHandler::instance();
+  static auto& commandHandler = API::CommandHandler::instance();
+  (void)commandHandler;
   setEnabled(m_settings.value("API/Enabled", false).toBool());
 }
 
@@ -896,8 +897,8 @@ void API::Server::handleJsonMessage(QTcpSocket* socket,
     return;
 
   if (MCP::isMCPMessage(jsonBytes)) {
-    auto& mcpHandler    = API::MCPHandler::instance();
-    const auto response = mcpHandler.processMessage(jsonBytes, state.sessionId);
+    static auto& mcpHandler = API::MCPHandler::instance();
+    const auto response     = mcpHandler.processMessage(jsonBytes, state.sessionId);
 
     if (!response.isEmpty())
       sendResponseToSocket(socket, response);
@@ -933,7 +934,7 @@ void API::Server::handleJsonMessage(QTcpSocket* socket,
     return;
   }
 
-  auto& cmdHandler = API::CommandHandler::instance();
+  static auto& cmdHandler = API::CommandHandler::instance();
   sendResponseToSocket(socket, cmdHandler.processMessage(jsonBytes, CommandOrigin::Remote));
 }
 
@@ -989,7 +990,7 @@ void API::Server::processRawJsonCommand(QTcpSocket* socket,
     return;
   }
 
-  auto& manager = IO::ConnectionManager::instance();
+  static auto& manager = IO::ConnectionManager::instance();
   if (!manager.isConnected()) {
     sendResponseToSocket(
       socket,
@@ -1037,7 +1038,8 @@ void API::Server::processNoNewlineBuffer(QTcpSocket* socket, ConnectionState& st
     return;
   }
 
-  const qint64 written = IO::ConnectionManager::instance().writeData(buffer);
+  static auto& manager = IO::ConnectionManager::instance();
+  const qint64 written = manager.writeData(buffer);
   if (written < 0) [[unlikely]]
     qWarning() << "[API] writeData() failed for raw buffer"
                << "-- data not sent to device";
@@ -1161,7 +1163,8 @@ void API::Server::processRawLine(QTcpSocket* socket, ConnectionState& state, con
     return;
   }
 
-  const qint64 written = IO::ConnectionManager::instance().writeData(line);
+  static auto& manager = IO::ConnectionManager::instance();
+  const qint64 written = manager.writeData(line);
   if (written < 0) [[unlikely]]
     qWarning() << "[API] writeData() failed for raw line"
                << "-- data not sent to device";
@@ -1306,8 +1309,9 @@ void API::Server::onSocketDisconnected(QTcpSocket* socket)
     return;
 
   if (m_connections.contains(socket)) {
-    const auto& state = m_connections[socket];
-    MCPHandler::instance().clearSession(state.sessionId);
+    const auto& state       = m_connections[socket];
+    static auto& mcpHandler = MCPHandler::instance();
+    mcpHandler.clearSession(state.sessionId);
     qInfo() << "[API] Client disconnected (via worker):"
             << "- Remaining clients:" << (m_connections.size() - 1);
 

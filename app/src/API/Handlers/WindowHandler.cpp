@@ -61,8 +61,8 @@ void API::Handlers::WindowHandler::registerCommands()
  */
 void API::Handlers::WindowHandler::registerStatusCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = API::emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = API::emptySchema();
 
   registry.registerCommand(
     QStringLiteral("ui.window.getStatus"),
@@ -96,7 +96,7 @@ void API::Handlers::WindowHandler::registerStatusCommands()
  */
 void API::Handlers::WindowHandler::registerStateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("ui.window.listWindowStates"),
@@ -120,8 +120,8 @@ void API::Handlers::WindowHandler::registerStateCommands()
  */
 void API::Handlers::WindowHandler::registerLayoutCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = API::emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = API::emptySchema();
 
   registry.registerCommand(QStringLiteral("ui.window.setAutoLayout"),
                            QStringLiteral("Enable or disable auto layout (params: enabled bool)"),
@@ -159,7 +159,7 @@ void API::Handlers::WindowHandler::registerLayoutCommands()
  */
 void API::Handlers::WindowHandler::registerWidgetSettingCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(QStringLiteral("ui.window.getWidgetSettings"),
                            QStringLiteral("Get saved widget settings (params: widgetId string)"),
@@ -206,8 +206,9 @@ API::CommandResponse API::Handlers::WindowHandler::getStatus(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
-  auto* wm      = UI::UISessionRegistry::instance().primaryWindowManager();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
+  auto* wm                     = sessionRegistry.primaryWindowManager();
 
   QJsonObject result;
 
@@ -241,7 +242,8 @@ API::CommandResponse API::Handlers::WindowHandler::getGroups(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -276,7 +278,8 @@ API::CommandResponse API::Handlers::WindowHandler::setActiveGroup(const QString&
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
   }
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -300,7 +303,8 @@ API::CommandResponse API::Handlers::WindowHandler::setActiveGroupIndex(const QSt
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: index"));
   }
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -324,7 +328,8 @@ API::CommandResponse API::Handlers::WindowHandler::getWindowStates(const QString
 {
   Q_UNUSED(params)
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -372,7 +377,8 @@ API::CommandResponse API::Handlers::WindowHandler::setWindowState(const QString&
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameters: id, state"));
   }
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -411,7 +417,8 @@ API::CommandResponse API::Handlers::WindowHandler::setAutoLayout(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
   }
 
-  auto* wm = UI::UISessionRegistry::instance().primaryWindowManager();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* wm                     = sessionRegistry.primaryWindowManager();
   if (!wm)
     return noSession(id);
 
@@ -431,7 +438,8 @@ API::CommandResponse API::Handlers::WindowHandler::saveLayout(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto* taskbar = UI::UISessionRegistry::instance().primaryTaskbar();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* taskbar                = sessionRegistry.primaryTaskbar();
   if (!taskbar)
     return noSession(id);
 
@@ -448,7 +456,8 @@ API::CommandResponse API::Handlers::WindowHandler::loadLayout(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto* wm = UI::UISessionRegistry::instance().primaryWindowManager();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* wm                     = sessionRegistry.primaryWindowManager();
   if (!wm)
     return noSession(id);
 
@@ -465,7 +474,8 @@ API::CommandResponse API::Handlers::WindowHandler::getLayout(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto* wm = UI::UISessionRegistry::instance().primaryWindowManager();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* wm                     = sessionRegistry.primaryWindowManager();
   if (!wm)
     return noSession(id);
 
@@ -487,7 +497,8 @@ API::CommandResponse API::Handlers::WindowHandler::setLayout(const QString& id,
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: layout"));
   }
 
-  auto* wm = UI::UISessionRegistry::instance().primaryWindowManager();
+  static auto& sessionRegistry = UI::UISessionRegistry::instance();
+  auto* wm                     = sessionRegistry.primaryWindowManager();
   if (!wm)
     return noSession(id);
 
@@ -519,7 +530,8 @@ API::CommandResponse API::Handlers::WindowHandler::getWidgetSettings(const QStri
   }
 
   const QString widget_id    = params.value(QStringLiteral("widgetId")).toString();
-  const QJsonObject settings = DataModel::ProjectModel::instance().widgetSettings(widget_id);
+  static auto& projectModel  = DataModel::ProjectModel::instance();
+  const QJsonObject settings = projectModel.widgetSettings(widget_id);
 
   QJsonObject result;
   result[QStringLiteral("widgetId")] = widget_id;
@@ -545,7 +557,8 @@ API::CommandResponse API::Handlers::WindowHandler::setWidgetSetting(const QStrin
   const QString key       = params.value(QStringLiteral("key")).toString();
   const QVariant value    = params.value(QStringLiteral("settingValue")).toVariant();
 
-  auto* pm = &DataModel::ProjectModel::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  auto* pm                  = &projectModel;
   QMetaObject::invokeMethod(
     pm, [pm, widget_id, key, value]() { pm->saveWidgetSetting(widget_id, key, value); });
 

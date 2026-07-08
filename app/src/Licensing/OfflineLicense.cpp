@@ -57,9 +57,11 @@ static void showOfflineError(const QString& text, QMessageBox::Icon icon = QMess
  */
 static void installOfflineToken(const Licensing::CertificateFields& fields, int daysRemaining)
 {
+  static auto& machineId = Licensing::MachineID::instance();
+
   Licensing::CommercialToken token;
   token.setVariantName(fields.variant);
-  token.setInstanceName(Licensing::MachineID::instance().machineId());
+  token.setInstanceName(machineId.machineId());
   token.setGraceDaysRemaining(daysRemaining);
   token.setFeatureTier(Licensing::tierFromCertVariant(fields.variant));
   token.seal();
@@ -76,22 +78,20 @@ static void installOfflineToken(const Licensing::CertificateFields& fields, int 
  */
 Licensing::OfflineLicense::OfflineLicense() : m_activated(false)
 {
-  m_simpleCrypt.setKey(MachineID::instance().machineSpecificKey());
+  static auto& machineId    = MachineID::instance();
+  static auto& lemonSqueezy = LemonSqueezy::instance();
+
+  m_simpleCrypt.setKey(machineId.machineSpecificKey());
   m_simpleCrypt.setIntegrityProtectionMode(SimpleCrypt::ProtectionHash);
 
-  connect(&LemonSqueezy::instance(),
+  connect(&lemonSqueezy,
           &LemonSqueezy::activatedChanged,
           this,
           &OfflineLicense::onOnlineActivationChanged);
 
-  connect(this,
-          &OfflineLicense::activatedChanged,
-          &LemonSqueezy::instance(),
-          &LemonSqueezy::activatedChanged);
-  connect(this,
-          &OfflineLicense::activatedChanged,
-          &LemonSqueezy::instance(),
-          &LemonSqueezy::licenseDataChanged);
+  connect(this, &OfflineLicense::activatedChanged, &lemonSqueezy, &LemonSqueezy::activatedChanged);
+  connect(
+    this, &OfflineLicense::activatedChanged, &lemonSqueezy, &LemonSqueezy::licenseDataChanged);
 
   readSettings();
 }
@@ -114,7 +114,8 @@ Licensing::OfflineLicense& Licensing::OfflineLicense::instance()
  */
 const QString& Licensing::OfflineLicense::machineId() const
 {
-  return MachineID::instance().machineId();
+  static auto& machineId = MachineID::instance();
+  return machineId.machineId();
 }
 
 /**
@@ -194,7 +195,8 @@ void Licensing::OfflineLicense::deactivate()
   if (answer != QMessageBox::Yes)
     return;
 
-  if (!LemonSqueezy::instance().isOnlineActivated())
+  static auto& lemonSqueezy = LemonSqueezy::instance();
+  if (!lemonSqueezy.isOnlineActivated())
     CommercialToken::clearCurrent();
 
   clearOfflineLicense();
@@ -361,7 +363,8 @@ bool Licensing::OfflineLicense::applyCertificate(const QByteArray& framedCert, b
   m_variantName = fields.variant;
   m_expiresAt   = QDateTime::fromSecsSinceEpoch(fields.expiresAt);
 
-  if (!LemonSqueezy::instance().isOnlineActivated()) {
+  static auto& lemonSqueezy = LemonSqueezy::instance();
+  if (!lemonSqueezy.isOnlineActivated()) {
     const int days = qMax(0, static_cast<int>((fields.expiresAt - nowSecs) / 86400));
     installOfflineToken(fields, days);
   }

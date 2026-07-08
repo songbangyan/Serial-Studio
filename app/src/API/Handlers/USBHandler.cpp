@@ -26,8 +26,8 @@
  */
 void API::Handlers::USBHandler::registerCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(QStringLiteral("io.usb.setDeviceIndex"),
                            QStringLiteral("Select USB device by index (params: deviceIndex)"),
@@ -103,8 +103,9 @@ API::CommandResponse API::Handlers::USBHandler::setDeviceIndex(const QString& id
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: deviceIndex"));
   }
 
-  const int device_index = params.value(QStringLiteral("deviceIndex")).toInt();
-  const auto& devices    = IO::ConnectionManager::instance().usb()->deviceList();
+  const int device_index         = params.value(QStringLiteral("deviceIndex")).toInt();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.usb()->deviceList();
 
   if (device_index < 0 || device_index >= devices.count()) {
     return CommandResponse::makeError(
@@ -115,7 +116,7 @@ API::CommandResponse API::Handlers::USBHandler::setDeviceIndex(const QString& id
         .arg(devices.count() - 1));
   }
 
-  IO::ConnectionManager::instance().usb()->setDeviceIndex(device_index);
+  connectionManager.usb()->setDeviceIndex(device_index);
 
   QJsonObject result;
   result[QStringLiteral("deviceIndex")] = device_index;
@@ -143,7 +144,8 @@ API::CommandResponse API::Handlers::USBHandler::setTransferMode(const QString& i
         .arg(mode));
   }
 
-  IO::ConnectionManager::instance().usb()->setTransferMode(mode);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.usb()->setTransferMode(mode);
 
   QJsonObject result;
   result[QStringLiteral("mode")] = mode;
@@ -161,8 +163,9 @@ API::CommandResponse API::Handlers::USBHandler::setInEndpointIndex(const QString
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: endpointIndex"));
   }
 
-  const int ep_index    = params.value(QStringLiteral("endpointIndex")).toInt();
-  const auto& endpoints = IO::ConnectionManager::instance().usb()->inEndpointList();
+  const int ep_index             = params.value(QStringLiteral("endpointIndex")).toInt();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& endpoints          = connectionManager.usb()->inEndpointList();
 
   if (ep_index < 0 || ep_index >= endpoints.count()) {
     return CommandResponse::makeError(
@@ -173,7 +176,7 @@ API::CommandResponse API::Handlers::USBHandler::setInEndpointIndex(const QString
         .arg(endpoints.count() - 1));
   }
 
-  IO::ConnectionManager::instance().usb()->setInEndpointIndex(ep_index);
+  connectionManager.usb()->setInEndpointIndex(ep_index);
 
   QJsonObject result;
   result[QStringLiteral("endpointIndex")] = ep_index;
@@ -192,8 +195,9 @@ API::CommandResponse API::Handlers::USBHandler::setOutEndpointIndex(const QStrin
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: endpointIndex"));
   }
 
-  const int ep_index    = params.value(QStringLiteral("endpointIndex")).toInt();
-  const auto& endpoints = IO::ConnectionManager::instance().usb()->outEndpointList();
+  const int ep_index             = params.value(QStringLiteral("endpointIndex")).toInt();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& endpoints          = connectionManager.usb()->outEndpointList();
 
   if (ep_index < 0 || ep_index >= endpoints.count()) {
     return CommandResponse::makeError(
@@ -204,7 +208,7 @@ API::CommandResponse API::Handlers::USBHandler::setOutEndpointIndex(const QStrin
         .arg(endpoints.count() - 1));
   }
 
-  IO::ConnectionManager::instance().usb()->setOutEndpointIndex(ep_index);
+  connectionManager.usb()->setOutEndpointIndex(ep_index);
 
   QJsonObject result;
   result[QStringLiteral("endpointIndex")] = ep_index;
@@ -231,7 +235,8 @@ API::CommandResponse API::Handlers::USBHandler::setIsoPacketSize(const QString& 
       QStringLiteral("Invalid size: %1. Valid range: 1-49152").arg(size));
   }
 
-  IO::ConnectionManager::instance().usb()->setIsoPacketSize(size);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.usb()->setIsoPacketSize(size);
 
   QJsonObject result;
   result[QStringLiteral("size")] = size;
@@ -250,7 +255,8 @@ API::CommandResponse API::Handlers::USBHandler::getDeviceList(const QString& id,
 {
   Q_UNUSED(params)
 
-  const auto& devices = IO::ConnectionManager::instance().usb()->deviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.usb()->deviceList();
 
   QJsonArray devices_array;
   for (const auto& device : devices)
@@ -258,7 +264,7 @@ API::CommandResponse API::Handlers::USBHandler::getDeviceList(const QString& id,
 
   QJsonObject result;
   result[QStringLiteral("devices")]       = devices_array;
-  result[QStringLiteral("selectedIndex")] = IO::ConnectionManager::instance().usb()->deviceIndex();
+  result[QStringLiteral("selectedIndex")] = connectionManager.usb()->deviceIndex();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -270,7 +276,8 @@ API::CommandResponse API::Handlers::USBHandler::getConfiguration(const QString& 
 {
   Q_UNUSED(params)
 
-  auto* usb = IO::ConnectionManager::instance().usb();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  auto* usb                      = connectionManager.usb();
 
   QJsonArray in_endpoints;
   for (const auto& ep : usb->inEndpointList())

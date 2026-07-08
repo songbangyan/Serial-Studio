@@ -212,7 +212,8 @@ QString DataModel::ProjectModel::workspaceFolderTitle(int folderId) const
  */
 int DataModel::ProjectModel::addWorkspaceFolder(int parentFolderId, const QString& title)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return -1;
 
   if (!m_customizeWorkspaces)
@@ -423,8 +424,10 @@ void DataModel::ProjectModel::promptAddWorkspaceFolder(int parentFolderId)
     return;
 
   const int newId = addWorkspaceFolder(parentFolderId, name.trimmed());
-  QTimer::singleShot(
-    0, this, [newId] { DataModel::ProjectEditor::instance().selectWorkspaceFolder(newId); });
+  QTimer::singleShot(0, this, [newId] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectWorkspaceFolder(newId);
+  });
 }
 
 /**
@@ -441,8 +444,10 @@ void DataModel::ProjectModel::promptAddWorkspaceInFolder(int parentFolderId)
 
   const int newId = addWorkspace(name.trimmed());
   moveWorkspaceToFolder(newId, parentFolderId);
-  QTimer::singleShot(
-    0, this, [newId] { DataModel::ProjectEditor::instance().selectWorkspace(newId); });
+  QTimer::singleShot(0, this, [newId] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectWorkspace(newId);
+  });
 }
 
 /**
@@ -657,8 +662,10 @@ void DataModel::ProjectModel::promptAddGroupFolder(int parentFolderId)
     return;
 
   const int newId = addGroupFolder(parentFolderId, name.trimmed());
-  QTimer::singleShot(
-    0, this, [newId] { DataModel::ProjectEditor::instance().selectGroupFolder(newId); });
+  QTimer::singleShot(0, this, [newId] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectGroupFolder(newId);
+  });
 }
 
 /**
@@ -882,8 +889,10 @@ void DataModel::ProjectModel::promptAddTableFolder(int parentFolderId)
     return;
 
   const int newId = addTableFolder(parentFolderId, name.trimmed());
-  QTimer::singleShot(
-    0, this, [newId] { DataModel::ProjectEditor::instance().selectTableFolder(newId); });
+  QTimer::singleShot(0, this, [newId] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectTableFolder(newId);
+  });
 }
 
 /**
@@ -899,8 +908,10 @@ void DataModel::ProjectModel::promptAddTableInFolder(int parentFolderId)
     return;
 
   const QString added = addTable(name.trimmed(), parentFolderId);
-  QTimer::singleShot(
-    0, this, [added] { DataModel::ProjectEditor::instance().selectUserTable(added); });
+  QTimer::singleShot(0, this, [added] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectUserTable(added);
+  });
 }
 
 /**

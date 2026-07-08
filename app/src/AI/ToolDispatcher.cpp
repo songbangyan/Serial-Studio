@@ -584,7 +584,7 @@ static QJsonObject fsToolDescription(const QString& name)
  */
 static QJsonObject runOffMainThread(const std::function<QJsonObject()>& work)
 {
-  if (QThread::currentThread() != QCoreApplication::instance()->thread())
+  if (QThread::currentThread() != qApp->thread())
     return work();
 
   static bool s_inNestedLoop = false;
@@ -616,7 +616,7 @@ static QJsonObject runOffMainThread(const std::function<QJsonObject()>& work)
  */
 static QJsonObject executeFsTool(const QString& name, const QJsonObject& args)
 {
-  auto& sandbox = AI::FileSandbox::instance();
+  static auto& sandbox = AI::FileSandbox::instance();
   if (name == QStringLiteral("fs.list"))
     return runOffMainThread([&]() { return sandbox.list(args); });
 
@@ -665,8 +665,9 @@ static QJsonObject assistantToolDescription(const QString& name)
  */
 static QJsonObject runCommand(const QString& name, const QJsonObject& args = {})
 {
-  const auto callId   = QUuid::createUuid().toString(QUuid::WithoutBraces);
-  const auto response = API::CommandRegistry::instance().execute(name, callId, args);
+  const auto callId        = QUuid::createUuid().toString(QUuid::WithoutBraces);
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto response      = apiRegistry.execute(name, callId, args);
 
   QJsonObject reply;
   reply[QStringLiteral("ok")] = response.success;
@@ -1397,7 +1398,8 @@ static QJsonObject compactBatchRowResult(const QJsonObject& opResult)
  */
 static bool innerOpAllowed(const QString& commandName)
 {
-  const auto safety = AI::CommandRegistry::instance().safetyOf(commandName);
+  static auto& aiReg = AI::CommandRegistry::instance();
+  const auto safety  = aiReg.safetyOf(commandName);
   return safety == AI::Safety::Safe || safety == AI::Safety::Confirm;
 }
 
@@ -1406,8 +1408,8 @@ static bool innerOpAllowed(const QString& commandName)
  */
 static QJsonObject makeInnerOpRejection(const QString& commandName)
 {
-  const auto& aiReg = AI::CommandRegistry::instance();
-  const auto safety = aiReg.safetyOf(commandName);
+  static auto& aiReg = AI::CommandRegistry::instance();
+  const auto safety  = aiReg.safetyOf(commandName);
 
   QJsonObject out;
   out[QStringLiteral("ok")]      = false;
@@ -1875,8 +1877,9 @@ QJsonArray AI::ToolDispatcher::availableTools(const QString& category) const
   appendVirtual(assistantToolDefs());
   appendVirtual(fsToolDefs());
 
-  const auto& commands = API::CommandRegistry::instance().commands();
-  const auto& aiReg    = AI::CommandRegistry::instance();
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto& commands     = apiRegistry.commands();
+  static auto& aiReg       = AI::CommandRegistry::instance();
 
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
     const auto& def = it.value();
@@ -1943,8 +1946,9 @@ static const QVector<detail::AssistantToolDef>& metaToolRoster()
  *         filtered by prefix and windowed by offset/limit (limit 0 = all). */
 QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix, int offset, int limit) const
 {
-  const auto& commands = API::CommandRegistry::instance().commands();
-  const auto& aiReg    = AI::CommandRegistry::instance();
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto& commands     = apiRegistry.commands();
+  static auto& aiReg       = AI::CommandRegistry::instance();
 
   QJsonArray entries;
   auto appendVirtual = [&entries, &prefix](const QVector<detail::AssistantToolDef>& defs) {
@@ -2061,8 +2065,9 @@ static const QHash<QString, QString>& scopeDescriptions()
 QJsonObject AI::ToolDispatcher::listCategories() const
 {
   const auto& kDescriptions = scopeDescriptions();
-  const auto& commands      = API::CommandRegistry::instance().commands();
-  const auto& aiReg         = AI::CommandRegistry::instance();
+  static auto& apiRegistry  = API::CommandRegistry::instance();
+  const auto& commands      = apiRegistry.commands();
+  static auto& aiReg        = AI::CommandRegistry::instance();
 
   QHash<QString, int> counts;
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
@@ -2112,7 +2117,11 @@ QJsonObject AI::ToolDispatcher::listCategories() const
  */
 QString AI::ToolDispatcher::canonicalToolName(const QString& name) const
 {
-  if (isAssistantTool(name) || isFsTool(name) || API::CommandRegistry::instance().hasCommand(name))
+  if (isAssistantTool(name) || isFsTool(name))
+    return name;
+
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  if (apiRegistry.hasCommand(name))
     return name;
 
   static const auto kReverse = []() {
@@ -2129,7 +2138,8 @@ QString AI::ToolDispatcher::canonicalToolName(const QString& name) const
     for (const auto& def : fsToolDefs())
       add(def.name);
 
-    const auto& commands = API::CommandRegistry::instance().commands();
+    static auto& registry = API::CommandRegistry::instance();
+    const auto& commands  = registry.commands();
     for (auto it = commands.constBegin(); it != commands.constEnd(); ++it)
       add(it.value().name);
 
@@ -2158,12 +2168,14 @@ QJsonObject AI::ToolDispatcher::describeCommand(const QString& requestedName) co
   if (isFsTool(name))
     return fsToolDescription(name);
 
-  const auto& commands = API::CommandRegistry::instance().commands();
-  const auto it        = commands.constFind(name);
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto& commands     = apiRegistry.commands();
+  const auto it            = commands.constFind(name);
   if (it == commands.constEnd())
     return {};
 
-  if (AI::CommandRegistry::instance().safetyOf(name) == Safety::Blocked)
+  static auto& aiReg = AI::CommandRegistry::instance();
+  if (aiReg.safetyOf(name) == Safety::Blocked)
     return {};
 
   QJsonObject desc;
@@ -2186,7 +2198,8 @@ static QJsonObject makeBlockedReply(const QString& name)
   QJsonObject error;
   error[QStringLiteral("code")]    = QStringLiteral("blocked");
   error[QStringLiteral("message")] = QStringLiteral("This command is blocked for AI safety.");
-  if (AI::CommandRegistry::instance().isDeviceGated(name)) {
+  static auto& aiReg               = AI::CommandRegistry::instance();
+  if (aiReg.isDeviceGated(name)) {
     error[QStringLiteral("repair")] =
       QStringLiteral("Hardware writes and connection changes must be performed by the user "
                      "unless they enable the 'Allow device control' checkbox in the AI panel. "
@@ -2226,7 +2239,8 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
     return reply;
   }
 
-  const auto safety        = AI::CommandRegistry::instance().safetyOf(name);
+  static auto& aiReg       = AI::CommandRegistry::instance();
+  const auto safety        = aiReg.safetyOf(name);
   const bool isDryRunQuery = args.value(QStringLiteral("dryRun")).toBool(false);
   if (safety == Safety::Blocked)
     return makeBlockedReply(name);
@@ -2254,8 +2268,9 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
   if (isFsTool(name))
     return executeFsTool(name, args);
 
-  const auto callId   = QUuid::createUuid().toString(QUuid::WithoutBraces);
-  const auto response = API::CommandRegistry::instance().execute(name, callId, args);
+  const auto callId        = QUuid::createUuid().toString(QUuid::WithoutBraces);
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto response      = apiRegistry.execute(name, callId, args);
 
   QJsonObject reply;
   reply[QStringLiteral("ok")] = response.success;
@@ -2286,8 +2301,9 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
  */
 static QJsonObject runSafeCommand(const QString& name)
 {
-  const auto callId   = QUuid::createUuid().toString(QUuid::WithoutBraces);
-  const auto response = API::CommandRegistry::instance().execute(name, callId, {});
+  const auto callId        = QUuid::createUuid().toString(QUuid::WithoutBraces);
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  const auto response      = apiRegistry.execute(name, callId, {});
   if (!response.success)
     return {};
 
@@ -2318,8 +2334,9 @@ QJsonObject AI::ToolDispatcher::getSnapshot() const
 
   QJsonObject snapshot;
   QJsonArray skipped;
+  static auto& apiRegistry = API::CommandRegistry::instance();
   for (const auto& name : kStatusCommands) {
-    if (!API::CommandRegistry::instance().hasCommand(name)) {
+    if (!apiRegistry.hasCommand(name)) {
       skipped.append(name);
       continue;
     }
@@ -2350,8 +2367,9 @@ QJsonObject AI::ToolDispatcher::getProjectState() const
   };
 
   QJsonObject state;
+  static auto& apiRegistry = API::CommandRegistry::instance();
   for (const auto& name : kSafeListCommands) {
-    if (!API::CommandRegistry::instance().hasCommand(name))
+    if (!apiRegistry.hasCommand(name))
       continue;
 
     state.insert(name, runSafeCommand(name));

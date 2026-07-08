@@ -26,7 +26,7 @@
  */
 void API::Handlers::AudioHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(QStringLiteral("io.audio.setInputDevice"),
                            QStringLiteral("Set input device (params: deviceIndex)"),
@@ -135,7 +135,8 @@ API::CommandResponse API::Handlers::AudioHandler::setInputDevice(const QString& 
 
   const int device_index = params.value(QStringLiteral("deviceIndex")).toInt();
 
-  const auto& devices = IO::ConnectionManager::instance().audio()->inputDeviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.audio()->inputDeviceList();
   if (device_index < 0 || device_index >= devices.count()) {
     return CommandResponse::makeError(
       id,
@@ -145,7 +146,7 @@ API::CommandResponse API::Handlers::AudioHandler::setInputDevice(const QString& 
         .arg(devices.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedInputDevice(device_index);
+  connectionManager.audio()->setSelectedInputDevice(device_index);
 
   QJsonObject result;
   result[QStringLiteral("deviceIndex")] = device_index;
@@ -166,7 +167,8 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputDevice(const QString&
 
   const int device_index = params.value(QStringLiteral("deviceIndex")).toInt();
 
-  const auto& devices = IO::ConnectionManager::instance().audio()->outputDeviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.audio()->outputDeviceList();
   if (device_index < 0 || device_index >= devices.count()) {
     return CommandResponse::makeError(
       id,
@@ -176,7 +178,7 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputDevice(const QString&
         .arg(devices.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedOutputDevice(device_index);
+  connectionManager.audio()->setSelectedOutputDevice(device_index);
 
   QJsonObject result;
   result[QStringLiteral("deviceIndex")] = device_index;
@@ -197,7 +199,8 @@ API::CommandResponse API::Handlers::AudioHandler::setSampleRate(const QString& i
 
   const int rate_index = params.value(QStringLiteral("rateIndex")).toInt();
 
-  const auto& rates = IO::ConnectionManager::instance().audio()->sampleRates();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& rates              = connectionManager.audio()->sampleRates();
   if (rate_index < 0 || rate_index >= rates.count()) {
     return CommandResponse::makeError(
       id,
@@ -207,7 +210,7 @@ API::CommandResponse API::Handlers::AudioHandler::setSampleRate(const QString& i
         .arg(rates.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedSampleRate(rate_index);
+  connectionManager.audio()->setSelectedSampleRate(rate_index);
 
   QJsonObject result;
   result[QStringLiteral("rateIndex")] = rate_index;
@@ -228,7 +231,8 @@ API::CommandResponse API::Handlers::AudioHandler::setInputSampleFormat(const QSt
 
   const int format_index = params.value(QStringLiteral("formatIndex")).toInt();
 
-  const auto& formats = IO::ConnectionManager::instance().audio()->inputSampleFormats();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& formats            = connectionManager.audio()->inputSampleFormats();
   if (format_index < 0 || format_index >= formats.count()) {
     return CommandResponse::makeError(
       id,
@@ -238,7 +242,7 @@ API::CommandResponse API::Handlers::AudioHandler::setInputSampleFormat(const QSt
         .arg(formats.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedInputSampleFormat(format_index);
+  connectionManager.audio()->setSelectedInputSampleFormat(format_index);
 
   QJsonObject result;
   result[QStringLiteral("formatIndex")] = format_index;
@@ -259,7 +263,8 @@ API::CommandResponse API::Handlers::AudioHandler::setInputChannelConfig(const QS
 
   const int channel_index = params.value(QStringLiteral("channelIndex")).toInt();
 
-  const auto& channels = IO::ConnectionManager::instance().audio()->inputChannelConfigurations();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& channels           = connectionManager.audio()->inputChannelConfigurations();
   if (channel_index < 0 || channel_index >= channels.count()) {
     return CommandResponse::makeError(
       id,
@@ -269,7 +274,7 @@ API::CommandResponse API::Handlers::AudioHandler::setInputChannelConfig(const QS
         .arg(channels.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedInputChannelConfiguration(channel_index);
+  connectionManager.audio()->setSelectedInputChannelConfiguration(channel_index);
 
   QJsonObject result;
   result[QStringLiteral("channelIndex")] = channel_index;
@@ -290,7 +295,8 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputSampleFormat(const QS
 
   const int format_index = params.value(QStringLiteral("formatIndex")).toInt();
 
-  const auto& formats = IO::ConnectionManager::instance().audio()->outputSampleFormats();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& formats            = connectionManager.audio()->outputSampleFormats();
   if (format_index < 0 || format_index >= formats.count()) {
     return CommandResponse::makeError(
       id,
@@ -300,7 +306,7 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputSampleFormat(const QS
         .arg(formats.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedOutputSampleFormat(format_index);
+  connectionManager.audio()->setSelectedOutputSampleFormat(format_index);
 
   QJsonObject result;
   result[QStringLiteral("formatIndex")] = format_index;
@@ -321,7 +327,8 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputChannelConfig(const Q
 
   const int channel_index = params.value(QStringLiteral("channelIndex")).toInt();
 
-  const auto& channels = IO::ConnectionManager::instance().audio()->outputChannelConfigurations();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& channels           = connectionManager.audio()->outputChannelConfigurations();
   if (channel_index < 0 || channel_index >= channels.count()) {
     return CommandResponse::makeError(
       id,
@@ -331,7 +338,7 @@ API::CommandResponse API::Handlers::AudioHandler::setOutputChannelConfig(const Q
         .arg(channels.count() - 1));
   }
 
-  IO::ConnectionManager::instance().audio()->setSelectedOutputChannelConfiguration(channel_index);
+  connectionManager.audio()->setSelectedOutputChannelConfiguration(channel_index);
 
   QJsonObject result;
   result[QStringLiteral("channelIndex")] = channel_index;
@@ -351,16 +358,16 @@ API::CommandResponse API::Handlers::AudioHandler::getInputDevices(const QString&
 {
   Q_UNUSED(params)
 
-  const auto& devices = IO::ConnectionManager::instance().audio()->inputDeviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.audio()->inputDeviceList();
 
   QJsonArray devices_array;
   for (const auto& device : devices)
     devices_array.append(device);
 
   QJsonObject result;
-  result[QStringLiteral("devices")] = devices_array;
-  result[QStringLiteral("selectedIndex")] =
-    IO::ConnectionManager::instance().audio()->selectedInputDevice();
+  result[QStringLiteral("devices")]       = devices_array;
+  result[QStringLiteral("selectedIndex")] = connectionManager.audio()->selectedInputDevice();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -372,16 +379,16 @@ API::CommandResponse API::Handlers::AudioHandler::getOutputDevices(const QString
 {
   Q_UNUSED(params)
 
-  const auto& devices = IO::ConnectionManager::instance().audio()->outputDeviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.audio()->outputDeviceList();
 
   QJsonArray devices_array;
   for (const auto& device : devices)
     devices_array.append(device);
 
   QJsonObject result;
-  result[QStringLiteral("devices")] = devices_array;
-  result[QStringLiteral("selectedIndex")] =
-    IO::ConnectionManager::instance().audio()->selectedOutputDevice();
+  result[QStringLiteral("devices")]       = devices_array;
+  result[QStringLiteral("selectedIndex")] = connectionManager.audio()->selectedOutputDevice();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -393,16 +400,16 @@ API::CommandResponse API::Handlers::AudioHandler::getSampleRates(const QString& 
 {
   Q_UNUSED(params)
 
-  const auto& rates = IO::ConnectionManager::instance().audio()->sampleRates();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& rates              = connectionManager.audio()->sampleRates();
 
   QJsonArray rates_array;
   for (const auto& rate : rates)
     rates_array.append(rate);
 
   QJsonObject result;
-  result[QStringLiteral("sampleRates")] = rates_array;
-  result[QStringLiteral("selectedIndex")] =
-    IO::ConnectionManager::instance().audio()->selectedSampleRate();
+  result[QStringLiteral("sampleRates")]   = rates_array;
+  result[QStringLiteral("selectedIndex")] = connectionManager.audio()->selectedSampleRate();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -414,16 +421,16 @@ API::CommandResponse API::Handlers::AudioHandler::getInputFormats(const QString&
 {
   Q_UNUSED(params)
 
-  const auto& formats = IO::ConnectionManager::instance().audio()->inputSampleFormats();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& formats            = connectionManager.audio()->inputSampleFormats();
 
   QJsonArray formats_array;
   for (const auto& format : formats)
     formats_array.append(format);
 
   QJsonObject result;
-  result[QStringLiteral("formats")] = formats_array;
-  result[QStringLiteral("selectedIndex")] =
-    IO::ConnectionManager::instance().audio()->selectedInputSampleFormat();
+  result[QStringLiteral("formats")]       = formats_array;
+  result[QStringLiteral("selectedIndex")] = connectionManager.audio()->selectedInputSampleFormat();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -435,16 +442,16 @@ API::CommandResponse API::Handlers::AudioHandler::getOutputFormats(const QString
 {
   Q_UNUSED(params)
 
-  const auto& formats = IO::ConnectionManager::instance().audio()->outputSampleFormats();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& formats            = connectionManager.audio()->outputSampleFormats();
 
   QJsonArray formats_array;
   for (const auto& format : formats)
     formats_array.append(format);
 
   QJsonObject result;
-  result[QStringLiteral("formats")] = formats_array;
-  result[QStringLiteral("selectedIndex")] =
-    IO::ConnectionManager::instance().audio()->selectedOutputSampleFormat();
+  result[QStringLiteral("formats")]       = formats_array;
+  result[QStringLiteral("selectedIndex")] = connectionManager.audio()->selectedOutputSampleFormat();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -456,7 +463,8 @@ API::CommandResponse API::Handlers::AudioHandler::getConfiguration(const QString
 {
   Q_UNUSED(params)
 
-  auto* audio = IO::ConnectionManager::instance().audio();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  auto* audio                    = connectionManager.audio();
 
   QJsonObject result;
   result[QStringLiteral("selectedInputDevice")]        = audio->selectedInputDevice();

@@ -28,6 +28,11 @@
 #include "IO/FrameConfig.h"
 #include "SerialStudio.h"
 
+namespace DataModel {
+class FrameBuilder;
+class ProjectModel;
+}  // namespace DataModel
+
 /**
  * @brief Singleton owning the application-level operation mode, project file path,
  *        and derived FrameConfig for device 0.
@@ -88,4 +93,6 @@ private:
   QString m_projectFilePath;
   SerialStudio::OperationMode m_operationMode;
   IO::FrameConfig m_frameConfig;
+  DataModel::ProjectModel& m_projectModel;
+  DataModel::FrameBuilder* m_frameBuilder;
 };

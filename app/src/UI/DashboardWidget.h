@@ -25,7 +25,14 @@
 
 #include "SerialStudio.h"
 
+namespace Misc {
+class ThemeManager;
+}  // namespace Misc
+
 namespace UI {
+class Dashboard;
+class WidgetRegistry;
+
 /**
  * @brief QML-exposed widget container that dynamically instantiates and
  *        manages dashboard visualization widgets.
@@ -87,6 +94,10 @@ public slots:
 
 private:
   void buildWidgetForType();
+
+  UI::Dashboard& m_dashboard;
+  Misc::ThemeManager& m_themeManager;
+  UI::WidgetRegistry& m_widgetRegistry;
 
   int m_index;
   int m_relativeIndex;

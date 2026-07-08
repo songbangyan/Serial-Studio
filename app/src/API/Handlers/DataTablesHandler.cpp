@@ -94,7 +94,7 @@ void API::Handlers::DataTablesHandler::registerCommands()
  */
 void API::Handlers::DataTablesHandler::registerTableQueryCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataTable.list"),
@@ -154,7 +154,7 @@ void API::Handlers::DataTablesHandler::registerTableQueryCommands()
  */
 void API::Handlers::DataTablesHandler::registerTableMutationCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataTable.add"),
@@ -242,7 +242,7 @@ void API::Handlers::DataTablesHandler::registerTableMutationCommands()
  */
 void API::Handlers::DataTablesHandler::registerRegisterCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject addProps;
   addProps[QStringLiteral("table")] = QJsonObject{
@@ -327,8 +327,9 @@ API::CommandResponse API::Handlers::DataTablesHandler::tablesList(const QString&
 {
   Q_UNUSED(params)
 
-  const auto& tables  = DataModel::ProjectModel::instance().tables();
-  const auto& folders = DataModel::ProjectModel::instance().editorTableFolders();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& tables        = projectModel.tables();
+  const auto& folders       = projectModel.editorTableFolders();
 
   QJsonArray arr;
   for (const auto& t : tables) {
@@ -356,8 +357,9 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableGet(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  const auto& tables  = DataModel::ProjectModel::instance().tables();
-  const auto& folders = DataModel::ProjectModel::instance().editorTableFolders();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& tables        = projectModel.tables();
+  const auto& folders       = projectModel.editorTableFolders();
 
   QString path;
   for (const auto& t : tables) {
@@ -372,7 +374,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableGet(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Table not found: %1").arg(name));
 
-  const auto registers = DataModel::ProjectModel::instance().registersForTable(path);
+  const auto registers = projectModel.registersForTable(path);
 
   QJsonArray arr = QJsonArray::fromVariantList(registers);
 
@@ -396,7 +398,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableAdd(const QString& i
   const QString desired =
     params.value(QStringLiteral("name")).toString(QStringLiteral("Shared Table"));
 
-  const QString actual = DataModel::ProjectModel::instance().addTable(desired);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const QString actual      = projectModel.addTable(desired);
 
   QJsonObject result;
   result[QStringLiteral("name")]  = actual;
@@ -416,7 +419,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableDelete(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  static auto& pm     = DataModel::ProjectModel::instance();
   const auto& tables  = pm.tables();
   const auto& folders = pm.editorTableFolders();
 
@@ -476,7 +479,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::tableRename(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: newName"));
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  static auto& pm     = DataModel::ProjectModel::instance();
   const auto& tables  = pm.tables();
   const auto& folders = pm.editorTableFolders();
 
@@ -539,7 +542,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::registerAdd(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  static auto& pm     = DataModel::ProjectModel::instance();
   const auto& tables  = pm.tables();
   const auto& folders = pm.editorTableFolders();
 
@@ -602,7 +605,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::registerDelete(const QStr
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  static auto& pm     = DataModel::ProjectModel::instance();
   const auto& tables  = pm.tables();
   const auto& folders = pm.editorTableFolders();
 
@@ -665,7 +668,7 @@ API::CommandResponse API::Handlers::DataTablesHandler::registerUpdate(const QStr
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  auto& pm            = DataModel::ProjectModel::instance();
+  static auto& pm     = DataModel::ProjectModel::instance();
   const auto& tables  = pm.tables();
   const auto& folders = pm.editorTableFolders();
 
@@ -744,7 +747,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::valueGet(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  const auto& store = DataModel::FrameBuilder::instance().tableStore();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto& store         = frameBuilder.tableStore();
   if (!store.isInitialized())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Data-table store not initialized (no project)"));
@@ -793,7 +797,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::valueSet(const QString& i
   if (!rv.isNumeric)
     rv.stringValue = v.toString();
 
-  auto& store = DataModel::FrameBuilder::instance().tableStore();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  auto& store               = frameBuilder.tableStore();
   if (!store.isInitialized())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Data-table store not initialized (no project)"));
@@ -828,7 +833,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::valueHandle(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: name"));
 
-  const auto& store = DataModel::FrameBuilder::instance().tableStore();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto& store         = frameBuilder.tableStore();
   if (!store.isInitialized())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Data-table store not initialized (no project)"));
@@ -855,7 +861,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::valueGetH(const QString& 
   const qint64 handle =
     static_cast<qint64>(SerialStudio::toDouble(params.value(QStringLiteral("handle"))));
 
-  const auto& store = DataModel::FrameBuilder::instance().tableStore();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto& store         = frameBuilder.tableStore();
   if (!store.isInitialized())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Data-table store not initialized (no project)"));
@@ -898,7 +905,8 @@ API::CommandResponse API::Handlers::DataTablesHandler::valueSetH(const QString& 
   if (!rv.isNumeric)
     rv.stringValue = v.toString();
 
-  auto& store = DataModel::FrameBuilder::instance().tableStore();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  auto& store               = frameBuilder.tableStore();
   if (!store.isInitialized())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Data-table store not initialized (no project)"));

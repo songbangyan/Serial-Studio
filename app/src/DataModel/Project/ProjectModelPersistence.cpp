@@ -90,7 +90,9 @@ bool DataModel::ProjectModel::askSave()
   if (!modified())
     return true;
 
-  const auto opMode = AppState::instance().operationMode();
+  static auto& appState = AppState::instance();
+
+  const auto opMode = appState.operationMode();
   if (opMode != SerialStudio::ProjectFile && m_filePath.isEmpty())
     return true;
 
@@ -105,7 +107,7 @@ bool DataModel::ProjectModel::askSave()
       openJsonFile(path);
       m_silentReload = false;
       if (opMode != SerialStudio::ProjectFile)
-        AppState::instance().setOperationMode(opMode);
+        appState.setOperationMode(opMode);
     }
 
     return true;
@@ -131,7 +133,7 @@ bool DataModel::ProjectModel::askSave()
       openJsonFile(path);
       m_silentReload = false;
       if (opMode != SerialStudio::ProjectFile)
-        AppState::instance().setOperationMode(opMode);
+        appState.setOperationMode(opMode);
     }
 
     return true;
@@ -344,7 +346,8 @@ void DataModel::ProjectModel::autoSave()
   if (m_filePath.isEmpty() || m_locked || !m_modified)
     return;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!writeProjectFile(m_filePath)) {
@@ -364,8 +367,9 @@ void DataModel::ProjectModel::autoSave()
  */
 void DataModel::ProjectModel::syncRuntime()
 {
-  m_runtimeDirty = false;
-  DataModel::FrameBuilder::instance().syncFromProjectModel();
+  m_runtimeDirty            = false;
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.syncFromProjectModel();
 }
 
 /**
@@ -388,7 +392,8 @@ void DataModel::ProjectModel::scheduleAutoSave()
   if (m_autoSaveSuspended || m_filePath.isEmpty() || m_locked)
     return;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   m_autoSaveTimer->start();
@@ -482,7 +487,8 @@ void DataModel::ProjectModel::resolveDiskFileChange()
     m_modified = true;
     Q_EMIT modifiedChanged();
     Q_EMIT projectFileChangedOnDisk();
-    DataModel::NotificationCenter::instance().postWarning(
+    static auto& nc = DataModel::NotificationCenter::instance();
+    nc.postWarning(
       QStringLiteral("ProjectModel"),
       tr("Project file removed from disk"),
       tr("%1 was deleted or renamed by another program. Save the project to recreate it.")
@@ -504,7 +510,8 @@ void DataModel::ProjectModel::resolveDiskFileChange()
     qWarning() << "[ProjectModel] Project file changed on disk; keeping in-memory state";
     m_modified = true;
     Q_EMIT modifiedChanged();
-    DataModel::NotificationCenter::instance().postWarning(
+    static auto& nc = DataModel::NotificationCenter::instance();
+    nc.postWarning(
       QStringLiteral("ProjectModel"),
       tr("Project file changed on disk"),
       tr("%1 was modified by another program. The in-memory project was kept; reopen the "
@@ -561,7 +568,8 @@ bool DataModel::ProjectModel::finalizeProjectSave()
     return false;
   }
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
   setModified(false);
   Q_EMIT jsonFileChanged();
   return true;

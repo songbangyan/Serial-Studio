@@ -89,7 +89,8 @@ void DataModel::JsWatchdogWorker::finish()
  */
 void DataModel::JsWatchdogWorker::onTick()
 {
-  JsWatchdogThread::instance().interruptExpired();
+  static auto& watchdogThread = JsWatchdogThread::instance();
+  watchdogThread.interruptExpired();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ void DataModel::JsWatchdogThread::ensureStarted()
   QObject::connect(m_thread, &QThread::started, m_worker, &JsWatchdogWorker::begin);
   m_thread->start();
 
-  if (auto* app = QCoreApplication::instance())
+  if (auto* app = qApp)
     QObject::connect(app, &QCoreApplication::aboutToQuit, app, [this]() { shutdown(); });
 
   m_started = true;

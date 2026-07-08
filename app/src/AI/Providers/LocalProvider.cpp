@@ -293,8 +293,9 @@ void AI::LocalProvider::refreshModels()
     reply->deleteLater();
 
     if (reply->error() != QNetworkReply::NoError) {
+      static auto& assistant = AI::Assistant::instance();
       const bool localActive =
-        static_cast<ProviderId>(AI::Assistant::instance().currentProvider()) == ProviderId::Local;
+        static_cast<ProviderId>(assistant.currentProvider()) == ProviderId::Local;
       if (reply->error() == QNetworkReply::ConnectionRefusedError || !localActive)
         qCDebug(serialStudioAI) << "Local model list query failed:" << reply->errorString();
       else

@@ -31,6 +31,14 @@
 #include "DataModel/Frame.h"
 #include "SerialStudio.h"
 
+namespace IO {
+class ConnectionManager;
+}  // namespace IO
+
+namespace Misc {
+class Translator;
+}  // namespace Misc
+
 namespace MQTT {
 class Publisher;
 class PublisherScriptEditor;
@@ -38,6 +46,7 @@ class PublisherScriptEditor;
 
 namespace DataModel {
 class CustomModel;
+class FrameBuilder;
 class ProjectModel;
 
 /**
@@ -536,6 +545,14 @@ private:
   void buildOutputWidgetTransmitRow(const DataModel::OutputWidget& widget);
 
 private:
+  DataModel::ProjectModel& m_projectModelRef;
+  IO::ConnectionManager& m_connectionManager;
+  Misc::Translator& m_translator;
+  DataModel::FrameBuilder& m_frameBuilder;
+#ifdef BUILD_COMMERCIAL
+  MQTT::Publisher& m_mqttPublisher;
+#endif
+
   CurrentView m_currentView;
   bool m_suppressViewChange;
 

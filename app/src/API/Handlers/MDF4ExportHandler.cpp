@@ -34,7 +34,7 @@
  */
 void API::Handlers::MDF4ExportHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject setEnabledSchema;
   {
@@ -86,8 +86,9 @@ API::CommandResponse API::Handlers::MDF4ExportHandler::setEnabled(const QString&
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
   }
 
-  const bool enabled = params.value(QStringLiteral("enabled")).toBool();
-  MDF4::Export::instance().setExportEnabled(enabled);
+  const bool enabled      = params.value(QStringLiteral("enabled")).toBool();
+  static auto& mdf4Export = MDF4::Export::instance();
+  mdf4Export.setExportEnabled(enabled);
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = enabled;
@@ -102,7 +103,8 @@ API::CommandResponse API::Handlers::MDF4ExportHandler::close(const QString& id,
 {
   Q_UNUSED(params)
 
-  MDF4::Export::instance().closeFile();
+  static auto& mdf4Export = MDF4::Export::instance();
+  mdf4Export.closeFile();
 
   QJsonObject result;
   result[QStringLiteral("closed")] = true;
@@ -121,7 +123,7 @@ API::CommandResponse API::Handlers::MDF4ExportHandler::getStatus(const QString& 
 {
   Q_UNUSED(params)
 
-  auto& mdf4Export = MDF4::Export::instance();
+  static auto& mdf4Export = MDF4::Export::instance();
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = mdf4Export.exportEnabled();

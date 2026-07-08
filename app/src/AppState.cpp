@@ -35,7 +35,11 @@
 /**
  * @brief Constructs AppState and restores the saved operation mode.
  */
-AppState::AppState() : m_ephemeralSession(false), m_operationMode(SerialStudio::QuickPlot)
+AppState::AppState()
+  : m_ephemeralSession(false)
+  , m_operationMode(SerialStudio::QuickPlot)
+  , m_projectModel(DataModel::ProjectModel::instance())
+  , m_frameBuilder(nullptr)
 {
   const int saved   = m_settings.value("operation_mode", SerialStudio::QuickPlot).toInt();
   const int clamped = (saved >= SerialStudio::ProjectFile && saved <= SerialStudio::QuickPlot)
@@ -110,9 +114,14 @@ bool AppState::ephemeralSession() const noexcept
  */
 void AppState::setupExternalConnections()
 {
-  auto& pm = DataModel::ProjectModel::instance();
-  connect(&pm, &DataModel::ProjectModel::jsonFileChanged, this, &AppState::onProjectLoaded);
-  connect(&pm, &DataModel::ProjectModel::frameDetectionChanged, this, &AppState::onProjectLoaded);
+  m_frameBuilder = &DataModel::FrameBuilder::instance();
+
+  connect(
+    &m_projectModel, &DataModel::ProjectModel::jsonFileChanged, this, &AppState::onProjectLoaded);
+  connect(&m_projectModel,
+          &DataModel::ProjectModel::frameDetectionChanged,
+          this,
+          &AppState::onProjectLoaded);
 }
 
 /**
@@ -120,14 +129,13 @@ void AppState::setupExternalConnections()
  */
 void AppState::restoreLastProject()
 {
-  auto& pm                 = DataModel::ProjectModel::instance();
   const QString saved_path = m_settings.value("project_file_path", "").toString();
   const auto persistedMode = m_operationMode;
 
   if (!saved_path.isEmpty() && QFileInfo::exists(saved_path))
-    pm.openJsonFile(saved_path);
+    m_projectModel.openJsonFile(saved_path);
   else
-    pm.newJsonFile();
+    m_projectModel.newJsonFile();
 
   if (m_operationMode != persistedMode)
     setOperationMode(persistedMode);
@@ -183,7 +191,7 @@ void AppState::setOperationMode(SerialStudio::OperationMode mode)
  */
 void AppState::onProjectLoaded()
 {
-  const QString path = DataModel::ProjectModel::instance().jsonFilePath();
+  const QString path = m_projectModel.jsonFilePath();
   if (!m_demoSessionDir.isEmpty() && !QDir::cleanPath(path).startsWith(m_demoSessionDir)) {
     m_demoSessionDir.clear();
     if (!m_ephemeralSession)
@@ -198,7 +206,8 @@ void AppState::onProjectLoaded()
     Q_EMIT projectFileChanged();
   }
 
-  DataModel::FrameBuilder::instance().syncFromProjectModel();
+  Q_ASSERT(m_frameBuilder);
+  m_frameBuilder->syncFromProjectModel();
 
   m_frameConfig = deriveFrameConfig();
   Q_EMIT frameConfigChanged(m_frameConfig);
@@ -232,12 +241,12 @@ IO::FrameConfig AppState::deriveFrameConfig() const
     return cfg;
   }
 
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  const auto& sources = m_projectModel.sources();
   if (sources.empty()) {
     cfg.startSequences    = {QByteArray("/*")};
     cfg.finishSequences   = {QByteArray("*/")};
     cfg.checksumAlgorithm = QString();
-    cfg.frameDetection    = DataModel::ProjectModel::instance().frameDetection();
+    cfg.frameDetection    = m_projectModel.frameDetection();
     return cfg;
   }
 

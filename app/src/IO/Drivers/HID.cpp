@@ -281,7 +281,8 @@ void IO::Drivers::HID::onReadError()
   if (!isOpen())
     return;
 
-  ConnectionManager::instance().disconnectDevice(this);
+  static auto& connectionManager = ConnectionManager::instance();
+  connectionManager.disconnectDevice(this);
   Misc::Utilities::showMessageBox(tr("HID Device Error"),
                                   tr("The HID device was disconnected or "
                                      "encountered a fatal read error."));

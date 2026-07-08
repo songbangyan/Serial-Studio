@@ -103,6 +103,10 @@ Sessions::DatabaseManager::DatabaseManager()
   , m_pendingPdfActive(false)
   , m_nextToken(1)
   , m_outstandingMutations(0)
+  , m_workspaceManager(nullptr)
+  , m_player(nullptr)
+  , m_projectModel(nullptr)
+  , m_appState(nullptr)
 {
   qRegisterMetaType<Sessions::ReportPayloadPtr>("Sessions::ReportPayloadPtr");
   initWorker();
@@ -184,7 +188,7 @@ void Sessions::DatabaseManager::shutdown()
     m_worker->requestCancel();
 
   bool joined = true;
-  if (QCoreApplication::instance() && m_thread->isRunning() && m_worker) {
+  if (qApp && m_thread->isRunning() && m_worker) {
     QMetaObject::invokeMethod(m_worker, "closeDatabase", Qt::BlockingQueuedConnection);
     m_thread->quit();
     joined = m_thread->wait(5000);
@@ -214,6 +218,11 @@ void Sessions::DatabaseManager::shutdown()
  */
 void Sessions::DatabaseManager::setupExternalConnections()
 {
+  m_workspaceManager = &Misc::WorkspaceManager::instance();
+  m_player           = &Sessions::Player::instance();
+  m_projectModel     = &DataModel::ProjectModel::instance();
+  m_appState         = &AppState::instance();
+
   connect(&Sessions::Export::instance(),
           &Sessions::Export::openChanged,
           this,
@@ -410,8 +419,9 @@ QVariantMap Sessions::DatabaseManager::sessionMetadata(int sessionId) const
  */
 QString Sessions::DatabaseManager::canonicalDbPath(const QString& projectTitle)
 {
-  const QString safeTitle = sanitiseTitleForPath(projectTitle);
-  const auto subdir       = Misc::WorkspaceManager::instance().path("Session Databases");
+  const QString safeTitle       = sanitiseTitleForPath(projectTitle);
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto subdir             = workspaceManager.path("Session Databases");
   return QStringLiteral("%1/%2/%2.db").arg(subdir, safeTitle);
 }
 
@@ -424,9 +434,11 @@ QString Sessions::DatabaseManager::canonicalDbPath(const QString& projectTitle)
  */
 void Sessions::DatabaseManager::openDatabase()
 {
+  Q_ASSERT(m_workspaceManager);
+
   auto* dialog = new QFileDialog(qApp->activeWindow(),
                                  tr("Open Session File"),
-                                 Misc::WorkspaceManager::instance().path("Session Databases"),
+                                 m_workspaceManager->path("Session Databases"),
                                  tr("Session files (*.db)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
@@ -671,7 +683,8 @@ void Sessions::DatabaseManager::replaySelectedSession()
   if (m_selectedSessionId < 0 || m_filePath.isEmpty())
     return;
 
-  Sessions::Player::instance().openFile(m_filePath, m_selectedSessionId);
+  Q_ASSERT(m_player);
+  m_player->openFile(m_filePath, m_selectedSessionId);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -784,11 +797,12 @@ void Sessions::DatabaseManager::exportSessionToCsv(int sessionId)
   if (!isOpen() || m_csvExportBusy)
     return;
 
+  Q_ASSERT(m_workspaceManager);
+
   const auto meta         = sessionMetadata(sessionId);
   const QString projTitle = meta.value("project_title").toString();
   const QString safeProj  = sanitiseTitleForPath(projTitle);
-  const QString dir =
-    QStringLiteral("%1/%2").arg(Misc::WorkspaceManager::instance().path("CSV"), safeProj);
+  const QString dir       = QStringLiteral("%1/%2").arg(m_workspaceManager->path("CSV"), safeProj);
   QDir().mkpath(dir);
 
   const QString suggested =
@@ -915,11 +929,12 @@ void Sessions::DatabaseManager::requestPdfOutputPath(int sessionId, HtmlReportOp
   const QString title  = wantsPdf ? tr("Save PDF Report") : tr("Save HTML Report");
   const QString filter = wantsPdf ? tr("PDF files (*.pdf)") : tr("HTML files (*.html)");
 
+  Q_ASSERT(m_workspaceManager);
+
   const auto meta         = sessionMetadata(sessionId);
   const QString projTitle = meta.value("project_title").toString();
   const QString safeProj  = sanitiseTitleForPath(projTitle);
-  const QString dir =
-    QStringLiteral("%1/%2").arg(Misc::WorkspaceManager::instance().path("Reports"), safeProj);
+  const QString dir = QStringLiteral("%1/%2").arg(m_workspaceManager->path("Reports"), safeProj);
   QDir().mkpath(dir);
 
   const QString baseName  = opts.documentTitle.isEmpty()
@@ -1070,15 +1085,16 @@ void Sessions::DatabaseManager::storeProjectMetadata()
   if (!isOpen())
     return;
 
-  const auto& pm  = DataModel::ProjectModel::instance();
-  const auto json = QJsonDocument(pm.serializeToJson()).toJson(QJsonDocument::Compact);
+  Q_ASSERT(m_projectModel);
+
+  const auto json = QJsonDocument(m_projectModel->serializeToJson()).toJson(QJsonDocument::Compact);
 
   setBusy(true);
   QMetaObject::invokeMethod(m_worker,
                             "storeProjectMetadata",
                             Qt::QueuedConnection,
                             Q_ARG(QString, QString::fromUtf8(json)),
-                            Q_ARG(QString, pm.title()),
+                            Q_ARG(QString, m_projectModel->title()),
                             Q_ARG(quint64, nextToken()));
 }
 
@@ -1099,6 +1115,9 @@ void Sessions::DatabaseManager::restoreProjectFromDb()
  */
 void Sessions::DatabaseManager::runRestoreProjectFromJson(const QString& json)
 {
+  Q_ASSERT(m_projectModel);
+  Q_ASSERT(m_appState);
+
   if (json.isEmpty()) {
     Misc::Utilities::showMessageBox(tr("No project data"),
                                     tr("This session file does not contain an embedded project."),
@@ -1117,7 +1136,7 @@ void Sessions::DatabaseManager::runRestoreProjectFromJson(const QString& json)
   }
 
   const auto title       = doc.object().value("title").toString("Restored Project");
-  const auto projectsDir = DataModel::ProjectModel::instance().jsonProjectsPath();
+  const auto projectsDir = m_projectModel->jsonProjectsPath();
   const auto suggested   = QStringLiteral("%1/%2.ssproj").arg(projectsDir, title);
 
   const auto path = QFileDialog::getSaveFileName(
@@ -1136,8 +1155,8 @@ void Sessions::DatabaseManager::runRestoreProjectFromJson(const QString& json)
   file.write(doc.toJson(QJsonDocument::Indented));
   file.close();
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
-  DataModel::ProjectModel::instance().openJsonFile(path);
+  m_appState->setOperationMode(SerialStudio::ProjectFile);
+  m_projectModel->openJsonFile(path);
 
   Q_EMIT projectMetadataRestored();
 }

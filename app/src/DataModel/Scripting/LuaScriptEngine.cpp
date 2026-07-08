@@ -121,7 +121,8 @@ static void closeLuaState(lua_State* state)
   if (!state)
     return;
 
-  DataModel::FrameBuilder::instance().tableStore().clearLookupCache();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.tableStore().clearLookupCache();
   lua_close(state);
 }
 
@@ -176,7 +177,8 @@ void DataModel::LuaScriptEngine::createState()
 
   DataModel::NotificationCenter::installScriptApi(m_state);
 
-  DataModel::FrameBuilder::instance().injectTableApiLua(m_state);
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.injectTableApiLua(m_state);
 
   DataModel::DeviceWriteApi::installLua(m_state, m_sourceId);
 

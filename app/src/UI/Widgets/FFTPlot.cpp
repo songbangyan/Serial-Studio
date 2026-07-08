@@ -56,6 +56,7 @@ inline float blackman_harris_coeff(unsigned int i, unsigned int N)
  */
 Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
+  , m_dashboard(UI::Dashboard::instance())
   , m_size(0)
   , m_index(index)
   , m_samplingRate(0)
@@ -175,7 +176,7 @@ double Widgets::FFTPlot::maxY() const noexcept
  */
 bool Widgets::FFTPlot::running() const noexcept
 {
-  return UI::Dashboard::instance().fftPlotRunning(m_index);
+  return m_dashboard.fftPlotRunning(m_index);
 }
 
 /**
@@ -244,7 +245,7 @@ void Widgets::FFTPlot::setDataH(const int height)
  */
 void Widgets::FFTPlot::setRunning(const bool enabled)
 {
-  UI::Dashboard::instance().setFFTPlotRunning(m_index, enabled);
+  m_dashboard.setFFTPlotRunning(m_index, enabled);
   Q_EMIT runningChanged();
 }
 
@@ -379,7 +380,7 @@ void Widgets::FFTPlot::updateData()
   if (!VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index))
     return;
 
-  const auto& data  = UI::Dashboard::instance().fftData(m_index);
+  const auto& data  = m_dashboard.fftData(m_index);
   const int newSize = static_cast<int>(data.size());
   if (newSize != m_size && !rebuildFftPlan(newSize))
     return;

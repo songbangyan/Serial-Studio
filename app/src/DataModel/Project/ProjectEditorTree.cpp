@@ -129,7 +129,7 @@ void DataModel::ProjectEditor::buildTreeModel()
   const bool seeding = m_seedExpansionFromModel;
   QHash<QString, bool> expandedStates;
   if (seeding) {
-    const auto& persisted = DataModel::ProjectModel::instance().treeExpansion();
+    const auto& persisted = m_projectModelRef.treeExpansion();
     for (auto it = persisted.constBegin(); it != persisted.constEnd(); ++it)
       expandedStates.insert(it.key(), it.value().toBool());
 
@@ -156,7 +156,7 @@ void DataModel::ProjectEditor::buildTreeModel()
 
   m_treeModel = new CustomModel(this);
 
-  const auto& pm = DataModel::ProjectModel::instance();
+  const auto& pm = m_projectModelRef;
   auto* root     = new QStandardItem(pm.title());
   root->setData(root->text(), TreeViewText);
   root->setData("qrc:/icons/project-editor/treeview/project-setup.svg", TreeViewIcon);
@@ -184,7 +184,7 @@ void DataModel::ProjectEditor::buildTreeModel()
     restoreTreeSelection();
 
   if (!seeding)
-    DataModel::ProjectModel::instance().setTreeExpansion(snapshotTreeExpansion());
+    m_projectModelRef.setTreeExpansion(snapshotTreeExpansion());
 
   Q_EMIT treeRebuildFinished(revealIndex);
 }
@@ -243,7 +243,7 @@ void DataModel::ProjectEditor::appendSourceTreeItems(QStandardItem* root)
   if (!m_treeSearchQuery.trimmed().isEmpty())
     return;
 
-  const auto& sources    = DataModel::ProjectModel::instance().sources();
+  const auto& sources    = m_projectModelRef.sources();
   const bool multiSource = sources.size() > 1;
 
   for (const auto& source : sources) {
@@ -278,7 +278,7 @@ void DataModel::ProjectEditor::appendActionTreeItems(QStandardItem* root)
 
   const QString q         = m_treeSearchQuery.trimmed();
   const bool filterActive = !q.isEmpty();
-  const auto& actions     = DataModel::ProjectModel::instance().actions();
+  const auto& actions     = m_projectModelRef.actions();
 
   for (const auto& action : actions) {
     if (filterActive && !action.title.contains(q, Qt::CaseInsensitive))
@@ -409,8 +409,8 @@ void DataModel::ProjectEditor::appendGroupTreeItems(QStandardItem* root,
     return true;
   };
 
-  const auto& groups     = DataModel::ProjectModel::instance().groups();
-  const auto& folders    = DataModel::ProjectModel::instance().editorGroupFolders();
+  const auto& groups     = m_projectModelRef.groups();
+  const auto& folders    = m_projectModelRef.editorGroupFolders();
   const bool showFolders = !filterActive && !folders.empty();
 
   bool anyGroup = false;
@@ -490,8 +490,8 @@ void DataModel::ProjectEditor::appendGroupTreeItems(QStandardItem* root,
 QHash<int, QStandardItem*> DataModel::ProjectEditor::appendGroupFolderItems(
   QStandardItem* groupsRoot, const QString& pathPrefix, QHash<QString, bool>& expandedStates)
 {
-  const auto& folders = DataModel::ProjectModel::instance().editorGroupFolders();
-  const auto& groups  = DataModel::ProjectModel::instance().groups();
+  const auto& folders = m_projectModelRef.editorGroupFolders();
+  const auto& groups  = m_projectModelRef.groups();
 
   QHash<int, bool> folderHasGroup;
   QHash<int, bool> folderHasEnabled;
@@ -544,7 +544,7 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
     return s.contains(q, Qt::CaseInsensitive);
   };
 
-  const auto& userTables = DataModel::ProjectModel::instance().tables();
+  const auto& userTables = m_projectModelRef.tables();
   bool includeSharedRoot =
     !filterActive || matches(tr("Shared Memory")) || matches(tr("Dataset Values"));
   if (!includeSharedRoot) {
@@ -571,7 +571,7 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
   sysDsItem->setData(-1, TreeViewFrameIndex);
   tablesRoot->appendRow(sysDsItem);
 
-  const auto& tableFolders    = DataModel::ProjectModel::instance().editorTableFolders();
+  const auto& tableFolders    = m_projectModelRef.editorTableFolders();
   const bool showTableFolders = !filterActive && !tableFolders.empty();
 
   QHash<int, QStandardItem*> folderItems;
@@ -618,7 +618,7 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
 QHash<int, QStandardItem*> DataModel::ProjectEditor::appendTableFolderItems(
   QStandardItem* tablesRoot, const QString& pathPrefix, QHash<QString, bool>& expandedStates)
 {
-  const auto& folders = DataModel::ProjectModel::instance().editorTableFolders();
+  const auto& folders = m_projectModelRef.editorTableFolders();
 
   QHash<int, QStandardItem*> folderItems;
   for (const auto& f : folders) {
@@ -674,8 +674,8 @@ void DataModel::ProjectEditor::buildWorkspaceFolderTree(QStandardItem* wsRoot,
 {
   Q_ASSERT(wsRoot != nullptr);
 
-  const auto& folders    = DataModel::ProjectModel::instance().editorWorkspaceFolders();
-  const auto& workspaces = DataModel::ProjectModel::instance().editorWorkspaces();
+  const auto& folders    = m_projectModelRef.editorWorkspaceFolders();
+  const auto& workspaces = m_projectModelRef.editorWorkspaces();
 
   QHash<int, QStandardItem*> folderItems;
   for (const auto& f : folders) {
@@ -725,7 +725,7 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
     return s.contains(q, Qt::CaseInsensitive);
   };
 
-  const auto& workspaces = DataModel::ProjectModel::instance().editorWorkspaces();
+  const auto& workspaces = m_projectModelRef.editorWorkspaces();
   bool includeWorkspaces = !filterActive || matches(tr("Workspaces"));
   if (!includeWorkspaces) {
     for (const auto& ws : workspaces) {
@@ -1023,5 +1023,5 @@ QJsonObject DataModel::ProjectEditor::snapshotTreeExpansion()
  */
 void DataModel::ProjectEditor::persistTreeExpansion()
 {
-  DataModel::ProjectModel::instance().setTreeExpansion(snapshotTreeExpansion());
+  m_projectModelRef.setTreeExpansion(snapshotTreeExpansion());
 }

@@ -72,7 +72,8 @@ void Console::ExportWorker::processItems(const std::vector<ExportDataPtr>& items
   if (items.empty())
     return;
 
-  if (!IO::ConnectionManager::instance().isConnected())
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  if (!connectionManager.isConnected())
     return;
 
   for (const auto& dataPtr : items) {
@@ -134,8 +135,10 @@ void Console::ExportWorker::createFile(int deviceId)
 
   fileName += QStringLiteral(".txt");
 
-  const auto opMode        = AppState::instance().operationMode();
-  const auto& projectTitle = DataModel::ProjectModel::instance().title();
+  static auto& appState     = AppState::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto opMode         = appState.operationMode();
+  const auto& projectTitle  = projectModel.title();
   QString subdirName;
   switch (opMode) {
     case SerialStudio::ProjectFile:
@@ -149,7 +152,8 @@ void Console::ExportWorker::createFile(int deviceId)
       break;
   }
 
-  QDir dir(Misc::WorkspaceManager::instance().path("Console"));
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  QDir dir(workspaceManager.path("Console"));
   if (!dir.exists(subdirName))
     dir.mkpath(subdirName);
 
@@ -200,14 +204,12 @@ Console::Export::Export()
           &Export::onWorkerOpenChanged,
           Qt::QueuedConnection);
 
-  connect(&Licensing::LemonSqueezy::instance(),
-          &Licensing::LemonSqueezy::activatedChanged,
-          this,
-          [=, this] {
-            if (exportEnabled()
-                && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
-              setExportEnabled(false);
-          });
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  connect(&lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, [=, this] {
+    if (exportEnabled()
+        && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
+      setExportEnabled(false);
+  });
 #endif
 
   setExportEnabled(m_settings.value("ConsoleExport", false).toBool());

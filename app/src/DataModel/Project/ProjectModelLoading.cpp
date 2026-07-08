@@ -252,7 +252,8 @@ bool DataModel::ProjectModel::openJsonFile(const QString& path)
 
   QString resolved = path;
   if (!QFileInfo::exists(resolved)) {
-    const QString remapped = Misc::WorkspaceManager::instance().remapLegacyPath(path);
+    static auto& workspaceManager = Misc::WorkspaceManager::instance();
+    const QString remapped        = workspaceManager.remapLegacyPath(path);
     if (remapped != path && QFileInfo::exists(remapped))
       resolved = remapped;
   }
@@ -260,7 +261,8 @@ bool DataModel::ProjectModel::openJsonFile(const QString& path)
   if (m_filePath == resolved && !m_groups.empty())
     return true;
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
 
   QFile file(resolved);
   QJsonDocument document;
@@ -319,8 +321,9 @@ bool DataModel::ProjectModel::loadFromJsonDocument(const QJsonDocument& document
   m_apiCallAllowFullSurface = ss_jsr(json, Keys::ApiCallAllowFullSurface, false).toBool();
   DataModel::ScriptApiCall::setAllowFullSurface(m_apiCallAllowFullSurface);
 
-  m_controlScriptCode = ss_jsr(json, Keys::ControlScriptCode, "").toString();
-  DataModel::ControlScript::instance().setCode(m_controlScriptCode);
+  m_controlScriptCode        = ss_jsr(json, Keys::ControlScriptCode, "").toString();
+  static auto& controlScript = DataModel::ControlScript::instance();
+  controlScript.setCode(m_controlScriptCode);
 
   loadProjectRootScalars(json);
   loadProjectArrays(json, legacyParserCode);
@@ -372,8 +375,8 @@ bool DataModel::ProjectModel::loadFromJsonDocument(const QJsonDocument& document
                            .arg(loadedSchema)
                            .arg(DataModel::kSchemaVersion);
     QTimer::singleShot(0, this, [title, body] {
-      DataModel::NotificationCenter::instance().postInfo(
-        QStringLiteral("ProjectModel"), title, body);
+      static auto& nc = DataModel::NotificationCenter::instance();
+      nc.postInfo(QStringLiteral("ProjectModel"), title, body);
     });
   }
 
@@ -443,7 +446,8 @@ void DataModel::ProjectModel::importProjectFromJson(const QJsonObject& project,
             file.write(QJsonDocument(project).toJson(QJsonDocument::Indented));
             file.close();
 
-            AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+            static auto& appState = AppState::instance();
+            appState.setOperationMode(SerialStudio::ProjectFile);
 
             // code-verify off
             // Clear cached path so openJsonFile()'s redundant-reload guard doesn't skip the open.
@@ -547,7 +551,7 @@ void DataModel::ProjectModel::seedDefaultSourceFromUi(const QString& legacyParse
   DataModel::Source defaultSource;
   defaultSource.sourceId              = 0;
   defaultSource.title                 = tr("Device A");
-  auto& cm                            = IO::ConnectionManager::instance();
+  static auto& cm                     = IO::ConnectionManager::instance();
   defaultSource.busType               = static_cast<int>(cm.busType());
   defaultSource.frameStart            = m_frameStartSequence;
   defaultSource.frameEnd              = m_frameEndSequence;
@@ -840,7 +844,8 @@ void DataModel::ProjectModel::loadWidgetSettingsAndWorkspaces(const QJsonObject&
     if (collisions > 0) {
       const int n = collisions;
       QTimer::singleShot(0, this, [n] {
-        DataModel::NotificationCenter::instance().postWarning(
+        static auto& nc = DataModel::NotificationCenter::instance();
+        nc.postWarning(
           QStringLiteral("ProjectModel"),
           tr("Workspace IDs remapped on load"),
           tr("%1 custom workspace ID(s) overlapped the new reserved auto range and were "
@@ -909,7 +914,9 @@ void DataModel::ProjectModel::loadWidgetSettingsAndWorkspaces(const QJsonObject&
  */
 void DataModel::ProjectModel::loadPointCount(const QJsonObject& json)
 {
-  m_pointCount = UI::Dashboard::instance().points();
+  static auto& dashboard = UI::Dashboard::instance();
+
+  m_pointCount = dashboard.points();
   if (json.contains(Keys::PointCount)) {
     const int pts = json.value(Keys::PointCount).toInt();
     if (pts > 0)
@@ -922,8 +929,9 @@ void DataModel::ProjectModel::loadPointCount(const QJsonObject& json)
     m_widgetSettings.remove(QStringLiteral("__pointCount__"));
   }
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    UI::Dashboard::instance().setPoints(m_pointCount);
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile)
+    dashboard.setPoints(m_pointCount);
 }
 
 /**
@@ -931,15 +939,18 @@ void DataModel::ProjectModel::loadPointCount(const QJsonObject& json)
  */
 void DataModel::ProjectModel::loadPlotTimeRange(const QJsonObject& json)
 {
-  m_plotTimeRange = UI::Dashboard::instance().plotTimeRange();
+  static auto& dashboard = UI::Dashboard::instance();
+
+  m_plotTimeRange = dashboard.plotTimeRange();
   if (json.contains(Keys::PlotTimeRange)) {
     const double secs = SerialStudio::toDouble(json.value(Keys::PlotTimeRange));
     if (secs > 0)
       m_plotTimeRange = secs;
   }
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    UI::Dashboard::instance().setPlotTimeRange(m_plotTimeRange);
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile)
+    dashboard.setPlotTimeRange(m_plotTimeRange);
 }
 
 /**

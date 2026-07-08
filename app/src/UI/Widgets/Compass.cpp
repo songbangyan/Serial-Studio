@@ -34,7 +34,11 @@
  * @brief Constructs a Compass widget.
  */
 Widgets::Compass::Compass(const int index, QQuickItem* parent)
-  : QQuickItem(parent), m_index(index), m_decimalPoints(-1), m_value(0.0)
+  : QQuickItem(parent)
+  , m_index(index)
+  , m_decimalPoints(-1)
+  , m_value(0.0)
+  , m_dashboard(UI::Dashboard::instance())
 {
   m_cardinal = cardinalDirection(0.0);
 
@@ -45,7 +49,7 @@ Widgets::Compass::Compass(const int index, QQuickItem* parent)
     m_displayFormat     = dataset.displayFormat;
     m_decimalPoints     = dataset.decimalPoints;
 
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Compass::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Compass::updateData);
   }
 }
 

@@ -168,29 +168,36 @@ UI::Dashboard::Dashboard()
   , m_pltXAxis(kDefaultPlotPoints)
   , m_multipltXAxis(kDefaultPlotPoints)
 {
+  static auto& csvPlayer    = CSV::Player::instance();
+  static auto& mdf4Player   = MDF4::Player::instance();
+  static auto& ioManager    = IO::ConnectionManager::instance();
+  static auto& appState     = AppState::instance();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+
   // clang-format off
-  connect(&CSV::Player::instance(), &CSV::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
-  connect(&MDF4::Player::instance(), &MDF4::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
-  connect(&IO::ConnectionManager::instance(), &IO::ConnectionManager::connectedChanged, this, [=, this] {
-    if (!IO::ConnectionManager::instance().isConnected())
+  connect(&csvPlayer, &CSV::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
+  connect(&mdf4Player, &MDF4::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
+  connect(&ioManager, &IO::ConnectionManager::connectedChanged, this, [=, this] {
+    if (!ioManager.isConnected())
       resetData(true);
   }, Qt::QueuedConnection);
-  connect(&AppState::instance(), &AppState::projectFileChanged, this, [=, this] { resetData(); }, Qt::QueuedConnection);
-  connect(&DataModel::FrameBuilder::instance(), &DataModel::FrameBuilder::jsonFileMapChanged, this, [this] {
+  connect(&appState, &AppState::projectFileChanged, this, [=, this] { resetData(); }, Qt::QueuedConnection);
+  connect(&frameBuilder, &DataModel::FrameBuilder::jsonFileMapChanged, this, [this] {
     m_sourceRawFrames.clear();
     m_datasetReferences.clear();
     m_valuePushes.clear();
   }, Qt::QueuedConnection);
-  connect(&AppState::instance(), &AppState::operationModeChanged, this, [=, this] {
-    const auto mode = AppState::instance().operationMode();
+  connect(&appState, &AppState::operationModeChanged, this, [=, this] {
+    const auto mode = appState.operationMode();
     if (mode == SerialStudio::ProjectFile) {
-      const int project_pts = DataModel::ProjectModel::instance().pointCount();
+      const int project_pts = projectModel.pointCount();
       if (project_pts > 0 && m_points != project_pts) {
         m_points = project_pts;
         Q_EMIT pointsChanged();
       }
 
-      const double project_range = DataModel::ProjectModel::instance().plotTimeRange();
+      const double project_range = projectModel.plotTimeRange();
       if (project_range > 0 && !qFuzzyCompare(m_plotTimeRange, project_range)) {
         m_plotTimeRange = project_range;
         Q_EMIT plotTimeRangeChanged();
@@ -215,8 +222,9 @@ UI::Dashboard::Dashboard()
   // clang-format on
 
 #ifdef BUILD_COMMERCIAL
+  static auto& sessPlayer = Sessions::Player::instance();
   connect(
-    &Sessions::Player::instance(),
+    &sessPlayer,
     &Sessions::Player::openChanged,
     this,
     [=, this] { resetData(true); },
@@ -225,7 +233,8 @@ UI::Dashboard::Dashboard()
 
   connectStreamAvailableInputs();
 
-  connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [=, this] {
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  connect(&timerEvents, &Misc::TimerEvents::uiTimeout, this, [=, this] {
     if (m_updateRequired) {
       m_updateRequired = false;
       Q_EMIT updated();
@@ -368,23 +377,28 @@ void UI::Dashboard::updateStreamAvailable()
  */
 void UI::Dashboard::connectStreamAvailableInputs()
 {
-  connect(&IO::ConnectionManager::instance(),
+  static auto& ioManager  = IO::ConnectionManager::instance();
+  static auto& csvPlayer  = CSV::Player::instance();
+  static auto& mdf4Player = MDF4::Player::instance();
+
+  connect(&ioManager,
           &IO::ConnectionManager::connectedChanged,
           this,
           &UI::Dashboard::updateStreamAvailable,
           Qt::DirectConnection);
-  connect(&CSV::Player::instance(),
+  connect(&csvPlayer,
           &CSV::Player::openChanged,
           this,
           &UI::Dashboard::updateStreamAvailable,
           Qt::DirectConnection);
-  connect(&MDF4::Player::instance(),
+  connect(&mdf4Player,
           &MDF4::Player::openChanged,
           this,
           &UI::Dashboard::updateStreamAvailable,
           Qt::DirectConnection);
 #ifdef BUILD_COMMERCIAL
-  connect(&Sessions::Player::instance(),
+  static auto& sessPlayer = Sessions::Player::instance();
+  connect(&sessPlayer,
           &Sessions::Player::openChanged,
           this,
           &UI::Dashboard::updateStreamAvailable,
@@ -910,7 +924,8 @@ void UI::Dashboard::setPoints(const int points)
   if (m_points != points) {
     m_points = points;
 
-    if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    static auto& appState = AppState::instance();
+    if (appState.operationMode() != SerialStudio::ProjectFile)
       m_settings.setValue("Dashboard/Points", m_points);
 
     auto savedPlotRings      = snapshotPlotTimeRings();
@@ -957,13 +972,14 @@ void UI::Dashboard::clearPushTables()
  */
 void UI::Dashboard::resetData(const bool notify)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile
-      && m_points != kDefaultPlotPoints) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile && m_points != kDefaultPlotPoints) {
     m_points = kDefaultPlotPoints;
     Q_EMIT pointsChanged();
   }
 
-  WidgetRegistry::instance().clear();
+  static auto& widgetRegistry = WidgetRegistry::instance();
+  widgetRegistry.clear();
 
   m_fftValues.clear();
   m_pltValues.clear();
@@ -1016,8 +1032,10 @@ void UI::Dashboard::resetData(const bool notify)
   m_sourceRawFrames.clear();
   m_updateRetryInProgress = false;
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    configureActions(DataModel::FrameBuilder::instance().frame());
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
+    static auto& frameBuilder = DataModel::FrameBuilder::instance();
+    configureActions(frameBuilder.frame());
+  }
 
   if (notify) {
     m_updateRequired = true;
@@ -1151,7 +1169,8 @@ void UI::Dashboard::setPlotTimeRange(const double seconds)
 
   m_plotTimeRange = clamped;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     m_settings.setValue("Dashboard/PlotTimeRange", m_plotTimeRange);
 
   auto savedPlotRings            = snapshotPlotTimeRings();
@@ -1265,24 +1284,24 @@ void UI::Dashboard::activateAction(const int index, const bool guiTrigger)
 
   const auto& action = m_actions[index];
 
+  static auto& ioManager = IO::ConnectionManager::instance();
+
   if (action.timerMode == DataModel::TimerMode::RepeatNTimes && guiTrigger) {
     if (m_timers.contains(index) && m_timers[index]) {
       m_repeatCounters[index] = qMax(1, action.repeatCount);
       m_timers[index]->start();
     }
 
-    if (!IO::ConnectionManager::instance().paused())
-      (void)IO::ConnectionManager::instance().writeDataToDevice(action.sourceId,
-                                                                DataModel::get_tx_bytes(action));
+    if (!ioManager.paused())
+      (void)ioManager.writeDataToDevice(action.sourceId, DataModel::get_tx_bytes(action));
 
     tickRepeatTimer(index, m_timers, m_repeatCounters);
     return;
   }
 
   if (action.timerMode == DataModel::TimerMode::RepeatNTimes && !guiTrigger) {
-    if (!IO::ConnectionManager::instance().paused())
-      (void)IO::ConnectionManager::instance().writeDataToDevice(action.sourceId,
-                                                                DataModel::get_tx_bytes(action));
+    if (!ioManager.paused())
+      (void)ioManager.writeDataToDevice(action.sourceId, DataModel::get_tx_bytes(action));
 
     tickRepeatTimer(index, m_timers, m_repeatCounters);
     return;
@@ -1297,9 +1316,8 @@ void UI::Dashboard::activateAction(const int index, const bool guiTrigger)
     timerFlipped        = (wasActive != isActive);
   }
 
-  if (!IO::ConnectionManager::instance().paused())
-    (void)IO::ConnectionManager::instance().writeDataToDevice(action.sourceId,
-                                                              DataModel::get_tx_bytes(action));
+  if (!ioManager.paused())
+    (void)ioManager.writeDataToDevice(action.sourceId, DataModel::get_tx_bytes(action));
 
   if (timerFlipped)
     Q_EMIT actionStatusChanged();
@@ -1538,25 +1556,28 @@ void UI::Dashboard::handleMissingDataset(const DataModel::Frame& frame)
   if (m_updateRetryInProgress) {
     qWarning() << "Failed to build dashboard widget model";
 
-    auto& connMgr = IO::ConnectionManager::instance();
+    static auto& connMgr = IO::ConnectionManager::instance();
     if (connMgr.isConnected()) {
       connMgr.disconnectDevice();
       return;
     }
 
-    if (CSV::Player::instance().isOpen()) {
-      CSV::Player::instance().closeFile();
+    static auto& csvPlayer = CSV::Player::instance();
+    if (csvPlayer.isOpen()) {
+      csvPlayer.closeFile();
       return;
     }
 
-    if (MDF4::Player::instance().isOpen()) {
-      MDF4::Player::instance().closeFile();
+    static auto& mdf4Player = MDF4::Player::instance();
+    if (mdf4Player.isOpen()) {
+      mdf4Player.closeFile();
       return;
     }
 
 #ifdef BUILD_COMMERCIAL
-    if (Sessions::Player::instance().isOpen()) {
-      Sessions::Player::instance().closeFile();
+    static auto& sessPlayer = Sessions::Player::instance();
+    if (sessPlayer.isOpen()) {
+      sessPlayer.closeFile();
       return;
     }
 #endif
@@ -1849,7 +1870,7 @@ void UI::Dashboard::registerWidgets()
   Q_ASSERT(!m_widgetGroups.isEmpty() || !m_widgetDatasets.isEmpty());
   Q_ASSERT(m_widgetCount == 0);
 
-  auto& registry = WidgetRegistry::instance();
+  static auto& registry = WidgetRegistry::instance();
   registry.beginBatchUpdate();
 
   for (auto i = m_widgetGroups.begin(); i != m_widgetGroups.end(); ++i) {
@@ -2836,7 +2857,8 @@ void UI::Dashboard::configureActions(const DataModel::Frame& frame)
   for (const auto& action : frame.actions)
     m_actions.append(action);
 
-  if (!IO::ConnectionManager::instance().isConnected()) {
+  static auto& ioManager = IO::ConnectionManager::instance();
+  if (!ioManager.isConnected()) {
     Q_EMIT actionStatusChanged();
     return;
   }

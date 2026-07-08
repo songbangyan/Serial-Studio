@@ -16,7 +16,17 @@
 #include "DataModel/Dialogs/TransmitTestDialog.h"
 #include "DataModel/Frame.h"
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+class TimerEvents;
+class Translator;
+}  // namespace Misc
+
 namespace DataModel {
+
+class ProjectEditor;
+class ProjectModel;
 
 /**
  * @brief QML-embeddable code editor for output-widget transmit scripts.
@@ -97,6 +107,12 @@ public:
 private:
   void loadTemplates();
   bool m_readingCode;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  DataModel::ProjectEditor& m_projectEditor;
+  DataModel::ProjectModel& m_projectModel;
+  Misc::TimerEvents& m_timerEvents;
+  Misc::Translator& m_translator;
   QPixmap m_pixmap;
   QSyntaxStyle m_style;
   QCodeEditor m_widget;

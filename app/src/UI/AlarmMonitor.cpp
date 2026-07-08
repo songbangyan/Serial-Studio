@@ -41,7 +41,7 @@ static constexpr qint64 kMinNotifyIntervalMs = 3000;
 /**
  * @brief Constructs the AlarmMonitor.
  */
-UI::AlarmMonitor::AlarmMonitor() {}
+UI::AlarmMonitor::AlarmMonitor() : m_dashboard(nullptr), m_notificationCenter(nullptr) {}
 
 /**
  * @brief Retrieves the singleton instance of the AlarmMonitor.
@@ -57,6 +57,9 @@ UI::AlarmMonitor& UI::AlarmMonitor::instance()
  */
 void UI::AlarmMonitor::setupExternalConnections()
 {
+  m_dashboard          = &UI::Dashboard::instance();
+  m_notificationCenter = &DataModel::NotificationCenter::instance();
+
   auto& dashboard = UI::Dashboard::instance();
   connect(&dashboard, &UI::Dashboard::widgetCountChanged, this, &AlarmMonitor::rebuildTrackers);
   connect(&dashboard, &UI::Dashboard::dataReset, this, &AlarmMonitor::rebuildTrackers);
@@ -73,9 +76,11 @@ void UI::AlarmMonitor::setupExternalConnections()
  */
 void UI::AlarmMonitor::rebuildTrackers()
 {
+  Q_ASSERT(m_dashboard);
+
   m_trackers.clear();
 
-  const auto& datasets = UI::Dashboard::instance().datasets();
+  const auto& datasets = m_dashboard->datasets();
   for (auto it = datasets.cbegin(); it != datasets.cend(); ++it) {
     const auto& dataset = it.value();
     if (dataset.alarmBands.empty())
@@ -116,10 +121,12 @@ void UI::AlarmMonitor::rebuildTrackers()
  */
 void UI::AlarmMonitor::evaluateAlarms()
 {
+  Q_ASSERT(m_dashboard);
+
   if (m_trackers.empty())
     return;
 
-  const auto& datasets = UI::Dashboard::instance().datasets();
+  const auto& datasets = m_dashboard->datasets();
   for (auto& tracker : m_trackers) {
     const auto it = datasets.constFind(tracker.uniqueId);
     if (it == datasets.cend())
@@ -160,6 +167,8 @@ int UI::AlarmMonitor::bandIndexFor(const Tracker& tracker, double value) noexcep
  */
 void UI::AlarmMonitor::processValue(Tracker& tracker, double value)
 {
+  Q_ASSERT(m_notificationCenter);
+
   if (tracker.rangeMax > tracker.rangeMin)
     value = qBound(tracker.rangeMin, value, tracker.rangeMax);
 
@@ -202,5 +211,5 @@ void UI::AlarmMonitor::processValue(Tracker& tracker, double value)
 
   const auto level = band.severity >= 3 ? DataModel::NotificationCenter::Critical
                                         : DataModel::NotificationCenter::Warning;
-  DataModel::NotificationCenter::instance().post(level, tr("Alarms"), name, subtitle);
+  m_notificationCenter->post(level, tr("Alarms"), name, subtitle);
 }

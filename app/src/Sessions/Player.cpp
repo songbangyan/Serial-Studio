@@ -265,9 +265,10 @@ void Sessions::Player::toggle()
  */
 void Sessions::Player::openFile()
 {
-  auto* dialog = new QFileDialog(qApp->activeWindow(),
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  auto* dialog                  = new QFileDialog(qApp->activeWindow(),
                                  tr("Open Session File"),
-                                 Misc::WorkspaceManager::instance().path("Session Databases"),
+                                 workspaceManager.path("Session Databases"),
                                  tr("Session files (*.db)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
@@ -300,8 +301,9 @@ void Sessions::Player::closeFile()
   teardownLocalDb();
   clearLocalState();
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(QStringList());
-  DataModel::FrameBuilder::instance().setReplayColumnMap({});
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(QStringList());
+  frameBuilder.setReplayColumnMap({});
 
   restorePreSessionState();
 
@@ -337,7 +339,8 @@ void Sessions::Player::openFile(const QString& filePath, int sessionId)
 
   capturePreSessionState();
 
-  if (IO::ConnectionManager::instance().isConnected()) {
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  if (connectionManager.isConnected()) {
     auto response =
       Misc::Utilities::showMessageBox(tr("Device Connection Active"),
                                       tr("To use this feature, you must disconnect from the "
@@ -347,7 +350,7 @@ void Sessions::Player::openFile(const QString& filePath, int sessionId)
                                       QMessageBox::No | QMessageBox::Yes);
 
     if (response == QMessageBox::Yes)
-      IO::ConnectionManager::instance().disconnectDevice();
+      connectionManager.disconnectDevice();
     else
       return;
   }
@@ -425,7 +428,8 @@ void Sessions::Player::onLoadFinished(const PlayerSessionPayloadPtr& payload)
   m_columnUniqueIds = payload->columnUniqueIds;
   m_timestampsNs    = payload->timestampsNs;
 
-  const auto mode = AppState::instance().operationMode();
+  static auto& appState = AppState::instance();
+  const auto mode       = appState.operationMode();
   if (mode == SerialStudio::ProjectFile) {
     alignColumnsToProject();
     buildMultiSourceMapping();
@@ -435,7 +439,8 @@ void Sessions::Player::onLoadFinished(const PlayerSessionPayloadPtr& payload)
     for (int uid : m_columnUniqueIds)
       headers.append(QStringLiteral("uid_%1").arg(uid));
 
-    DataModel::FrameBuilder::instance().registerQuickPlotHeaders(headers);
+    static auto& frameBuilder = DataModel::FrameBuilder::instance();
+    frameBuilder.registerQuickPlotHeaders(headers);
   }
 
   if (m_uidToColumn.isEmpty())
@@ -561,8 +566,10 @@ void Sessions::Player::capturePreSessionState()
   if (m_preSessionCaptured)
     return;
 
-  m_preSessionOperationMode = AppState::instance().operationMode();
-  m_preSessionProjectPath   = DataModel::ProjectModel::instance().jsonFilePath();
+  static auto& appState     = AppState::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  m_preSessionOperationMode = appState.operationMode();
+  m_preSessionProjectPath   = projectModel.jsonFilePath();
   m_preSessionCaptured      = true;
 }
 
@@ -574,13 +581,14 @@ void Sessions::Player::restorePreSessionState()
   if (!m_preSessionCaptured)
     return;
 
-  auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   if (!m_preSessionProjectPath.isEmpty() && QFileInfo::exists(m_preSessionProjectPath))
     (void)pm.openJsonFile(m_preSessionProjectPath);
   else
     pm.newJsonFile();
 
-  AppState::instance().setOperationMode(m_preSessionOperationMode);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(m_preSessionOperationMode);
 
   m_preSessionCaptured = false;
   m_preSessionProjectPath.clear();
@@ -603,8 +611,11 @@ bool Sessions::Player::restoreProjectFromJson(const QString& json)
     return false;
   }
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
-  if (!DataModel::ProjectModel::instance().loadFromJsonDocument(doc)) {
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
+
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  if (!projectModel.loadFromJsonDocument(doc)) {
     qWarning() << "[Sessions::Player] ProjectModel rejected the embedded JSON";
     return false;
   }
@@ -634,9 +645,10 @@ void Sessions::Player::setProgress(const double progress)
 
   m_framePos = newPos;
 
-  UI::Dashboard::instance().clearPlotData();
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.clearPlotData();
 
-  const int toLoad   = UI::Dashboard::instance().points();
+  const int toLoad   = dashboard.points();
   const int startIdx = std::max(0, m_framePos - toLoad);
   processFrameBatch(startIdx, m_framePos);
 
@@ -650,8 +662,9 @@ void Sessions::Player::nextFrame()
 {
   if (m_framePos < frameCount() - 1) {
     ++m_framePos;
-    UI::Dashboard::instance().clearPlotData();
-    const int toLoad   = UI::Dashboard::instance().points();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
+    const int toLoad   = dashboard.points();
     const int startIdx = std::max(0, m_framePos - toLoad);
     processFrameBatch(startIdx, m_framePos);
     updateData();
@@ -665,8 +678,9 @@ void Sessions::Player::previousFrame()
 {
   if (m_framePos > 0) {
     --m_framePos;
-    UI::Dashboard::instance().clearPlotData();
-    const int toLoad   = UI::Dashboard::instance().points();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
+    const int toLoad   = dashboard.points();
     const int startIdx = std::max(0, m_framePos - toLoad);
     processFrameBatch(startIdx, m_framePos);
     updateData();
@@ -777,7 +791,8 @@ void Sessions::Player::alignColumnsToProject()
     return;
 
   QMap<int, QPair<int, int>> uidToSrcIndex;
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
   for (const auto& g : groups)
     for (const auto& d : g.datasets)
       uidToSrcIndex.insert(d.uniqueId, qMakePair(g.sourceId, d.index));
@@ -826,7 +841,8 @@ void Sessions::Player::buildMultiSourceMapping()
   m_sourceColumns.clear();
 
   QMap<int, int> uidToSource;
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
   for (const auto& g : groups)
     for (const auto& d : g.datasets)
       uidToSource.insert(d.uniqueId, g.sourceId);
@@ -854,7 +870,8 @@ void Sessions::Player::buildMultiSourceMapping()
     replay[0] = std::move(columns);
   }
 
-  DataModel::FrameBuilder::instance().setReplayColumnMap(std::move(replay));
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.setReplayColumnMap(std::move(replay));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -930,7 +947,8 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
   if (uidValues.isEmpty())
     return;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
     QStringList cells;
     cells.reserve(static_cast<int>(m_columnUniqueIds.size()));
     for (int uid : m_columnUniqueIds)
@@ -938,7 +956,8 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
 
     QByteArray payload = DataModel::joinReplayRow(cells);
     payload.append('\n');
-    IO::ConnectionManager::instance().processPayload(payload);
+    static auto& connectionManager = IO::ConnectionManager::instance();
+    connectionManager.processPayload(payload);
     return;
   }
 
@@ -964,8 +983,9 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
   if (sourcePayloads.isEmpty())
     return;
 
+  static auto& connectionManager = IO::ConnectionManager::instance();
   if (!m_multiSource) {
-    IO::ConnectionManager::instance().processPayload(sourcePayloads.first());
+    connectionManager.processPayload(sourcePayloads.first());
     return;
   }
 
@@ -978,7 +998,7 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
   }
 
   combined.append('\n');
-  IO::ConnectionManager::instance().processMultiSourcePayload(combined, sourcePayloads);
+  connectionManager.processMultiSourcePayload(combined, sourcePayloads);
 }
 
 //--------------------------------------------------------------------------------------------------

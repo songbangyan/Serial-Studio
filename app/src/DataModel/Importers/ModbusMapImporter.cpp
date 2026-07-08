@@ -375,7 +375,7 @@ void DataModel::ModbusMapImporter::confirmImport()
   const int registerCount = m_registers.count();
   const int blockCount    = blocks.count();
 
-  auto& pm = ProjectModel::instance();
+  static auto& pm = ProjectModel::instance();
   QObject::connect(
     &pm,
     &ProjectModel::importCompleted,
@@ -1066,7 +1066,8 @@ local BLOCKS = {
  */
 void DataModel::ModbusMapImporter::loadRegisterGroups(const QVector<RegisterBlock>& blocks) const
 {
-  auto* modbus = IO::ConnectionManager::instance().modbus();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  auto* modbus                   = connectionManager.modbus();
   if (!modbus)
     return;
 

@@ -186,8 +186,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupAdd(const QString& id,
         .arg(static_cast<int>(SerialStudio::Painter)));
   }
 
-  const auto widget = static_cast<SerialStudio::GroupWidget>(widget_type);
-  DataModel::ProjectModel::instance().addGroup(title, widget);
+  const auto widget         = static_cast<SerialStudio::GroupWidget>(widget_type);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.addGroup(title, widget);
 
   QJsonObject result;
   result[QStringLiteral("title")]      = title;
@@ -205,9 +206,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupDelete(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -247,8 +248,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupDelete(const QString& i
   QString backupPath;
   qint64 preEpoch = 0;
   if (!isDryRun) {
-    backupPath = Misc::BackupManager::instance().snapshot(QStringLiteral("pre-groupDelete"));
-    preEpoch   = captureProjectEpoch();
+    static auto& backupManager = Misc::BackupManager::instance();
+    backupPath                 = backupManager.snapshot(QStringLiteral("pre-groupDelete"));
+    preEpoch                   = captureProjectEpoch();
     project.deleteGroup(groupId);
   }
 
@@ -297,9 +299,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupDuplicate(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -375,8 +377,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAdd(const QString& id
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-255 (bit flags)"));
 
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -470,8 +472,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetAddMany(const QString
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Invalid options: must be 0-255 (bit flags)"));
 
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -588,10 +590,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString&
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
 
-  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
-  const int datasetId = params.value(Keys::DatasetId).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& groups  = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId  = params.value(Keys::DatasetId).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -638,8 +640,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDelete(const QString&
   QString backupPath;
   qint64 preEpoch = 0;
   if (!isDryRun) {
-    backupPath = Misc::BackupManager::instance().snapshot(QStringLiteral("pre-datasetDelete"));
-    preEpoch   = captureProjectEpoch();
+    static auto& backupManager = Misc::BackupManager::instance();
+    backupPath                 = backupManager.snapshot(QStringLiteral("pre-datasetDelete"));
+    preEpoch                   = captureProjectEpoch();
     project.deleteDataset(groupId, datasetId);
   }
 
@@ -677,10 +680,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetDuplicate(const QStri
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
 
-  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
-  const int datasetId = params.value(Keys::DatasetId).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& groups  = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId  = params.value(Keys::DatasetId).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -741,8 +744,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOption(const QStri
     option = optionJson.toInt();
   }
 
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -798,8 +801,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetOptions(const QStr
     options = optionsJson.toInt();
   }
 
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -864,7 +867,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetVirtual(const QStr
   const int datasetId = params.value(Keys::DatasetId).toInt();
   const bool isVirt   = params.value(Keys::Virtual).toBool();
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
   const auto git     = std::find_if(
     groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
@@ -918,7 +921,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetTransformCode(
   const int datasetId = params.value(Keys::DatasetId).toInt();
   const QString code  = params.value(QStringLiteral("code")).toString();
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
   const auto git     = std::find_if(
     groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
@@ -1012,7 +1015,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetAlarmBands(const Q
   const int groupId   = params.value(Keys::GroupId).toInt();
   const int datasetId = params.value(Keys::DatasetId).toInt();
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
   const auto git     = std::find_if(
     groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
@@ -1063,7 +1066,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetAlarmBands(const Q
   const int datasetId = params.value(Keys::DatasetId).toInt();
   const auto arr      = params.value(Keys::AlarmBands).toArray();
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
   const auto git     = std::find_if(
     groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
@@ -1117,7 +1120,8 @@ API::CommandResponse API::Handlers::ProjectHandler::actionAdd(const QString& id,
 {
   Q_UNUSED(params)
 
-  DataModel::ProjectModel::instance().addAction();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.addAction();
 
   QJsonObject result;
   result[QStringLiteral("added")] = true;
@@ -1134,9 +1138,9 @@ API::CommandResponse API::Handlers::ProjectHandler::actionDelete(const QString& 
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
 
-  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& actions = project.actions();
+  const int actionId   = params.value(QStringLiteral("actionId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& actions  = project.actions();
   if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
@@ -1159,9 +1163,9 @@ API::CommandResponse API::Handlers::ProjectHandler::actionDuplicate(const QStrin
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
 
-  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& actions = project.actions();
+  const int actionId   = params.value(QStringLiteral("actionId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& actions  = project.actions();
   if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
@@ -1188,10 +1192,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetAdd(const QStrin
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const int type     = params.value(QStringLiteral("type")).toInt(0);
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int type       = params.value(QStringLiteral("type")).toInt(0);
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1221,10 +1225,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDelete(const QSt
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId   = params.value(QStringLiteral("widgetId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1258,10 +1262,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDuplicate(const 
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId   = params.value(QStringLiteral("widgetId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1295,9 +1299,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetGet(const QStrin
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const int groupId         = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId        = params.value(QStringLiteral("widgetId")).toInt();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1341,9 +1346,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupUpdate(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1617,10 +1622,10 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetUpdate(const QString&
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: datasetId"));
 
-  const int groupId   = params.value(QStringLiteral("groupId")).toInt();
-  const int datasetId = params.value(Keys::DatasetId).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& groups  = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int datasetId  = params.value(Keys::DatasetId).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1681,9 +1686,9 @@ API::CommandResponse API::Handlers::ProjectHandler::actionUpdate(const QString& 
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: actionId"));
 
-  const int actionId  = params.value(QStringLiteral("actionId")).toInt();
-  auto& project       = DataModel::ProjectModel::instance();
-  const auto& actions = project.actions();
+  const int actionId   = params.value(QStringLiteral("actionId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& actions  = project.actions();
   if (actionId < 0 || static_cast<size_t>(actionId) >= actions.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Action id not found: %1").arg(actionId));
@@ -1763,10 +1768,10 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetUpdate(const QSt
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: widgetId"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const int widgetId = params.value(QStringLiteral("widgetId")).toInt();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const int widgetId   = params.value(QStringLiteral("widgetId")).toInt();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));

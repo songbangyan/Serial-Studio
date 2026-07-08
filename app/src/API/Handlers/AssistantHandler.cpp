@@ -45,7 +45,8 @@ static API::CommandResponse forward(const QString& innerCommand,
                                     const QString& id,
                                     const QJsonObject& params)
 {
-  return API::CommandRegistry::instance().execute(innerCommand, id, params);
+  static auto& registry = API::CommandRegistry::instance();
+  return registry.execute(innerCommand, id, params);
 }
 
 /**
@@ -852,8 +853,9 @@ API::CommandResponse API::Handlers::AssistantHandler::projectBulkApply(const QSt
 API::CommandResponse API::Handlers::AssistantHandler::checkpoint(const QString& id,
                                                                  const QJsonObject& params)
 {
-  const auto label = params.value(QStringLiteral("label")).toString();
-  const auto path  = Misc::BackupManager::instance().snapshot(label);
+  const auto label           = params.value(QStringLiteral("label")).toString();
+  static auto& backupManager = Misc::BackupManager::instance();
+  const auto path            = backupManager.snapshot(label);
   if (path.isEmpty())
     return CommandResponse::makeError(
       id,
@@ -875,7 +877,8 @@ static QString resolveCheckpoint(const QJsonObject& params)
   if (params.contains(QStringLiteral("path")))
     return params.value(QStringLiteral("path")).toString();
 
-  const auto rows = Misc::BackupManager::instance().list();
+  static auto& backupManager = Misc::BackupManager::instance();
+  const auto rows            = backupManager.list();
   if (params.contains(QStringLiteral("timestamp"))) {
     const auto needle = params.value(QStringLiteral("timestamp")).toString();
     for (const auto& v : rows) {
@@ -910,9 +913,10 @@ API::CommandResponse API::Handlers::AssistantHandler::restore(const QString& id,
       QStringLiteral("Provide one of: path, timestamp, or label. Use "
                      "assistant.listCheckpoints to discover available references."));
 
-  const auto reverse = Misc::BackupManager::instance().snapshot(QStringLiteral("pre-restore"));
+  static auto& backupManager = Misc::BackupManager::instance();
+  const auto reverse         = backupManager.snapshot(QStringLiteral("pre-restore"));
 
-  if (!Misc::BackupManager::instance().restore(path))
+  if (!backupManager.restore(path))
     return CommandResponse::makeError(
       id,
       ErrorCode::ExecutionError,
@@ -920,7 +924,7 @@ API::CommandResponse API::Handlers::AssistantHandler::restore(const QString& id,
                      "contained invalid project JSON).")
         .arg(path));
 
-  auto& pm               = DataModel::ProjectModel::instance();
+  static auto& pm        = DataModel::ProjectModel::instance();
   const auto projectPath = pm.jsonFilePath();
   const bool persisted   = !projectPath.isEmpty() && pm.apiSaveJsonFile(projectPath);
   if (!projectPath.isEmpty() && !persisted)
@@ -955,8 +959,9 @@ API::CommandResponse API::Handlers::AssistantHandler::restore(const QString& id,
 API::CommandResponse API::Handlers::AssistantHandler::listCheckpoints(const QString& id,
                                                                       const QJsonObject& params)
 {
-  const int limit = params.value(QStringLiteral("limit")).toInt(20);
-  const auto rows = Misc::BackupManager::instance().list(limit);
+  const int limit            = params.value(QStringLiteral("limit")).toInt(20);
+  static auto& backupManager = Misc::BackupManager::instance();
+  const auto rows            = backupManager.list(limit);
 
   QJsonArray arr;
   for (const auto& v : rows) {
@@ -973,7 +978,7 @@ API::CommandResponse API::Handlers::AssistantHandler::listCheckpoints(const QStr
   QJsonObject result;
   result[QStringLiteral("checkpoints")] = arr;
   result[QStringLiteral("count")]       = arr.size();
-  result[QStringLiteral("directory")]   = Misc::BackupManager::instance().backupDirectory();
+  result[QStringLiteral("directory")]   = backupManager.backupDirectory();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -986,7 +991,7 @@ API::CommandResponse API::Handlers::AssistantHandler::listCheckpoints(const QStr
  */
 void API::Handlers::AssistantHandler::registerResolverCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
   registry.registerCommand(
     QStringLiteral("assistant.snapshot"),
     QStringLiteral("Token-efficient project snapshot for LLMs. Identical payload to "
@@ -1066,7 +1071,7 @@ void API::Handlers::AssistantHandler::registerResolverCommands()
  */
 void API::Handlers::AssistantHandler::registerEditCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
   registry.registerCommand(
     QStringLiteral("assistant.script.dryRun"),
     QStringLiteral("Validate a script by kind without writing. Routes to "
@@ -1170,7 +1175,7 @@ void API::Handlers::AssistantHandler::registerEditCommands()
  */
 void API::Handlers::AssistantHandler::registerCheckpointCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
   registry.registerCommand(
     QStringLiteral("assistant.checkpoint"),
     QStringLiteral("Force an immediate project snapshot to disk and return its absolute path. "

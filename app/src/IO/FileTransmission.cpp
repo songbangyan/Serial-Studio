@@ -53,6 +53,7 @@ IO::FileTransmission::FileTransmission()
   , m_protocolTimeout(10000)
   , m_runtimeAccessAllowed(false)
   , m_lastSpeedBytes(0)
+  , m_connectionManager(nullptr)
 {
   m_timer.setInterval(100);
   m_timer.setTimerType(Qt::PreciseTimer);
@@ -116,7 +117,8 @@ bool IO::FileTransmission::active() const
  */
 bool IO::FileTransmission::fileOpen() const
 {
-  return m_file.isOpen() && IO::ConnectionManager::instance().isConnected();
+  Q_ASSERT(m_connectionManager);
+  return m_file.isOpen() && m_connectionManager->isConnected();
 }
 
 /**
@@ -363,7 +365,9 @@ void IO::FileTransmission::stopTransmission()
  */
 void IO::FileTransmission::beginTransmission()
 {
-  if (!IO::ConnectionManager::instance().isConnected()) {
+  Q_ASSERT(m_connectionManager);
+
+  if (!m_connectionManager->isConnected()) {
     stopTransmission();
     return;
   }
@@ -458,6 +462,8 @@ void IO::FileTransmission::beginTransmission()
  */
 void IO::FileTransmission::setupExternalConnections()
 {
+  m_connectionManager = &IO::ConnectionManager::instance();
+
   connect(&IO::ConnectionManager::instance(),
           &IO::ConnectionManager::connectedChanged,
           this,
@@ -586,10 +592,12 @@ void IO::FileTransmission::setRuntimeAccessAllowed(bool allowed)
  */
 void IO::FileTransmission::sendLine()
 {
+  Q_ASSERT(m_connectionManager);
+
   if (!active())
     return;
 
-  if (!IO::ConnectionManager::instance().isConnected())
+  if (!m_connectionManager->isConnected())
     return;
 
   if (m_stream && !m_stream->atEnd()) {
@@ -599,7 +607,7 @@ void IO::FileTransmission::sendLine()
         line.append("\n");
 
       auto data = line.toUtf8();
-      (void)IO::ConnectionManager::instance().writeData(data);
+      (void)m_connectionManager->writeData(data);
       m_bytesSent = m_stream->pos();
       Q_EMIT progressChanged();
     }
@@ -620,7 +628,9 @@ void IO::FileTransmission::sendLine()
  */
 void IO::FileTransmission::sendRawBlock()
 {
-  if (!IO::ConnectionManager::instance().isConnected())
+  Q_ASSERT(m_connectionManager);
+
+  if (!m_connectionManager->isConnected())
     return;
 
   if (m_file.atEnd()) {
@@ -633,7 +643,7 @@ void IO::FileTransmission::sendRawBlock()
 
   QByteArray block = m_file.read(m_blockSize);
   if (!block.isEmpty()) {
-    (void)IO::ConnectionManager::instance().writeData(block);
+    (void)m_connectionManager->writeData(block);
     m_bytesSent += block.size();
     Q_EMIT progressChanged();
   }
@@ -693,7 +703,8 @@ void IO::FileTransmission::onProtocolStatus(const QString& message)
  */
 void IO::FileTransmission::onProtocolWriteRequested(const QByteArray& data)
 {
-  (void)IO::ConnectionManager::instance().writeData(data);
+  Q_ASSERT(m_connectionManager);
+  (void)m_connectionManager->writeData(data);
 }
 
 /**

@@ -43,9 +43,9 @@
  */
 [[nodiscard]] static QQuickItem* makeWebViewWidget(int index, QQuickItem* parent)
 {
-  auto* w = new Widgets::WebView(index, parent);
-  const auto& group =
-    UI::Dashboard::instance().getGroupWidget(SerialStudio::DashboardWebView, index);
+  static auto& dashboard = UI::Dashboard::instance();
+  auto* w                = new Widgets::WebView(index, parent);
+  const auto& group      = dashboard.getGroupWidget(SerialStudio::DashboardWebView, index);
   w->setUrl(group.webViewUrl);
   return w;
 }
@@ -62,9 +62,9 @@
  */
 [[nodiscard]] static QQuickItem* makePainterWidget(int index, QQuickItem* parent)
 {
-  auto* p = new Widgets::Painter(index, parent);
-  const auto& group =
-    UI::Dashboard::instance().getGroupWidget(SerialStudio::DashboardPainter, index);
+  static auto& dashboard = UI::Dashboard::instance();
+  auto* p                = new Widgets::Painter(index, parent);
+  const auto& group      = dashboard.getGroupWidget(SerialStudio::DashboardPainter, index);
   p->setUserCode(group.painterCode);
   return p;
 }
@@ -79,6 +79,9 @@
  */
 UI::DashboardWidget::DashboardWidget(QQuickItem* parent)
   : QQuickItem(parent)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_widgetRegistry(UI::WidgetRegistry::instance())
   , m_index(-1)
   , m_relativeIndex(-1)
   , m_widgetType(SerialStudio::DashboardNoWidget)
@@ -87,7 +90,7 @@ UI::DashboardWidget::DashboardWidget(QQuickItem* parent)
 {
   connect(
     this, &UI::DashboardWidget::widgetIndexChanged, this, &UI::DashboardWidget::widgetColorChanged);
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &UI::DashboardWidget::widgetColorChanged);
@@ -174,8 +177,8 @@ SerialStudio::DashboardWidget UI::DashboardWidget::widgetType() const
  */
 QString UI::DashboardWidget::widgetId() const
 {
-  auto id   = UI::WidgetRegistry::instance().widgetIdByTypeAndIndex(m_widgetType, m_relativeIndex);
-  auto info = UI::WidgetRegistry::instance().widgetInfo(id);
+  auto id   = m_widgetRegistry.widgetIdByTypeAndIndex(m_widgetType, m_relativeIndex);
+  auto info = m_widgetRegistry.widgetInfo(id);
   return QStringLiteral("%1:%2:%3")
     .arg(static_cast<int>(m_widgetType))
     .arg(info.groupId)
@@ -224,12 +227,12 @@ QQuickItem* UI::DashboardWidget::widgetModel() const
  */
 void UI::DashboardWidget::setWidgetIndex(const int index)
 {
-  if (index < 0 || index >= UI::Dashboard::instance().totalWidgetCount())
+  if (index < 0 || index >= m_dashboard.totalWidgetCount())
     return;
 
   m_index         = index;
-  m_widgetType    = UI::Dashboard::instance().widgetType(index);
-  m_relativeIndex = UI::Dashboard::instance().relativeIndex(index);
+  m_widgetType    = m_dashboard.widgetType(index);
+  m_relativeIndex = m_dashboard.relativeIndex(index);
 
   if (m_dbWidget) {
     m_dbWidget->deleteLater();

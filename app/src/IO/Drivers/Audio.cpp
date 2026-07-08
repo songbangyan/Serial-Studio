@@ -188,7 +188,8 @@ static bool checkAndUpdateDeviceList(ma_context* context,
     stillConnected = deviceIndexById(newList, currentList[selectedIndex].id) >= 0;
 
   if (!stillConnected) {
-    IO::ConnectionManager::instance().disconnectDevice();
+    static auto& connectionManager = IO::ConnectionManager::instance();
+    connectionManager.disconnectDevice();
     replaceDeviceList(context, type, currentList, newList, selectedIndex, capabilities);
     settingsChanged();
     configurationChanged();
@@ -337,15 +338,12 @@ IO::Drivers::Audio::Audio()
   configureInput();
   configureOutput();
 
-  connect(&Misc::TimerEvents::instance(),
-          &Misc::TimerEvents::timeout1Hz,
-          this,
-          &Audio::refreshAudioDevices);
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  connect(&timerEvents, &Misc::TimerEvents::timeout1Hz, this, &Audio::refreshAudioDevices);
 
-  connect(&Misc::Translator::instance(),
-          &Misc::Translator::languageChanged,
-          this,
-          &IO::Drivers::Audio::generateLists);
+  static auto& translator = Misc::Translator::instance();
+  connect(
+    &translator, &Misc::Translator::languageChanged, this, &IO::Drivers::Audio::generateLists);
 }
 
 /**

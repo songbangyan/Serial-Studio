@@ -90,8 +90,8 @@ void API::Handlers::ProjectHandler::registerFileCommands()
  */
 void API::Handlers::ProjectHandler::registerFileLifecycleCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.new"),
@@ -187,8 +187,8 @@ void API::Handlers::ProjectHandler::registerFileLifecycleCommands()
  */
 void API::Handlers::ProjectHandler::registerFileMetadataCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.getStatus"),
@@ -225,8 +225,8 @@ void API::Handlers::ProjectHandler::registerFileMetadataCommands()
  */
 void API::Handlers::ProjectHandler::registerGroupCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.group.add"),
@@ -305,7 +305,7 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetCreateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.add"),
@@ -370,7 +370,7 @@ void API::Handlers::ProjectHandler::registerDatasetCreateCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetLifecycleCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.delete"),
@@ -407,7 +407,7 @@ void API::Handlers::ProjectHandler::registerDatasetLifecycleCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetOptionCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setOption"),
@@ -473,7 +473,7 @@ void API::Handlers::ProjectHandler::registerDatasetCrudCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetFieldCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.setVirtual"),
@@ -527,7 +527,7 @@ void API::Handlers::ProjectHandler::registerDatasetFieldCommands()
  */
 void API::Handlers::ProjectHandler::registerDatasetAlarmCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.getAlarmBands"),
@@ -611,8 +611,8 @@ void API::Handlers::ProjectHandler::registerDatasetAlarmCommands()
  */
 void API::Handlers::ProjectHandler::registerActionCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.action.add"),
@@ -648,8 +648,8 @@ void API::Handlers::ProjectHandler::registerActionCommands()
  */
 void API::Handlers::ProjectHandler::registerOutputWidgetCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.outputWidget.add"),
@@ -719,7 +719,7 @@ void API::Handlers::ProjectHandler::registerParserCommands()
  */
 void API::Handlers::ProjectHandler::registerParserCodeCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   const auto setCodeSchema = makeSchema(
     {
@@ -813,7 +813,7 @@ void API::Handlers::ProjectHandler::registerParserCodeCommands()
  */
 void API::Handlers::ProjectHandler::registerParserTemplateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.frameParser.listTemplates"),
@@ -879,7 +879,7 @@ void API::Handlers::ProjectHandler::registerParserTemplateCommands()
  */
 void API::Handlers::ProjectHandler::registerParserConfigCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.frameParser.update"),
@@ -919,8 +919,8 @@ void API::Handlers::ProjectHandler::registerParserConfigCommands()
  */
 void API::Handlers::ProjectHandler::registerListCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(QStringLiteral("project.group.list"),
                            QStringLiteral("List all groups with dataset counts"),
@@ -943,8 +943,8 @@ void API::Handlers::ProjectHandler::registerListCommands()
  */
 void API::Handlers::ProjectHandler::registerResolverCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.getByUniqueId"),
@@ -1002,7 +1002,7 @@ void API::Handlers::ProjectHandler::registerResolverCommands()
  */
 void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.snapshot"),
@@ -1093,7 +1093,7 @@ void API::Handlers::ProjectHandler::registerPainterCommands()
  */
 void API::Handlers::ProjectHandler::registerPainterCodeCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.painter.setCode"),
@@ -1136,7 +1136,7 @@ void API::Handlers::ProjectHandler::registerPainterCodeCommands()
  */
 void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.group.update"),
@@ -1224,7 +1224,7 @@ void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
  */
 void API::Handlers::ProjectHandler::registerBatchCommand()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.batch"),
@@ -1305,7 +1305,7 @@ void API::Handlers::ProjectHandler::registerDryRunCommands()
  */
 void API::Handlers::ProjectHandler::registerFrameParserDryRunCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.frameParser.dryRun"),
@@ -1390,7 +1390,7 @@ void API::Handlers::ProjectHandler::registerFrameParserDryRunCommands()
  */
 void API::Handlers::ProjectHandler::registerScriptDryRunCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.transform.dryRun"),
@@ -1458,7 +1458,7 @@ void API::Handlers::ProjectHandler::registerScriptDryRunCommands()
  */
 void API::Handlers::ProjectHandler::registerEndToEndDryRunCommand()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.dryRun.endToEnd"),
@@ -1507,7 +1507,7 @@ void API::Handlers::ProjectHandler::registerEndToEndDryRunCommand()
  */
 void API::Handlers::ProjectHandler::registerTemplateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.template.list"),

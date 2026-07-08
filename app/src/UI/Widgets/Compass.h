@@ -23,6 +23,8 @@
 
 #include <QQuickItem>
 
+#include "UI/Dashboard.h"
+
 namespace Widgets {
 /**
  * @brief Data model for a compass/heading display (0-360 deg, fixed rose).
@@ -84,5 +86,7 @@ private:
   QString m_units;
   QString m_displayFormat;
   QString m_cardinal;
+
+  UI::Dashboard& m_dashboard;
 };
 }  // namespace Widgets

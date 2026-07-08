@@ -214,7 +214,8 @@ static std::vector<DataModel::WidgetRef> buildAutoRefsForGroup(
  */
 int DataModel::ProjectModel::addWorkspace(const QString& title)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return -1;
 
   if (!m_customizeWorkspaces)
@@ -241,7 +242,8 @@ int DataModel::ProjectModel::addWorkspace(const QString& title)
  */
 void DataModel::ProjectModel::deleteWorkspace(int workspaceId)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -265,7 +267,8 @@ void DataModel::ProjectModel::deleteWorkspace(int workspaceId)
  */
 void DataModel::ProjectModel::clearAllWorkspaces()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -285,7 +288,8 @@ void DataModel::ProjectModel::clearAllWorkspaces()
  */
 void DataModel::ProjectModel::renameWorkspace(int workspaceId, const QString& title)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -313,7 +317,8 @@ void DataModel::ProjectModel::updateWorkspace(int workspaceId,
                                               bool setIcon,
                                               bool setDescription)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -345,7 +350,8 @@ void DataModel::ProjectModel::updateWorkspace(int workspaceId,
  */
 void DataModel::ProjectModel::reorderWorkspaces(const QList<int>& userWorkspaceIds)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   QHash<int, DataModel::Workspace> userById;
@@ -389,7 +395,8 @@ void DataModel::ProjectModel::addWidgetToWorkspace(int workspaceId,
                                                    int groupUniqueId,
                                                    int relativeIndex)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -422,7 +429,8 @@ void DataModel::ProjectModel::addWidgetToWorkspace(int workspaceId,
  */
 void DataModel::ProjectModel::removeWidgetFromWorkspace(int workspaceId, int index)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -451,7 +459,8 @@ void DataModel::ProjectModel::removeWidgetFromWorkspace(int workspaceId,
                                                         int groupUniqueId,
                                                         int relativeIndex)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -482,7 +491,8 @@ void DataModel::ProjectModel::removeWidgetFromWorkspace(int workspaceId,
  */
 int DataModel::ProjectModel::cleanupWorkspaceWidgetRefs(const QSet<qint64>& validKeys)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return 0;
 
   const auto encode = [](int widgetType, int groupId, int relIdx) {
@@ -562,8 +572,10 @@ void DataModel::ProjectModel::promptAddWorkspace()
     return;
 
   const int newId = addWorkspace(name.trimmed());
-  QTimer::singleShot(
-    0, this, [newId] { DataModel::ProjectEditor::instance().selectWorkspace(newId); });
+  QTimer::singleShot(0, this, [newId] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectWorkspace(newId);
+  });
 }
 
 /**
@@ -598,7 +610,8 @@ bool DataModel::ProjectModel::customizeWorkspaces() const noexcept
  */
 void DataModel::ProjectModel::setCustomizeWorkspaces(const bool enabled)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (m_customizeWorkspaces == enabled)
@@ -628,10 +641,12 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
 {
   std::vector<DataModel::Workspace> result;
 
-  const auto mode    = AppState::instance().operationMode();
-  const auto& groups = (mode == SerialStudio::QuickPlot)
-                       ? DataModel::FrameBuilder::instance().quickPlotFrame().groups
-                       : m_groups;
+  static auto& appState     = AppState::instance();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+
+  const auto mode = appState.operationMode();
+  const auto& groups =
+    (mode == SerialStudio::QuickPlot) ? frameBuilder.quickPlotFrame().groups : m_groups;
 
   QMap<SerialStudio::DashboardWidget, int> groupIdx;
   QMap<SerialStudio::DashboardWidget, int> datasetIdx;
@@ -871,7 +886,8 @@ bool DataModel::ProjectModel::mergeAutoWorkspaceUpdates()
  */
 int DataModel::ProjectModel::autoGenerateWorkspaces()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return -1;
 
   if (m_customizeWorkspaces && !m_workspaces.empty())
@@ -905,7 +921,8 @@ int DataModel::ProjectModel::autoGenerateWorkspaces()
  */
 void DataModel::ProjectModel::resetWorkspacesToAuto()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -926,7 +943,8 @@ void DataModel::ProjectModel::resetWorkspacesToAuto()
  */
 void DataModel::ProjectModel::confirmResetWorkspacesToAuto()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_customizeWorkspaces)
@@ -1185,7 +1203,8 @@ void DataModel::ProjectModel::confirmDeleteWorkspace(int workspaceId)
  */
 void DataModel::ProjectModel::hideGroup(int groupId)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (groupId < 0)
@@ -1209,7 +1228,8 @@ void DataModel::ProjectModel::hideGroup(int groupId)
  */
 void DataModel::ProjectModel::showGroup(int groupId)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (!m_hiddenGroupIds.remove(groupId))
@@ -1247,7 +1267,8 @@ QVariantList DataModel::ProjectModel::hiddenGroupsSummary() const
  */
 void DataModel::ProjectModel::showAllHiddenGroups()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (m_hiddenGroupIds.isEmpty())

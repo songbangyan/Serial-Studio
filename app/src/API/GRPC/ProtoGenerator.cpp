@@ -108,7 +108,8 @@ void API::GRPC::ProtoGenerator::writeSharedMessages(QTextStream& out)
 void API::GRPC::ProtoGenerator::buildCommandMessages(QStringList& message_defs,
                                                      QStringList& rpc_lines)
 {
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& commandRegistry = API::CommandRegistry::instance();
+  const auto& commands         = commandRegistry.commands();
 
   for (auto it = commands.begin(); it != commands.end(); ++it) {
     const auto& def     = it.value();

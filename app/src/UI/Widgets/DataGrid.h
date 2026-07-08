@@ -27,6 +27,7 @@
 #include <QVector>
 
 #include "DataModel/Frame.h"
+#include "UI/Dashboard.h"
 
 namespace Widgets {
 
@@ -119,5 +120,7 @@ private:
   QString m_valueHeader;
   DataGridRowsModel* m_rowsModel;
   int m_lastRowCount;
+
+  UI::Dashboard& m_dashboard;
 };
 }  // namespace Widgets

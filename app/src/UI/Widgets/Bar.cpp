@@ -44,6 +44,7 @@ Widgets::Bar::Bar(const int index, QQuickItem* parent, bool autoInitFromBarDatas
   , m_maxValue(0.0)
   , m_activeBandIndex(-1)
   , m_lastBandHint(-1)
+  , m_dashboard(UI::Dashboard::instance())
 {
   if (autoInitFromBarDataset && VALIDATE_WIDGET(SerialStudio::DashboardBar, m_index)) {
     const auto& dataset = GET_DATASET(SerialStudio::DashboardBar, m_index);
@@ -57,7 +58,7 @@ Widgets::Bar::Bar(const int index, QQuickItem* parent, bool autoInitFromBarDatas
     m_maxValue         = qMax(dataset.wgtMin, dataset.wgtMax);
     buildBands(dataset.alarmBands);
 
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Bar::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &Bar::updateData);
   }
 }
 

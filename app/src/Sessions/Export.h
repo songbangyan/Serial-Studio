@@ -30,6 +30,13 @@
 #include "DataModel/FrameConsumer.h"
 #include "IO/ConnectionManager.h"
 
+class AppState;
+
+namespace DataModel {
+class FrameBuilder;
+class ProjectModel;
+}  // namespace DataModel
+
 #ifdef BUILD_COMMERCIAL
 
 namespace Sessions {
@@ -189,6 +196,10 @@ private:
 
   QMutex m_projectSnapshotMutex;
   QByteArray m_projectSnapshot;
+
+  AppState* m_appState;
+  DataModel::ProjectModel* m_projectModel;
+  DataModel::FrameBuilder* m_frameBuilder;
 };
 
 }  // namespace Sessions

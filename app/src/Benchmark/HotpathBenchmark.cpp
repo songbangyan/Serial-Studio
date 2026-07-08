@@ -177,7 +177,8 @@ void HotpathBenchmark::setActive(bool active) noexcept
 {
   s_benchmarkActive = active;
 
-  UI::Dashboard::instance().updateStreamAvailable();
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.updateStreamAvailable();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -403,10 +404,11 @@ void HotpathBenchmark::setupProject(int language, int channels, bool withStrings
 {
   Q_ASSERT(channels > 0);
 
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
   project.setSuppressMessageBoxes(true);
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
 
   const QJsonObject root = dashboard ? buildDashboardProjectJson(language, withStrings)
                                      : buildProjectJson(language, channels, withStrings);
@@ -414,11 +416,12 @@ void HotpathBenchmark::setupProject(int language, int channels, bool withStrings
   Q_ASSERT(loaded);
   Q_UNUSED(loaded);
 
-  auto& parser = DataModel::FrameParser::instance();
+  static auto& parser = DataModel::FrameParser::instance();
   parser.setSuppressMessageBoxes(true);
   parser.readCode();
 
-  DataModel::FrameBuilder::instance().syncFromProjectModel();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.syncFromProjectModel();
 
   if (dashboard) {
     project.setCustomizeWorkspaces(true);
@@ -431,14 +434,19 @@ void HotpathBenchmark::setupProject(int language, int channels, bool withStrings
  */
 void HotpathBenchmark::enableConsumers()
 {
-  CSV::Export::instance().setExportEnabled(true);
-  API::Server::instance().setEnabled(true);
+  static auto& csvExport = CSV::Export::instance();
+  csvExport.setExportEnabled(true);
+  static auto& apiServer = API::Server::instance();
+  apiServer.setEnabled(true);
 #ifdef BUILD_COMMERCIAL
-  MDF4::Export::instance().setExportEnabled(true);
-  Sessions::Export::instance().setExportEnabled(true);
+  static auto& mdfExport = MDF4::Export::instance();
+  mdfExport.setExportEnabled(true);
+  static auto& sessionExport = Sessions::Export::instance();
+  sessionExport.setExportEnabled(true);
 #endif
 #ifdef ENABLE_GRPC
-  API::GRPC::GRPCServer::instance().setEnabled(true);
+  static auto& grpcServer = API::GRPC::GRPCServer::instance();
+  grpcServer.setEnabled(true);
 #endif
 }
 
@@ -447,21 +455,26 @@ void HotpathBenchmark::enableConsumers()
  */
 void HotpathBenchmark::disableConsumers()
 {
-  CSV::Export::instance().setExportEnabled(false);
-  API::Server::instance().setEnabled(false);
+  static auto& csvExport = CSV::Export::instance();
+  csvExport.setExportEnabled(false);
+  static auto& apiServer = API::Server::instance();
+  apiServer.setEnabled(false);
 #ifdef BUILD_COMMERCIAL
-  MDF4::Export::instance().setExportEnabled(false);
-  Sessions::Export::instance().setExportEnabled(false);
+  static auto& mdfExport = MDF4::Export::instance();
+  mdfExport.setExportEnabled(false);
+  static auto& sessionExport = Sessions::Export::instance();
+  sessionExport.setExportEnabled(false);
 #endif
 #ifdef ENABLE_GRPC
-  API::GRPC::GRPCServer::instance().setEnabled(false);
+  static auto& grpcServer = API::GRPC::GRPCServer::instance();
+  grpcServer.setEnabled(false);
 #endif
 
-  CSV::Export::instance().flushWorker();
-  API::Server::instance().flushWorker();
+  csvExport.flushWorker();
+  apiServer.flushWorker();
 #ifdef BUILD_COMMERCIAL
-  MDF4::Export::instance().flushWorker();
-  Sessions::Export::instance().flushWorker();
+  mdfExport.flushWorker();
+  sessionExport.flushWorker();
 #endif
 }
 
@@ -470,7 +483,7 @@ void HotpathBenchmark::disableConsumers()
  */
 void HotpathBenchmark::activateDashboardWidgets()
 {
-  auto& dashboard = UI::Dashboard::instance();
+  static auto& dashboard = UI::Dashboard::instance();
 
   const int plots = dashboard.widgetCount(SerialStudio::DashboardPlot);
   for (int i = 0; i < plots; ++i)
@@ -593,7 +606,7 @@ HotpathBenchmark::Result HotpathBenchmark::run(quint64 targetFrames,
   reader.setOperationMode(SerialStudio::QuickPlot);
   reader.setFinishSequences({QByteArrayLiteral("\n")});
 
-  auto& builder = DataModel::FrameBuilder::instance();
+  static auto& builder = DataModel::FrameBuilder::instance();
   builder.setParseBudgetEnabled(false);
 
   auto& queue = reader.queue();
@@ -699,7 +712,7 @@ HotpathBenchmark::StageBreakdown HotpathBenchmark::measureNativeStages(const Res
     // code-verify on
   }
 
-  auto& parser = DataModel::FrameParser::instance();
+  static auto& parser = DataModel::FrameParser::instance();
   std::array<QByteArrayView, 64> spans;
 
   using Clock    = std::chrono::steady_clock;

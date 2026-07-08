@@ -54,7 +54,7 @@
  */
 void DataModel::ProjectEditor::wireProjectModelRebuilds()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(&pm,
           &DataModel::ProjectModel::groupsChanged,
@@ -98,7 +98,7 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
     if (m_currentView != ProjectView || !m_projectModel)
       return;
 
-    const auto title = DataModel::ProjectModel::instance().title();
+    const auto title = m_projectModelRef.title();
     for (int i = 0; i < m_projectModel->rowCount(); ++i) {
       auto* row = m_projectModel->item(i);
       if (!row || row->data(ParameterType).toInt() != kProjectView_Title)
@@ -117,7 +117,7 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
       buildProjectModel();
   });
   connect(&pm, &DataModel::ProjectModel::jsonFileChanged, this, [this] {
-    const auto& path = DataModel::ProjectModel::instance().jsonFilePath();
+    const auto& path = m_projectModelRef.jsonFilePath();
     if (path == m_lastJsonFilePath)
       return;
 
@@ -132,7 +132,7 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
     if (!m_treeModel)
       return;
 
-    const auto title = DataModel::ProjectModel::instance().title();
+    const auto title = m_projectModelRef.title();
     for (auto it = m_rootItems.constBegin(); it != m_rootItems.constEnd(); ++it) {
       if (it.value() != kRootItem)
         continue;
@@ -153,7 +153,7 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
  */
 void DataModel::ProjectEditor::wireGroupSignals()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(
     &pm,
@@ -202,7 +202,7 @@ void DataModel::ProjectEditor::wireGroupSignals()
  */
 void DataModel::ProjectEditor::wireDatasetSignals()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(
     &pm,
@@ -261,7 +261,7 @@ void DataModel::ProjectEditor::wireDatasetSignals()
  */
 void DataModel::ProjectEditor::wireActionSignals()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(
     &pm,
@@ -299,7 +299,7 @@ void DataModel::ProjectEditor::wireActionSignals()
  */
 void DataModel::ProjectEditor::wireOutputWidgetSignals()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(
     &pm,
@@ -350,7 +350,7 @@ void DataModel::ProjectEditor::wireOutputWidgetSignals()
  */
 void DataModel::ProjectEditor::wireSourceSignals()
 {
-  auto& pm = DataModel::ProjectModel::instance();
+  auto& pm = m_projectModelRef;
 
   connect(
     &pm,
@@ -411,7 +411,7 @@ void DataModel::ProjectEditor::wireEditorSelfSignals()
  */
 void DataModel::ProjectEditor::wireExternalSignals()
 {
-  connect(&Misc::Translator::instance(), &Misc::Translator::languageChanged, this, [this] {
+  connect(&m_translator, &Misc::Translator::languageChanged, this, [this] {
     generateComboBoxModels();
     buildTreeModel();
 
@@ -439,11 +439,11 @@ void DataModel::ProjectEditor::wireExternalSignals()
     }
   });
 
-  connect(&IO::ConnectionManager::instance(), &IO::ConnectionManager::driverChanged, this, [this] {
+  connect(&m_connectionManager, &IO::ConnectionManager::driverChanged, this, [this] {
     if (m_currentView != SourceView)
       return;
 
-    const auto& sources = DataModel::ProjectModel::instance().sources();
+    const auto& sources = m_projectModelRef.sources();
     for (const auto& src : sources) {
       if (src.sourceId == m_selectedSource.sourceId) {
         m_selectedSource = src;
@@ -455,14 +455,14 @@ void DataModel::ProjectEditor::wireExternalSignals()
   });
 
   connect(
-    &DataModel::ProjectModel::instance(),
+    &m_projectModelRef,
     &DataModel::ProjectModel::sourceChanged,
     this,
     [this](int sourceId) {
       if (m_currentView != SourceView || sourceId != m_selectedSource.sourceId)
         return;
 
-      const auto& sources = DataModel::ProjectModel::instance().sources();
+      const auto& sources = m_projectModelRef.sources();
       for (const auto& src : sources) {
         if (src.sourceId != sourceId)
           continue;

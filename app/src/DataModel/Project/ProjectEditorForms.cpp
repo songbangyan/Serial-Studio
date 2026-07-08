@@ -56,7 +56,7 @@ void DataModel::ProjectEditor::buildProjectModel()
   }
 
   m_projectModel = new CustomModel(this);
-  const auto& pm = DataModel::ProjectModel::instance();
+  const auto& pm = m_projectModelRef;
 
   auto* hdr = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
@@ -111,7 +111,7 @@ void DataModel::ProjectEditor::buildGroupGeneralSection(const DataModel::Group& 
  */
 void DataModel::ProjectEditor::buildGroupSourceSection(const DataModel::Group& group)
 {
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  const auto& sources = m_projectModelRef.sources();
   if (sources.size() <= 1)
     return;
 
@@ -466,7 +466,7 @@ void DataModel::ProjectEditor::buildSourceModel(const DataModel::Source& source)
     disconnect(m_deviceListConn);
 
   m_deviceListConn = connect(
-    &IO::ConnectionManager::instance(),
+    &m_connectionManager,
     &IO::ConnectionManager::deviceListRefreshed,
     this,
     [this]() { buildSourceModel(m_selectedSource); },
@@ -486,7 +486,7 @@ void DataModel::ProjectEditor::appendDriverPropertyRows(const DataModel::Source&
   driverHdr->setData(busTypeIcon(source.busType), ParameterIcon);
   m_sourceModel->appendRow(driverHdr);
 
-  IO::HAL_Driver* driver = IO::ConnectionManager::instance().driverForEditing(source.sourceId);
+  IO::HAL_Driver* driver = m_connectionManager.driverForEditing(source.sourceId);
   if (!driver)
     return;
 
@@ -564,7 +564,7 @@ void DataModel::ProjectEditor::buildActionGeneralRows(const DataModel::Action& a
   iconItem->setData(tr("Icon displayed for this action in the dashboard"), ParameterDescription);
   m_actionModel->appendRow(iconItem);
 
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  const auto& sources = m_projectModelRef.sources();
   if (sources.size() <= 1)
     return;
 
@@ -824,7 +824,7 @@ void DataModel::ProjectEditor::addGeneralSection(CustomModel* model,
                      ParameterDescription);
   model->appendRow(titleItem);
 
-  const auto& pm = DataModel::ProjectModel::instance();
+  const auto& pm = m_projectModelRef;
 
   auto* virtualItem = new QStandardItem();
   virtualItem->setEditable(true);
@@ -950,7 +950,7 @@ void DataModel::ProjectEditor::addPlotSection(CustomModel* model, const DataMode
   plotItem->setData(tr("Plot data in real-time"), ParameterDescription);
   model->appendRow(plotItem);
 
-  const auto xUids  = DataModel::ProjectModel::instance().xDataSourceUniqueIds();
+  const auto xUids  = m_projectModelRef.xDataSourceUniqueIds();
   int xAxisComboPos = 0;
   for (int i = 0; i < xUids.size(); ++i) {
     if (xUids.at(i) == dataset.xAxisId) {
@@ -964,7 +964,7 @@ void DataModel::ProjectEditor::addPlotSection(CustomModel* model, const DataMode
   xAxisItem->setData(ComboBox, WidgetType);
   xAxisItem->setData(xAxisComboPos, EditableValue);
   xAxisItem->setData(xAxisItem->isEditable(), Active);
-  xAxisItem->setData(DataModel::ProjectModel::instance().xDataSources(), ComboBoxData);
+  xAxisItem->setData(m_projectModelRef.xDataSources(), ComboBoxData);
   xAxisItem->setData(kDatasetView_xAxis, ParameterType);
   xAxisItem->setData(tr("X-Axis Source"), ParameterName);
   xAxisItem->setData(tr("Choose Time or a dataset to drive the X-Axis in plots"),
@@ -1010,7 +1010,7 @@ void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
   if (!dataset.waterfall)
     return;
 
-  const auto yUids  = DataModel::ProjectModel::instance().yWaterfallSourceUniqueIds();
+  const auto yUids  = m_projectModelRef.yWaterfallSourceUniqueIds();
   int yAxisComboPos = 0;
   for (int i = 0; i < yUids.size(); ++i) {
     if (yUids.at(i) == dataset.waterfallYAxis) {
@@ -1024,7 +1024,7 @@ void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
   yAxisItem->setData(ComboBox, WidgetType);
   yAxisItem->setData(yAxisComboPos, EditableValue);
   yAxisItem->setData(yAxisItem->isEditable(), Active);
-  yAxisItem->setData(DataModel::ProjectModel::instance().yWaterfallSources(), ComboBoxData);
+  yAxisItem->setData(m_projectModelRef.yWaterfallSources(), ComboBoxData);
   yAxisItem->setData(kDatasetView_WaterfallYAxis, ParameterType);
   yAxisItem->setData(tr("Waterfall Y Axis"), ParameterName);
   yAxisItem->setData(tr("Choose Time (default) or any dataset whose value drives "

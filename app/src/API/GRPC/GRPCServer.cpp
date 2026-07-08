@@ -73,15 +73,17 @@ public:
 
     API::CommandResponse result;
     QMetaObject::invokeMethod(
-      QCoreApplication::instance(),
+      qApp,
       [&]() {
-        if (!API::Server::instance().authorizeRemoteCommand(command)) {
+        static auto& server = API::Server::instance();
+        if (!server.authorizeRemoteCommand(command)) {
           result = API::CommandResponse::makeError(
             id, API::ErrorCode::ExecutionError, QStringLiteral("Device write denied by user"));
           return;
         }
 
-        result = API::CommandRegistry::instance().execute(command, id, params);
+        static auto& commandRegistry = API::CommandRegistry::instance();
+        result                       = commandRegistry.execute(command, id, params);
       },
       Qt::BlockingQueuedConnection);
 
@@ -220,14 +222,16 @@ public:
     bool denied  = false;
     bool written = false;
     QMetaObject::invokeMethod(
-      QCoreApplication::instance(),
+      qApp,
       [&]() {
-        if (!API::Server::instance().authorizeDeviceWrite()) {
+        static auto& server = API::Server::instance();
+        if (!server.authorizeDeviceWrite()) {
           denied = true;
           return;
         }
 
-        written = IO::ConnectionManager::instance().writeData(data) == data.size();
+        static auto& connectionManager = IO::ConnectionManager::instance();
+        written                        = connectionManager.writeData(data) == data.size();
       },
       Qt::BlockingQueuedConnection);
 
@@ -253,7 +257,8 @@ public:
     if (!authorize(context))
       return unauthenticated();
 
-    const auto& commands = API::CommandRegistry::instance().commands();
+    static auto& commandRegistry = API::CommandRegistry::instance();
+    const auto& commands         = commandRegistry.commands();
     for (auto it = commands.begin(); it != commands.end(); ++it) {
       auto* info = response->add_commands();
       info->set_name(it->name.toStdString());
@@ -286,7 +291,8 @@ private:
       return false;
 
     const QByteArray token(it->second.data(), static_cast<int>(it->second.size()));
-    return API::Server::instance().verifyToken(token);
+    static auto& server = API::Server::instance();
+    return server.verifyToken(token);
   }
 
   /**
@@ -310,10 +316,11 @@ private:
 API::GRPC::GRPCServer::GRPCServer()
   : m_enabled(false), m_clientCount(0), m_writerRunning(false), m_frameQueue(4096), m_rawQueue(4096)
 {
-  auto& server = API::Server::instance();
+  static auto& server = API::Server::instance();
 
   connect(&server, &API::Server::enabledChanged, this, [this]() {
-    setEnabled(API::Server::instance().enabled());
+    static auto& apiServer = API::Server::instance();
+    setEnabled(apiServer.enabled());
   });
 
   connect(&server,
@@ -321,7 +328,10 @@ API::GRPC::GRPCServer::GRPCServer()
           this,
           &GRPCServer::onExternalConnectionsChanged);
 
-  QTimer::singleShot(0, this, [this]() { setEnabled(API::Server::instance().enabled()); });
+  QTimer::singleShot(0, this, [this]() {
+    static auto& apiServer = API::Server::instance();
+    setEnabled(apiServer.enabled());
+  });
 }
 
 /**
@@ -452,11 +462,13 @@ void API::GRPC::GRPCServer::onExternalConnectionsChanged()
  */
 void API::GRPC::GRPCServer::startServer()
 {
-  const bool external = API::Server::instance().externalConnections();
+  static auto& server = API::Server::instance();
+  const bool external = server.externalConnections();
   const auto address  = external ? QStringLiteral("0.0.0.0:%1").arg(API_GRPC_PORT)
                                  : QStringLiteral("127.0.0.1:%1").arg(API_GRPC_PORT);
 
-  (void)API::CommandHandler::instance();
+  static auto& commandHandler = API::CommandHandler::instance();
+  (void)commandHandler;
 
   m_service = std::make_unique<SerialStudioServiceImpl>(this);
   grpc::ServerBuilder builder;

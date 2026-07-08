@@ -71,7 +71,7 @@ AI::Conversation::Conversation(QObject* parent)
   m_autoSaveTimer->setInterval(800);
   m_autoSaveTimer->setSingleShot(true);
   connect(m_autoSaveTimer, &QTimer::timeout, this, [] {
-    auto& project = DataModel::ProjectModel::instance();
+    static auto& project = DataModel::ProjectModel::instance();
     if (!project.modified())
       return;
 
@@ -685,7 +685,8 @@ void AI::Conversation::runMetaSearchDocs(const QString& callId,
   const auto query = arguments.value(QStringLiteral("query")).toString();
   const int k      = qBound(1, arguments.value(QStringLiteral("k")).toInt(5), 10);
 
-  const auto hits = AI::DocSearch::instance().search(query, k);
+  static auto& docSearch = AI::DocSearch::instance();
+  const auto hits        = docSearch.search(query, k);
 
   QJsonArray rows;
   for (const auto& h : hits) {
@@ -855,8 +856,9 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
                                             const QString& requestedName,
                                             const QJsonObject& arguments)
 {
-  const QString name = m_dispatcher->canonicalToolName(requestedName);
-  const auto safety  = AI::CommandRegistry::instance().safetyOf(name);
+  const QString name           = m_dispatcher->canonicalToolName(requestedName);
+  static auto& commandRegistry = AI::CommandRegistry::instance();
+  const auto safety            = commandRegistry.safetyOf(name);
   qCDebug(serialStudioAI) << "Tool call" << name << "safety=" << static_cast<int>(safety);
 
   if (safety == Safety::Blocked) {
@@ -871,8 +873,12 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
   }
 
   if (safety == Safety::Confirm || safety == Safety::AlwaysConfirm) {
-    const bool autoApprove =
-      (safety == Safety::Confirm) && Assistant::instance().autoApproveEdits();
+    bool autoApprove = false;
+    if (safety == Safety::Confirm) {
+      static auto& assistant = Assistant::instance();
+      autoApprove            = assistant.autoApproveEdits();
+    }
+
     if (autoApprove) {
       appendToolCallCard(callId, name, arguments, CallStatus::Running);
       runToolCall(callId, name, arguments, true);
@@ -1127,7 +1133,8 @@ void AI::Conversation::issueRequest()
   connect(m_reply, &Reply::finished, this, &Conversation::onReplyFinished);
   connect(m_reply, &Reply::errorOccurred, this, &Conversation::onReplyError);
   connect(m_reply, &Reply::cacheStatsAvailable, this, [](int read, int created) {
-    Assistant::instance().reportCacheStats(read, created);
+    static auto& assistant = Assistant::instance();
+    assistant.reportCacheStats(read, created);
   });
 }
 
@@ -1730,7 +1737,8 @@ static QString toolCallCategory(const QString& name)
   if (name.startsWith(QStringLiteral("meta.")))
     return QStringLiteral("discovery");
 
-  if (AI::CommandRegistry::instance().safetyOf(name) == AI::Safety::Safe)
+  static auto& commandRegistry = AI::CommandRegistry::instance();
+  if (commandRegistry.safetyOf(name) == AI::Safety::Safe)
     return QStringLiteral("discovery");
 
   return QStringLiteral("execution");
@@ -1839,8 +1847,9 @@ void AI::Conversation::runToolCall(const QString& callId,
   const bool isExplicit =
     (name == QStringLiteral("project.save") || name == QStringLiteral("project.new")
      || name == QStringLiteral("project.open"));
-  const auto safety     = AI::CommandRegistry::instance().safetyOf(name);
-  const bool isReadOnly = (safety == Safety::Safe);
+  static auto& commandRegistry = AI::CommandRegistry::instance();
+  const auto safety            = commandRegistry.safetyOf(name);
+  const bool isReadOnly        = (safety == Safety::Safe);
   if (ok && !isMeta && !isExplicit && !isReadOnly)
     m_autoSaveTimer->start();
 }

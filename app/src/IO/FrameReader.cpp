@@ -342,8 +342,9 @@ void IO::FrameReader::noteDroppedFrame()
   m_lastDropNotify = now;
   qWarning() << "[FrameReader] Frame queue full -- frame dropped (total" << m_droppedFrames << ")";
 
+  static auto& nc = DataModel::NotificationCenter::instance();
   QMetaObject::invokeMethod(
-    &DataModel::NotificationCenter::instance(),
+    &nc,
     "postWarning",
     Qt::QueuedConnection,
     Q_ARG(QString, QStringLiteral("FrameReader")),

@@ -376,7 +376,7 @@ DataModel::PipelineResult DataModel::runFrameParserPipeline(const QByteArray& in
   PipelineResult result;
   populateExtractionStats(result, input.size(), extracted, reader.droppedFrameCount());
 
-  auto& parser = DataModel::FrameParser::instance();
+  static auto& parser = DataModel::FrameParser::instance();
   result.frames.reserve(extracted.size());
   for (const auto& f : extracted)
     result.frames.append(buildPipelineFrame(f, spec, &parser, nullptr, sourceId));

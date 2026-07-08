@@ -155,12 +155,16 @@ API::CommandResponse API::CommandHandler::processCommand(const CommandRequest& r
                                                          const CommandOrigin origin)
 {
   const bool remote = (origin == CommandOrigin::Remote);
-  if (remote && !Server::instance().authorizeRemoteCommand(request.command)) {
-    return CommandResponse::makeError(
-      request.id, ErrorCode::ExecutionError, QStringLiteral("Device write denied by user"));
+  if (remote) {
+    static auto& server = Server::instance();
+    if (!server.authorizeRemoteCommand(request.command)) {
+      return CommandResponse::makeError(
+        request.id, ErrorCode::ExecutionError, QStringLiteral("Device write denied by user"));
+    }
   }
 
-  return CommandRegistry::instance().execute(request.command, request.id, request.params);
+  static auto& registry = CommandRegistry::instance();
+  return registry.execute(request.command, request.id, request.params);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -200,7 +204,8 @@ QJsonObject API::CommandHandler::getAvailableCommands() const
   QJsonObject result;
   QJsonArray commandList;
 
-  const auto& commands = CommandRegistry::instance().commands();
+  static auto& registry = CommandRegistry::instance();
+  const auto& commands  = registry.commands();
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
     QJsonObject cmdInfo;
     cmdInfo[QStringLiteral("name")]        = it.key();
@@ -220,12 +225,12 @@ void API::CommandHandler::initializeHandlers()
   if (m_initialized)
     return;
 
-  CommandRegistry::instance().registerCommand(QStringLiteral("api.getCommands"),
-                                              QStringLiteral("Get list of all available commands"),
-                                              [this](const QString& id, const QJsonObject&) {
-                                                return CommandResponse::makeSuccess(
-                                                  id, getAvailableCommands());
-                                              });
+  static auto& registry = CommandRegistry::instance();
+  registry.registerCommand(QStringLiteral("api.getCommands"),
+                           QStringLiteral("Get list of all available commands"),
+                           [this](const QString& id, const QJsonObject&) {
+                             return CommandResponse::makeSuccess(id, getAvailableCommands());
+                           });
 
   Handlers::IOManagerHandler::registerCommands();
   Handlers::UARTHandler::registerCommands();

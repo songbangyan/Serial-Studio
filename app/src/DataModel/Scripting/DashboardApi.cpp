@@ -77,7 +77,8 @@ static QVariantMap makeJsResult(bool ok, const QString& errorMsg)
 static bool coreClearPlots(QString& errorMsgOut)
 {
   try {
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {
@@ -98,7 +99,8 @@ static bool coreSetPlotPoints(int points, QString& errorMsgOut)
   }
 
   try {
-    UI::Dashboard::instance().setPoints(points);
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.setPoints(points);
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {
@@ -116,7 +118,8 @@ static bool coreSetVisibility(void (UI::Dashboard::*setter)(const bool),
                               QString& errorMsgOut)
 {
   try {
-    (UI::Dashboard::instance().*setter)(visible);
+    static auto& dashboard = UI::Dashboard::instance();
+    (dashboard.*setter)(visible);
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {
@@ -132,7 +135,8 @@ static bool coreSetVisibility(void (UI::Dashboard::*setter)(const bool),
 static bool coreSetActiveWorkspaceById(int workspaceId, QString& errorMsgOut)
 {
   try {
-    DataModel::ProjectModel::instance().setActiveGroupId(workspaceId);
+    static auto& projectModel = DataModel::ProjectModel::instance();
+    projectModel.setActiveGroupId(workspaceId);
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {
@@ -154,7 +158,8 @@ static bool coreSetActiveWorkspaceByName(const QString& name, QString& errorMsgO
 
   int matchedId = -1;
   try {
-    const auto& workspaces = DataModel::ProjectModel::instance().activeWorkspaces();
+    static auto& projectModel = DataModel::ProjectModel::instance();
+    const auto& workspaces    = projectModel.activeWorkspaces();
     for (const auto& w : workspaces) {
       if (w.title.compare(name, Qt::CaseInsensitive) == 0) {
         matchedId = w.workspaceId;

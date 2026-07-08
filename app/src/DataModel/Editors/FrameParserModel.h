@@ -29,10 +29,16 @@
 class QStandardItem;
 class QAbstractItemModel;
 
+namespace Misc {
+class Translator;
+}  // namespace Misc
+
 namespace DataModel {
 
 class CustomModel;
+class FrameBuilder;
 class INativeTemplate;
+class ProjectModel;
 struct PipelineResult;
 struct Source;
 
@@ -173,6 +179,9 @@ private:
   QJsonObject m_params;
   QStringList m_templateNames;
   CustomModel* m_parameterModel;
+  DataModel::ProjectModel& m_projectModel;
+  Misc::Translator& m_translator;
+  DataModel::FrameBuilder& m_frameBuilder;
 };
 
 }  // namespace DataModel

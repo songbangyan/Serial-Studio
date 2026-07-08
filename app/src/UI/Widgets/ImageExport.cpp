@@ -181,10 +181,11 @@ bool Widgets::VideoExportWorker::ensureSession(int groupId,
                                                const QString& groupTitle,
                                                const QImage& firstFrame)
 {
-  const auto dt      = QDateTime::currentDateTime();
-  const auto stamp   = dt.toString(QStringLiteral("yyyy-MM-dd_HH-mm-ss-zzz"));
-  const auto base    = Misc::WorkspaceManager::instance().path(QStringLiteral("Video Recordings"));
-  const QString path = QStringLiteral("%1/%2/%3").arg(base, projectTitle, groupTitle);
+  const auto dt                 = QDateTime::currentDateTime();
+  const auto stamp              = dt.toString(QStringLiteral("yyyy-MM-dd_HH-mm-ss-zzz"));
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto base               = workspaceManager.path(QStringLiteral("Video Recordings"));
+  const QString path            = QStringLiteral("%1/%2/%3").arg(base, projectTitle, groupTitle);
 
   QDir dir(path);
   if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
@@ -339,7 +340,8 @@ bool Widgets::ImageExport::exportEnabled() const
 QString Widgets::ImageExport::imagesPath(const QString& groupTitle,
                                          const QString& projectTitle) const
 {
-  const auto base = Misc::WorkspaceManager::instance().path(QStringLiteral("Video Recordings"));
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto base               = workspaceManager.path(QStringLiteral("Video Recordings"));
   return QStringLiteral("%1/%2/%3").arg(base, projectTitle, groupTitle);
 }
 

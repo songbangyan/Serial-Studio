@@ -79,7 +79,8 @@ void MQTT::PublisherScriptEditor::buildEditorWidgets()
   m_editor->setTabReplace(true);
   m_editor->setTabReplaceSize(2);
   m_editor->setAutoIndentation(true);
-  m_editor->setFont(Misc::CommonFonts::instance().monoFont());
+  static auto& commonFonts = Misc::CommonFonts::instance();
+  m_editor->setFont(commonFonts.monoFont());
   m_editor->setMinimumHeight(220);
   m_editor->setLayoutDirection(Qt::LeftToRight);
 
@@ -165,14 +166,12 @@ void MQTT::PublisherScriptEditor::wireSignals()
           QOverload<int>::of(&QComboBox::activated),
           this,
           &PublisherScriptEditor::onLanguageChanged);
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &PublisherScriptEditor::onThemeChanged);
-  connect(&Misc::Translator::instance(),
-          &Misc::Translator::languageChanged,
-          this,
-          &PublisherScriptEditor::buildTemplates);
+  static auto& themeManager = Misc::ThemeManager::instance();
+  connect(
+    &themeManager, &Misc::ThemeManager::themeChanged, this, &PublisherScriptEditor::onThemeChanged);
+  static auto& translator = Misc::Translator::instance();
+  connect(
+    &translator, &Misc::Translator::languageChanged, this, &PublisherScriptEditor::buildTemplates);
 }
 
 /**

@@ -60,7 +60,7 @@ void API::Handlers::MqttHandler::registerCommands()
  */
 void API::Handlers::MqttHandler::registerPublisherCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.mqtt.publisher.getConfig"),
@@ -147,7 +147,7 @@ void API::Handlers::MqttHandler::registerPublisherCommands()
  */
 void API::Handlers::MqttHandler::registerSubscriberCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.mqtt.subscriber.getConfig"),
@@ -223,7 +223,7 @@ API::CommandResponse API::Handlers::MqttHandler::publisherGetConfig(const QStrin
 {
   Q_UNUSED(params)
 
-  const auto& p = MQTT::Publisher::instance();
+  static const auto& p = MQTT::Publisher::instance();
 
   MQTT::CredentialVault vault;
   const bool hasCreds = vault.hasCredentials(p.hostname(), p.port());
@@ -399,7 +399,7 @@ API::CommandResponse API::Handlers::MqttHandler::publisherGetConfig(const QStrin
 API::CommandResponse API::Handlers::MqttHandler::publisherSetConfig(const QString& id,
                                                                     const QJsonObject& params)
 {
-  auto& p = MQTT::Publisher::instance();
+  static auto& p = MQTT::Publisher::instance();
 
   if (auto err = applyPublisherEndpoint(p, params); err)
     return CommandResponse::makeError(id, ErrorCode::InvalidParam, *err);
@@ -426,7 +426,7 @@ API::CommandResponse API::Handlers::MqttHandler::publisherGetStatus(const QStrin
 {
   Q_UNUSED(params)
 
-  const auto& p = MQTT::Publisher::instance();
+  static const auto& p = MQTT::Publisher::instance();
 
   QJsonObject result;
   result[QStringLiteral("enabled")]        = p.enabled();
@@ -446,7 +446,8 @@ API::CommandResponse API::Handlers::MqttHandler::publisherGetStatus(const QStrin
  */
 [[nodiscard]] static IO::Drivers::MQTT* subscriber()
 {
-  return IO::ConnectionManager::instance().mqtt();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  return connectionManager.mqtt();
 }
 
 /**

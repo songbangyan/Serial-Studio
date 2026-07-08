@@ -34,18 +34,19 @@
  * @brief Constructs an LEDPanel widget.
  */
 Widgets::LEDPanel::LEDPanel(const int index, QQuickItem* parent)
-  : QQuickItem(parent), m_index(index)
+  : QQuickItem(parent)
+  , m_index(index)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardLED, m_index)) {
     buildLeds();
 
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &LEDPanel::updateData);
+    connect(&m_dashboard, &UI::Dashboard::updated, this, &LEDPanel::updateData);
 
     onThemeChanged();
-    connect(&Misc::ThemeManager::instance(),
-            &Misc::ThemeManager::themeChanged,
-            this,
-            &Widgets::LEDPanel::onThemeChanged);
+    connect(
+      &m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::LEDPanel::onThemeChanged);
   }
 }
 
@@ -243,8 +244,10 @@ QString Widgets::LEDPanel::resolveBandColor(const LedBand& band, const QString& 
   if (!band.customColor.isEmpty())
     return band.customColor;
 
-  if (band.severity >= 0)
-    return Misc::ThemeManager::instance().alarmColorForSeverity(band.severity).name();
+  if (band.severity >= 0) {
+    static auto& themeManager = Misc::ThemeManager::instance();
+    return themeManager.alarmColorForSeverity(band.severity).name();
+  }
 
   return datasetColor;
 }

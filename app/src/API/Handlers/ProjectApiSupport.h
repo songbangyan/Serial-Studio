@@ -143,8 +143,8 @@ inline QJsonObject buildDatasetObject(const DataModel::Dataset& dataset,
  */
 inline void attachProjectEpoch(QJsonObject& result)
 {
-  result[QStringLiteral("projectEpoch")] =
-    static_cast<qint64>(DataModel::ProjectModel::instance().mutationEpoch());
+  static auto& projectModel              = DataModel::ProjectModel::instance();
+  result[QStringLiteral("projectEpoch")] = static_cast<qint64>(projectModel.mutationEpoch());
 }
 
 /**
@@ -152,7 +152,8 @@ inline void attachProjectEpoch(QJsonObject& result)
  */
 [[nodiscard]] inline qint64 captureProjectEpoch()
 {
-  return DataModel::ProjectModel::instance().mutationEpoch();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  return projectModel.mutationEpoch();
 }
 
 /**

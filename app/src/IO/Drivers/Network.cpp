@@ -543,7 +543,8 @@ void IO::Drivers::Network::onErrorOccurred(const QAbstractSocket::SocketError so
   else
     error = QString::number(socketError);
 
-  ConnectionManager::instance().disconnectDevice(this);
+  static auto& connectionManager = ConnectionManager::instance();
+  connectionManager.disconnectDevice(this);
   Misc::Utilities::showMessageBox(tr("Network socket error"), error, QMessageBox::Critical);
 }
 

@@ -63,7 +63,8 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
 {
   Q_UNUSED(params)
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
 
   QJsonArray groups_array;
   for (const auto& group : groups) {
@@ -158,7 +159,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 {
   Q_UNUSED(params)
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
 
   QJsonArray datasets_array;
   int total_datasets = 0;
@@ -206,8 +208,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetByUniqueId(const Q
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: uniqueId"));
 
-  const int uniqueId = params.value(Keys::UniqueId).toInt();
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const int uniqueId        = params.value(Keys::UniqueId).toInt();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
 
   for (const auto& group : groups) {
     for (const auto& dataset : group.datasets)
@@ -239,7 +242,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetByTitle(const QStr
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("title cannot be empty"));
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
 
   QJsonArray matches;
   for (const auto& group : groups) {
@@ -298,9 +302,9 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetByPath(const QStri
   const QString groupTitle   = segments.size() == 3 ? segments.at(1) : segments.at(0);
   const QString datasetTitle = segments.last();
 
-  const auto& pm      = DataModel::ProjectModel::instance();
-  const auto& sources = pm.sources();
-  const auto& groups  = pm.groups();
+  static const auto& pm = DataModel::ProjectModel::instance();
+  const auto& sources   = pm.sources();
+  const auto& groups    = pm.groups();
 
   int sourceFilterId = -1;
   if (!sourceTitle.isEmpty()) {
@@ -371,7 +375,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& i
   const int newPosition = params.value(QStringLiteral("newPosition")).toInt();
   const bool isDryRun   = params.value(QStringLiteral("dryRun")).toBool(false);
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
 
   const DataModel::Group* matchGroup     = nullptr;
@@ -469,7 +473,7 @@ API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
   const int newPosition = params.value(QStringLiteral("newPosition")).toInt();
   const bool isDryRun   = params.value(QStringLiteral("dryRun")).toBool(false);
 
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto& groups = pm.groups();
   if (groupId < 0 || groupId >= static_cast<int>(groups.size()))
     return CommandResponse::makeError(
@@ -535,7 +539,8 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetExecutionOrder(
 {
   Q_UNUSED(params)
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& groups        = projectModel.groups();
 
   QJsonArray order;
   for (const auto& group : groups) {
@@ -575,7 +580,8 @@ API::CommandResponse API::Handlers::ProjectHandler::actionsList(const QString& i
 {
   Q_UNUSED(params)
 
-  const auto& actions = DataModel::ProjectModel::instance().actions();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& actions       = projectModel.actions();
 
   QJsonArray actions_array;
   for (const auto& action : actions) {
@@ -722,8 +728,8 @@ static QJsonObject executeBatchOp(int index, const QJsonObject& op, bool dryRun,
   if (dryRun)
     opParams.insert(QStringLiteral("dryRun"), true);
 
-  const auto response =
-    API::CommandRegistry::instance().execute(command, QString::number(index), opParams);
+  static auto& commandRegistry = API::CommandRegistry::instance();
+  const auto response          = commandRegistry.execute(command, QString::number(index), opParams);
 
   QJsonObject entry;
   entry[QStringLiteral("index")]   = index;
@@ -839,7 +845,7 @@ API::CommandResponse API::Handlers::ProjectHandler::projectBatch(const QString& 
       return *invalid;
   }
 
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
   if (!isDryRun)
     project.setAutoSaveSuspended(true);
 

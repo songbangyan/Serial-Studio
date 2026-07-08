@@ -27,7 +27,17 @@
 #include <QQuickPaintedItem>
 #include <QSyntaxStyle>
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+class TimerEvents;
+}  // namespace Misc
+
 namespace DataModel {
+
+class FrameParser;
+class ProjectEditor;
+class ProjectModel;
 
 /**
  * @brief QML-embeddable code editor for the JavaScript / Lua frame parser.
@@ -130,6 +140,12 @@ private:
   QPixmap m_pixmap;
   QSyntaxStyle m_style;
   QCodeEditor m_widget;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  Misc::TimerEvents& m_timerEvents;
+  DataModel::ProjectModel& m_projectModel;
+  DataModel::ProjectEditor& m_projectEditor;
+  DataModel::FrameParser& m_frameParser;
 };
 
 }  // namespace DataModel

@@ -72,6 +72,8 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   , m_triggerSource(0)
   , m_sweepMode(SerialStudio::SweepAuto)
   , m_triggerEdge(SerialStudio::TriggerRising)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
 {
   if (!VALIDATE_WIDGET(SerialStudio::DashboardMultiPlot, m_index))
     return;
@@ -99,22 +101,16 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   if (!sharedUnit.isEmpty())
     m_yLabel += " (" + sharedUnit + ")";
 
-  m_timeAxis = UI::Dashboard::instance().useTimeXAxisGroup(group);
+  m_timeAxis = m_dashboard.useTimeXAxisGroup(group);
   m_xLabel   = m_timeAxis ? tr("Time (s)") : tr("Samples");
 
   m_data.resize(group.datasets.size());
 
-  connect(&UI::Dashboard::instance(), &UI::Dashboard::pointsChanged, this, &MultiPlot::updateRange);
-  connect(&UI::Dashboard::instance(),
-          &UI::Dashboard::plotTimeRangeChanged,
-          this,
-          &MultiPlot::updateRange);
+  connect(&m_dashboard, &UI::Dashboard::pointsChanged, this, &MultiPlot::updateRange);
+  connect(&m_dashboard, &UI::Dashboard::plotTimeRangeChanged, this, &MultiPlot::updateRange);
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &MultiPlot::onThemeChanged);
+  connect(&m_themeManager, &Misc::ThemeManager::themeChanged, this, &MultiPlot::onThemeChanged);
 
   calculateAutoScaleRange();
   updateRange();
@@ -193,7 +189,7 @@ double Widgets::MultiPlot::maxY() const noexcept
  */
 bool Widgets::MultiPlot::running() const noexcept
 {
-  return UI::Dashboard::instance().multiplotRunning(m_index);
+  return m_dashboard.multiplotRunning(m_index);
 }
 
 /**
@@ -398,7 +394,7 @@ void Widgets::MultiPlot::setDataH(const int height)
  */
 void Widgets::MultiPlot::setRunning(const bool enabled)
 {
-  UI::Dashboard::instance().setMultiplotRunning(m_index, enabled);
+  m_dashboard.setMultiplotRunning(m_index, enabled);
   Q_EMIT runningChanged();
 }
 
@@ -560,7 +556,7 @@ void Widgets::MultiPlot::setTriggerEdge(const SerialStudio::TriggerEdge edge)
  */
 void Widgets::MultiPlot::armSweep()
 {
-  UI::Dashboard::instance().armMultiplotSweep(m_index);
+  m_dashboard.armMultiplotSweep(m_index);
 }
 
 /**
@@ -568,14 +564,14 @@ void Widgets::MultiPlot::armSweep()
  */
 void Widgets::MultiPlot::pushSweepConfig()
 {
-  UI::Dashboard::instance().setMultiplotSweep(m_index,
-                                              m_sweepEnabled,
-                                              m_triggerLevel,
-                                              static_cast<int>(m_triggerEdge),
-                                              static_cast<int>(m_sweepMode),
-                                              m_holdoffMs * 0.001,
-                                              m_triggerSource,
-                                              m_timebaseMs * 0.001);
+  m_dashboard.setMultiplotSweep(m_index,
+                                m_sweepEnabled,
+                                m_triggerLevel,
+                                static_cast<int>(m_triggerEdge),
+                                static_cast<int>(m_sweepMode),
+                                m_holdoffMs * 0.001,
+                                m_triggerSource,
+                                m_timebaseMs * 0.001);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -599,7 +595,7 @@ void Widgets::MultiPlot::updateData()
     double xHi = m_maxX;
     clampToVisibleX(xLo, xHi);
 
-    const auto& engine        = UI::Dashboard::instance().multiplotSweep(m_index);
+    const auto& engine        = m_dashboard.multiplotSweep(m_index);
     const qsizetype plotCount = static_cast<qsizetype>(engine.front.size());
     if (m_data.size() != plotCount)
       m_data.resize(plotCount);
@@ -622,7 +618,7 @@ void Widgets::MultiPlot::updateData()
     double xHi = m_maxX;
     clampToVisibleX(xLo, xHi);
 
-    const auto& rings         = UI::Dashboard::instance().multiplotTimeRings(m_index);
+    const auto& rings         = m_dashboard.multiplotTimeRings(m_index);
     const qsizetype plotCount = static_cast<qsizetype>(rings.size());
     if (m_data.size() != plotCount)
       m_data.resize(plotCount);
@@ -640,7 +636,7 @@ void Widgets::MultiPlot::updateData()
     return;
   }
 
-  const auto& data = UI::Dashboard::instance().multiplotData(m_index);
+  const auto& data = m_dashboard.multiplotData(m_index);
   const auto& X    = *data.x;
 
   const qsizetype plotCount = data.y.size();
@@ -670,26 +666,26 @@ void Widgets::MultiPlot::updateRange()
   if (!VALIDATE_WIDGET(SerialStudio::DashboardMultiPlot, m_index))
     return;
 
-  const auto& data = UI::Dashboard::instance().multiplotData(m_index);
+  const auto& data = m_dashboard.multiplotData(m_index);
   m_data.clear();
   m_data.squeeze();
   m_data.resize(data.y.size());
 
   if (m_timeAxis && m_sweepEnabled) {
-    const double range    = UI::Dashboard::instance().plotTimeRange();
+    const double range    = m_dashboard.plotTimeRange();
     const double timebase = m_timebaseMs * 0.001;
     m_minX                = 0;
     m_maxX                = (timebase > 0 && timebase < range) ? timebase : range;
   }
 
   else if (m_timeAxis) {
-    m_minX = -UI::Dashboard::instance().plotTimeRange();
+    m_minX = -m_dashboard.plotTimeRange();
     m_maxX = 0;
   }
 
   else {
     m_minX = 0;
-    m_maxX = UI::Dashboard::instance().points();
+    m_maxX = m_dashboard.points();
   }
 
   Q_EMIT rangeChanged();

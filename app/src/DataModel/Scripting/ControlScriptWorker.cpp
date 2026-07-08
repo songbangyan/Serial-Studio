@@ -78,7 +78,8 @@ QVariantMap DataModel::ControlApiMarshaller::dispatch(const QString& method,
   request.command = method;
   request.params  = QJsonObject::fromVariantMap(params);
 
-  const auto response = API::CommandHandler::instance().processCommand(request);
+  static auto& commandHandler = API::CommandHandler::instance();
+  const auto response         = commandHandler.processCommand(request);
 
   QVariantMap out;
   out.insert(QStringLiteral("ok"), response.success);
@@ -102,7 +103,8 @@ qint64 DataModel::ControlApiMarshaller::writeAndArm(int sourceId, const QByteArr
   if (s_shutdownRequested.load(std::memory_order_acquire))
     return -1;
 
-  return IO::ConnectionManager::instance().writeAndArmReply(sourceId, data);
+  static auto& ioManager = IO::ConnectionManager::instance();
+  return ioManager.writeAndArmReply(sourceId, data);
 }
 
 /**
@@ -110,7 +112,8 @@ qint64 DataModel::ControlApiMarshaller::writeAndArm(int sourceId, const QByteArr
  */
 QByteArray DataModel::ControlApiMarshaller::pollReply(int sourceId)
 {
-  return IO::ConnectionManager::instance().pollReplyBuffer(sourceId);
+  static auto& ioManager = IO::ConnectionManager::instance();
+  return ioManager.pollReplyBuffer(sourceId);
 }
 
 /**
@@ -118,7 +121,8 @@ QByteArray DataModel::ControlApiMarshaller::pollReply(int sourceId)
  */
 void DataModel::ControlApiMarshaller::disarmReply(int sourceId)
 {
-  IO::ConnectionManager::instance().disarmReplyCapture(sourceId);
+  static auto& ioManager = IO::ConnectionManager::instance();
+  ioManager.disarmReplyCapture(sourceId);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -183,7 +187,8 @@ QVariantMap DataModel::ControlApiBridge::call(const QString& method, const QVari
 QVariantList DataModel::ControlApiBridge::listCommands()
 {
   QVariantList result;
-  const auto& commands = API::CommandRegistry::instance().commands();
+  static auto& registry = API::CommandRegistry::instance();
+  const auto& commands  = registry.commands();
   result.reserve(commands.size());
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it)
     result.append(it.key());

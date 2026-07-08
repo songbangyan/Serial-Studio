@@ -33,6 +33,10 @@
 #  include <QVariantMap>
 #  include <vector>
 
+namespace Misc {
+class CommonFonts;
+}  // namespace Misc
+
 namespace Widgets {
 
 /**
@@ -260,6 +264,8 @@ private:
   void renderWithShadow(const std::function<void(QPainter*)>& draw, const QRectF& bounds);
   void rebindFillBrush();
   void rebindStrokeBrush();
+
+  Misc::CommonFonts& m_commonFonts;
 
   QPainter* m_painter;
   qreal m_width;

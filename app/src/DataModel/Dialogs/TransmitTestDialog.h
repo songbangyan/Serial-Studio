@@ -21,7 +21,15 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+class Translator;
+}  // namespace Misc
+
 namespace DataModel {
+
+class FrameBuilder;
 
 /**
  * @brief Dialog for exercising an output-widget transmit script against sample input.
@@ -51,6 +59,10 @@ private:
 
 private:
   QString m_transmitCode;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  Misc::Translator& m_translator;
+  DataModel::FrameBuilder& m_frameBuilder;
   QLabel* m_inputTitle;
   QLabel* m_outputTitle;
   QLabel* m_byteCountLabel;

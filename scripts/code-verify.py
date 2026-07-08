@@ -2245,9 +2245,13 @@ the kinds below are short labels.
   list for leaves, `setupExternalConnections()` for core modules) or wires it
   in the `ModuleManager` composition root. Sanctioned and never flagged: the
   root files (`main.cpp`, `Misc/ModuleManager.cpp`), the accessor's own
-  `X& X::instance()` body, `setupExternalConnections()` wiring bodies, and the
-  interim `static auto& x = X::instance();` hotpath cache. Advisory: the
-  codebase has ~1,850 existing sites, so the report is the migration ratchet.
+  `X& X::instance()` body, `setupExternalConnections()` wiring bodies, the
+  interim `static auto& x = X::instance();` hotpath cache, constructor
+  member-initializer captures (`m_x(X::instance())` — the prescribed fix;
+  which classes may ctor-capture what is governed by the spec's capture-safety
+  table, not the linter), and single-line `Q_ASSERT(...)` expressions
+  (debug-only, no release-build construction edge). Advisory: the report is
+  the migration ratchet; the 2026-07 sweep converted the ~1,540-site backlog.
 
 ## Performance / CPU-microarchitecture rules
 

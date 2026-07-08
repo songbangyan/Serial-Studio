@@ -38,6 +38,7 @@
 #include <atomic>
 #include <cstddef>
 #include <new>
+#include <QHash>
 #include <QList>
 #include <QObject>
 #include <QSettings>
@@ -183,6 +184,9 @@ private:
   void cancelAndDrainTransfers();
   void freeTransfers();
 
+  [[nodiscard]] QString enrichDeviceLabel(libusb_device* dev,
+                                          const libusb_device_descriptor& desc,
+                                          const QString& base) const;
   [[nodiscard]] QString endpointErrorMessage() const;
   [[nodiscard]] bool activateSelectedEndpoints();
 
@@ -232,6 +236,7 @@ private:
 
   QStringList m_deviceLabels;
   QList<libusb_device*> m_devicePtrs;
+  QHash<QString, QString> m_deviceLabelCache;
 
   QList<int> m_claimedInterfaces;
   QList<EndpointInfo> m_inEndpoints;

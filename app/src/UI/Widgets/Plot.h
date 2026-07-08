@@ -28,6 +28,10 @@
 #include "DataModel/Frame.h"
 #include "SerialStudio.h"
 
+namespace UI {
+class Dashboard;
+}  // namespace UI
+
 namespace Widgets {
 /**
  * @brief Real-time 2D plotting widget for visualizing time-series data.
@@ -187,6 +191,7 @@ private:
   static void applyAxisPadding(double& min, double& max, const bool addPadding);
 
 private:
+  UI::Dashboard& m_dashboard;
   int m_index;
   int m_dataW;
   int m_dataH;

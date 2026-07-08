@@ -43,8 +43,8 @@
  */
 void API::Handlers::SourceHandler::registerCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(QStringLiteral("project.source.list"),
                            QStringLiteral("List all project sources"),
@@ -112,7 +112,7 @@ void API::Handlers::SourceHandler::registerCommands()
  */
 void API::Handlers::SourceHandler::registerPropertyCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.source.setProperty"),
@@ -151,7 +151,7 @@ void API::Handlers::SourceHandler::registerPropertyCommands()
  */
 void API::Handlers::SourceHandler::registerFrameParserCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("project.source.setFrameParserCode"),
@@ -185,7 +185,8 @@ API::CommandResponse API::Handlers::SourceHandler::sourceList(const QString& id,
 {
   (void)params;
 
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
   QJsonArray arr;
   for (const auto& src : sources) {
     QJsonObject obj;
@@ -248,10 +249,11 @@ API::CommandResponse API::Handlers::SourceHandler::sourceAdd(const QString& id,
                                     QStringLiteral("COMMERCIAL_REQUIRED"),
                                     QStringLiteral("Multiple data sources require a Pro license"));
 #else
-  const int countBefore = DataModel::ProjectModel::instance().sourceCount();
-  QMetaObject::invokeMethod(&DataModel::ProjectModel::instance(), "addSource");
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const int countBefore     = projectModel.sourceCount();
+  QMetaObject::invokeMethod(&projectModel, "addSource");
 
-  const int countAfter = DataModel::ProjectModel::instance().sourceCount();
+  const int countAfter = projectModel.sourceCount();
   if (countAfter <= countBefore)
     return CommandResponse::makeError(
       id, QStringLiteral("OPERATION_FAILED"), QStringLiteral("Failed to add source"));
@@ -285,10 +287,9 @@ API::CommandResponse API::Handlers::SourceHandler::sourceDelete(const QString& i
       QStringLiteral("INVALID_PARAM"),
       QStringLiteral("sourceId must be >= 1 (cannot delete primary source)"));
 
-  QMetaObject::invokeMethod(&DataModel::ProjectModel::instance(),
-                            "deleteSource",
-                            Qt::DirectConnection,
-                            Q_ARG(int, sourceId));
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  QMetaObject::invokeMethod(
+    &projectModel, "deleteSource", Qt::DirectConnection, Q_ARG(int, sourceId));
 
   return CommandResponse::makeSuccess(id);
 #endif
@@ -310,9 +311,10 @@ API::CommandResponse API::Handlers::SourceHandler::sourceUpdate(const QString& i
     return CommandResponse::makeError(
       id, QStringLiteral("MISSING_PARAM"), QStringLiteral("sourceId is required"));
 
-  const int sourceId    = params[Keys::SourceId].toInt(-1);
-  const auto& sources   = DataModel::ProjectModel::instance().sources();
-  const int sourceCount = static_cast<int>(sources.size());
+  const int sourceId        = params[Keys::SourceId].toInt(-1);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
+  const int sourceCount     = static_cast<int>(sources.size());
 
   if (sourceId < 0 || sourceId >= sourceCount)
     return CommandResponse::makeError(
@@ -344,7 +346,7 @@ API::CommandResponse API::Handlers::SourceHandler::sourceUpdate(const QString& i
   if (params.contains(Keys::HexadecimalDelimiters))
     updated.hexadecimalDelimiters = params[Keys::HexadecimalDelimiters].toBool();
 
-  QMetaObject::invokeMethod(&DataModel::ProjectModel::instance(),
+  QMetaObject::invokeMethod(&projectModel,
                             "updateSource",
                             Qt::DirectConnection,
                             Q_ARG(int, sourceId),
@@ -365,7 +367,7 @@ API::CommandResponse API::Handlers::SourceHandler::sourceConfigure(const QString
       id, QStringLiteral("MISSING_PARAM"), QStringLiteral("sourceId and settings are required"));
 
   const int sourceId    = params[Keys::SourceId].toInt(-1);
-  const auto& model     = DataModel::ProjectModel::instance();
+  static auto& model    = DataModel::ProjectModel::instance();
   const int sourceCount = static_cast<int>(model.sources().size());
 
   if (sourceId < 0 || sourceId >= sourceCount)
@@ -373,18 +375,21 @@ API::CommandResponse API::Handlers::SourceHandler::sourceConfigure(const QString
       id, QStringLiteral("INVALID_PARAM"), QStringLiteral("Invalid sourceId"));
 
   const QJsonObject settings = params[QStringLiteral("settings")].toObject();
-  const bool usesUiDriver    = sourceId == 0 && sourceCount == 1
-                         && AppState::instance().operationMode() == SerialStudio::ProjectFile;
+  static auto& appState      = AppState::instance();
+  const bool usesUiDriver =
+    sourceId == 0 && sourceCount == 1 && appState.operationMode() == SerialStudio::ProjectFile;
 
   if (usesUiDriver) {
+    static auto& uiDriverConnectionManager = IO::ConnectionManager::instance();
     for (auto it = settings.constBegin(); it != settings.constEnd(); ++it)
-      IO::ConnectionManager::instance().setUiDriverProperty(it.key(), it.value().toVariant());
+      uiDriverConnectionManager.setUiDriverProperty(it.key(), it.value().toVariant());
 
-    DataModel::ProjectModel::instance().captureSourceSettings(sourceId);
+    model.captureSourceSettings(sourceId);
     return CommandResponse::makeSuccess(id);
   }
 
-  IO::HAL_Driver* driver = IO::ConnectionManager::instance().driverForEditing(sourceId);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  IO::HAL_Driver* driver         = connectionManager.driverForEditing(sourceId);
   if (!driver)
     return CommandResponse::makeError(
       id, QStringLiteral("OPERATION_FAILED"), QStringLiteral("No driver for source"));
@@ -392,9 +397,9 @@ API::CommandResponse API::Handlers::SourceHandler::sourceConfigure(const QString
   for (auto it = settings.constBegin(); it != settings.constEnd(); ++it)
     driver->setDriverProperty(it.key(), it.value().toVariant());
 
-  DataModel::ProjectModel::instance().captureSourceSettings(sourceId);
+  model.captureSourceSettings(sourceId);
 
-  IO::HAL_Driver* live = IO::ConnectionManager::instance().driver(sourceId);
+  IO::HAL_Driver* live = connectionManager.driver(sourceId);
   if (live && live != driver)
     for (auto it = settings.constBegin(); it != settings.constEnd(); ++it)
       live->setDriverProperty(it.key(), it.value().toVariant());
@@ -428,15 +433,17 @@ API::CommandResponse API::Handlers::SourceHandler::sourceSetProperty(const QStri
                        ? params[QStringLiteral("propertyValue")].toVariant()
                        : params[QStringLiteral("value")].toVariant();
 
-  IO::HAL_Driver* driver = IO::ConnectionManager::instance().driverForEditing(sourceId);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  IO::HAL_Driver* driver         = connectionManager.driverForEditing(sourceId);
   if (!driver)
     return CommandResponse::makeError(
       id, QStringLiteral("OPERATION_FAILED"), QStringLiteral("No driver for source"));
 
   driver->setDriverProperty(key, val);
-  DataModel::ProjectModel::instance().captureSourceSettings(sourceId);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.captureSourceSettings(sourceId);
 
-  IO::HAL_Driver* live = IO::ConnectionManager::instance().driver(sourceId);
+  IO::HAL_Driver* live = connectionManager.driver(sourceId);
   if (live && live != driver)
     live->setDriverProperty(key, val);
 
@@ -453,9 +460,10 @@ API::CommandResponse API::Handlers::SourceHandler::sourceGetConfiguration(const 
     return CommandResponse::makeError(
       id, QStringLiteral("MISSING_PARAM"), QStringLiteral("sourceId is required"));
 
-  const int sourceId    = params[Keys::SourceId].toInt(-1);
-  const auto& sources   = DataModel::ProjectModel::instance().sources();
-  const int sourceCount = static_cast<int>(sources.size());
+  const int sourceId        = params[Keys::SourceId].toInt(-1);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
+  const int sourceCount     = static_cast<int>(sources.size());
 
   if (sourceId < 0 || sourceId >= sourceCount)
     return CommandResponse::makeError(
@@ -479,14 +487,15 @@ API::CommandResponse API::Handlers::SourceHandler::sourceSetFrameParserCode(
   const int sourceId = params[Keys::SourceId].toInt(-1);
   const QString code = params[QStringLiteral("code")].toString();
 
-  const auto& sources   = DataModel::ProjectModel::instance().sources();
-  const int sourceCount = static_cast<int>(sources.size());
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
+  const int sourceCount     = static_cast<int>(sources.size());
 
   if (sourceId < 0 || sourceId >= sourceCount)
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAM"), QStringLiteral("Invalid sourceId"));
 
-  QMetaObject::invokeMethod(&DataModel::ProjectModel::instance(),
+  QMetaObject::invokeMethod(&projectModel,
                             "updateSourceFrameParser",
                             Qt::DirectConnection,
                             Q_ARG(int, sourceId),
@@ -505,9 +514,10 @@ API::CommandResponse API::Handlers::SourceHandler::sourceGetFrameParserCode(
     return CommandResponse::makeError(
       id, QStringLiteral("MISSING_PARAM"), QStringLiteral("sourceId is required"));
 
-  const int sourceId    = params[Keys::SourceId].toInt(-1);
-  const auto& sources   = DataModel::ProjectModel::instance().sources();
-  const int sourceCount = static_cast<int>(sources.size());
+  const int sourceId        = params[Keys::SourceId].toInt(-1);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
+  const int sourceCount     = static_cast<int>(sources.size());
 
   if (sourceId < 0 || sourceId >= sourceCount)
     return CommandResponse::makeError(

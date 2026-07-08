@@ -126,6 +126,11 @@ static constexpr int kSlowPaintMs       = 30;
  */
 Widgets::Painter::Painter(int index, QQuickItem* parent)
   : QQuickPaintedItem(parent)
+  , m_frameBuilder(DataModel::FrameBuilder::instance())
+  , m_appState(AppState::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_dashboard(UI::Dashboard::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
   , m_index(index)
   , m_compileDirty(true)
   , m_runtimeOk(false)
@@ -151,7 +156,7 @@ Widgets::Painter::Painter(int index, QQuickItem* parent)
 
   m_engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
   DataModel::NotificationCenter::installScriptApi(&m_engine);
-  DataModel::FrameBuilder::instance().injectTableApiJS(&m_engine);
+  m_frameBuilder.injectTableApiJS(&m_engine);
 
   DataModel::DeviceWriteApi::installJS(&m_engine, 0);
   DataModel::ActionFireApi::installJS(&m_engine);
@@ -160,7 +165,7 @@ Widgets::Painter::Painter(int index, QQuickItem* parent)
 
   DataModel::ScriptApiCall::installJS(&m_engine, 0);
 
-  const auto projectPath = AppState::instance().projectFilePath();
+  const auto projectPath = m_appState.projectFilePath();
   if (!projectPath.isEmpty())
     m_ctx->setProjectDirectory(QFileInfo(projectPath).absolutePath());
 
@@ -176,13 +181,13 @@ Widgets::Painter::Painter(int index, QQuickItem* parent)
 
   connect(m_bridge, &PainterDataBridge::consoleLine, this, &Painter::consoleLine);
 
-  connect(&Misc::ThemeManager::instance(), &Misc::ThemeManager::themeChanged, this, [this]() {
+  connect(&m_themeManager, &Misc::ThemeManager::themeChanged, this, [this]() {
     installTheme();
     m_compileDirty = true;
   });
 
-  connect(&UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Painter::updateData);
-  connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [this] {
+  connect(&m_dashboard, &UI::Dashboard::updated, this, &Painter::updateData);
+  connect(&m_timerEvents, &Misc::TimerEvents::uiTimeout, this, [this] {
     if (!isVisible())
       return;
 
@@ -372,12 +377,11 @@ void Widgets::Painter::updateData()
   if (m_index < 0)
     return;
 
-  const auto* dashboard = &UI::Dashboard::instance();
-  const auto count      = dashboard->widgetCount(SerialStudio::DashboardPainter);
+  const auto count = m_dashboard.widgetCount(SerialStudio::DashboardPainter);
   if (m_index >= count)
     return;
 
-  const auto& group = dashboard->getGroupWidget(SerialStudio::DashboardPainter, m_index);
+  const auto& group = m_dashboard.getGroupWidget(SerialStudio::DashboardPainter, m_index);
   m_bridge->setGroup(&group);
   m_bridge->setFrame(++m_frameSeq, QDateTime::currentMSecsSinceEpoch());
 
@@ -446,11 +450,10 @@ void Widgets::Painter::animateTick()
   if (m_previewMode || m_index < 0 || !m_runtimeOk)
     return;
 
-  const auto* dashboard = &UI::Dashboard::instance();
-  if (m_index >= dashboard->widgetCount(SerialStudio::DashboardPainter))
+  if (m_index >= m_dashboard.widgetCount(SerialStudio::DashboardPainter))
     return;
 
-  const auto& group = dashboard->getGroupWidget(SerialStudio::DashboardPainter, m_index);
+  const auto& group = m_dashboard.getGroupWidget(SerialStudio::DashboardPainter, m_index);
   m_bridge->setGroup(&group);
 
   renderFrame();
@@ -466,13 +469,12 @@ void Widgets::Painter::dispatchPointer(QJSValue& fn, const QJSValueList& args)
     return;
 
   if (!m_previewMode) {
-    const auto* dashboard = &UI::Dashboard::instance();
-    if (m_index < 0 || m_index >= dashboard->widgetCount(SerialStudio::DashboardPainter)) {
+    if (m_index < 0 || m_index >= m_dashboard.widgetCount(SerialStudio::DashboardPainter)) {
       m_bridge->setGroup(nullptr);
       return;
     }
 
-    m_bridge->setGroup(&dashboard->getGroupWidget(SerialStudio::DashboardPainter, m_index));
+    m_bridge->setGroup(&m_dashboard.getGroupWidget(SerialStudio::DashboardPainter, m_index));
   }
 
   auto r = m_watchdog.call(fn, args);
@@ -635,7 +637,7 @@ void Widgets::Painter::installBootstrap()
  */
 void Widgets::Painter::installTheme()
 {
-  const auto& palette = Misc::ThemeManager::instance().colors();
+  const auto& palette = m_themeManager.colors();
   auto themeObject    = m_engine.newObject();
   for (auto it = palette.constBegin(); it != palette.constEnd(); ++it) {
     const auto v = it.value();

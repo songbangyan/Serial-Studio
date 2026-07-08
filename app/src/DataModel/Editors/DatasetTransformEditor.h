@@ -30,7 +30,15 @@
 #include <QSyntaxStyle>
 #include <QVBoxLayout>
 
+namespace Misc {
+class CommonFonts;
+class ThemeManager;
+class Translator;
+}  // namespace Misc
+
 namespace DataModel {
+
+class FrameBuilder;
 
 /**
  * @brief Dialog for editing per-dataset value transform scripts (Lua or JS).
@@ -118,6 +126,11 @@ private:
   };
 
   QList<Template> m_templates;
+
+  Misc::CommonFonts& m_commonFonts;
+  Misc::ThemeManager& m_themeManager;
+  Misc::Translator& m_translator;
+  DataModel::FrameBuilder& m_frameBuilder;
 };
 
 }  // namespace DataModel

@@ -150,13 +150,13 @@ DataModel::FrameBuilder::FrameBuilder()
     m_framePool.emplace_back(std::make_shared<PooledFrameSlot>());
 
 #ifdef BUILD_COMMERCIAL
-  connect(&Licensing::LemonSqueezy::instance(),
-          &Licensing::LemonSqueezy::activatedChanged,
-          this,
-          [this] { syncFromProjectModel(); });
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  connect(&lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, [this] {
+    syncFromProjectModel();
+  });
 #endif
 
-  if (auto* app = QCoreApplication::instance())
+  if (auto* app = qApp)
     connect(app, &QCoreApplication::aboutToQuit, this, [this]() { destroyTransformEngines(); });
 }
 
@@ -222,8 +222,9 @@ SS_COLD void DataModel::FrameBuilder::notePoolExhausted()
     warned = true;
     qWarning() << "[FrameBuilder] Frame pool exhausted (" << kFramePoolSize
                << " slots), consumers are not draining; falling back to heap allocation.";
+    static auto& nc = NotificationCenter::instance();
     QMetaObject::invokeMethod(
-      &NotificationCenter::instance(),
+      &nc,
       "postWarning",
       Qt::QueuedConnection,
       Q_ARG(QString, QStringLiteral("FrameBuilder")),
@@ -507,16 +508,19 @@ void DataModel::FrameBuilder::setupExternalConnections()
  */
 void DataModel::FrameBuilder::refreshAnyAsyncSink()
 {
-  const auto& server = API::Server::instance();
-  bool any = CSV::Export::instance().exportEnabled() || MDF4::Export::instance().exportEnabled()
+  static auto& server     = API::Server::instance();
+  static auto& csvExport  = CSV::Export::instance();
+  static auto& mdf4Export = MDF4::Export::instance();
+  bool any                = csvExport.exportEnabled() || mdf4Export.exportEnabled()
           || (server.enabled() && server.clientCount() > 0);
 #ifdef BUILD_COMMERCIAL
-  any =
-    any || Sessions::Export::instance().exportEnabled() || MQTT::Publisher::instance().enabled();
+  static auto& sessionsExport = Sessions::Export::instance();
+  static auto& mqttPublisher  = MQTT::Publisher::instance();
+  any                         = any || sessionsExport.exportEnabled() || mqttPublisher.enabled();
 #endif
 #ifdef ENABLE_GRPC
-  const auto& grpc = API::GRPC::GRPCServer::instance();
-  any              = any || (grpc.enabled() && grpc.clientCount() > 0);
+  static auto& grpc = API::GRPC::GRPCServer::instance();
+  any               = any || (grpc.enabled() && grpc.clientCount() > 0);
 #endif
 
   m_anyAsyncSink = any;
@@ -530,8 +534,9 @@ void DataModel::FrameBuilder::refreshLatestFrameCapture()
 {
   const bool wasEnabled = m_captureLatestFrame;
 
-  m_captureLatestFrame =
-    DataModel::ControlScript::instance().running() || API::Server::instance().enabled();
+  static auto& controlScript = DataModel::ControlScript::instance();
+  static auto& server        = API::Server::instance();
+  m_captureLatestFrame       = controlScript.running() || server.enabled();
 
   if (wasEnabled && !m_captureLatestFrame) {
     m_latestFrames.clear();
@@ -548,7 +553,7 @@ void DataModel::FrameBuilder::refreshLatestFrameCapture()
  */
 void DataModel::FrameBuilder::syncFromProjectModel()
 {
-  const auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   Q_ASSERT(!pm.title().isEmpty());
 
   clear_frame(m_frame);
@@ -720,10 +725,11 @@ void DataModel::FrameBuilder::onSourceRemoved()
  */
 void DataModel::FrameBuilder::onOperationModeChanged()
 {
-  Q_ASSERT(AppState::instance().operationMode() >= SerialStudio::ProjectFile
-           && AppState::instance().operationMode() <= SerialStudio::QuickPlot);
+  static auto& appState = AppState::instance();
+  Q_ASSERT(appState.operationMode() >= SerialStudio::ProjectFile
+           && appState.operationMode() <= SerialStudio::QuickPlot);
 
-  m_operationMode     = AppState::instance().operationMode();
+  m_operationMode     = appState.operationMode();
   m_quickPlotChannels = -1;
   m_sourceFrames.clear();
   m_sourceFrameCounters.clear();
@@ -833,10 +839,12 @@ bool DataModel::FrameBuilder::dashboardTick()
  */
 void DataModel::FrameBuilder::onConnectedChanged()
 {
-  Q_ASSERT(AppState::instance().operationMode() >= SerialStudio::ProjectFile
-           && AppState::instance().operationMode() <= SerialStudio::QuickPlot);
+  static auto& appState  = AppState::instance();
+  static auto& ioManager = IO::ConnectionManager::instance();
+  Q_ASSERT(appState.operationMode() >= SerialStudio::ProjectFile
+           && appState.operationMode() <= SerialStudio::QuickPlot);
 
-  const bool nowConnected = IO::ConnectionManager::instance().isConnected();
+  const bool nowConnected = ioManager.isConnected();
   if (nowConnected == m_lastConnectedState)
     return;
 
@@ -860,24 +868,25 @@ void DataModel::FrameBuilder::onConnectedChanged()
   m_latestFrames.clear();
   m_latestFrameSourceId = -1;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   Q_ASSERT(!m_frame.title.isEmpty());
   initializeTableStore();
-  DataModel::FrameParser::instance().readCode();
+  static auto& parser = DataModel::FrameParser::instance();
+  parser.readCode();
   compileTransforms();
 
   const auto& actions = m_frame.actions;
   for (const auto& action : actions)
     if (action.autoExecuteOnConnect) {
-      const qint64 written =
-        IO::ConnectionManager::instance().writeDataToDevice(action.sourceId, get_tx_bytes(action));
+      const qint64 written = ioManager.writeDataToDevice(action.sourceId, get_tx_bytes(action));
       if (written < 0) [[unlikely]]
         qWarning() << "[FrameBuilder] Auto-execute write failed for action:" << action.title;
     }
 
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
   if (sources.size() > 1) {
     for (const auto& src : sources)
       publishSourceTemplateFrame(src);
@@ -1172,7 +1181,7 @@ void DataModel::FrameBuilder::parseBudgetReset() noexcept
 SerialStudio::DecoderMethod DataModel::FrameBuilder::resolveDecoderMethod(
   int sourceId, bool applyPerSourceOverride) const
 {
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
   if (!applyPerSourceOverride)
     return project.decoderMethod();
 
@@ -1196,9 +1205,10 @@ void DataModel::FrameBuilder::decodeProjectChannels(int sourceId,
     return;
   }
 
+  static auto& parser = DataModel::FrameParser::instance();
   decodeAndParseFrame(data->data,
                       resolveDecoderMethod(sourceId, applyPerSourceOverride),
-                      DataModel::FrameParser::instance(),
+                      parser,
                       sourceId,
                       outChannels);
 }
@@ -1423,13 +1433,15 @@ void DataModel::FrameBuilder::endDatasetPass(bool armedJsWatchdog)
 
   if (armedJsWatchdog) [[unlikely]] {
     m_jsEngineForSource->jsWatchdog->disarm();
-    if (m_jsTransformTimedOut)
-      NotificationCenter::instance().postWarning(
+    if (m_jsTransformTimedOut) {
+      static auto& nc = NotificationCenter::instance();
+      nc.postWarning(
         QStringLiteral("FrameBuilder"),
         tr("JavaScript transform exceeded budget"),
         tr("A dataset transform took longer than %1 ms; remaining datasets in the frame fell "
            "back to raw values until the next frame. Profile or simplify the transform code.")
           .arg(kTransformWatchdogMs));
+    }
   }
 
   if (m_compileGuard == 0 && m_compilePending) [[unlikely]] {
@@ -1448,7 +1460,8 @@ void DataModel::FrameBuilder::refreshDatasetCaptureFlag()
   m_captureDatasetValues =
     m_tableStore.isInitialized()
     && (!m_transformEngines.empty() || m_externalTableApiUsers || parser.hasTableApiEngines());
-  m_changeDriven = DataModel::ProjectModel::instance().changeDrivenTransforms();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  m_changeDriven            = projectModel.changeDrivenTransforms();
   m_datasetDeps.clear();
   m_captureFlagsDirty = false;
 }
@@ -1661,10 +1674,12 @@ void DataModel::FrameBuilder::parseQuickPlotFrame(const IO::CapturedDataPtr& dat
  */
 DataModel::Source DataModel::FrameBuilder::makeQuickPlotSource() const
 {
+  static auto& ioManager = IO::ConnectionManager::instance();
+
   DataModel::Source src;
   src.sourceId = 0;
   src.title    = tr("Device A");
-  src.busType  = static_cast<int>(IO::ConnectionManager::instance().busType());
+  src.busType  = static_cast<int>(ioManager.busType());
   return src;
 }
 
@@ -1679,7 +1694,8 @@ void DataModel::FrameBuilder::buildQuickPlotFrame(const QStringList& channels)
   invalidateFramePool();
 
 #ifdef BUILD_COMMERCIAL
-  const auto busType = IO::ConnectionManager::instance().busType();
+  static auto& ioManager = IO::ConnectionManager::instance();
+  const auto busType     = ioManager.busType();
   if (busType == SerialStudio::BusType::Audio) {
     buildQuickPlotAudioFrame(channels);
     return;
@@ -1752,7 +1768,8 @@ void DataModel::FrameBuilder::buildQuickPlotAudioFrame(const QStringList& channe
   Q_ASSERT(AppState::instance().operationMode() == SerialStudio::QuickPlot);
 
 #ifdef BUILD_COMMERCIAL
-  const auto* audioPtr = IO::ConnectionManager::instance().audio();
+  static auto& ioManager = IO::ConnectionManager::instance();
+  const auto* audioPtr   = ioManager.audio();
   if (!audioPtr)
     return;
 
@@ -1950,7 +1967,8 @@ void DataModel::FrameBuilder::transformLuaWatchdogHook(lua_State* L, lua_Debug* 
  */
 void DataModel::FrameBuilder::rebuildTransformsForPlayback()
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile || m_frame.title.isEmpty())
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile || m_frame.title.isEmpty())
     return;
 
   initializeTableStore();
@@ -2409,7 +2427,7 @@ QVariant DataModel::FrameBuilder::applyTransformJs(TransformEngine& engine,
  */
 void DataModel::FrameBuilder::initializeTableStore()
 {
-  const auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   m_tableStore.initialize(pm.tables(), pm.editorTableFolders(), m_frame);
   m_captureFlagsDirty = true;
 }
@@ -2422,12 +2440,13 @@ void DataModel::FrameBuilder::initializeTableStore()
  */
 void DataModel::FrameBuilder::refreshTableStoreFromProjectModel()
 {
-  const bool session_live =
-    IO::ConnectionManager::instance().isConnected() || SerialStudio::isAnyPlayerOpen();
+  static auto& ioManager = IO::ConnectionManager::instance();
+
+  const bool session_live = ioManager.isConnected() || SerialStudio::isAnyPlayerOpen();
   if (m_tableStore.isInitialized() && session_live)
     return;
 
-  const auto& pm = DataModel::ProjectModel::instance();
+  static auto& pm = DataModel::ProjectModel::instance();
   DataModel::Frame scratch;
   scratch.title  = pm.title();
   scratch.groups = pm.groups();
@@ -2655,7 +2674,9 @@ static int luaMqttPublish(lua_State* L)
   if (lua_gettop(L) >= 4 && !lua_isnil(L, 4))
     retain = lua_toboolean(L, 4) != 0;
 
-  const auto id = MQTT::Publisher::instance().mqttPublish(
+  static auto& publisher = MQTT::Publisher::instance();
+
+  const auto id = publisher.mqttPublish(
     QString::fromUtf8(topic), QByteArray(payload_d, static_cast<qsizetype>(len)), qos, retain);
 
   lua_pushinteger(L, static_cast<lua_Integer>(id));

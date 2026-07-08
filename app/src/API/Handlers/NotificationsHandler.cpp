@@ -73,7 +73,7 @@ static void readEventStrings(const QJsonObject& params,
  */
 void API::Handlers::NotificationsHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema[QStringLiteral("type")]       = QStringLiteral("object");
@@ -165,7 +165,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::post(const QString& id
   QString channel, title, subtitle;
   readEventStrings(params, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().post(level, channel, title, subtitle);
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  notificationCenter.post(level, channel, title, subtitle);
 
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
@@ -182,7 +183,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::resolve(const QString&
   QString channel, title, subtitle;
   readEventStrings(params, channel, title, subtitle);
 
-  DataModel::NotificationCenter::instance().resolve(channel, title, subtitle);
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  notificationCenter.resolve(channel, title, subtitle);
 
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
@@ -203,7 +205,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::list(const QString& id
   const QString channel = params.value(QStringLiteral("channel")).toString();
   const int limit       = params.value(QStringLiteral("limit")).toInt(0);
 
-  const auto events = DataModel::NotificationCenter::instance().history(channel, limit);
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  const auto events               = notificationCenter.history(channel, limit);
 
   QJsonObject result;
   result[QStringLiteral("events")] = QJsonArray::fromVariantList(events);
@@ -219,7 +222,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::channels(const QString
 {
   Q_UNUSED(params)
 
-  const auto list = DataModel::NotificationCenter::instance().channels();
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  const auto list                 = notificationCenter.channels();
 
   QJsonArray arr;
   for (const auto& c : list)
@@ -239,7 +243,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::unreadCount(const QStr
 {
   Q_UNUSED(params)
 
-  const int unread = DataModel::NotificationCenter::instance().unreadCount();
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  const int unread                = notificationCenter.unreadCount();
 
   QJsonObject result;
   result[QStringLiteral("unreadCount")] = unread;
@@ -261,7 +266,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::clearChannel(const QSt
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: channel"));
 
-  DataModel::NotificationCenter::instance().clearChannel(channel);
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  notificationCenter.clearChannel(channel);
 
   QJsonObject result;
   result[QStringLiteral("channel")] = channel;
@@ -277,7 +283,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::clearAll(const QString
 {
   Q_UNUSED(params)
 
-  DataModel::NotificationCenter::instance().clearAll();
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  notificationCenter.clearAll();
 
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
@@ -293,7 +300,8 @@ API::CommandResponse API::Handlers::NotificationsHandler::markRead(const QString
 {
   Q_UNUSED(params)
 
-  DataModel::NotificationCenter::instance().markRead();
+  static auto& notificationCenter = DataModel::NotificationCenter::instance();
+  notificationCenter.markRead();
 
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{

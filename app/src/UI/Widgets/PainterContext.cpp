@@ -291,21 +291,23 @@ QBrush Widgets::PainterPattern::brush() const
  */
 [[nodiscard]] static QString resolveFontFamily(const QString& family)
 {
+  static auto& commonFonts = Misc::CommonFonts::instance();
+
   const QString trimmed = family.trimmed();
   if (trimmed.isEmpty())
-    return Misc::CommonFonts::instance().widgetFontFamily();
+    return commonFonts.widgetFontFamily();
 
   const QString lower = trimmed.toLower();
   if (lower == QLatin1String("sans-serif") || lower == QLatin1String("system-ui")
       || lower == QLatin1String("ui-sans-serif"))
-    return Misc::CommonFonts::instance().widgetFontFamily();
+    return commonFonts.widgetFontFamily();
 
   if (lower == QLatin1String("monospace") || lower == QLatin1String("ui-monospace"))
-    return Misc::CommonFonts::instance().monoFont().family();
+    return commonFonts.monoFont().family();
 
   if (lower == QLatin1String("serif") || lower == QLatin1String("ui-serif")
       || lower == QLatin1String("cursive") || lower == QLatin1String("fantasy"))
-    return Misc::CommonFonts::instance().uiFont().family();
+    return commonFonts.uiFont().family();
 
   return trimmed;
 }
@@ -314,9 +316,13 @@ QBrush Widgets::PainterPattern::brush() const
  * @brief Initialises the context with sensible Canvas2D defaults.
  */
 Widgets::PainterContext::PainterContext(QObject* parent)
-  : QObject(parent), m_painter(nullptr), m_width(0.0), m_height(0.0)
+  : QObject(parent)
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_painter(nullptr)
+  , m_width(0.0)
+  , m_height(0.0)
 {
-  const QString defaultFam = Misc::CommonFonts::instance().widgetFontFamily();
+  const QString defaultFam = m_commonFonts.widgetFontFamily();
 
   m_state.fillBrush             = QBrush(Qt::black);
   m_state.strokePen             = QPen(Qt::black, 1.0);

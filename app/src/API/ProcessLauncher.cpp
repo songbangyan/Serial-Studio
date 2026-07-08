@@ -39,7 +39,11 @@ static constexpr int kTerminateGraceMs = 2000;
  * @brief Constructs the launcher with an empty process table.
  */
 API::ProcessLauncher::ProcessLauncher(QObject* parent)
-  : QObject(parent), m_nextId(1), m_wasConnected(false)
+  : QObject(parent)
+  , m_nextId(1)
+  , m_wasConnected(false)
+  , m_connectionManager(nullptr)
+  , m_projectModel(nullptr)
 {}
 
 /**
@@ -57,6 +61,9 @@ API::ProcessLauncher& API::ProcessLauncher::instance()
  */
 void API::ProcessLauncher::setupExternalConnections()
 {
+  m_connectionManager = &IO::ConnectionManager::instance();
+  m_projectModel      = &DataModel::ProjectModel::instance();
+
   m_lastProjectPath = DataModel::ProjectModel::instance().jsonFilePath();
 
   connect(&IO::ConnectionManager::instance(),
@@ -276,7 +283,8 @@ QVariantList API::ProcessLauncher::runningProcesses() const
  */
 void API::ProcessLauncher::onConnectedChanged()
 {
-  const bool connected = IO::ConnectionManager::instance().isConnected();
+  Q_ASSERT(m_connectionManager);
+  const bool connected = m_connectionManager->isConnected();
   if (m_wasConnected && !connected)
     killAll();
 
@@ -288,7 +296,8 @@ void API::ProcessLauncher::onConnectedChanged()
  */
 void API::ProcessLauncher::onProjectFileChanged()
 {
-  const auto path = DataModel::ProjectModel::instance().jsonFilePath();
+  Q_ASSERT(m_projectModel);
+  const auto path = m_projectModel->jsonFilePath();
   if (path == m_lastProjectPath)
     return;
 

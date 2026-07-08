@@ -71,7 +71,8 @@ AI::Assistant::Assistant()
   m_autoApproveEdits = m_settings.value(QStringLiteral("ai/autoApproveEdits"), false).toBool();
 
   m_allowDeviceControl = m_settings.value(QStringLiteral("ai/allowDeviceControl"), false).toBool();
-  CommandRegistry::instance().setDeviceControlAllowed(m_allowDeviceControl);
+  static auto& commandRegistry = CommandRegistry::instance();
+  commandRegistry.setDeviceControlAllowed(m_allowDeviceControl);
 
   m_conversation->setDispatcher(m_dispatcher.get());
   rewireConversationProvider();
@@ -236,7 +237,8 @@ void AI::Assistant::setAllowDeviceControl(bool enabled)
 
   m_allowDeviceControl = enabled;
   m_settings.setValue(QStringLiteral("ai/allowDeviceControl"), m_allowDeviceControl);
-  CommandRegistry::instance().setDeviceControlAllowed(m_allowDeviceControl);
+  static auto& commandRegistry = CommandRegistry::instance();
+  commandRegistry.setDeviceControlAllowed(m_allowDeviceControl);
   Q_EMIT allowDeviceControlChanged();
 }
 
@@ -539,7 +541,8 @@ void AI::Assistant::newChat()
   if (m_conversation)
     m_conversation->clear();
 
-  AI::FileSandbox::instance().clearDroppedPaths();
+  static auto& fileSandbox = AI::FileSandbox::instance();
+  fileSandbox.clearDroppedPaths();
 
   Q_EMIT chatListChanged();
   Q_EMIT activeChatChanged();
@@ -562,7 +565,8 @@ void AI::Assistant::switchChat(const QString& id)
   m_chats.setLastActiveId(id);
   loadActiveSnapshot();
 
-  AI::FileSandbox::instance().clearDroppedPaths();
+  static auto& fileSandbox = AI::FileSandbox::instance();
+  fileSandbox.clearDroppedPaths();
   Q_EMIT activeChatChanged();
 }
 
@@ -603,7 +607,8 @@ void AI::Assistant::renameChat(const QString& id, const QString& title)
  */
 void AI::Assistant::addDroppedPath(const QString& localPath)
 {
-  const auto canonical = AI::FileSandbox::instance().registerDroppedPath(localPath);
+  static auto& fileSandbox = AI::FileSandbox::instance();
+  const auto canonical     = fileSandbox.registerDroppedPath(localPath);
   if (canonical.isEmpty()) {
     qCWarning(serialStudioAI) << "Ignoring undroppable path:" << localPath;
     return;
@@ -618,7 +623,8 @@ void AI::Assistant::addDroppedPath(const QString& localPath)
  */
 void AI::Assistant::clearDroppedPaths()
 {
-  AI::FileSandbox::instance().clearDroppedPaths();
+  static auto& fileSandbox = AI::FileSandbox::instance();
+  fileSandbox.clearDroppedPaths();
 }
 
 /**

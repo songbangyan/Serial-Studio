@@ -114,7 +114,7 @@ static void applyNativeTemplate(int sourceId,
   const auto params =
     templateParams.isEmpty() ? DataModel::nativeTemplateDefaults(*tmpl) : templateParams;
 
-  auto& model = DataModel::ProjectModel::instance();
+  static auto& model = DataModel::ProjectModel::instance();
   model.updateSourceFrameParserLanguage(sourceId, SerialStudio::Native);
   model.updateSourceFrameParserParams(sourceId, params);
   model.updateSourceFrameParserTemplate(sourceId, templateId);
@@ -149,8 +149,8 @@ static API::CommandResponse setNativeParserFromDescriptor(const QString& id,
   result[Keys::SourceId]             = sourceId;
   result[QStringLiteral("language")] = static_cast<int>(SerialStudio::Native);
   result[QStringLiteral("template")] = template_id;
-  result[QStringLiteral("params")] =
-    DataModel::ProjectModel::instance().frameParserParams(sourceId);
+  static auto& model                 = DataModel::ProjectModel::instance();
+  result[QStringLiteral("params")]   = model.frameParserParams(sourceId);
   return API::CommandResponse::makeSuccess(id, result);
 }
 
@@ -169,7 +169,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetCode(const QString&
 
   const QString code = params.value(QStringLiteral("code")).toString();
   const int sourceId = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
-  auto& model        = DataModel::ProjectModel::instance();
+  static auto& model = DataModel::ProjectModel::instance();
   const int srcCount = static_cast<int>(model.sources().size());
 
   if (sourceId < 0 || sourceId >= srcCount)
@@ -194,7 +194,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetCode(const QString&
 
     model.updateSourceFrameParserLanguage(sourceId, language);
 
-    auto& parser            = DataModel::FrameParser::instance();
+    static auto& parser     = DataModel::FrameParser::instance();
     const bool prevSuppress = model.suppressMessageBoxes();
     model.setSuppressMessageBoxes(true);
     parser.setSuppressMessageBoxes(true);
@@ -241,7 +241,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserGetCode(const QString&
                                                                   const QJsonObject& params)
 {
   const int sourceId = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
-  const auto& model  = DataModel::ProjectModel::instance();
+  static auto& model = DataModel::ProjectModel::instance();
   const int srcCount = static_cast<int>(model.sources().size());
 
   if (sourceId < 0 || sourceId >= srcCount)
@@ -296,7 +296,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetLanguage(const QStr
       ErrorCode::InvalidParam,
       QStringLiteral("Invalid language: must be 0 (JavaScript), 1 (Lua) or 2 (Built-In)"));
 
-  auto& model         = DataModel::ProjectModel::instance();
+  static auto& model  = DataModel::ProjectModel::instance();
   const auto& sources = model.sources();
   const auto it =
     std::find_if(sources.begin(), sources.end(), [sourceId](const DataModel::Source& s) {
@@ -309,10 +309,13 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetLanguage(const QStr
 
   model.updateSourceFrameParserLanguage(sourceId, language);
 
-  if (language != SerialStudio::Native || model.frameParserTemplate(sourceId).isEmpty())
-    DataModel::FrameParser::instance().loadDefaultTemplate(sourceId, true);
-  else
-    DataModel::FrameParser::instance().readCode();
+  if (language != SerialStudio::Native || model.frameParserTemplate(sourceId).isEmpty()) {
+    static auto& parser = DataModel::FrameParser::instance();
+    parser.loadDefaultTemplate(sourceId, true);
+  } else {
+    static auto& parser = DataModel::FrameParser::instance();
+    parser.readCode();
+  }
 
   QJsonObject result;
   result[Keys::SourceId]             = sourceId;
@@ -328,7 +331,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserGetLanguage(const QStr
 {
   const int sourceId = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
 
-  const auto& model   = DataModel::ProjectModel::instance();
+  static auto& model  = DataModel::ProjectModel::instance();
   const auto& sources = model.sources();
   const auto it =
     std::find_if(sources.begin(), sources.end(), [sourceId](const DataModel::Source& s) {
@@ -390,7 +393,7 @@ API::CommandResponse API::Handlers::ProjectHandler::parserGetTemplate(const QStr
                                                                       const QJsonObject& params)
 {
   const int sourceId  = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
-  const auto& model   = DataModel::ProjectModel::instance();
+  static auto& model  = DataModel::ProjectModel::instance();
   const auto& sources = model.sources();
   const auto it =
     std::find_if(sources.begin(), sources.end(), [sourceId](const DataModel::Source& s) {
@@ -420,7 +423,8 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetTemplate(const QStr
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: template"));
 
   const int sourceId  = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  static auto& model  = DataModel::ProjectModel::instance();
+  const auto& sources = model.sources();
   const auto it =
     std::find_if(sources.begin(), sources.end(), [sourceId](const DataModel::Source& s) {
       return s.sourceId == sourceId;
@@ -439,7 +443,6 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetTemplate(const QStr
 
   applyNativeTemplate(sourceId, template_id, template_params);
 
-  const auto& model = DataModel::ProjectModel::instance();
   QJsonObject result;
   result[Keys::SourceId]             = sourceId;
   result[QStringLiteral("language")] = static_cast<int>(SerialStudio::Native);
@@ -454,9 +457,9 @@ API::CommandResponse API::Handlers::ProjectHandler::parserSetTemplate(const QStr
 API::CommandResponse API::Handlers::ProjectHandler::frameParserConfigure(const QString& id,
                                                                          const QJsonObject& params)
 {
-  auto& model   = DataModel::ProjectModel::instance();
-  auto& manager = IO::ConnectionManager::instance();
-  bool updated  = false;
+  static auto& model   = DataModel::ProjectModel::instance();
+  static auto& manager = IO::ConnectionManager::instance();
+  bool updated         = false;
 
   const int sourceId = params.contains(Keys::SourceId) ? params.value(Keys::SourceId).toInt() : 0;
   const int srcCount = static_cast<int>(model.sources().size());
@@ -468,7 +471,8 @@ API::CommandResponse API::Handlers::ProjectHandler::frameParserConfigure(const Q
   if (params.contains(QStringLiteral("operationMode"))) {
     const int modeIdx = params.value(QStringLiteral("operationMode")).toInt();
     if (modeIdx >= 0 && modeIdx <= 2) {
-      AppState::instance().setOperationMode(static_cast<SerialStudio::OperationMode>(modeIdx));
+      static auto& appState = AppState::instance();
+      appState.setOperationMode(static_cast<SerialStudio::OperationMode>(modeIdx));
       updated = true;
     }
   }
@@ -549,7 +553,8 @@ API::CommandResponse API::Handlers::ProjectHandler::frameParserGetConfig(const Q
 {
   Q_UNUSED(params)
 
-  const auto& cfg = AppState::instance().frameConfig();
+  static auto& appState = AppState::instance();
+  const auto& cfg       = appState.frameConfig();
 
   QJsonArray startArr, endArr;
   for (const auto& s : cfg.startSequences)
@@ -589,10 +594,10 @@ API::CommandResponse API::Handlers::ProjectHandler::painterSetCode(const QString
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
 
-  const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const QString code = params.value(QStringLiteral("code")).toString();
-  auto& project      = DataModel::ProjectModel::instance();
-  const auto& groups = project.groups();
+  const int groupId    = params.value(QStringLiteral("groupId")).toInt();
+  const QString code   = params.value(QStringLiteral("code")).toString();
+  static auto& project = DataModel::ProjectModel::instance();
+  const auto& groups   = project.groups();
 
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
@@ -619,7 +624,8 @@ API::CommandResponse API::Handlers::ProjectHandler::painterGetCode(const QString
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: groupId"));
 
   const int groupId  = params.value(QStringLiteral("groupId")).toInt();
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  static auto& model = DataModel::ProjectModel::instance();
+  const auto& groups = model.groups();
   if (groupId < 0 || static_cast<size_t>(groupId) >= groups.size())
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
@@ -1047,15 +1053,16 @@ API::CommandResponse API::Handlers::ProjectHandler::outputWidgetDryRun(const QSt
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
 
-  const auto code = params.value(QStringLiteral("code")).toString();
-  DataModel::FrameBuilder::instance().refreshTableStoreFromProjectModel();
+  const auto code           = params.value(QStringLiteral("code")).toString();
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.refreshTableStoreFromProjectModel();
 
   QJSEngine engine;
   engine.installExtensions(QJSEngine::ConsoleExtension | QJSEngine::GarbageCollectionExtension);
 #ifdef BUILD_COMMERCIAL
   Widgets::Output::Base::installProtocolHelpers(engine);
 #endif
-  DataModel::FrameBuilder::instance().injectTableApiJS(&engine);
+  frameBuilder.injectTableApiJS(&engine);
 
   const auto wrapped =
     QStringLiteral("(function() { %1\n"
@@ -1247,7 +1254,7 @@ static QJsonObject buildDryRunRow(
 API::CommandResponse API::Handlers::ProjectHandler::endToEndDryRun(const QString& id,
                                                                    const QJsonObject& params)
 {
-  auto& pm           = DataModel::ProjectModel::instance();
+  static auto& pm    = DataModel::ProjectModel::instance();
   const auto sources = pm.sources();
   const int sourceId = params.value(Keys::SourceId).toInt(0);
   if (sources.empty())

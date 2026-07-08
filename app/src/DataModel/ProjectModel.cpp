@@ -168,7 +168,8 @@ DataModel::ProjectModel::ProjectModel()
   // code-verify on
 
   connect(this, &ProjectModel::groupsChanged, this, [this] {
-    if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    static auto& appState = AppState::instance();
+    if (appState.operationMode() != SerialStudio::ProjectFile)
       return;
 
     if (m_customizeWorkspaces) {
@@ -461,7 +462,8 @@ QString DataModel::ProjectModel::jsonFileName() const
  */
 QString DataModel::ProjectModel::jsonProjectsPath() const
 {
-  return Misc::WorkspaceManager::instance().path("Projects");
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  return workspaceManager.path("Projects");
 }
 
 /**
@@ -879,7 +881,8 @@ const std::vector<DataModel::TableFolder>& DataModel::ProjectModel::editorTableF
  */
 const std::vector<DataModel::Workspace>& DataModel::ProjectModel::activeWorkspaces() const
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return m_sessionWorkspaces;
 
   return m_workspaces;
@@ -955,7 +958,8 @@ void DataModel::ProjectModel::saveWidgetSetting(const QString& widgetId,
                                                 const QString& key,
                                                 const QVariant& value)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   auto normalized = value;
@@ -979,7 +983,8 @@ void DataModel::ProjectModel::saveWidgetSetting(const QString& widgetId,
  */
 void DataModel::ProjectModel::setExternalWindows(const QJsonArray& windows)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (m_widgetSettings.value(Keys::kDashboardWindowsSubKey).toArray() == windows)
@@ -1062,7 +1067,8 @@ void DataModel::ProjectModel::savePluginState(const QString& pluginId, const QJs
     return;
 
   m_widgetSettings.insert(key, state);
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile)
     setModified(true);
 
   Q_EMIT widgetSettingsChanged();
@@ -1146,18 +1152,19 @@ void DataModel::ProjectModel::newJsonFile()
   m_passwordHash.clear();
   m_locked = false;
 
-  m_frameEndSequence        = "\\n";
-  m_checksumAlgorithm       = "";
-  m_frameStartSequence      = "$";
-  m_writerVersionAtCreation = "";
-  m_hexadecimalDelimiters   = false;
-  m_title                   = tr("Untitled Project");
-  m_pointCount              = 100;
-  m_plotTimeRange           = 10.0;
-  m_changeDrivenTransforms  = false;
-  m_nextUniqueId            = 1;
-  m_controlScriptCode       = "";
-  DataModel::ControlScript::instance().setCode(m_controlScriptCode);
+  m_frameEndSequence         = "\\n";
+  m_checksumAlgorithm        = "";
+  m_frameStartSequence       = "$";
+  m_writerVersionAtCreation  = "";
+  m_hexadecimalDelimiters    = false;
+  m_title                    = tr("Untitled Project");
+  m_pointCount               = 100;
+  m_plotTimeRange            = 10.0;
+  m_changeDrivenTransforms   = false;
+  m_nextUniqueId             = 1;
+  m_controlScriptCode        = "";
+  static auto& controlScript = DataModel::ControlScript::instance();
+  controlScript.setCode(m_controlScriptCode);
   m_frameDecoder    = SerialStudio::PlainText;
   m_frameDetection  = SerialStudio::EndDelimiterOnly;
   m_widgetSettings  = QJsonObject();
@@ -1180,9 +1187,13 @@ void DataModel::ProjectModel::newJsonFile()
   m_filePath = "";
   watchProjectFile();
 
-  if (m_initialized && AppState::instance().operationMode() == SerialStudio::ProjectFile) {
-    UI::Dashboard::instance().setPoints(m_pointCount);
-    UI::Dashboard::instance().setPlotTimeRange(m_plotTimeRange);
+  if (m_initialized) {
+    static auto& appState = AppState::instance();
+    if (appState.operationMode() == SerialStudio::ProjectFile) {
+      static auto& dashboard = UI::Dashboard::instance();
+      dashboard.setPoints(m_pointCount);
+      dashboard.setPlotTimeRange(m_plotTimeRange);
+    }
   }
 
   Q_EMIT groupsChanged();
@@ -1241,8 +1252,9 @@ void DataModel::ProjectModel::setControlScriptCode(const QString& code)
   if (m_controlScriptCode == code)
     return;
 
-  m_controlScriptCode = code;
-  DataModel::ControlScript::instance().setCode(code);
+  m_controlScriptCode        = code;
+  static auto& controlScript = DataModel::ControlScript::instance();
+  controlScript.setCode(code);
   setModified(true);
   Q_EMIT controlScriptChanged();
 }
@@ -1257,8 +1269,11 @@ void DataModel::ProjectModel::setPointCount(const int points)
 
   m_pointCount = points;
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    UI::Dashboard::instance().setPoints(points);
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.setPoints(points);
+  }
 
   setModified(true);
   Q_EMIT pointCountChanged();
@@ -1275,8 +1290,11 @@ void DataModel::ProjectModel::setPlotTimeRange(const double seconds)
 
   m_plotTimeRange = clamped;
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    UI::Dashboard::instance().setPlotTimeRange(clamped);
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.setPlotTimeRange(clamped);
+  }
 
   setModified(true);
   Q_EMIT plotTimeRangeChanged();
@@ -1463,7 +1481,8 @@ void DataModel::ProjectModel::setModified(const bool modified)
  */
 void DataModel::ProjectModel::setActiveGroupId(const int groupId)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   const int current = m_widgetSettings.value(Keys::kActiveGroupSubKey).toInt(-1);
@@ -1485,7 +1504,8 @@ void DataModel::ProjectModel::setActiveGroupId(const int groupId)
  */
 void DataModel::ProjectModel::setGroupLayout(const int groupId, const QJsonObject& layout)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   QJsonObject entry;
@@ -1597,7 +1617,8 @@ void DataModel::ProjectModel::promptRenameAction(int actionId)
  */
 void DataModel::ProjectModel::clearTransientState()
 {
-  const auto opMode = AppState::instance().operationMode();
+  static auto& appState = AppState::instance();
+  const auto opMode     = appState.operationMode();
   if (opMode == SerialStudio::ProjectFile || !m_filePath.isEmpty() || m_customizeWorkspaces)
     return;
 

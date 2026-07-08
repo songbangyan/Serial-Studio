@@ -330,6 +330,8 @@ void Widgets::ImageFrameReader::processManual()
  */
 Widgets::ImageView::ImageView(int index, QQuickItem* parent)
   : QQuickItem(parent)
+  , m_connectionManager(IO::ConnectionManager::instance())
+  , m_dashboard(UI::Dashboard::instance())
   , m_index(index)
   , m_groupId(-1)
   , m_sourceId(0)
@@ -350,7 +352,7 @@ Widgets::ImageView::ImageView(int index, QQuickItem* parent)
 
   m_providerKey = QStringLiteral("imageview:%1").arg(m_groupId);
 
-  connect(&IO::ConnectionManager::instance(),
+  connect(&m_connectionManager,
           &IO::ConnectionManager::driverChanged,
           this,
           &ImageView::reconfigureReader);
@@ -444,8 +446,10 @@ void Widgets::ImageView::setExportEnabled(bool enabled)
 
   m_exportEnabled = enabled;
 
-  if (!enabled)
-    ImageExport::instance().closeSession(m_groupId);
+  if (!enabled) {
+    static auto& imageExport = ImageExport::instance();
+    imageExport.closeSession(m_groupId);
+  }
 
   Q_EMIT exportEnabledChanged();
 }
@@ -461,7 +465,7 @@ void Widgets::ImageView::onFrameReady(const QByteArray& data)
   if (data.isEmpty())
     return;
 
-  if (IO::ConnectionManager::instance().paused())
+  if (m_connectionManager.paused())
     return;
 
   m_imageFormat = detectFormat(data);
@@ -497,9 +501,8 @@ void Widgets::ImageView::onFrameReady(const QByteArray& data)
     prov->setImage(m_providerKey, img);
 
   if (m_exportEnabled) {
-    const auto& dash = UI::Dashboard::instance();
-    ImageExport::instance().enqueueImage(
-      data, m_imageFormat, m_groupId, m_groupTitle, dash.title());
+    static auto& imageExport = ImageExport::instance();
+    imageExport.enqueueImage(data, m_imageFormat, m_groupId, m_groupTitle, m_dashboard.title());
   }
 
   ++m_frameCount;
@@ -520,7 +523,7 @@ void Widgets::ImageView::reconfigureReader()
     m_reader = nullptr;
   }
 
-  auto* driver = IO::ConnectionManager::instance().driver(m_sourceId);
+  auto* driver = m_connectionManager.driver(m_sourceId);
   if (!driver)
     return;
 

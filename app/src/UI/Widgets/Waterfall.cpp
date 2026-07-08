@@ -229,6 +229,10 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
   , m_yMin(0.0)
   , m_yMax(1.0)
   , m_plan(nullptr)
+  , m_dashboard(UI::Dashboard::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
 {
   setAcceptedMouseButtons(Qt::LeftButton);
   setAcceptHoverEvents(true);
@@ -253,7 +257,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
 
     m_yDatasetUniqueId = dataset.waterfallYAxis;
     if (m_yDatasetUniqueId > 0) {
-      const auto& datasets = UI::Dashboard::instance().datasets();
+      const auto& datasets = m_dashboard.datasets();
       const auto it        = datasets.find(m_yDatasetUniqueId);
       if (it != datasets.end() && it->pltMax > it->pltMin) {
         m_campbellMode = true;
@@ -270,23 +274,18 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
 
   onThemeChanged();
 
+  connect(&m_dashboard, &UI::Dashboard::updated, this, &Widgets::Waterfall::updateData);
+
   connect(
-    &UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Widgets::Waterfall::updateData);
+    &m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::Waterfall::onThemeChanged);
+  connect(
+    &m_commonFonts, &Misc::CommonFonts::fontsChanged, this, &Widgets::Waterfall::onFontsChanged);
 
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &Widgets::Waterfall::onThemeChanged);
-  connect(&Misc::CommonFonts::instance(),
-          &Misc::CommonFonts::fontsChanged,
-          this,
-          &Widgets::Waterfall::onFontsChanged);
-
-  connect(&UI::Dashboard::instance(),
+  connect(&m_dashboard,
           &UI::Dashboard::plotTimeRangeChanged,
           this,
           &Widgets::Waterfall::syncHistoryToTimeRange);
-  connect(&Misc::TimerEvents::instance(),
+  connect(&m_timerEvents,
           &Misc::TimerEvents::fpsChanged,
           this,
           &Widgets::Waterfall::syncHistoryToTimeRange);
@@ -310,7 +309,7 @@ Widgets::Waterfall::~Waterfall()
  */
 bool Widgets::Waterfall::running() const noexcept
 {
-  return UI::Dashboard::instance().waterfallRunning(m_index);
+  return m_dashboard.waterfallRunning(m_index);
 }
 
 /**
@@ -429,7 +428,7 @@ QColor Widgets::Waterfall::colorAt(double normalized) const
  */
 void Widgets::Waterfall::setRunning(const bool enabled)
 {
-  UI::Dashboard::instance().setWaterfallRunning(m_index, enabled);
+  m_dashboard.setWaterfallRunning(m_index, enabled);
   Q_EMIT runningChanged();
 }
 
@@ -469,7 +468,7 @@ void Widgets::Waterfall::syncHistoryToTimeRange()
 {
   static auto& timer = Misc::TimerEvents::instance();
   const double fps   = timer.fps() > 0 ? timer.fps() : 24.0;
-  const double range = UI::Dashboard::instance().plotTimeRange();
+  const double range = m_dashboard.plotTimeRange();
   setHistorySize(static_cast<int>(std::lround(range * fps)));
 }
 
@@ -654,13 +653,13 @@ void Widgets::Waterfall::updateData()
   if (!isEnabled() || !isVisible())
     return;
 
-  if (!UI::Dashboard::instance().waterfallRunning(m_index))
+  if (!m_dashboard.waterfallRunning(m_index))
     return;
 
   if (!VALIDATE_WIDGET(SerialStudio::DashboardWaterfall, m_index))
     return;
 
-  const auto& data  = UI::Dashboard::instance().waterfallData(m_index);
+  const auto& data  = m_dashboard.waterfallData(m_index);
   const int newSize = static_cast<int>(data.size());
   if (newSize <= 0)
     return;
@@ -723,7 +722,7 @@ void Widgets::Waterfall::updateData()
   }
 
   if (m_campbellMode && m_image.height() > 0) {
-    const auto& datasets = UI::Dashboard::instance().datasets();
+    const auto& datasets = m_dashboard.datasets();
     const auto it        = datasets.find(m_yDatasetUniqueId);
     if (it != datasets.end() && it->isNumeric) {
       const double v     = it->numericValue;
@@ -1571,12 +1570,11 @@ void Widgets::Waterfall::hoverLeaveEvent(QHoverEvent* event)
  */
 void Widgets::Waterfall::onThemeChanged()
 {
-  const auto& theme = Misc::ThemeManager::instance();
-  m_outerBg         = theme.getColor(QStringLiteral("widget_window"));
-  m_innerBg         = theme.getColor(QStringLiteral("widget_base"));
-  m_borderColor     = theme.getColor(QStringLiteral("widget_border"));
-  m_textColor       = theme.getColor(QStringLiteral("widget_text"));
-  m_gridColor       = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
+  m_outerBg     = m_themeManager.getColor(QStringLiteral("widget_window"));
+  m_innerBg     = m_themeManager.getColor(QStringLiteral("widget_base"));
+  m_borderColor = m_themeManager.getColor(QStringLiteral("widget_border"));
+  m_textColor   = m_themeManager.getColor(QStringLiteral("widget_text"));
+  m_gridColor   = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
 
   markAxisDirty();
 }

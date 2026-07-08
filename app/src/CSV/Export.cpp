@@ -142,8 +142,9 @@ void CSV::ExportWorker::createCsvFile(const DataModel::Frame& frame)
   const auto dt       = QDateTime::currentDateTime();
   const auto fileName = dt.toString("yyyy-MM-dd_HH-mm-ss") + ".csv";
 
-  const auto subdir = Misc::WorkspaceManager::instance().path("CSV");
-  QString safeTitle = frame.title;
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto subdir             = workspaceManager.path("CSV");
+  QString safeTitle             = frame.title;
   safeTitle.remove(QChar('/'));
   safeTitle.remove(QChar('\\'));
   safeTitle.remove(QChar(':'));
@@ -341,7 +342,8 @@ void CSV::Export::setSettingsPersistent(const bool persistent)
  */
 void CSV::Export::setExportEnabled(const bool enabled)
 {
-  const bool allow = enabled && AppState::instance().operationMode() != SerialStudio::ConsoleOnly;
+  static auto& appState = AppState::instance();
+  const bool allow      = enabled && appState.operationMode() != SerialStudio::ConsoleOnly;
 
   if (!allow && isOpen())
     closeFile();

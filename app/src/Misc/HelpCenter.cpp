@@ -50,10 +50,8 @@ Misc::HelpCenter::HelpCenter() : m_loading(false), m_currentIndex(-1), m_pending
   m_nam.setTransferTimeout(15 * 1000);
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &HelpCenter::onThemeChanged);
+  static auto& themeManager = Misc::ThemeManager::instance();
+  connect(&themeManager, &Misc::ThemeManager::themeChanged, this, &HelpCenter::onThemeChanged);
 }
 
 /**

@@ -351,8 +351,10 @@ void DataModel::ProjectModel::promptAddTable()
     return;
 
   const QString added = addTable(name.trimmed());
-  QTimer::singleShot(
-    0, this, [added] { DataModel::ProjectEditor::instance().selectUserTable(added); });
+  QTimer::singleShot(0, this, [added] {
+    static auto& projectEditor = DataModel::ProjectEditor::instance();
+    projectEditor.selectUserTable(added);
+  });
 }
 
 /**
@@ -491,10 +493,12 @@ void DataModel::ProjectModel::exportTableToCsv(const QString& tableName)
 
   const auto it = m_tables.begin() + idx;
 
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+
   const auto path = QFileDialog::getSaveFileName(
     nullptr,
     tr("Export Table"),
-    QStringLiteral("%1/%2.csv").arg(Misc::WorkspaceManager::instance().path("CSV"), it->name),
+    QStringLiteral("%1/%2.csv").arg(workspaceManager.path("CSV"), it->name),
     tr("CSV files (*.csv)"));
 
   if (path.isEmpty())
@@ -533,10 +537,10 @@ void DataModel::ProjectModel::importTableFromCsv(const QString& tableName)
 
   auto it = m_tables.begin() + idx;
 
-  const auto path = QFileDialog::getOpenFileName(nullptr,
-                                                 tr("Import Table"),
-                                                 Misc::WorkspaceManager::instance().path("CSV"),
-                                                 tr("CSV files (*.csv)"));
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+
+  const auto path = QFileDialog::getOpenFileName(
+    nullptr, tr("Import Table"), workspaceManager.path("CSV"), tr("CSV files (*.csv)"));
 
   if (path.isEmpty())
     return;

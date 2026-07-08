@@ -86,27 +86,31 @@ static QByteArray delimiterBytes(const QString& text, bool hex)
  * @brief Builds the bridge and wires project-model + translation subscriptions.
  */
 DataModel::FrameParserModel::FrameParserModel(QObject* parent)
-  : QObject(parent), m_sourceId(0), m_applying(false), m_parameterModel(nullptr)
+  : QObject(parent)
+  , m_sourceId(0)
+  , m_applying(false)
+  , m_parameterModel(nullptr)
+  , m_projectModel(ProjectModel::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_frameBuilder(DataModel::FrameBuilder::instance())
 {
-  connect(&ProjectModel::instance(),
+  connect(&m_projectModel,
           &ProjectModel::sourceFrameParserTemplateChanged,
           this,
           &FrameParserModel::onSourceTemplateChanged);
 
-  connect(&ProjectModel::instance(),
+  connect(&m_projectModel,
           &ProjectModel::sourceFrameParserParamsChanged,
           this,
           &FrameParserModel::onSourceParamsChanged);
 
-  connect(&ProjectModel::instance(), &ProjectModel::sourceChanged, this, [this](int sourceId) {
+  connect(&m_projectModel, &ProjectModel::sourceChanged, this, [this](int sourceId) {
     if (sourceId == m_sourceId)
       Q_EMIT pipelineChanged();
   });
 
-  connect(&Misc::Translator::instance(),
-          &Misc::Translator::languageChanged,
-          this,
-          &FrameParserModel::onLanguageChanged);
+  connect(
+    &m_translator, &Misc::Translator::languageChanged, this, &FrameParserModel::onLanguageChanged);
 
   rebuildTemplateNames();
   rebuildParameterModel();
@@ -129,7 +133,7 @@ int DataModel::FrameParserModel::sourceId() const noexcept
  */
 int DataModel::FrameParserModel::templateIndex() const
 {
-  const QString id      = ProjectModel::instance().frameParserTemplate(m_sourceId);
+  const QString id      = m_projectModel.frameParserTemplate(m_sourceId);
   const auto& templates = nativeTemplates();
   for (int i = 0; i < templates.size(); ++i)
     if (templates.at(i)->id() == id)
@@ -333,10 +337,9 @@ void DataModel::FrameParserModel::setTemplateIndex(int index)
   const auto* tmpl = templates.at(index);
   Q_ASSERT(tmpl != nullptr);
 
-  m_applying  = true;
-  auto& model = ProjectModel::instance();
-  model.updateSourceFrameParserParams(m_sourceId, nativeTemplateDefaults(*tmpl));
-  model.updateSourceFrameParserTemplate(m_sourceId, tmpl->id());
+  m_applying = true;
+  m_projectModel.updateSourceFrameParserParams(m_sourceId, nativeTemplateDefaults(*tmpl));
+  m_projectModel.updateSourceFrameParserTemplate(m_sourceId, tmpl->id());
   m_applying = false;
 
   setParamError(QString());
@@ -354,7 +357,7 @@ void DataModel::FrameParserModel::setDecoderIndex(int index)
 
   auto src          = currentSource();
   src.decoderMethod = index;
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 /**
@@ -367,7 +370,7 @@ void DataModel::FrameParserModel::setDetectionIndex(int index)
 
   auto src           = currentSource();
   src.frameDetection = static_cast<int>(kDetectionValues.at(index));
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 /**
@@ -381,7 +384,7 @@ void DataModel::FrameParserModel::setChecksumIndex(int index)
 
   auto src              = currentSource();
   src.checksumAlgorithm = algorithms.at(index);
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 /**
@@ -394,7 +397,7 @@ void DataModel::FrameParserModel::setFrameStart(const QString& sequence)
     return;
 
   src.frameStart = sequence;
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 /**
@@ -407,7 +410,7 @@ void DataModel::FrameParserModel::setFrameEnd(const QString& sequence)
     return;
 
   src.frameEnd = sequence;
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 /**
@@ -420,7 +423,7 @@ void DataModel::FrameParserModel::setHexDelimiters(bool hexadecimal)
     return;
 
   src.hexadecimalDelimiters = hexadecimal;
-  ProjectModel::instance().updateSource(m_sourceId, src);
+  m_projectModel.updateSource(m_sourceId, src);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -437,7 +440,7 @@ void DataModel::FrameParserModel::resetToDefaults()
     return;
 
   m_applying = true;
-  ProjectModel::instance().updateSourceFrameParserParams(m_sourceId, nativeTemplateDefaults(*tmpl));
+  m_projectModel.updateSourceFrameParserParams(m_sourceId, nativeTemplateDefaults(*tmpl));
   m_applying = false;
 
   setParamError(QString());
@@ -511,7 +514,7 @@ void DataModel::FrameParserModel::dryRun(const QString& input, bool hex)
     spec.finishSequences.append(end);
 
   if (src.frameParserLanguage != SerialStudio::Native) {
-    DataModel::FrameBuilder::instance().refreshTableStoreFromProjectModel();
+    m_frameBuilder.refreshTableStoreFromProjectModel();
     emitPreview(runFrameParserPipeline(bytes, spec, m_sourceId), spec.decoderMethod);
     return;
   }
@@ -651,7 +654,7 @@ void DataModel::FrameParserModel::onItemChanged(QStandardItem* item)
 
   setParamError(QString());
   m_applying = true;
-  ProjectModel::instance().updateSourceFrameParserParams(m_sourceId, m_params);
+  m_projectModel.updateSourceFrameParserParams(m_sourceId, m_params);
   m_applying = false;
 }
 
@@ -719,7 +722,7 @@ void DataModel::FrameParserModel::rebuildParameterModel()
   auto* model = new CustomModel(this);
   connect(model, &CustomModel::itemChanged, this, &FrameParserModel::onItemChanged);
 
-  m_params = ProjectModel::instance().frameParserParams(m_sourceId);
+  m_params = m_projectModel.frameParserParams(m_sourceId);
   if (tmpl && m_params.isEmpty())
     m_params = nativeTemplateDefaults(*tmpl);
 
@@ -817,7 +820,7 @@ void DataModel::FrameParserModel::setParamError(const QString& error)
  */
 DataModel::Source DataModel::FrameParserModel::currentSource() const
 {
-  const auto& sources = ProjectModel::instance().sources();
+  const auto& sources = m_projectModel.sources();
   for (const auto& src : sources)
     if (src.sourceId == m_sourceId)
       return src;
@@ -830,7 +833,7 @@ DataModel::Source DataModel::FrameParserModel::currentSource() const
  */
 const DataModel::INativeTemplate* DataModel::FrameParserModel::currentTemplate() const
 {
-  const QString id = ProjectModel::instance().frameParserTemplate(m_sourceId);
+  const QString id = m_projectModel.frameParserTemplate(m_sourceId);
   if (const auto* tmpl = nativeTemplateById(id))
     return tmpl;
 

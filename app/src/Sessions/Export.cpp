@@ -412,7 +412,8 @@ QJsonObject Sessions::ExportWorker::buildReplayProjectJson(const DataModel::Fram
     }
   }
 
-  if (AppState::instance().operationMode() == SerialStudio::ConsoleOnly) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ConsoleOnly) {
     QJsonObject json;
     json.insert(QStringLiteral("title"), frame.title);
     json.insert(QStringLiteral("operationMode"), QStringLiteral("ConsoleOnly"));
@@ -594,15 +595,18 @@ Sessions::Export::Export()
   , m_rawBytesQueue(8192)
   , m_tableSnapshotQueue(1024)
   , m_operationMode(static_cast<int>(AppState::instance().operationMode()))
+  , m_appState(nullptr)
+  , m_projectModel(nullptr)
+  , m_frameBuilder(nullptr)
 {
   initializeWorker();
 
-  connect(
-    &Licensing::LemonSqueezy::instance(), &Licensing::LemonSqueezy::activatedChanged, this, [this] {
-      if (exportEnabled()
-          && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
-        setExportEnabled(false);
-    });
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  connect(&lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, [this] {
+    if (exportEnabled()
+        && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
+      setExportEnabled(false);
+  });
 }
 
 /**
@@ -667,6 +671,10 @@ void Sessions::Export::closeFile()
  */
 void Sessions::Export::setupExternalConnections()
 {
+  m_appState     = &AppState::instance();
+  m_projectModel = &DataModel::ProjectModel::instance();
+  m_frameBuilder = &DataModel::FrameBuilder::instance();
+
   connect(&AppState::instance(), &AppState::operationModeChanged, this, [this] {
     const auto mode = AppState::instance().operationMode();
     m_operationMode.store(static_cast<int>(mode), std::memory_order_relaxed);
@@ -751,11 +759,13 @@ void Sessions::Export::setupExternalConnections()
  */
 void Sessions::Export::refreshProjectSnapshot()
 {
+  Q_ASSERT(m_appState);
+  Q_ASSERT(m_projectModel);
+
   QByteArray payload;
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile) {
-    const auto& pm = DataModel::ProjectModel::instance();
-    if (!pm.groups().empty()) {
-      const auto doc = QJsonDocument(pm.serializeToJson());
+  if (m_appState->operationMode() == SerialStudio::ProjectFile) {
+    if (!m_projectModel->groups().empty()) {
+      const auto doc = QJsonDocument(m_projectModel->serializeToJson());
       payload        = doc.toJson(QJsonDocument::Compact);
     }
   }
@@ -769,12 +779,14 @@ void Sessions::Export::refreshProjectSnapshot()
  */
 void Sessions::Export::setExportEnabled(const bool enabled)
 {
+  Q_ASSERT(m_appState);
+
   const auto& tk = Licensing::CommercialToken::current();
   const bool licensed =
     tk.isValid() && SS_LICENSE_GUARD() && tk.featureTier() >= Licensing::FeatureTier::Trial;
 
   const bool allow =
-    enabled && licensed && AppState::instance().operationMode() != SerialStudio::ConsoleOnly;
+    enabled && licensed && m_appState->operationMode() != SerialStudio::ConsoleOnly;
 
   if (m_exportEnabled.load(std::memory_order_relaxed) == allow)
     return;
@@ -804,12 +816,14 @@ void Sessions::Export::setSettingsPersistent(const bool persistent)
  */
 void Sessions::Export::captureTableSnapshots()
 {
+  Q_ASSERT(m_frameBuilder);
+
   if (!exportEnabled() || !isOpen() || SerialStudio::isAnyPlayerOpen()) {
     m_lastTableSnapshot.clear();
     return;
   }
 
-  const auto& store = DataModel::FrameBuilder::instance().tableStore();
+  const auto& store = m_frameBuilder->tableStore();
   if (!store.isInitialized())
     return;
 

@@ -545,15 +545,18 @@ inline QString FMT_VAL(double val, const DataModel::Dataset& dataset)
 
 inline const DataModel::Group& GET_GROUP(const SerialStudio::DashboardWidget type, int index)
 {
-  return UI::Dashboard::instance().getGroupWidget(type, index);
+  static auto& dashboard = UI::Dashboard::instance();
+  return dashboard.getGroupWidget(type, index);
 }
 
 inline const DataModel::Dataset& GET_DATASET(const SerialStudio::DashboardWidget type, int index)
 {
-  return UI::Dashboard::instance().getDatasetWidget(type, index);
+  static auto& dashboard = UI::Dashboard::instance();
+  return dashboard.getDatasetWidget(type, index);
 }
 
 inline bool VALIDATE_WIDGET(const SerialStudio::DashboardWidget type, int index)
 {
-  return index >= 0 && index < UI::Dashboard::instance().widgetCount(type);
+  static auto& dashboard = UI::Dashboard::instance();
+  return index >= 0 && index < dashboard.widgetCount(type);
 }

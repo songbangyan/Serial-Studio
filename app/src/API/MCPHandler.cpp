@@ -295,13 +295,14 @@ API::MCP::MCPResponse API::MCPHandler::handleToolsCall(const MCP::MCPRequest& re
       request.id, MCP::ErrorCode::InvalidParams, QStringLiteral("Missing tool name"));
   }
 
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
   if (!registry.hasCommand(name)) {
     return MCP::MCPResponse::makeError(
       request.id, MCP::ErrorCode::InvalidParams, QStringLiteral("Unknown tool: %1").arg(name));
   }
 
-  if (!Server::instance().authorizeRemoteCommand(name)) {
+  static auto& server = Server::instance();
+  if (!server.authorizeRemoteCommand(name)) {
     return MCP::MCPResponse::makeError(
       request.id, MCP::ErrorCode::InternalError, QStringLiteral("Device write denied by user"));
   }
@@ -378,8 +379,9 @@ API::MCP::MCPResponse API::MCPHandler::handleResourcesRead(const MCP::MCPRequest
   content[QStringLiteral("mimeType")] = QStringLiteral("application/json");
 
   if (uri == QStringLiteral("serialstudio://frame/current")) {
-    const auto& frame  = UI::Dashboard::instance().processedFrame();
-    const bool hasData = !frame.groups.empty();
+    static auto& dashboard = UI::Dashboard::instance();
+    const auto& frame      = dashboard.processedFrame();
+    const bool hasData     = !frame.groups.empty();
 
     auto frameJson                       = DataModel::serialize(frame);
     frameJson[QStringLiteral("hasData")] = hasData;
@@ -392,7 +394,8 @@ API::MCP::MCPResponse API::MCPHandler::handleResourcesRead(const MCP::MCPRequest
     content[QStringLiteral("text")] =
       QString::fromUtf8(QJsonDocument(frameJson).toJson(QJsonDocument::Indented));
   } else if (uri == QStringLiteral("serialstudio://frame/history")) {
-    const auto& frame = UI::Dashboard::instance().processedFrame();
+    static auto& dashboard = UI::Dashboard::instance();
+    const auto& frame      = dashboard.processedFrame();
 
     QJsonArray history;
     if (!frame.groups.empty())
@@ -629,7 +632,8 @@ QVector<API::MCP::Tool> API::MCPHandler::generateToolsFromRegistry() const
 {
   QVector<MCP::Tool> tools;
 
-  const auto& commands = CommandRegistry::instance().commands();
+  static auto& registry = CommandRegistry::instance();
+  const auto& commands  = registry.commands();
   for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
     const auto& name = it.key();
     MCP::Tool tool;

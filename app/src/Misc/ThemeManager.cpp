@@ -161,7 +161,8 @@ Misc::ThemeManager::ThemeManager() : m_theme(0), m_applyingTheme(false), m_persi
   setTheme(themeIndex);
 
   updateLocalizedThemeNames();
-  connect(&Misc::Translator::instance(),
+  static auto& translator = Misc::Translator::instance();
+  connect(&translator,
           &Misc::Translator::languageChanged,
           this,
           &Misc::ThemeManager::updateLocalizedThemeNames);
@@ -391,7 +392,8 @@ void Misc::ThemeManager::loadSystemTheme()
 void Misc::ThemeManager::updateLocalizedThemeNames()
 {
   m_availableThemeNames.clear();
-  const auto lang = Translator::instance().language();
+  static auto& translator = Translator::instance();
+  const auto lang         = translator.language();
 
   for (const auto& themeName : std::as_const(m_availableThemes)) {
     if (themeName == QStringLiteral("System")) {
@@ -505,7 +507,8 @@ void Misc::ThemeManager::loadUserThemes()
 
   m_userThemeNames.clear();
 
-  const auto themesDir = Misc::WorkspaceManager::instance().path("Extensions/theme");
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  const auto themesDir          = workspaceManager.path("Extensions/theme");
   QDir dir(themesDir);
   if (!dir.exists())
     return;
@@ -568,7 +571,7 @@ void Misc::ThemeManager::onExtensionInstalled(const QString& id)
   loadUserThemes();
   m_availableThemes.append(QStringLiteral("System"));
 
-  const auto& ext    = Misc::ExtensionManager::instance();
+  static auto& ext   = Misc::ExtensionManager::instance();
   const auto info    = ext.selectedExtension();
   const bool isTheme = id.isEmpty() || info.value("type").toString() == QStringLiteral("theme");
 

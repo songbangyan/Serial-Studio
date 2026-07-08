@@ -26,6 +26,21 @@
 #  include "DataModel/Frame.h"
 #  include "DataModel/Scripting/JsWatchdog.h"
 
+class AppState;
+
+namespace DataModel {
+class FrameBuilder;
+}  // namespace DataModel
+
+namespace Misc {
+class ThemeManager;
+class TimerEvents;
+}  // namespace Misc
+
+namespace UI {
+class Dashboard;
+}  // namespace UI
+
 namespace Widgets {
 
 class PainterContext;
@@ -83,6 +98,12 @@ private:
 
   void setRuntimeOk(bool ok);
   void setLastError(const QString& error);
+
+  DataModel::FrameBuilder& m_frameBuilder;
+  AppState& m_appState;
+  Misc::ThemeManager& m_themeManager;
+  UI::Dashboard& m_dashboard;
+  Misc::TimerEvents& m_timerEvents;
 
   int m_index;
   QString m_userCode;

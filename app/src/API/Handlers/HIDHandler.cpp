@@ -25,7 +25,7 @@
  */
 void API::Handlers::HIDHandler::registerCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   {
     QJsonObject props;
@@ -81,8 +81,9 @@ API::CommandResponse API::Handlers::HIDHandler::setDeviceIndex(const QString& id
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: deviceIndex"));
   }
 
-  const int device_index = params.value(QStringLiteral("deviceIndex")).toInt();
-  const auto& devices    = IO::ConnectionManager::instance().hid()->deviceList();
+  const int device_index         = params.value(QStringLiteral("deviceIndex")).toInt();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.hid()->deviceList();
 
   if (device_index < 0 || device_index >= devices.count()) {
     return CommandResponse::makeError(
@@ -93,7 +94,7 @@ API::CommandResponse API::Handlers::HIDHandler::setDeviceIndex(const QString& id
         .arg(devices.count() - 1));
   }
 
-  IO::ConnectionManager::instance().hid()->setDeviceIndex(device_index);
+  connectionManager.hid()->setDeviceIndex(device_index);
 
   QJsonObject result;
   result[QStringLiteral("deviceIndex")] = device_index;
@@ -113,7 +114,8 @@ API::CommandResponse API::Handlers::HIDHandler::getDeviceList(const QString& id,
 {
   Q_UNUSED(params)
 
-  const auto& devices = IO::ConnectionManager::instance().hid()->deviceList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  const auto& devices            = connectionManager.hid()->deviceList();
 
   QJsonArray devices_array;
   for (const auto& device : devices)
@@ -121,7 +123,7 @@ API::CommandResponse API::Handlers::HIDHandler::getDeviceList(const QString& id,
 
   QJsonObject result;
   result[QStringLiteral("devices")]       = devices_array;
-  result[QStringLiteral("selectedIndex")] = IO::ConnectionManager::instance().hid()->deviceIndex();
+  result[QStringLiteral("selectedIndex")] = connectionManager.hid()->deviceIndex();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -133,7 +135,8 @@ API::CommandResponse API::Handlers::HIDHandler::getConfiguration(const QString& 
 {
   Q_UNUSED(params)
 
-  auto* hid = IO::ConnectionManager::instance().hid();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  auto* hid                      = connectionManager.hid();
 
   QJsonObject result;
   result[QStringLiteral("deviceIndex")] = hid->deviceIndex();

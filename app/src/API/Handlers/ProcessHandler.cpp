@@ -27,8 +27,8 @@
  */
 void API::Handlers::ProcessHandler::registerCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(QStringLiteral("io.process.setMode"),
                            QStringLiteral("Set driver mode (params: mode - 0=Launch, 1=NamedPipe)"),
@@ -113,7 +113,8 @@ API::CommandResponse API::Handlers::ProcessHandler::setMode(const QString& id,
       QStringLiteral("Invalid mode: %1. Valid values: 0=Launch, 1=NamedPipe").arg(mode));
   }
 
-  IO::ConnectionManager::instance().process()->setMode(mode);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->setMode(mode);
 
   QJsonObject result;
   result[QStringLiteral("mode")] = mode;
@@ -137,7 +138,8 @@ API::CommandResponse API::Handlers::ProcessHandler::setExecutable(const QString&
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Path is not allowed: ") + path);
 
-  IO::ConnectionManager::instance().process()->setExecutable(path);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->setExecutable(path);
 
   QJsonObject result;
   result[QStringLiteral("executable")] = path;
@@ -155,8 +157,9 @@ API::CommandResponse API::Handlers::ProcessHandler::setArguments(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: arguments"));
   }
 
-  const QString args = params.value(QStringLiteral("arguments")).toString();
-  IO::ConnectionManager::instance().process()->setArguments(args);
+  const QString args             = params.value(QStringLiteral("arguments")).toString();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->setArguments(args);
 
   QJsonObject result;
   result[QStringLiteral("arguments")] = args;
@@ -180,7 +183,8 @@ API::CommandResponse API::Handlers::ProcessHandler::setWorkingDir(const QString&
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Path is not allowed: ") + dir);
 
-  IO::ConnectionManager::instance().process()->setWorkingDir(dir);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->setWorkingDir(dir);
 
   QJsonObject result;
   result[QStringLiteral("workingDir")] = dir;
@@ -204,7 +208,8 @@ API::CommandResponse API::Handlers::ProcessHandler::setPipePath(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::InvalidParam, QStringLiteral("Path is not allowed: ") + path);
 
-  IO::ConnectionManager::instance().process()->setPipePath(path);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->setPipePath(path);
 
   QJsonObject result;
   result[QStringLiteral("pipePath")] = path;
@@ -223,9 +228,10 @@ API::CommandResponse API::Handlers::ProcessHandler::getRunningProcesses(const QS
 {
   Q_UNUSED(params)
 
-  IO::ConnectionManager::instance().process()->refreshProcessList();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.process()->refreshProcessList();
 
-  const auto& processes = IO::ConnectionManager::instance().process()->runningProcesses();
+  const auto& processes = connectionManager.process()->runningProcesses();
 
   QJsonArray processes_array;
   for (const auto& proc : processes)
@@ -245,7 +251,8 @@ API::CommandResponse API::Handlers::ProcessHandler::getConfiguration(const QStri
 {
   Q_UNUSED(params)
 
-  auto* proc = IO::ConnectionManager::instance().process();
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  auto* proc                     = connectionManager.process();
 
   QJsonObject result;
   result[QStringLiteral("mode")]       = proc->mode();

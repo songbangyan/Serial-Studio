@@ -27,7 +27,8 @@ Q_LOGGING_CATEGORY(lcMqttVault, "serialstudio.mqtt.vault", QtCriticalMsg)
  */
 MQTT::CredentialVault::CredentialVault()
 {
-  m_simpleCrypt.setKey(Licensing::MachineID::instance().machineSpecificKey());
+  static auto& machineId = Licensing::MachineID::instance();
+  m_simpleCrypt.setKey(machineId.machineSpecificKey());
   m_simpleCrypt.setIntegrityProtectionMode(Licensing::SimpleCrypt::ProtectionHash);
 }
 

@@ -26,7 +26,13 @@
 #include <QString>
 #include <vector>
 
+namespace DataModel {
+class NotificationCenter;
+}  // namespace DataModel
+
 namespace UI {
+class Dashboard;
+
 /**
  * @brief Dataset-level alarm-band tracker; posts band-entry notifications independently of
  *        whether any widget displaying the dataset is instantiated or visible.
@@ -75,5 +81,7 @@ private:
   void processValue(Tracker& tracker, double value);
 
   std::vector<Tracker> m_trackers;
+  Dashboard* m_dashboard;
+  DataModel::NotificationCenter* m_notificationCenter;
 };
 }  // namespace UI

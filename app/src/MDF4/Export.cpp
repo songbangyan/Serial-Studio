@@ -132,7 +132,8 @@ void MDF4::ExportWorker::processItems(const std::vector<DataModel::TimestampedFr
   if (items.empty())
     return;
 
-  if (!IO::ConnectionManager::instance().isConnected())
+  static auto& ioManager = IO::ConnectionManager::instance();
+  if (!ioManager.isConnected())
     return;
 
   if (!isResourceOpen()) {
@@ -410,7 +411,8 @@ void MDF4::ExportWorker::createFile(const DataModel::Frame& frame)
     dateTime.toString(QStringLiteral("yyyy-MM-dd_HH-mm-ss")) + QStringLiteral(".mf4");
   const QString frameName = sanitizeFrameTitle(frame.title);
 
-  QDir dir(Misc::WorkspaceManager::instance().path("MDF4"));
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  QDir dir(workspaceManager.path("MDF4"));
   if (!dir.exists(frameName))
     dir.mkpath(frameName);
 
@@ -460,6 +462,8 @@ MDF4::Export::Export()
   , m_isOpen(false)
   , m_exportEnabled(false)
   , m_persistSettings(true)
+  , m_appState(nullptr)
+  , m_frameBuilder(nullptr)
 #else
   : m_isOpen(false), m_exportEnabled(false), m_persistSettings(true)
 #endif
@@ -472,14 +476,12 @@ MDF4::Export::Export()
           &Export::onWorkerOpenChanged,
           Qt::QueuedConnection);
 
-  connect(&Licensing::LemonSqueezy::instance(),
-          &Licensing::LemonSqueezy::activatedChanged,
-          this,
-          [=, this] {
-            if (exportEnabled()
-                && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
-              setExportEnabled(false);
-          });
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  connect(&lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, [=, this] {
+    if (exportEnabled()
+        && (!Licensing::CommercialToken::current().isValid() || !SS_LICENSE_GUARD()))
+      setExportEnabled(false);
+  });
 #endif
 
   setExportEnabled(m_settings.value("MDF4Export", false).toBool());
@@ -550,10 +552,13 @@ void MDF4::Export::closeFile()
  */
 void MDF4::Export::refreshTemplateFrame()
 {
+  Q_ASSERT(m_appState);
+  Q_ASSERT(m_frameBuilder);
+
   auto* worker = static_cast<ExportWorker*>(m_worker);
   DataModel::Frame frame;
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    frame = DataModel::FrameBuilder::instance().frame();
+  if (m_appState->operationMode() == SerialStudio::ProjectFile)
+    frame = m_frameBuilder->frame();
 
   QMetaObject::invokeMethod(
     worker,
@@ -568,6 +573,9 @@ void MDF4::Export::refreshTemplateFrame()
 void MDF4::Export::setupExternalConnections()
 {
 #ifdef BUILD_COMMERCIAL
+  m_appState     = &AppState::instance();
+  m_frameBuilder = &DataModel::FrameBuilder::instance();
+
   connect(
     &IO::ConnectionManager::instance(), &IO::ConnectionManager::connectedChanged, this, [this] {
       if (IO::ConnectionManager::instance().isConnected())
@@ -602,7 +610,8 @@ void MDF4::Export::setSettingsPersistent(const bool persistent)
  */
 void MDF4::Export::setExportEnabled(const bool enabled)
 {
-  const bool allow = enabled && AppState::instance().operationMode() != SerialStudio::ConsoleOnly;
+  static auto& appState = AppState::instance();
+  const bool allow      = enabled && appState.operationMode() != SerialStudio::ConsoleOnly;
 
 #ifdef BUILD_COMMERCIAL
   const auto& tk = Licensing::CommercialToken::current();

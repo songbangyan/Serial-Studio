@@ -80,19 +80,24 @@ Console::Handler::Handler()
   , m_currentDeviceId(-1)
   , m_fontFamilyIndex(0)
   , m_textBuffer(10 * 1024)
+  , m_commonFonts(nullptr)
+  , m_connectionManager(nullptr)
+  , m_appState(nullptr)
+  , m_projectModel(nullptr)
 {
   clear();
-  const auto defaultFont = Misc::CommonFonts::instance().monoFont();
-  m_fontFamily           = m_settings.value("Console/FontFamily", defaultFont.family()).toString();
-  m_fontSize             = m_settings.value("Console/FontSize", defaultFont.pointSize()).toInt();
-  m_echo                 = m_settings.value("Console/Echo", true).toBool();
-  m_showTimestamp        = m_settings.value("Console/ShowTimestamp", false).toBool();
-  m_vt100Emulation       = m_settings.value("Console/VT100Emulation", true).toBool();
-  m_ansiColors           = m_settings.value("Console/AnsiColors", true).toBool();
-  m_checksumMethod       = m_settings.value("Console/ChecksumMethod", 0).toInt();
-  m_dataMode             = static_cast<DataMode>(m_settings.value("Console/DataMode", 0).toInt());
-  m_lineEnding  = static_cast<LineEnding>(m_settings.value("Console/LineEnding", 0).toInt());
-  m_displayMode = static_cast<DisplayMode>(m_settings.value("Console/DisplayMode", 0).toInt());
+  static auto& commonFonts = Misc::CommonFonts::instance();
+  const auto defaultFont   = commonFonts.monoFont();
+  m_fontFamily     = m_settings.value("Console/FontFamily", defaultFont.family()).toString();
+  m_fontSize       = m_settings.value("Console/FontSize", defaultFont.pointSize()).toInt();
+  m_echo           = m_settings.value("Console/Echo", true).toBool();
+  m_showTimestamp  = m_settings.value("Console/ShowTimestamp", false).toBool();
+  m_vt100Emulation = m_settings.value("Console/VT100Emulation", true).toBool();
+  m_ansiColors     = m_settings.value("Console/AnsiColors", true).toBool();
+  m_checksumMethod = m_settings.value("Console/ChecksumMethod", 0).toInt();
+  m_dataMode       = static_cast<DataMode>(m_settings.value("Console/DataMode", 0).toInt());
+  m_lineEnding     = static_cast<LineEnding>(m_settings.value("Console/LineEnding", 0).toInt());
+  m_displayMode    = static_cast<DisplayMode>(m_settings.value("Console/DisplayMode", 0).toInt());
 
   const int encInt = m_settings.value("Console/Encoding", 0).toInt();
   if (encInt >= 0 && encInt <= SerialStudio::EncEucKr)
@@ -110,7 +115,8 @@ Console::Handler::Handler()
   m_ansiColorsEnabled = m_vt100Emulation && m_ansiColors;
   m_fontFamilyIndex   = availableFonts().indexOf(m_fontFamily);
 
-  connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [this]() {
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  connect(&timerEvents, &Misc::TimerEvents::uiTimeout, this, [this]() {
     if (!m_pendingDisplay.isEmpty()) {
       Q_EMIT displayString(m_pendingDisplay);
       m_pendingDisplay.clear();
@@ -335,8 +341,9 @@ int Console::Handler::fontFamilyIndex() const
 QStringList Console::Handler::availableFonts() const
 {
   QStringList monospaceFonts;
-  const auto allFonts = QFontDatabase::families();
-  auto defaultFamily  = Misc::CommonFonts::instance().monoFont().family();
+  const auto allFonts      = QFontDatabase::families();
+  static auto& commonFonts = Misc::CommonFonts::instance();
+  auto defaultFamily       = commonFonts.monoFont().family();
   for (const auto& family : allFonts) {
     QFontInfo fontInfo(family);
     if (fontInfo.fixedPitch() && !monospaceFonts.contains(family))
@@ -356,7 +363,8 @@ QStringList Console::Handler::availableFonts() const
  */
 int Console::Handler::defaultCharWidth() const
 {
-  const auto defaultFont = Misc::CommonFonts::instance().monoFont();
+  Q_ASSERT(m_commonFonts);
+  const auto defaultFont = m_commonFonts->monoFont();
   const QFontMetrics metrics(defaultFont);
   return metrics.horizontalAdvance("M");
 }
@@ -366,7 +374,8 @@ int Console::Handler::defaultCharWidth() const
  */
 int Console::Handler::defaultCharHeight() const
 {
-  const auto defaultFont = Misc::CommonFonts::instance().monoFont();
+  Q_ASSERT(m_commonFonts);
+  const auto defaultFont = m_commonFonts->monoFont();
   const QFontMetrics metrics(defaultFont);
   return metrics.height();
 }
@@ -471,6 +480,11 @@ void Console::Handler::historyDown()
  */
 void Console::Handler::setupExternalConnections()
 {
+  m_commonFonts       = &Misc::CommonFonts::instance();
+  m_connectionManager = &IO::ConnectionManager::instance();
+  m_appState          = &AppState::instance();
+  m_projectModel      = &DataModel::ProjectModel::instance();
+
   connect(&Misc::Translator::instance(),
           &Misc::Translator::languageChanged,
           this,
@@ -514,7 +528,8 @@ void Console::Handler::setupExternalConnections()
  */
 void Console::Handler::send(const QString& data)
 {
-  if (!IO::ConnectionManager::instance().isConnected())
+  Q_ASSERT(m_connectionManager);
+  if (!m_connectionManager->isConnected())
     return;
 
   if (!data.isEmpty())
@@ -551,9 +566,9 @@ void Console::Handler::send(const QString& data)
 
   if (!bin.isEmpty()) {
     if (m_currentDeviceId >= 0)
-      (void)IO::ConnectionManager::instance().writeDataToDevice(m_currentDeviceId, bin);
+      (void)m_connectionManager->writeDataToDevice(m_currentDeviceId, bin);
     else
-      (void)IO::ConnectionManager::instance().writeData(bin);
+      (void)m_connectionManager->writeData(bin);
   }
 }
 
@@ -914,9 +929,12 @@ void Console::Handler::setCurrentDeviceIndex(int index)
  */
 void Console::Handler::onDevicesChanged()
 {
-  const auto& mgr     = IO::ConnectionManager::instance();
-  const auto opMode   = AppState::instance().operationMode();
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  Q_ASSERT(m_connectionManager);
+  Q_ASSERT(m_appState);
+  Q_ASSERT(m_projectModel);
+
+  const auto opMode   = m_appState->operationMode();
+  const auto& sources = m_projectModel->sources();
 
   QStringList names;
   QList<int> ids;
@@ -935,7 +953,7 @@ void Console::Handler::onDevicesChanged()
   m_deviceNames     = names;
   m_deviceSourceIds = ids;
 
-  if (!mgr.isConnected()) {
+  if (!m_connectionManager->isConnected()) {
     m_deviceState.clear();
     m_currentDeviceId = -1;
     Q_EMIT deviceNamesChanged();
@@ -1040,13 +1058,17 @@ QString Console::Handler::appendToDevice(int deviceId, const QString& str, bool 
  */
 bool Console::Handler::hasImageWidget() const
 {
-  if (!IO::ConnectionManager::instance().isConnected())
+  Q_ASSERT(m_connectionManager);
+  Q_ASSERT(m_appState);
+  Q_ASSERT(m_projectModel);
+
+  if (!m_connectionManager->isConnected())
     return false;
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  if (m_appState->operationMode() != SerialStudio::ProjectFile)
     return false;
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModel->groups();
   for (const auto& g : groups)
     if (g.widget == QLatin1String("image"))
       return true;
@@ -1071,10 +1093,11 @@ void Console::Handler::updateFont()
   QFontInfo fontInfo(testFont);
 
   if (!fontInfo.fixedPitch()) {
-    const auto defaultFont = Misc::CommonFonts::instance().monoFont();
-    m_fontFamily           = defaultFont.family();
-    m_fontFamilyIndex      = availableFonts().indexOf(m_fontFamily);
-    m_fontSize             = defaultFont.pointSize();
+    static auto& commonFonts = Misc::CommonFonts::instance();
+    const auto defaultFont   = commonFonts.monoFont();
+    m_fontFamily             = defaultFont.family();
+    m_fontFamilyIndex        = availableFonts().indexOf(m_fontFamily);
+    m_fontSize               = defaultFont.pointSize();
     m_settings.setValue("Console/FontFamily", m_fontFamily);
     m_settings.setValue("Console/FontSize", m_fontSize);
     testFont = defaultFont;

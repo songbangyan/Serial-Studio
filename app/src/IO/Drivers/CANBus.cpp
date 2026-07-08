@@ -40,7 +40,8 @@
  */
 static QStringList enumerateCanPlugins()
 {
-  QStringList list = QCanBus::instance()->plugins();
+  static auto* canBus = QCanBus::instance();
+  QStringList list    = canBus->plugins();
   for (const auto& backend : IO::Drivers::CanBackends::all())
     if (backend.supported)
       list.append(backend.key);
@@ -266,8 +267,10 @@ bool IO::Drivers::CANBus::open(const QIODevice::OpenMode mode)
   QString error;
   if (const auto* backend = IO::Drivers::CanBackends::find(plugin))
     m_device = backend->create(interface);
-  else
-    m_device = QCanBus::instance()->createDevice(plugin, interface, &error);
+  else {
+    static auto* canBus = QCanBus::instance();
+    m_device            = canBus->createDevice(plugin, interface, &error);
+  }
 
   if (!m_device) {
     Misc::Utilities::showMessageBox(
@@ -797,8 +800,8 @@ void IO::Drivers::CANBus::refreshInterfaces()
     m_interfaceList = backend->availableInterfaces();
   } else {
     QString error;
-    const QList<QCanBusDeviceInfo> interfaces =
-      QCanBus::instance()->availableDevices(plugin, &error);
+    static auto* canBus                       = QCanBus::instance();
+    const QList<QCanBusDeviceInfo> interfaces = canBus->availableDevices(plugin, &error);
 
     const QString errorKey = plugin + QLatin1Char('|') + error;
     if (!error.isEmpty() && !m_loggedPluginErrors.contains(errorKey)) {

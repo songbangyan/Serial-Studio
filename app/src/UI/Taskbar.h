@@ -31,7 +31,16 @@
 #include "UI/WidgetRegistry.h"
 #include "UI/WindowManager.h"
 
+class AppState;
+
+namespace DataModel {
+class ProjectModel;
+}  // namespace DataModel
+
 namespace UI {
+class Dashboard;
+class UISessionRegistry;
+
 /**
  * @brief QStandardItemModel used to represent dashboard widgets in a hierarchical UI.
  */
@@ -235,6 +244,12 @@ private:
   [[nodiscard]] QStandardItem* createItemFromWidgetInfo(const UI::WidgetInfo& info);
   [[nodiscard]] int findWindowIdByGroupAndIndex(int widgetType, int relativeIndex) const;
   [[nodiscard]] int relativeIndexForWindow(int windowId) const;
+
+  UI::Dashboard& m_dashboard;
+  DataModel::ProjectModel& m_projectModel;
+  UI::UISessionRegistry& m_uiSessionRegistry;
+  UI::WidgetRegistry& m_widgetRegistry;
+  AppState& m_appState;
 
   int m_activeGroupId;
   int m_desiredGroupId;

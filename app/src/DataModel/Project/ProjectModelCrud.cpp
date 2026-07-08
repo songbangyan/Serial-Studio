@@ -709,7 +709,8 @@ void DataModel::ProjectModel::moveDataset(int groupId, int fromDatasetId, int to
  */
 void DataModel::ProjectModel::moveWorkspace(int workspaceId, int targetIndex)
 {
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   if (workspaceId < WorkspaceIds::UserStart)

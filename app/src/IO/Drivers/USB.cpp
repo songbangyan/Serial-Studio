@@ -584,7 +584,8 @@ void IO::Drivers::USB::onReadError()
   if (!isOpen())
     return;
 
-  ConnectionManager::instance().disconnectDevice(this);
+  static auto& connectionManager = ConnectionManager::instance();
+  connectionManager.disconnectDevice(this);
   Misc::Utilities::showMessageBox(tr("USB Device Error"),
                                   tr("The USB device was disconnected or "
                                      "encountered a fatal read error."));
@@ -620,6 +621,7 @@ void IO::Drivers::USB::enumerateDevices()
     return;
   }
 
+  QHash<QString, QString> refreshedCache;
   for (ssize_t i = 0; i < count; ++i) {
     libusb_device* dev = devs[i];
     libusb_device_descriptor desc{};
@@ -632,38 +634,24 @@ void IO::Drivers::USB::enumerateDevices()
                       .arg(desc.idProduct, 4, 16, QChar('0'))
                       .toUpper();
 
-    libusb_device_handle* tmp = nullptr;
-    if (libusb_open(dev, &tmp) == 0) {
-      auto fetchStr = [&](uint8_t idx) -> QString {
-        if (!idx)
-          return {};
+    const QString key = QStringLiteral("%1:%2:%3")
+                          .arg(label)
+                          .arg(static_cast<int>(libusb_get_bus_number(dev)))
+                          .arg(static_cast<int>(libusb_get_device_address(dev)));
 
-        unsigned char buf[256] = {};
-        const int rc =
-          libusb_get_string_descriptor_ascii(tmp, idx, buf, static_cast<int>(sizeof(buf)));
+    if (m_deviceLabelCache.contains(key))
+      label = m_deviceLabelCache.value(key);
+    else if (!m_eventThread.isRunning())
+      label = enrichDeviceLabel(dev, desc, label);
 
-        if (rc > 0)
-          return QString::fromLatin1(reinterpret_cast<const char*>(buf), rc).trimmed();
-
-        return {};
-      };
-
-      const QString mfr  = fetchStr(desc.iManufacturer);
-      const QString prod = fetchStr(desc.iProduct);
-
-      // code-verify off
-      if (!mfr.isEmpty() || !prod.isEmpty())
-        label += QStringLiteral(" – %1 %2").arg(mfr, prod).trimmed();
-      // code-verify on
-
-      libusb_close(tmp);
-    }
+    refreshedCache.insert(key, label);
 
     libusb_ref_device(dev);
     m_devicePtrs.append(dev);
     m_deviceLabels.append(label);
   }
 
+  m_deviceLabelCache.swap(refreshedCache);
   libusb_free_device_list(devs, 1);
 
   int newIndex = m_deviceIndex;
@@ -692,6 +680,49 @@ void IO::Drivers::USB::enumerateDevices()
 //--------------------------------------------------------------------------------------------------
 // Private helpers
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Opens @p dev to append its manufacturer/product strings to @p base; the synchronous
+ * string-descriptor transfer runs only on the single-threaded startup scan, since issuing it while
+ * m_eventThread pumps libusb_handle_events deadlocks the macOS backend (hotplug rescans reuse the
+ * cached label instead).
+ */
+QString IO::Drivers::USB::enrichDeviceLabel(libusb_device* dev,
+                                            const libusb_device_descriptor& desc,
+                                            const QString& base) const
+{
+  Q_ASSERT(dev != nullptr);
+  Q_ASSERT(m_ctx != nullptr);
+
+  QString label             = base;
+  libusb_device_handle* tmp = nullptr;
+  if (libusb_open(dev, &tmp) != 0)
+    return label;
+
+  const auto fetchStr = [tmp](uint8_t idx) -> QString {
+    if (!idx)
+      return {};
+
+    unsigned char buf[256] = {};
+    const int rc = libusb_get_string_descriptor_ascii(tmp, idx, buf, static_cast<int>(sizeof(buf)));
+
+    if (rc > 0)
+      return QString::fromLatin1(reinterpret_cast<const char*>(buf), rc).trimmed();
+
+    return {};
+  };
+
+  const QString mfr  = fetchStr(desc.iManufacturer);
+  const QString prod = fetchStr(desc.iProduct);
+
+  // code-verify off
+  if (!mfr.isEmpty() || !prod.isEmpty())
+    label += QStringLiteral(" – %1 %2").arg(mfr, prod).trimmed();
+  // code-verify on
+
+  libusb_close(tmp);
+  return label;
+}
 
 /**
  * @brief Returns true when @p type is streamable in the current transfer mode (iso mode wants

@@ -202,9 +202,10 @@ void CSV::Player::toggle()
  */
 void CSV::Player::openFile()
 {
-  auto* dialog = new QFileDialog(qApp->activeWindow(),
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  auto* dialog                  = new QFileDialog(qApp->activeWindow(),
                                  tr("Select CSV file"),
-                                 Misc::WorkspaceManager::instance().path("CSV"),
+                                 workspaceManager.path("CSV"),
                                  tr("CSV files (*.csv)"));
 
   dialog->setFileMode(QFileDialog::ExistingFile);
@@ -240,8 +241,9 @@ void CSV::Player::closeFile()
   m_multiSource                = false;
   m_sourceColumnsByIndex.clear();
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(QStringList());
-  DataModel::FrameBuilder::instance().setReplayColumnMap({});
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(QStringList());
+  frameBuilder.setReplayColumnMap({});
 
   Q_EMIT openChanged();
   Q_EMIT timestampChanged();
@@ -256,9 +258,10 @@ void CSV::Player::nextFrame()
   if (framePosition() < frameCount() - 1) {
     ++m_framePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(1, m_framePos - framesToLoad);
     processFrameBatch(startFrame, m_framePos);
 
@@ -274,9 +277,10 @@ void CSV::Player::previousFrame()
   if (framePosition() > 0) {
     --m_framePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(1, m_framePos - framesToLoad);
     processFrameBatch(startFrame, m_framePos);
 
@@ -361,7 +365,8 @@ void CSV::Player::openFile(const QString& filePath)
 
   closeFile();
 
-  if (IO::ConnectionManager::instance().isConnected()) {
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  if (connectionManager.isConnected()) {
     auto response =
       Misc::Utilities::showMessageBox(tr("Device Connection Active"),
                                       tr("To use this feature, you must disconnect from the "
@@ -370,7 +375,7 @@ void CSV::Player::openFile(const QString& filePath)
                                       qAppName(),
                                       QMessageBox::No | QMessageBox::Yes);
     if (response == QMessageBox::Yes)
-      IO::ConnectionManager::instance().disconnectDevice();
+      connectionManager.disconnectDevice();
     else
       return;
   }
@@ -441,9 +446,10 @@ void CSV::Player::setProgress(const double progress)
   if (newFramePos != m_framePos) {
     m_framePos = newFramePos;
 
-    UI::Dashboard::instance().clearPlotData();
+    static auto& dashboard = UI::Dashboard::instance();
+    dashboard.clearPlotData();
 
-    int framesToLoad = UI::Dashboard::instance().points();
+    int framesToLoad = dashboard.points();
     int startFrame   = std::max(1, m_framePos - framesToLoad);
     int endFrame     = std::min(frameCount() - 1, m_framePos);
 
@@ -620,7 +626,8 @@ void CSV::Player::sendHeaderFrame()
   if (headerRow.size() <= 1)
     return;
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
     buildReplayLayout();
     if (m_multiSource)
       return;
@@ -630,7 +637,8 @@ void CSV::Player::sendHeaderFrame()
   for (int i = 1; i < headerRow.size(); ++i)
     headers.append(headerRow[i]);
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(headers);
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(headers);
 }
 
 /**
@@ -893,10 +901,11 @@ void CSV::Player::buildReplayLayout()
   m_sourceColumnsByIndex.clear();
 
   DataModel::Frame frame;
-  frame.groups       = DataModel::ProjectModel::instance().groups();
-  frame.sources      = DataModel::ProjectModel::instance().sources();
-  const auto schema  = DataModel::buildExportSchema(frame);
-  const int colCount = static_cast<int>(schema.columns.size());
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  frame.groups              = projectModel.groups();
+  frame.sources             = projectModel.sources();
+  const auto schema         = DataModel::buildExportSchema(frame);
+  const int colCount        = static_cast<int>(schema.columns.size());
 
   QSet<int> sources;
   for (const auto& col : schema.columns)
@@ -920,7 +929,8 @@ void CSV::Player::buildReplayLayout()
     }
   }
 
-  DataModel::FrameBuilder::instance().setReplayColumnMap(std::move(replay));
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.setReplayColumnMap(std::move(replay));
 }
 
 /**
@@ -932,7 +942,8 @@ void CSV::Player::injectFrame(const QByteArray& frame)
     return;
 
   if (!m_multiSource) {
-    IO::ConnectionManager::instance().processPayload(frame);
+    static auto& connectionManager = IO::ConnectionManager::instance();
+    connectionManager.processPayload(frame);
     return;
   }
 
@@ -967,7 +978,8 @@ void CSV::Player::injectFrame(const QByteArray& frame)
   if (sourcePayloads.isEmpty())
     return;
 
-  IO::ConnectionManager::instance().processMultiSourcePayload(frame, sourcePayloads);
+  static auto& connectionManager = IO::ConnectionManager::instance();
+  connectionManager.processMultiSourcePayload(frame, sourcePayloads);
 }
 
 //--------------------------------------------------------------------------------------------------

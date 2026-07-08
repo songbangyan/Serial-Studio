@@ -66,7 +66,14 @@ static QString defaultControlScript()
  * @brief Constructs the QML-side control-script editor.
  */
 DataModel::ControlScriptEditor::ControlScriptEditor(QQuickItem* parent)
-  : QQuickPaintedItem(parent), m_readingCode(false), m_initialLoad(true)
+  : QQuickPaintedItem(parent)
+  , m_readingCode(false)
+  , m_initialLoad(true)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_projectEditor(DataModel::ProjectEditor::instance())
+  , m_projectModel(DataModel::ProjectModel::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
 {
   setMipmap(false);
   setAntialiasing(false);
@@ -76,19 +83,19 @@ DataModel::ControlScriptEditor::ControlScriptEditor(QQuickItem* parent)
   setFlag(ItemIsFocusScope, true);
   setFlag(ItemAcceptsInputMethod, true);
   setAcceptedMouseButtons(Qt::AllButtons);
-  setFillColor(Misc::ThemeManager::instance().getColor(QStringLiteral("base")));
+  setFillColor(m_themeManager.getColor(QStringLiteral("base")));
 
   m_widget.setTabReplace(true);
   m_widget.setTabReplaceSize(2);
   m_widget.setAutoIndentation(true);
   m_widget.setHighlighter(new QJavascriptHighlighter());
-  m_widget.setFont(Misc::CommonFonts::instance().monoFont());
+  m_widget.setFont(m_commonFonts.monoFont());
   m_widget.setLayoutDirection(Qt::LeftToRight);
   m_widget.setLanguageHint(QCodeEditor::LanguageHint::JavaScript);
   m_widget.setCompleter(new DataModel::SerialStudioCompleter(false, &m_widget));
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &DataModel::ControlScriptEditor::onThemeChanged);
@@ -100,21 +107,19 @@ DataModel::ControlScriptEditor::ControlScriptEditor(QQuickItem* parent)
     if (m_readingCode)
       return;
 
-    auto& editor = DataModel::ProjectEditor::instance();
-    if (editor.currentView() != DataModel::ProjectEditor::ControlScriptView)
+    if (m_projectEditor.currentView() != DataModel::ProjectEditor::ControlScriptView)
       return;
 
     m_readingCode = true;
-    DataModel::ProjectModel::instance().setControlScriptCode(text());
+    m_projectModel.setControlScriptCode(text());
     m_readingCode = false;
   });
 
-  connect(&DataModel::ProjectModel::instance(),
-          &DataModel::ProjectModel::jsonFileChanged,
-          this,
-          [this] { m_initialLoad = true; });
+  connect(&m_projectModel, &DataModel::ProjectModel::jsonFileChanged, this, [this] {
+    m_initialLoad = true;
+  });
 
-  connect(&DataModel::ProjectModel::instance(),
+  connect(&m_projectModel,
           &DataModel::ProjectModel::controlScriptChanged,
           this,
           &DataModel::ControlScriptEditor::readCode);
@@ -123,7 +128,7 @@ DataModel::ControlScriptEditor::ControlScriptEditor(QQuickItem* parent)
     this, &QQuickPaintedItem::widthChanged, this, &DataModel::ControlScriptEditor::resizeWidget);
   connect(
     this, &QQuickPaintedItem::heightChanged, this, &DataModel::ControlScriptEditor::resizeWidget);
-  connect(&Misc::TimerEvents::instance(),
+  connect(&m_timerEvents,
           &Misc::TimerEvents::uiTimeout,
           this,
           &DataModel::ControlScriptEditor::renderWidget);
@@ -319,7 +324,7 @@ void DataModel::ControlScriptEditor::readCode()
 
   m_readingCode = true;
 
-  QString code = DataModel::ProjectModel::instance().controlScriptCode();
+  QString code = m_projectModel.controlScriptCode();
   if (code.isEmpty() && m_initialLoad)
     code = defaultControlScript();
 

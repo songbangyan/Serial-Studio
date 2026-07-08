@@ -63,14 +63,14 @@ Misc::DemoLauncher& Misc::DemoLauncher::instance()
  */
 bool Misc::DemoLauncher::startDemo()
 {
-  auto& state = AppState::instance();
+  static auto& state = AppState::instance();
   if (state.ephemeralSession())
     return false;
 
-  auto& io          = IO::ConnectionManager::instance();
-  const auto& model = DataModel::ProjectModel::instance();
+  static auto& io           = IO::ConnectionManager::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
 
-  if (model.jsonFilePath() == demoProjectPath()) {
+  if (projectModel.jsonFilePath() == demoProjectPath()) {
     state.setDemoSession(demoDirectory());
     state.setOperationMode(SerialStudio::ProjectFile);
     applyProGating();
@@ -91,7 +91,7 @@ bool Misc::DemoLauncher::startDemo()
   const auto previousMode = state.operationMode();
   state.setDemoSession(demoDirectory());
 
-  if (!DataModel::ProjectModel::instance().openJsonFile(projectPath)) {
+  if (!projectModel.openJsonFile(projectPath)) {
     state.setDemoSession(QString());
     state.setOperationMode(previousMode);
     qWarning() << "[Demo] Failed to open staged demo project:" << projectPath;
@@ -176,7 +176,7 @@ bool Misc::DemoLauncher::stageDemoProject(QString& projectPath) const
  */
 void Misc::DemoLauncher::applyProGating() const
 {
-  auto& model        = DataModel::ProjectModel::instance();
+  static auto& model = DataModel::ProjectModel::instance();
   const auto& groups = model.groups();
 
   for (size_t i = 0; i < groups.size(); ++i)

@@ -39,6 +39,8 @@ struct StableKey;
 
 namespace UI {
 class Taskbar;
+class Dashboard;
+class UISessionRegistry;
 
 /**
  * @brief Manages layout, geometry, z-ordering, and interactive manipulation of
@@ -167,6 +169,9 @@ protected:
   [[nodiscard]] bool childMouseEventFilter(QQuickItem* item, QEvent* event) override;
 
 private:
+  UI::Dashboard& m_dashboard;
+  UI::UISessionRegistry& m_sessionRegistry;
+
   int m_zCounter;
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;

@@ -1001,7 +1001,7 @@ void DataModel::ProtoImporter::confirmImport()
   for (const auto& m : m_messages)
     totalFields += countFieldsRecursive(m);
 
-  auto& pm = ProjectModel::instance();
+  static auto& pm = ProjectModel::instance();
   QObject::connect(
     &pm,
     &ProjectModel::importCompleted,

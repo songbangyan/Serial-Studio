@@ -33,6 +33,7 @@
  */
 Widgets::Plot::Plot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
+  , m_dashboard(UI::Dashboard::instance())
   , m_index(index)
   , m_dataW(0)
   , m_dataH(0)
@@ -66,9 +67,8 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
     if (!yDataset.units.isEmpty())
       m_yLabel += " (" + yDataset.units + ")";
 
-    connect(&UI::Dashboard::instance(), &UI::Dashboard::pointsChanged, this, &Plot::updateRange);
-    connect(
-      &UI::Dashboard::instance(), &UI::Dashboard::plotTimeRangeChanged, this, &Plot::updateRange);
+    connect(&m_dashboard, &UI::Dashboard::pointsChanged, this, &Plot::updateRange);
+    connect(&m_dashboard, &UI::Dashboard::plotTimeRangeChanged, this, &Plot::updateRange);
 
     calculateAutoScaleRange();
     updateRange();
@@ -80,7 +80,7 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
  */
 void Widgets::Plot::resolveXAxis(const DataModel::Dataset& yDataset)
 {
-  if (UI::Dashboard::instance().useTimeXAxis(yDataset)) {
+  if (m_dashboard.useTimeXAxis(yDataset)) {
     m_timeAxis      = true;
     m_monotonicData = true;
     m_xLabel        = tr("Time (s)");
@@ -89,7 +89,7 @@ void Widgets::Plot::resolveXAxis(const DataModel::Dataset& yDataset)
 
   const auto xAxisId = SerialStudio::datasetXAxisEnabled() ? yDataset.xAxisId : -1;
 
-  const auto& datasets = UI::Dashboard::instance().datasets();
+  const auto& datasets = m_dashboard.datasets();
   if (datasets.contains(xAxisId)) {
     m_monotonicData      = false;
     const auto& xDataset = datasets[xAxisId];
@@ -197,7 +197,7 @@ bool Widgets::Plot::dataFlatZero() const noexcept
  */
 bool Widgets::Plot::running() const noexcept
 {
-  return UI::Dashboard::instance().plotRunning(m_index);
+  return m_dashboard.plotRunning(m_index);
 }
 
 /**
@@ -357,7 +357,7 @@ void Widgets::Plot::setDataH(const int height)
  */
 void Widgets::Plot::setRunning(const bool enabled)
 {
-  UI::Dashboard::instance().setPlotRunning(m_index, enabled);
+  m_dashboard.setPlotRunning(m_index, enabled);
   Q_EMIT runningChanged();
 }
 
@@ -488,7 +488,7 @@ void Widgets::Plot::setTriggerEdge(const SerialStudio::TriggerEdge edge)
  */
 void Widgets::Plot::armSweep()
 {
-  UI::Dashboard::instance().armPlotSweep(m_index);
+  m_dashboard.armPlotSweep(m_index);
 }
 
 /**
@@ -496,13 +496,13 @@ void Widgets::Plot::armSweep()
  */
 void Widgets::Plot::pushSweepConfig()
 {
-  UI::Dashboard::instance().setPlotSweep(m_index,
-                                         m_sweepEnabled,
-                                         m_triggerLevel,
-                                         static_cast<int>(m_triggerEdge),
-                                         static_cast<int>(m_sweepMode),
-                                         m_holdoffMs * 0.001,
-                                         m_timebaseMs * 0.001);
+  m_dashboard.setPlotSweep(m_index,
+                           m_sweepEnabled,
+                           m_triggerLevel,
+                           static_cast<int>(m_triggerEdge),
+                           static_cast<int>(m_sweepMode),
+                           m_holdoffMs * 0.001,
+                           m_timebaseMs * 0.001);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -526,7 +526,7 @@ void Widgets::Plot::updateData()
     double xLo = m_minX;
     double xHi = m_maxX;
     clampToVisibleX(xLo, xHi);
-    const auto& ring = UI::Dashboard::instance().plotSweep(m_index).display(0);
+    const auto& ring = m_dashboard.plotSweep(m_index).display(0);
     (void)DSP::downsampleWindowAbsolute(
       ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data, &ws);
     return;
@@ -536,12 +536,12 @@ void Widgets::Plot::updateData()
     double xLo = m_minX;
     double xHi = m_maxX;
     clampToVisibleX(xLo, xHi);
-    const auto& ring = UI::Dashboard::instance().plotTimeRing(m_index);
+    const auto& ring = m_dashboard.plotTimeRing(m_index);
     (void)DSP::downsampleTimeWindow(ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data, &ws);
     return;
   }
 
-  const auto& plotData = UI::Dashboard::instance().plotData(m_index);
+  const auto& plotData = m_dashboard.plotData(m_index);
 
   if (m_monotonicData) {
     (void)DSP::downsampleMonotonic(plotData, m_dataW, m_dataH, m_data, &ws);
@@ -648,7 +648,7 @@ void Widgets::Plot::updateRange()
   }
 
   if (m_timeAxis) {
-    const double range    = UI::Dashboard::instance().plotTimeRange();
+    const double range    = m_dashboard.plotTimeRange();
     const double timebase = m_timebaseMs * 0.001;
     const double window   = (timebase > 0 && timebase < range) ? timebase : range;
     m_minX                = m_sweepEnabled ? 0 : -range;
@@ -659,7 +659,7 @@ void Widgets::Plot::updateRange()
 
   const auto& yD = GET_DATASET(SerialStudio::DashboardPlot, m_index);
   if (SerialStudio::datasetXAxisEnabled() && yD.xAxisId >= 0) {
-    const auto& datasets = UI::Dashboard::instance().datasets();
+    const auto& datasets = m_dashboard.datasets();
     auto it              = datasets.find(yD.xAxisId);
     if (it != datasets.end()) {
       m_minX = it->pltMin;
@@ -669,7 +669,7 @@ void Widgets::Plot::updateRange()
 
   else {
     m_minX = 0;
-    m_maxX = UI::Dashboard::instance().points();
+    m_maxX = m_dashboard.points();
   }
 
   Q_EMIT rangeChanged();
@@ -691,14 +691,14 @@ void Widgets::Plot::calculateAutoScaleRange()
   yChanged |= updateDataExtremes(dy);
 
   if (!m_timeAxis && SerialStudio::datasetXAxisEnabled()
-      && UI::Dashboard::instance().datasets().contains(dy.xAxisId)) {
-    const auto& dx = UI::Dashboard::instance().datasets()[dy.xAxisId];
+      && m_dashboard.datasets().contains(dy.xAxisId)) {
+    const auto& dx = m_dashboard.datasets()[dy.xAxisId];
     xChanged =
       computeMinMaxValues(m_minX, m_maxX, dx, false, [](const QPointF& p) { return p.x(); });
   }
 
   else if (!m_timeAxis) {
-    const auto points = UI::Dashboard::instance().points();
+    const auto points = m_dashboard.points();
 
     if (m_minX != 0 || m_maxX != points) {
       m_minX   = 0;

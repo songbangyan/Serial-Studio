@@ -50,7 +50,7 @@ void API::Handlers::IOManagerHandler::registerCommands()
  */
 void API::Handlers::IOManagerHandler::registerConnectionCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -103,7 +103,7 @@ void API::Handlers::IOManagerHandler::registerConnectionCommands()
  */
 void API::Handlers::IOManagerHandler::registerBusConfigCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   {
     QJsonObject props;
@@ -171,7 +171,7 @@ void API::Handlers::IOManagerHandler::registerBusConfigCommands()
  */
 void API::Handlers::IOManagerHandler::registerQueryCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -249,7 +249,7 @@ API::CommandResponse API::Handlers::IOManagerHandler::connect(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto& manager = IO::ConnectionManager::instance();
+  static auto& manager = IO::ConnectionManager::instance();
 
   if (manager.isConnected()) {
     return CommandResponse::makeError(
@@ -276,7 +276,7 @@ API::CommandResponse API::Handlers::IOManagerHandler::disconnect(const QString& 
 {
   Q_UNUSED(params)
 
-  auto& manager = IO::ConnectionManager::instance();
+  static auto& manager = IO::ConnectionManager::instance();
 
   if (!manager.isConnected()) {
     return CommandResponse::makeError(
@@ -301,8 +301,9 @@ API::CommandResponse API::Handlers::IOManagerHandler::setPaused(const QString& i
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: paused"));
   }
 
-  const bool paused = params.value(QStringLiteral("paused")).toBool();
-  IO::ConnectionManager::instance().setPaused(paused);
+  const bool paused    = params.value(QStringLiteral("paused")).toBool();
+  static auto& manager = IO::ConnectionManager::instance();
+  manager.setPaused(paused);
 
   QJsonObject result;
   result[QStringLiteral("paused")] = paused;
@@ -331,7 +332,8 @@ API::CommandResponse API::Handlers::IOManagerHandler::setBusType(const QString& 
         .arg(busType));
   }
 
-  IO::ConnectionManager::instance().setBusType(static_cast<SerialStudio::BusType>(busType));
+  static auto& manager = IO::ConnectionManager::instance();
+  manager.setBusType(static_cast<SerialStudio::BusType>(busType));
 
   QJsonObject result;
   result[Keys::BusType]                 = busType;
@@ -358,7 +360,7 @@ API::CommandResponse API::Handlers::IOManagerHandler::writeData(const QString& i
       id, ErrorCode::InvalidParam, QStringLiteral("Invalid base64 data"));
   }
 
-  auto& manager = IO::ConnectionManager::instance();
+  static auto& manager = IO::ConnectionManager::instance();
   if (!manager.isConnected()) {
     return CommandResponse::makeError(
       id, ErrorCode::ExecutionError, QStringLiteral("Not connected"));
@@ -383,11 +385,11 @@ API::CommandResponse API::Handlers::IOManagerHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  auto& manager     = IO::ConnectionManager::instance();
-  const int busInt  = static_cast<int>(manager.busType());
-  const bool ok     = manager.configurationOk();
-  const bool live   = manager.isConnected();
-  const bool paused = manager.paused();
+  static auto& manager = IO::ConnectionManager::instance();
+  const int busInt     = static_cast<int>(manager.busType());
+  const bool ok        = manager.configurationOk();
+  const bool live      = manager.isConnected();
+  const bool paused    = manager.paused();
 
   QJsonObject result;
   result[QStringLiteral("isConnected")]     = live;
@@ -447,7 +449,8 @@ API::CommandResponse API::Handlers::IOManagerHandler::getLatestFrame(const QStri
       QStringLiteral("Invalid encoding: %1. Valid values: text, base64, both").arg(encoding));
   }
 
-  const auto* latest = DataModel::FrameBuilder::instance().latestFrame(sourceId);
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto* latest        = frameBuilder.latestFrame(sourceId);
   if (!latest || !latest->chunk) {
     QJsonObject empty;
     empty[QStringLiteral("hasData")]  = false;
@@ -495,7 +498,8 @@ API::CommandResponse API::Handlers::IOManagerHandler::getAvailableBuses(const QS
 {
   Q_UNUSED(params)
 
-  const auto buses = IO::ConnectionManager::instance().availableBuses();
+  static auto& manager = IO::ConnectionManager::instance();
+  const auto buses     = manager.availableBuses();
 
   QJsonArray busArray;
   for (int i = 0; i < buses.count(); ++i) {

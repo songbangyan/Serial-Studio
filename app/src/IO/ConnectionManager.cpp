@@ -93,11 +93,12 @@ IO::ConnectionManager::ConnectionManager()
   m_uiDriverSaveTimer.setSingleShot(true);
   m_uiDriverSaveTimer.setInterval(750);
   connect(&m_uiDriverSaveTimer, &QTimer::timeout, this, [] {
-    auto& model = DataModel::ProjectModel::instance();
+    static auto& model = DataModel::ProjectModel::instance();
     if (model.jsonFilePath().isEmpty())
       return;
 
-    if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+    static auto& appState = AppState::instance();
+    if (appState.operationMode() != SerialStudio::ProjectFile)
       return;
 
     if (model.sources().size() != 1)
@@ -179,7 +180,8 @@ bool IO::ConnectionManager::readWrite() const
  */
 bool IO::ConnectionManager::isConnected() const
 {
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
     for (const auto& [id, dm] : m_devices)
       if (dm && dm->isOpen())
         return true;
@@ -218,7 +220,8 @@ int IO::ConnectionManager::connectedDeviceCount() const
  */
 bool IO::ConnectionManager::configurationOk() const
 {
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile)
     return projectConfigurationOk();
 
   auto* uiDriver = activeUiDriver();
@@ -298,7 +301,8 @@ IO::HAL_Driver* IO::ConnectionManager::driver(int deviceId) const
  */
 IO::HAL_Driver* IO::ConnectionManager::driverForEditing(int deviceId)
 {
-  const auto& sources             = DataModel::ProjectModel::instance().sources();
+  static auto& projectModel       = DataModel::ProjectModel::instance();
+  const auto& sources             = projectModel.sources();
   const DataModel::Source* srcPtr = nullptr;
   for (const auto& src : sources) {
     if (src.sourceId == deviceId) {
@@ -534,11 +538,12 @@ void IO::ConnectionManager::processPayload(const QByteArray& payload)
   static auto& console      = Console::Handler::instance();
   static auto& server       = API::Server::instance();
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  static auto& appState     = AppState::instance();
 
   const auto captured = makeCapturedData(payload);
   server.hotpathTxData(captured->data);
   console.hotpathRxData(captured->data);
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
+  if (appState.operationMode() == SerialStudio::ProjectFile)
     frameBuilder.hotpathRxSourceFrame(0, captured);
   else
     frameBuilder.hotpathRxFrame(captured);
@@ -606,7 +611,8 @@ qint64 IO::ConnectionManager::writeDataToDevice(int deviceId, const QByteArray& 
     auto writtenData          = data;
     const qint64 boundedBytes = qMin<qint64>(bytes, writtenData.size());
     writtenData.chop(writtenData.length() - boundedBytes);
-    Console::Handler::instance().displaySentData(deviceId, writtenData);
+    static auto& console = Console::Handler::instance();
+    console.displaySentData(deviceId, writtenData);
   }
 
   return bytes;
@@ -677,8 +683,8 @@ void IO::ConnectionManager::toggleConnection()
 void IO::ConnectionManager::connectDevice()
 {
 #ifdef BUILD_COMMERCIAL
-  if ((Licensing::Trial::instance().trialExpired()
-       && !Licensing::CommercialToken::current().isValid())
+  static auto& trial = Licensing::Trial::instance();
+  if ((trial.trialExpired() && !Licensing::CommercialToken::current().isValid())
       || !SS_LICENSE_GUARD()) {
     disconnectDevice();
     Misc::Utilities::showMessageBox(
@@ -688,14 +694,17 @@ void IO::ConnectionManager::connectDevice()
   }
 #endif
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
-    DataModel::ControlScript::instance().runOnConnect();
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
+    static auto& controlScript = DataModel::ControlScript::instance();
+    controlScript.runOnConnect();
+  }
 
   QApplication::setOverrideCursor(Qt::WaitCursor);
 
   connectDevice(0);
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
+  if (appState.operationMode() == SerialStudio::ProjectFile)
     connectAllDevices();
 
   QApplication::restoreOverrideCursor();
@@ -711,13 +720,15 @@ void IO::ConnectionManager::disconnectDevice()
 
   disconnectDevice(0);
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile) {
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile) {
     for (auto& [id, dm] : m_devices)
       if (id > 0)
         disconnectDevice(id);
   }
 
-  DataModel::FrameBuilder::instance().registerQuickPlotHeaders(QStringList());
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  frameBuilder.registerQuickPlotHeaders(QStringList());
 
   QApplication::restoreOverrideCursor();
   Q_EMIT driverChanged();
@@ -933,7 +944,8 @@ void IO::ConnectionManager::disconnectDevice(HAL_Driver* driver)
   disconnectDevice(deviceId);
 
   if (!isConnected()) {
-    DataModel::FrameBuilder::instance().registerQuickPlotHeaders(QStringList());
+    static auto& frameBuilder = DataModel::FrameBuilder::instance();
+    frameBuilder.registerQuickPlotHeaders(QStringList());
     Q_EMIT driverChanged();
   }
 
@@ -1011,9 +1023,11 @@ void IO::ConnectionManager::setChecksumAlgorithm(const QString& algorithm)
  */
 void IO::ConnectionManager::setBusType(SerialStudio::BusType type)
 {
+  static auto& appState = AppState::instance();
+  static auto& model    = DataModel::ProjectModel::instance();
+
   if (m_busType == type && m_devices.find(0) != m_devices.end()) {
-    const auto opMode = AppState::instance().operationMode();
-    auto& model       = DataModel::ProjectModel::instance();
+    const auto opMode = appState.operationMode();
     if (opMode == SerialStudio::ProjectFile && model.sources().size() == 1
         && model.sources()[0].busType != static_cast<int>(type))
       model.setSource0BusType(static_cast<int>(type));
@@ -1025,7 +1039,7 @@ void IO::ConnectionManager::setBusType(SerialStudio::BusType type)
   m_busType = type;
   m_settings.setValue("IOManager/busType", static_cast<int>(type));
 
-  if (AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  if (appState.operationMode() != SerialStudio::ProjectFile)
     m_settings.setValue("IOManager/userBusType", static_cast<int>(type));
 
   auto driver = createDriver(type);
@@ -1076,8 +1090,7 @@ void IO::ConnectionManager::setBusType(SerialStudio::BusType type)
   Q_EMIT driverChanged();
   Q_EMIT busTypeChanged();
 
-  const auto opMode = AppState::instance().operationMode();
-  auto& model       = DataModel::ProjectModel::instance();
+  const auto opMode = appState.operationMode();
   if (opMode == SerialStudio::ProjectFile && model.sources().size() == 1) {
     model.setSource0BusType(static_cast<int>(type));
 
@@ -1100,8 +1113,11 @@ void IO::ConnectionManager::syncUiDriverToLive()
   if (m_syncingFromProject)
     return;
 
-  const auto& srcs = DataModel::ProjectModel::instance().sources();
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile && srcs.size() > 1)
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  static auto& appState     = AppState::instance();
+
+  const auto& srcs = projectModel.sources();
+  if (appState.operationMode() == SerialStudio::ProjectFile && srcs.size() > 1)
     return;
 
   HAL_Driver* uiDriver = activeUiDriver();
@@ -1124,8 +1140,10 @@ void IO::ConnectionManager::syncUiDriverToLive()
  */
 void IO::ConnectionManager::syncUiDriverFromSource0()
 {
-  const auto opMode = AppState::instance().operationMode();
-  const auto& model = DataModel::ProjectModel::instance();
+  static auto& appState = AppState::instance();
+  static auto& model    = DataModel::ProjectModel::instance();
+
+  const auto opMode = appState.operationMode();
   const auto& srcs  = model.sources();
 
   if (opMode != SerialStudio::ProjectFile || srcs.size() != 1)
@@ -1183,9 +1201,10 @@ void IO::ConnectionManager::onUiDriverConfigurationChanged()
   if (m_syncingFromProject)
     return;
 
-  const auto opMode = AppState::instance().operationMode();
-  auto& model       = DataModel::ProjectModel::instance();
+  static auto& appState = AppState::instance();
+  static auto& model    = DataModel::ProjectModel::instance();
 
+  const auto opMode = appState.operationMode();
   if (opMode != SerialStudio::ProjectFile || model.sources().size() != 1)
     return;
 
@@ -1246,13 +1265,16 @@ void IO::ConnectionManager::buildDeviceForSource(const DataModel::Source& src,
  */
 void IO::ConnectionManager::rebuildDevices()
 {
-  const auto opMode       = AppState::instance().operationMode();
+  static auto& appState     = AppState::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+
+  const auto opMode       = appState.operationMode();
   const bool wasConnected = isConnected();
 
   bool willRebuildDevice0 = (opMode != SerialStudio::ProjectFile);
   bool didChangeBusType   = false;
   if (opMode == SerialStudio::ProjectFile) {
-    const auto& srcs = DataModel::ProjectModel::instance().sources();
+    const auto& srcs = projectModel.sources();
     for (const auto& src : srcs) {
       if (src.sourceId != 0)
         continue;
@@ -1287,7 +1309,7 @@ void IO::ConnectionManager::rebuildDevices()
   }
 
   if (opMode == SerialStudio::ProjectFile) {
-    const auto& sources = DataModel::ProjectModel::instance().sources();
+    const auto& sources = projectModel.sources();
     for (const auto& src : sources)
       buildDeviceForSource(src, willRebuildDevice0);
   }
@@ -1322,7 +1344,8 @@ void IO::ConnectionManager::rebuildDevices()
  */
 void IO::ConnectionManager::onProjectSourceChanged(int sourceId)
 {
-  if (sourceId <= 0 || AppState::instance().operationMode() != SerialStudio::ProjectFile)
+  static auto& appState = AppState::instance();
+  if (sourceId <= 0 || appState.operationMode() != SerialStudio::ProjectFile)
     return;
 
   auto it = m_devices.find(sourceId);
@@ -1338,7 +1361,8 @@ void IO::ConnectionManager::onProjectSourceChanged(int sourceId)
  */
 bool IO::ConnectionManager::projectConfigurationOk() const
 {
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
   if (sources.empty())
     return false;
 
@@ -1367,8 +1391,9 @@ void IO::ConnectionManager::onFrameReady(int deviceId, const IO::CapturedDataPtr
     return;
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  static auto& appState     = AppState::instance();
 
-  if (AppState::instance().operationMode() == SerialStudio::ProjectFile)
+  if (appState.operationMode() == SerialStudio::ProjectFile)
     frameBuilder.hotpathRxSourceFrame(deviceId, frame);
   else
     frameBuilder.hotpathRxFrame(frame);
@@ -1431,15 +1456,17 @@ void IO::ConnectionManager::onRawDataReceived(int deviceId, const IO::CapturedDa
  */
 IO::FrameConfig IO::ConnectionManager::buildFrameConfig(int deviceId) const
 {
-  const auto opMode = AppState::instance().operationMode();
+  static auto& appState = AppState::instance();
 
+  const auto opMode = appState.operationMode();
   if (opMode == SerialStudio::QuickPlot || opMode == SerialStudio::ConsoleOnly)
-    return AppState::instance().frameConfig();
+    return appState.frameConfig();
 
   FrameConfig cfg;
   cfg.operationMode = opMode;
 
-  const auto& sources = DataModel::ProjectModel::instance().sources();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
   for (const auto& src : sources) {
     if (src.sourceId != deviceId)
       continue;
@@ -1469,7 +1496,7 @@ IO::FrameConfig IO::ConnectionManager::buildFrameConfig(int deviceId) const
   cfg.startSequences    = {QByteArray("/*")};
   cfg.finishSequences   = {QByteArray("*/")};
   cfg.checksumAlgorithm = QString();
-  cfg.frameDetection    = DataModel::ProjectModel::instance().frameDetection();
+  cfg.frameDetection    = projectModel.frameDetection();
   return cfg;
 }
 

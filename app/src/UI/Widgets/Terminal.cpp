@@ -51,6 +51,14 @@ constexpr int MAX_LINES = 1000;
  */
 Widgets::Terminal::Terminal(QQuickItem* parent)
   : QQuickPaintedItem(parent)
+  , m_consoleHandler(Console::Handler::instance())
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_connectionManager(IO::ConnectionManager::instance())
+#ifdef BUILD_COMMERCIAL
+  , m_lemonSqueezy(Licensing::LemonSqueezy::instance())
+#endif
+  , m_translator(Misc::Translator::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
   , m_cWidth(0)
   , m_cHeight(0)
   , m_borderX(0)
@@ -78,29 +86,22 @@ Widgets::Terminal::Terminal(QQuickItem* parent)
   setOpaquePainting(true);
 
   loadWelcomeGuide();
-  setFont(Console::Handler::instance().font());
-  connect(&Console::Handler::instance(), &Console::Handler::fontChanged, this, [this] {
-    setFont(Console::Handler::instance().font());
+  setFont(m_consoleHandler.font());
+  connect(&m_consoleHandler, &Console::Handler::fontChanged, this, [this] {
+    setFont(m_consoleHandler.font());
   });
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
-          &Misc::ThemeManager::themeChanged,
-          this,
-          &Widgets::Terminal::onThemeChanged);
-  connect(&Console::Handler::instance(),
-          &Console::Handler::displayString,
-          this,
-          &Widgets::Terminal::append);
   connect(
-    &Console::Handler::instance(), &Console::Handler::cleared, this, &Widgets::Terminal::clear);
-  connect(
-    &IO::ConnectionManager::instance(), &IO::ConnectionManager::connectedChanged, this, [=, this] {
-      if (IO::ConnectionManager::instance().isConnected())
-        clear();
-      else if (m_data.isEmpty())
-        loadWelcomeGuide();
-    });
+    &m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::Terminal::onThemeChanged);
+  connect(&m_consoleHandler, &Console::Handler::displayString, this, &Widgets::Terminal::append);
+  connect(&m_consoleHandler, &Console::Handler::cleared, this, &Widgets::Terminal::clear);
+  connect(&m_connectionManager, &IO::ConnectionManager::connectedChanged, this, [=, this] {
+    if (m_connectionManager.isConnected())
+      clear();
+    else if (m_data.isEmpty())
+      loadWelcomeGuide();
+  });
 
   connect(this, &Widgets::Terminal::visibleChanged, this, [=, this] {
     if (isVisible()) {
@@ -121,22 +122,20 @@ Widgets::Terminal::Terminal(QQuickItem* parent)
   });
 
 #ifdef BUILD_COMMERCIAL
-  connect(&Licensing::LemonSqueezy::instance(),
+  connect(&m_lemonSqueezy,
           &Licensing::LemonSqueezy::activatedChanged,
           this,
           &Widgets::Terminal::loadWelcomeGuide);
 #endif
 
-  connect(&Misc::Translator::instance(), &Misc::Translator::languageChanged, this, [this] {
-    loadWelcomeGuide();
-  });
+  connect(&m_translator, &Misc::Translator::languageChanged, this, [this] { loadWelcomeGuide(); });
 
   m_cursorTimer.start(200);
   m_cursorTimer.setTimerType(Qt::PreciseTimer);
   connect(&m_cursorTimer, &QTimer::timeout, this, &Widgets::Terminal::toggleCursor);
 
   m_stateChanged = true;
-  connect(&Misc::TimerEvents::instance(), &Misc::TimerEvents::uiTimeout, this, [=, this] {
+  connect(&m_timerEvents, &Misc::TimerEvents::uiTimeout, this, [=, this] {
     if (isVisible() && m_stateChanged) {
       m_stateChanged = false;
       update();
@@ -188,7 +187,7 @@ void Widgets::Terminal::drawSegmentSelection(
       selectionWidth += charWidth;
   }
 
-  const bool rtl     = Misc::Translator::instance().rtl();
+  const bool rtl     = m_translator.rtl();
   const int maxWidth = width() - 2 * m_borderX;
   int startX         = 0;
 
@@ -282,7 +281,7 @@ void Widgets::Terminal::drawCursor(QPainter* painter, int firstLine, int lastVLi
 {
   const int cursorLine = m_cursorPosition.y();
   const int cursorCol  = m_cursorPosition.x();
-  const bool rtl       = Misc::Translator::instance().rtl();
+  const bool rtl       = m_translator.rtl();
   const int emptyCursorX =
     rtl ? (width() - m_borderX - painter->fontMetrics().horizontalAdvance(QChar(0x2588)))
         : m_borderX;
@@ -440,7 +439,7 @@ void Widgets::Terminal::paintTextContent(QPainter* painter,
 {
   int y                         = m_borderY;
   const QColor defaultTextColor = m_palette.color(QPalette::Text);
-  const bool rtlMode            = Misc::Translator::instance().rtl();
+  const bool rtlMode            = m_translator.rtl();
   const int rightEdge           = width() - m_borderX;
   const int ascent              = painter->fontMetrics().ascent();
   const auto& fm                = painter->fontMetrics();
@@ -494,7 +493,7 @@ void Widgets::Terminal::paintScrollbar(QPainter* painter)
   if (scrollbarHeight > availableHeight / 2)
     scrollbarHeight = availableHeight / 2;
 
-  const bool rtl = Misc::Translator::instance().rtl();
+  const bool rtl = m_translator.rtl();
   const int x    = rtl ? m_borderX : (width() - scrollbarWidth - m_borderX);
   int y          = (m_scrollOffsetY / static_cast<float>(lineCount() - linesPerPage()))
           * (availableHeight - scrollbarHeight)
@@ -645,19 +644,18 @@ int Widgets::Terminal::terminalRows() const
  */
 void Widgets::Terminal::keyPressEvent(QKeyEvent* event)
 {
-  if (!vt100emulation() || !IO::ConnectionManager::instance().isConnected()
-      || !IO::ConnectionManager::instance().readWrite()) {
+  if (!vt100emulation() || !m_connectionManager.isConnected() || !m_connectionManager.readWrite()) {
     QQuickPaintedItem::keyPressEvent(event);
     return;
   }
 
   const QByteArray seq = translateKeyToVt100(event);
   if (!seq.isEmpty()) {
-    const int deviceId = Console::Handler::instance().currentDeviceId();
+    const int deviceId = m_consoleHandler.currentDeviceId();
     if (deviceId >= 0)
-      (void)IO::ConnectionManager::instance().writeDataToDevice(deviceId, seq);
+      (void)m_connectionManager.writeDataToDevice(deviceId, seq);
     else
-      (void)IO::ConnectionManager::instance().writeData(seq);
+      (void)m_connectionManager.writeData(seq);
 
     event->accept();
     return;
@@ -704,7 +702,8 @@ QByteArray Widgets::Terminal::translateKeyToVt100(const QKeyEvent* event)
 QByteArray Widgets::Terminal::translateEnterKey()
 {
   QByteArray seq;
-  switch (Console::Handler::instance().lineEnding()) {
+  static auto& consoleHandler = Console::Handler::instance();
+  switch (consoleHandler.lineEnding()) {
     case Console::Handler::LineEnding::NoLineEnding:
       break;
     case Console::Handler::LineEnding::NewLine:
@@ -907,7 +906,7 @@ QPoint Widgets::Terminal::positionToCursor(const QPoint& pos) const
     const int segmentEnd   = qMin(segmentStart + maxCharsPerLine(), line.length());
 
     int relX = pos.x() - m_borderX;
-    if (Misc::Translator::instance().rtl())
+    if (m_translator.rtl())
       relX = (width() - m_borderX) - pos.x();
 
     return QPoint(findCharAtPixelX(line, segmentStart, segmentEnd, relX), i);
@@ -1095,7 +1094,7 @@ void Widgets::Terminal::onThemeChanged()
 {
   // clang-format off
   m_stateChanged = true;
-  const auto theme = &Misc::ThemeManager::instance();
+  const auto theme = &m_themeManager;
   m_palette.setColor(QPalette::Text, theme->getColor("console_text"));
   m_palette.setColor(QPalette::Base, theme->getColor("console_base"));
   m_palette.setColor(QPalette::Window, theme->getColor("console_border"));
@@ -1132,7 +1131,7 @@ void Widgets::Terminal::loadWelcomeGuide()
   clear();
   setAutoscroll(false);
   append(logo);
-  append(Misc::Translator::instance().welcomeConsoleText());
+  append(m_translator.welcomeConsoleText());
   setAutoscroll(true);
 
   const int lines = linesPerPage();
@@ -1756,7 +1755,7 @@ void Widgets::Terminal::processIgnoreSeq(const QChar& byte)
  */
 void Widgets::Terminal::updateAnsiColorPalette()
 {
-  const auto theme         = &Misc::ThemeManager::instance();
+  const auto theme         = &m_themeManager;
   const QColor consoleBase = theme->getColor("console_base");
   const QColor consoleText = theme->getColor("console_text");
   const bool isDarkTheme   = consoleText.lightness() > consoleBase.lightness();

@@ -32,6 +32,20 @@
 #include "IO/HAL_Driver.h"
 #include "SerialStudio.h"
 
+class AppState;
+
+namespace Misc {
+class CommonFonts;
+}  // namespace Misc
+
+namespace IO {
+class ConnectionManager;
+}  // namespace IO
+
+namespace DataModel {
+class ProjectModel;
+}  // namespace DataModel
+
 namespace Console {
 /**
  * @brief Receives device data and formats it for the console text view.
@@ -305,5 +319,10 @@ private:
   IO::CircularBuffer<QByteArray, char> m_textBuffer;
 
   QString m_pendingDisplay;
+
+  Misc::CommonFonts* m_commonFonts;
+  IO::ConnectionManager* m_connectionManager;
+  AppState* m_appState;
+  DataModel::ProjectModel* m_projectModel;
 };
 }  // namespace Console

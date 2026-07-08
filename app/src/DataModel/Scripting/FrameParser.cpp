@@ -49,17 +49,17 @@ DataModel::FrameParser::FrameParser()
 {
   (void)engineForSource(0);
 
-  connect(&Misc::TimerEvents::instance(),
-          &Misc::TimerEvents::timeout1Hz,
-          this,
-          &DataModel::FrameParser::collectGarbage);
+  static auto& timerEvents = Misc::TimerEvents::instance();
+  connect(
+    &timerEvents, &Misc::TimerEvents::timeout1Hz, this, &DataModel::FrameParser::collectGarbage);
 
-  connect(&Misc::Translator::instance(),
+  static auto& translator = Misc::Translator::instance();
+  connect(&translator,
           &Misc::Translator::languageChanged,
           this,
           &DataModel::FrameParser::loadTemplateNames);
 
-  if (auto* app = QCoreApplication::instance()) {
+  if (auto* app = qApp) {
     connect(app, &QCoreApplication::aboutToQuit, this, [this]() {
       Q_ASSERT(QThread::currentThread() == this->thread());
       m_engines.clear();
@@ -349,7 +349,8 @@ const QStringList& DataModel::FrameParser::templateFiles() const
  */
 int DataModel::FrameParser::languageForSource(int sourceId) const
 {
-  const auto& sources = ProjectModel::instance().sources();
+  static auto& projectModel = ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
   for (const auto& src : sources)
     if (src.sourceId == sourceId)
       return src.frameParserLanguage;
@@ -630,7 +631,7 @@ void DataModel::FrameParser::readCode()
 
   refreshEngineCaches();
 
-  const auto& model   = ProjectModel::instance();
+  static auto& model  = ProjectModel::instance();
   const auto& sources = model.sources();
   const bool suppress = m_suppressMessageBoxes || model.suppressMessageBoxes();
   const QString code  = sources.empty() ? QString() : scriptForSource(sources[0]);
@@ -664,8 +665,9 @@ void DataModel::FrameParser::clearContext()
 
   refreshEngineCaches();
 
-  const auto& sources = ProjectModel::instance().sources();
-  const QString code  = sources.empty() ? QString() : scriptForSource(sources[0]);
+  static auto& projectModel = ProjectModel::instance();
+  const auto& sources       = projectModel.sources();
+  const QString code        = sources.empty() ? QString() : scriptForSource(sources[0]);
 
   if (!code.isEmpty())
     (void)loadScript(0, code, !m_suppressMessageBoxes);
@@ -737,7 +739,7 @@ void DataModel::FrameParser::setTemplateIdx(int sourceId, int idx)
   const QString code                    = templateCode(sourceId);
 
   if (loadScript(sourceId, code, !m_suppressMessageBoxes)) {
-    auto& model = DataModel::ProjectModel::instance();
+    static auto& model = DataModel::ProjectModel::instance();
     if (sourceId == 0)
       model.setFrameParserCode(code);
     else
@@ -765,7 +767,7 @@ void DataModel::FrameParser::setNativeTemplateIdx(int sourceId, int idx)
 
   engineForSource(sourceId).templateIdx = idx;
 
-  auto& model = DataModel::ProjectModel::instance();
+  static auto& model = DataModel::ProjectModel::instance();
   model.updateSourceFrameParserParams(sourceId, nativeTemplateDefaults(*tmpl));
   model.updateSourceFrameParserTemplate(sourceId, tmpl->id());
   model.setModified(true);
@@ -780,6 +782,8 @@ void DataModel::FrameParser::loadDefaultTemplate(int sourceId, bool guiTrigger)
   const auto idx    = native ? 0 : m_templateFiles.indexOf(m_defaultTemplateFile);
   setTemplateIdx(sourceId, idx);
 
-  if (!guiTrigger)
-    DataModel::ProjectModel::instance().setModified(false);
+  if (!guiTrigger) {
+    static auto& projectModel = DataModel::ProjectModel::instance();
+    projectModel.setModified(false);
+  }
 }

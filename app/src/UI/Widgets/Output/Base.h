@@ -18,6 +18,7 @@
 
 #include "DataModel/Frame.h"
 #include "DataModel/Scripting/JsWatchdog.h"
+#include "IO/ConnectionManager.h"
 #include "SerialStudio.h"
 
 namespace Widgets {
@@ -104,6 +105,8 @@ private:
   static constexpr int kMinSendIntervalMs  = 50;
   static constexpr int kTransmitWatchdogMs = 500;
   static constexpr int kMaxPayloadBytes    = 65536;
+
+  IO::ConnectionManager& m_connectionManager;
 };
 
 }  // namespace Output

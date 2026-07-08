@@ -49,8 +49,8 @@ void API::Handlers::ExtensionHandler::registerCommands()
  */
 void API::Handlers::ExtensionHandler::registerCatalogCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("extensions.list"),
@@ -105,7 +105,7 @@ void API::Handlers::ExtensionHandler::registerCatalogCommands()
  */
 void API::Handlers::ExtensionHandler::registerStateCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(
     QStringLiteral("extensions.saveState"),
@@ -137,7 +137,7 @@ void API::Handlers::ExtensionHandler::registerStateCommands()
  */
 void API::Handlers::ExtensionHandler::registerRepositoryCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   registry.registerCommand(QStringLiteral("extensions.listRepositories"),
                            QStringLiteral("List configured addon repository URLs"),
@@ -174,7 +174,7 @@ void API::Handlers::ExtensionHandler::registerRepositoryCommands()
 API::CommandResponse API::Handlers::ExtensionHandler::listAddons(const QString& id,
                                                                  const QJsonObject&)
 {
-  auto& mgr = Misc::ExtensionManager::instance();
+  static auto& mgr = Misc::ExtensionManager::instance();
   QJsonArray result;
   for (const auto& addon : mgr.extensions())
     result.append(QJsonObject::fromVariantMap(addon.toMap()));
@@ -196,7 +196,7 @@ API::CommandResponse API::Handlers::ExtensionHandler::getAddonInfo(const QString
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing extensionId parameter");
 
-  auto& mgr = Misc::ExtensionManager::instance();
+  static auto& mgr = Misc::ExtensionManager::instance();
   for (const auto& addon : mgr.extensions()) {
     const auto map = addon.toMap();
     if (map.value("id").toString() == extensionId) {
@@ -223,7 +223,7 @@ API::CommandResponse API::Handlers::ExtensionHandler::installExtension(const QSt
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing or invalid addonIndex");
 
-  auto& mgr = Misc::ExtensionManager::instance();
+  static auto& mgr = Misc::ExtensionManager::instance();
   mgr.setSelectedIndex(index);
   mgr.installExtension();
   return CommandResponse::makeSuccess(id,
@@ -245,7 +245,7 @@ API::CommandResponse API::Handlers::ExtensionHandler::uninstallExtension(const Q
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing or invalid addonIndex");
 
-  auto& mgr = Misc::ExtensionManager::instance();
+  static auto& mgr = Misc::ExtensionManager::instance();
   mgr.setSelectedIndex(index);
 
   const auto selected     = mgr.selectedExtension();
@@ -293,7 +293,7 @@ API::CommandResponse API::Handlers::ExtensionHandler::uninstallExtension(const Q
 API::CommandResponse API::Handlers::ExtensionHandler::listRepositories(const QString& id,
                                                                        const QJsonObject&)
 {
-  auto& mgr = Misc::ExtensionManager::instance();
+  static auto& mgr = Misc::ExtensionManager::instance();
   QJsonArray repos;
   for (const auto& url : mgr.repositories())
     repos.append(url);
@@ -314,7 +314,8 @@ API::CommandResponse API::Handlers::ExtensionHandler::addRepository(const QStrin
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing url parameter");
 
-  Misc::ExtensionManager::instance().addRepository(url);
+  static auto& mgr = Misc::ExtensionManager::instance();
+  mgr.addRepository(url);
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
                                         {"status", "added"}
@@ -332,7 +333,8 @@ API::CommandResponse API::Handlers::ExtensionHandler::removeRepository(const QSt
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing or invalid index");
 
-  Misc::ExtensionManager::instance().removeRepository(index);
+  static auto& mgr = Misc::ExtensionManager::instance();
+  mgr.removeRepository(index);
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
                                         {"status", "removed"}
@@ -345,7 +347,8 @@ API::CommandResponse API::Handlers::ExtensionHandler::removeRepository(const QSt
 API::CommandResponse API::Handlers::ExtensionHandler::refreshRepositories(const QString& id,
                                                                           const QJsonObject&)
 {
-  Misc::ExtensionManager::instance().refreshRepositories();
+  static auto& mgr = Misc::ExtensionManager::instance();
+  mgr.refreshRepositories();
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
                                         {"status", "refreshing"}
@@ -367,8 +370,9 @@ API::CommandResponse API::Handlers::ExtensionHandler::savePluginState(const QStr
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing pluginId parameter");
 
-  const auto state = params.value("state").toObject();
-  DataModel::ProjectModel::instance().savePluginState(pluginId, state);
+  const auto state          = params.value("state").toObject();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.savePluginState(pluginId, state);
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
                                         {"status", "saved"}
@@ -386,7 +390,8 @@ API::CommandResponse API::Handlers::ExtensionHandler::loadPluginState(const QStr
     return CommandResponse::makeError(
       id, QStringLiteral("INVALID_PARAMS"), "Missing pluginId parameter");
 
-  const auto state = DataModel::ProjectModel::instance().pluginState(pluginId);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto state          = projectModel.pluginState(pluginId);
   return CommandResponse::makeSuccess(id,
                                       QJsonObject{
                                         {"state", state}

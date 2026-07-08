@@ -23,6 +23,8 @@
 
 #include <QQuickItem>
 
+#include "UI/Dashboard.h"
+
 namespace Widgets {
 /**
  * @brief Visual widget for displaying 3D acceleration vector data.
@@ -108,6 +110,8 @@ private:
   double m_maxG;
   bool m_inputInG;
   bool m_filterInitialized;
+
+  UI::Dashboard& m_dashboard;
 };
 
 }  // namespace Widgets

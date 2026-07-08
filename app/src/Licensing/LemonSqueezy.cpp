@@ -76,7 +76,9 @@ Licensing::LemonSqueezy::LemonSqueezy()
   , m_silentValidation(true)
   , m_gracePeriod(0)
 {
-  m_simpleCrypt.setKey(MachineID::instance().machineSpecificKey());
+  static auto& machineId = MachineID::instance();
+
+  m_simpleCrypt.setKey(machineId.machineSpecificKey());
   m_simpleCrypt.setIntegrityProtectionMode(Licensing::SimpleCrypt::ProtectionHash);
 
   readSettings();
@@ -125,7 +127,8 @@ int Licensing::LemonSqueezy::seatUsage() const
  */
 bool Licensing::LemonSqueezy::isActivated() const
 {
-  return m_activated || OfflineLicense::instance().isActivated();
+  static auto& offlineLicense = OfflineLicense::instance();
+  return m_activated || offlineLicense.isActivated();
 }
 
 /**
@@ -238,7 +241,8 @@ void Licensing::LemonSqueezy::activate()
 
   QJsonObject payload;
   payload.insert("license_key", license());
-  payload.insert("instance_name", MachineID::instance().machineId());
+  static auto& machineId = MachineID::instance();
+  payload.insert("instance_name", machineId.machineId());
 
   auto url         = QUrl("https://api.lemonsqueezy.com/v1/licenses/activate");
   auto payloadData = QJsonDocument(payload).toJson(QJsonDocument::Compact);
@@ -304,8 +308,9 @@ void Licensing::LemonSqueezy::validate()
  */
 void Licensing::LemonSqueezy::deactivate()
 {
-  if (OfflineLicense::instance().isActivated()) {
-    OfflineLicense::instance().deactivate();
+  static auto& offlineLicense = OfflineLicense::instance();
+  if (offlineLicense.isActivated()) {
+    offlineLicense.deactivate();
     return;
   }
 
@@ -542,7 +547,8 @@ bool Licensing::LemonSqueezy::checkValidationRules(const QJsonObject& json,
     return false;
   }
 
-  if (instanceName != MachineID::instance().machineId()) {
+  static auto& machineId = MachineID::instance();
+  if (instanceName != machineId.machineId()) {
     qWarning() << "[LemonSqueezy] Machine ID mismatch";
     if (!cachedResponse)
       Misc::Utilities::showMessageBox(tr("This license key was activated on a different device."),
@@ -721,7 +727,8 @@ bool Licensing::LemonSqueezy::checkActivationRules(const QJsonObject& json)
     return false;
   }
 
-  if (instanceName != MachineID::instance().machineId()) {
+  static auto& machineId = MachineID::instance();
+  if (instanceName != machineId.machineId()) {
     qWarning() << "[LemonSqueezy] Machine ID mismatch";
     Misc::Utilities::showMessageBox(tr("This license key was activated on a different device."),
                                     tr("Deactivate it there first or contact support for help."),

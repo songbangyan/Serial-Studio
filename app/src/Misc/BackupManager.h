@@ -27,6 +27,10 @@
 
 class QTimer;
 
+namespace DataModel {
+class ProjectModel;
+}  // namespace DataModel
+
 namespace Misc {
 
 /**
@@ -80,6 +84,7 @@ private:
   QString m_lastSnapshotPath;
   QByteArray m_lastContentHash;
   QTimer* m_debounceTimer;
+  DataModel::ProjectModel* m_projectModel;
 };
 
 }  // namespace Misc

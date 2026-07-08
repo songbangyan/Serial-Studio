@@ -97,10 +97,8 @@ BenchmarkRunner::BenchmarkRunner()
 #endif
 {
   retranslate();
-  connect(&Misc::Translator::instance(),
-          &Misc::Translator::languageChanged,
-          this,
-          &BenchmarkRunner::retranslate);
+  static auto& translator = Misc::Translator::instance();
+  connect(&translator, &Misc::Translator::languageChanged, this, &BenchmarkRunner::retranslate);
 }
 
 /**
@@ -448,25 +446,34 @@ void BenchmarkRunner::start(int framesIndex,
  */
 void BenchmarkRunner::beginSession()
 {
-  m_savedMode        = AppState::instance().operationMode();
-  m_savedProjectPath = AppState::instance().projectFilePath();
+  static auto& appState = AppState::instance();
+  m_savedMode           = appState.operationMode();
+  m_savedProjectPath    = appState.projectFilePath();
 
-  m_savedPlotTimeRange = UI::Dashboard::instance().plotTimeRange();
-  UI::Dashboard::instance().setPlotTimeRange(10.0);
+  static auto& dashboard = UI::Dashboard::instance();
+  m_savedPlotTimeRange   = dashboard.plotTimeRange();
+  dashboard.setPlotTimeRange(10.0);
 
-  m_savedCsvExport = CSV::Export::instance().exportEnabled();
-  m_savedApiServer = API::Server::instance().enabled();
+  static auto& csvExport = CSV::Export::instance();
+  m_savedCsvExport       = csvExport.exportEnabled();
+  static auto& apiServer = API::Server::instance();
+  m_savedApiServer       = apiServer.enabled();
 #ifdef BUILD_COMMERCIAL
-  m_savedMdfExport     = MDF4::Export::instance().exportEnabled();
-  m_savedSessionExport = Sessions::Export::instance().exportEnabled();
+  static auto& mdfExport     = MDF4::Export::instance();
+  m_savedMdfExport           = mdfExport.exportEnabled();
+  static auto& sessionExport = Sessions::Export::instance();
+  m_savedSessionExport       = sessionExport.exportEnabled();
 #endif
 #ifdef ENABLE_GRPC
-  m_savedGrpcServer = API::GRPC::GRPCServer::instance().enabled();
+  static auto& grpcServer = API::GRPC::GRPCServer::instance();
+  m_savedGrpcServer       = grpcServer.enabled();
 #endif
 
   m_tempWorkspace = std::make_unique<QTemporaryDir>();
-  if (m_tempWorkspace->isValid())
-    Misc::WorkspaceManager::instance().setTemporaryPath(m_tempWorkspace->path());
+  if (m_tempWorkspace->isValid()) {
+    static auto& workspaceManager = Misc::WorkspaceManager::instance();
+    workspaceManager.setTemporaryPath(m_tempWorkspace->path());
+  }
 }
 
 /**
@@ -474,31 +481,43 @@ void BenchmarkRunner::beginSession()
  */
 void BenchmarkRunner::endSession()
 {
-  Misc::WorkspaceManager::instance().clearTemporaryPath();
+  static auto& workspaceManager = Misc::WorkspaceManager::instance();
+  workspaceManager.clearTemporaryPath();
   m_tempWorkspace.reset();
 
-  UI::Dashboard::instance().setPlotTimeRange(m_savedPlotTimeRange);
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.setPlotTimeRange(m_savedPlotTimeRange);
 
-  CSV::Export::instance().setExportEnabled(m_savedCsvExport);
-  API::Server::instance().setEnabled(m_savedApiServer);
+  static auto& csvExport = CSV::Export::instance();
+  csvExport.setExportEnabled(m_savedCsvExport);
+  static auto& apiServer = API::Server::instance();
+  apiServer.setEnabled(m_savedApiServer);
 #ifdef BUILD_COMMERCIAL
-  MDF4::Export::instance().setExportEnabled(m_savedMdfExport);
-  Sessions::Export::instance().setExportEnabled(m_savedSessionExport);
+  static auto& mdfExport = MDF4::Export::instance();
+  mdfExport.setExportEnabled(m_savedMdfExport);
+  static auto& sessionExport = Sessions::Export::instance();
+  sessionExport.setExportEnabled(m_savedSessionExport);
 #endif
 #ifdef ENABLE_GRPC
-  API::GRPC::GRPCServer::instance().setEnabled(m_savedGrpcServer);
+  static auto& grpcServer = API::GRPC::GRPCServer::instance();
+  grpcServer.setEnabled(m_savedGrpcServer);
 #endif
 
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
-  DataModel::FrameParser::instance().setSuppressMessageBoxes(false);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setSuppressMessageBoxes(false);
+  static auto& frameParser = DataModel::FrameParser::instance();
+  frameParser.setSuppressMessageBoxes(false);
 
   if (!m_savedProjectPath.isEmpty()) {
-    AppState::instance().setOperationMode(SerialStudio::ProjectFile);
-    (void)DataModel::ProjectModel::instance().openJsonFile(m_savedProjectPath);
+    static auto& appState = AppState::instance();
+    appState.setOperationMode(SerialStudio::ProjectFile);
+    (void)projectModel.openJsonFile(m_savedProjectPath);
   } else {
-    AppState::instance().setOperationMode(static_cast<SerialStudio::OperationMode>(m_savedMode));
-    DataModel::FrameBuilder::instance().syncFromProjectModel();
-    UI::Dashboard::instance().resetData();
+    static auto& appState = AppState::instance();
+    appState.setOperationMode(static_cast<SerialStudio::OperationMode>(m_savedMode));
+    static auto& frameBuilder = DataModel::FrameBuilder::instance();
+    frameBuilder.syncFromProjectModel();
+    dashboard.resetData();
   }
 }
 

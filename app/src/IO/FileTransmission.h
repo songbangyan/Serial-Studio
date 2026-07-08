@@ -30,6 +30,8 @@
 
 namespace IO {
 
+class ConnectionManager;
+
 namespace Protocols {
 class Protocol;
 class XMODEM;
@@ -210,6 +212,8 @@ private:
   QElapsedTimer m_speedTimer;
   QTimer m_speedUpdateTimer;
   qint64 m_lastSpeedBytes;
+
+  ConnectionManager* m_connectionManager;
 
   static constexpr int kMaxLogEntries = 200;
 };

@@ -751,11 +751,12 @@ void IO::Drivers::UART::refreshSerialDevices()
 
     const bool indexChanged = relocateOpenPortIndex(validPortList);
 
-    const bool uart_active = ConnectionManager::instance().busType() == SerialStudio::BusType::UART;
+    static auto& connectionManager = ConnectionManager::instance();
+    const bool uart_active         = connectionManager.busType() == SerialStudio::BusType::UART;
     if (uart_active && autoReconnect() && m_lastSerialDeviceIndex > 0
         && m_lastSerialDeviceIndex < portList().count()) {
       setPortIndex(m_lastSerialDeviceIndex);
-      ConnectionManager::instance().connectDevice();
+      connectionManager.connectDevice();
     }
 
     Q_EMIT availablePortsChanged();
@@ -792,7 +793,8 @@ void IO::Drivers::UART::handleError(QSerialPort::SerialPortError error)
         return;
     }
 
-    ConnectionManager::instance().disconnectDevice(this);
+    static auto& connectionManager = ConnectionManager::instance();
+    connectionManager.disconnectDevice(this);
 
     if (!m_autoReconnect || error != QSerialPort::ResourceError) {
       const auto name = serialPort ? serialPort->portName() : tr("Unknown");

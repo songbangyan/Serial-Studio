@@ -26,7 +26,16 @@
 #include <QQuickPaintedItem>
 #include <QSyntaxStyle>
 
+namespace Misc {
+class ThemeManager;
+class CommonFonts;
+class TimerEvents;
+}  // namespace Misc
+
 namespace DataModel {
+
+class ProjectEditor;
+class ProjectModel;
 
 /**
  * @brief QML-embeddable code editor for the project setup()/loop() control script.
@@ -103,6 +112,11 @@ private:
 private:
   bool m_readingCode;
   bool m_initialLoad;
+  Misc::ThemeManager& m_themeManager;
+  Misc::CommonFonts& m_commonFonts;
+  DataModel::ProjectEditor& m_projectEditor;
+  DataModel::ProjectModel& m_projectModel;
+  Misc::TimerEvents& m_timerEvents;
   QPixmap m_pixmap;
   QSyntaxStyle m_style;
   QCodeEditor m_widget;

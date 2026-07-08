@@ -338,8 +338,12 @@ QString Misc::ShortcutGenerator::quoteArg(const QString& arg) const
  */
 bool Misc::ShortcutGenerator::hasProLicense() const
 {
-  return Licensing::LemonSqueezy::instance().isActivated()
-      || Licensing::Trial::instance().trialEnabled();
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  if (lemonSqueezy.isActivated())
+    return true;
+
+  static auto& trial = Licensing::Trial::instance();
+  return trial.trialEnabled();
 }
 
 /**

@@ -94,7 +94,7 @@ static QJsonObject summarizeProjectJson(const QJsonObject& project)
  */
 static QJsonObject summarizeCurrentProject()
 {
-  const auto& pm = DataModel::ProjectModel::instance();
+  static const auto& pm = DataModel::ProjectModel::instance();
   QJsonObject out;
   out[QStringLiteral("title")]        = pm.title();
   out[QStringLiteral("groupCount")]   = pm.groupCount();
@@ -139,15 +139,17 @@ API::CommandResponse API::Handlers::ProjectHandler::fileNew(const QString& id,
     return CommandResponse::makeSuccess(id, result);
   }
 
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(true);
-  DataModel::ProjectModel::instance().newJsonFile();
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setSuppressMessageBoxes(true);
+  projectModel.newJsonFile();
+  projectModel.setSuppressMessageBoxes(false);
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
 
   QJsonObject result;
   result[QStringLiteral("created")] = true;
-  result[QStringLiteral("title")]   = DataModel::ProjectModel::instance().title();
+  result[QStringLiteral("title")]   = projectModel.title();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -168,10 +170,11 @@ API::CommandResponse API::Handlers::ProjectHandler::setTitle(const QString& id,
       id, ErrorCode::InvalidParam, QStringLiteral("title cannot be empty"));
   }
 
-  DataModel::ProjectModel::instance().setTitle(title);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setTitle(title);
 
   QJsonObject result;
-  result[QStringLiteral("title")] = DataModel::ProjectModel::instance().title();
+  result[QStringLiteral("title")] = projectModel.title();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -228,9 +231,10 @@ API::CommandResponse API::Handlers::ProjectHandler::fileOpen(const QString& id,
     return CommandResponse::makeSuccess(id, result);
   }
 
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(true);
-  const bool ok = DataModel::ProjectModel::instance().openJsonFile(file_path);
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setSuppressMessageBoxes(true);
+  const bool ok = projectModel.openJsonFile(file_path);
+  projectModel.setSuppressMessageBoxes(false);
 
   if (!ok) {
     return CommandResponse::makeError(
@@ -239,11 +243,12 @@ API::CommandResponse API::Handlers::ProjectHandler::fileOpen(const QString& id,
       QStringLiteral("Failed to open project file (validation or I/O error)"));
   }
 
-  AppState::instance().setOperationMode(SerialStudio::ProjectFile);
+  static auto& appState = AppState::instance();
+  appState.setOperationMode(SerialStudio::ProjectFile);
 
   QJsonObject result;
-  result[QStringLiteral("filePath")] = DataModel::ProjectModel::instance().jsonFilePath();
-  result[QStringLiteral("title")]    = DataModel::ProjectModel::instance().title();
+  result[QStringLiteral("filePath")] = projectModel.jsonFilePath();
+  result[QStringLiteral("title")]    = projectModel.title();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -255,22 +260,23 @@ API::CommandResponse API::Handlers::ProjectHandler::fileSave(const QString& id,
 {
   const QString explicit_path = params.value(QStringLiteral("filePath")).toString();
 
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(true);
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setSuppressMessageBoxes(true);
   bool success = false;
   if (!explicit_path.isEmpty()) {
     if (!API::isPathAllowed(explicit_path)) {
-      DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
+      projectModel.setSuppressMessageBoxes(false);
       return CommandResponse::makeError(
         id, ErrorCode::InvalidParam, QStringLiteral("filePath is not allowed"));
     }
 
-    success = DataModel::ProjectModel::instance().apiSaveJsonFile(explicit_path);
+    success = projectModel.apiSaveJsonFile(explicit_path);
   } else {
     const bool ask_path = params.value(QStringLiteral("askPath")).toBool(false);
-    success             = DataModel::ProjectModel::instance().saveJsonFile(ask_path);
+    success             = projectModel.saveJsonFile(ask_path);
   }
 
-  DataModel::ProjectModel::instance().setSuppressMessageBoxes(false);
+  projectModel.setSuppressMessageBoxes(false);
 
   if (!success) {
     return CommandResponse::makeError(
@@ -279,7 +285,7 @@ API::CommandResponse API::Handlers::ProjectHandler::fileSave(const QString& id,
 
   QJsonObject result;
   result[QStringLiteral("saved")]    = true;
-  result[QStringLiteral("filePath")] = DataModel::ProjectModel::instance().jsonFilePath();
+  result[QStringLiteral("filePath")] = projectModel.jsonFilePath();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -295,7 +301,7 @@ API::CommandResponse API::Handlers::ProjectHandler::getStatus(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
 
   QJsonObject result;
   result[QStringLiteral("title")]                      = project.title();
@@ -522,8 +528,8 @@ static QJsonObject buildSnapshotExplanations(const DataModel::ProjectModel& pm,
 API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
                                                                     const QJsonObject& params)
 {
-  const bool verbose = params.value(QStringLiteral("verbose")).toBool(false);
-  const auto& pm     = DataModel::ProjectModel::instance();
+  const bool verbose    = params.value(QStringLiteral("verbose")).toBool(false);
+  static const auto& pm = DataModel::ProjectModel::instance();
 
   QJsonObject snapshot;
   snapshot[Keys::Title]                = pm.title();
@@ -540,7 +546,8 @@ API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QStrin
   snapshot[QStringLiteral("workspaces")]   = buildSnapshotWorkspaces(pm);
   snapshot[QStringLiteral("dataTables")]   = buildSnapshotTables(pm);
 
-  const int operationMode = static_cast<int>(AppState::instance().operationMode());
+  static auto& appState                     = AppState::instance();
+  const int operationMode                   = static_cast<int>(appState.operationMode());
   snapshot[QStringLiteral("operationMode")] = operationMode;
   snapshot[QStringLiteral("_explanations")] =
     buildSnapshotExplanations(pm, operationMode, totalDatasets);
@@ -582,7 +589,7 @@ API::CommandResponse API::Handlers::ProjectHandler::loadFromJSON(const QString& 
     return CommandResponse::makeSuccess(id, result);
   }
 
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
   project.setSuppressMessageBoxes(true);
   const bool ok = project.loadFromJsonDocument(QJsonDocument(config));
   project.setSuppressMessageBoxes(false);
@@ -611,7 +618,7 @@ API::CommandResponse API::Handlers::ProjectHandler::exportJson(const QString& id
 {
   Q_UNUSED(params)
 
-  auto& project          = DataModel::ProjectModel::instance();
+  static auto& project   = DataModel::ProjectModel::instance();
   const QJsonObject json = project.serializeToJson();
 
   QJsonObject result;
@@ -627,8 +634,8 @@ API::CommandResponse API::Handlers::ProjectHandler::loadIntoFrameBuilder(const Q
 {
   Q_UNUSED(params)
 
-  auto& project = DataModel::ProjectModel::instance();
-  auto& builder = DataModel::FrameBuilder::instance();
+  static auto& project = DataModel::ProjectModel::instance();
+  static auto& builder = DataModel::FrameBuilder::instance();
 
   const bool hasDatasetlessGroup =
     std::any_of(project.groups().begin(), project.groups().end(), [](const DataModel::Group& g) {
@@ -746,7 +753,7 @@ API::CommandResponse API::Handlers::ProjectHandler::templateApply(const QString&
     return CommandResponse::makeSuccess(id, result);
   }
 
-  auto& project = DataModel::ProjectModel::instance();
+  static auto& project = DataModel::ProjectModel::instance();
   project.setSuppressMessageBoxes(true);
   const bool ok = project.loadFromJsonDocument(body);
   project.setSuppressMessageBoxes(false);
@@ -935,10 +942,10 @@ API::CommandResponse API::Handlers::ProjectHandler::validate(const QString& id,
 {
   Q_UNUSED(params)
 
-  const auto& project = DataModel::ProjectModel::instance();
-  const auto& groups  = project.groups();
-  const auto& sources = project.sources();
-  const auto& actions = project.actions();
+  static const auto& project = DataModel::ProjectModel::instance();
+  const auto& groups         = project.groups();
+  const auto& sources        = project.sources();
+  const auto& actions        = project.actions();
 
   QJsonArray issues;
   bool ok = true;

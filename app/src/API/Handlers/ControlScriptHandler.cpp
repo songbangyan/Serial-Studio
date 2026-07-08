@@ -45,8 +45,8 @@ static constexpr int kDryRunWatchdogMs = 2000;
  */
 void API::Handlers::ControlScriptHandler::registerCommands()
 {
-  auto& registry   = CommandRegistry::instance();
-  const auto empty = emptySchema();
+  static auto& registry = CommandRegistry::instance();
+  const auto empty      = emptySchema();
 
   const auto codeSchema = makeSchema({
     {QStringLiteral("code"), QStringLiteral("string"), QStringLiteral("Control script source")}
@@ -110,8 +110,10 @@ API::CommandResponse API::Handlers::ControlScriptHandler::getScript(const QStrin
 {
   Q_UNUSED(params)
 
+  static auto& projectModel = DataModel::ProjectModel::instance();
+
   QJsonObject result;
-  result[QStringLiteral("code")] = DataModel::ProjectModel::instance().controlScriptCode();
+  result[QStringLiteral("code")] = projectModel.controlScriptCode();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -126,11 +128,13 @@ API::CommandResponse API::Handlers::ControlScriptHandler::setScript(const QStrin
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: code"));
   }
 
-  const QString code = params.value(QStringLiteral("code")).toString();
-  DataModel::ProjectModel::instance().setControlScriptCode(code);
+  const QString code        = params.value(QStringLiteral("code")).toString();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setControlScriptCode(code);
 
+  static auto& controlScript = DataModel::ControlScript::instance();
   QJsonObject result;
-  result[QStringLiteral("running")] = DataModel::ControlScript::instance().running();
+  result[QStringLiteral("running")] = controlScript.running();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -142,8 +146,10 @@ API::CommandResponse API::Handlers::ControlScriptHandler::getStatus(const QStrin
 {
   Q_UNUSED(params)
 
+  static auto& controlScript = DataModel::ControlScript::instance();
+
   QJsonObject result;
-  result[QStringLiteral("running")] = DataModel::ControlScript::instance().running();
+  result[QStringLiteral("running")] = controlScript.running();
   return CommandResponse::makeSuccess(id, result);
 }
 

@@ -42,7 +42,7 @@ void API::Handlers::SessionsHandler::registerCommands()
  */
 void API::Handlers::SessionsHandler::registerLifecycleCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema[QStringLiteral("type")]       = QStringLiteral("object");
@@ -101,7 +101,7 @@ void API::Handlers::SessionsHandler::registerLifecycleCommands()
  */
 void API::Handlers::SessionsHandler::registerBrowsingCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema[QStringLiteral("type")]       = QStringLiteral("object");
@@ -190,7 +190,7 @@ void API::Handlers::SessionsHandler::registerBrowsingCommands()
  */
 void API::Handlers::SessionsHandler::registerTagCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema[QStringLiteral("type")]       = QStringLiteral("object");
@@ -287,7 +287,7 @@ API::CommandResponse API::Handlers::SessionsHandler::getStatus(const QString& id
 {
   Q_UNUSED(params)
 
-  auto& exp = Sessions::Export::instance();
+  static auto& exp = Sessions::Export::instance();
 
   QJsonObject result;
   result[QStringLiteral("exportEnabled")] = exp.exportEnabled();
@@ -306,7 +306,8 @@ API::CommandResponse API::Handlers::SessionsHandler::setExportEnabled(const QStr
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: enabled"));
 
   const bool enabled = params.value(QStringLiteral("enabled")).toBool();
-  Sessions::Export::instance().setExportEnabled(enabled);
+  static auto& exp   = Sessions::Export::instance();
+  exp.setExportEnabled(enabled);
 
   QJsonObject result;
   result[QStringLiteral("enabled")] = enabled;
@@ -322,11 +323,12 @@ API::CommandResponse API::Handlers::SessionsHandler::close(const QString& id,
 {
   Q_UNUSED(params)
 
-  Sessions::Export::instance().closeFile();
+  static auto& exp = Sessions::Export::instance();
+  exp.closeFile();
 
   QJsonObject result;
   result[QStringLiteral("closed")] = true;
-  result[QStringLiteral("isOpen")] = Sessions::Export::instance().isOpen();
+  result[QStringLiteral("isOpen")] = exp.isOpen();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -365,7 +367,8 @@ API::CommandResponse API::Handlers::SessionsHandler::openDatabase(const QString&
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: filePath"));
 
   const auto filePath = params.value(QStringLiteral("filePath")).toString();
-  Sessions::DatabaseManager::instance().openDatabase(filePath);
+  static auto& db     = Sessions::DatabaseManager::instance();
+  db.openDatabase(filePath);
 
   QJsonObject result;
   result[QStringLiteral("filePath")] = filePath;
@@ -381,7 +384,7 @@ API::CommandResponse API::Handlers::SessionsHandler::list(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto& db = Sessions::DatabaseManager::instance();
+  static auto& db = Sessions::DatabaseManager::instance();
   if (!db.isOpen())
     return CommandResponse::makeError(
       id,
@@ -407,7 +410,7 @@ API::CommandResponse API::Handlers::SessionsHandler::get(const QString& id,
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sessionId"));
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
-  auto& db            = Sessions::DatabaseManager::instance();
+  static auto& db     = Sessions::DatabaseManager::instance();
   if (!db.isOpen())
     return CommandResponse::makeError(
       id,
@@ -437,7 +440,7 @@ API::CommandResponse API::Handlers::SessionsHandler::deleteSession(const QString
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sessionId"));
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
-  auto& db            = Sessions::DatabaseManager::instance();
+  static auto& db     = Sessions::DatabaseManager::instance();
   if (!db.isOpen())
     return CommandResponse::makeError(
       id,
@@ -468,7 +471,7 @@ API::CommandResponse API::Handlers::SessionsHandler::setNotes(const QString& id,
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
   const auto notes    = params.value(QStringLiteral("notes")).toString();
-  auto& db            = Sessions::DatabaseManager::instance();
+  static auto& db     = Sessions::DatabaseManager::instance();
   db.setSelectedSessionId(sessionId);
   db.setSelectedSessionNotes(notes);
 
@@ -489,7 +492,7 @@ API::CommandResponse API::Handlers::SessionsHandler::replay(const QString& id,
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sessionId"));
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
-  auto& db            = Sessions::DatabaseManager::instance();
+  static auto& db     = Sessions::DatabaseManager::instance();
   db.setSelectedSessionId(sessionId);
   db.replaySelectedSession();
 
@@ -510,7 +513,8 @@ API::CommandResponse API::Handlers::SessionsHandler::exportToCsv(const QString& 
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: sessionId"));
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
-  Sessions::DatabaseManager::instance().exportSessionToCsv(sessionId);
+  static auto& db     = Sessions::DatabaseManager::instance();
+  db.exportSessionToCsv(sessionId);
 
   QJsonObject result;
   result[QStringLiteral("sessionId")] = sessionId;
@@ -530,7 +534,7 @@ API::CommandResponse API::Handlers::SessionsHandler::listTags(const QString& id,
 {
   Q_UNUSED(params)
 
-  auto& db = Sessions::DatabaseManager::instance();
+  static auto& db = Sessions::DatabaseManager::instance();
   if (!db.isOpen())
     return CommandResponse::makeError(
       id,
@@ -553,7 +557,8 @@ API::CommandResponse API::Handlers::SessionsHandler::addTag(const QString& id,
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: label"));
 
   const auto label = params.value(QStringLiteral("label")).toString();
-  Sessions::DatabaseManager::instance().addTag(label);
+  static auto& db  = Sessions::DatabaseManager::instance();
+  db.addTag(label);
 
   QJsonObject result;
   result[QStringLiteral("label")] = label;
@@ -572,7 +577,8 @@ API::CommandResponse API::Handlers::SessionsHandler::deleteTag(const QString& id
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: tagId"));
 
   const int tagId = params.value(QStringLiteral("tagId")).toInt();
-  Sessions::DatabaseManager::instance().deleteTag(tagId);
+  static auto& db = Sessions::DatabaseManager::instance();
+  db.deleteTag(tagId);
 
   QJsonObject result;
   result[QStringLiteral("tagId")]   = tagId;
@@ -596,7 +602,8 @@ API::CommandResponse API::Handlers::SessionsHandler::renameTag(const QString& id
 
   const int tagId     = params.value(QStringLiteral("tagId")).toInt();
   const auto newLabel = params.value(QStringLiteral("newLabel")).toString();
-  Sessions::DatabaseManager::instance().renameTag(tagId, newLabel);
+  static auto& db     = Sessions::DatabaseManager::instance();
+  db.renameTag(tagId, newLabel);
 
   QJsonObject result;
   result[QStringLiteral("tagId")]    = tagId;
@@ -621,7 +628,8 @@ API::CommandResponse API::Handlers::SessionsHandler::assignTag(const QString& id
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
   const int tagId     = params.value(QStringLiteral("tagId")).toInt();
-  Sessions::DatabaseManager::instance().assignTagToSession(sessionId, tagId);
+  static auto& db     = Sessions::DatabaseManager::instance();
+  db.assignTagToSession(sessionId, tagId);
 
   QJsonObject result;
   result[QStringLiteral("sessionId")] = sessionId;
@@ -646,7 +654,8 @@ API::CommandResponse API::Handlers::SessionsHandler::removeTag(const QString& id
 
   const int sessionId = params.value(QStringLiteral("sessionId")).toInt();
   const int tagId     = params.value(QStringLiteral("tagId")).toInt();
-  Sessions::DatabaseManager::instance().removeTagFromSession(sessionId, tagId);
+  static auto& db     = Sessions::DatabaseManager::instance();
+  db.removeTagFromSession(sessionId, tagId);
 
   QJsonObject result;
   result[QStringLiteral("sessionId")] = sessionId;

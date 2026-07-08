@@ -123,7 +123,7 @@ QVariantList DataModel::ProjectEditor::selectedTreeItems() const
 QVariantList DataModel::ProjectEditor::tablesSummary() const
 {
   QVariantList result;
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
 
   int datasetCount = 0;
   for (const auto& g : groups)
@@ -136,7 +136,7 @@ QVariantList DataModel::ProjectEditor::tablesSummary() const
   sysRow["entryCount"]  = datasetCount;
   result.append(sysRow);
 
-  const auto& tables = DataModel::ProjectModel::instance().tables();
+  const auto& tables = m_projectModelRef.tables();
   for (const auto& table : tables) {
     QVariantMap row;
     row["name"]        = table.name;
@@ -226,7 +226,7 @@ int DataModel::ProjectEditor::selectedFolderId() const noexcept
  */
 QVariantList DataModel::ProjectEditor::workspaceFolderTree() const
 {
-  return buildFolderTree(DataModel::ProjectModel::instance().editorWorkspaceFolders(), -1);
+  return buildFolderTree(m_projectModelRef.editorWorkspaceFolders(), -1);
 }
 
 /**
@@ -234,7 +234,7 @@ QVariantList DataModel::ProjectEditor::workspaceFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::workspaceFolderContents(int parentFolderId) const
 {
-  const auto& pm         = DataModel::ProjectModel::instance();
+  const auto& pm         = m_projectModelRef;
   const auto& folders    = pm.editorWorkspaceFolders();
   const auto& workspaces = pm.editorWorkspaces();
 
@@ -284,7 +284,7 @@ QVariantList DataModel::ProjectEditor::workspaceFolderContents(int parentFolderI
  */
 QVariantList DataModel::ProjectEditor::groupFolderTree() const
 {
-  return buildFolderTree(DataModel::ProjectModel::instance().editorGroupFolders(), -1);
+  return buildFolderTree(m_projectModelRef.editorGroupFolders(), -1);
 }
 
 /**
@@ -292,7 +292,7 @@ QVariantList DataModel::ProjectEditor::groupFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::groupFolderContents(int parentFolderId) const
 {
-  const auto& pm      = DataModel::ProjectModel::instance();
+  const auto& pm      = m_projectModelRef;
   const auto& folders = pm.editorGroupFolders();
   const auto& groups  = pm.groups();
 
@@ -341,7 +341,7 @@ QVariantList DataModel::ProjectEditor::groupFolderContents(int parentFolderId) c
  */
 QVariantMap DataModel::ProjectEditor::groupFolderPaths() const
 {
-  const auto& pm      = DataModel::ProjectModel::instance();
+  const auto& pm      = m_projectModelRef;
   const auto& folders = pm.editorGroupFolders();
   const auto& groups  = pm.groups();
 
@@ -360,7 +360,7 @@ QVariantMap DataModel::ProjectEditor::groupFolderPaths() const
  */
 QVariantList DataModel::ProjectEditor::tableFolderTree() const
 {
-  return buildFolderTree(DataModel::ProjectModel::instance().editorTableFolders(), -1);
+  return buildFolderTree(m_projectModelRef.editorTableFolders(), -1);
 }
 
 /**
@@ -369,7 +369,7 @@ QVariantList DataModel::ProjectEditor::tableFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::tableFolderContents(int parentFolderId) const
 {
-  const auto& pm      = DataModel::ProjectModel::instance();
+  const auto& pm      = m_projectModelRef;
   const auto& folders = pm.editorTableFolders();
   const auto& tables  = pm.tables();
 
@@ -517,7 +517,7 @@ void DataModel::ProjectEditor::setTreeSearchQuery(const QString& query)
 QVariantList DataModel::ProjectEditor::systemDatasetsSummary() const
 {
   QVariantList result;
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
 
   for (const auto& group : groups) {
     for (const auto& ds : group.datasets) {
@@ -548,7 +548,7 @@ QVariantList DataModel::ProjectEditor::systemDatasetsSummary() const
 QVariantList DataModel::ProjectEditor::workspacesSummary() const
 {
   QVariantList result;
-  const auto& workspaces = DataModel::ProjectModel::instance().editorWorkspaces();
+  const auto& workspaces = m_projectModelRef.editorWorkspaces();
 
   for (const auto& ws : workspaces) {
     QVariantMap row;
@@ -656,7 +656,7 @@ QHash<qint64, DataModel::ProjectEditor::ResolvedWidget> DataModel::ProjectEditor
 QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) const
 {
   QVariantList result;
-  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto& pm     = m_projectModelRef;
   const auto& wsList = pm.editorWorkspaces();
 
   auto wsIt = std::find_if(wsList.begin(), wsList.end(), [workspaceId](const auto& w) {
@@ -696,7 +696,7 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
  */
 bool DataModel::ProjectEditor::workspaceHasUnresolvedRefs(int workspaceId) const
 {
-  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto& pm     = m_projectModelRef;
   const auto& wsList = pm.editorWorkspaces();
 
   const auto wsIt = std::find_if(wsList.begin(), wsList.end(), [workspaceId](const auto& w) {
@@ -724,7 +724,7 @@ bool DataModel::ProjectEditor::workspaceHasUnresolvedRefs(int workspaceId) const
  */
 int DataModel::ProjectEditor::unresolvedWorkspaceWidgetCount() const
 {
-  const auto& pm     = DataModel::ProjectModel::instance();
+  const auto& pm     = m_projectModelRef;
   const auto lookup  = buildResolvedWidgetLookup(pm);
   const auto& wsList = pm.editorWorkspaces();
 
@@ -745,7 +745,7 @@ int DataModel::ProjectEditor::unresolvedWorkspaceWidgetCount() const
  */
 int DataModel::ProjectEditor::cleanupUnresolvedWorkspaceWidgets()
 {
-  auto& pm          = DataModel::ProjectModel::instance();
+  auto& pm          = m_projectModelRef;
   const auto lookup = buildResolvedWidgetLookup(pm);
 
   QSet<qint64> validKeys;
@@ -793,7 +793,7 @@ QVariantList DataModel::ProjectEditor::allWidgetsSummary() const
   QMap<SerialStudio::DashboardWidget, int> groupIdx;
   QMap<SerialStudio::DashboardWidget, int> datasetIdx;
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
   const bool pro     = SerialStudio::proWidgetsEnabled();
   for (const auto& group : groups) {
     if (!SerialStudio::groupEligibleForWorkspace(group))
@@ -881,7 +881,7 @@ bool DataModel::ProjectEditor::moveCurrentGroup(int direction)
   if (gid < 0)
     return false;
 
-  const int n      = DataModel::ProjectModel::instance().groupCount();
+  const int n      = m_projectModelRef.groupCount();
   const int target = gid + (direction < 0 ? -1 : 1);
   if (target < 0 || target >= n)
     return false;
@@ -889,7 +889,7 @@ bool DataModel::ProjectEditor::moveCurrentGroup(int direction)
   m_pendingSelectionKind    = PendingSelectionKind::Group;
   m_pendingSelectionGroupId = target;
   m_pendingSelectionItemId  = -1;
-  DataModel::ProjectModel::instance().moveGroup(gid, target);
+  m_projectModelRef.moveGroup(gid, target);
   return true;
 }
 
@@ -906,7 +906,7 @@ bool DataModel::ProjectEditor::moveCurrentDataset(int direction)
   if (gid < 0 || did < 0)
     return false;
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
   if (static_cast<size_t>(gid) >= groups.size())
     return false;
 
@@ -918,7 +918,7 @@ bool DataModel::ProjectEditor::moveCurrentDataset(int direction)
   m_pendingSelectionKind    = PendingSelectionKind::Dataset;
   m_pendingSelectionGroupId = gid;
   m_pendingSelectionItemId  = target;
-  DataModel::ProjectModel::instance().moveDataset(gid, did, target);
+  m_projectModelRef.moveDataset(gid, did, target);
   return true;
 }
 
@@ -934,12 +934,12 @@ bool DataModel::ProjectEditor::moveCurrentAction(int direction)
   if (aid < 0)
     return false;
 
-  const int n      = static_cast<int>(DataModel::ProjectModel::instance().actions().size());
+  const int n      = static_cast<int>(m_projectModelRef.actions().size());
   const int target = aid + (direction < 0 ? -1 : 1);
   if (target < 0 || target >= n)
     return false;
 
-  DataModel::ProjectModel::instance().moveAction(aid, target);
+  m_projectModelRef.moveAction(aid, target);
   return true;
 }
 
@@ -956,7 +956,7 @@ bool DataModel::ProjectEditor::moveCurrentOutputWidget(int direction)
   if (gid < 0 || wid < 0)
     return false;
 
-  const auto& groups = DataModel::ProjectModel::instance().groups();
+  const auto& groups = m_projectModelRef.groups();
   if (static_cast<size_t>(gid) >= groups.size())
     return false;
 
@@ -965,7 +965,7 @@ bool DataModel::ProjectEditor::moveCurrentOutputWidget(int direction)
   if (target < 0 || target >= n)
     return false;
 
-  DataModel::ProjectModel::instance().moveOutputWidget(gid, wid, target);
+  m_projectModelRef.moveOutputWidget(gid, wid, target);
   return true;
 }
 
@@ -974,7 +974,7 @@ bool DataModel::ProjectEditor::moveCurrentOutputWidget(int direction)
  */
 bool DataModel::ProjectEditor::moveWorkspace(int workspaceId, int direction)
 {
-  const auto& workspaces = DataModel::ProjectModel::instance().editorWorkspaces();
+  const auto& workspaces = m_projectModelRef.editorWorkspaces();
   const int n            = static_cast<int>(workspaces.size());
 
   int from = -1;
@@ -1000,6 +1000,6 @@ bool DataModel::ProjectEditor::moveWorkspace(int workspaceId, int direction)
   if (target < 0)
     return false;
 
-  DataModel::ProjectModel::instance().moveWorkspaceInFolder(workspaceId, direction);
+  m_projectModelRef.moveWorkspaceInFolder(workspaceId, direction);
   return true;
 }

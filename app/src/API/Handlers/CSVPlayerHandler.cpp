@@ -47,7 +47,7 @@ void API::Handlers::CSVPlayerHandler::registerCommands()
  */
 void API::Handlers::CSVPlayerHandler::registerFileCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -83,7 +83,7 @@ void API::Handlers::CSVPlayerHandler::registerFileCommands()
  */
 void API::Handlers::CSVPlayerHandler::registerPlaybackCommands()
 {
-  auto& registry = CommandRegistry::instance();
+  static auto& registry = CommandRegistry::instance();
 
   QJsonObject emptySchema;
   emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
@@ -183,11 +183,12 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::open(const QString& id,
       id, ErrorCode::InvalidParam, QStringLiteral("filePath is not allowed"));
   }
 
-  CSV::Player::instance().openFile(file_path);
+  static auto& player = CSV::Player::instance();
+  player.openFile(file_path);
 
   QJsonObject result;
   result[QStringLiteral("filePath")] = file_path;
-  result[QStringLiteral("isOpen")]   = CSV::Player::instance().isOpen();
+  result[QStringLiteral("isOpen")]   = player.isOpen();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -199,7 +200,8 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::close(const QString& id,
 {
   Q_UNUSED(params)
 
-  CSV::Player::instance().closeFile();
+  static auto& player = CSV::Player::instance();
+  player.closeFile();
 
   QJsonObject result;
   result[QStringLiteral("closed")] = true;
@@ -217,14 +219,16 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::setPaused(const QString& i
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: paused"));
   }
 
+  static auto& player = CSV::Player::instance();
+
   const bool paused = params.value(QStringLiteral("paused")).toBool();
   if (paused)
-    CSV::Player::instance().pause();
+    player.pause();
   else
-    CSV::Player::instance().play();
+    player.play();
 
   QJsonObject result;
-  result[QStringLiteral("isPlaying")] = CSV::Player::instance().isPlaying();
+  result[QStringLiteral("isPlaying")] = player.isPlaying();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -237,7 +241,7 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::step(const QString& id,
   const int delta =
     params.contains(QStringLiteral("delta")) ? params.value(QStringLiteral("delta")).toInt() : 1;
 
-  auto& player = CSV::Player::instance();
+  static auto& player = CSV::Player::instance();
   if (delta == 0) {
     QJsonObject result;
     result[QStringLiteral("framePosition")] = player.framePosition();
@@ -276,11 +280,12 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::setProgress(const QString&
       id, ErrorCode::InvalidParam, QStringLiteral("progress must be between 0.0 and 1.0"));
   }
 
-  CSV::Player::instance().setProgress(progress);
+  static auto& player = CSV::Player::instance();
+  player.setProgress(progress);
 
   QJsonObject result;
-  result[QStringLiteral("progress")]      = CSV::Player::instance().progress();
-  result[QStringLiteral("framePosition")] = CSV::Player::instance().framePosition();
+  result[QStringLiteral("progress")]      = player.progress();
+  result[QStringLiteral("framePosition")] = player.framePosition();
   return CommandResponse::makeSuccess(id, result);
 }
 
@@ -296,7 +301,7 @@ API::CommandResponse API::Handlers::CSVPlayerHandler::getStatus(const QString& i
 {
   Q_UNUSED(params)
 
-  auto& player = CSV::Player::instance();
+  static auto& player = CSV::Player::instance();
 
   QJsonObject result;
   result[QStringLiteral("isOpen")]        = player.isOpen();

@@ -49,7 +49,14 @@
  * @brief Constructs the QML-side painter widget code editor.
  */
 DataModel::PainterCodeEditor::PainterCodeEditor(QQuickItem* parent)
-  : QQuickPaintedItem(parent), m_readingCode(false)
+  : QQuickPaintedItem(parent)
+  , m_readingCode(false)
+  , m_themeManager(Misc::ThemeManager::instance())
+  , m_commonFonts(Misc::CommonFonts::instance())
+  , m_projectEditor(DataModel::ProjectEditor::instance())
+  , m_timerEvents(Misc::TimerEvents::instance())
+  , m_translator(Misc::Translator::instance())
+  , m_projectModel(DataModel::ProjectModel::instance())
 {
   setMipmap(false);
   setAntialiasing(false);
@@ -59,19 +66,19 @@ DataModel::PainterCodeEditor::PainterCodeEditor(QQuickItem* parent)
   setFlag(ItemIsFocusScope, true);
   setFlag(ItemAcceptsInputMethod, true);
   setAcceptedMouseButtons(Qt::AllButtons);
-  setFillColor(Misc::ThemeManager::instance().getColor(QStringLiteral("base")));
+  setFillColor(m_themeManager.getColor(QStringLiteral("base")));
 
   m_widget.setTabReplace(true);
   m_widget.setTabReplaceSize(2);
   m_widget.setAutoIndentation(true);
   m_widget.setHighlighter(new QJavascriptHighlighter());
-  m_widget.setFont(Misc::CommonFonts::instance().monoFont());
+  m_widget.setFont(m_commonFonts.monoFont());
   m_widget.setLayoutDirection(Qt::LeftToRight);
   m_widget.setLanguageHint(QCodeEditor::LanguageHint::JavaScript);
   m_widget.setCompleter(new DataModel::SerialStudioCompleter(false, &m_widget));
 
   onThemeChanged();
-  connect(&Misc::ThemeManager::instance(),
+  connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &DataModel::PainterCodeEditor::onThemeChanged);
@@ -83,40 +90,37 @@ DataModel::PainterCodeEditor::PainterCodeEditor(QQuickItem* parent)
     if (m_readingCode)
       return;
 
-    auto& editor = DataModel::ProjectEditor::instance();
-    if (!editor.currentGroupIsPainter())
+    if (!m_projectEditor.currentGroupIsPainter())
       return;
 
-    editor.setCurrentGroupPainterCode(text());
+    m_projectEditor.setCurrentGroupPainterCode(text());
   });
 
   connect(
     this, &QQuickPaintedItem::widthChanged, this, &DataModel::PainterCodeEditor::resizeWidget);
   connect(
     this, &QQuickPaintedItem::heightChanged, this, &DataModel::PainterCodeEditor::resizeWidget);
-  connect(&Misc::TimerEvents::instance(),
+  connect(&m_timerEvents,
           &Misc::TimerEvents::uiTimeout,
           this,
           &DataModel::PainterCodeEditor::renderWidget);
 
-  connect(&Misc::Translator::instance(),
+  connect(&m_translator,
           &Misc::Translator::languageChanged,
           this,
           &DataModel::PainterCodeEditor::loadTemplates);
 
-  connect(
-    &DataModel::ProjectModel::instance(), &DataModel::ProjectModel::groupDataChanged, this, [this] {
-      if (m_readingCode)
-        return;
+  connect(&m_projectModel, &DataModel::ProjectModel::groupDataChanged, this, [this] {
+    if (m_readingCode)
+      return;
 
-      auto& editor = DataModel::ProjectEditor::instance();
-      if (!editor.currentGroupIsPainter())
-        return;
+    if (!m_projectEditor.currentGroupIsPainter())
+      return;
 
-      const QString live = editor.currentGroupPainterCode();
-      if (live != m_widget.toPlainText())
-        readCode();
-    });
+    const QString live = m_projectEditor.currentGroupPainterCode();
+    if (live != m_widget.toPlainText())
+      readCode();
+  });
 
   loadTemplates();
   readCode();
@@ -224,11 +228,10 @@ void DataModel::PainterCodeEditor::commit()
       ime->commit();
   }
 
-  auto& editor = DataModel::ProjectEditor::instance();
-  if (!editor.currentGroupIsPainter())
+  if (!m_projectEditor.currentGroupIsPainter())
     return;
 
-  editor.setCurrentGroupPainterCode(text());
+  m_projectEditor.setCurrentGroupPainterCode(text());
 }
 
 /**
@@ -330,8 +333,7 @@ void DataModel::PainterCodeEditor::readCode()
 
   m_readingCode = true;
 
-  auto& editor = DataModel::ProjectEditor::instance();
-  QString code = editor.currentGroupPainterCode();
+  QString code = m_projectEditor.currentGroupPainterCode();
   if (code.isEmpty())
     code = defaultTemplate();
 
@@ -412,13 +414,11 @@ void DataModel::PainterCodeEditor::selectTemplate()
   if (specs.isEmpty())
     return;
 
-  auto& editor = DataModel::ProjectEditor::instance();
-  if (!editor.currentGroupIsPainter())
+  if (!m_projectEditor.currentGroupIsPainter())
     return;
 
-  auto& pm           = DataModel::ProjectModel::instance();
-  const auto& groups = pm.groups();
-  const int gid      = editor.currentGroupId();
+  const auto& groups = m_projectModel.groups();
+  const int gid      = m_projectEditor.currentGroupId();
   if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
     return;
 
@@ -440,7 +440,7 @@ void DataModel::PainterCodeEditor::selectTemplate()
                           QMessageBox::Yes);
 
   if (choice == QMessageBox::Yes)
-    pm.ensurePainterDatasets(gid, specs);
+    m_projectModel.ensurePainterDatasets(gid, specs);
 }
 
 /**

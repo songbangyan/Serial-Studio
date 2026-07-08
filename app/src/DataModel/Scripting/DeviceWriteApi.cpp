@@ -52,7 +52,8 @@ static qint64 performDeviceWrite(int sourceId, const QByteArray& data, QString& 
 
   qint64 written = -1;
   try {
-    written = IO::ConnectionManager::instance().writeDataToDevice(sourceId, data);
+    static auto& ioManager = IO::ConnectionManager::instance();
+    written                = ioManager.writeDataToDevice(sourceId, data);
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {
@@ -254,7 +255,9 @@ void DataModel::DeviceWriteApi::setJSDefaultSourceId(QJSEngine* js, int defaultS
  */
 static bool fireActionByPublicId(int actionId, QString& errorMsgOut)
 {
-  const int idx = UI::Dashboard::instance().actionIndexForId(actionId);
+  static auto& dashboard = UI::Dashboard::instance();
+
+  const int idx = dashboard.actionIndexForId(actionId);
   if (idx < 0) {
     errorMsgOut = QStringLiteral("actionFire: no action with actionId=%1").arg(actionId);
     qInfo().noquote() << QStringLiteral("[actionFire] rejected id=%1 (not found)").arg(actionId);
@@ -262,7 +265,7 @@ static bool fireActionByPublicId(int actionId, QString& errorMsgOut)
   }
 
   try {
-    UI::Dashboard::instance().activateAction(idx, false);
+    dashboard.activateAction(idx, false);
   } catch (const std::exception& e) {
     errorMsgOut = QString::fromUtf8(e.what());
   } catch (...) {

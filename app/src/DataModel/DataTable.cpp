@@ -735,6 +735,7 @@ qint64 DataModel::TableApiBridge::mqttPublish(const QString& topic,
                                               int qos,
                                               bool retain)
 {
-  return MQTT::Publisher::instance().mqttPublish(topic, payload, qos, retain);
+  static auto& publisher = MQTT::Publisher::instance();
+  return publisher.mqttPublish(topic, payload, qos, retain);
 }
 #endif

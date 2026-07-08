@@ -23,6 +23,8 @@
 
 #include <QQuickItem>
 
+#include "UI/Dashboard.h"
+
 namespace DataModel {
 struct Group;
 }  // namespace DataModel
@@ -76,6 +78,8 @@ private:
   double m_pitch;
 
   bool m_displayFilterInitialized;
+
+  UI::Dashboard& m_dashboard;
 };
 
 }  // namespace Widgets

@@ -91,8 +91,10 @@ bool FileOpenEventFilter::eventFilter(QObject* obj, QEvent* event)
     auto* fileEvent    = static_cast<QFileOpenEvent*>(event);
     const QString path = fileEvent->file();
     if (path.endsWith(QStringLiteral(".ssproj"), Qt::CaseInsensitive)) {
-      AppState::instance().setOperationMode(SerialStudio::ProjectFile);
-      DataModel::ProjectModel::instance().openJsonFile(path);
+      static auto& appState     = AppState::instance();
+      static auto& projectModel = DataModel::ProjectModel::instance();
+      appState.setOperationMode(SerialStudio::ProjectFile);
+      projectModel.openJsonFile(path);
       return true;
     }
   }

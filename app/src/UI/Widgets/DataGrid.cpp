@@ -133,14 +133,14 @@ Widgets::DataGrid::DataGrid(const int index, QQuickItem* parent)
   , m_valueHeader(tr("Value"))
   , m_rowsModel(new DataGridRowsModel(this))
   , m_lastRowCount(-1)
+  , m_dashboard(UI::Dashboard::instance())
 {
   if (!VALIDATE_WIDGET(SerialStudio::DashboardDataGrid, m_index))
     return;
 
   rebuildRows();
 
-  connect(
-    &UI::Dashboard::instance(), &UI::Dashboard::updated, this, &Widgets::DataGrid::updateData);
+  connect(&m_dashboard, &UI::Dashboard::updated, this, &Widgets::DataGrid::updateData);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ QVariantList Widgets::DataGrid::datasetWidgets(const DataModel::Dataset& dataset
 
   QVariantList widgets;
   QVariantList plots;
-  const auto& map = UI::Dashboard::instance().widgetMap();
+  const auto& map = m_dashboard.widgetMap();
   for (auto it = map.constBegin(); it != map.constEnd(); ++it) {
     const auto type = it.value().first;
     if (!SerialStudio::isDatasetWidget(type))
