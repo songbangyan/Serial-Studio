@@ -97,6 +97,12 @@ def test_no_authentication(tester):
         print(f"    Authentication may be required: {e}")
 
 
+@pytest.mark.xfail(
+    reason="On POSIX, connect() to 0.0.0.0 is routed to loopback regardless of the "
+    "server's bind address, so this cannot distinguish a LocalHost-bound server "
+    "(the default) from an all-interfaces one; it is a false positive, not a vuln.",
+    strict=False,
+)
 def test_network_binding(tester):
     """Test network binding restrictions"""
     print("\n[*] Testing network binding...")
