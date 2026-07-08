@@ -14,9 +14,9 @@
 
 ## Overview
 
-Serial Studio exposes its entire API over gRPC on port 8888. The gRPC server starts automatically when the API server is enabled. It provides:
+Serial Studio exposes its entire API over gRPC on port 8888. The gRPC server starts automatically when the API server is enabled. Official Serial Studio downloads always include gRPC support; a binary built from source with the default CMake configuration (`ENABLE_GRPC=OFF`) omits the gRPC controls from Preferences and never opens port 8888. It provides:
 
-- **High-performance frame streaming.** Binary protobuf encoding is roughly 5 to 10 times smaller and faster than JSON.
+- **High-performance frame streaming.** Binary protobuf encoding is smaller and faster than JSON for the same frame.
 - **Typed service definition.** A full `.proto` file for code generation in any language.
 - **Server-streaming RPCs.** Real-time frame and raw data push, no polling.
 - **Cross-language support.** Python, C++, Go, Java, Rust, Node.js, C#, and more.
@@ -28,7 +28,7 @@ The gRPC server shares the same command set as the [TCP/JSON API](API-Reference.
 The gRPC server starts automatically whenever the API server is enabled:
 
 1. Open **Preferences** (wrench icon or **Ctrl/Cmd+,**).
-2. On the **General** tab, scroll to the **Advanced** section.
+2. On the **General** tab, scroll to the **API & Plugins** section.
 3. Turn on **"Enable API Server (Port 7777)"**.
 4. Click **OK**.
 
@@ -104,7 +104,7 @@ grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/StreamFrames
 ```
 
 > **About the "Export Protobuf File" button.** The **Export…** button under
-> **Preferences → General → Advanced → Export Protobuf File** writes an auto-generated
+> **Preferences → General → API & Plugins → Export Protobuf File** writes an auto-generated
 > *typed* schema (package `serialstudio.typed`, service `SerialStudioTypedAPI`) with one
 > request message and one RPC per registered command. Use it as machine-readable
 > documentation of every command's parameters. The running server implements only the
@@ -167,7 +167,7 @@ The gRPC server follows the same **Allow External API Connections** setting as t
 | Disabled (default)  | `127.0.0.1:7777`    | `127.0.0.1:8888`    |
 | Enabled             | `0.0.0.0:7777`      | `0.0.0.0:8888`      |
 
-Enable external connections under **Preferences → General → Advanced → Allow External API Connections**.
+Enable external connections under **Preferences → General → API & Plugins → Allow External API Connections**.
 
 > **Security note.** Enabling external connections exposes the API to your network. Non-loopback clients must then authenticate: send the access token (shown in the **API Access Token** field next to the external-connections switch) in the `x-serial-studio-token` request metadata. Loopback clients (`127.0.0.1` / `::1`) are exempt. The token is the only barrier, so keep it secret and disable external access when it is not needed.
 
@@ -177,9 +177,9 @@ Enable external connections under **Preferences → General → Advanced → All
 |--------------------|-----------------------------|--------------------------------|
 | Encoding           | JSON text                   | Protobuf binary                |
 | Frame streaming    | JSON lines pushed to all clients | Server-push (`StreamFrames`) |
-| Message size       | Larger (JSON overhead)      | About 5 to 10 times smaller    |
+| Message size       | Larger (JSON overhead)      | Smaller (binary encoding)      |
 | Code generation    | Manual parsing              | Auto-generated stubs           |
-| Browser support    | WebSocket/TCP clients       | grpc-web (needs a proxy)       |
+| Browser support    | TCP clients only (no browser access without a bridge) | grpc-web (needs a proxy) |
 | Ease of use        | `nc`, `curl`, any TCP client| Needs gRPC tooling             |
 
 **When to use gRPC:**

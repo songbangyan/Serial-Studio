@@ -42,15 +42,15 @@ When you select **MQTT Subscriber** as the **Bus Type** for a source, the projec
 | **Keep Alive (s)** | Seconds between PING packets when idle. Default 60; `0` disables the mechanism. |
 | **Auto Keep Alive** | Let the client send keep-alive pings automatically. Default on. |
 | **SSL/TLS Enabled** | Master TLS toggle. Off by default; when on, the three fields below appear. |
-| **SSL Protocol** | TLS protocol family: TLS 1.2, TLS 1.3, TLS 1.3 or Later, DTLS 1.2 or Later, Any Protocol, or Secure Protocols Only (default). |
-| **Peer Verify Mode** | None, Query Peer, Verify Peer, or Auto Verify Peer (default). |
+| **SSL Protocol** | TLS protocol family. One of Any Protocol, DTLS 1.2 or Later, Secure Protocols Only, TLS 1.2, TLS 1.3, or TLS 1.3 or Later. Default Secure Protocols Only. |
+| **Peer Verify Mode** | One of Auto Verify Peer, None, Query Peer, or Verify Peer. Default Auto Verify Peer. |
 | **Peer Verify Depth** | Maximum certificate chain length accepted. Default `10`; `0` = unlimited. |
 
 The main window's **Setup** pane shows the same configuration with two extras: a **Regenerate** button beside **Client ID**, and a **CA Certificates** row whose **Load From Folder…** button imports PEM certificates for self-signed brokers. The Setup pane omits **Auto Keep Alive** and shortens a few labels (**Version**, **Use SSL/TLS**, **Peer Verify**, **Verify Depth**); the fields are otherwise the same.
 
 The same fields are scriptable through the [API](API-Reference.md) commands `project.mqtt.subscriber.getConfig`, `project.mqtt.subscriber.setConfig`, and `project.mqtt.subscriber.getStatus`. `setConfig` patches only the keys you pass and schedules a reconnect when the driver is connected.
 
-For step-by-step instructions, see the [Protocol Setup Guides, MQTT section](Protocol-Setup-Guides.md).
+For step-by-step instructions, see the [Protocol Setup Guides, MQTT section](Protocol-Setup-Guides.md#mqtt-setup-pro).
 
 ### Payload expectations
 

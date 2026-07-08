@@ -21,7 +21,7 @@ The examples were built on [Arch Linux](https://archlinux.org/), where you can:
     yay -S serial-studio-bin
     ```
 
-- Build it with [cmake](/#development).
+- Build it with [cmake](/#building-serial-studio).
 
 Data from the HUAWEI K5161H is pulled from the URL API `http://192.168.9.1/api/device/signal`. Python is used to receive, process, and generate data frames. All three scripts read the API with the **requests** library:
 
@@ -29,7 +29,7 @@ Data from the HUAWEI K5161H is pulled from the URL API `http://192.168.9.1/api/d
 sudo pacman -S python-requests
 ```
 
-Each frame carries five values, matching the datasets in `LTE Modem.ssproj`: cell ID, RSRQ (dB), RSRP (dBm), RSSI (dBm), and SINR (dB). The serial and UDP scripts wrap each frame in the project's `/*` and `*/` start and end sequences.
+Each frame carries five values, matching the datasets in `LTE Modem.ssproj`: cell ID, RSRQ (dB), RSRP (dBm), RSSI (dBm), and SINR (dB). All three scripts wrap each frame in the project's `/*` and `*/` start and end sequences.
 
 <a name="method_1"></a>
 
@@ -75,13 +75,13 @@ Each frame carries five values, matching the datasets in `LTE Modem.ssproj`: cel
 
 ### Serial Studio configuration for the virtual serial port
 
-- Run Serial Studio.
-- Go to **DEVICE SETUP** → I/O Interface: Serial Port.
-- Go to **FRAME PARSING** → Parse via Project File.
-- Pick **Project file** → `LTE Modem.ssproj`.
-- Manually enter **COM Port** → `/tmp/ttyV0` and press Enter.
-- Pick **Baud Rate** → 9600.
-- Click **Connect** in the upper right corner.
+1. Run Serial Studio.
+2. Go to **DEVICE SETUP** → I/O Interface: UART/COM.
+3. Go to **FRAME PARSING** → Parse via Project File.
+4. Pick **Project file** → `LTE Modem.ssproj`.
+5. Manually enter **COM Port** → `/tmp/ttyV0` and press Enter.
+6. Pick **Baud Rate** → 9600.
+7. Click **Connect** in the upper right corner.
 
 After the first frame of data arrives, Serial Studio opens the dashboard with plots automatically.
 
@@ -90,6 +90,8 @@ After the first frame of data arrives, Serial Studio opens the dashboard with pl
 <a name="method_2"></a>
 
 ## Method 2: MQTT
+
+> The MQTT driver is a Pro feature and requires a Serial Studio Pro license (trial or paid). See [serial-studio.com](https://serial-studio.com/) for details.
 
 ### Set up the MQTT broker
 
@@ -125,16 +127,15 @@ After the first frame of data arrives, Serial Studio opens the dashboard with pl
 
 ### Serial Studio configuration for MQTT
 
-- Run Serial Studio.
-- Go to **FRAME PARSING** → Parse via Project File.
-- Pick **Project file** → `LTE Modem.ssproj`.
-- Click **MQTT** in the top bar.
-- Set **Host** → 127.0.0.1.
-- Set **Port** → 1883.
-- Set **Topic** → lte.
-- Pick **Mode** → Subscriber.
-- Set **Keep Alive** → 600.
-- Click **Connect**.
+1. Run Serial Studio.
+2. Go to **DEVICE SETUP** → I/O Interface: MQTT Subscriber.
+3. Go to **FRAME PARSING** → Parse via Project File.
+4. Pick **Project file** → `LTE Modem.ssproj`.
+5. Set **Hostname** → 127.0.0.1.
+6. Set **Port** → 1883.
+7. Set **Topic Filter** → lte.
+8. Set **Keep Alive (s)** → 600.
+9. Click **Connect**.
 
 After the first frame of data arrives, Serial Studio opens the dashboard with plots automatically.
 
@@ -154,14 +155,14 @@ python lte_udp.py
 
 ### Serial Studio configuration for UDP socket
 
-- Run Serial Studio.
-- Go to **DEVICE SETUP** → I/O Interface: Network Socket.
-- Go to **FRAME PARSING** → Parse via Project File.
-- Pick **Project file** → `LTE Modem.ssproj`.
-- Pick **Socket type** → UDP.
-- Set **Remote address** → 127.0.0.1.
-- Set **Local port** → 5005.
-- Click **Connect** in the upper right corner.
+1. Run Serial Studio.
+2. Go to **DEVICE SETUP** → I/O Interface: Network Socket.
+3. Go to **FRAME PARSING** → Parse via Project File.
+4. Pick **Project file** → `LTE Modem.ssproj`.
+5. Pick **Socket Type** → UDP.
+6. Set **Remote Address** → 127.0.0.1.
+7. Set **Local Port** → 5005.
+8. Click **Connect** in the upper right corner.
 
 After the first frame of data arrives, Serial Studio opens the dashboard with plots automatically.
 

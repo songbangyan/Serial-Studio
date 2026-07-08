@@ -11,7 +11,7 @@ Serial Studio's line plots turn a stream of numbers into a moving chart. This pa
 
 A **Plot** draws a single signal. A **MultiPlot** overlays several signals from the same group on one chart with a shared axis and a color legend, which is the right choice when you want to compare channels (the three axes of an accelerometer, several thermocouples, a setpoint against a measured value).
 
-Both are configured in the Project Editor and behave the same way at runtime. Everything below applies to both unless noted.
+Both are configured in the [Project Editor](Project-Editor.md) and behave the same way at runtime. Everything below applies to both unless noted.
 
 ## How the X axis works
 
@@ -21,13 +21,13 @@ A plot's X axis is one of three kinds, chosen automatically from the dataset con
 |-------------|---------------------------------------------|-----------------------------------|
 | **Time**    | Default for a plotted dataset               | Seconds, newest sample at the right |
 | **Samples** | X axis set to Samples                        | Sample index, 0 to N (newest at the right) |
-| **Custom**  | `xAxisId` points at another dataset (Pro)   | That dataset's value (XY / scatter) |
+| **Custom**  | `xAxisId` points at another dataset (Pro, Plot only) | That dataset's value (XY / scatter) |
 
 A **time** plot scrolls: it shows the most recent window of data, spanning `[-T, 0]` where `T` is the dashboard time range. The newest reading is always pinned at the right edge.
 
 Two settings control how much history a plot keeps, and both sit next to each other in two places: the **Time Range** and **Point Count** fields in the Project Editor's project toolbar, and the same two fields on the **Dashboard** tab of the **Settings** dialog. **Time Range** is the width `T` of the scrolling time window, in seconds (it sets how far back a time plot looks). **Point Count** is the number of samples retained per signal, which sizes the history buffer and is the window width for a plot drawn against sample number rather than time. The Project Editor values are saved into the project file (as `plotTimeRange` and `pointCount`); the Settings dialog applies them to the live dashboard.
 
-A **custom X axis** plots one dataset against another instead of against time, producing XY traces (a phase plot, an I-V curve, a Lissajous figure).
+A **custom X axis** plots one dataset against another instead of against time, producing XY traces (a phase plot, an I-V curve, a Lissajous figure). This mode is available only on a **Plot**; a **MultiPlot** group's shared X axis is limited to Time or Samples.
 
 The Y axis auto-scales to fit the data by default. Pin it to a fixed range with `pltMin` / `pltMax` in the Project Editor, or from the **Axis Range** dialog on the toolbar.
 
@@ -41,11 +41,11 @@ When a plot is large enough to show its toolbar, these controls appear left to r
 | **Area** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/area.svg" width="16" height="16"> | Fills the region under the curve. Available with line interpolation. Plot only. |
 | **X / Y label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/x.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/y.svg" width="16" height="16"> | Shows or hides each axis label. |
 | **Crosshair** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/crosshair.svg" width="16" height="16"> | Shows a tracking crosshair that follows the cursor. |
-| **Pause** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes the plot without stopping data collection. |
-| **Sweep** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/sweep.svg" width="16" height="16"> | Turns Sweep / Trigger mode on or off (Pro). |
-| **Trigger** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/trigger.svg" width="16" height="16"> | Opens the trigger settings (Pro). Enabled only while Sweep is on. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops this widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. Other widgets and the data source are unaffected. |
+| **Sweep / Trigger Mode** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/sweep.svg" width="16" height="16"> | Turns Sweep / Trigger mode on or off (Pro). |
+| **Trigger Settings** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/trigger.svg" width="16" height="16"> | Opens the trigger settings (Pro). Enabled only while Sweep is on. |
 | **Reset View** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/return.svg" width="16" height="16"> | Returns pan and zoom to the default view. |
-| **Axis Range** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/settings.svg" width="16" height="16"> | Sets fixed minimum and maximum values for the axes. |
+| **Axis Range Settings** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/settings.svg" width="16" height="16"> | Sets fixed minimum and maximum values for the axes. |
 
 Drag inside the plot to pan and scroll to zoom; **Reset View** undoes both. These buttons and the toolbars of every other widget are catalogued in the [Toolbar & Button Reference](Toolbar-Reference.md#plot).
 
@@ -85,7 +85,7 @@ While the Trigger Settings dialog is open, a horizontal line marks the trigger l
 
 ## Performance
 
-Plots draw from a decimating ring buffer sized to the time range, so a plot stays responsive whether it holds a few hundred points or millions. Rendering happens on the UI thread at a fixed refresh rate and never blocks data collection; **Pause** stops only the drawing.
+Plots draw from a decimating ring buffer sized to the time range, so a plot stays responsive whether it holds a few hundred points or millions. Rendering happens on the UI thread at a fixed refresh rate. **Pause** stops the widget from pushing new samples into that buffer, so data received while paused is dropped for that widget; the rest of the application, including other widgets, exports, and the underlying data source, keeps running.
 
 ## Choosing a plot
 
@@ -95,4 +95,4 @@ Plots draw from a decimating ring buffer sized to the time range, so a plot stay
 | Compare several signals on one chart          | MultiPlot                    |
 | Plot one value against another               | Plot with a custom X axis    |
 | Read the shape of a repeating waveform        | Plot or MultiPlot with Sweep |
-| See a frequency spectrum                      | FFT Plot (see Widget Reference) |
+| See a frequency spectrum                      | FFT Plot (see [Widget Reference](Widget-Reference.md#fft-plot)) |

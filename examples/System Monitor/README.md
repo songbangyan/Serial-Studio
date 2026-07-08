@@ -14,7 +14,7 @@ Serial Studio spawns `system-monitor.py` (or the platform launcher), and the scr
 |---------------------------|---------------------|-------|
 | CPU usage                 | Line plot           | Overall utilization (%) |
 | CPU temperature           | Value (logged)      | °C; `N/A` if unavailable (for example macOS) |
-| Per-core CPU              | Multiplot           | One curve per logical core. Cores beyond the machine's count are hidden via `-1` sentinel |
+| Per-core CPU              | Multiplot           | One curve per logical core. Slots beyond the machine's actual core count report `-1` and plot as a flat line at the bottom of the chart |
 | RAM usage                 | Line plot           | Memory pressure (%) |
 | RAM used                  | Bar + line plot     | Absolute consumption (GB) |
 | Swap used                 | Bar                 | Page-file / swap used (GB) |
@@ -49,7 +49,7 @@ All frames use `$` as `frameStart` and `\n` as `frameEnd`.
 
 #### Core sentinel value
 
-The project always declares 32 core slots (`CORE0` to `CORE31`). Slots beyond the machine's actual logical core count are emitted as `-1`. The multiplot widget treats `-1` as out-of-range and hides those curves automatically.
+The project always declares 32 core slots (`CORE0` to `CORE31`). Slots beyond the machine's actual logical core count are emitted as `-1`. Since the group's plot range is 0-100, these curves stay visible and render as a flat line pinned at the bottom of the chart.
 
 ## How to run
 
@@ -67,13 +67,13 @@ The platform launchers (`system-monitor.sh` / `system-monitor.bat`) auto-install
 ### Step 2: configure Serial Studio
 
 1. Open Serial Studio and load `system-monitor.ssproj`.
-2. In the Setup panel, set **Bus Type** to **Process**.
-3. Set **Mode** to **Launch**.
+2. In the Setup panel, set the **I/O Interface** to **Process**.
+3. Set **Mode** to **Launch Process**.
 4. Set **Executable** to one of:
    - **macOS/Linux:** full path to `system-monitor.sh`.
    - **Windows:** full path to `system-monitor.bat`.
    - Or point directly to `python3` and set **Arguments** to the full path of `system-monitor.py`.
-5. Leave **Working Directory** empty (the script resolves its own path).
+5. Leave **Working Dir** empty (the script resolves its own path).
 6. Click **Connect**.
 
 ### Optional: run from the terminal
@@ -147,7 +147,7 @@ Dataset index `N` in the `.ssproj` maps to `_vals[N - 1]` (Serial Studio uses 1-
 
 ## Dependencies
 
-- Python 3.8 or later.
+- Python 3.9 or later.
 - [`psutil`](https://pypi.org/project/psutil/). `pip install psutil`.
 - [`py-cpuinfo`](https://pypi.org/project/py-cpuinfo/). `pip install py-cpuinfo`.
 

@@ -42,7 +42,7 @@ Treat the integer as opaque: it's allocated, not derived. Two assumptions you'd 
 - You **cannot** recover `(sourceId, groupId, datasetId)` from a `uniqueId` by arithmetic. The legacy formula `sourceId * 1'000'000 + groupId * 10'000 + datasetId` is only used as a one-shot back-fill when loading a project file from before this scheme existed; once the project is saved again, the values are persisted and no longer follow the formula.
 - You **cannot** guess what `uniqueId` a new dataset will receive. It's just the next value from the project's counter (`nextUniqueId`).
 
-`uniqueId` is what transform scripts and Data Tables use, because they need a single key that's stable across sources. It's what you read from the live data API and what the system data table (`__datasets__`) uses for its `raw:<uid>` and `final:<uid>` registers. The Group struct has its own `uniqueId` field with the same semantics, used inside workspace widget refs.
+`uniqueId` is what transform scripts and Data Tables use, because they need a single key that's stable across sources. It's what you read from the live data API and what the system data table (`__datasets__`) uses for its `raw:<uniqueId>` and `final:<uniqueId>` registers. The Group struct has its own `uniqueId` field with the same semantics, used inside workspace widget refs.
 
 ## Where each ID is used
 
@@ -52,7 +52,7 @@ Treat the integer as opaque: it's allocated, not derived. Two assumptions you'd 
 | `groupId`  | Group-scoped API calls (`project.group.update`, dataset CRUD addressing)                         |
 | `datasetId`| Dataset CRUD addressing (`project.dataset.update`, `project.dataset.setOptions`, `project.dataset.delete`) |
 | `index`    | Maps each slot of the parser's returned array to a dataset; set per dataset in the Project Editor |
-| `uniqueId` | Live-data API (`dashboard.getData`, `dashboard.tailFrames`), transform scripts (`datasetGetRaw(uid)`, `datasetGetFinal(uid)`), Data Tables (`raw:<uid>`, `final:<uid>`) |
+| `uniqueId` | Live-data API (`dashboard.getData`, `dashboard.tailFrames`), transform scripts (`datasetGetRaw(uniqueId)`, `datasetGetFinal(uniqueId)`), Data Tables (`raw:<uniqueId>`, `final:<uniqueId>`) |
 
 ## Rule of thumb
 
@@ -95,3 +95,4 @@ If something is ever ambiguous, default to looking it up fresh from the project 
 - [Dataset Value Transforms](Dataset-Transforms.md): per-dataset scripts that read and write registers by `uniqueId`.
 - [Data Tables](Data-Tables.md): the system table (`__datasets__`) keyed by `raw:<uniqueId>` and `final:<uniqueId>`.
 - [API Reference](API-Reference.md): the JSON-RPC surface that exposes mutating CRUD by `(groupId, datasetId)` and live reads by `uniqueId`.
+- [Glossary](Glossary.md): definitions for `uniqueId`, `datasetId`, and frame `index`.

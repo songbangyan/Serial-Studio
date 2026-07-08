@@ -2,27 +2,27 @@
 
 If you write tutorials, make videos, blog, or run a social account, you can earn money by helping more people find Serial Studio. The affiliate program is for content creators, educators, publishers, and community builders who want to recommend the app and earn a commission on successful referrals.
 
-#### How the program works
+## How the program works
 
 Affiliate partnerships let you monetize content. You refer customers, and we pay a commission when those referrals turn into sales.
 
-#### How do I make money?
+## Earning commissions
 
 Share your affiliate link on your site, blog, YouTube channel, newsletter, forum posts, or social media accounts. Lemon Squeezy tracks clicks and completed transactions, so commissions are attributed to your account automatically.
 
-#### How much can I earn?
+## Commission rate
 
 You can earn up to **$159.80** in commission for each referral that turns into a sale. There's no cap on total earnings.
 
-#### Payout minimum
+## Payout minimum
 
 Affiliate payouts require a minimum balance of **$10.00**. This keeps fraud and administrative overhead down.
 
-#### When do payouts happen?
+## Payout schedule
 
 Payouts run on **NET30** terms to account for refunds and chargebacks. For example, commissions generated in January are paid on **March 15**.
 
-#### How do I sign up?
+## Signing up
 
 The Serial Studio affiliate program is hosted by Lemon Squeezy's affiliate hub. Create a Lemon Squeezy account, apply to the program, and start sharing your affiliate link once approved.
 

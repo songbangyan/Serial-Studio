@@ -54,18 +54,11 @@ If you want to configure it yourself:
 - **Frame end sequence:** `;`.
 - **Data separator:** `,`.
 
-Then click the **Map** button in Serial Studio to create a GPS map widget automatically. The widget uses the latitude and longitude to show the current position, and altitude is logged into the CSV.
+Then click the **GPS Map** button in Serial Studio to create a GPS map widget automatically. The widget uses the latitude and longitude to show the current position, and altitude is logged into the CSV.
 
 ![Serial Studio project setup](doc/project-setup.png)
 
-### 3. API keys for maps
-
-To get the most out of the mapping features, you may need API keys for some map styles:
-
-- **Thunderforest API key.** Needed for some map types. Get one from [Thunderforest](https://www.thunderforest.com/docs/apikeys/).
-- **MapTiler API key.** Needed for satellite maps. Get one from [MapTiler](https://www.maptiler.com/cloud/). The satellite map may take a bit to download and cache on first use.
-
-### 4. Viewing GPS data
+### 3. Viewing GPS data
 
 Once Serial Studio is configured:
 

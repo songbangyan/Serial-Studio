@@ -6,7 +6,7 @@ A comparison of Serial Studio against other data visualization and telemetry too
 
 | Tool                      | Cost          | Real-time    | Multi-protocol                | GUI config  | Open source   | Best for                              |
 |---------------------------|---------------|--------------|-------------------------------|-------------|---------------|---------------------------------------|
-| **Serial Studio**         | Free + Pro    | Excellent    | Serial/BLE/TCP/UDP/MQTT/Modbus/CAN/USB/HID/Audio | Yes | GPL-3.0 | Embedded telemetry, IoT, education    |
+| **Serial Studio**         | Free + Pro    | Excellent    | Serial/BLE/TCP/UDP (free); MQTT/Modbus/CAN/USB/HID/Audio (Pro) | Yes | GPL-3.0 | Embedded telemetry, IoT, education    |
 | Arduino Serial Plotter    | Free          | Basic        | Serial only                   | No config   | GPL           | Quick Arduino debugging               |
 | Processing                | Free          | Manual       | Manual                        | Code-based  | LGPL          | Custom visualizations, art projects   |
 | MATLAB                    | $$$$          | Good         | Via toolboxes                 | Scripting   | Proprietary   | Scientific computing, academia        |
@@ -98,7 +98,7 @@ MATLAB is industry-standard software for numerical computing and data analysis.
 - **Serial Studio GPL:** free forever.
 - **Serial Studio Pro:** monthly, yearly, or lifetime licenses (check current pricing at [serial-studio.com](https://serial-studio.com)).
 
-**Real-time capability.** Serial Studio redraws dashboards at up to 60 FPS with no scripting, and its frame-parsing pipeline sustains 256,000 frames per second (a CI-gated benchmark). MATLAB requires writing data acquisition code and periodic plot updates.
+**Real-time capability.** Serial Studio redraws dashboards at 60 Hz by default (configurable up to 240 Hz) with no scripting, and its frame-parsing pipeline sustains 256,000 frames per second (a CI-gated benchmark). MATLAB requires writing data acquisition code and periodic plot updates.
 
 ### Serial Studio vs Python + Matplotlib/PySerial
 
@@ -174,7 +174,7 @@ Grafana is a popular web-based dashboard for time-series data, often paired with
 - You need a direct hardware connection (serial, BLE) with no intermediate server.
 - You want a desktop app with no server setup.
 - Your embedded devices have no network connectivity.
-- You need real-time, low-latency visualization (under 50 ms).
+- You need real-time, low-latency visualization without a network/database/browser round trip.
 - You do field work without internet access.
 
 **Setup complexity:**
@@ -189,43 +189,25 @@ Grafana is a popular web-based dashboard for time-series data, often paired with
 
 **Complementary use.** Serial Studio for real-time field testing, and MQTT (Pro) to forward data to Grafana for a long-term web dashboard.
 
-### Serial Studio vs TeraTerm / PuTTY
+### Serial Studio vs terminal emulators (TeraTerm, PuTTY, CoolTerm)
 
-TeraTerm and PuTTY are terminal emulators, mainly for text-based communication.
+TeraTerm and PuTTY are terminal emulators for text-based communication (SSH, Telnet, raw serial). CoolTerm is a lighter, serial-only terminal that adds basic line plotting and hex display on top of the same raw-text model.
 
-**Use TeraTerm or PuTTY when:**
+**Use a terminal emulator when:**
 
 - You're sending AT commands to modems.
 - You need SSH or Telnet to a remote server.
 - You want a serial console for embedded Linux (U-Boot, a shell).
+- You need simple serial debugging with hex display, or basic line-based text plotting.
+- You want a lightweight, portable app that just captures raw serial data to a file.
 
 **Use Serial Studio instead when:**
 
-- You need to visualize sensor data as plots and gauges.
-- You're monitoring structured telemetry, not just text.
-- You want CSV data logging.
+- You need to visualize sensor data as plots, gauges, maps, FFT, or accelerometer widgets, not just text.
+- You need data sources beyond serial, or custom frame parsing in JavaScript or Lua.
+- You want CSV data logging and project-based dashboard configurations instead of a raw terminal.
 - You need multiple simultaneous data streams.
 - You need file transfers (XMODEM, YMODEM, ZMODEM) alongside telemetry. Pro includes all three; see [File Transmission](File-Transmission.md).
-- You want plots and gauges rather than a text console.
-
-### Serial Studio vs CoolTerm
-
-CoolTerm is a serial port terminal with basic plotting.
-
-**Use CoolTerm when:**
-
-- You need simple serial debugging with hex display.
-- You want basic line-based text plotting.
-- You want to capture raw serial data to a file.
-- You want a lightweight, portable app.
-
-**Use Serial Studio instead when:**
-
-- You need advanced widgets (gauges, maps, FFT, accelerometers).
-- You need data sources beyond serial.
-- You want project-based dashboard configurations.
-- You need custom frame parsing in JavaScript or Lua.
-- You want a dashboard-style presentation rather than a raw terminal.
 
 ### Serial Studio vs a custom web dashboard (Node.js + Chart.js)
 
@@ -268,7 +250,7 @@ Plotly Dash is a Python framework for building web-based analytical dashboards.
 ### Choose Serial Studio if
 
 - You need real-time telemetry dashboards without coding.
-- Your data comes from serial, BLE, MQTT, Modbus, CAN Bus, or network sockets.
+- Your data comes from serial, BLE, or network sockets (free), or MQTT, Modbus, or CAN Bus (Pro).
 - You want ready-made visualization widgets with little setup.
 - Your team includes non-programmers who need access.
 - You need CSV export.
@@ -313,21 +295,23 @@ Plotly Dash is a Python framework for building web-based analytical dashboards.
 
 ## Feature matrix
 
+Rows marked "Pro" require the commercial edition; see [Pro vs Free](Pro-vs-Free.md) for the full licensing breakdown.
+
 | Feature                        | Serial Studio | Arduino Plotter | Processing  | MATLAB   | Python   | LabVIEW   | Grafana   |
 |--------------------------------|---------------|-----------------|-------------|----------|----------|-----------|-----------|
 | **No coding required**         | Yes           | Yes             | No          | Partial  | No       | Partial   | Partial   |
 | **Real-time (< 100 ms)**       | Yes           | Yes             | Partial     | Partial  | Partial  | Yes       | Partial   |
 | **Serial port**                | Yes           | Yes             | Manual      | Toolbox  | Manual   | Yes       | Partial   |
 | **Bluetooth LE**               | Yes           | No              | Manual      | Toolbox  | Manual   | Partial   | Partial   |
-| **MQTT**                       | Pro           | No              | Manual      | Toolbox  | Manual   | Partial   | Yes       |
+| **MQTT**                       | [Pro](Drivers-MQTT.md) | No     | Manual      | Toolbox  | Manual   | Partial   | Yes       |
 | **TCP/UDP**                    | Yes           | No              | Manual      | Toolbox  | Manual   | Yes       | Partial   |
 | **CSV export**                 | Yes           | No              | Manual      | Yes      | Yes      | Yes       | Yes       |
 | **Gauges**                     | Yes           | No              | Manual      | Yes      | Manual   | Yes       | Yes       |
 | **GPS maps**                   | Yes           | No              | Manual      | Toolbox  | Manual   | Partial   | Plugin    |
 | **FFT spectrum**               | Yes           | No              | Manual      | Yes      | Manual   | Yes       | Partial   |
-| **Waterfall (spectrogram)**    | Pro           | No              | Manual      | Yes      | Manual   | Yes       | Partial   |
-| **3D visualization**           | Pro           | No              | Yes         | Yes      | Yes      | Yes       | Partial   |
-| **Live image/camera stream**   | Pro           | No              | Manual      | Yes      | Manual   | Yes       | Plugin    |
+| **Waterfall (spectrogram)**    | [Pro](Widget-Reference.md#waterfall-pro) | No | Manual | Yes | Manual | Yes | Partial |
+| **3D visualization**           | [Pro](Widget-Reference.md#3d-plot-pro) | No | Yes    | Yes      | Yes      | Yes       | Partial   |
+| **Live image/camera stream**   | [Pro](Widget-Reference.md#image-view-pro) | No | Manual | Yes  | Manual   | Yes       | Plugin    |
 | **Custom parsing**             | JS/Lua        | No              | Yes         | Yes      | Yes      | Yes       | Partial   |
 | **Cross-platform**             | Yes           | Yes             | Yes         | Yes      | Yes      | Partial   | Yes       |
 | **Open source**                | GPL           | Yes             | Yes         | No       | Yes      | No        | Yes       |
@@ -365,5 +349,3 @@ If you were using Python just for serial plotting, Serial Studio removes the nee
 - Real-time visualization without writing plotting code.
 
 If you need custom analysis, use Serial Studio for real-time monitoring, export CSV, and run Python scripts for the analysis.
-
-Questions, or want to talk about a specific use case? Open an issue on [GitHub](https://github.com/Serial-Studio/Serial-Studio/issues) or email alex@serial-studio.com.

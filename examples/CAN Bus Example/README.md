@@ -2,13 +2,15 @@
 
 This example shows how to use CAN bus with Serial Studio. It includes a car simulator that sends realistic vehicle data.
 
+> CAN Bus support needs a Serial Studio Pro license. See [serial-studio.com](https://serial-studio.com/) for details.
+
 ![CAN Bus ECU Simulator](doc/screenshot.png)
 
 ## Quick Start (No Hardware Required!)
 
 ### 1. Start Serial Studio
-- Go to **Setup** → **CAN Bus** tab
-- Select **Driver**: `VirtualCAN`
+- In the Setup panel, select **CAN Bus** from the I/O Interface dropdown
+- Select **CAN Driver**: `Virtual CAN`
 - Select **Interface**: `can0`
 - Click **Connect**
 
@@ -19,7 +21,7 @@ python3 ecu_simulator.py --virtual
 ```
 
 ### 3. See Live CAN Data
-You will see CAN messages in Serial Studio's Console (View → Console).
+You will see CAN messages in Serial Studio's Console view (shown automatically until a frame is parsed, or toggle it from the Tools menu).
 
 Switch Console to **Hexadecimal** mode to see the raw data.
 
@@ -28,7 +30,7 @@ Switch Console to **Hexadecimal** mode to see the raw data.
 To create a dashboard with gauges, plots, and organized data:
 
 ### Step 1: Connect to CAN Bus
-Make sure Serial Studio is connected (VirtualCAN or hardware).
+Make sure Serial Studio is connected (Virtual CAN or hardware).
 
 ### Step 2: Import DBC Database
 1. In the **Setup** → **CAN Bus** panel, click **Import DBC File…**
@@ -50,18 +52,18 @@ Look at the summary, then click **Create Project**.
    - Lua frame parser (decodes CAN frames automatically)
    - Groups for each CAN message
    - Datasets for each signal
-   - Auto-assigned widgets (Gauges, Plots, Bars)
+   - Auto-assigned widgets (Gauges, Meters, Bars)
 2. The **Project Editor** opens automatically
-3. Click **File** → **Save** (or Ctrl+S)
+3. Click the **Save** toolbar button (or Ctrl+S)
 4. Save as `vehicle_can.ssproj`
 
 ### Step 5: View the Dashboard
 1. Close the Project Editor
 2. The Dashboard automatically loads your project
 3. You'll see:
-   - **Engine RPM** gauge
-   - **Vehicle Speed** plot
-   - **Coolant Temperature** gauge
+   - **Engine RPM** meter
+   - **Vehicle Speed** meter
+   - **Coolant Temperature** bar
    - **Battery State of Charge** bar
    - And many more widgets for all signals
 
@@ -106,14 +108,14 @@ The ECU simulator sends realistic automotive data:
 
 ### Files
 
-- **`ecu_simulator.py`**: All-in-one simulator (VirtualCAN, PCAN, SocketCAN, Vector)
+- **`ecu_simulator.py`**: All-in-one simulator (Virtual CAN, PCAN, SocketCAN, Vector)
 - **`ecu_simulator.dbc`**: DBC database file
 - **`ecu_simulator.ssproj`**: Ready-made project built from the DBC file, then tidied into data grids so every signal is visible at a glance (load it to skip the import steps)
 - **`README.md`**: This file
 
 ## Usage Options
 
-### VirtualCAN (Recommended for Testing)
+### Virtual CAN (Recommended for Testing)
 
 **Works on macOS/Windows/Linux without hardware!**
 
@@ -129,7 +131,7 @@ python3 ecu_simulator.py --virtual -c can1
 ```
 
 **In Serial Studio:**
-- Driver: `VirtualCAN`
+- Driver: `Virtual CAN`
 - Interface: `can0` (or your specified channel)
 
 ### Physical Hardware
@@ -138,7 +140,7 @@ Serial Studio supports all Qt CAN backends:
 
 | Backend | Platforms | Typical Use |
 |---------|-----------|-------------|
-| **VirtualCAN** | All | Testing without hardware (TCP-based) |
+| **Virtual CAN** | All | Testing without hardware (TCP-based) |
 | **SocketCAN** | Linux | Most USB-CAN adapters on Linux |
 | **PEAK CAN** | All | PEAK PCAN-USB adapters |
 | **Vector CAN** | Windows/Linux | Vector VN-series interfaces |
@@ -222,7 +224,7 @@ sudo ip link set up can0
 
 ### "No CAN Drivers Found"
 
-**VirtualCAN**: Should always be available. If not, Qt installation may be incomplete.
+**Virtual CAN**: Should always be available. If not, Qt installation may be incomplete.
 
 **Physical Hardware**:
 - **macOS/Windows**: Install CAN hardware drivers first
@@ -230,11 +232,11 @@ sudo ip link set up can0
 
 ### Python Simulator Won't Connect
 
-**VirtualCAN Mode**:
+**Virtual CAN Mode**:
 ```
 Error: Failed to connect to Qt VirtualCAN
 
-Solution: Start Serial Studio FIRST, connect to VirtualCAN, THEN run the simulator.
+Solution: Start Serial Studio FIRST, connect to Virtual CAN, THEN run the simulator.
 The first client to connect creates the TCP server.
 ```
 
@@ -249,7 +251,7 @@ python3 -c "import can; print(can.detect_available_configs())"
 
 ### No Data in Serial Studio
 
-1. **Check Console**: Go to View → Console, switch to **Hexadecimal** mode
+1. **Check Console**: open the Console view (shown automatically, or toggle it from the Tools menu), switch to **Hexadecimal** mode
 2. **Verify Connection**: Status bar should show "Connected"
 3. **Check Bitrate**: Must match on both sides (500000)
 4. **Verify Interface**: Both must use same interface name
@@ -298,7 +300,7 @@ cansend vcan0 100#1122334455    # Send test frame
 ```
 
 **Serial Studio Console**:
-- View → Console
+- Open the Console view (shown automatically, or toggle it from the Tools menu)
 - Set Display Mode to **Hexadecimal**
 - All CAN frames shown in format: `[ID_H ID_L DLC DATA...]`
 
@@ -310,3 +312,7 @@ cansend vcan0 100#1122334455    # Send test frame
 - [DBC File Format Specification](https://www.csselectronics.com/pages/can-dbc-file-database-intro)
 - [PEAK PCAN Products](https://www.peak-system.com/)
 - [Vector CAN Products](https://www.vector.com/)
+
+## License
+
+This example is dual-licensed under GPL-3.0 and the Serial Studio Commercial License.

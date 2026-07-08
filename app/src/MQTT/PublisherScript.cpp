@@ -49,6 +49,8 @@ static void openSafeLibs(lua_State* L)
     lua_setfield(L, -2, "dump");
   }
   lua_pop(L, 1);
+
+  DataModel::installLuaRestrictedOs(L);
 }
 
 /**

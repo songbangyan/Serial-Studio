@@ -4,7 +4,7 @@ The Bluetooth Low Energy (BLE) driver lets Serial Studio connect to any BLE peri
 
 For "classic" Bluetooth devices (the older 2.x flavor that uses the Serial Port Profile), the OS already exposes a virtual COM port. Use the [UART driver](Drivers-UART.md) for those. This page covers BLE only.
 
-## What is Bluetooth Low Energy?
+## Bluetooth Low Energy basics
 
 Bluetooth Low Energy was introduced in Bluetooth 4.0 (2010) as a low-power, low-data-rate companion to classic Bluetooth. It is *not* wire-compatible with classic Bluetooth; the radio is shared but the protocol stack is entirely separate.
 
@@ -98,7 +98,7 @@ The BLE driver wraps Qt's `QLowEnergyController` and `QLowEnergyService`. The Se
 
 From that point on, every notification's payload bytes enter the incoming stream exactly as if they had arrived over UART, and the configured frame detection splits them into frames. Quick Plot mode frames on line endings; in a project, set the source's frame detection to **No Delimiters** to map one notification to one frame, and decode packed binary payloads in a [frame parser](JavaScript-API.md).
 
-Writes use the same selection in reverse: data sent through the console or an [action](Actions.md) is written to the selected characteristic with Write With Response. Devices that split RX and TX across two characteristics (the Nordic UART Service pattern) take writes through `io.ble.writeCharacteristic`, which resolves any characteristic in the selected service by UUID and uses Write Without Response when the characteristic supports it.
+Writes use the same selection in reverse: data sent through the console or an [action](Actions.md) is written to the selected characteristic, using Write Without Response when the characteristic supports it and Write With Response otherwise. Devices that split RX and TX across two characteristics (the Nordic UART Service pattern) take writes through `io.ble.writeCharacteristic`, which resolves any characteristic in the selected service by UUID and applies the same rule.
 
 The device, service, and notify characteristic are saved with the project (the device by name/address, the service and characteristic by UUID, so they survive a firmware update that reorders the GATT table). On the next connection Serial Studio reselects them automatically after discovery, and only then reports the source as connected, so anything that runs on connect (a [Control Loop](Control-Script.md), an auto-execute action) sees a fully wired GATT. A control loop should therefore handle only the write handshake, not service or characteristic selection.
 
@@ -120,7 +120,7 @@ The driver lives on the main thread. QtBluetooth's event-driven async I/O delive
 
 ### Scripting and API control
 
-The same flow is scriptable through the `io.ble.*` commands of the [JSON-RPC API](API-Reference.md): `selectDevice` (`deviceIndex`), `selectService` (`serviceIndex`), and `setCharacteristicIndex` (`characteristicIndex`) select by index into the lists returned by `listDevices`, `listServices`, and `listCharacteristics`; `selectServiceByUuid` (`serviceUuid`) and `setNotifyCharacteristic` (`characteristicUuid`) select by UUID, which survives GATT-table reordering; `writeCharacteristic` (`characteristicUuid`, base64 `data`) writes to any characteristic in the selected service. `startDiscovery`, `getConfig`, and `getStatus` round out the set. UUID parameters accept the 16-bit short form (`fff1`, `0xFFF1`) or the full 128-bit form, with or without braces. When the in-app AI issues these commands, they sit behind the **Allow device control** toggle.
+The same flow is scriptable through the `io.ble.*` commands of the [JSON-RPC API](API-Reference.md): `selectDevice` (`deviceIndex`), `selectService` (`serviceIndex`), and `setCharacteristicIndex` (`characteristicIndex`) select by index into the lists returned by `listDevices`, `listServices`, and `listCharacteristics`; `selectServiceByUuid` (`serviceUuid`) and `setNotifyCharacteristic` (`characteristicUuid`) select by UUID, which survives GATT-table reordering; `writeCharacteristic` (`characteristicUuid`, base64 `data`) writes to any characteristic in the selected service. `startDiscovery`, `getConfig`, and `getStatus` round out the set. UUID parameters accept the 16-bit short form (`fff1`, `0xFFF1`) or the full 128-bit form, with or without braces. When the in-app AI issues commands that change device state or write bytes (`selectDevice`, `selectService`, `selectServiceByUuid`, `setCharacteristicIndex`, `setNotifyCharacteristic`, `startDiscovery`, `writeCharacteristic`), they sit behind the **Allow device control** toggle; the read-only `listDevices`, `listServices`, `listCharacteristics`, `getConfig`, and `getStatus` queries do not.
 
 For step-by-step setup, see the [Protocol Setup Guides, Bluetooth LE section](Protocol-Setup-Guides.md).
 

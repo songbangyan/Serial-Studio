@@ -6,6 +6,8 @@ This project subscribes to Helsinki Regional Transport's (HSL) public MQTT feed 
 
 Live, real-world telemetry with no extra hardware. You only need Serial Studio and an internet connection.
 
+> The MQTT driver is a Pro feature and requires a Serial Studio Pro license (trial or paid). The free/GPL build does not include it. See [serial-studio.com](https://serial-studio.com/) for details.
+
 ![HSL Helsinki Public Transit in Serial Studio](doc/screenshot.png)
 
 ## Telemetry source
@@ -19,7 +21,7 @@ HSL exposes its high-frequency positioning feed at `mqtt.hsl.fi:1883` under the 
 | Username       | (empty)                            |
 | Password       | (empty)                            |
 | Topic filter   | `/hfp/v2/journey/ongoing/vp/#`     |
-| Mode           | Subscriber                         |
+| Bus Type       | `MQTT Subscriber`                  |
 
 Each MQTT message wraps a Vehicle Position object under the `VP` key:
 
@@ -42,7 +44,7 @@ Each MQTT message wraps a Vehicle Position object under the `VP` key:
 
 - Live map widget tracking the chosen vehicle by latitude and longitude.
 - Speed meter with an in-project value transform that converts m/s to km/h.
-- Data grid showing route designation, direction, timestamp, and heading.
+- Data grid showing vehicle ID, route designation, direction, timestamp, speed, and heading.
 - Pure JavaScript MQTT stream parser, no native code required.
 
 ## How the parser works
@@ -66,9 +68,9 @@ function transform(value) {
 
 ## How to run
 
-- Open Serial Studio.
-- **File → Open Project File**, pick `HSL Helsinki Public Transit.ssproj`.
-- The MQTT source is preconfigured. Hit **Connect**.
+1. Open Serial Studio.
+2. On the toolbar, click **Open Project**, then pick `HSL Helsinki Public Transit.ssproj`.
+3. The MQTT source is preconfigured. Hit **Connect**.
 
 After the first matching message arrives (a second or two while the broker pushes the next position update for your target vehicle), the dashboard opens with the map zoomed to the vehicle's current location.
 

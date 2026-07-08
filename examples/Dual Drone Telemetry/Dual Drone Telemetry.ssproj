@@ -318,8 +318,8 @@
                 {
                     "alarmBands": [
                         {
-                            "max": 25.2,
-                            "min": 21,
+                            "max": 21,
+                            "min": 18,
                             "severity": 2
                         }
                     ],
@@ -379,8 +379,8 @@
                 {
                     "alarmBands": [
                         {
-                            "max": 100,
-                            "min": 20,
+                            "max": 20,
+                            "min": 0,
                             "severity": 2
                         }
                     ],
@@ -733,8 +733,8 @@
                 {
                     "alarmBands": [
                         {
-                            "max": 25.2,
-                            "min": 21,
+                            "max": 21,
+                            "min": 18,
                             "severity": 2
                         }
                     ],
@@ -794,8 +794,8 @@
                 {
                     "alarmBands": [
                         {
-                            "max": 100,
-                            "min": 20,
+                            "max": 20,
+                            "min": 0,
                             "severity": 2
                         }
                     ],

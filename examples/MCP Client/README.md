@@ -9,9 +9,9 @@ This example demonstrates how to use the **Model Context Protocol (MCP)** with S
 ### 1. Enable the API Server
 
 1. Launch **Serial Studio**
-2. Open **Settings** (⚙️ icon or `Cmd+,`)
+2. Open **Preferences** (⚙️ icon in the toolbar, or `Cmd+,` on macOS)
 3. Enable **"Enable API Server (Port 7777)"** switch
-4. Close settings - server is now running on `localhost:7777`
+4. Close Preferences - server is now running on `localhost:7777`
 
 ### 2. Run the Example Client
 
@@ -40,8 +40,8 @@ python3 client.py
 ✓ Available resources (2):
   • serialstudio://frame/current: Current Frame
     The most recent telemetry frame received
-  • serialstudio://frame/history: Frame History
-    Last 100 telemetry frames
+  • serialstudio://frame/history: Latest Frame
+    The latest telemetry frame, as a JSON array
 
 ✓ Resource 'serialstudio://frame/current' read successfully
 {
@@ -56,7 +56,7 @@ python3 client.py
 **Model Context Protocol (MCP)** is Anthropic's open standard for connecting AI models to external tools and data sources. Serial Studio implements MCP to allow AI assistants like Claude to:
 
 - **Execute commands** - Control Serial Studio (connect devices, start exports, etc.)
-- **Read telemetry data** - Access real-time sensor data and frame history
+- **Read telemetry data** - Access the current real-time sensor frame
 - **Analyze data** - Use AI to find patterns, anomalies, or insights
 
 ## Architecture
@@ -94,34 +94,47 @@ Serial Studio uses a **hybrid protocol** approach:
 Every Serial Studio API command is exposed as an MCP tool:
 
 **I/O Management:**
-- `io.connect` - Connect to device
-- `io.disconnect` - Disconnect
-- `io.getStatus` - Get connection status
-- `io.setBusType` - Set bus type (UART, Network, BLE, etc.)
+
+| Command | Description |
+|---------|-------------|
+| `io.connect` | Connect to device |
+| `io.disconnect` | Disconnect |
+| `io.getStatus` | Get connection status |
+| `io.setBusType` | Set bus type (UART, Network, BLE, etc.) |
 
 **UART Configuration:**
-- `io.uart.setBaudRate` - Set baud rate
-- `io.uart.setDataBits` - Set data bits
-- `io.uart.setParity` - Set parity
+
+| Command | Description |
+|---------|-------------|
+| `io.uart.setBaudRate` | Set baud rate |
+| `io.uart.setDataBits` | Set data bits |
+| `io.uart.setParity` | Set parity |
 
 **Network Configuration:**
-- `io.network.setRemoteAddress` - Set remote host
-- `io.network.setTcpPort` - Set TCP port
-- `io.network.setUdpRemotePort` - Set UDP remote port
-- `io.network.setUdpLocalPort` - Set UDP local port
+
+| Command | Description |
+|---------|-------------|
+| `io.network.setRemoteAddress` | Set remote host |
+| `io.network.setTcpPort` | Set TCP port |
+| `io.network.setUdpRemotePort` | Set UDP remote port |
+| `io.network.setUdpLocalPort` | Set UDP local port |
 
 **Project Management:**
-- `project.exportJson` - Read the active project as JSON
-- `project.template.list` / `project.template.apply` - Browse and apply
-  bundled starters
-- `project.group.add` / `project.dataset.add` / `project.workspace.add`
-  - Edit the in-memory project
-- `project.frameParser.setCode` - Update frame parser source
+
+| Command | Description |
+|---------|-------------|
+| `project.exportJson` | Read the active project as JSON |
+| `project.template.list` / `project.template.apply` | Browse and apply bundled starters |
+| `project.group.add` / `project.dataset.add` / `project.workspace.add` | Edit the in-memory project |
+| `project.frameParser.setCode` | Update frame parser source |
 
 **Export:**
-- `csvExport.setEnabled` - Toggle CSV export
-- `csvExport.close` - Close the current CSV file
-- `mdf4Export.setEnabled` (Pro) - Toggle MDF4 export
+
+| Command | Description |
+|---------|-------------|
+| `csvExport.setEnabled` | Toggle CSV export |
+| `csvExport.close` | Close the current CSV file |
+| `mdf4Export.setEnabled` (Pro) | Toggle MDF4 export |
 
 **...and many more!** Send `tools/list` over MCP (or
 `{"command": "api.getCommands"}` over the legacy JSON protocol) to
@@ -135,9 +148,9 @@ enumerate the complete surface.
   - Real-time sensor data
   - Updated whenever new frame arrives
 
-- **`serialstudio://frame/history`** - Last 100 frames (JSON array)
-  - Historical data for trend analysis
-  - Useful for AI-powered pattern detection
+- **`serialstudio://frame/history`** - Latest telemetry frame, as a JSON array
+  - Same frame as `serialstudio://frame/current`, wrapped in a single-element array
+  - No rolling buffer: the array holds 0 or 1 frames
 
 Resources support **subscription** for real-time updates.
 
@@ -169,8 +182,8 @@ result = client.call_tool("io.getStatus")
 # Read current frame
 frame = client.read_resource("serialstudio://frame/current")
 
-# Read frame history
-history = client.read_resource("serialstudio://frame/history")
+# Read the latest frame as a single-element array
+frame_array = client.read_resource("serialstudio://frame/history")
 ```
 
 ### Manual Testing with netcat
@@ -199,7 +212,7 @@ nc localhost 7777
 #### Step 1: Enable Serial Studio API Server
 
 1. Launch **Serial Studio**
-2. Open **Settings** (⚙️ icon or `Cmd+,` / `Ctrl+,`)
+2. Open **Preferences** (⚙️ icon in the toolbar, or `Cmd+,` on macOS)
 3. Enable **"Enable API Server (Port 7777)"**
 4. Keep Serial Studio running in the background
 
@@ -215,7 +228,8 @@ examples/MCP Client/claude_desktop_bridge.py
 This script connects Claude Desktop (stdio) to Serial Studio's TCP API (port 7777).
 
 **Features:**
-- Automatic reconnection with retry logic
+- Retries the initial connection to Serial Studio up to 5 times at startup (does not
+  reconnect mid-session; a dropped connection ends the bridge process)
 - Proper error handling and logging
 - Graceful shutdown
 - Detailed status messages in Claude Desktop logs
@@ -300,7 +314,7 @@ cd "examples\MCP Client"; (Get-Location).Path
 
 1. **Quit Claude Desktop completely** (not just close window)
 2. **Start Serial Studio** (if not already running)
-3. **Enable API Server** in Serial Studio settings
+3. **Enable API Server** in Serial Studio Preferences
 4. **Launch Claude Desktop**
 
 #### Step 5: Verify Integration
@@ -333,7 +347,7 @@ You can now ask Claude to:
 
 **Analyze data:**
 ```
-"Read the last 100 frames and tell me if there are any anomalies in the temperature sensor data"
+"Subscribe to the current telemetry frame and tell me if the temperature sensor readings look anomalous"
 ```
 
 **Control Serial Studio:**
@@ -373,7 +387,7 @@ You can now ask Claude to:
 
 **Fix:**
 1. Ensure Serial Studio is running **before** starting Claude Desktop
-2. Enable API server in Serial Studio settings
+2. Enable API server in Serial Studio Preferences
 3. Check port 7777 is not blocked: `lsof -i :7777` (macOS/Linux) or `netstat -ano | findstr :7777` (Windows)
 4. Try connecting manually: `nc localhost 7777` (should connect immediately)
 
@@ -381,7 +395,7 @@ You can now ask Claude to:
 
 **Fix:**
 1. Serial Studio is not running → Start Serial Studio
-2. API server not enabled → Enable in Settings
+2. API server not enabled → Enable in Preferences
 3. Port already in use → Kill process using port 7777 or restart Serial Studio
 
 #### Bridge works but no telemetry data
@@ -432,7 +446,7 @@ if b'"method":"tools/call"' in line:
 
 ### Connection Refused
 
-- ✓ Check API server is enabled in Serial Studio settings
+- ✓ Check API server is enabled in Serial Studio Preferences
 - ✓ Verify Serial Studio is running
 - ✓ Confirm port 7777 is free: `lsof -i :7777`
 
@@ -452,7 +466,9 @@ if b'"method":"tools/call"' in line:
 
 MCP connections use the same security as the legacy API:
 
-- **Localhost only** - Server binds to 127.0.0.1
+- **Localhost only by default** - Server binds to 127.0.0.1; the "Allow External API
+  Connections" setting opts into binding all interfaces, gated behind a confirmation
+  warning and a required auth token
 - **Rate limiting** - 200 messages/second per client
 - **Buffer limits** - 4MB max buffer, 1MB max message
 - **JSON depth** - Max 64 nesting levels
@@ -489,10 +505,10 @@ assert frame["groups"][0]["datasets"][0]["value"] < 100
 ### 2. AI-Powered Anomaly Detection
 
 ```python
-# Read frame history
-history = client.read_resource("serialstudio://frame/history")
+# Subscribe to real-time frame updates
+client.send_request("resources/subscribe", {"uri": "serialstudio://frame/current"})
 
-# Send to Claude for analysis
+# Send each incoming frame to Claude for analysis
 # "Analyze this telemetry data and identify any anomalies..."
 ```
 

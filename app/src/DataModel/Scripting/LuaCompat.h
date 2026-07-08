@@ -39,4 +39,11 @@ void installLuaCompat(lua_State* L);
  */
 void installLuaConsole(lua_State* L);
 
+/**
+ * @brief Installs an os table restricted to the side-effect-free time functions
+ * (time, date, clock, difftime), so timestamping scripts work while process and
+ * filesystem entries (execute, remove, getenv, ...) never exist in the sandbox.
+ */
+void installLuaRestrictedOs(lua_State* L);
+
 }  // namespace DataModel

@@ -17,17 +17,17 @@ If you have never used MQTT before, read [MQTT Topics & Semantics](MQTT-Topics.m
 
 ## Where to configure it
 
-The Publisher has its own node in the project editor's left tree, directly under **Devices**. Selecting it opens a form-style editor in the same table layout as a device source.
+The Publisher has its own node in the project editor's left tree, as a top-level item alongside **Control Loop**, each action, and each data source. Selecting it opens a form-style editor in the same table layout as a device source.
 
 ```
 Project
-├─ Devices
-│   ├─ Device 1 (UART)
-│   └─ Device 2 (MQTT Subscriber)
+├─ Control Loop
 ├─ MQTT Publisher          <-- here
-├─ Actions
-├─ Groups
-└─ ...
+├─ Action 1
+├─ Main Device (UART)
+├─ Device 2 (MQTT Subscriber)
+└─ Dashboard Widgets
+    └─ ...groups...
 ```
 
 The header bar above the form shows the live connection state (green LED + "Connected to broker" when up, red LED + "Not connected" otherwise) and three actions, all disabled until **Enable Publishing** is on:
@@ -126,14 +126,14 @@ Click **Edit Script** in the header to open the editor dialog. It has the same l
 - **Language** dropdown: JavaScript or Lua. The selection is stored in the project file.
 - **Template** dropdown: ready-made starters for common integrations:
   - **Home Assistant Discovery + State**: publishes the auto-discovery config message and per-frame state updates.
-  - **InfluxDB Line Protocol**: formats `measurement,tag=value field=value timestamp` lines suitable for a Telegraf `mqtt_consumer` input.
-  - **Sparkplug B (NDATA)**: Eclipse Sparkplug B-shaped JSON surrogate; swap the body for a protobuf encoder in production.
+  - **InfluxDB Line Protocol**: formats `measurement,tag=value field=value timestamp` lines suitable for a Telegraf `mqtt_consumer` input. Timestamps come from `os.time()`.
+  - **Sparkplug B (NDATA)**: Eclipse Sparkplug B-shaped JSON surrogate; swap the body for a protobuf encoder in production. Timestamps come from `os.time()`.
   - **AWS IoT / Azure IoT Shadow**: `{"state":{"reported":{...}}}` payload accepted by both clouds.
 - Code editor with syntax highlighting, Ctrl-I to format the selection, Ctrl-Shift-I to format the document.
 - Test row at the bottom: paste sample bytes in **Frame**, tick **Hex** if they are hex-encoded, click **Test**, and the dialog shows the string the script would publish (or the error). This runs in a disposable engine and never touches the live broker session.
 - **Apply** saves the script into the project; **Cancel** discards changes.
 
-The script is compiled lazily on the worker thread the first time a frame arrives after a code change. A frame whose script call fails is skipped; the rest of the batch still publishes. JavaScript runs under a 500 ms watchdog per call: exceed the budget and the call is killed and that frame skipped. Lua scripts run in a sandbox limited to the `table`, `string`, and `math` libraries; `load`, `loadfile`, and `dofile` are removed. Catch compile and runtime errors with the editor's **Test** button before applying.
+The script is compiled lazily on the worker thread the first time a frame arrives after a code change. A frame whose script call fails is skipped; the rest of the batch still publishes. JavaScript runs under a 500 ms watchdog per call: exceed the budget and the call is killed and that frame skipped. Lua scripts run in a sandbox limited to the `table`, `string`, and `math` libraries plus a restricted `os` table that exposes only `os.time`, `os.date`, `os.clock`, and `os.difftime`; `load`, `loadfile`, and `dofile` are removed. The editor's **Test** button runs the script in a disposable engine with the same sandbox, so a script that passes **Test** behaves identically once applied.
 
 ### Dashboard Data (CSV)
 

@@ -1,10 +1,10 @@
 # UART / Serial Driver
 
-The UART driver handles plain serial communication: USB-to-serial adapters, RS-232 ports, RS-485 buses, and Bluetooth Classic devices that the OS exposes as virtual COM ports. It was the first driver Serial Studio shipped and is still the most widely used.
+The UART driver handles plain serial communication: USB-to-serial adapters, RS-232 ports, RS-485 buses, and Bluetooth Classic devices that the OS exposes as virtual COM ports. It is included in the free build and is the most common transport for microcontroller telemetry.
 
 If you have never used a serial port before, read the next section first. If you only need the configuration reference, skip to **How Serial Studio uses it**.
 
-## What is UART?
+## UART basics
 
 UART stands for **Universal Asynchronous Receiver-Transmitter**. It is the small piece of hardware inside a microcontroller, a USB-to-serial chip, or a PC's chipset that converts parallel bytes into a sequential stream of bits and back. There is no clock line between the two ends; both sides agree in advance on how fast the bits will arrive, and the receiver synchronises itself to the start of each byte.
 
@@ -14,9 +14,7 @@ A UART is a peripheral, not a protocol. The protocol it implements is usually ca
 
 Every byte sent over a UART line is wrapped in a small fixed-shape frame: an idle high level, a single low start bit, the data bits (typically 8, least-significant first), an optional parity bit, and one or more high stop bits before the line returns to idle.
 
-![UART frame on the wire (8N1, byte 0x4B)](https://quickchart.io/chart/render/zf-ab7ff419-8d59-4cce-a948-0af6371223e4)
-
-The trace above shows the byte `0x4B` (`0100 1011`) sent as 8N1: 8 data bits, no parity, 1 stop bit. Bit times are equal; the receiver clocks at a multiple of the baud rate and samples each bit near the middle.
+As an example, the byte `0x4B` (`0100 1011`) sent as 8N1 (8 data bits, no parity, 1 stop bit) looks like this on the wire: idle high, a low start bit, the eight data bits least-significant first, and a high stop bit. Bit times are equal; the receiver clocks at a multiple of the baud rate and samples each bit near the middle.
 
 - **Idle** is logic high. The line sits high while nothing is being sent.
 - **Start bit** drops the line low for one bit-time. This is the receiver's cue to start clocking in bits.
@@ -82,8 +80,8 @@ The UART driver wraps Qt's `QSerialPort`. Settings exposed in the Setup Panel ma
 | **Parity** | None / Even / Odd / Space / Mark | None |
 | **Stop Bits** | 1 / 1.5 / 2 | 1 |
 | **Flow Control** | None / RTS/CTS / XON/XOFF | None |
-| **Send DTR Signal** | Asserts the DTR line on connect (some boards reset on DTR toggle, e.g. Arduino) | on |
 | **Auto Reconnect** | Rescans ports once per second and reconnects when the last-used device re-enumerates | off |
+| **Send DTR Signal** | Asserts the DTR line on connect (some boards reset on DTR toggle, e.g. Arduino) | on |
 
 On Linux and macOS the **COM Port** field is editable: type a device path missing from the list (for example `/dev/ttyAMA0`) and press Enter to register it. On macOS each adapter is listed once, as its `cu.*` device; the `tty.*` duplicates are hidden.
 

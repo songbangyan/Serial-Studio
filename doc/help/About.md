@@ -88,25 +88,25 @@ Datasets are no longer islands. Every project carries an auto-generated **system
 
 Each dataset can carry a small Lua or JavaScript snippet, `function transform(value) → number`, that runs every frame. Transforms compile once when the project loads and call into a shared engine per source, so an EMA, a unit conversion, or a calibration curve costs roughly a function call per frame. Transforms can derive **virtual datasets** (no frame index, computed entirely from other registers), which is how things like running averages, rate-of-change, and derived KPIs become first-class datasets. See [Dataset Value Transforms](Dataset-Transforms.md).
 
-### Output (control) widgets
+### Output (control) widgets (Pro)
 
-Buttons, toggles, sliders, knobs, text fields, and a freeform Output Panel send data *back* to the device. Each one runs a JavaScript template (GCode, SCPI, Modbus, NMEA, CAN, SLCAN, GRBL, custom binary packets) to convert UI state into bytes. There's a Transmit Test Dialog so you can preview the wire output before firing the real command. See [Output Controls](Output-Controls.md).
+Buttons, toggles, sliders, knobs, text fields, and a freeform Output Panel send data *back* to the device. Each one runs a JavaScript template (GCode, SCPI, Modbus, NMEA, CAN, SLCAN, GRBL, custom binary packets) to convert UI state into bytes. There's a Transmit Test Dialog so you can preview the wire output before firing the real command. Output controls require a Pro license. See [Output Controls](Output-Controls.md).
 
 ### Control Loop and the scripting SDK
 
 Output widgets cover button-press commands; the Control Loop covers automation. A project carries one `setup()` / `loop()` script, the same mental model as an Arduino sketch, that Serial Studio runs on a worker thread over the life of a connection. Through the I/O scripting SDK (`io.*`: device writes, `deviceWriteAndWait` handshakes, latest-frame capture, `dashboardTick`) the loop can send wake-up sequences, poll registers on a timer, keep a link alive, or step a state machine, without touching firmware. The loop runs off the data hotpath and is bounded by a watchdog, so a slow script can't stall parsing or the UI. See [Control Loop](Control-Script.md).
 
-### Session Database
+### Session Database (Pro)
 
-Sessions can be recorded into a SQLite `.db` file. Parsed frames, raw bytes, data-table snapshots, and project metadata all live in one file. The Database Explorer browses, tags, and exports sessions. The SQLite Player replays a stored session through the live FrameBuilder pipeline so dashboards and reports work identically on recorded data. Session Reports turn the same database into a styled PDF with cover, test info, summary, and per-parameter chart sections. See [Session Database](Session-Database.md) and [Session Reports](Session-Reports.md).
+Serial Studio Pro can record sessions into a SQLite `.db` file. Parsed frames, raw bytes, data-table snapshots, and project metadata all live in one file. The Database Explorer browses, tags, and exports sessions. The SQLite Player replays a stored session through the live FrameBuilder pipeline so dashboards and reports work identically on recorded data. Session Reports turn the same database into a styled PDF with cover, test info, summary, and per-parameter chart sections. See [Session Database](Session-Database.md) and [Session Reports](Session-Reports.md).
 
 ### File transmission
 
-XMODEM, YMODEM, and ZMODEM are built in for firmware uploads, log retrieval, and any device that talks one of the classic file-transfer protocols. ZMODEM includes ZRPOS-based crash recovery. See [File Transmission](File-Transmission.md).
+XMODEM, YMODEM, and ZMODEM are built in for firmware uploads, log retrieval, and any device that talks one of the classic file-transfer protocols. ZMODEM includes ZRPOS-based crash recovery. Ships in commercial builds only; GPL builds compiled from source do not include it. See [File Transmission](File-Transmission.md).
 
 ### Operator deployments and Project Lock
 
-Two features aimed at the engineer-hands-off-to-operator workflow. A **deployment** is a saved native launcher (`.lnk` / `.app` / `.desktop`) that opens a specific project with a fixed set of runtime flags (toolbar hidden, optional auto-connect and fullscreen), so an operator gets a single-icon entry point instead of hunting for the right `.ssproj`. A **Project Lock** puts a password gate (salted PBKDF2-SHA256, stored in the project file) in front of the Project Editor, so an operator can run the dashboard but can't rewire parsers or move widgets mid-shift. Neither pretends to be a security boundary; both are about operator/engineer separation. See [Operator Deployments](Operator-Deployments.md) and [Project Lock](Project-Lock.md).
+Two features aimed at the engineer-hands-off-to-operator workflow. A **deployment** is a saved native launcher (`.lnk` / `.app` / `.desktop`) that opens a specific project with a fixed set of runtime flags (toolbar hidden, optional auto-connect and fullscreen), so an operator gets a single-icon entry point instead of hunting for the right `.ssproj`. Generating a deployment requires a Pro license, and the target machine also needs a Pro build to launch it — a GPL build refuses the runtime flags a deployment writes and fails to launch instead. A **Project Lock** puts a password gate (salted PBKDF2-SHA256, stored in the project file) in front of the Project Editor, so an operator can run the dashboard but can't rewire parsers or move widgets mid-shift; Project Lock is available in all builds, not license-gated. Neither pretends to be a security boundary; both are about operator/engineer separation. See [Operator Deployments](Operator-Deployments.md) and [Project Lock](Project-Lock.md).
 
 ### AI integration
 

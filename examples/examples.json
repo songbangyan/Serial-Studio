@@ -123,7 +123,7 @@
   {
     "id": "ISS Tracker",
     "title": "ISS Tracker",
-    "description": "Visualizes real-time position and velocity of the International Space Station fetched from a public API and streamed over UDP with interactive map display.",
+    "description": "Visualizes the real-time position of the International Space Station fetched from a public API and streamed over TCP with interactive map display.",
     "category": "Simulation",
     "difficulty": "Beginner",
     "hasProjectFile": true,

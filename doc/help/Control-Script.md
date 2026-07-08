@@ -21,9 +21,9 @@ The Control Loop has its own node in the project editor's left tree, directly un
 
 ```
 Project
-├─ Device 1 (Bluetooth LE)
 ├─ Control Loop            <-- here
 ├─ Actions
+├─ Device 1 (Bluetooth LE)
 ├─ Groups
 └─ ...
 ```
@@ -143,7 +143,7 @@ A control loop is not limited to sending commands: it can also read what the dev
 
 `newFrame()` sees the data *before* dataset mapping, so it includes channels that no dataset reads yet, which is exactly what you need to detect a new channel and create a widget for it. (`dashboard.getData()`, by contrast, returns only data already mapped to datasets.) The raw command underneath is `io.getLatestFrame`, which also accepts `{ encoding: "base64" }` for binary payloads.
 
-In ConsoleOnly mode frames are not parsed, so `values` is empty and only `text` carries the payload. Pace any polling loop with `delay()`; 50-250 ms is plenty for channel detection.
+Before the first frame of a connection arrives, `newFrame()` returns `null`; check for that before reading `values`. Pace any polling loop with `delay()`; 50-250 ms is plenty for channel detection.
 
 ### Data tables: tableGet() / tableSet()
 
@@ -199,8 +199,8 @@ ensureDashboard([
 ```
 
 - Groups are matched by `title`; datasets are matched by their parser `index` within the group. If you rename a generated group in the Project Editor, the script no longer finds it and recreates it under the original name; treat the spec as the source of truth for the generated parts of a project.
-- Dataset flags map to widgets: `plot`, `fft`, `bar`, `gauge`, `compass`, `led`, `waterfall` (or pass a raw `options` bitfield instead).
-- Group `widget` accepts `datagrid`, `accelerometer`, `gyroscope`, `gps`, `multiplot`, `none`, `plot3d`, `image`, or `painter`.
+- Dataset flags map to widgets: `plot`, `fft`, `bar`, `gauge`, `compass`, `led`, `waterfall` (or pass a raw `options` bitfield instead). `waterfall` needs a Pro license.
+- Group `widget` accepts `datagrid`, `accelerometer`, `gyroscope`, `gps`, `multiplot`, `none`, `plot3d`, `image`, or `painter`. `plot3d` and `image` need a Pro license; without one, a `plot3d` group renders as a MultiPlot titled "*(title)* (Fallback)".
 - Created groups and datasets are real project edits: they are saved with the project exactly like changes made in the Project Editor, so the dashboard the script builds is still there the next time the project opens.
 
 ## Examples
@@ -220,7 +220,7 @@ function setup() {
 }
 ```
 
-The characteristic UUID is a plain string and the payload a hex string with `SerialStudio.Hex`; do not wrap the arguments in an object and do not hand-encode base64. Configure the service and notify characteristic on the source (they are saved in the project) rather than selecting them from the script. For a binary BLE device, set the source's decoder to **Binary** with **No Delimiters** so the frame parser receives each notification as an array of byte values; see [Frame Parser Reference](JavaScript-API.md) for reading bytes and decoding floats.
+The characteristic UUID is a plain string and the payload a hex string with `SerialStudio.Hex`; do not wrap the arguments in an object and do not hand-encode base64. Configure the service and notify characteristic on the source (they are saved in the project) rather than selecting them from the script. For a binary BLE device, set the source's decoder to **Binary (raw bytes)** with **No delimiters (whole chunk)** so the frame parser receives each notification as an array of byte values; see [Frame Parser Reference](JavaScript-API.md) for reading bytes and decoding floats.
 
 ### 2. Periodic keep-alive
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project visualizes the real-time position of the International Space Station (ISS) in Serial Studio. A built-in control loop polls a public API directly over TCP, so there is no companion program to run and no extra hardware. Serial Studio parses the response and shows the station on an interactive map alongside a live 3D view.
+This project visualizes the real-time position of the International Space Station (ISS) in Serial Studio. A built-in control loop polls a public API directly over TCP, so there is no companion program to run and no extra hardware. Serial Studio parses the response and shows the station on an interactive map alongside an embedded 3D model viewer.
 
 Real-time satellite tracking with nothing but Serial Studio and an internet connection.
 
@@ -20,7 +20,7 @@ ISS position is pulled from the [Open Notify](http://open-notify.org/Open-Notify
 ## Project features
 
 - Real-time map tracking of the ISS.
-- Interactive 3D view of the station rendered in the dashboard.
+- 3D Model view of the station via an embedded NASA glTF viewer (Web View widget).
 - API polling driven entirely by an in-project control loop, no external program.
 - TCP source with a JSON frame parser, configured in Serial Studio's project editor.
 
@@ -54,17 +54,16 @@ The widgets then map to array indices:
 1. Open Serial Studio and load `iss-tracker.ssproj` (project file included).
 2. Click **Connect**.
 
-That is all. The bundled control loop opens the TCP connection to the API and polls it for you, so the map and 3D view start updating on their own. The source is preconfigured as a **Network Socket** in **TCP** mode pointing at `api.open-notify.org`, port **80**.
+That is all. The bundled control loop opens the TCP connection to the API and polls it for you, so the map updates automatically; the 3D panel loads NASA's embedded model once Serial Studio connects and does not change with the telemetry. The source is preconfigured as a **Network Socket** in **TCP** mode pointing at `api.open-notify.org`, port **80**.
 
 ## Visualizations
 
 - **Map widget.** Live ISS position by latitude and longitude.
-- **ISS 3D View.** A Heavens-Above-style render of the station over a sunlit
-  Earth limb, with a starfield, an inset mini-globe showing the ground track
-  and heading, and a heads-up readout (location, heading, sun altitude, frames
-  per second). The view is interactive: **drag** to orbit the camera, **scroll**
-  to zoom, and **double-click** to reset. It animates continuously, so the scene
-  stays alive between telemetry updates.
+- **3D Model.** A Web View widget that embeds NASA's public glTF model viewer
+  for the ISS (`solarsystem.nasa.gov`) via Qt WebEngine. Camera controls and
+  any on-screen readouts belong to that external page, not to Serial Studio.
+  Requires a build compiled with Qt WebEngine; other builds show a
+  "Web View Unavailable" placeholder in its place.
 
 ## Files
 

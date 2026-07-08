@@ -4,7 +4,7 @@ The Raw USB driver talks to USB devices directly through **libusb**, bypassing t
 
 If the device shows up as a virtual COM port, use the [UART driver](Drivers-UART.md). For gamepads, joysticks, or HID firmware, use the [HID driver](Drivers-HID.md). This page covers everything else: logic analysers, oscilloscopes, custom data-acquisition boards, vendor-specific scientific instruments, and any device whose datasheet says "uses bulk endpoints".
 
-## What is USB, really?
+## USB basics
 
 USB is layered. From the bottom up:
 
@@ -37,7 +37,7 @@ flowchart TB
 - **Interrupt transfers** carry small amounts of data with a guaranteed maximum latency (the polling interval set in the endpoint descriptor). Used for HID devices and other small periodic data. Despite the name there are no real hardware interrupts; the host polls.
 - **Isochronous transfers** carry time-sensitive streaming data (audio, video) with guaranteed bandwidth but no retransmission. A corrupted packet is lost. Used for USB audio interfaces and webcams.
 
-For Serial Studio's USB driver, the relevant types are **bulk** (the default, for streaming captured data), **isochronous** (for high-rate continuous streams where dropped frames are acceptable), and **control** (vendor-specific commands, available in Advanced mode).
+For Serial Studio's USB driver, the relevant types are **bulk** and **interrupt** (both handled by Bulk/Interrupt Stream mode, the default, for streaming or small periodic data), **isochronous** (for high-rate continuous streams where dropped frames are acceptable), and **control** (vendor-specific commands, available in Advanced mode).
 
 ### Descriptors
 
@@ -66,18 +66,19 @@ The USB driver wraps libusb. The setup flow is:
 
 1. Pick a device from the **USB Device** dropdown. The list updates on libusb hotplug events, with a 2-second rescan fallback on platforms without hotplug support.
 2. Pick a **Transfer Mode**:
-   - **Bulk Stream** (default): synchronous bulk IN/OUT. Works for most devices.
+   - **Bulk/Interrupt Stream** (default): synchronous bulk or interrupt IN/OUT, depending on the selected endpoint's type.
    - **Advanced (Bulk + Control)**: bulk transfers plus vendor-specific control transfers. A confirmation dialog appears before enabling this, because vendor-specific control writes can do anything the device firmware allows, up to and including bricking the device.
    - **Isochronous**: asynchronous isochronous transfers for fixed-rate streaming.
-3. Connect. The **IN Endpoint** and **OUT Endpoint** dropdowns appear once connected, read from the device's active configuration descriptor and labeled like `EP 0x81 – Bulk IN (IF0, max 64 B)`. The first endpoint matching the transfer mode is selected automatically; **OUT Endpoint** defaults to **None (Read-only)** when no matching OUT endpoint exists.
-4. In Isochronous mode, a **Max Packet Size** field (1 to 49152 bytes, default 1024) also appears once connected. Serial Studio pre-fills it with the endpoint's reported maximum packet size; override it only when the device datasheet says otherwise.
+3. Pick the **IN Endpoint** and, optionally, the **OUT Endpoint**. Both dropdowns populate as soon as a device is selected, read from the device's cached configuration descriptor and labeled like `EP 0x81 – Bulk IN (IF0, max 64 B)`. The first endpoint matching the transfer mode is selected automatically; **OUT Endpoint** defaults to **None (Read-only)** when no matching OUT endpoint exists. Both dropdowns lock once connected.
+4. In Isochronous mode, a **Max Packet Size** field (1 to 49152 bytes, default 1024) also appears once a device is selected. Serial Studio pre-fills it with the endpoint's reported maximum packet size; override it only when the device datasheet says otherwise. It locks once connected.
+5. Click **Connect**.
 
 ### Threading
 
 The USB driver runs two dedicated threads:
 
 - **Event thread.** Pumps libusb's event loop. Required by libusb's async API and hotplug callbacks.
-- **Read thread.** Issues synchronous bulk reads (64 KB buffer, 100 ms timeout) in Bulk Stream and Advanced modes. In Isochronous mode, data arrives instead through a pool of eight async transfers (eight packets each) whose completion callbacks run on the event thread.
+- **Read thread.** Issues synchronous bulk or interrupt reads (64 KB buffer, 100 ms timeout), depending on the active IN endpoint's type, in Bulk/Interrupt Stream and Advanced modes. In Isochronous mode, data arrives instead through a pool of eight async transfers (eight packets each) whose completion callbacks run on the event thread.
 
 Each completed transfer carries a timestamp captured at completion time and is queued to the main thread for FrameReader processing. See [Threading and Timing Guarantees](Threading-and-Timing.md).
 
@@ -104,13 +105,13 @@ The TCP API and the in-app AI assistant configure this driver through the `io.us
 |---------|------------|-------|
 | `io.usb.listDevices` | none | Returns `devices` array and `selectedIndex` (index 0 is the "Select Device" placeholder) |
 | `io.usb.setDeviceIndex` | `deviceIndex` (integer) | Selects a device by list index |
-| `io.usb.setTransferMode` | `mode` (0 = Bulk Stream, 1 = Advanced, 2 = Isochronous) | |
-| `io.usb.setInEndpointIndex` | `endpointIndex` (integer) | Endpoint lists populate when the device connects |
+| `io.usb.setTransferMode` | `mode` (0 = Bulk/Interrupt Stream, 1 = Advanced, 2 = Isochronous) | |
+| `io.usb.setInEndpointIndex` | `endpointIndex` (integer) | Endpoint lists populate once a device is selected (via `setDeviceIndex` or the UI); an IN endpoint must be selected before connecting |
 | `io.usb.setOutEndpointIndex` | `endpointIndex` (integer) | Index 0 is "None (Read-only)" |
 | `io.usb.setIsoPacketSize` | `size` (1 to 49152 bytes) | |
 | `io.usb.getConfig` | none | Returns mode, indices, packet size, and both endpoint lists |
 
-Transport details and command safety tiers are in the [API Reference](API-Reference.md).
+Transport details are in the [API Reference](API-Reference.md); command safety tiers are in [AI Assistant](AI-Assistant.md#the-safety-tiers).
 
 ## Common pitfalls
 

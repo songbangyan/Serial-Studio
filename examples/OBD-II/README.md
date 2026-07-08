@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project reads live engine data from any OBD-II compliant vehicle and shows it on a Serial Studio dashboard. A built-in control loop polls an ELM327-compatible adapter (such as the OBDLink EX) over a serial connection, so there is no companion program to run. Engine RPM, vehicle speed, coolant temperature, calculated load, intake air temperature, throttle position and adapter battery voltage appear on live gauges.
+This project reads live engine data from any OBD-II compliant vehicle and shows it on a Serial Studio dashboard. A built-in control loop polls an ELM327-compatible adapter (such as the OBDLink EX) over a serial connection, so there is no companion program to run. Engine RPM, vehicle speed, coolant temperature, calculated load, intake air temperature, throttle position and adapter battery voltage appear on Gauge, Meter and Bar widgets: RPM and load use Gauge, speed and voltage use Meter, coolant, intake air temperature and throttle position use Bar.
 
 Real-time car telemetry with nothing but Serial Studio and a cheap OBD-II adapter.
 
@@ -29,7 +29,7 @@ These are all standard SAE J1979 Mode-01 PIDs, so no vehicle-specific configurat
 | `0111`  | Throttle position   | `A * 100 / 255` (%)      | Common, not universal                 |
 | `AT RV` | Battery voltage     | adapter reading (volts)  | Always (measured by the adapter)      |
 
-Any PID the car does not support comes back as `NO DATA`; the script skips that write and the gauge reads "No data" rather than showing a wrong value, so an unsupported metric never breaks the others.
+Any PID the car does not support comes back as `NO DATA`; the script skips that write and the register keeps its last value (0 if the vehicle has never returned a reply for that PID), so the widget still shows a number rather than an explicit "no data" indication.
 
 All requests are plain ASCII (the hex PID digits, or the letters `AT` for adapter commands) terminated by a carriage return, and every reply ends with the ELM327 `>` prompt. The full command set and reply formats are in the [ELM327 datasheet](https://cdn.sparkfun.com/assets/learn_tutorials/8/3/ELM327DS.pdf).
 
@@ -45,7 +45,7 @@ After writing the table, the script calls **`dashboardTick()`**, which forces th
 
 ## Project features
 
-- Live gauges for engine RPM, vehicle speed, coolant temperature, calculated load, intake air temperature, throttle position and adapter battery voltage (any PID the vehicle does not support reads "No data").
+- Gauge, Meter and Bar widgets for engine RPM, vehicle speed, coolant temperature, calculated load, intake air temperature, throttle position and adapter battery voltage (any PID the vehicle does not support leaves its register, and its widget, at the last value received).
 - Request/response polling driven entirely by an in-project control loop, no external program.
 - Works with any OBD-II compliant vehicle through the standard ELM327 command set; the core RPM/speed/coolant gauges populate on almost every car.
 - Serial (UART) source configured in Serial Studio's project editor (115200 baud, the OBDLink EX power-up rate; classic ELM327 clones default to 38400).

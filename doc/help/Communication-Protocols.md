@@ -25,7 +25,7 @@ flowchart TD
 | Bluetooth LE       | Free    | 2.4 GHz radio           | ~1 Mbps                    | Battery-powered wireless sensors       |
 | MQTT               | Pro     | Internet / LAN          | Network-dependent          | IoT cloud, distributed systems         |
 | Modbus             | Pro     | RS-485 / Ethernet       | 9600 bps to network speed  | PLCs, SCADA, industrial equipment      |
-| CAN Bus            | Pro     | Twisted pair            | Up to 8 Mbps (CAN FD)      | Automotive, industrial machinery       |
+| CAN Bus            | Pro     | Twisted pair            | Up to 1 Mbps (arbitration) | Automotive, industrial machinery       |
 | Audio input        | Pro     | Analog audio            | Device-dependent, up to 384 kHz sampling | Sound analysis, vibration monitoring   |
 | Raw USB            | Pro     | USB cable               | Up to 480 Mbps (USB 2.0)   | Custom firmware, bulk/iso endpoints    |
 | HID                | Pro     | USB cable               | Up to 64 KB/s              | Gamepads, custom HID sensors           |
@@ -46,13 +46,15 @@ Serial/UART is the most common way to connect microcontrollers to a computer. It
 
 **Key configuration parameters:**
 
-- **Baud rate.** Has to match the device. Common values: 9600, 115200, 921600. Serial Studio supports custom rates up to 1 Mbps and beyond.
-- **Data bits.** 5, 6, 7, or 8 (8 is standard for nearly all modern devices).
-- **Parity.** None, Even, Odd, Space, or Mark. Most devices use None.
-- **Stop bits.** 1, 1.5, or 2. Almost always 1.
-- **Flow control.** None, RTS/CTS (hardware), or XON/XOFF (software). Use None unless your device needs it.
-- **DTR signal.** Some boards (notably Arduino) use DTR to trigger a reset on connect. Enable or disable based on whether you want auto-reset.
-- **Auto reconnect.** Reconnects automatically if the device is unplugged and replugged.
+| Parameter      | Description |
+|----------------|-------------|
+| Baud rate      | Has to match the device. Common values: 9600, 115200, 921600. Serial Studio supports custom rates up to 1 Mbps and beyond. |
+| Data bits      | 5, 6, 7, or 8 (8 is standard for nearly all modern devices). |
+| Parity         | None, Even, Odd, Space, or Mark. Most devices use None. |
+| Stop bits      | 1, 1.5, or 2. Almost always 1. |
+| Flow control   | None, RTS/CTS (hardware), or XON/XOFF (software). Use None unless your device needs it. |
+| DTR signal     | Some boards (notably Arduino) use DTR to trigger a reset on connect. Enable or disable based on whether you want auto-reset. |
+| Auto reconnect | Reconnects automatically if the device is unplugged and replugged. |
 
 **Platform considerations:**
 
@@ -62,7 +64,7 @@ Serial/UART is the most common way to connect microcontrollers to a computer. It
 
 ### TCP/UDP network
 
-The Network driver connects to devices over TCP or UDP sockets. It's the natural fit for WiFi-enabled microcontrollers (ESP32, ESP8266), Ethernet-connected instruments, and remote data acquisition systems.
+The Network driver connects to devices over TCP or UDP sockets. It's the natural fit for WiFi-enabled microcontrollers (ESP32, ESP8266), Ethernet-connected instruments, and remote data acquisition systems. Full driver reference: [Drivers: Network](Drivers-Network.md).
 
 **When to use it:**
 
@@ -83,18 +85,20 @@ The Network driver connects to devices over TCP or UDP sockets. It's the natural
 
 **Key configuration parameters:**
 
-- **Socket type.** TCP or UDP.
-- **Remote address.** IP address or hostname of the device. Default: `127.0.0.1`.
-- **TCP port.** Remote port for TCP connections. Default: 23.
-- **UDP remote port.** Port the device is listening on or sending from. Default: 53.
-- **UDP local port.** Port Serial Studio binds to for receiving. Set to 0 for automatic assignment.
-- **UDP multicast.** Join a multicast group specified by the remote address.
+| Parameter       | Description |
+|-----------------|-------------|
+| Socket type     | TCP or UDP. |
+| Remote address  | IP address or hostname of the device. Default: `127.0.0.1`. |
+| TCP port        | Remote port for TCP connections. Default: 23. |
+| UDP remote port | Port the device is listening on or sending from. Default: 53. |
+| UDP local port  | Port Serial Studio binds to for receiving. Set to 0 for automatic assignment. |
+| UDP multicast   | Join a multicast group specified by the remote address. |
 
 **Platform considerations:**
 
 - Firewall rules on any OS may block incoming UDP datagrams or outgoing TCP connections. Allow Serial Studio through if connections fail.
 - On macOS, the first network connection may trigger a system permission dialog.
-- DNS resolution runs asynchronously. A spinner appears while the hostname is looked up.
+- DNS resolution runs asynchronously.
 
 ### Bluetooth Low Energy
 
@@ -109,9 +113,11 @@ The BLE driver talks to Bluetooth Low Energy peripherals via GATT. It auto-disco
 
 **Key configuration parameters:**
 
-- **Device.** Selected from the auto-discovered list. Scanning starts automatically when BLE is chosen.
-- **Service.** If the device exposes multiple GATT services, pick the one carrying your data.
-- **Characteristic.** The specific characteristic that sends notifications or indications with your telemetry payload.
+| Parameter      | Description |
+|----------------|-------------|
+| Device         | Selected from the auto-discovered list. Scanning starts automatically when BLE is chosen. |
+| Service        | If the device exposes multiple GATT services, pick the one carrying your data. |
+| Characteristic | The specific characteristic that sends notifications or indications with your telemetry payload. |
 
 **How discovery works.** Serial Studio uses a shared static discovery agent. All BLE driver instances share the same device list, so scanning happens once no matter how many sources reference BLE. The device list is append-only during a scan, and device indices stay stable, so combobox selections aren't disrupted by new discoveries.
 
@@ -139,14 +145,16 @@ MQTT (Message Queuing Telemetry Transport) is a lightweight publish/subscribe me
 
 **Key configuration parameters:**
 
-- **Hostname.** Broker address. Default: `127.0.0.1`.
-- **Port.** Broker port. Default: 1883 (plaintext) or 8883 (TLS).
-- **Client ID.** Auto-generated 16-character random string. Regenerate via the button.
-- **Username / password.** Broker authentication.
-- **MQTT version.** 3.1, 3.1.1, or 5.0.
-- **Topic filter.** Topic the subscriber listens on. Supports MQTT wildcards (`+` single level, `#` multi-level). The publisher uses a separate per-project topic base configured on the [MQTT Publisher](MQTT-Publisher.md) page.
-- **TLS/SSL.** Optional encryption with configurable protocol version, peer verification mode, peer verification depth, and CA certificates.
-- **Keep alive.** Interval in seconds for PING packets. Supports automatic keep-alive.
+| Parameter            | Description |
+|----------------------|-------------|
+| Hostname             | Broker address. Default: `127.0.0.1`. |
+| Port                 | Broker port. Default: 1883. For TLS brokers, set this manually; commonly 8883. |
+| Client ID            | Auto-generated 16-character random string. Regenerate via the button. |
+| Username / password  | Broker authentication. |
+| MQTT version         | 3.1, 3.1.1, or 5.0. |
+| Topic filter         | Topic the subscriber listens on. Supports MQTT wildcards (`+` single level, `#` multi-level). The publisher uses a separate per-project topic base configured on the [MQTT Publisher](MQTT-Publisher.md) page. |
+| TLS/SSL              | Optional encryption with configurable protocol version, peer verification mode, peer verification depth, and CA certificates. |
+| Keep alive           | Interval in seconds for PING packets. Supports automatic keep-alive. |
 
 Subscriptions are made at QoS 0, and Last Will configuration is not exposed. The subscriber and publisher are configured separately: the subscriber is a per-source bus type, the publisher a project-level export.
 
@@ -171,12 +179,14 @@ Modbus is an industrial communication protocol for reading and writing registers
 
 **Key configuration parameters:**
 
-- **Protocol.** Modbus RTU or Modbus TCP.
-- **Slave address.** Device address on the bus (1 to 247).
-- **Register groups.** One or more groups, each specifying a register type (coil, discrete input, input register, holding register), start address, and count.
-- **Poll interval.** How often to query registers, in milliseconds.
-- RTU-specific: serial port, baud rate, data bits, parity, stop bits.
-- TCP-specific: host address, port (default 5020).
+| Parameter       | Description |
+|-----------------|-------------|
+| Protocol        | Modbus RTU or Modbus TCP. |
+| Slave address   | Device address on the bus (1 to 247). |
+| Register groups | One or more groups, each specifying a register type (coil, discrete input, input register, holding register), start address, and count. |
+| Poll interval   | How often to query registers, in milliseconds. |
+| RTU-specific    | Serial port, baud rate, data bits, parity, stop bits. |
+| TCP-specific    | Host address, port (default 5020). |
 
 **Register types:**
 
@@ -206,13 +216,12 @@ Controller Area Network (CAN) is a vehicle and industrial bus standard. Serial S
 
 **Key configuration parameters:**
 
-- **Plugin.** The CAN backend. Platform-dependent:
-  - Linux: `socketcan`.
-  - Windows: `peakcan`, `vectorcan`, `systeccan`.
-  - macOS: limited. Needs third-party drivers.
-- **Interface.** The CAN interface name (for example `can0`, `PCAN_USBBUS1`).
-- **Bitrate.** Has to match the network exactly. Common: 125, 250, 500 kbps, 1 Mbps.
-- **CAN FD.** Enable for Flexible Data-rate frames (up to 64 data bytes per frame).
+| Parameter | Description |
+|-----------|-------------|
+| Plugin    | The CAN backend. Platform-dependent: Linux uses `socketcan`; Windows uses `peakcan`, `vectorcan`, or `systeccan`; macOS support is limited and needs third-party drivers. |
+| Interface | The CAN interface name (for example `can0`, `PCAN_USBBUS1`). |
+| Bitrate   | Has to match the network exactly. Common: 125, 250, 500 kbps, 1 Mbps. |
+| CAN FD    | Enable for Flexible Data-rate frames (up to 64 data bytes per frame). |
 
 **CAN frame format emitted by the driver.** The driver converts each received CAN frame into a byte array. Standard frames (11-bit identifiers) use `[ID_high, ID_low, DLC, data_0, data_1, ...]`; extended frames (29-bit identifiers) carry the full identifier in four bytes with bit 7 of the first byte set: `[0x80|ID_28..24, ID_23..16, ID_15..8, ID_7..0, DLC, data_0, ...]`. Standard identifiers never exceed 0x7FF, so the first byte's top bit tells the two forms apart. This array is passed to Serial Studio's frame parser for decoding.
 
@@ -235,10 +244,12 @@ The Audio Input driver captures raw PCM audio from the computer's sound input (m
 
 **Key configuration parameters:**
 
-- **Input device.** Pick from enumerated audio capture devices.
-- **Sample rate.** Depends on the device. Common: 44100, 48000 Hz.
-- **Sample format.** Bit depth (for example 16-bit integer, 32-bit float).
-- **Channel configuration.** Mono or stereo.
+| Parameter             | Description |
+|------------------------|-------------|
+| Input device           | Pick from enumerated audio capture devices. |
+| Sample rate            | Depends on the device. Common: 44100, 48000 Hz. |
+| Sample format          | Bit depth (for example 16-bit integer, 32-bit float). |
+| Channel configuration  | Mono or stereo. |
 
 The driver also exposes output device settings for audio passthrough, though the primary use case is capture.
 
@@ -262,19 +273,21 @@ The Raw USB driver gives direct access to USB device endpoints via libusb, bypas
 
 **Transfer modes:**
 
-| Mode              | Description |
-|-------------------|-------------|
-| Bulk stream       | Synchronous bulk IN/OUT transfers. Default and most common. |
-| Advanced control  | Bulk transfers plus vendor-specific control transfers. Requires user confirmation. |
-| Isochronous       | Asynchronous isochronous transfers for time-sensitive fixed-rate streams. |
+| Mode                   | Description |
+|------------------------|-------------|
+| Bulk/Interrupt Stream  | Synchronous bulk IN/OUT transfers. Default and most common. |
+| Advanced control       | Bulk transfers plus vendor-specific control transfers. Requires user confirmation. |
+| Isochronous            | Asynchronous isochronous transfers for time-sensitive fixed-rate streams. |
 
 **Key configuration parameters:**
 
-- **Device.** Pick from the enumerated list (VID:PID and product string).
-- **IN endpoint.** The endpoint to read data from.
-- **OUT endpoint.** The endpoint to write data to.
-- **Transfer mode.** Bulk Stream, Advanced Control, or Isochronous.
-- **ISO packet size.** Packet size for isochronous transfers (only relevant in Isochronous mode).
+| Parameter        | Description |
+|-------------------|-------------|
+| Device            | Pick from the enumerated list (VID:PID and product string). |
+| IN endpoint       | The endpoint to read data from. |
+| OUT endpoint      | The endpoint to write data to. |
+| Transfer mode     | Bulk/Interrupt Stream, Advanced Control, or Isochronous. |
+| ISO packet size   | Packet size for isochronous transfers (only relevant in Isochronous mode). |
 
 **Platform considerations:**
 
@@ -294,10 +307,7 @@ The HID driver accesses Human Interface Devices via the hidapi library. It reads
 - Sensors and measurement instruments that enumerate as USB HID.
 - Any USB device where you want driver-free cross-platform access.
 
-**Key configuration parameters:**
-
-- **Device.** Pick from the auto-enumerated list, shown as `Product Name (VID:PID)` (or just `VID:PID` when no product string is available).
-- **Usage Page / Usage.** Shown after device selection for reference (identifies the HID function).
+**Key configuration parameters.** Pick a device from the auto-enumerated list, shown as `Product Name (VID:PID)` (or just `VID:PID` when no product string is available). Once selected, Serial Studio shows the device's Usage Page and Usage for reference, identifying the HID function.
 
 **How enumeration works.** The driver re-enumerates all HID devices every 2 seconds via a QTimer. The device list updates automatically when devices are plugged in or removed.
 
@@ -329,13 +339,13 @@ The Process I/O driver captures data from child processes or named pipes, so Ser
 
 **Launch mode parameters:**
 
-- **Executable.** Path to the program. Supports browsing via file dialog. Serial Studio searches standard PATH locations plus platform-specific extras.
-- **Arguments.** Command-line arguments passed to the process.
-- **Working directory.** The directory the process runs in. Supports browsing.
+| Parameter          | Description |
+|---------------------|-------------|
+| Executable          | Path to the program. Supports browsing via file dialog. Serial Studio searches standard PATH locations plus platform-specific extras. |
+| Arguments           | Command-line arguments passed to the process. |
+| Working directory   | The directory the process runs in. Supports browsing. |
 
-**Named pipe parameters:**
-
-- **Pipe path.** Filesystem path to the named pipe or FIFO. Supports browsing.
+**Named pipe parameters.** Pipe path: the filesystem path to the named pipe or FIFO. Supports browsing.
 
 **Platform considerations:**
 

@@ -36,20 +36,20 @@ The control loop uses the Euler method for numerical integration to evolve the s
 
 The whole example runs from the control script, with no helper process to launch:
 
-- **`setup()`** seeds the clock and posts a notification.
+- **`setup()`** seeds the clock and posts a notification (Pro license required; on a free build the notification call fails silently and nothing appears).
 - **`loop()`** advances the Lorenz state one Euler step, writes `x`, `y` and `z` into the `Lorenz` data table with `tableSet()`, then calls `dashboardTick()` to force a render.
 - The three datasets are **virtual**: their Lua transforms read the matching register from the `Lorenz` table, so the dashboard is fed straight from the control loop.
 - The UDP source is a **dummy**, kept only so a connection can be opened. Its Lua frame parser returns `{}` (no frame); no bytes are ever parsed, and the control loop's `dashboardTick()` drives both the dashboard and the exports.
 
 Because the loop free-runs (the worker re-arms it about once per millisecond), this project also doubles as a control-loop benchmark. `loop()` advances `STEPS_PER_TICK` integration steps per dashboard refresh, and every `STATS_EVERY` steps it reports the measured step rate as a notification, so you can see how fast and how steadily the control loop runs. Raise `STEPS_PER_TICK` to push raw integration throughput past the refresh rate.
 
-> `dashboardTick()` also fans the synthesized frame out to whatever export sinks are enabled, so a control-script simulation like this one can be recorded to CSV/MDF4/Session-database/MQTT just like real device data. (`refreshDashboard()`, by contrast, only refreshes the view.)
+> `dashboardTick()` also fans the synthesized frame out to whatever export sinks are enabled, so a control-script simulation like this one can be recorded to CSV/MQTT (free) or MDF4/Session Database (Pro) just like real device data. (`refreshDashboard()`, by contrast, only refreshes the view.)
 
 ## Project features
 
 - **Self-contained.** No Python, no external process, no real data source.
 - **Real-time visualization.** Watch the Lorenz attractor's chaotic motion as it happens.
-- **Custom X-axis.** Use Serial Studio's project editor to pick any dataset as the X-axis source.
+- **Custom X-axis.** Use Serial Studio's project editor to pick any dataset as the X-axis source (Pro license required).
 - **Dynamic visualization.** Plot $x$, $y$, and $z$ on 2D or 3D graphs.
 
 ## Requirements
@@ -70,7 +70,7 @@ Here is how the project editor should look:
 
 ### Custom X-axis example
 
-Serial Studio's custom X-axis feature lets you map any dataset to serve as the X-axis source for plots. It is particularly useful for:
+Serial Studio's custom X-axis feature lets you map any dataset to serve as the X-axis source for plots. Dataset-vs-dataset X-axis selection requires a Pro license; without one the axis falls back to Samples and the cross-referenced attractor trace shown in the screenshot will not render. It is particularly useful for:
 
 - Plotting values against elapsed time or packet numbers.
 - Advanced visualizations like the Lorenz attractor.
@@ -84,3 +84,5 @@ In the bundled project the three datasets cross-reference each other ($x$ agains
   - Confirm the project still contains the `Lorenz` data table and that the X/Y/Z datasets are marked virtual.
 - **Want a faster (or slower) trace.**
   - Adjust `STEPS_PER_TICK` (integration steps per refresh) or `DT` (Euler step size) at the top of the control script.
+- **No notifications appear.**
+  - The setup and step-rate notifications require a Pro license; on a free build the notification calls fail silently and nothing is shown.

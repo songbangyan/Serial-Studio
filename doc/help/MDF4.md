@@ -4,7 +4,7 @@ Serial Studio Pro can export incoming telemetry to MDF4 files during a live sess
 
 For text-based logging and the broader "what file format should I pick?" comparison, see [CSV Export & Playback](CSV-Export-Playback.md). For project-scoped, queryable session storage with replay metadata and tagging, see [Session Database](Session-Database.md).
 
-## What is MDF4?
+## MDF4 basics
 
 MDF stands for **Measurement Data Format**. The current revision is MDF4 (also written MF4 or `.mf4`), standardised by [ASAM](https://www.asam.net/) (the Association for Standardisation of Automation and Measuring Systems). It was designed for the automotive ECU-test workflow, where a single recording can carry hundreds of channels at very different sample rates (a CAN bus running at 1 kHz, an analog sensor at 10 kHz, GPS at 1 Hz), all timestamped against a common clock.
 
@@ -42,7 +42,7 @@ Pick CSV for ad-hoc analysis, sharing with colleagues who don't have MDF4 toolin
 
 ### Turning export on
 
-MDF4 export is toggled in the Setup panel of the main window. Turn on the **MDF4 Recording** switch before or during a live connection. Once it's on, Serial Studio writes every incoming frame to an MDF4 file on a background thread.
+MDF4 export is toggled in the Setup panel of the main window, under **Data Export**. Turn on the **MDF4 Recording** switch before or during a live connection. Once it's on, Serial Studio writes every incoming frame to an MDF4 file on a background thread.
 
 ### File location
 
@@ -60,7 +60,7 @@ Serial Studio/MDF4/Vehicle Test/2026-03-17_15-30-05.mf4
 
 ### Channels and metadata
 
-Each dataset becomes one MDF4 channel, and each project group becomes one MDF4 channel group. The exporter writes:
+Each dataset becomes one MDF4 channel, and each project group becomes one MDF4 channel group, except Image View groups, which are not exported. The exporter writes:
 
 - **Channel group name** as the group's title, or `SourceName / GroupName` for multi-source projects.
 - **Channel name** as the dataset's title, with a companion `<title> (raw)` channel carrying the pre-transform value.
@@ -72,6 +72,7 @@ Each dataset becomes one MDF4 channel, and each project group becomes one MDF4 c
 
 - The file is created on the first frame received after export is turned on.
 - The file auto-closes when the device disconnects or when export is turned off.
+- Pausing the connection also closes the file; resuming starts a new file with a new timestamp.
 - If you disconnect and reconnect during the same session, a new file is created with a new timestamp.
 
 ### Automation

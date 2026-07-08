@@ -1,10 +1,10 @@
-# MQTT Topics & Semantics
+# MQTT Topics & Semantics (Pro)
 
 MQTT is the standard publish/subscribe protocol for IoT. It is the right transport when many devices share a network and publishers and subscribers should not have to know about each other directly. The header is small, it tolerates unreliable links, every constrained microcontroller has a client, and bridging it into a dashboard takes little work.
 
-This page is the protocol vocabulary used by Serial Studio's two MQTT surfaces: the [subscriber driver](Drivers-MQTT.md) (broker → Serial Studio) and the [publisher](MQTT-Publisher.md) (Serial Studio → broker). Both reference the concepts defined here; this is the place to learn them once.
+This page is the protocol vocabulary used by Serial Studio's two MQTT surfaces, both Pro features: the [subscriber driver](Drivers-MQTT.md) (broker → Serial Studio) and the [publisher](MQTT-Publisher.md) (Serial Studio → broker). Both reference the concepts defined here; this is the place to learn them once.
 
-## What is MQTT?
+## MQTT overview
 
 MQTT originally stood for **MQ Telemetry Transport**, after IBM's MQ product line; the OASIS standard treats the name as no longer an acronym. The "Message Queuing Telemetry Transport" expansion often seen is a back-formation, and a misleading one: MQTT does not provide queuing in the traditional sense, though the "telemetry over unreliable links" part still describes it accurately. The protocol was designed in 1999 by IBM for monitoring oil pipelines over satellite links and standardised as an OASIS specification in 2014. The current version is MQTT 5.0 (2019); MQTT 3.1.1 is still extremely common in the field. Serial Studio supports 3.1, 3.1.1, and 5.0 on both of its MQTT surfaces and defaults to 5.0.
 

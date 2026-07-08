@@ -166,20 +166,12 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 
 ### Audio Input
 
-**What it is:** Capture and visualize audio signals from microphone or line-in.
-
-**Used for:**
-- Audio spectrum analysis (FFT)
-- Vibration monitoring via audio-coupled sensors
-- Acoustic measurements
-- Analog signal visualization (20 Hz - 20 kHz range)
-
-**Use cases:**
-- Sound level monitoring
-- Machinery vibration analysis
-- Musical instrument tuning
-- Frequency analysis
-- Analog signal debugging
+Captures audio from a microphone or line-in and treats it as a live data
+source, over the 20 Hz - 20 kHz analog range: FFT spectrum analysis,
+vibration monitoring through audio-coupled sensors, and acoustic
+measurement. Typical uses include sound level monitoring, machinery
+vibration analysis, musical instrument tuning, and general frequency or
+signal debugging.
 
 **Learn more:** [Protocol Setup Guide](Protocol-Setup-Guides.md#audio-input-setup-pro)
 
@@ -422,6 +414,21 @@ function parse(frame) {
 
 **Learn more:** [AI Assistant](AI-Assistant.md)
 
+### Operator Deployment Generation
+
+**What it is:** A saved launcher (`.lnk` on Windows, `.app` on macOS,
+`.desktop` on Linux) that opens Serial Studio with a specific project file
+and a fixed set of command-line flags, so an operator gets a single-icon
+entry point instead of hunting for the right `.ssproj`.
+
+**How it works:** The **Deploy** toolbar button writes the launcher with the
+project path, theme, fullscreen, taskbar, and export flags baked in.
+Serial Studio must already be installed on the target machine, and the
+target build must be commercial (Pro) too, since the runtime flags a
+deployment writes are compiled out of GPL builds.
+
+**Learn more:** [Operator Deployments](Operator-Deployments.md)
+
 ### Commercial Use Rights
 
 **Free (GPLv3):**
@@ -439,7 +446,7 @@ function parse(frame) {
 
 **Important:** Even if you compile from source (GPL modules only), commercial use requires a Pro license per the license agreement.
 
-## Which version do I need?
+## Choosing a version
 
 ### Free (GPLv3) covers:
 
@@ -491,7 +498,9 @@ commercial products, and enterprise deployments.
 1. Purchase a license from [serial-studio.com](https://serial-studio.com).
 2. Download the official binary (if you were using a GPL build).
 3. Open Serial Studio.
-4. Click **Activate** in the toolbar to open the License Management dialog.
+4. Open the Licensing dialog: click **About** in the toolbar, then **Manage
+   License**. (The toolbar also shows an **Activate** shortcut once the
+   14-day trial has expired and no key is active.)
 5. Paste the license key and click **Activate**.
 
 Pro features unlock once the key is accepted.
@@ -548,7 +557,7 @@ Pro features become locked. You can:
 
 ### Can I transfer my Pro license to another computer?
 
-**Yes.** Deactivate on one machine (the **Deactivate** button in the License Management dialog), then activate on another. You can transfer activations as needed, up to your plan's activation limit (5, 20, or 100 depending on the tier).
+**Yes.** Deactivate on one machine (the **Deactivate** button in the Licensing dialog), then activate on another. You can transfer activations as needed, up to your plan's activation limit (5, 20, or 100 depending on the tier).
 
 ### Is there a subscription?
 
@@ -576,7 +585,7 @@ contact alex@serial-studio.com.
 
 Each plan includes a fixed number of device activations (5, 20, or 100
 depending on the tier). You can run Pro on that many machines at once and move
-activations between computers as needed (deactivate in the License Management
+activations between computers as needed (deactivate in the Licensing
 dialog, then activate elsewhere).
 
 ### Is the source code available for Pro features?

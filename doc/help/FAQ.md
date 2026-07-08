@@ -26,7 +26,7 @@ It works with any device that sends data via serial port, Bluetooth LE, MQTT, Mo
 The core is open source, with two flavors:
 
 1. **GPL version (open source).** Built from source under GPL-3.0. Includes core features, but leaves out Pro modules like MQTT, Modbus, CAN Bus, 3D and XY plotting, and the Waterfall widget.
-2. **Pro version (proprietary).** Official binary with everything, plus a 14-day trial. Individual licenses start at $9.99 per month, with a $349 one-time Lifetime option; team and test-stand plans cost more (check current pricing at [serial-studio.com/pricing](https://serial-studio.com/pricing)).
+2. **Pro version (proprietary).** Official binary with everything, plus a 14-day trial. Individual, team, and test-stand plans are available as monthly, yearly, or lifetime licenses; check current pricing at [serial-studio.com/pricing](https://serial-studio.com/pricing).
 
 Pro features are proprietary. They're not open source. See the [License Agreement](License-Agreement.md) and [Pro vs GPL](#pro-vs-gpl) for details.
 
@@ -430,7 +430,7 @@ See [Dataset Value Transforms](Dataset-Transforms.md) for the full guide.
 
 **Baud rate.** This is the most common cause. Make sure Serial Studio's baud rate matches the device (9600 or 115200 are common).
 
-**Data bits, parity, stop bits.** Usually 8N1 (8 data bits, no parity, 1 stop bit). Change it in Serial Studio's settings if your device uses something else.
+**Data bits, parity, stop bits.** Default: 8N1 (8 data bits, no parity, 1 stop bit). Change it in Serial Studio's settings if your device uses something else.
 
 **Frame delimiters.** Serial Studio expects newline (`\n`) by default. If your device uses something different (`\r\n`, a semicolon, a custom byte), change the **Frame Detection** settings for the source in the Project Editor.
 

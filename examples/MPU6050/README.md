@@ -37,7 +37,7 @@ $accel_x,accel_y,accel_z,gyro_x,gyro_y,gyro_z,temperature;
 Notes:
 
 - `accel_x`, `accel_y`, `accel_z` are in m/s².
-- `gyro_x`, `gyro_y`, `gyro_z` are in deg/s. Serial Studio integrates these to pitch, yaw, and roll in degrees for the attitude indicator widget.
+- `gyro_x`, `gyro_y`, `gyro_z` are in deg/s (angular rate). The Gyroscope widget expects absolute angles in degrees, so this project feeds the raw rate values in directly, smoothed and wrapped to ±180°, rather than a true integrated orientation. Apply the **Integrate Rate to Angle** transform to each gyro dataset for accurate attitude tracking.
 
 ### 2. Serial Studio configuration
 

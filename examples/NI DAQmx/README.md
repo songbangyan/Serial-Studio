@@ -27,11 +27,10 @@ pip install numpy nidaqmx
 ## Serial Studio setup
 
 1. **Configure the connection:**
-   - Enable Quick Plot mode in Serial Studio settings.
+   - In the **Setup** pane, under **Frame Parsing**, select **Quick Plot (Comma Separated Values)**.
    - Go to **Setup** → **I/O Interface** → **Network Socket**.
    - Set **Socket Type** to `UDP`.
-   - Set **Host** to `127.0.0.1`.
-   - Set **Port** to `9000`.
+   - Set **Local Port** to `9000`.
 2. **Connect** and run DAQBridge:
 
    ```bash

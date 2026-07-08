@@ -7,7 +7,7 @@ syntax = "proto3";
 //   - Vec3:   bare 3-axis sample (sent independently to exercise the
 //             importer's per-frame multi-message auto-detect)
 //
-// Import into Serial Studio via Project Editor -> Import -> From .proto,
+// Import into Serial Studio via Project Editor -> Import -> Protobuf,
 // then run sensor_simulator.py to feed live values.
 
 message Vec3 {

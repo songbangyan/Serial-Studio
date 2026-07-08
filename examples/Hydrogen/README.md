@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project simulates the electron probability distribution of a hydrogen atom's 1s orbital using Monte Carlo sampling. The data streams over UDP for real-time visualization in Serial Studio.
+This project simulates the electron probability distribution of a hydrogen atom's 1s orbital using Monte Carlo sampling. Data streams over UDP for real-time visualization in Serial Studio.
 
 It's not a classical orbit model. Instead, it shows probabilistic electron positions derived from quantum mechanics, as a dynamic 3D cloud.
 
@@ -12,7 +12,7 @@ It's not a classical orbit model. Instead, it shows probabilistic electron posit
 
 ## Simulation model
 
-The electron's radial distance from the nucleus, `r`, is sampled from the 1s orbital probability distribution:
+Sampling draws the electron's radial distance from the nucleus, `r`, from the 1s orbital probability distribution:
 
 $$
 P(r) \propto r^2 \cdot e^{-2r / a_0}
@@ -45,7 +45,7 @@ Where:
 
 Example:
 
-`-0.283291,0.453772,0.125448,0.038142,0.621987`
+`-0.210105,0.459088,0.324181,0.095873,0.600000`
 
 ## How to run
 
@@ -54,7 +54,7 @@ The script needs Python 3.6 or later and uses only the standard library.
 1. Open the `Hydrogen.ssproj` project file in Serial Studio.
 2. Click **Connect**.
 
-The project includes a control loop that launches `hydrogen.py` automatically when you connect, so there is nothing to start by hand. The input source is preconfigured as UDP on local port `9000`. To run the generator yourself instead, start `python3 hydrogen.py` before connecting.
+Connecting launches `hydrogen.py` automatically via a bundled control loop, so there is nothing to start by hand. The input source is preconfigured as UDP on local port `9000`. To run the generator yourself instead, start `python3 hydrogen.py` before connecting.
 
 ## Visualizations
 
@@ -72,4 +72,4 @@ The project includes a control loop that launches `hydrogen.py` automatically wh
 
 - This simulation doesn't numerically solve the Schrödinger equation. It samples from the known analytical 1s solution.
 - All spatial values are in normalized Bohr units $$a_0 = 1$$.
-- For a clearer point cloud, enable the scatter plot style instead of interpolated line plots.
+- For a clearer point cloud, turn off Interpolate on the 3D Plot toolbar (or set the Probability Density plot's interpolation mode to None).

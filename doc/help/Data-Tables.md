@@ -332,10 +332,10 @@ Data tables are shared across all sources in a project. A transform on source A 
 ## Rules and limitations
 
 1. Registers hold a number or a string, not arrays or tables. For a vector of values, use multiple registers or multiple datasets.
-2. `tableSet()` on a constant register is silently ignored. Constants are frozen at project load.
+2. `tableSet()` on a constant register has no effect. Constants are frozen at project load, and Serial Studio logs a warning to the Console panel when the write is attempted.
 3. `tableSet()` on a register that doesn't exist is also ignored. There's no auto-creation. Define the register in the Project Editor first.
 4. Computed registers hold their last written value indefinitely. If you want one to start each frame at a known value, write that value with `tableSet()` at the top of an early transform.
-5. The `__datasets__` table is reserved. Don't create a user table with that name.
+5. The `__datasets__` table name is reserved for the built-in system table. The Project Editor doesn't stop you from naming a user table `__datasets__`; avoid it anyway to prevent a naming collision with the system table's registers.
 6. Table and register names are case-sensitive.
 
 ## See also

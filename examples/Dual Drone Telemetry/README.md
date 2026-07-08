@@ -8,10 +8,12 @@ A multi-source drone telemetry simulator that shows Serial Studio receiving and 
 
 Two simulated drones fly different flight profiles over the Swiss Alps near Zermatt, each transmitting telemetry and synthetic camera imagery over separate TCP connections.
 
+> Connecting both drones at once, the Image View camera feeds, the output control panels, and the Painter state visualizer need a Serial Studio Pro license. See [serial-studio.com](https://serial-studio.com/) for details.
+
 | Drone        | Port  | Flight pattern                   | Altitude   | Camera style                          |
 |--------------|-------|----------------------------------|------------|---------------------------------------|
-| **Alpha**    | 9001  | Circular patrol (~330 m radius)  | 120 m AGL  | Satellite imagery + green HUD         |
-| **Bravo**    | 9002  | Figure-8 survey (~550 m radius)  | 200 m AGL  | Thermal/IR remap (iron-bow palette)   |
+| **Alpha**    | 9001  | Circular patrol (~95 m radius)   | 120 m AGL  | Satellite imagery + green HUD         |
+| **Bravo**    | 9002  | Drifting S-turn survey (~105 m turn radius) | 200 m AGL  | Thermal/IR remap (iron-bow palette)   |
 
 ### Camera feeds
 
@@ -113,7 +115,7 @@ Each drone has eight widget groups on the dashboard.
 | Widget     | Type          | Description |
 |------------|---------------|-------------|
 | Camera     | Image View    | Live satellite (Alpha) or thermal/IR (Bravo) camera feed |
-| Navigation | Map           | GPS track on an interactive map |
+| Navigation | GPS Map       | GPS track on an interactive map |
 | Heading    | Compass       | Compass heading indicator |
 | Attitude   | Gyroscope     | Roll, pitch, and yaw visualization |
 | Flight     | Gauges + Bars | Airspeed, altitude, and vertical speed |
@@ -134,19 +136,19 @@ Both drones start grounded at their helipads near Zermatt. Send `TKO` to launch.
 
 **Drone Bravo**, Trockener Steg plateau (46.0035°N, 7.7465°E):
 
-- Figure-8 survey at 200 m AGL.
+- Drifting S-turn survey at 200 m AGL.
 - Dynamic banking (up to ±40°).
 - Higher altitude variation (±15 m).
 - Faster speed, higher current draw.
 - Battery drain: about 0.18%/sec in cruise.
 
-Both drones have low-battery alarms set at 20% charge and 21 V. Send `RTH` to return, land, and recharge automatically for another flight.
+Both drones have low-battery (0-20%) and low-voltage (18-21 V) alarm bands that fire a notification when charge or voltage drains into the band. Send `RTH` to return, land, and recharge automatically for another flight.
 
 ## Requirements
 
 - Python 3.6+.
 - `opencv-python` and `numpy` (optional, for camera imagery).
-- Serial Studio Pro (multi-source, Image View, and output controls).
+- Serial Studio Pro (multi-source, Image View, Output Panel, and Painter).
 
 <!--
   SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial

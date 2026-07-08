@@ -1,8 +1,8 @@
 # Notifications
 
-Dashboard-level notification system for publishing **Info**, **Warning**, and **Critical** events from frame parsers, dataset transforms, output widget scripts, C++ code, and the MCP API. Every event shows up in a scrollable log on the dashboard and can optionally surface as a native OS desktop notification.
+Dashboard-level notification system for publishing **Info**, **Warning**, and **Critical** events from frame parsers, dataset transforms, output widget scripts, the Control Loop, C++ code, and the MCP API. Every event shows up in a scrollable log on the dashboard and can optionally surface as a native OS desktop notification.
 
-Notifications are a **Pro feature**. The `notify*` functions are exposed to every scripting engine Serial Studio runs, but they raise a clear `notify() requires a Pro license` error when called without a valid Pro license. Level constants (`Info`, `Warning`, `Critical`) stay available at every tier so Pro-authored projects parse-load cleanly under GPL builds.
+Notifications are a **Pro feature**. The `notify*` functions are exposed to every scripting engine Serial Studio runs; without a valid Pro license, calls from frame parsers, dataset transforms, and output widgets raise a clear `notify() requires a Pro license` error, while Control Loop calls return an error result instead. Level constants (`Info`, `Warning`, `Critical`) stay available at every tier so Pro-authored projects parse-load cleanly under GPL builds.
 
 ## Overview
 
@@ -15,7 +15,7 @@ Notifications are a single shared bus. Any caller can post an event; the dashboa
 | `title`    | string | Short event headline shown in bold in the log. |
 | `subtitle` | string | Optional detail line shown under the title with word wrap. |
 
-Channels are not declared up front. They come into existence as soon as something posts to them. The Notification Log has a **Filter by channel** box that narrows the view to a single channel when needed.
+Channels are not declared up front. They come into existence as soon as something posts to them. The Notification Log has a **Filter by channel** box that live-filters rows by a case-sensitive substring match on the channel name.
 
 ```mermaid
 flowchart LR
@@ -40,6 +40,10 @@ Frame parser scripts (`parse(frame)`) have the same five functions available. Us
 ### Output widget scripts
 
 The `transmit(value)` function in output widgets can post notifications too. Useful for logging commands sent to the device, flagging clamped inputs, or warning when a setpoint exceeds a safe range.
+
+### Control Loop
+
+The Control Loop's `setup()` and `loop()` functions have the same five functions available, for example to raise a communication-loss alarm from a staleness watchdog. See [Control Loop (setup / loop)](Control-Script.md) for a worked example.
 
 ### C++ and the MCP API
 
@@ -289,7 +293,8 @@ The Notification Log is a Pro-only dashboard widget that renders events from the
 |-----------------------------|-------------|
 | Layout                      | One row per event, icon + title + channel pill + timestamp, optional subtitle on a wrapped second line. |
 | Auto-scroll                 | Follows the tail automatically when new events arrive, unless the user has scrolled up to inspect history. |
-| Border blink                | The widget border pulses in the alarm color for 10 seconds after any Warning or Critical event. |
+| Alarm-colored title         | The event title renders in the alarm color for Warning and Critical events. |
+| Unread badge                | A count badge next to the filter box tracks unread Warning and Critical events, capped at "99+". |
 | Filter by channel           | Case-sensitive substring match on the channel name. Live; rows hide and re-show as you type. |
 | Clear all                   | Wipes the in-memory history. The ring buffer and the dedup window reset to empty. |
 | Empty state                 | When the log is empty, the widget shows a large icon and a "No notifications yet" heading. |
@@ -322,14 +327,14 @@ Warnings are off by default because Qt and QML emit them frequently during norma
 
 ## Rules and limitations
 
-1. Notifications are Pro-only at runtime. `notify*` calls under GPL raise a clear `"notify() requires a Pro license. See https://serial-studio.com/pricing"` error from the script engine.
+1. Notifications are Pro-only at runtime. Under GPL, `notify*` calls from frame parser, dataset transform, and output widget engines raise a clear `"notify() requires a Pro license. See https://serial-studio.com/pricing"` error; Control Loop calls return an error result from the `notifications.post` command instead (see rule 8).
 2. Level constants (`Info`, `Warning`, `Critical`) are always defined so Pro-authored scripts parse-load cleanly on GPL builds. Only the call itself fails.
 3. The ring buffer holds the most recent 1024 events. Older events are dropped when new events arrive.
 4. De-duplication collapses identical `(level, channel, title, subtitle)` tuples posted within 100 ms. Include the live value in the subtitle if you want rising-value events to stay visible.
 5. `notifyInfo` does not increment the unread badge; only Warning and Critical do.
 6. Channel names are case-sensitive. `"Power"` and `"power"` are different channels.
 7. History is wiped on every dashboard reset (disconnect, project reload, playback open/close). Intentional: new sessions start with a clean log.
-8. Posting from a worker thread is not allowed. Script engines run on the main thread already, so this only matters for C++ callers: route via `QMetaObject::invokeMethod(&nc, Qt::QueuedConnection, ...)` when posting from a worker.
+8. Posting from a worker thread is not allowed directly. Dataset transform, frame parser, and output widget engines run on the main thread already. The Control Loop engine is the exception: it runs on its own worker thread, so its `notify*` calls are marshalled through the `notifications.post` / `notifications.resolve` API commands instead of posting to the bus directly. C++ callers on a worker thread must route via `QMetaObject::invokeMethod(&nc, Qt::QueuedConnection, ...)`.
 9. Projects that use `notify*` in transforms are flagged as commercial by `SerialStudio::commercialCfg`, so the Pro-required overlay appears on the dashboard when loaded under GPL.
 
 ## See also
@@ -337,5 +342,7 @@ Warnings are off by default because Qt and QML emit them frequently during norma
 - [Dataset Value Transforms](Dataset-Transforms.md): where `notify*` is most commonly used.
 - [Frame Parser Scripting](JavaScript-API.md): the `parse(frame)` function has the same notification API.
 - [Output Controls](Output-Controls.md): `transmit(value)` can also post notifications.
+- [Control Loop (setup / loop)](Control-Script.md): `setup()` and `loop()` can also post notifications, marshalled from the worker thread.
 - [API Reference](API-Reference.md): `notifications.post`, `notifications.list`, and related commands for external drivers.
+- [MQTT Publisher](MQTT-Publisher.md): the **Publish Notifications** option republishes every event on this bus to MQTT.
 - [Pro vs Free Features](Pro-vs-Free.md): what's gated behind a Pro license.

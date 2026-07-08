@@ -32,13 +32,13 @@ Quick solutions to common Serial Studio issues. If you can't find your problem h
 **Solution:**
 1. **For "damaged" error:**
    ```bash
-   xattr -cr "/Applications/Serial Studio Pro.app"
+   xattr -cr "/Applications/Serial-Studio-Pro.app"
    ```
    Run this in Terminal, then try opening again. Substitute the exact bundle name shown in
-   /Applications (for example "Serial Studio GPLv3.app" for the GPL build).
+   /Applications (for example "Serial-Studio-GPL3.app" for the GPL build).
 
 2. **For "unidentified developer":**
-   - Go to **System Preferences > Security & Privacy**
+   - Go to **System Settings > Privacy & Security**
    - Click "Open Anyway" button next to Serial Studio message
    - Or right-click Serial Studio and select "Open"
 
@@ -235,7 +235,7 @@ sudo chmod 666 /dev/ttyUSB0  # Replace with your port
 
 3. **Check firewall:**
    - Windows: Windows Defender Firewall → Allow an app
-   - macOS: System Preferences → Security & Privacy → Firewall
+   - macOS: System Settings → Privacy & Security → Firewall
    - Linux: `sudo ufw allow <port>`
 
 4. **Verify network connectivity:**
@@ -645,7 +645,7 @@ Common issues:
 
 ### Pro features show as locked
 
-**Problem:** Pro features are grayed out or show "Requires Pro License".
+**Problem:** Pro features are grayed out or show a Buy License / Activate prompt.
 
 **Possible causes:**
 - Trial expired
@@ -655,11 +655,11 @@ Common issues:
 **Solutions:**
 
 1. **Check license status:**
-   - Click **Activate** in the toolbar to open the License Management dialog
+   - Click **Activate** in the toolbar to open the Licensing dialog
    - It shows whether a Pro license or trial is active
 
 2. **Activate license key:**
-   - In the License Management dialog, paste your license key and click **Activate**
+   - In the Licensing dialog, paste your license key and click **Activate**
    - Internet connection required for activation
 
 3. **Download official binary:**
@@ -747,12 +747,13 @@ Common issues:
    - More widgets = more rendering
 
 2. **Use fewer 3D widgets:**
-   - 3D Accelerometer, Gyroscope, and 3D Plot are the most CPU-intensive widgets
-   - Consider 2D alternatives
+   - Accelerometer, Gyroscope, and 3D Plot are among the more CPU-intensive widgets
+   - 3D Plot is the only one rendering an actual 3D scene; swap it for Plot or a Gauge where a
+     full 3D view isn't needed
 
 3. **Reduce data rate:**
-   - Dashboard updates at data rate
-   - 60 Hz is plenty for visualization
+   - Dashboard widgets redraw on a fixed timer (60 Hz by default, adjustable in Settings), but
+     a very high data rate still adds CPU load parsing and updating datasets between redraws
 
 4. **Update graphics drivers**
 

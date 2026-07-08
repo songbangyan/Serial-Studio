@@ -77,7 +77,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Solution:** Serial Studio records accelerometer data from Arduino + MPU6050 attached to pendulum:
 - Real-time acceleration plots (X, Y, Z axes)
-- FFT widget shows frequency spectrum to identify resonance
+- FFT Plot shows frequency spectrum to identify resonance
 - CSV export for offline analysis in Python/MATLAB
 - Multiple lab stations use the same JSON project file
 
@@ -180,6 +180,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Hardware:** ESP32 + PMS5003 + MQ-135 + GPS module
 **Deployment:** 10 units across city, data aggregated via MQTT
+**Pro Feature Used:** MQTT
 **Public Impact:** Open data published to local community
 
 ### Water Quality Monitoring
@@ -267,7 +268,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 - **Yaw knob** (-180° to +180°) for heading adjustment
 - **Camera toggle** (ON/OFF) to start/stop recording on each aircraft
 - **RTH button** (Return to Home) for emergency recall
-- Each control's **Target Device** is set to its respective drone, so a single dashboard commands both aircraft independently
+- Each drone's controls live in a separate Output Panel group assigned to that drone's data source (Input Device), so a single dashboard commands both aircraft independently
 
 **Hardware:** Two flight controllers + radio modems/Wi-Fi modules
 **Pro Feature Used:** Multi-device projects, output controls, MDF4 export
@@ -353,7 +354,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Solution:** SDR dongle + GNU Radio outputs I/Q data via UDP:
 - Serial Studio receives UDP packets
-- FFT widget displays frequency spectrum
+- FFT Plot displays frequency spectrum
 - Signal strength plotted over time
 - Waterfall widget (Pro) for time-frequency band monitoring
 
@@ -394,7 +395,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Solution:** AD8232 ECG sensor with Arduino:
 - Serial Studio displays real-time ECG waveform
-- FFT widget shows heart rate frequency
+- FFT Plot shows heart rate frequency
 - R-peak detection algorithm exports to CSV for HRV analysis
 
 **Hardware:** AD8232 + Arduino Nano + electrodes
@@ -449,7 +450,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 ### CNC Machine Monitor
 **Problem:** Machine shop wants to track spindle load, feed rate, and tool wear.
 
-**Solution:** Industrial PLC outputs data via Modbus RTU or serial:
+**Solution:** Industrial PLC outputs data via Modbus RTU (Pro) or plain serial with a custom frame parser:
 - Serial Studio displays:
   - Spindle RPM and load current
   - Axis positions (X, Y, Z)
@@ -559,7 +560,7 @@ scope: no persistence trace, no afterglow, no XY mode for Lissajous patterns.
 **Solution:** The bundled `Oscilloscope` template renders one or more channels
 on a phosphor-green CRT background:
 - Per-channel traces drawn with a glow underlay and a crisp foreground line
-- 10 x 8 graticule with a brighter centre cross
+- 10 x 8 graticule with a heavier centre cross
 - Switch to the `XY scope (Lissajous)` template for Lissajous patterns from two
   synchronous channels
 
@@ -575,7 +576,7 @@ a fixed aircraft symbol.
 (pitch and roll, in degrees):
 - Sky and ground regions rotate with roll and translate with pitch
 - Pitch ladder ticks every 10°, with numeric labels every 30°
-- Fixed yellow aircraft symbol over the rotating background
+- Fixed accent-colored aircraft symbol over the rotating background
 
 **Hardware:** Pixhawk / Betaflight flight controller streaming MAVLink, or any
 source providing pitch and roll.

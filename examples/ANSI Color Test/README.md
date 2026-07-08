@@ -7,9 +7,10 @@ This example exercises Serial Studio's ANSI color and VT-100 terminal emulation 
 ## Features Tested
 
 ### Text Attributes
-- Normal, bold, dim, italic, underline (single, double, curly)
-- Blink, reverse, hidden, strikethrough
-- Combined attributes (bold + underline, bold + reverse, italic + strikethrough)
+- Normal (reset, `\033[0m`) and bold (`\033[1m`, rendered as a lightened color)
+- The script also sends dim, italic, underline (single, double, curly), blink, reverse,
+  hidden, and strikethrough codes to show that the terminal ignores unsupported SGR
+  attributes and renders plain (or lightened) colored text instead
 
 ### 4-bit Colors (Standard ANSI)
 - Standard foreground colors (30-37): Black, Red, Green, Yellow, Blue, Magenta, Cyan, White
@@ -32,7 +33,8 @@ This example exercises Serial Studio's ANSI color and VT-100 terminal emulation 
 ### VT-100 Control Sequences
 - Cursor up (`\033[1A`) and cursor back (`\033[3D`) with overwrite
 - Erase to end of line (`\033[K`)
-- Combined text styles with colors
+- Bold + color combinations (other style codes sent by the demo are ignored, per Text
+  Attributes above)
 
 ### Visual Displays
 - 4-bit FG × BG matrix table
@@ -60,8 +62,17 @@ This example exercises Serial Studio's ANSI color and VT-100 terminal emulation 
 
 2. **Enable ANSI Colors**:
    - Open the **Console** pane
+   - Check the **"Emulate VT-100"** checkbox first; **"ANSI Colors"** stays disabled
+     until VT-100 emulation is on
    - Check the **"ANSI Colors"** checkbox
    - Optionally check **"Show Timestamp"** to see colored timestamps
+
+### Troubleshooting
+
+- **"ANSI Colors" checkbox is greyed out.** It only becomes selectable once **"Emulate
+  VT-100"** is checked.
+- **No output in the console.** Confirm the script and Serial Studio agree on the UDP
+  port (default `9000`) and that no other process is already bound to it.
 
 ## Usage
 
@@ -212,7 +223,9 @@ You can modify `test_ansi_colors.py` to:
 Serial Studio's ANSI color implementation:
 
 - **Color accuracy**: Full 24-bit RGB support (16.7M colors)
-- **Standards compliance**: VT-100/ANSI X3.64 escape sequences
+- **Standards compliance**: Cursor movement, line erase, and SGR color codes (4-bit,
+  8-bit, 24-bit) follow VT-100/ANSI X3.64; most text-attribute SGR codes (dim, italic,
+  underline, blink, reverse, hidden, strikethrough) are not rendered
 - **Background rendering**: Separate passes for backgrounds and text to prevent overlap
 - **Optional**: Colors are only processed when "ANSI Colors" is enabled
 

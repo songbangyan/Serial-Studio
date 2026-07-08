@@ -42,13 +42,13 @@ Each session captures three per-sample streams, keyed by session ID and nanoseco
 |------------------|--------------------|----------|
 | Frame values     | `readings`         | Per-dataset raw and final values at each frame |
 | Raw bytes        | `raw_bytes`        | Every byte that arrived on the driver, exactly as received |
-| Data tables      | `table_snapshots`  | Registers of user data tables at each frame |
+| Data tables      | `table_snapshots`  | Registers of user data tables, captured on change at a 1 Hz poll |
 | Session metadata | `sessions`         | Project title, start time, end time, embedded project JSON, notes |
 | Column layout    | `columns`          | Dataset title, group, units, widget type, virtual flag |
 
 The embedded project JSON in `sessions.project_json` is a snapshot of the project at the moment recording started. That's how a session recorded with one version of the project can replay faithfully later, even if the live project has changed in the meantime.
 
-Both raw bytes and parsed frames are captured. Replay re-renders widgets from the stored parsed (final) values; the raw byte stream is archived for inspection, CSV, or external analysis, but it is not re-parsed during replay. Tables and computed registers are snapshotted so data-table-aware transforms can be inspected after the fact.
+Both raw bytes and parsed frames are captured. Replay re-renders widgets from the stored parsed (final) values; the raw byte stream is archived for inspection, CSV, or external analysis, but it is not re-parsed during replay. Tables and computed registers are polled once a second and only changed registers are written, so `table_snapshots` is not a per-frame record like `readings` and `raw_bytes`.
 
 ## Session Explorer
 
@@ -61,8 +61,9 @@ Open the Session Explorer from the **Sessions** button on the toolbar or the sta
 - **Annotate.** Add free-text notes to any session.
 - **Restore project.** Extract the embedded project JSON into a standalone `.ssproj` file and open it in the editor.
 - **Delete.** Remove a session and all of its readings, raw bytes, tags, and table snapshots in a single transaction.
+- **Lock / Unlock.** Set a password on the database to block session deletion. Deletion stays blocked until you unlock the database with the same password; there's no password-recovery path, so store it somewhere safe.
 
-Sessions are identified by start time, project title, duration, and tag labels.
+Sessions are identified by start time, frame count, and tag labels.
 
 ## Replay
 
@@ -91,7 +92,7 @@ Session DBs grow linearly with data rate and session length. There's no built-in
 | Goal                                                              | Best option               |
 |-------------------------------------------------------------------|---------------------------|
 | Hand a single file to a collaborator who uses Excel or pandas     | CSV export                |
-| Long recordings, high data rates, automotive toolchain            | MDF4 export (Pro)         |
+| Long recordings, high data rates, automotive toolchain            | [MDF4 export](MDF4.md) (Pro) |
 | Archive every run of a project, then search, tag, or replay later | Session database (Pro)    |
 | A shareable, printable summary with charts for a customer or lab notebook | Session report (Pro) |
 
@@ -101,6 +102,7 @@ CSV and MDF4 produce one file per session. The session database produces one fil
 
 - [Session Reports](Session-Reports.md): export sessions as self-contained HTML or PDF reports with charts.
 - [CSV Export & Playback](CSV-Export-Playback.md): live CSV export and CSV playback.
+- [MDF4 Export & Playback](MDF4.md): binary logging with per-channel sample rates and channel metadata (Pro).
 - [Data Flow](Data-Flow.md): where session recording sits in the overall pipeline.
 - [Dataset Value Transforms](Dataset-Transforms.md): transforms contribute to the recorded final values.
 - [Data Tables](Data-Tables.md): recorded in `table_snapshots` alongside frames.

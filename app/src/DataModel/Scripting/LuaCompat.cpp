@@ -23,6 +23,7 @@
 
 #include <lauxlib.h>
 #include <lua.h>
+#include <lualib.h>
 
 #include <cstring>
 #include <QDebug>
@@ -323,4 +324,32 @@ void DataModel::installLuaConsole(lua_State* L)
   lua_pushinteger(L, static_cast<lua_Integer>(QtDebugMsg));
   lua_pushcclosure(L, luaConsoleLog, 1);
   lua_setglobal(L, "print");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Restricted os table
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Publishes a whitelist copy of the os library (time, date, clock, difftime)
+ *        as the global os table; the full module is loaded without a global so the
+ *        process/filesystem entries are unreachable from sandboxed scripts.
+ */
+void DataModel::installLuaRestrictedOs(lua_State* L)
+{
+  Q_ASSERT(L != nullptr);
+
+  static const char* const kSafeOsFields[] = {"time", "date", "clock", "difftime"};
+
+  luaL_requiref(L, "os", luaopen_os, 0);
+  Q_ASSERT(lua_istable(L, -1));
+
+  lua_createtable(L, 0, 4);
+  for (const char* name : kSafeOsFields) {
+    lua_getfield(L, -2, name);
+    lua_setfield(L, -2, name);
+  }
+
+  lua_setglobal(L, "os");
+  lua_pop(L, 1);
 }

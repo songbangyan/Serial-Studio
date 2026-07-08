@@ -6,7 +6,7 @@ A Python client for the Serial Studio API that lets external programs control an
 
 ![Serial Studio API Client](doc/screenshot.png)
 
-## What is this?
+## Overview
 
 The Serial Studio API exposes a TCP server on port 7777 (default) that allows external programs to:
 - Read and modify Serial Studio configuration (UART settings, network settings, etc.)
@@ -28,7 +28,7 @@ This Python client provides:
 
 1. **Serial Studio** running with API Server enabled
    - Open Serial Studio
-   - Open **Preferences**, **General** tab, **Advanced** section
+   - Open **Preferences**, **General** tab, **API & Plugins** section
    - Toggle **Enable API Server (Port 7777)**
    - The server listens on port 7777
 
@@ -281,9 +281,7 @@ Use `python test_api.py list` to see all commands, or run `python test_api.py in
   - `project.workspace.*` - Workspace add/list/update/delete
   - `project.frameParser.*` - Frame parser get/set/dryRun
 - `extensions.*` - Extension repository management
-- `notifications.*` - Notification center
 - `ui.window.*` - Dashboard window layout
-- `licensing.*` - License inspection (mutations are AI-blocked)
 - `scripts.*` - Read-only script asset access
 
 ### Pro Features (Commercial License Required)
@@ -294,6 +292,9 @@ Use `python test_api.py list` to see all commands, or run `python test_api.py in
 - `io.hid.*` - HID driver
 - `io.process.*` - Process I/O driver
 - `project.mqtt.publisher.*` / `project.mqtt.subscriber.*` - MQTT publisher/subscriber configuration (`getConfig`, `setConfig`, `getStatus`)
+- `mdf4Export.*` - MDF4 export control (`setEnabled`, `close`, `getStatus`)
+- `notifications.*` - Notification center
+- `licensing.*` - License inspection (mutations are AI-blocked)
 - `sessions.*` - Session database browse/replay/export
 
 For the full reference with parameters and examples, see [API-Reference.md](../../doc/help/API-Reference.md).
@@ -483,7 +484,7 @@ Use `io.listBuses` to discover the bus types your build supports.
 
 **Solutions:**
 1. Verify Serial Studio is running
-2. Check API Server is enabled (Preferences → General → Advanced)
+2. Check API Server is enabled (Preferences → General → API & Plugins)
 3. Confirm port number (default: 7777)
 4. Try specifying host/port explicitly:
    ```bash
@@ -592,7 +593,7 @@ send_command("io.uart.setBaudRate", {"baudRate": 115200})
 
 1. **Localhost Only**: The API Server binds to localhost (127.0.0.1) by default and is not accessible from the network
 
-2. **No Authentication**: The API does not require authentication - anyone with local access can control Serial Studio
+2. **No Authentication by Default**: On the default loopback-only setup, the API does not require authentication - anyone with local access can control Serial Studio. Enabling **Allow External API Connections** requires non-loopback clients to present the generated **API Access Token**
 
 3. **Firewall**: Ensure your firewall blocks external access to port 7777
 

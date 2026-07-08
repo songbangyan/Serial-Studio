@@ -37,33 +37,34 @@ Two groups of checkboxes pick which phases run:
 - **Stages** (Parsers / Data export / Dashboard): which families of phases to schedule. The raw
   data pipeline always runs and is not a toggle. The default is Parsers only, which is the
   cheapest meaningful sweep.
-- **Data** (Numeric only / Mixed): whether each selected stage runs over numeric channels, the
-  mixed workload (numeric channels plus trailing non-numeric string tokens), or both.
+- **Data** (Numeric only / Mixed (numeric + text)): whether each selected stage runs over
+  numeric channels, the mixed workload (numeric channels plus trailing non-numeric string
+  tokens), or both.
 
 The Run button stays disabled until at least one stage and at least one data type are selected.
 
 ## The phases
 
 The data pipeline always runs first. Each selected stage then runs every parser engine
-(Built-in, Lua, JavaScript) over each selected data type. The data-pipeline and parser phases
+(Built-In, Lua, JavaScript) over each selected data type. The data-pipeline and parser phases
 are **gated** (Pass/Fail); the data-export and dashboard phases are **informational** and
 report `n/a` in the Result column.
 
 | Phase | What it exercises | Gate (at default 256 K min-fps) |
 |---|---|---|
 | **Data pipeline** | Raw `FrameReader` extraction only: delimiter scan and dequeue, no parse. | 1024 K frames/s |
-| **Built-in parser (numeric)** | Native C++ template over numeric channels. | 1024 K frames/s |
-| **Built-in parser (mixed)** | Native template with trailing non-numeric string tokens. | 512 K frames/s |
+| **Built-In parser (numeric)** | Native C++ template over numeric channels. | 1024 K frames/s |
+| **Built-In parser (mixed)** | Native template with trailing non-numeric string tokens. | 512 K frames/s |
 | **Lua parser (numeric)** | `parse()` in Lua 5.4 over numeric channels. | 256 K frames/s |
 | **JavaScript parser (numeric)** | `parse()` in `QJSEngine` over the same channels. | 128 K frames/s |
 | **Lua parser (mixed)** | Lua `parse()` over the mixed workload. | 128 K frames/s |
 | **JavaScript parser (mixed)** | JavaScript `parse()` over the mixed workload. | 64 K frames/s |
-| **Built-in / Lua / JavaScript + data export** | Each engine, numeric and/or mixed, with every export/output consumer enabled (CSV, API, plus MDF4 / Sessions / gRPC where built). | informational |
-| **Built-in / Lua / JavaScript + dashboard** | Each engine, numeric and/or mixed, feeding a full dashboard (multiplot, FFT, bar, LED, waterfall, GPS, 3D plot). | informational |
+| **Built-In / Lua / JavaScript + data export** | Each engine, numeric and/or mixed, with every export/output consumer enabled (CSV, API, plus MDF4 / Sessions / gRPC where built). | informational |
+| **Built-In / Lua / JavaScript + dashboard** | Each engine, numeric and/or mixed, feeding a full dashboard (multiplot, FFT, bar, LED, waterfall, GPS, 3D plot). | informational |
 
 The gates are **tiered off the minimum frame rate**, so JavaScript is held to half its Lua
 peer and the data pipeline to four times the parser baseline. This reflects the real cost
-hierarchy: raw extraction is the cheapest stage, the Built-in template is faster than the
+hierarchy: raw extraction is the cheapest stage, the Built-In template is faster than the
 scripted engines, Lua's stack-based API is faster than `QJSEngine`'s value boxing, and the
 mixed workload (with `toDouble` failures on the string tokens) is heavier than the numeric one.
 The same per-language ranking is described in

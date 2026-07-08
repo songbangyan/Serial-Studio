@@ -80,7 +80,7 @@ The main thread enqueues a shared `TimestampedFramePtr` into each consumer's que
 
 ### Dashboard runs on the main thread
 
-The dashboard reads from the same `TimestampedFramePtr` everyone else reads from, on the main thread, on the UI tick (default 60 Hz, configurable from 1 to 240 Hz). It samples the latest frame; it doesn't process every frame. At 256 kHz input and a 60 Hz tick, the dashboard is rendering one out of roughly 4,000 frames. Everything else has already been logged or exported by the consumer threads.
+The dashboard reads from the same `TimestampedFramePtr` everyone else reads from, on the main thread, on the UI tick (default 60 Hz, configurable from 1 to 240 Hz). It samples the latest frame; it doesn't process every frame. At 256 kHz input and a 60 Hz tick, the dashboard is rendering one out of roughly 4,300 frames. Everything else has already been logged or exported by the consumer threads.
 
 This is the right tradeoff for a UI: a 250 kHz refresh would melt the GPU and the user can't see it anyway.
 
@@ -129,10 +129,6 @@ A few specific guarantees fall out of this:
 - **"My dashboard is laggy at 100 kHz."** It isn't. The dashboard ticks at the UI refresh rate (60 Hz by default) on purpose, not at the input rate. Open the session report or the CSV after the run; that's the full-rate data.
 - **"A widget skips frames."** Widgets sample on their tick, not per frame. They're not supposed to render every frame. The export and session-database paths see every frame; the UI doesn't need to.
 - **"My transform makes the dashboard stutter."** Transforms run on the main thread because they read peer-dataset values that are also on the main thread. A heavy transform (regex, JSON parsing, tight Lua loops) will block. Profile it. If you genuinely need expensive math per frame, do it offline against the session database.
-
-## Summary, in one sentence
-
-Serial Studio is a soft-real-time pipeline that survives 256 kHz audio without missing a beat, optimized for throughput and zero copies, with timestamps owned by the driver and a single-threaded hot path that the project has earned the right to keep through years of profiling. Treat it as a logger, not a controller, and it will not surprise you.
 
 ## See also
 

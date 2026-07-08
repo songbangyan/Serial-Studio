@@ -1,6 +1,6 @@
 # Extensions
 
-## What are extensions?
+## Overview
 
 Extensions are add-ons that extend Serial Studio. Supported types:
 
@@ -26,9 +26,14 @@ Click the **Extensions** button in the toolbar. The Extension Manager has three 
 3. Browse or search for an extension. Use the type dropdown to filter by Themes, Plugins, and so on.
 4. Click an extension card to open the detail view.
 5. Click **Install**. A progress bar shows download status.
-6. Once installed, the extension is immediately available:
+6. Once installed, the extension is available:
    - **Themes** show up in the theme dropdown in Preferences.
    - **Plugins** can be launched from the detail view with the Run button.
+   - **Frame parsers** are copied into your workspace's Extensions folder as `.js` files;
+     use the **Open** button in the frame parser editor toolbar (it imports an external
+     script file) to load one into your project.
+   - **Project templates** are copied into your workspace's Extensions folder as `.ssproj`
+     files; use **Open Project** in the toolbar to load one.
 
 ## Uninstalling an extension
 
@@ -207,7 +212,7 @@ The Extension Manager is accessible via the [API](API-Reference.md) on TCP port 
 | `extensions.list`               | List all available extensions. |
 | `extensions.getInfo`            | Get details for a specific extension (`extensionId`). |
 | `extensions.install`            | Install an extension by index (`addonIndex`). |
-| `extensions.uninstall`          | Uninstall an extension by index (`addonIndex`). |
+| `extensions.uninstall`          | Uninstall an extension by index (`addonIndex`). Destructive: removes the extension files irreversibly. Pass `dryRun:true` to preview the removal without committing it. |
 | `extensions.refresh`            | Refresh catalogs from all repositories. |
 | `extensions.saveState`          | Save plugin state to the project (`pluginId`, `state`). |
 | `extensions.loadState`          | Load plugin state from the project (`pluginId`). |

@@ -9,14 +9,15 @@ Serial Studio Pro can export any recorded session as a **self-contained HTML rep
 3. Click **Generate Report** in the session detail pane.
 4. Configure branding, page, and section options in the dialog (see [Options](#options)).
 5. Click **Export PDF** (or **Export HTML** on builds without the embedded browser engine).
+6. Confirm or change the destination in the **Save PDF Report** (or **Save HTML Report**) dialog.
 
-A progress dialog appears while charts render and (for PDF) the page is rasterized. The output format depends on the build: builds with the embedded browser engine produce a PDF, and builds without it produce a self-contained HTML file. When finished, the file is written to:
+A progress dialog appears while charts render and (for PDF) the page is rasterized. The output format depends on the build: builds with the embedded browser engine produce a PDF, and builds without it produce a self-contained HTML file. The Save dialog is pre-filled with a suggested path:
 
 ```
 <Workspace>/Reports/<Project Title>/
 ```
 
-The workspace root is the folder set under **Settings → Workspace**. Project titles are sanitized so the filename is always safe.
+The workspace root is the **Workspace Folder** set in Settings → General. Project titles are sanitized so the suggested filename is always safe.
 
 ## What's in the report
 
@@ -27,7 +28,7 @@ The report has four sections, each independently toggleable:
 | **Cover page** | Logo, company name, document title, project name, session ID, duration, sample count, parameter count, start/end timestamps, author, generation date |
 | **Test information** | Project title, session ID, start/end times, duration, sample count, parameter count, tags (as chips), and session notes |
 | **Measurement summary** | Per-parameter table with sample count, min, max, mean, and standard deviation. Non-numeric datasets show `—` for numeric columns |
-| **Parameter trends** | One Chart.js line chart per numeric dataset, laid out in a responsive grid. A screen-only overlay chart (hidden on print) plots all parameters on shared axes for shape comparison |
+| **Parameter trends** | One Chart.js line chart per numeric dataset, stacked one per row (each chart starts its own page when printed). A screen-only overlay chart (hidden on print) plots all parameters on shared axes for shape comparison |
 
 ## Options
 
@@ -47,6 +48,10 @@ All options are persisted between runs, so you only configure them once per proj
 ### Sections tab
 
 Toggle each of the four sections on or off independently. An extra **Annotate min, max, and mean values on plots** checkbox overlays those statistics on each chart. Turning off **Parameter trends** produces a text-only summary report that renders instantly and prints to a few pages.
+
+### Datasets tab
+
+Pick which datasets feed the **Measurement summary** and **Parameter trends** sections. A search box filters the list, **Expand All** and **Collapse All** toggle group visibility, and each group, folder, or individual dataset has its own checkbox. At least one dataset must stay selected to enable export.
 
 ## HTML vs PDF
 

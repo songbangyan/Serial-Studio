@@ -40,7 +40,7 @@ Open the **Project Editor**, then click **Restore** on the toolbar (next to **Lo
 
 Select an entry to see a one-line preview of what restoring would change (groups added or removed, a renamed title). Click **Restore**, or double-click the row, to load that snapshot back into the project.
 
-**Restoring is reversible.** Before loading the chosen snapshot, Serial Studio snapshots your current state first (labelled *Before Restore*), so if you pick the wrong one you can restore your way back. The restored project is also written straight to your project file, so the recovery survives a crash before your next manual save.
+**Restoring is reversible.** Before loading the chosen snapshot, Serial Studio snapshots your current state first (labelled *Before Restore*), so if you pick the wrong one you can restore your way back. Restoring loads the snapshot into the project and marks it modified; save the project to write the restored state to your `.ssproj` file. Restoring through the AI Assistant writes it to disk immediately.
 
 If the list is empty, no edits have been made to this project yet. Edit or save the project to start the rolling backup.
 

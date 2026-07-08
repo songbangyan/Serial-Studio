@@ -8,7 +8,7 @@ With Serial Studio, you can use Quick Plot to visualize data coming in over UDP.
 
 ![Serial Studio with UDP function generator](doc/screenshot.png)
 
-### What is a function generator?
+### Function generator background
 
 A function generator produces electrical waveforms for testing circuits, analyzing systems, and generating real-time signals. This program simulates one but transmits its output over a UDP socket instead of generating physical signals.
 
@@ -28,6 +28,7 @@ The waveforms are useful for:
   - Adjustable transmission interval.
 - **Verbose output.** Print real-time data to the console (optional).
 - **Aliasing protection.** Warns if the frequency is too high for smooth reconstruction.
+- **Source code.** See `udp_function_generator.c` for the full list of customizable options.
 
 ## Getting started
 
@@ -76,9 +77,9 @@ gcc -o udp_function_generator.exe udp_function_generator.c -lws2_32 -lm
 2. **Configure Serial Studio.**
    - Set **I/O Interface** to **Network Socket**.
    - Pick **UDP** as the socket type.
-   - Set **Host** to `localhost`.
+   - Set **Remote Address** to `localhost`.
    - Set both the local and remote ports to match the program's `-p` option (default `9000`).
-3. **Enable Quick Plot.** In the Setup pane, tick the **Quick Plot** checkbox. It plots numeric values transmitted via UDP in real time.
+3. **Select Quick Plot.** In the Setup pane, select the **Quick Plot (Comma Separated Values)** option. It plots numeric values transmitted via UDP in real time.
 4. **Run the program.** Waveforms will show up in Serial Studio's real-time plot.
 
 ## Step by step
@@ -100,7 +101,7 @@ The program formats the waveform data as a comma-separated string and transmits 
 ### Troubleshooting
 
 - **No waveforms in Serial Studio.** Make sure the UDP port matches between the program and Serial Studio, and that the host is set to `localhost`.
-- **Distorted waveforms.** Lower the frequency if it's approaching the Nyquist limit. The program issues warnings for frequencies near this threshold. If the frequencies look fine, please open a [bug report](https://github.com/Serial-Studio/Serial-Studio/issues/new?assignees=alex-spataru&labels=bug&projects=&template=bug_report.md).
+- **Distorted waveforms.** Lower the frequency if it's approaching the Nyquist limit. The program issues warnings for frequencies near this threshold. If the frequencies look fine, please open a [bug report](https://github.com/Serial-Studio/Serial-Studio/issues/new?assignees=alex-spataru&labels=bug&projects=&template=bug_report.yml).
 - **No data output.** Make sure the program is running and the network configuration is correct.
 
 ## Examples
@@ -140,12 +141,5 @@ Visualization: Serial Studio shows all three waveforms in real time, with a 5 ms
 If the frequency exceeds 80% of the Nyquist rate, the program prints a warning:
 
 ```plaintext
-Warning: Frequency 450.00 Hz approaches the Nyquist rate (500.00 Hz). 
-Consider reducing it below 400.00 Hz to ensure smooth waveform reconstruction.
+Warning: Frequency 450.00 Hz approaches the Nyquist rate (500.00 Hz). Consider reducing it below 400.00 Hz to ensure smooth waveform reconstruction.
 ```
-
-That keeps waveform visualization smooth.
-
-## Enjoy your testing
-
-For more advanced use cases, check the source code and explore the customizable options. Pull requests with improvements are welcome.

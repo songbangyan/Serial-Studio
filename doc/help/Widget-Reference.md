@@ -45,7 +45,7 @@ flowchart TD
 
 ### GPS Map
 
-- Widget key: `"gps"` (also accepts `"map"`).
+- Widget key: `"map"` (the Project Editor writes this for new GPS Map groups; `"gps"` is also accepted).
 - Tile-based map with real-time position tracking.
 - Plots the trajectory path.
 - Shows latitude, longitude, and altitude.
@@ -97,7 +97,7 @@ flowchart TD
 - Optional anaglyph stereo (red/cyan 3D glasses).
 - Interpolation support.
 - Best for: 3D position tracking, spatial data, point clouds.
-- Requires: exactly 3 datasets (X, Y, Z coordinates).
+- Recommended: 3 datasets tagged x/y/z; any axis without a tagged dataset renders at 0.
 - Renders through Serial Studio's custom QPainter-based 3D pipeline. No GPU or OpenGL driver required. Runs on low-end hardware including Raspberry Pi.
 - Pro license required.
 
@@ -225,7 +225,7 @@ Bar, Gauge, Meter, and LED Panel widgets render one or more **alarm bands**. Eac
 | `label`    | string | no       | Optional human-readable name. Surfaces in the band-edge notification subtitle and next to the dataset title on LED panels. |
 | `blink`    | bool   | no       | When `true`, LED panels flash the LED while the value sits in this band. Defaults to `false`. |
 
-Bands may have gaps (the dataset's default background shows through), may overlap (later bands paint over earlier ones), and need not cover the full range. Editing is via the **Alarm Bands** button in the dataset toolbar (next to **Transform**), which opens a dedicated dialog with presets (Tachometer, Speedometer, Engine Temperature, Pressure, Battery Voltage, Fuel Level, Signal Strength, CPU / System Load, OK / Warning / Critical, Indicator, Fault Indicator), per-band color picker, severity selector, blink toggle, and a live preview strip.
+Bands may have gaps (the dataset's default background shows through), may overlap (later bands paint over earlier ones), and need not cover the full range. Editing is via the **Alarm Bands** button in the dataset toolbar (next to **Transform**), which opens a dedicated dialog with presets (Tachometer, Speedometer, Engine Temperature, Pressure, Battery Voltage, Fuel Level, Signal Strength, CPU / System Load, OK / Warning / Critical, Indicator (On / Off), Fault Indicator), per-band color picker, severity selector, blink toggle, and a live preview strip.
 
 **Notifications.** When the value enters a band with severity ≥ Warning, Serial Studio posts a notification (`Warning` or `Critical` level, with the band's `label` in the subtitle). Alarm tracking runs per dataset at the dashboard level, so notifications fire even when the widget displaying the dataset is hidden or not instantiated. A 3-second per-dataset cooldown suppresses oscillation spam.
 
@@ -256,11 +256,11 @@ Clock and Stopwatch are dashboard-level utility widgets. They are not attached t
 |---------------|---------|----------------|--------------|----------------------------------------------|
 | Data Grid     | Group   | `datagrid`     | 1+           | (none)                                       |
 | MultiPlot     | Group   | `multiplot`    | 1+           | `graph: true` on datasets                    |
-| GPS Map       | Group   | `gps`          | 2-3          | lat, lon, (alt) datasets                     |
+| GPS Map       | Group   | `map`          | 2-3          | lat, lon, (alt) datasets                     |
 | Gyroscope     | Group   | `gyro`         | 3            | yaw, pitch, roll                             |
 | Accelerometer | Group   | `accelerometer`| 3            | x, y, z accel                                |
 | LED Panel     | Group   | auto           | 1+           | `led: true`, `alarmBands[]` or legacy `ledHigh` |
-| 3D Plot       | Group   | `plot3d`       | 3            | x, y, z coords (Pro)                         |
+| 3D Plot       | Group   | `plot3d`       | 0+           | x, y, z coords (Pro)                         |
 | Image View    | Group   | `image`        | 0            | binary stream (Pro)                          |
 | Painter       | Group   | `painter`      | 0+           | user `paint(ctx, w, h)` JS script (Pro)      |
 | Web View      | Group   | `webview`      | 0            | `webViewUrl` (Qt WebEngine build)            |

@@ -3,6 +3,8 @@
 This example shows how to ingest a Protocol Buffers (`.proto`) schema into
 Serial Studio. The Project Editor reads the file and produces:
 
+![Protobuf example dashboard](doc/screenshot.png)
+
 - A binary source with a **Lua** frame parser containing one dispatch
   table per top-level message + every submessage occurrence. No
   `libprotobuf` runtime dependency — the wire-format decoder is inline.
@@ -30,9 +32,9 @@ import steps below to generate the project yourself.
 ### 1. Import the schema
 
 1. Launch Serial Studio.
-2. Open the **Project Editor** (`Ctrl+E`).
-3. In the toolbar, find the **Import** ribbon section and click
-   **From .proto**.
+2. Open the **Project Editor** (toolbar button, or the wrench icon in the
+   device setup panel).
+3. In the toolbar, expand the **Import** section and click **Protobuf**.
 4. Pick `examples/Protobuf Example/sensor.proto`.
 5. Browse the messages in the preview, then click **Create Project**.
 6. Save the generated project as `sensor.ssproj`.
@@ -42,9 +44,10 @@ import steps below to generate the project yourself.
 The generated project defaults to UART; the simulator speaks UDP. Open
 the project's source panel and set:
 
-- Driver: **Network / UDP Listener**
-- Local port: `7878`
-- Decoder: **Binary**
+- Bus Type: **Network Socket** (or **Network (TCP/UDP)** in the main Setup Panel)
+- Socket Type: **UDP**
+- UDP Local Port: `7878`
+- Data Conversion Method: **Binary (Direct)**
 - Frame detection: **No delimiters**
 
 ### 3. Run the simulator
@@ -57,7 +60,7 @@ python3 sensor_simulator.py
 You should see a live status line like:
 
 ```
-  Sensor   54B  |  sent    123  (99 sensor + 24 vec3)  |  24.7 Hz  |    5.0s
+  Sensor   59B  |  sent    123  (99 sensor + 24 vec3)  |  24.7 Hz  |    5.0s
 ```
 
 And on the dashboard:
@@ -95,7 +98,8 @@ discriminator envelope or split them into separate UDP ports. The
 example here is intentionally easy: `Sensor` starts with `float` (wire
 type 5) at field 1, and so does `Vec3` — but `Sensor` carries six
 distinct tags vs. `Vec3`'s three, so the score difference is decisive
-once the second tag is seen.
+once the third tag is seen: `Vec3`'s float `z` against `Sensor`'s
+submessage `accel` (wire type 2).
 
 ## Files
 

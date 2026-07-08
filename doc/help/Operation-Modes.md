@@ -2,7 +2,7 @@
 
 ## Overview
 
-Serial Studio has three parsing modes that determine how incoming data is interpreted and displayed. The mode is picked in the Setup panel on the right side of the main window. Every mode works with any data source: Serial (UART), Bluetooth LE, Network (TCP/UDP), and all Pro sources (Audio, Modbus, CAN Bus, USB, HID, Process).
+Serial Studio has three parsing modes that determine how incoming data is interpreted and displayed. The mode is picked in the Setup panel on the right side of the main window. Every mode works with any data source: Serial (UART), Bluetooth LE, Network (TCP/UDP), and all Pro sources (Audio, Modbus, CAN Bus, MQTT, USB, HID, Process).
 
 The three modes, in order of increasing complexity:
 
@@ -28,7 +28,7 @@ flowchart LR
 | Feature          | Console Only | Quick Plot | Project File |
 |------------------|:------------:|:----------:|:------------:|
 | Dashboard        | No           | Auto       | Custom       |
-| Frame Parser     | No           | No         | Lua / JS     |
+| Frame Parser     | No           | No         | Built-In / Lua / JS |
 | Custom Widgets   | No           | No         | Yes          |
 | Multi-Source     | No           | No         | Yes (Pro)    |
 | Setup Effort     | None         | None       | Editor       |
@@ -143,13 +143,15 @@ The decoder determines how raw bytes are converted before being passed to the fr
 | Decoder                 | Enum value | Description |
 |-------------------------|-----------|-------------|
 | **Plain Text (UTF-8)**  | 0         | Bytes are decoded as UTF-8 text. The most common choice for ASCII/CSV protocols. |
-| **Hexadecimal**         | 1         | Each byte is converted to a two-character hex string. For example, bytes `0x03 0xFF 0x02` become `"03FF02"`. |
+| **Hexadecimal**         | 1         | Each byte is converted to a two-character hex string. For example, bytes `0x03 0xFF 0x02` become `"03ff02"`. |
 | **Base64**              | 2         | Bytes are encoded as a Base64 string. |
 | **Binary (Direct)**     | 3         | Raw bytes are passed to the frame parser as a table or array of integers (0 to 255). |
 
 ### Frame parser script
 
-When the incoming data isn't simple comma-separated text, you can write a Lua or JavaScript `parse()` function to transform each frame into the array of values Serial Studio expects. Lua is the default and recommended language for new projects because it's faster.
+Every new source defaults to a Built-In (Native) template: a no-code parser configured through a parameter form, covering CSV, fixed-width, key-value, NMEA, JSON, XML, YAML, MessagePack, Modbus, UBX, MAVLink, and COBS/SLIP formats. See [Frame Parser Reference](JavaScript-API.md) for the full template catalog.
+
+When the incoming data isn't covered by a Built-In template, you can write a Lua or JavaScript `parse()` function to transform each frame into the array of values Serial Studio expects. Lua is the default and recommended language for new projects because it's faster.
 
 The signature:
 
@@ -232,7 +234,7 @@ Project File mode is the right choice for any application that needs custom widg
 | Dashboard                   | No                  | Auto             | Custom                        |
 | Frame detection             | None (raw stream)   | Line-based (auto)| Configurable per source       |
 | CSV delimiter               | N/A                 | Comma only       | Any (via parser script)       |
-| Frame parser (Lua/JS)       | No                  | No               | Yes                           |
+| Frame parser (Built-In/Lua/JS) | No               | No               | Yes                           |
 | Dataset value transforms    | No                  | No               | Yes                           |
 | Custom widgets              | No                  | No (plots only)  | Yes (project-defined)         |
 | Alarms and LED indicators   | No                  | No               | Yes                           |
@@ -248,3 +250,11 @@ If you're hooking up a new device and don't yet know what it sends, start in **C
 Once you can see clean comma-separated numbers in the console, switch to **Quick Plot**. You'll get a dashboard with one plot per CSV field in seconds, with no configuration.
 
 Once you need more control (specific widget types, unit labels, alarm thresholds, a custom dashboard layout, binary protocol parsing, or multiple concurrent data sources), move to **Project File** mode. Open the Project Editor, define your groups and datasets, save a `.ssproj` file, and load it from the Setup panel. This is the recommended mode for most real-world projects.
+
+## See also
+
+- [Project Editor](Project-Editor.md): building and configuring a project file, including picking and configuring a Built-In template.
+- [Frame Parser Reference](JavaScript-API.md): the Built-In template catalog and the Lua/JavaScript `parse()` API in detail.
+- [Dataset Value Transforms](Dataset-Transforms.md): per-dataset value transforms applied after parsing.
+- [Data Sources](Data-Sources.md): the driver types available to any operation mode.
+- [Pro vs Free Features](Pro-vs-Free.md): which drivers and dashboard features require a Pro license.

@@ -26,7 +26,7 @@ flowchart LR
 
 ### Turning export on
 
-CSV export is toggled in the Setup panel of the main window, under **Data Export**. Turn on the **CSV Spreadsheet** switch before or during a live connection. Once it's on, Serial Studio writes every incoming frame to a CSV file on a background thread, so dashboard performance isn't affected.
+CSV export is toggled in the Setup panel of the main window, under **Data Export**. Turn on the **CSV Spreadsheet** switch before or during a live connection. Once it's on, Serial Studio writes every incoming frame to a CSV file on a background thread, so dashboard performance isn't affected. The switch is disabled in Console Only mode (no project/frame structure to export); switch to Quick Plot or Project File mode first.
 
 ### File location
 
@@ -44,7 +44,7 @@ Documents/Serial Studio/CSV/Weather Station/2026-03-17_15-30-05.csv
 
 ### Automation
 
-Export and playback can be driven without the GUI. The [API](API-Reference.md) exposes `csvExport.getStatus`, `csvExport.setEnabled`, and `csvExport.close` for export, plus the `csvPlayer.*` family (`open`, `setPaused`, `setProgress`, `getStatus`, and frame stepping via `csvPlayer.step`) for playback. The `--csv-export` flag in the [Command-Line Interface](Command-Line-Interface.md) turns export on at startup.
+Export and playback can be driven without the GUI. The [API](API-Reference.md) exposes `csvExport.getStatus`, `csvExport.setEnabled`, and `csvExport.close` for export, plus the `csvPlayer.*` family (`open`, `setPaused`, `setProgress`, `getStatus`, and frame stepping via `csvPlayer.step`) for playback. The `--csv-export` flag in the [Command-Line Interface](Command-Line-Interface.md) turns export on at startup (commercial builds only).
 
 ### File format
 
@@ -62,9 +62,9 @@ The first column, labeled `Elapsed (s)`, is elapsed time in seconds since the se
 
 ### File lifecycle
 
-- The file is created on the first frame received after export is turned on.
-- The file auto-closes when the device disconnects or when export is turned off.
-- If you disconnect and reconnect during the same session, a new file is created with a new timestamp.
+- Export opens the file on the first frame received after export is turned on.
+- Disconnecting the device, turning export off, or pausing the connection (the dashboard Pause control) all close the file, the same as each other.
+- Reconnecting, resuming, or re-enabling export during the same session opens a new file with a new timestamp.
 
 ### Background writing
 
@@ -86,7 +86,7 @@ When a CSV file opens, Serial Studio looks at the first column to figure out the
 
 - **Decimal seconds** (for example `0.0`, `1.5`, `3.016`): used directly as elapsed time. This is the format Serial Studio's own export produces.
 - **Date/time strings** (for example `2026/03/17 15:30:05`): parsed into absolute timestamps and converted to elapsed offsets.
-- **Unrecognizable format:** Serial Studio asks you to specify a fixed interval between rows (in milliseconds). Useful for CSV files from other tools that don't include timestamps.
+- **Unrecognizable format:** Serial Studio prompts you to either pick an existing column to use as the timestamp, or set a fixed interval between rows (in milliseconds) — useful for CSV files from tools that don't record timestamps at all.
 
 ### Player controls
 
@@ -103,15 +103,15 @@ The current timestamp shows next to the slider as `HH:MM:SS.mmm`.
 
 ### How playback works
 
-During playback, the CSV Player feeds each row through the same data pipeline as a live connection: Frame Builder, then Dashboard. That means all widgets, plots, and gauges render exactly as they would with a live device. The player respects the original timing between frames, so playback speed matches the original recording rate.
+During playback, the CSV Player feeds each row through the same data pipeline as a live connection: Frame Builder, then Dashboard. That means all widgets, plots, and gauges render exactly as they would with a live device. Original per-frame timing carries through, so playback speed matches the original recording rate.
 
 ### Multi-source CSV files
 
-For projects with multiple data sources, the CSV Player maps columns back to their respective source IDs. Each column is associated with a source based on the dataset's unique ID recorded in the header. The player reconstructs per-source frames and injects them into the pipeline at the right routing.
+For projects with multiple data sources, the CSV Player maps columns back to their respective source IDs. Each column is associated with a source based on the dataset's unique ID recorded in the header. Reconstructed per-source frames go back into the pipeline at the right routing.
 
 ### Speed control
 
-Playback runs at real-time speed by default. The player uses the timestamp differences between consecutive rows to schedule frame delivery, so the original data rate is preserved.
+Playback runs at real-time speed by default. Timestamp differences between consecutive rows schedule frame delivery, so the original data rate is preserved.
 
 ## Analyzing exported data
 

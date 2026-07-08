@@ -20,6 +20,8 @@ Two consequences follow from "the SDK is the API, in-process":
 - **Anything the network API can do, a script can do**: connect a source, edit the project, start an export, query the dashboard. The full command catalog is the [API Reference](API-Reference.md); this page covers the ergonomic helpers layered on top.
 - **The same `{ ok, result, error }` discipline applies.** Every call can fail (a wrong UUID, a disconnected device, a Pro-only command on a Free build), so you check the result rather than assume success.
 
+`apiCall` itself is default-deny: only a small read-only allow-list (`project.getStatus`, `dashboard.getStatus`, `project.dataset.list`, and a couple dozen other query commands) is callable with no setup. Every other command — most mutating calls included — returns `errorCode: "METHOD_NOT_ALLOWED"` until the project opts in via the `apiCall.allowFullSurface` setting. `io.getLatestFrame`, `dashboard.reprocess`, and `dashboard.tick`, which back the `newFrame()` / `refreshDashboard()` / `dashboardTick()` helpers under See/Decide/Act below, are outside the default allow-list, so those helpers need the opt-in too. See [Frame Parser Reference](JavaScript-API.md) for the full allow-list and the rate limits.
+
 ## The result envelope
 
 Every SDK call that reaches the command registry returns the same object. Check `ok` before trusting `result`.
@@ -29,7 +31,7 @@ Every SDK call that reaches the command registry returns the same object. Check 
 | `ok` | always | `true` on success, `false` otherwise. |
 | `result` | success | The command-specific payload. Absent when the command returns nothing. |
 | `error` | failure | Human-readable message. |
-| `errorCode` | failure | Machine-readable code (`INVALID_PARAM`, `MISSING_PARAM`, `UNKNOWN_COMMAND`, ...). |
+| `errorCode` | failure | Machine-readable code (`INVALID_PARAM`, `MISSING_PARAM`, `UNKNOWN_COMMAND`, `METHOD_NOT_ALLOWED`, ...). |
 
 ```javascript
 var r = io.getStatus();
@@ -79,7 +81,7 @@ The wrappers mirror the bus tree. The ones you reach for most:
 |---|---|
 | `io.writeData(data, encoding)` | Write raw bytes to the active connection (any bus). |
 | `io.getStatus()` | `{ isConnected, paused, ... }`. |
-| `io.getLatestFrame(options?)` | The most recent raw frame (see [`newFrame()`](#see-decide-act-helpers) for the deduplicated control-loop form). |
+| `io.getLatestFrame(options?)` | The most recent raw frame (see [`newFrame()`](#see-decide-act-helpers-control-loop) for the deduplicated once-per-arrival form). |
 | `io.connect()` / `io.disconnect()` | Open / close the configured connection. |
 | `io.setPaused(paused)` | Pause/resume the data stream. |
 | `io.ble.writeCharacteristic(uuid, data, encoding)` | Write to a specific BLE characteristic. |
@@ -89,7 +91,7 @@ Every other `io.*` command (audio, CAN, Modbus, network, process, USB, HID confi
 
 ### `deviceWrite()` and `deviceWriteAndWait()`
 
-`deviceWrite(data, sourceId?)` is the data-first form of `io.writeData`, available in parsers and transforms as well as the Control Loop. `sourceId` defaults to the first source.
+`deviceWrite(data, sourceId?)` is the data-first form of `io.writeData`, available in every script kind. `sourceId` defaults to the first source.
 
 `deviceWriteAndWait(data, timeoutMs, until, source?)` (Control Loop only) writes, then **blocks the worker thread** (never the GUI) until a reply satisfies `until` or `timeoutMs` elapses. `until` is a terminator string, an expected byte count (number), or `undefined` for the first non-empty reply. It returns `{ ok, data, bytesRead, timedOut }`, the clean way to drive a request/response instrument without juggling `newFrame()` state.
 
@@ -142,7 +144,7 @@ Handles are valid only while the project is loaded. If you edit the project's ta
 
 ### Dashboard control
 
-Available from any in-process script (the bridge is present in parsers, transforms, and the Control Loop):
+Available from any in-process script (the bridge is present in parsers, transforms, the Control Loop, and Output widgets):
 
 | Function | Effect |
 |---|---|
@@ -152,7 +154,7 @@ Available from any in-process script (the bridge is present in parsers, transfor
 | `setClockVisible(v)` / `setStopwatchVisible(v)` | Toggle the clock / stopwatch. |
 | `setActiveWorkspace(idOrName)` | Switch the active workspace. |
 
-Control Loops additionally get the **See/Decide/Act** helpers, documented below.
+Every script kind also gets the **See/Decide/Act** helpers, documented below under the Control Loop, since a closed automation loop is their primary use case.
 
 ### Actions
 
@@ -169,7 +171,7 @@ notifyClear("Watchdog");   // resolve the same channel/title
 
 ### MQTT (Pro)
 
-`mqttPublish(topic, payload, qos, retain)` publishes to the configured broker from inside a parser or transform. See [MQTT Publisher](MQTT-Publisher.md).
+`mqttPublish(topic, payload, qos, retain)` publishes to the configured broker from any in-process script. See [MQTT Publisher](MQTT-Publisher.md).
 
 ### Protocol encoders (pure helpers)
 
@@ -189,19 +191,20 @@ Not every helper exists in every engine; the SDK guards each block on whether th
 
 | Helper group | Frame parser | Transform | Control Loop | Output widget |
 |---|---|---|---|---|
-| `apiCall` / `apiCallList` | yes | yes | yes | no |
-| `delay`, See/Decide/Act, `deviceWriteAndWait` | no | no | yes | no |
-| `io.*`, `deviceWrite` | yes | yes | yes | no |
-| `tableGet` / `tableSet`, dataset reads | yes | yes | yes | no |
-| Dashboard control, `actionFire` | yes | yes | yes | no |
-| `notify*`, `mqttPublish` (Pro) | yes | yes | yes | no |
+| `apiCall` / `apiCallList` | yes | yes | yes | yes |
+| `delay`, `deviceWriteAndWait` | no | no | yes | no |
+| See/Decide/Act (`newFrame`, `refreshDashboard`, `dashboardTick`, `ensureDashboard`) | yes | yes | yes | yes |
+| `io.*`, `deviceWrite` | yes | yes | yes | yes |
+| `tableGet` / `tableSet`, dataset reads | yes | yes | yes | yes |
+| Dashboard control, `actionFire` | yes | yes | yes | yes |
+| `notify*`, `mqttPublish` (Pro) | yes | yes | yes | yes |
 | Protocol encoders (`modbus*`, `can*`) | yes | yes | yes | yes |
 
-Output widget `transmit()` runs a smaller sandbox: it returns bytes for Serial Studio to send, so it gets the pure encoders but not the live `io.*`/table bridges. Language note: `transmit()` is **always JavaScript**; the Lua/JavaScript choice applies only to the frame parser.
+Every script kind installs the same host bridges, so `transmit()` has the identical `io.*`/table/dashboard/apiCall surface as a frame parser or the Control Loop. What sets it apart: `transmit()` runs from a user action on the widget (a knob turn, a button press), not from an arriving frame, so there is nothing new to read with `newFrame()`; and it has no `delay()` / `deviceWriteAndWait()`, the worker-thread blocking calls that exist only for the Control Loop. Language note: `transmit()` is **always JavaScript**; the Lua/JavaScript choice applies only to the frame parser.
 
 ## See/Decide/Act helpers (Control Loop)
 
-The Control Loop adds four helpers for closed-loop automation: read the latest data, decide in plain code, act through the SDK. Full treatment is in the [Control Loop](Control-Script.md) page; the SDK surface is:
+Four helpers for closed-loop automation — read the latest data, decide in plain code, act through the SDK — available in every script kind, documented here because the Control Loop is where they matter most. Full treatment is in the [Control Loop](Control-Script.md) page; the SDK surface is:
 
 | Function | Returns | Purpose |
 |---|---|---|
@@ -327,7 +330,7 @@ The SDK is identical in spirit in Lua; only the spellings change:
 - The envelope is a Lua table: `local r = io.getStatus(); if r.ok then ... end`.
 - The encoding enum is `SerialStudio.Hex` / `.Text` / `.Base64`, same as JS.
 - Wrappers are global functions with dotted names (`io.writeData`, `io.ble.writeCharacteristic`); optional arguments go in a trailing table.
-- Bridge availability differs per engine; a portable snippet guards with `if tableGet then ... end`. (`delay`, the See/Decide/Act helpers, and `deviceWriteAndWait` are Control-Loop-only and JavaScript-only, since the Control Loop runs JavaScript.)
+- Bridge availability differs per engine; a portable snippet guards with `if tableGet then ... end`. `delay` and `deviceWriteAndWait` are Control-Loop-only. The See/Decide/Act helpers (`newFrame`, `refreshDashboard`, `dashboardTick`, `ensureDashboard`) are JavaScript-only across the board — they run in any JavaScript engine (frame parser, transform, Control Loop, Output widget), but have no Lua equivalent.
 
 ```lua
 function transform(value)
@@ -338,7 +341,7 @@ end
 
 ## How the SDK is built
 
-`SerialStudio.js` and `SerialStudio.lua` are generated from the live command registry by `scripts/generate-sdk.py` (the schema snapshot lives in `app/rcc/api/api-schema.json`, refreshed with `SerialStudio --dump-api-schema`). The hand-written helpers (the dashboard/notification/encoder glue and the See/Decide/Act helpers) live in `app/rcc/api/prelude.js` and `prelude.lua` and are prepended to the generated wrappers. You never edit the SDK files directly; add a command to the registry (or the prelude) and regenerate. This is why every new API command shows up in scripts for free, with autocomplete, the moment it lands.
+`SerialStudio.js` and `SerialStudio.lua` are generated from the live command registry by `scripts/generate-sdk.py` (the schema snapshot lives in `app/rcc/api/api-schema.json`, refreshed with `SerialStudio --dump-api-schema`). The hand-written helpers (the dashboard/notification/encoder glue, and, JavaScript-only, the See/Decide/Act helpers) live in `app/rcc/api/prelude.js` and `prelude.lua` and are prepended to the generated wrappers. You never edit the SDK files directly; add a command to the registry (or the prelude) and regenerate. This is why every new API command shows up in scripts for free, with autocomplete, the moment it lands.
 
 ## Related
 

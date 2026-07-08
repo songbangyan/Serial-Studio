@@ -14,7 +14,7 @@ Step-by-step setup instructions for every communication protocol supported by Se
 2. In the **Setup Panel**, select **UART/COM** from the I/O Interface dropdown. Alternatively, click the **UART** button in the toolbar if visible.
 3. Select the COM port (Windows) or `/dev/ttyUSBx` / `/dev/ttyACMx` (Linux/macOS) from the **COM Port** dropdown. If the port does not appear, check the Troubleshooting entries for this driver.
 4. Set the **Baud Rate** to match your device. Default: 9600. Common values: 9600, 115200, 921600. The field is editable, so rates not in the list can be typed directly.
-5. Set **Data Bits** (usually 8), **Parity** (usually None), **Stop Bits** (usually 1), and **Flow Control** (usually None).
+5. **Data Bits** defaults to 8, **Parity** to None, **Stop Bits** to 1, and **Flow Control** to None; change any of these to match your device.
 6. Leave **Send DTR Signal** enabled (the default) if your device uses DTR for reset signaling, as Arduino boards do; disable it if a DTR pulse resets your device unexpectedly.
 7. Optionally enable **Auto Reconnect** (off by default) to reconnect when the device is unplugged and re-plugged.
 8. Click **Connect**.
@@ -121,9 +121,9 @@ For a single-device setup, select **MQTT Subscriber** from the I/O Interface dro
    - **Username** / **Password** if the broker requires authentication.
    - **Client ID** (auto-generated; click **Regenerate** to pick a new one).
    - **Topic Filter**. Examples: `sensors/#`, `device/+/telemetry`, `mydevice/data`. Connecting is blocked while this is empty.
-   - **MQTT Version** (MQTT 3.1, 3.1.1, or 5.0).
+   - **Version** (MQTT 3.1, 3.1.1, or 5.0).
    - **Clean Session** on (default) for interactive use.
-4. To use TLS, enable **SSL/TLS** and pick an **SSL Protocol** and **Peer Verify** mode. For a private CA, set **CA Certificates** to **Load From Folder…** and pick the directory holding the PEM files.
+4. To use TLS, enable **Use SSL/TLS** and pick an **SSL Protocol** and **Peer Verify** mode. For a private CA, set **CA Certificates** to **Load From Folder…** and pick the directory holding the PEM files.
 5. Configure frame detection on the source. Each MQTT message preserves payload boundaries, so **No Delimiters** is usually the right choice — one publish becomes one frame.
 6. Save the project and click **Connect** in the Setup panel.
 
@@ -140,12 +140,13 @@ See [MQTT Subscriber](Drivers-MQTT.md) for the full protocol primer.
    - **Dashboard Data (CSV)** publishes each parsed frame as a CSV row.
    - **Raw RX Data** republishes the bytes that arrived on any active driver, unmodified.
    - **Custom Script** publishes the value returned by the `mqtt(frame)` script hook.
-4. Set **Topic Base**. The Publisher silently produces no traffic when this is empty.
-5. Turn on **Publish Notifications** to mirror dashboard events to MQTT; set **Notification Topic** if you want them on a separate topic from the frame stream (it defaults to the Topic Base when empty).
-6. Under **Broker**, fill in hostname, port, credentials, protocol version, and keep-alive.
-7. For TLS, enable **Use SSL/TLS** and pick a protocol, peer-verify mode, and verify depth. Use **Load CA Certs** in the header bar to add PEM certificates for a private CA.
-8. Click **Test Connection** in the header bar to probe the broker without disturbing the live session. The result appears in a message box.
-9. Click **Connect** in the header bar to open the publishing session.
+4. Set **Publish Rate (Hz)** — how often the publisher emits (1-30 Hz, default 10).
+5. Set **Topic Base**. The Publisher silently produces no traffic when this is empty.
+6. Turn on **Publish Notifications** to mirror dashboard events to MQTT; set **Notification Topic** if you want them on a separate topic from the frame stream (it defaults to the Topic Base when empty).
+7. Under **Broker**, fill in hostname, port, credentials, protocol version, and keep-alive.
+8. For TLS, enable **Use SSL/TLS** and pick a protocol, peer-verify mode, and verify depth. Use **Load CA Certs** in the header bar to add PEM certificates for a private CA.
+9. Click **Test Connection** in the header bar to probe the broker without disturbing the live session. The result appears in a message box.
+10. Click **Connect** in the header bar to open the publishing session.
 
 See [MQTT Publisher](MQTT-Publisher.md) for the full reference, including the `mqtt(frame)` script hook for frame parsers.
 
@@ -547,7 +548,7 @@ Full driver reference: [Audio](Drivers-Audio.md).
 1. In the **Setup Panel**, select **USB Device** from the I/O Interface dropdown.
 2. Pick the device from the **USB Device** dropdown. Devices are listed as `VID:PID – Manufacturer Product`.
 3. Select the **Transfer Mode**:
-   - **Bulk Stream** (default): Standard synchronous bulk IN/OUT. Works for most devices.
+   - **Bulk/Interrupt Stream** (default): Standard synchronous bulk or interrupt IN/OUT. Works for most devices.
    - **Advanced (Bulk + Control)**: Bulk transfers plus vendor-specific control transfers. A confirmation dialog appears before enabling, since incorrect control requests can crash or damage hardware.
    - **Isochronous**: Asynchronous isochronous transfers for fixed-rate streaming.
 4. Select the **IN Endpoint** (for reading data from the device).
@@ -574,8 +575,8 @@ Full driver reference: [USB](Drivers-USB.md).
 1. In the **Setup Panel**, select **HID Device** from the I/O Interface dropdown.
 2. Wait for device enumeration. HID devices are re-enumerated every 2 seconds automatically.
 3. Pick the device from the **HID Device** dropdown. Devices are listed as `Product Name (VID:PID)`.
-4. Review the **Usage Page** and **Usage** fields to confirm the correct device function is selected.
-5. Click **Connect**.
+4. Click **Connect**.
+5. Once connected, the **Usage Page** and **Usage** fields show which HID collection is active — useful when a device exposes several interfaces.
 
 ### Troubleshooting
 

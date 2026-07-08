@@ -78,7 +78,7 @@ python3 camera_telemetry.py --quality 60         # smaller packets
 ### Step 3: configure Serial Studio
 
 1. Open Serial Studio and load `Camera Telemetry.ssproj`.
-2. In the **Setup** panel, set **Bus Type** → **Network Socket**, **Socket Type** → **UDP**.
+2. In the **Setup** panel, set **I/O Interface** → **Network Socket**, **Socket Type** → **UDP**.
 3. Set **Local Port** to `9000` (or whatever `--port` you used).
 4. Click **Connect**.
 
@@ -92,6 +92,7 @@ python3 camera_telemetry.py --quality 60         # smaller packets
 
 - Python 3.8 or later.
 - [`opencv-python`](https://pypi.org/project/opencv-python/). `pip install opencv-python`.
+- Serial Studio Pro (Image View widget, for the Camera Feed group).
 
 ## License
 

@@ -20,7 +20,7 @@ The center view starts on the **Console** and switches to the **Dashboard** auto
 
 ## Main toolbar
 
-The toolbar runs along the top of the window, left to right, grouped into sections that collapse into overflow menus when the window is narrow. The exact set of buttons depends on the build (Pro vs free) and on whether the app is running as a normal install or as an [operator deployment](Operator-Deployments.md) (operator runtime mode hides the authoring buttons).
+The toolbar runs along the top of the window, left to right, grouped into sections that collapse into overflow menus when the window is narrow. The exact set of buttons depends on the build (Pro vs free). In [operator runtime mode](Operator-Deployments.md), the entire main toolbar is hidden, not just the buttons tagged "Authoring mode only" below.
 
 ### Project section
 
@@ -100,7 +100,7 @@ Switches that arm recording for the session. Each writes to a separate file or s
 |--------|-----------------|-----------|
 | **CSV Spreadsheet** | A `.csv` of every parsed frame. | [CSV Export & Playback](CSV-Export-Playback.md) |
 | **Session Recording** **(Pro)** | A SQLite session in the database. | [Session Database](Session-Database.md) |
-| **MDF4 Recording** | An ASAM MDF4 measurement file. | [MDF4](MDF4.md) |
+| **MDF4 Recording** **(Pro)** | An ASAM MDF4 measurement file. | [MDF4](MDF4.md) |
 | **Console Log** | A transcript of the raw console stream. | |
 
 For a project with two or more data sources, the panel replaces the single-driver controls with an **Open Project Editor** button, because the source list is defined in the project. See [Data Sources](Data-Sources.md).
@@ -113,11 +113,11 @@ The Start menu opens from the leftmost taskbar button. It is the dashboard's mai
 |-------|------|--------------|-------|
 | **Workspaces** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/groups.svg" width="16" height="16"> | Picks the active [workspace](#a-note-on-workspaces), creates a new one, shows hidden ones, or edits and deletes user workspaces. | Submenu. |
 | **Actions** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/actions.svg" width="16" height="16"> | Lists the project's [actions](Actions.md); picking one runs it. | Hidden when the project defines no actions. |
-| **Plugins** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/extensions.svg" width="16" height="16"> | Lists installed [plugins](Plugin-Development.md), plus **Manage Plugins...**. | Hidden when no plugins are installed. |
+| **Plugins** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/extensions.svg" width="16" height="16"> | Lists installed [plugins](Plugin-Development.md), plus **Manage Plugins…**. | Hidden when no plugins are installed. |
 | **Auto Layout** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/auto-layout.svg" width="16" height="16"> | Toggles automatic tiling of dashboard windows. | Toggle. |
 | **Full Screen** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/full-screen.svg" width="16" height="16"> | Toggles the main window between full-screen and windowed. | Toggle. |
 | **Add External Window** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/external-window.svg" width="16" height="16"> | Opens a second dashboard window (for a multi-monitor layout). | |
-| **Export** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/export.svg" width="16" height="16"> | Submenu of recording toggles: CSV File, MDF4 File, Console Transcript, and Session Database **(Pro)**. | Mirrors the Setup panel's export switches. |
+| **Export** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/export.svg" width="16" height="16"> | Submenu of recording toggles: CSV File, MDF4 File **(Pro)**, Console Transcript, and Session Database **(Pro)**. | Mirrors the Setup panel's export switches. |
 | **Tools** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/tools.svg" width="16" height="16"> | Submenu: Console, Notifications **(Pro)**, Clock, Stopwatch, Preferences, Sessions **(Pro)**, File Transmission **(Pro)**, AI Assistant **(Pro)**. | Toggles the utility widgets and opens the tool windows. |
 | **Help Center** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/help.svg" width="16" height="16"> | Opens this documentation. | |
 | **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/resume.svg" width="16" height="16"> | Pauses or resumes data reception for the whole session. | Toggle. |
@@ -142,7 +142,7 @@ The taskbar runs along the bottom of the dashboard.
 
 ### A note on workspaces
 
-A **workspace** is a saved arrangement of dashboard windows. Each project includes a default workspace; you can add your own to keep different views of the same data (an overview screen, a diagnostics screen) and switch between them from the taskbar or the Start menu. User workspaces have IDs at or above 1000 and only those can be renamed or deleted.
+A **workspace** is a saved arrangement of dashboard windows. Each project includes a default workspace; you can add your own to keep different views of the same data (an overview screen, a diagnostics screen) and switch between them from the taskbar or the Start menu. User workspaces have IDs at or above 5000 and only those can be renamed or deleted.
 
 ## Project Editor toolbar
 
@@ -220,7 +220,7 @@ Most visualization widgets carry a small toolbar of icon buttons along their top
 
 A few conventions are shared across widgets:
 
-- **Pause / Resume** freezes drawing without stopping data collection; the icon swaps between a pause and a play glyph.
+- **Pause / Resume** stops the widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. Other widgets and the data source are unaffected. The icon swaps between a pause and a play glyph.
 - **Show Crosshair** overlays a tracking crosshair that follows the cursor.
 - **Reset View** returns pan and zoom to the default; it is disabled until you have zoomed or panned.
 - **Axis Range Settings** (gear icon) opens a dialog to pin fixed minimum and maximum axis values.
@@ -234,7 +234,7 @@ A few conventions are shared across widgets:
 | **Show X Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/x.svg" width="16" height="16"> | Shows or hides the X-axis label. |
 | **Show Y Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/y.svg" width="16" height="16"> | Shows or hides the Y-axis label. |
 | **Show Crosshair** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/crosshair.svg" width="16" height="16"> | Tracking crosshair that follows the cursor. |
-| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes drawing without stopping data collection. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops this widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. Other widgets and the data source are unaffected. |
 | **Sweep / Trigger Mode** **(Pro)** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/sweep.svg" width="16" height="16"> | Turns oscilloscope-style [Sweep / Trigger mode](Plots.md#sweep--trigger-mode-pro) on or off. Time-axis plots only. |
 | **Trigger Settings** **(Pro)** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/trigger.svg" width="16" height="16"> | Opens the **Trigger Settings** dialog (mode, level, slope, holdoff, timebase). Enabled only while Sweep is on. |
 | **Reset View** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/return.svg" width="16" height="16"> | Returns pan and zoom to the default; disabled until you have zoomed or panned. |
@@ -250,7 +250,7 @@ The MultiPlot toolbar matches the Plot toolbar, minus **Show Area Under Plot** (
 | **Show X Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/x.svg" width="16" height="16"> | Shows or hides the X-axis label. |
 | **Show Y Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/y.svg" width="16" height="16"> | Shows or hides the Y-axis label. |
 | **Show Crosshair** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/crosshair.svg" width="16" height="16"> | Tracking crosshair that follows the cursor. |
-| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes drawing without stopping data collection. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops this widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. Other widgets and the data source are unaffected. |
 | **Sweep / Trigger Mode** **(Pro)** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/sweep.svg" width="16" height="16"> | Turns oscilloscope-style [Sweep / Trigger mode](Plots.md#sweep--trigger-mode-pro) on or off. The **Source** setting picks which curve the trigger watches. Time-axis plots only. |
 | **Trigger Settings** **(Pro)** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/trigger.svg" width="16" height="16"> | Opens the **Trigger Settings** dialog (mode, source, level, slope, holdoff, timebase). Enabled only while Sweep is on. |
 | **Reset View** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/return.svg" width="16" height="16"> | Returns pan and zoom to the default; disabled until you have zoomed or panned. |
@@ -267,7 +267,7 @@ These buttons and Sweep / Trigger mode are documented in full on the [Plots](Plo
 | **Show X Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/x.svg" width="16" height="16"> | Shows or hides the frequency-axis label. |
 | **Show Y Axis Label** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/y.svg" width="16" height="16"> | Shows or hides the magnitude-axis label. |
 | **Show Crosshair** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/crosshair.svg" width="16" height="16"> | Tracking crosshair. |
-| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes drawing. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops this widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. |
 | **Reset View** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/return.svg" width="16" height="16"> | Resets pan and zoom. |
 | **Axis Range Settings** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/settings.svg" width="16" height="16"> | Fixed axis ranges. |
 
@@ -282,7 +282,7 @@ See the [FFT Plot](Widget-Reference.md#fft-plot) entry for window size and sampl
 | **Show Colorbar** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/color.svg" width="16" height="16"> | Shows or hides the color scale. |
 | **Show Axes & Grid** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/abscissa.svg" width="16" height="16"> | Shows or hides the axes and grid. |
 | **Show Crosshair** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/crosshair.svg" width="16" height="16"> | Frequency / time readout under the cursor. |
-| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes drawing. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops this widget from ingesting new samples into its own buffer; samples that arrive while paused are dropped, not shown after Resume. |
 
 See the [Waterfall](Widget-Reference.md#waterfall-pro) entry for details.
 
@@ -325,7 +325,7 @@ See the [Waterfall](Widget-Reference.md#waterfall-pro) entry for details.
 
 | Button | Icon | What it does |
 |--------|------|--------------|
-| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Freezes the table without stopping data collection. |
+| **Pause / Resume** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/pause.svg" width="16" height="16"> <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/dashboard-buttons/resume.svg" width="16" height="16"> | Stops the table from refreshing with new values; Resume pulls a fresh snapshot immediately, skipping what arrived while paused. |
 
 ### Accelerometer
 

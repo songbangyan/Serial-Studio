@@ -44,10 +44,9 @@ File actions sit on the left; the rest of the toolbar is "add" buttons grouped b
 - **Restore.** Restore a recent automatic snapshot. See [Backups & Recovery](Backup-Recovery.md).
 - **Lock.** Set a password and lock the editor. See [Project Lock](Project-Lock.md).
 - **Add Device** (Pro). Add another data source for multi-device projects.
-- **Add Folder / Add Sub-folder.** File the current branch's items under a named folder. Available on the Groups, Data Tables, and Workspaces branches. See [Organizing with folders](#organizing-with-folders).
 - **Output / Action / Slider / Toggle / Knob / Text Field / Button.** Add an [output control](Output-Controls.md) panel or an [action](Actions.md).
 - **Dataset / Plot / FFT Plot / Gauge / Level Indicator / Compass / LED Indicator.** Add a dataset to the selected group, pre-configured for that widget.
-- **Group / Image / Web View / Painter / Table / Multi-Plot / 3D Plot / Accelerometer / Gyroscope / GPS Map.** Add a group with the matching group widget (Image and Painter are Pro).
+- **Group / Image / Web View / Painter / Table / Multi-Plot / 3D Plot / Accelerometer / Gyroscope / GPS Map.** Add a group with the matching group widget (Image, Painter, and 3D Plot are Pro).
 
 Every button, with its icon, is listed in the [Toolbar & Button Reference](Toolbar-Reference.md#project-editor-toolbar).
 
@@ -120,7 +119,7 @@ Groups
 ### Creating and filling folders
 
 - **Add a folder.** Select the branch root (Groups, Data Tables, or Workspaces) and click **Add Folder** in the toolbar, or right-click the branch and choose **New Folder**.
-- **Nest a folder.** Select an existing folder and click **Add Sub-folder**, or right-click it and choose **New Sub-folder**. Folders nest to any depth.
+- **Nest a folder.** Select an existing folder and click **Add Sub-folder**, or right-click it and choose **New Sub-Folder**. Folders nest to any depth.
 - **Move an item in.** Right-click a group, table, workspace, or folder and use the **Move to Folder** submenu. It mirrors the folder tree, so you can drop the item into any folder at any depth, or back to the top level.
 - **Add items directly into a folder.** With a folder selected, the matching add button (**Add Group**, **Add Shared Table**, **Add Workspace**) creates the new item already filed inside it.
 
@@ -160,13 +159,13 @@ These settings run *before* the parser and apply to every parser type (Built-In,
 
 | Setting | Description | Options |
 |---------|-------------|---------|
-| Frame detection method | How Serial Studio finds frame boundaries in the byte stream. | *End Delimiter Only* (frames end with a known sequence such as `\n`; the most common choice); *Start and End Delimiter* (bounded by a start and an end marker, e.g. `/*` and `*/`); *Start Delimiter Only* (a header begins each frame, and the next header ends the previous one); *No Delimiters* (the whole captured chunk is one frame; use it for fixed-size or length-prefixed protocols). |
+| Frame detection method | How Serial Studio finds frame boundaries in the byte stream. | *End Delimiter Only* (frames end with a known sequence such as `\n`; the most common choice); *Start + End Delimiter* (bounded by a start and an end marker, e.g. `/*` and `*/`); *Start Delimiter Only* (a header begins each frame, and the next header ends the previous one); *No Delimiters* (the whole captured chunk is one frame; use it for fixed-size or length-prefixed protocols). |
 | Start delimiter / end delimiter | The actual delimiter strings. Which ones apply depends on the detection method. | Any string, e.g. `\n`, `/*`, `*/`. |
 | Hex delimiters | Tick when the delimiter strings are written in hex. | e.g. `0A` for newline. |
-| Data conversion (decoder) | How the bytes inside the delimiters are decoded before the parser sees them. | *Plain Text (UTF-8)* (default text mode); *Hexadecimal* (each byte pair read as a hex value); *Base64* (Base64-decoded first); *Binary Direct* (raw bytes passed straight to the parser as a byte array/table). |
+| Data conversion (decoder) | How the bytes inside the delimiters are decoded before the parser sees them. | *Plain Text (UTF8)* (default text mode); *Hexadecimal* (each byte pair read as a hex value); *Base64* (Base64-decoded first); *Binary (Direct)* (raw bytes passed straight to the parser as a byte array/table). |
 | Checksum algorithm | Optional integrity check appended to each frame; frames that fail are dropped. | XOR-8, MOD-256, CRC-8, CRC-16, CRC-16-MODBUS, CRC-16-CCITT, Fletcher-16, CRC-32, Adler-32. |
 
-Picking the wrong decoder/detection pair silently mojibakes binary data or never produces a frame. The trap to remember: **Plain Text routes through `QString::fromUtf8`**, so any byte that is not valid UTF-8 (most binary payloads contain `0x00` or values above `0x7F`) is replaced with `U+FFFD` and the original bytes are lost. For anything non-text, pick **Binary Direct**.
+Picking the wrong decoder/detection pair silently mojibakes binary data or never produces a frame. The trap to remember: **Plain Text routes through `QString::fromUtf8`**, so any byte that is not valid UTF-8 (most binary payloads contain `0x00` or values above `0x7F`) is replaced with `U+FFFD` and the original bytes are lost. For anything non-text, pick **Binary (Direct)**.
 
 #### Parser language
 
@@ -215,21 +214,21 @@ Datasets map to individual data fields in your device's output.
 **General**
 
 - **Title.** Display label (for example "Temperature").
-- **Units.** Measurement suffix (for example "deg C", "hPa", "%").
+- **Measurement Unit.** Measurement suffix (for example "deg C", "hPa", "%").
 - **Frame Index.** 1-based position in the parsed data array. If your device sends `23.5,1013,45.2`, then Temperature = 1, Pressure = 2, Humidity = 3.
 - **Widget.** Per-dataset visualization: Bar, Gauge, Compass, Meter, or None. All four render on the dashboard as a two-page swipe view — page 0 is the analog visualization and page 1 is a large monospace digital readout. The active page is saved per widget in the project file.
+- **Minimum Value / Maximum Value.** The dataset's base value range. Both default to 0. Widgets and FFT fall back to this range when their own min/max is left unset.
 
-**Plotting**
+**Plot Settings**
 
-- **Graph.** Enable time-series plotting.
-- **Plot Min / Plot Max.** Y-axis range. Leave both at 0 for auto-scale.
+- **Enable Plot Widget.** Enable time-series plotting.
 
 **FFT (frequency analysis)**
 
-- **FFT.** Enable frequency-domain analysis.
-- **FFT Samples.** Window size (64, 128, 256, 512, 1024, and so on).
+- **Enable FFT Analysis.** Enable frequency-domain analysis.
+- **FFT Window Size.** Window size (64, 128, 256, 512, 1024, and so on).
 - **FFT Sampling Rate.** In Hz. Has to match the actual data rate for correct frequency axis labeling.
-- **FFT Min / FFT Max.** Y-axis range for the FFT plot.
+- **Minimum Value (optional) / Maximum Value (optional).** Y-axis range for the FFT plot; falls back to the General section's Minimum Value / Maximum Value when left unset.
 
 **Waterfall (Pro)**
 
@@ -238,16 +237,16 @@ Datasets map to individual data fields in your device's output.
 
 **LED**
 
-- **LED.** Show this dataset in the LED panel.
-- **LED High.** Threshold above which the LED lights up. Shown only while the dataset has no alarm bands; once bands are defined, they drive the LED's color, label, and blink state instead.
+- **Show in LED Panel.** Show this dataset in the LED panel.
+- **LED On Threshold (required).** Threshold above which the LED lights up. Shown only while the dataset has no alarm bands; once bands are defined, they drive the LED's color, label, and blink state instead.
 
 **Alarm bands**
 
-- **Alarm Bands** (dataset toolbar, next to **Transform**). Opens a dialog to define colored value ranges with severity tiers for Bar, Gauge, Meter, and LED datasets. Each band has a min/max range, a severity (Info / OK / Warning / Critical), an optional color override and label, and a blink toggle for LED panels. Opening the dialog for an LED dataset with no bands pre-fills one band from the **LED High** threshold so existing setups migrate in place.
+- **Alarm Bands** (dataset toolbar, next to **Transform**). Opens a dialog to define colored value ranges with severity tiers for Bar, Gauge, Meter, and LED datasets. Each band has a min/max range, a severity (Info / OK / Warning / Critical), an optional color override and label, and a blink toggle for LED panels. Opening the dialog for an LED dataset with no bands pre-fills one band from the **LED On Threshold** so existing setups migrate in place.
 
-**Widget range**
+**Widget Settings**
 
-- **Widget Min / Widget Max.** Range for Bar, Gauge, and Meter displays. Both default to 0; set them to the expected range for the dataset.
+- **Minimum Value (optional) / Maximum Value (optional).** Range for Bar, Gauge, and Meter displays; falls back to the General section's Minimum Value / Maximum Value when left unset.
 
 ### Step 5: add actions (optional)
 
@@ -260,7 +259,7 @@ Actions place buttons on the dashboard that send commands to the connected devic
 - **Action Icon.** Pick from the built-in icon set.
 - **Send as Binary.** When checked, the payload is entered as hexadecimal bytes instead of text.
 - **Transmit Data.** The string or hex bytes to transmit (for example `RST`).
-- **End-of-Line Sequence.** Append a line ending: New Line (`\n`), Carriage Return (`\r`), CRLF (`\r\n`), or None. Disabled in binary mode.
+- **End-of-Line Sequence.** Append a line ending: New Line (`\n`), Carriage Return (`\r`), CRLF (`\r\n`), or None. Only editable while **Send as Binary** is off; if a sequence was already configured before switching to binary mode, it is still appended as raw bytes after the hex payload.
 - **Auto-Execute on Connect.** Send the command automatically when the device connects.
 - **Timer Mode:**
 
@@ -306,7 +305,7 @@ For data that isn't plain CSV and isn't covered by a Built-In template, write a 
 
 ```lua
 function parse(frame)
-  -- 'frame' is a string (PlainText/Hex/Base64) or byte table (Binary Direct).
+  -- 'frame' is a string (PlainText/Hex/Base64) or byte table (Binary (Direct)).
   -- Return a table of values matching dataset frame indices.
   local result = {}
   for field in frame:gmatch("([^,]+)") do
@@ -320,7 +319,7 @@ end
 
 ```javascript
 function parse(frame) {
-  // 'frame' is a string (PlainText/Hex/Base64) or byte array (Binary Direct).
+  // 'frame' is a string (PlainText/Hex/Base64) or byte array (Binary (Direct)).
   // Return an array of values matching dataset frame indices.
   return frame.split(",");
 }
@@ -339,7 +338,7 @@ function parse(frame) {
 
 ```lua
 function parse(frame)
-  -- frame is a byte table in Binary Direct mode (1-indexed)
+  -- frame is a byte table in Binary (Direct) mode (1-indexed)
   local temp     = (frame[1] << 8) | frame[2]
   local humidity = (frame[3] << 8) | frame[4]
   return {temp / 10.0, humidity / 10.0}
@@ -365,7 +364,7 @@ Reading the tree top-down tells you exactly which stage failed:
 
 ### How the decoder + detection settings reach the parser
 
-The detection mode, delimiters, and decoder you configured in Step 2 run *before* the parser. They decide where each frame starts and stops, and what `parse(frame)` receives: a `QString::fromUtf8` string for Plain Text, a hex or Base64 string, or the raw byte buffer (a 1-indexed table in Lua, a length-keyed object in JavaScript) for Binary Direct. See the table in Step 2 for the full option list and the UTF-8 trap.
+The detection mode, delimiters, and decoder you configured in Step 2 run *before* the parser. They decide where each frame starts and stops, and what `parse(frame)` receives: a `QString::fromUtf8` string for Plain Text, a hex or Base64 string, or the raw byte buffer (a 1-indexed table in Lua, a length-keyed object in JavaScript) for Binary (Direct). See the table in Step 2 for the full option list and the UTF-8 trap.
 
 ## Frame index mapping
 
@@ -450,7 +449,7 @@ Reloading replaces the in-memory project. The **Restore** dialog still lists the
 
 **Fix:**
 
-- Gauge, Bar, and Meter need bounded numeric values. Set Widget Min/Max.
+- Gauge, Bar, and Meter need bounded numeric values. Set the Minimum Value / Maximum Value in Widget Settings.
 - Accelerometer and Gyroscope groups need exactly 3 datasets.
 - GPS Map needs 2 or 3 datasets (latitude, longitude, optional altitude).
 - Compass expects a value in the 0 to 360 range.
@@ -468,7 +467,7 @@ Reloading replaces the in-memory project. The **Restore** dialog still lists the
 - Test your configuration with the Console view before switching to the Dashboard.
 - Record a session to CSV, then use the CSV Player to iterate on your dashboard layout without hardware connected.
 - Use clear dataset titles and units. They show up directly on dashboard widgets.
-- Set appropriate Widget Min/Max for gauges, bars, and meters instead of relying on auto-scale.
+- Set appropriate Minimum Value / Maximum Value in Widget Settings for gauges, bars, and meters instead of relying on auto-scale.
 
 ## See also
 

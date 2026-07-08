@@ -1,13 +1,13 @@
 # Process I/O Driver (Pro)
 
-The Process I/O driver lets Serial Studio ingest data from any external program. It has two modes:
+Process I/O is a Serial Studio Pro feature that lets Serial Studio ingest data from any external program. It has two modes:
 
 - **Launch mode.** Serial Studio spawns a child process and reads its standard output. The child can be a shell script, a Python program, `socat`, `nc`, or anything else that writes bytes to stdout.
 - **Named pipe mode.** Serial Studio reads from a named pipe (a FIFO on Linux/macOS, a Windows named pipe on Windows), creating it when it does not already exist. The producer is whatever process opens the same pipe for writing.
 
 This is the catch-all transport. When no built-in driver fits a data source but a script can emit bytes for it, the Process I/O driver bridges the gap.
 
-## What is process I/O?
+## Process I/O basics
 
 ### Standard streams
 
@@ -120,17 +120,17 @@ The TCP API and the in-app AI assistant configure this driver through the `io.pr
 | `io.process.setMode` | `mode` (0 = Launch, 1 = NamedPipe) | |
 | `io.process.setExecutable` | `executable` (string) | Path is validated against the API path policy |
 | `io.process.setArguments` | `arguments` (string) | Shell-style argument string; double-quoted substrings stay one argument |
-| `io.process.setWorkingDir` | `workingDir` (string) | |
-| `io.process.setPipePath` | `pipePath` (string) | |
+| `io.process.setWorkingDir` | `workingDir` (string) | Path is validated against the API path policy |
+| `io.process.setPipePath` | `pipePath` (string) | Path is validated against the API path policy |
 | `io.process.listRunning` | none | Refreshes and returns running processes as `name [pid]` |
 | `io.process.getConfig` | none | Returns mode, executable, arguments, workingDir, pipePath |
 
-Transport details and command safety tiers are in the [API Reference](API-Reference.md).
+Transport details are in the [API Reference](API-Reference.md); command safety tiers are in [AI Assistant](AI-Assistant.md#the-safety-tiers).
 
 ## Common pitfalls
 
 - **No data appears.** The child is usually buffering its own output. Standard-library functions block-buffer stdout (typically 4 KB or more) when it is not attached to a terminal. Force a flush after each line: in Python use `print(..., flush=True)` or `sys.stdout.flush()`; in C use `fflush(stdout)`; for programs you cannot modify, `stdbuf -oL my_program` (Linux coreutils) forces line-buffered output.
-- **Child process exits immediately.** Serial Studio drains any remaining output, shows a "Process stopped" dialog with the exit code, and disconnects. Run the child from a normal terminal first to confirm it starts.
+- **Child process exits immediately.** Serial Studio drains any remaining output, shows a dialog titled `Process "<name>" stopped`, with the exit code, and disconnects. Run the child from a normal terminal first to confirm it starts.
 - **Path issues.** Spaces and Unicode in executable paths or arguments can be misparsed. The arguments field is split with `QProcess::splitCommand`, which groups double-quoted substrings into one argument; single quotes are not special. Wrap an argument that contains spaces in double quotes.
 - **Working directory matters.** Some programs read configuration files relative to their working directory. Set the Working Directory field accordingly.
 - **Permission denied on the pipe.** On Linux/macOS, the FIFO inherits filesystem permissions. `chmod 666 /tmp/mypipe` opens it to all users; tighter permissions require both reader and writer to share a user or group.

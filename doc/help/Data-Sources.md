@@ -211,15 +211,15 @@ Direct USB access via libusb, bypassing OS serial and HID abstractions. Supports
 | Parameter       | Options                                               |
 |-----------------|-------------------------------------------------------|
 | Device          | Enumerated USB devices (VID:PID, product name)        |
-| Transfer mode   | Bulk Stream (default), Advanced Control, Isochronous  |
+| Transfer mode   | Bulk/Interrupt Stream (default), Advanced (Bulk + Control), Isochronous |
 | IN endpoint     | USB endpoint to read from                             |
 | OUT endpoint    | USB endpoint to write to                              |
-| ISO packet size | Packet size in bytes (isochronous mode only)          |
+| Max packet size | Packet size in bytes (isochronous mode only)          |
 
 **Transfer modes:**
 
-- **Bulk stream.** Standard bulk IN/OUT transfers. Best for most custom USB firmware.
-- **Advanced control.** Bulk plus control transfers, for devices that need vendor-specific USB control commands.
+- **Bulk/Interrupt stream.** Standard bulk IN/OUT transfers. Best for most custom USB firmware.
+- **Advanced (Bulk + Control).** Bulk plus control transfers, for devices that need vendor-specific USB control commands.
 - **Isochronous.** Time-sensitive, fixed-rate streaming transfers. Use this for real-time audio, video, or other isochronous devices.
 
 **Device enumeration.** Uses libusb hotplug callbacks where the OS supports them (Linux, macOS, Windows). Falls back to a 2-second polling timer when hotplug isn't available.
@@ -229,7 +229,7 @@ Direct USB access via libusb, bypassing OS serial and HID abstractions. Supports
 1. Plug in your USB device.
 2. Select Raw USB as the data source.
 3. Pick your device from the enumerated list.
-4. Select Bulk Stream as the transfer mode (unless your device specifically needs something else).
+4. Select Bulk/Interrupt Stream as the transfer mode (unless your device specifically needs something else).
 5. Select the IN and OUT endpoints that match your device firmware.
 6. Click **Connect**.
 

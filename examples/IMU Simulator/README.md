@@ -6,13 +6,12 @@ This example shows off Serial Studio's **multi-frame parsing** feature, which au
 
 ## Use case
 
-Many devices batch high-frequency sensor readings before transmission to cut communication overhead. For example:
-
-- **Wearable IMU.** Samples accelerometer at 120 Hz, transmits packets at 1 Hz.
-- **Environmental sensors.** Batch temperature/humidity readings.
-- **Audio devices.** Send chunks of audio samples.
-
-Without multi-frame parsing, you'd need to manually duplicate scalar values (battery, temperature) for each sample in JavaScript. With this feature, Serial Studio handles it for you.
+Many devices batch high-frequency sensor readings before transmission to cut communication
+overhead: a wearable IMU that samples its accelerometer at 120 Hz but only transmits packets at
+1 Hz, an environmental sensor batching temperature and humidity readings, or an audio device
+sending chunks of samples. Without multi-frame parsing, each of these needs the scalar values
+(battery, temperature) manually duplicated for every sample in JavaScript; Serial Studio handles
+that duplication automatically.
 
 ## How it works
 
@@ -93,9 +92,9 @@ python3 imu_simulator.py --sample-rate 240 --packet-rate 2.0
 
 ### 2. Configure Serial Studio
 
-1. **Bus type:** UDP Client.
-2. **Host:** 127.0.0.1.
-3. **Port:** 9000.
+1. **I/O Interface:** Network Socket.
+2. **Socket Type:** UDP.
+3. **Local Port:** 9000.
 4. **Project:** load `imu_batched.ssproj`.
 5. Click **Connect**.
 
@@ -108,25 +107,10 @@ python3 imu_simulator.py --sample-rate 240 --packet-rate 2.0
 
 ## Key features
 
-### Mixed scalar/vector parsing
-
-Scalars (battery, temp) + vectors (accel arrays) in a single return value.
-
-### Automatic scalar repetition
-
-No need to manually duplicate battery or temperature 120 times in JavaScript.
-
-### Vector unzipping
-
-Three 120-element arrays are transposed into 120 frames automatically.
-
-### Efficient protocol
-
-Transmit 1 packet instead of 120 individual frames.
-
-### Smooth visualization
-
-High-frequency data (120 Hz) visualized smoothly despite a low transmission rate (1 Hz).
+The parser's return value mixes scalars (`battery`, `temperature`) with vectors (`accel_x`,
+`accel_y`, `accel_z`) in one array. Serial Studio finds the longest vector, repeats the scalars
+across it, and transposes the result into one frame per sample, so the simulator only needs to
+send a single packet instead of 120 individual frames.
 
 ## Customization
 
@@ -166,17 +150,16 @@ function parse(frame) {
 
 ### Frame expansion algorithm
 
-1. **Detect array type.** Mixed scalar/vector.
-2. **Find the longest vector.** 120 elements.
-3. **Extend shorter vectors.** Repeat the last value if needed.
-4. **Generate frames.** Transpose into 120 frames with scalars repeated.
+The expansion distinguishes scalar entries from vector entries in the parser's return value,
+finds the longest vector (120 elements for this example), extends any shorter vector by
+repeating its last value, then transposes the result into 120 frames with the scalars repeated
+across each one.
 
 ### Performance
 
-- **Parsing overhead.** Single JavaScript call per packet.
-- **Memory.** One allocation for the multi-frame list.
-- **Dashboard updates.** Zero-copy via const reference.
-- **Throughput.** Tested with 120 samples/packet at 10 Hz = 1200 frames/sec.
+Parsing costs a single JavaScript call per packet, and the multi-frame list needs one allocation
+regardless of how many frames it expands to; the dashboard reads it by const reference with no
+further copies. At a 10 Hz packet rate, this scales to 120 x 10 = 1200 frames/sec.
 
 ## License
 

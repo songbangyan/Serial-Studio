@@ -7,7 +7,7 @@ The Network driver is the right transport once a project outgrows a single USB c
 
 Both are available in the free build.
 
-## What is TCP?
+## TCP basics
 
 TCP, the **Transmission Control Protocol**, was specified in [RFC 793](https://www.rfc-editor.org/rfc/rfc793) in 1981 and is still the workhorse of the Internet. It provides a reliable, ordered stream of bytes between two endpoints, hides packet loss, retransmits what is missing, and enforces flow control so a fast sender does not overwhelm a slow receiver.
 
@@ -53,7 +53,7 @@ Every TCP endpoint is `(IP address, port number)`. Ports go from 0 to 65535. 0-1
 
 Serial Studio enforces no specific choice. Use whatever the device is configured for.
 
-## What is UDP?
+## UDP basics
 
 UDP, the **User Datagram Protocol**, was specified in [RFC 768](https://www.rfc-editor.org/rfc/rfc768) in 1980; the entire specification is three pages. Where TCP provides a reliable stream, UDP provides something far simpler: send one packet and hope it arrives. There are no guarantees.
 
@@ -116,7 +116,7 @@ The Setup panel exposes these fields:
 
 UDP uses a single socket; there is no separate Receiver / Sender / Multicast mode. Serial Studio binds **Local Port** to receive datagrams. Incoming datagrams are read one at a time, so on the receive side UDP preserves the message boundaries that TCP discards. Outbound data (actions, output controls, the console send line) is sent as datagrams to **Remote Address** / **Remote Port**.
 
-The same settings are scriptable through the `io.network.*` commands of the [JSON-RPC API](API-Reference.md): `setSocketType` (`socketTypeIndex` 0 = TCP, 1 = UDP), `setRemoteAddress`, `setTcpPort`, `setUdpLocalPort`, `setUdpRemotePort`, `setUdpMulticast`, and `lookup`, plus the read-only `getConfig` and `listSocketTypes`. The port commands take a `port` parameter (1-65535; `setUdpLocalPort` also accepts 0). When the in-app AI issues these commands, they sit behind the **Allow device control** toggle.
+The same settings are scriptable through the `io.network.*` commands of the [JSON-RPC API](API-Reference.md): `setSocketType` (`socketTypeIndex` 0 = TCP, 1 = UDP), `setRemoteAddress`, `setTcpPort`, `setUdpLocalPort`, `setUdpRemotePort`, and `setUdpMulticast`, plus the read-only `lookup`, `getConfig`, and `listSocketTypes`. The port commands take a `port` parameter (1-65535; `setUdpLocalPort` also accepts 0). When the in-app AI calls the six setter commands above, they sit behind the **Allow device control** toggle; `lookup`, `getConfig`, and `listSocketTypes` are read-only and run without it.
 
 For step-by-step setup, see the [Protocol Setup Guides, Network section](Protocol-Setup-Guides.md).
 

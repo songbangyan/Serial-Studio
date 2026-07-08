@@ -558,6 +558,7 @@ bool MQTT::PublisherScriptEditor::definesMqttFunction(const QString& code, int l
       lua_pop(L, 1);
     }
 
+    DataModel::installLuaRestrictedOs(L);
     DataModel::installLuaCompat(L);
 
     const QByteArray utf8 = code.toUtf8();
@@ -627,7 +628,6 @@ QString MQTT::PublisherScriptEditor::runScript(const QString& code,
       { "table",  luaopen_table},
       {"string", luaopen_string},
       {  "math",   luaopen_math},
-      {    "os",     luaopen_os},
       { nullptr,        nullptr}
     };
 
@@ -636,6 +636,7 @@ QString MQTT::PublisherScriptEditor::runScript(const QString& code,
       lua_pop(L, 1);
     }
 
+    DataModel::installLuaRestrictedOs(L);
     DataModel::installLuaCompat(L);
 
     const QByteArray utf8 = code.toUtf8();

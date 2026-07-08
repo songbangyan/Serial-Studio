@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project is a utility for converting audio data recorded via Serial Studio's Audio I/O driver into playable WAV files. It's for developers testing Serial Studio's data pipeline integrity using audio signals like voice, tones, or music. If the reconstructed `.wav` file sounds like the original, the I/O pipeline works.
+This project is a utility for converting audio data recorded via Serial Studio's Audio driver into playable WAV files. It's for developers testing Serial Studio's data pipeline integrity using audio signals like voice, tones, or music. If the reconstructed `.wav` file sounds like the original, the I/O pipeline works.
 
 No extra hardware needed. Just Serial Studio, a microphone or audio source, and this Python script.
 
-> Serial Studio's audio features may need a paid license. See [serial-studio.com](https://serial-studio.com/) for details.
+> The Audio driver needs a Serial Studio Pro license (a free trial unlocks it too). See [serial-studio.com](https://serial-studio.com/) for details.
 
 ![Audio pipeline validator](doc/screenshot.png)
 
@@ -39,7 +39,7 @@ Elapsed (s),Audio Input/Channel 1,Audio Input/Channel 2,...
 
 ### 1. Record audio in Serial Studio
 
-- Set the input source to an Audio I/O device.
+- Set the input source (bus type) to Audio.
 - Configure the number of channels (1 = mono, 2 = stereo, and so on).
 - Enable data logging to a `.csv` file.
 - Speak, play music, or record any sound.

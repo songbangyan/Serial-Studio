@@ -105,7 +105,7 @@ The `frame` parameter type depends on the Decoder Method selected in the Project
 
 **Binary (Direct)** passes byte values directly. In Lua, this is a 1-indexed table; in JavaScript, a 0-indexed array.
 
-> **Binary trap:** with Binary (Direct), `frame` is **not a string**, so string functions fail on it. In Lua, `string.byte(frame, 1)` raises `bad argument #1 to 'byte' (string expected, got table)` and `frame:match(...)` raises `attempt to index a table value`; in JavaScript, `frame.split(",")` throws `frame.split is not a function`. Read bytes by indexing (`frame[1]` in Lua, `frame[0]` in JavaScript), as in Example 3 below. When you need `string.unpack` for multi-byte or float fields, convert the table to a string once at the top of `parse()`:
+> **Binary trap:** with Binary (Direct), `frame` is **not a string**, so string functions fail on it. In Lua, `string.byte(frame, 1)` raises `bad argument #1 to 'byte' (string expected, got table)` and `frame:match(...)` raises `attempt to call a nil value (method 'match')` (tables have no `match` method); in JavaScript, `frame.split(",")` throws `frame.split is not a function`. Read bytes by indexing (`frame[1]` in Lua, `frame[0]` in JavaScript), as in Example 3 below. When you need `string.unpack` for multi-byte or float fields, convert the table to a string once at the top of `parse()`:
 >
 > ```lua
 > function parse(frame)
@@ -127,7 +127,7 @@ The `frame` parameter type depends on the Decoder Method selected in the Project
 > }
 > ```
 
-> **Validation probe:** when a parser is saved, the editor test-runs `parse()` with tiny sample inputs before accepting it (`"0"` and `""` in Lua; `"0"`, a one-byte array, and `""` in JavaScript). A function that reads fixed offsets without checking the frame length fails every probe with a runtime error such as `index out of range`, and the editor rejects it with a *"parse function contains an error"* message even though the code is fine for full-size frames. The length guards in the examples above are what make them pass: return an empty table/array when the frame is too short. The same guard matters on a live link, where a truncated frame will eventually arrive.
+> **Validation probe:** when a parser is saved, the editor test-runs `parse()` with tiny sample inputs before accepting it (`"0"` and `""` as strings in Lua, falling back to a one-element byte table `{0}` if both string probes fail; `"0"`, a one-byte array, and `""` in JavaScript). A function that reads fixed offsets without checking the frame length fails every probe with a runtime error such as `index out of range`, and the editor rejects it with a *"parse function contains an error"* message even though the code is fine for full-size frames. The length guards in the examples above are what make them pass: return an empty table/array when the frame is too short. The same guard matters on a live link, where a truncated frame will eventually arrive.
 
 ### Return Value
 
@@ -841,7 +841,7 @@ end
 
 ## Built-in Template Scripts
 
-Serial Studio includes 28 ready-to-use parser templates, available in both Lua and JavaScript. Select a template from the dropdown in the frame parser editor:
+Serial Studio includes 28 ready-to-use parser templates, available in both Lua and JavaScript. Select a template from the **Select Template…** button in the frame parser editor toolbar (opens a template picker dialog):
 
 | Template                  | Description                          |
 |---------------------------|--------------------------------------|
@@ -885,7 +885,7 @@ Each source runs in an isolated engine instance. Global variables in one source 
 ## Rules and Limitations
 
 1. The function **must** be named `parse` (case-sensitive).
-2. It must accept exactly **one parameter**.
+2. It must accept **at least one parameter** (the frame payload). In JavaScript, the deprecated two-parameter `parse(frame, separator)` form is explicitly rejected by the editor, but declaring extra unused parameters is otherwise allowed. Lua performs no arity or legacy-signature check; a `parse(frame, separator)` function runs with `separator` as `nil`.
 3. It must return a table (Lua) or array (JavaScript). Not a string, number, or nil.
 4. Return an empty table/array for invalid or incomplete frames.
 5. **Synchronous only.** The engine never yields to the host, so the result must be ready when `parse()` returns. Lua's `coroutine` library is available, but it cannot make `parse()` asynchronous; the same goes for JavaScript Promises/async.

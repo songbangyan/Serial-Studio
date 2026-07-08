@@ -1,10 +1,10 @@
 # Audio Driver (Pro)
 
-The Audio driver lets Serial Studio treat any OS-level audio input device as an analog data source: microphones, line-in, audio interfaces, USB DACs, virtual loopback devices, anything the OS can record from.
+The Audio driver lets Serial Studio treat any OS-level audio input device as an analog data source: microphones, line-in, audio interfaces, USB DACs, virtual loopback devices, anything the OS can record from. Audio input is a Serial Studio Pro feature, built on miniaudio for direct OS-backend access.
 
 It can also feed an analog signal into Serial Studio when no dedicated driver fits. A vibration sensor through a microphone preamp, or a current shunt through a line input, both work the same as a real microphone.
 
-## What is digital audio?
+## Digital audio basics
 
 Digital audio is the discrete-time, discrete-amplitude representation of an analog sound waveform. Three numbers describe it:
 
@@ -100,7 +100,7 @@ Selections persist across sessions and are saved with the project by stable iden
 
 When an **Output Device** is configured, the driver opens in duplex mode and data written to it plays back as audio. Each outgoing frame is a comma-separated list with one value per playback channel: integer sample values for the integer formats, `-1.0` to `1.0` for Float 32-bit.
 
-The same settings are scriptable through the `io.audio.*` commands of the [JSON-RPC API](API-Reference.md): `setInputDevice` and `setOutputDevice` (`deviceIndex`), `setSampleRate` (`rateIndex`), `setInputSampleFormat` and `setOutputSampleFormat` (`formatIndex`), and `setInputChannelConfig` and `setOutputChannelConfig` (`channelIndex`), plus the read-only `listInputDevices`, `listOutputDevices`, `listSampleRates`, `listInputFormats`, `listOutputFormats`, and `getConfig`. Every setter takes a zero-based index into the option list, in the same order as the Setup Panel. When the in-app AI issues these commands, they sit behind the **Allow device control** toggle.
+The same settings are scriptable through the `io.audio.*` commands of the [JSON-RPC API](API-Reference.md): `setInputDevice` and `setOutputDevice` (`deviceIndex`), `setSampleRate` (`rateIndex`), `setInputSampleFormat` and `setOutputSampleFormat` (`formatIndex`), and `setInputChannelConfig` and `setOutputChannelConfig` (`channelIndex`), plus the read-only `listInputDevices`, `listOutputDevices`, `listSampleRates`, `listInputFormats`, `listOutputFormats`, and `getConfig`. Every setter takes a zero-based index into the option list, in the same order as the Setup Panel. When the in-app AI issues one of the seven setter commands, it sits behind the **Allow device control** toggle; the read-only getters run unconditionally.
 
 For step-by-step setup, see the [Protocol Setup Guides, Audio Input section](Protocol-Setup-Guides.md).
 

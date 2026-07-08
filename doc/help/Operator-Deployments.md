@@ -4,7 +4,7 @@ A **deployment** is a saved launcher that opens Serial Studio with a specific pr
 
 The intended workflow: an engineer configures a project once, generates a deployment for it, and hands the deployment file to whoever runs the workstation. Operators get a single-icon entry point to a known dashboard layout instead of having to find the right `.ssproj` and remember which exports to enable.
 
-> **Pro feature.** Deployment generation and the `--runtime` flag are part of the commercial build. Deployments created on a Pro machine still launch under GPL builds (the runtime CLI flags are honoured by GPL builds), but they can only be *generated* from a Pro install.
+> **Pro feature.** Deployment generation and the `--runtime` flag are part of the commercial build. The target machine needs a commercial (Pro) build too: `--runtime`, `--shortcut-path`, and the export/taskbar/theme flags a deployment writes are compiled out of GPL builds, so a GPL build refuses the unrecognized flags and fails to launch instead of running the deployment.
 
 > **Serial Studio must be installed on the target machine.** A deployment is a launcher, not a self-contained bundle. It records the absolute path of the Serial Studio executable at the moment it was created, plus the project file path and runtime flags. If Serial Studio isn't installed on the operator's machine (or if it has been uninstalled, moved, or the project file is missing), double-clicking the deployment will fail with the OS's "missing application" or "file not found" error. Install Serial Studio on the target machine first (the same installer the engineer uses), then drop the deployment file onto the desktop.
 
@@ -39,7 +39,7 @@ Three tabs.
 - **Icon.** Click the 96×96 preview (or **Change Icon…**) to pick your own. macOS prefers `.icns`, Windows prefers `.ico`, Linux accepts SVG or PNG. Leave it alone to use the bundled deployment icon.
 - **Name.** Defaults to the project's title. Used as the deployment filename and the displayed label in the operator's shell. Reserved characters (`\ / : * ? " < > |`) are replaced with `_` automatically when saving.
 - **Project.** Read-only field showing the currently loaded project. Use the folder button to switch projects without leaving the dialog. A project must be loaded for **Save** to enable.
-- **Theme.** Defaults to **Same as Serial Studio**, which means the deployment inherits whatever theme the operator's installation has set globally. Pick a specific theme from the dropdown to pin the deployment to that palette regardless of the host's preference. Useful for kiosks where the dashboard should always look the same, or for paired light/dark deployments off the same project. The selection adds `--theme "<name>"` to the launcher; an unknown theme name on the target machine falls back to the host's default with a warning.
+- **Theme.** Defaults to **Same as Serial Studio**, which means the deployment inherits whatever theme the operator's installation has set globally. Pick a specific theme from the dropdown to pin the deployment to that palette regardless of the host's preference. Useful for kiosks where the dashboard should always look the same, or for paired light/dark deployments off the same project. The selection adds `--theme "<name>"` to the launcher; an unknown theme name on the target machine falls back to the host's saved preference with a warning.
 - **Fullscreen.** When on, the deployment adds `--fullscreen` so the dashboard launches full-screen with no window chrome.
 - **Actions Panel.** When on (the default), the deployment adds `--actions-panel` so the dashboard's action panel is shown.
 - **File Transmission.** When on, the deployment adds `--file-transmission`, allowing the operator to open the File Transmission dialog in runtime mode.
@@ -80,7 +80,7 @@ Every generated deployment adds `--runtime`. This flag adjusts the dashboard for
 | Project loading                       | Loads the file passed via `--project` immediately, in Project mode. No project picker. |
 | Auto-connect                          | Once the QML loads, Serial Studio calls `connectDevice()` automatically if the project's bus type has a usable configuration. |
 | Failed initial connect (4 s grace)    | If no connection is established within 4 seconds of launch, a **Device Unavailable** dialog is shown. |
-| User-initiated disconnect             | Quits the application. In runtime mode, pressing Disconnect is treated as "I'm done." |
+| User-initiated disconnect             | The Start Menu's Disconnect action is relabeled **Quit** in runtime mode; pressing it quits the application. It's treated as "I'm done." |
 | Device-initiated drop                 | Shows the **Connection Lost** dialog. The user can Reconnect, pick a different device, or Quit; the dashboard layout is preserved underneath. |
 | Project file missing at launch        | A pre-flight check runs before the QML loads. If the project file is missing, a "Project file not found" dialog is shown and offers to **Delete Shortcut** (when `--shortcut-path` is provided) or **Quit**. |
 
@@ -122,7 +122,7 @@ serial-studio \
 | `--session-export`  | Pre-arm Session Database export (Pro). |
 | `--console-export`  | Pre-arm Console export (Pro). |
 | `--shortcut-path <p>` | Identifies which deployment file launched this process (Pro). Lets the runtime offer to delete a broken deployment when its project file goes missing. The flag is named `--shortcut-path` for backwards compatibility with deployments generated by earlier versions. |
-| `--theme <name>`    | Override the application theme for this deployment only (Pro). The name matches one of the entries in **Settings → Theme** (for example `"Iconic"`, `"Light"`, `"System"`). Unknown names log a warning and fall back to the host's saved preference. |
+| `--theme <name>`    | Override the application theme for this deployment only (Pro). The name matches one of the entries in **Settings → Theme** (for example `"Default"`, `"Fluent Light"`, `"Fluent Dark"`, `"System"`). Unknown names log a warning and fall back to the host's saved preference. |
 
 The deployment generator passes `--shortcut-path` automatically; you only need it when crafting flags by hand and want the broken-deployment self-cleanup behaviour.
 
@@ -167,13 +167,13 @@ No. It records the absolute path to the `.ssproj`. Move the project, and the dep
 Yes. Windows `.lnk` exposes Properties → Target. The macOS `.app` keeps a small Bash launcher at `Contents/MacOS/<bundle-name>` (the executable named in `Info.plist`'s `CFBundleExecutable`). Linux `.desktop` files are plain text. All three can be edited by hand if you need to adjust the flags.
 
 **Will the deployment still work on a machine without a Pro license?**
-Yes — the runtime CLI flags are honoured by GPL builds. You just can't *generate* deployments there. The target machine still needs Serial Studio installed.
+Yes, as long as that machine runs a commercial (Pro) build — a license or trial isn't required to launch the deployment, only to auto-connect. A true GPL build doesn't register `--runtime`, `--shortcut-path`, or the other deployment flags at all, so it fails to parse them and won't launch the deployment.
 
 **What if the user has multiple devices and the deployment points at one of them?**
 The recovery dialog's **Pick Different Device** page lets them switch on the fly without leaving runtime mode. The deployment's auto-connect behaviour is a starting point, not a hard wire.
 
 **Does the deployment survive a Serial Studio update?**
-Usually yes. The deployment targets the Serial Studio executable by absolute path; package upgrades that overwrite the binary in place leave the deployment intact. Reinstalls that move the executable will require regenerating the deployment.
+Yes, as long as the update overwrites the binary in place rather than moving it — the deployment targets the executable by absolute path. Reinstalls that move the executable require regenerating the deployment.
 
 ## See also
 

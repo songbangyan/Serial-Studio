@@ -47,9 +47,9 @@ Contributions have to be original, useful, and verifiable.
 ## Getting started with code contributions
 
 1. Fork the repository on GitHub.
-2. Read the project guidelines and code style docs.
+2. Read the [project guidelines and code style docs](https://github.com/Serial-Studio/Serial-Studio/blob/master/CONTRIBUTING.md).
 3. Pick an open issue or propose a new feature.
-4. Submit your pull request.
+4. Submit your pull request. A signed [Contributor License Agreement](License-Agreement.md#contributor-license-agreement-cla) is required before it can be merged.
 5. Once it's merged, request your Pro license via GitHub Discussions.
 
 ## Why this program exists

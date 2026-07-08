@@ -106,7 +106,7 @@ The return value must be a string. For binary protocols, build a byte-string wit
 
 ### Built-in Templates
 
-The code editor includes a set of ready-to-use templates (Simple Command, JSON Command, Binary Packet, PWM Control, PID Setpoint, Relay Toggle, AT Command, Modbus Write, CAN Bus Frame, G-Code, GRBL, NMEA, SCPI, SLCAN, and a default starting point). Select one from the template dropdown and customize it for your device.
+The code editor includes a set of ready-to-use templates: Simple command, JSON command, Binary packet, PWM control, PID setpoint, Relay toggle, AT command, Modbus write, CAN Bus frame, G-Code command, GRBL command, NMEA sentence, SCPI command, SLCAN command, and Default template. Select one from the template dropdown and customize it for your device.
 
 #### Simple Command
 
@@ -135,7 +135,8 @@ Sends structured JSON objects. Useful for firmware that parses JSON input.
 function transmit(value) {
   var obj = {
     cmd: "set",
-    value: value
+    value: value,
+    ts: Date.now()
   };
   return JSON.stringify(obj) + "\n";
 }
@@ -151,7 +152,10 @@ function transmit(value) {
   var ETX = String.fromCharCode(0x03);
   var cmd = String.fromCharCode(0x01);
   var val = String.fromCharCode(Math.round(value) & 0xFF);
-  return STX + cmd + val + ETX;
+
+  // XOR checksum over cmd + value
+  var chk = String.fromCharCode(0x01 ^ (Math.round(value) & 0xFF));
+  return STX + cmd + val + chk + ETX;
 }
 ```
 
@@ -160,9 +164,11 @@ function transmit(value) {
 Sends a duty cycle value (0-255) for motor speed, LED brightness, or heater control.
 
 ```javascript
+var CHANNEL = 0;
+
 function transmit(value) {
   var duty = Math.round(Math.max(0, Math.min(255, value)));
-  return "PWM " + duty + "\r\n";
+  return "PWM " + CHANNEL + " " + duty + "\r\n";
 }
 ```
 
@@ -171,8 +177,12 @@ function transmit(value) {
 Sends a floating-point setpoint with 2 decimal places for PID controllers.
 
 ```javascript
+var SP_MIN = 0.0;
+var SP_MAX = 100.0;
+
 function transmit(value) {
-  return "SP " + Number(value).toFixed(2) + "\r\n";
+  var sp = Math.max(SP_MIN, Math.min(SP_MAX, Number(value)));
+  return "SP " + sp.toFixed(2) + "\r\n";
 }
 ```
 
@@ -181,8 +191,11 @@ function transmit(value) {
 Sends distinct ON/OFF commands for relay or digital output control.
 
 ```javascript
+var CHANNEL = 0;
+
 function transmit(value) {
-  return value ? "RELAY ON\r\n" : "RELAY OFF\r\n";
+  var state = value ? "ON" : "OFF";
+  return "RELAY " + CHANNEL + " " + state + "\r\n";
 }
 ```
 
@@ -531,7 +544,7 @@ function transmit(value) {
 
 **Symptom:** The control shows the red text "No transmit function defined" instead of its widget.
 
-**Fix:** Open the Project Editor and check the transmit function for syntax errors. The function must be a valid JavaScript function named `transmit` that accepts one parameter and returns a string. This label also appears when the field is left empty. Runtime errors raised during a transmit (watchdog timeout or an oversize payload) abort the send but are not shown on the widget; use the Console view to confirm what was sent.
+**Fix:** Open the Project Editor and check the transmit function for syntax errors. The function must be a valid JavaScript function named `transmit` that accepts one parameter and returns a string. This label also appears when the field is left empty. Runtime errors raised during a transmit (watchdog timeout, a script exception, or an oversize payload) flash a red border on the control for a few seconds; hover it to read the error message.
 
 ## Tips
 

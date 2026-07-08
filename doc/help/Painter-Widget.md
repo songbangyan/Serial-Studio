@@ -83,11 +83,11 @@ function paint(ctx, w, h) {
 
 ### Persistent state
 
-Variables declared at the top of the script (`const`, `let`, `var`) live for the lifetime of the widget and retain their values between calls. State is reset when the script is recompiled (after an edit in the editor) or when the widget is destroyed (project closed, group deleted). Disconnecting and reconnecting the device does not reset state.
+Variables declared at the top of the script (`const`, `let`, `var`) live for the lifetime of the widget and retain their values between calls. State is reset when the script is recompiled (after an edit in the editor), when the user switches between light and dark themes (see [`theme`](#theme)), or when the widget is destroyed (project closed, group deleted). Disconnecting and reconnecting the device does not reset state.
 
 ## Globals
 
-Three globals are available inside `paint()` and `onFrame()`.
+Four globals are available inside `paint()` and `onFrame()`.
 
 ### `datasets`
 
@@ -108,7 +108,8 @@ An array-like view of the group's datasets. `datasets.length` returns the count,
 | `widgetMin`, `widgetMax` | number | Widget-specific bounds (`wgtMin` / `wgtMax`). |
 | `plotMin`, `plotMax`     | number | Plot bounds. |
 | `fftMin`, `fftMax`       | number | FFT bounds. |
-| `alarmLow`, `alarmHigh`  | number | Alarm thresholds. |
+| `alarmLow`, `alarmHigh`  | number | Alarm thresholds. Derived from `alarmBands`: the lower edge of the first, and the upper edge of the last, Warning-or-higher band. `NaN` when no such band exists. |
+| `alarmBands`             | array of object | The dataset's alarm bands: `{min, max, severity, color, label, blink}`. `severity` is 0=Info, 1=OK, 2=Warning, 3=Critical. `alarmLow`/`alarmHigh` are a legacy view of this same data. |
 | `ledHigh`                | number | LED activation threshold. |
 | `hasPlot`, `hasFft`, `hasLed` | boolean | Visualization flags from the project. |
 
@@ -135,6 +136,24 @@ Metadata about the current dashboard tick.
 | `timestampMs`  | number  | Wall-clock timestamp in milliseconds since epoch. |
 
 `frame.timestampMs` is the dashboard's reference clock. Use it for animation timing in preference to `Date.now()` so timestamps remain consistent across widgets.
+
+### `theme`
+
+The active color palette, refreshed automatically whenever the user switches themes. Every bundled template reads its colors from `theme` instead of hardcoding hex values; see [Composition reference](#composition-reference) for how they use it.
+
+| Field              | Type   | Description |
+|--------------------|--------|-------------|
+| `widget_base`      | string | Canvas / card background. |
+| `widget_border`    | string | Grid lines, frames, and borders. |
+| `alternate_base`   | string | Card body / recessed panel fill. |
+| `widget_text`      | string | Primary value labels and titles. |
+| `placeholder_text` | string | Muted secondary labels. |
+| `widget_highlight` | string | Primary signal / value color. |
+| `accent`           | string | Secondary accent color. |
+| `alarm`            | string | Alarm color. |
+| `widget_colors`    | array of string | Per-channel palette; index with `theme.widget_colors[i % theme.widget_colors.length]`. |
+
+Other palette keys exist (`text`, `window`, `mid`, `groupbox_background`, `groupbox_border`, `highlighted_text`, `pane_section_label`, ...) mirroring the palette the QML dashboard widgets draw from, but the fields above cover what a Painter script needs. `theme` is a plain object, not frozen — avoid mutating it. A theme switch replaces the global `theme` object and forces a script recompile (see [Persistent state](#persistent-state)), so any `onFrame()`-accumulated buffers reset when the user changes themes.
 
 ### `console`
 
@@ -235,14 +254,14 @@ ctx.drawImage("qrc:/icons/dashboard-large/painter.svg",   // bundled resource
 
 ## Built-in templates
 
-Eighteen templates are bundled with Serial Studio. Most use the light-theme card layout described in [Composition reference](#composition-reference). The instrument-style templates (oscilloscope, radar sweep, artificial horizon) use a dark instrument-panel layout.
+Eighteen templates are bundled with Serial Studio. Most use the card layout described in [Composition reference](#composition-reference). The instrument-style templates (oscilloscope, radar sweep, artificial horizon) use a recessed instrument-panel layout instead, drawn through the same `theme` global as every other template.
 
 | Template                | Datasets needed | What it draws |
 |-------------------------|-----------------|---------------|
 | Default template        | 3 (X, Y, Z)     | Position indicator with a planar dot and a Z bar. |
-| Audio VU meter          | 2               | Dual VU bars with peak markers. |
+| Audio VU meter          | 1+              | Per-channel VU bars with peak markers, any channel count. |
 | Bars with peak hold     | 1+              | Vertical bars with decaying peak-hold lines. |
-| Clock face              | 1 (seconds)     | Analog clock driven by the dataset value. |
+| Clock face              | 0-1 (seconds)   | Analog clock driven by the dataset value; falls back to wall-clock time when the dataset is absent. |
 | Dial gauge              | 1               | Single arc gauge with a needle. |
 | Heatmap                 | N               | Color-mapped grid, one cell per dataset. |
 | Artificial horizon      | 2 (pitch, roll) | Aviation attitude indicator. |
@@ -262,27 +281,24 @@ Templates are stored as plain `.js` files under `app/rcc/scripts/painter/`.
 
 ## Composition reference
 
-The bundled templates use a shared visual layout. None of this is enforced by the engine; the patterns are documented here so user-authored Painters can match the built-in style when desired.
+The bundled templates use a shared visual layout and draw every color through the [`theme`](#theme) global. None of this is enforced by the engine; the patterns are documented here so user-authored Painters can match the built-in style when desired. Hardcoding a hex color instead of reading `theme.*` renders correctly once, then stays wrong when the user switches between light and dark themes.
 
 ### Background and card
 
 ```javascript
-ctx.fillStyle = "#f5f5f1";        // background
+ctx.fillStyle = theme.widget_base;
 ctx.fillRect(0, 0, w, h);
-ctx.strokeStyle = "#e7e5de";      // outer border
-ctx.lineWidth = 2;
-ctx.strokeRect(1, 1, w - 2, h - 2);
 ```
 
-A white card with border and drop shadow holds the content:
+A card with a soft shadow and a 1-pixel border holds the content:
 
 ```javascript
 const pad = 14;
-ctx.fillStyle = "#e2e8f0";        // shadow
+ctx.fillStyle = theme.widget_border;      // shadow
 ctx.fillRect(pad + 1, pad + 2, w - pad * 2, h - pad * 2);
-ctx.fillStyle = "#ffffff";        // card body
+ctx.fillStyle = theme.alternate_base;     // card body
 ctx.fillRect(pad, pad, w - pad * 2, h - pad * 2);
-ctx.strokeStyle = "#d4d4d8";
+ctx.strokeStyle = theme.widget_border;
 ctx.lineWidth = 1;
 ctx.strokeRect(pad + 0.5, pad + 0.5, w - pad * 2 - 1, h - pad * 2 - 1);
 ```
@@ -294,21 +310,22 @@ The 0.5-pixel offset on `strokeRect` aligns the stroke to a single pixel column.
 A header consists of a left-aligned bold title, an optional right-aligned secondary label, and a 1-pixel rule:
 
 ```javascript
-ctx.fillStyle = "#0f172a";
+ctx.fillStyle = theme.widget_text;
 ctx.font = "bold 11px sans-serif";
 ctx.textAlign = "start";
-ctx.fillText("STEREO  VU", pad + 16, headerY + 4);
+ctx.fillText("LEVEL  METER", pad + 16, headerY + 4);
 
-ctx.fillStyle = "#64748b";
+ctx.fillStyle = theme.placeholder_text;
 ctx.font = "9px sans-serif";
 ctx.textAlign = "end";
-ctx.fillText("dB FS", w - pad - 16, headerY + 4);
+ctx.fillText(datasets.length === 1 ? datasets[0].title : "MULTI",
+             w - pad - 16, headerY + 4);
 
-ctx.fillStyle = "#e5e7eb";
+ctx.fillStyle = theme.widget_border;
 ctx.fillRect(pad + 12, headerY + 12, w - (pad + 12) * 2, 1);
 ```
 
-The double space in `"STEREO  VU"` widens the inter-letter spacing without requiring a font change.
+The double space in `"LEVEL  METER"` widens the inter-letter spacing without requiring a font change. The right-aligned label falls back to a fixed tag when the template draws more than one dataset in a single meter.
 
 ### Segmented bars
 
@@ -326,18 +343,18 @@ for (let i = 0; i < SEGMENTS; ++i) {
 }
 ```
 
-The dial gauge and progress rings templates apply the same approach to colored arc zones.
+`lit_color(t)` and `unlit_color(t)` pick from `theme.widget_highlight`, `theme.accent`, and `theme.alarm` by zone, and from `theme.widget_border` when unlit. The dial gauge and progress rings templates apply the same approach to colored arc zones.
 
 ### Peak hold marker
 
-A dark 2-pixel core with a 1-pixel light halo on each side gives a peak indicator that remains visible across light and dark backgrounds:
+A halo in the border color with a solid core in the accent color gives a peak indicator that remains visible across light and dark themes:
 
 ```javascript
 const px = x + w * peak;
-ctx.fillStyle = "#cbd5e1";        // halo
+ctx.fillStyle = theme.widget_border;      // halo
 ctx.fillRect(px - 2, y - 2, 1, h + 4);
 ctx.fillRect(px + 2, y - 2, 1, h + 4);
-ctx.fillStyle = "#0f172a";        // core
+ctx.fillStyle = theme.accent;             // core
 ctx.fillRect(px - 1, y - 3, 2, h + 6);
 ```
 
@@ -345,11 +362,11 @@ ctx.fillRect(px - 1, y - 3, 2, h + 6);
 
 Three font roles cover most layouts:
 
-| Role            | Font spec                       | Color      |
-|-----------------|---------------------------------|------------|
-| Card header     | `"bold 11px sans-serif"`        | `#0f172a`  |
-| Body label      | `"10px sans-serif"`             | `#64748b`  |
-| Numeric value   | `"bold 18px sans-serif"`        | `#0f172a`  |
+| Role            | Font spec                       | Color                    |
+|-----------------|----------------------------------|---------------------------|
+| Card header     | `"bold 11px sans-serif"`        | `theme.widget_text`       |
+| Body label      | `"10px sans-serif"`             | `theme.placeholder_text`  |
+| Numeric value   | `"bold 18px sans-serif"`        | `theme.widget_text`       |
 
 To place a value and a unit label side by side, measure the value with the value's own font:
 
@@ -358,7 +375,7 @@ ctx.font = "bold 18px sans-serif";
 const valueW = ctx.measureTextWidth(value);
 ctx.fillText(value, x, y);
 
-ctx.fillStyle = "#64748b";
+ctx.fillStyle = theme.placeholder_text;
 ctx.font      = "10px sans-serif";
 ctx.fillText(units, x + valueW + 6, y);
 ```
@@ -372,7 +389,7 @@ ctx.fillText(label, cx, y);
 
 ### Light and dark themes
 
-The bundled templates default to a light theme (cream background, slate text, saturated accent colors). The instrument-style templates (`oscilloscope`, `radar_sweep`, `horizon`) use a dark instrument-panel theme inside the same card frame. Pick the theme that matches the visualization's reference: an oscilloscope is recognizable as one only when rendered on a dark CRT background; a tank-level readout is not.
+Every bundled template, including the instrument-style ones (`oscilloscope`, `radar_sweep`, `horizon`), draws through the same `theme` object; none of them hardcode a light or dark palette. The "instrument panel" look on those three comes from the composition — a recessed screen with a scan grid inside the same card frame — not from a separate color scheme, so the panel repaints correctly in whichever theme the user has active. A Painter that reads `theme.*` gets the same behavior for free.
 
 ### Sizing
 
@@ -408,19 +425,18 @@ function onFrame() {
 }
 
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (trace.length < 2) return;
 
-  const ds   = datasets[0];
-  const span = (ds.max - ds.min) || 1;
+  const ds    = datasets[0];
+  const span  = (ds.max - ds.min) || 1;
+  const color = theme.widget_highlight;
 
   // Filled area under the line.
-  ctx.fillStyle = "#dbeafe";
+  ctx.fillStyle   = color;
+  ctx.globalAlpha = 0.18;
   ctx.beginPath();
   ctx.moveTo(0, h);
   for (let i = 0; i < trace.length; ++i) {
@@ -432,9 +448,10 @@ function paint(ctx, w, h) {
   ctx.lineTo(((trace.length - 1) / (HISTORY - 1)) * w, h);
   ctx.closePath();
   ctx.fill();
+  ctx.globalAlpha = 1;
 
   // Line on top of the fill.
-  ctx.strokeStyle = "#2563eb";
+  ctx.strokeStyle = color;
   ctx.lineWidth   = 1.5;
   ctx.beginPath();
   for (let i = 0; i < trace.length; ++i) {
@@ -454,11 +471,8 @@ Renders one dataset as a segmented vertical fill. The fill color switches throug
 
 ```javascript
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length === 0) return;
 
@@ -469,17 +483,17 @@ function paint(ctx, w, h) {
 
   // Card with header.
   const pad = 16;
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(pad, pad + 22, w - pad * 2, h - pad * 2 - 22);
-  ctx.strokeStyle = "#d4d4d8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(pad + 0.5, pad + 22 + 0.5, w - pad * 2 - 1, h - pad * 2 - 23);
 
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 11px sans-serif";
   ctx.textAlign = "start";
   ctx.fillText("TANK  LEVEL", pad, 18);
-  ctx.fillStyle = "#64748b";
+  ctx.fillStyle = theme.placeholder_text;
   ctx.font = "9px sans-serif";
   ctx.textAlign = "end";
   ctx.fillText(ds.units || "", w - pad, 18);
@@ -490,13 +504,13 @@ function paint(ctx, w, h) {
   const tw = w - pad * 2 - 48;
   const th = h - ty - pad - 28;
 
-  ctx.fillStyle = "#f1f5f9";
+  ctx.fillStyle = theme.alternate_base;
   ctx.fillRect(tx, ty, tw, th);
 
   // Color selection based on alarms.
-  let color = "#10b981";
-  if (Number.isFinite(ds.alarmHigh) && v >= ds.alarmHigh) color = "#dc2626";
-  else if (norm > 0.85) color = "#f59e0b";
+  let color = theme.widget_highlight;
+  if (Number.isFinite(ds.alarmHigh) && v >= ds.alarmHigh) color = theme.alarm;
+  else if (norm > 0.85) color = theme.accent;
 
   // Segmented fill, bottom-up.
   const SLICES = 20;
@@ -507,12 +521,12 @@ function paint(ctx, w, h) {
     ctx.fillRect(tx + 2, ty + th - (i + 1) * sliceH - 2, tw - 4, sliceH - 1);
   }
 
-  ctx.strokeStyle = "#94a3b8";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth = 1;
   ctx.strokeRect(tx + 0.5, ty + 0.5, tw - 1, th - 1);
 
   // Numeric readout below the tank.
-  ctx.fillStyle = "#0f172a";
+  ctx.fillStyle = theme.widget_text;
   ctx.font = "bold 16px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "alphabetic";
@@ -528,11 +542,8 @@ Two datasets, bearing in degrees and range in 0..1, plotted as a marker on a pol
 
 ```javascript
 function paint(ctx, w, h) {
-  ctx.fillStyle = "#f5f5f1";
+  ctx.fillStyle = theme.widget_base;
   ctx.fillRect(0, 0, w, h);
-  ctx.strokeStyle = "#e7e5de";
-  ctx.lineWidth = 2;
-  ctx.strokeRect(1, 1, w - 2, h - 2);
 
   if (datasets.length < 2) return;
 
@@ -541,7 +552,7 @@ function paint(ctx, w, h) {
   const r  = Math.min(w, h) * 0.42;
 
   // Concentric range rings.
-  ctx.strokeStyle = "#cbd5e1";
+  ctx.strokeStyle = theme.widget_border;
   ctx.lineWidth   = 1;
   for (let i = 1; i <= 4; ++i) {
     const rr = (r * i) / 4;
@@ -552,7 +563,7 @@ function paint(ctx, w, h) {
   }
 
   // Bearing spokes every 30 degrees.
-  ctx.strokeStyle = "#e2e8f0";
+  ctx.strokeStyle = theme.widget_border;
   for (let deg = 0; deg < 360; deg += 30) {
     const a = (deg - 90) * Math.PI / 180;
     ctx.beginPath();
@@ -568,14 +579,14 @@ function paint(ctx, w, h) {
   const x       = cx + Math.cos(a) * r * range;
   const y       = cy + Math.sin(a) * r * range;
 
-  ctx.fillStyle = "#dc2626";
+  ctx.fillStyle = theme.widget_highlight;
   ctx.beginPath();
   ctx.moveTo(x + 6, y);
   ctx.arc(x, y, 6, 0, Math.PI * 2);
   ctx.fill();
 
   // Readout.
-  ctx.fillStyle    = "#0f172a";
+  ctx.fillStyle    = theme.widget_text;
   ctx.font         = "bold 12px sans-serif";
   ctx.textAlign    = "center";
   ctx.textBaseline = "alphabetic";

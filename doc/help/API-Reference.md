@@ -37,7 +37,7 @@
 
 ## Overview
 
-### What is the API Server?
+### The API Server
 
 The Serial Studio API Server is a **TCP server** that listens on **port 7777** (default) and accepts JSON-formatted commands to control Serial Studio programmatically. It provides programmatic control over Serial Studio through a TCP socket connection.
 
@@ -70,7 +70,7 @@ The Serial Studio API Server is a **TCP server** that listens on **port 7777** (
 The API Server is available in both **Serial Studio GPL** and **Serial Studio Pro** builds:
 
 - **GPL Build**: Access to the core commands (UART, Network, BLE, CSV export/player, Console, Dashboard, Project, I/O Manager)
-- **Pro Build**: Full access to every command (includes Modbus, CAN Bus, MQTT, MDF4 export/player, Audio)
+- **Pro Build**: Full access to every command (includes Modbus, CAN Bus, MQTT, MDF4 export/player, Audio, USB, HID, Process I/O)
 
 **Legend:**
 - 🟢 = GPL/Pro (available in all builds)
@@ -109,7 +109,7 @@ Return shape: `{ ok, result?, error?, errorCode?, errorData? }`. See [Frame Pars
 1. **Launch Serial Studio**
 
 2. **Enable the API Server**:
-   - Go to **Preferences → General → Advanced**
+   - Go to **Preferences → General → API & Plugins**
    - Turn on **"Enable API Server (Port 7777)"**
    - Click **OK**
 
@@ -128,7 +128,7 @@ Return shape: `{ ok, result?, error?, errorCode?, errorData? }`. See [Frame Pars
 
 1. Open Serial Studio
 2. Click **Preferences** (wrench icon) or press **Ctrl/Cmd+,**
-3. On the **General** tab, scroll to the **Advanced** section
+3. On the **General** tab, scroll to the **API & Plugins** section
 4. Find **"Enable API Server (Port 7777)"**
 5. Toggle the switch to **ON**
 6. Click **OK** to apply
@@ -195,7 +195,7 @@ The access token gate applies **only to non-loopback clients** and **only when e
 
 **Where to find the token**
 
-1. Open **Preferences -> General -> Advanced**.
+1. Open **Preferences -> General -> API & Plugins**.
 2. Enable **Allow External API Connections**.
 3. The **API Access Token** field shows a 64-character hexadecimal token. Use the refresh button beside it to issue a new token. Regenerating leaves already-authenticated sessions connected; new connections must use the new token.
 
@@ -683,6 +683,8 @@ The API provides **300+ commands** across multiple modules; enumerate the live s
 The per-module counts below are approximate and drift behind the C++
 registry; treat `api.getCommands` as the source of truth.
 
+When a command is invoked through the AI Assistant rather than a raw TCP/JSON client, it is additionally gated by a five-tier safety system (Safe, Confirm, Always confirm, Device-gated, Blocked); see [The safety tiers](AI-Assistant.md#the-safety-tiers).
+
 **GPL Build:**
 - API introspection: 1 command
 - I/O Manager: 8 commands
@@ -694,6 +696,7 @@ registry; treat `api.getCommands` as the source of truth.
 - Console Control: 17 commands
 - Dashboard Configuration: 13 commands
 - Project Management: 64 commands
+- Workspace Management: 15 commands
 
 **Pro Build Additional:**
 - Modbus Driver: 22 commands
@@ -702,6 +705,9 @@ registry; treat `api.getCommands` as the source of truth.
 - MDF4 Export: 3 commands
 - MDF4 Player: 6 commands
 - Audio Driver: 13 commands
+- USB Driver: 7 commands
+- HID Driver: 3 commands
+- Process I/O Driver: 7 commands
 
 ### API Commands (1)
 
@@ -729,7 +735,7 @@ python test_api.py send api.getCommands
 > method, which returns the same surface plus per-command input
 > schemas.
 
-### I/O Manager Commands (7)
+### I/O Manager Commands (8)
 
 Connection and bus management:
 
@@ -774,7 +780,7 @@ Get list of supported bus types.
 Set the active bus/driver type.
 
 **Parameters:**
-- `busType` (int): 0=UART, 1=Network, 2=BLE, 3=Audio, 4=Modbus, 5=CAN, 6=USB, 7=HID, 8=Process (3-8 require Pro)
+- `busType` (int): 0=UART, 1=Network, 2=BLE, 3=Audio, 4=Modbus, 5=CAN, 6=USB, 7=HID, 8=Process, 9=MQTT (3-9 require Pro)
 
 **Example:**
 ```bash
@@ -866,6 +872,31 @@ python test_api.py send io.writeData -p data=SGVsbG8gV29ybGQ=
 > live runtime commands. They are per-source project settings configured
 > in the Project Editor (or via `project.source.update`) and persisted in
 > the `.ssproj` file.
+
+#### 🟢 `io.getLatestFrame`
+Get the latest raw frame received from the device, including channel tokens not yet mapped to any dataset.
+
+**Parameters:**
+- `sourceId` (int, optional): Source filter; omit for the newest frame across all sources
+- `encoding` (string, optional, default `text`): Payload encoding - `text`, `base64`, or `both`
+
+**Returns:**
+```json
+{
+  "hasData": true,
+  "sequence": 42,
+  "timestampMs": 123456,
+  "ageMs": 8,
+  "sourceId": 0,
+  "text": "25.3,60\n",
+  "valueCount": 2,
+  "values": ["25.3", "60"]
+}
+```
+
+**Notes:**
+- `timestampMs` is a monotonic clock in milliseconds, not Unix epoch time; use it only for deltas between frames
+- Capture runs only while a control script is running or the API server is enabled; `hasData: false` means no data or no active consumer
 
 ### UART Driver Commands (12)
 
@@ -1033,7 +1064,7 @@ Set auto-reconnect behavior.
 python test_api.py send io.uart.setAutoReconnect -p autoReconnect=true
 ```
 
-### Network Driver Commands (10)
+### Network Driver Commands (9)
 
 TCP/UDP configuration:
 
@@ -1156,7 +1187,7 @@ Perform DNS lookup for a hostname.
 python test_api.py send io.network.lookup -p host=google.com
 ```
 
-### Bluetooth LE Driver Commands (9)
+### Bluetooth LE Driver Commands (12)
 
 BLE device management:
 
@@ -1290,6 +1321,42 @@ Select a BLE characteristic.
 python test_api.py send io.ble.setCharacteristicIndex -p characteristicIndex=0
 ```
 
+#### 🟢 `io.ble.selectServiceByUuid`
+Select a BLE service by UUID instead of index. The device must already be connected.
+
+**Parameters:**
+- `serviceUuid` (string): Service UUID (16-bit short form like `fff0` or full 128-bit UUID)
+
+**Example:**
+```bash
+python test_api.py send io.ble.selectServiceByUuid -p serviceUuid=fff0
+```
+
+#### 🟢 `io.ble.setNotifyCharacteristic`
+Subscribe to the notify characteristic with the given UUID for incoming data. A service must be selected first.
+
+**Parameters:**
+- `characteristicUuid` (string): Notify characteristic UUID (16-bit short form like `fff2` or full 128-bit UUID)
+
+**Example:**
+```bash
+python test_api.py send io.ble.setNotifyCharacteristic -p characteristicUuid=fff2
+```
+
+#### 🟢 `io.ble.writeCharacteristic`
+Write raw bytes to a BLE characteristic resolved by UUID, independent of the selected notify characteristic. Pairs with `io.ble.setNotifyCharacteristic` for split read/write devices. The device must be connected and the owning service selected.
+
+**Parameters:**
+- `characteristicUuid` (string): Target characteristic UUID (16-bit short form like `fff1` or full 128-bit UUID)
+- `data` (string): Base64-encoded bytes to write
+
+**Errors:**
+- `EXECUTION_ERROR`: Not connected, no service selected, or device write denied by the user
+
+> This is one of the device-write commands covered by the consent prompt described
+> under `io.writeData` above; the same one-time prompt and
+> `SERIAL_STUDIO_API_AUTO_CONSENT=1` override apply here.
+
 ### CSV Export Commands (3)
 
 CSV file export control:
@@ -1401,6 +1468,9 @@ Get player status.
 
 ### Console Commands (11)
 
+> This section documents a representative subset; the live Console module
+> registers 17 commands. Run `api.getCommands` for the full list.
+
 Console/terminal control:
 
 #### 🟢 `console.setEcho`
@@ -1482,6 +1552,10 @@ Get console configuration.
 ```
 
 ### Dashboard Configuration Commands (7)
+
+> This section documents a representative subset; the live Dashboard
+> Configuration module registers 13 commands. Run `api.getCommands` for the
+> full list.
 
 Dashboard settings and visualization control:
 
@@ -1631,7 +1705,12 @@ Get the current visible plot time window, in seconds.
 python test_api.py send dashboard.getTimeRange
 ```
 
-### Project Management Commands (19)
+### Project Management Commands (61)
+
+> This section documents 61 of the 64 commands the live Project
+> Management module registers. `project.new`, `project.open`, and
+> `project.save` are covered above in prose rather than as separate
+> entries. Run `api.getCommands` for the full list.
 
 Project file and configuration management:
 
@@ -1639,9 +1718,11 @@ Project file and configuration management:
 > `project.open`, and `project.save` (with an optional `filePath` for a
 > headless save-as), plus `project.loadJson` to replace the in-memory model.
 > The GUI is one of several entry points. Programmatic project authoring can
-> also use `project.exportJson` (read) plus the
-> `project.{group,dataset,action,workspace}.*` mutators (write) on the
-> in-memory model.
+> also use `project.exportJson` (read) plus the `project.group.*`,
+> `project.dataset.*`, and `project.action.*` mutators documented below
+> (write) on the in-memory model. `project.workspace.*` is a separate
+> registered command family (see `WorkspacesHandler.cpp`); see [Workspace
+> Commands](#workspace-commands-15) below.
 
 #### 🟢 `project.getStatus`
 Get project info.
@@ -1657,6 +1738,284 @@ Get project info.
 }
 ```
 
+#### 🟢 `project.snapshot`
+Composite read of the active project: title, sources, groups + datasets,
+workspaces summary, and data-tables summary, in one round trip. Prefer this
+over chaining `project.group.list` / `project.dataset.list` / etc. Every
+level (top, source, group, dataset) carries an `_explanations` object with
+prose translations of enum/bitflag fields (`operationMode`, `busType`,
+`frameDetection`, `frameParserLanguage`, `enabledOptions`, `transformLanguage`)
+and a one-line summary of the project's operating shape.
+
+**Parameters:**
+- `verbose` (bool, optional): Include frame parser source and source-level
+  frame settings (`frameStart`, `frameEnd`, `checksumAlgorithm`,
+  `frameDetection`, `frameParserCode`) for each source.
+- `sections` (array of string, optional): Which top-level blocks to include:
+  any of `"sources"`, `"groups"`, `"workspaces"`, `"dataTables"` (default:
+  all). `groupCount`/`datasetCount` always reflect the whole project even
+  when a section is omitted.
+- `offset` (int, optional): Skip this many groups before returning results
+  (default 0); pass the previous reply's `nextOffset` to page through a large
+  project's `groups` array.
+- `limit` (int, optional): Max groups to return (default 0 = all).
+
+**Returns:**
+```json
+{
+  "snapshot": {
+    "title": "My Project",
+    "pointCount": 512,
+    "filePath": "/path/to/project.json",
+    "modified": false,
+    "sources": [
+      {
+        "sourceId": 0,
+        "title": "Serial Source",
+        "busType": 0,
+        "frameParserLanguage": 0,
+        "frameParserSize": 256,
+        "_explanations": {}
+      }
+    ],
+    "groups": [
+      {
+        "groupId": 0,
+        "title": "Sensors",
+        "widget": "",
+        "datasetCount": 1,
+        "datasets": [ { "...": "same shape as project.dataset.list entries" } ],
+        "_explanations": {
+          "widget": "No group widget (datasets render independently)"
+        }
+      }
+    ],
+    "groupCount": 1,
+    "datasetCount": 1,
+    "workspaces": [
+      { "workspaceId": 0, "title": "Default", "widgetCount": 4 }
+    ],
+    "dataTables": [
+      {
+        "title": "Calibration",
+        "path": "Calibration",
+        "registerCount": 6,
+        "constantCount": 2,
+        "computedCount": 1
+      }
+    ],
+    "operationMode": 1,
+    "_explanations": {
+      "operationMode": "Project File (full dashboard with parser)",
+      "summary": "Project File mode: 1 source(s), 1 group(s), 1 dataset(s), 1 workspace(s), 1 data table(s). Frame parser code is authoritative."
+    }
+  },
+  "hint": "Pass verbose=true to include frame parser source and source-level frame settings. For per-table register details, call project.dataTable.get with the table name.",
+  "projectEpoch": 9
+}
+```
+When `groups` is windowed by `offset`/`limit` and more groups remain,
+`snapshot.nextOffset` carries the offset for the next page.
+
+#### 🟢 `project.loadJson`
+Replace the current project with a JSON object, in memory only (no file association). The JSON must match the `.ssproj` schema (top-level `title`, `frameStart`, `frameEnd`, `frameDetection`, `decoder`, `frameParser`, `groups`, `actions`, ...). Prefer `project.template.apply` for canned starters.
+
+**Parameters:**
+- `config` (object): Full project JSON document
+- `dryRun` (bool, optional): If `true`, return a `wouldDiscard`/`wouldApply` summary instead of loading
+
+**Returns:**
+```json
+{
+  "loaded": true,
+  "title": "My Project",
+  "groupCount": 3,
+  "datasetCount": 12
+}
+```
+
+With `dryRun: true`, no project is loaded and the response summarizes both sides of the replacement instead:
+```json
+{
+  "dryRun": true,
+  "wouldDiscard": {
+    "title": "Old Project",
+    "groupCount": 3,
+    "datasetCount": 12,
+    "sourceCount": 1,
+    "filePath": "/path/to/old.ssproj",
+    "groupTitles": ["Sensors"]
+  },
+  "wouldApply": {
+    "title": "New Project",
+    "groupCount": 1,
+    "datasetCount": 4,
+    "groupTitles": ["Telemetry"],
+    "sourceCount": 1
+  },
+  "warning": "DRY RUN: no project was loaded. wouldDiscard shows what would be lost; wouldApply shows what would replace it. Confirm before re-issuing without dryRun:true."
+}
+```
+
+**Errors:**
+- `MISSING_PARAM`: Missing `config` parameter
+- `INVALID_PARAM`: `config` is empty
+- `EXECUTION_ERROR`: Project failed to load from JSON (validation error)
+
+#### 🟢 `project.exportJson`
+Export the current in-memory project as JSON, in the same schema used by project files on disk.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "config": {
+    "title": "My Project",
+    "schemaVersion": "1.0.0",
+    "groups": [],
+    "actions": [],
+    "sources": []
+  }
+}
+```
+
+#### 🟢 `project.setTitle`
+Rename the project (in-app title only). Does not move or rename the `.ssproj` file on disk; auto-save keeps writing to the existing file path. To save to a different file, use `project.save` with a `filePath`.
+
+**Parameters:**
+- `title` (string): Project title
+
+**Returns:**
+```json
+{
+  "title": "My Project"
+}
+```
+
+**Errors:**
+- `MISSING_PARAM`: Missing `title` parameter
+- `INVALID_PARAM`: `title` is empty
+
+#### 🟢 `project.activate`
+Load the current in-memory project into FrameBuilder, making it the live frame-parsing
+configuration. Fails if the project has no groups, or no datasets and no image/painter group.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "loaded": true,
+  "source": "API",
+  "title": "My Project",
+  "groupCount": 3,
+  "datasetCount": 12
+}
+```
+
+#### 🟢 `project.validate`
+Walk the loaded project and report inconsistencies: missing source references, frame parser
+compile errors, empty groups, duplicate dataset indexes, and similar issues. Call before
+`project.save` when building a project programmatically.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "issues": [
+    {
+      "level": "warning",
+      "location": "group[0]",
+      "message": "Group has no datasets; nothing to display"
+    }
+  ],
+  "groupCount": 3,
+  "sourceCount": 1,
+  "actionCount": 0,
+  "issueCount": 1
+}
+```
+`level` is one of `info`, `warning`, or `error`. `ok` is `false` when any `error`-level issue
+is present.
+
+#### 🟢 `project.template.list`
+List the built-in starter project templates available to `project.template.apply`.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "templates": [
+    {
+      "id": "blank",
+      "title": "Blank project",
+      "description": "Empty project with one default UART source. Useful as a starting point when the user wants to build from scratch.",
+      "file": "blank.json"
+    },
+    {
+      "id": "imu_uart",
+      "title": "IMU over UART",
+      "description": "Single UART source with a 9-DOF IMU group: accelerometer (X/Y/Z), gyroscope (X/Y/Z), magnetometer (X/Y/Z). Comma-separated frame parser. Plots + accelerometer 3-axis widget.",
+      "file": "imu_uart.json"
+    }
+  ]
+}
+```
+Six templates are registered: `blank`, `imu_uart`, `gps_uart_nmea`, `scope_multichannel_uart`,
+`telemetry_udp`, and `mqtt_subscriber`.
+
+#### 🟢 `project.template.apply`
+Replace the current project with a built-in starter template. Discards any unsaved state in
+the current project; auto-save writes the new template to disk shortly after applying.
+
+**Parameters:**
+- `templateId` (string): Template id from `project.template.list` (`blank`, `imu_uart`,
+  `gps_uart_nmea`, `scope_multichannel_uart`, `telemetry_udp`, `mqtt_subscriber`)
+- `dryRun` (bool, optional): If true, summarize the template without applying it
+
+**Returns:**
+```json
+{
+  "templateId": "imu_uart",
+  "title": "IMU over UART",
+  "groupCount": 1,
+  "datasetCount": 9
+}
+```
+
+With `dryRun: true`, no project is replaced; the response summarizes both sides of the swap
+instead:
+```json
+{
+  "dryRun": true,
+  "templateId": "imu_uart",
+  "wouldDiscard": {
+    "title": "My Project",
+    "groupCount": 3,
+    "datasetCount": 12,
+    "sourceCount": 1,
+    "filePath": "/path/to/project.json",
+    "groupTitles": ["Sensors", "GPS", "Status"]
+  },
+  "wouldApply": {
+    "title": "IMU over UART",
+    "groupCount": 1,
+    "datasetCount": 9,
+    "groupTitles": ["IMU"],
+    "sourceCount": 1
+  },
+  "warning": "DRY RUN: template not applied. wouldDiscard shows what would be lost; wouldApply shows what would replace it. Confirm before re-issuing without dryRun:true."
+}
+```
+
+**Note:** The `mqtt_subscriber` template configures an MQTT subscriber-mode project. Applying
+it works in any build, but the resulting project only receives data once an MQTT connection is
+configured, which is a Pro feature.
+
 #### 🟢 `project.group.add`
 Add new group.
 
@@ -1667,74 +2026,115 @@ Add new group.
   8=Painter
 
 #### 🟢 `project.group.delete`
-Delete current group.
-
-**Parameters:** None
-
-#### 🟢 `project.group.duplicate`
-Duplicate current group.
-
-**Parameters:** None
-
-#### 🟢 `project.dataset.add`
-Add new dataset.
+Delete a group by id.
 
 **Parameters:**
-- `options` (int): Dataset options (bit flags 0-127): 1=Plot, 2=FFT, 4=Bar,
-  8=Gauge, 16=Compass, 32=LED, 64=Waterfall
-
-#### 🟢 `project.dataset.delete`
-Delete current dataset.
-
-**Parameters:** None
-
-#### 🟢 `project.dataset.duplicate`
-Duplicate current dataset.
-
-**Parameters:** None
-
-#### 🟢 `project.dataset.setOption`
-Toggle dataset option.
-
-**Parameters:**
-- `option` (int): Option flag
-- `enabled` (bool): Enable or disable
-
-#### 🟢 `project.action.add`
-Add new action.
-
-**Parameters:** None
-
-#### 🟢 `project.action.delete`
-Delete current action.
-
-**Parameters:** None
-
-#### 🟢 `project.action.duplicate`
-Duplicate current action.
-
-**Parameters:** None
-
-#### 🟢 `project.frameParser.setCode`
-Set frame parser code.
-
-**Parameters:**
-- `code` (string): Frame parser source code
-- `language` (int, optional): 0=JavaScript, 1=Lua, 2=Built-In. Pass it to lock in the runtime engine; a mismatch silently fails to compile.
-
-#### 🟢 `project.frameParser.getCode`
-Get frame parser code.
+- `groupId` (int, required): Group id to delete
+- `dryRun` (bool, optional): If true, return the affected entities without
+  committing. Auto-runs without an approval card.
 
 **Returns:**
 ```json
 {
-  "sourceId": 0,
-  "language": 0,
-  "code": "function parse(frame) { ... }",
-  "codeLength": 256
+  "deleted": {
+    "groupId": 0,
+    "title": "Sensors",
+    "widget": "MultiPlot",
+    "datasetCount": 1,
+    "datasets": [
+      {"datasetId": 0, "uniqueId": 1024, "title": "Temperature"}
+    ]
+  },
+  "renumbered": [
+    {"oldGroupId": 1, "newGroupId": 0, "title": "GPS", "datasetCount": 3}
+  ],
+  "backupPath": "/path/to/backup.ssbak",
+  "warnings": [
+    "groupId values shifted after deletion; uniqueIds of every dataset in renumbered groups are now stale -- re-read project state before further mutations.",
+    "Pre-mutation snapshot saved at backupPath; pass it to assistant.restore to undo."
+  ],
+  "projectEpoch": 9
 }
 ```
-Built-In (`language: 2`) sources also return `template` and `params`, and `code` carries the JSON descriptor.
+With `dryRun: true`, the response sets `"dryRun": true`, omits `backupPath`,
+and nothing is written.
+
+#### 🟢 `project.group.duplicate`
+Duplicate a group by id.
+
+**Parameters:**
+- `groupId` (int, required): Group id to duplicate
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "duplicated": true
+}
+```
+
+#### 🟢 `project.group.update`
+Patch any subset of group fields by id.
+
+**Parameters:**
+- `groupId` (int, required): Target group id
+- `title` (string, optional)
+- `widget` (string, optional): Group widget identifier (e.g. `"MultiPlot"`)
+- `columns` (int, optional)
+- `sourceId` (int, optional)
+- `painterCode` (string, optional): Same as `project.painter.setCode`, addressable
+  through the generic patch endpoint
+
+Unknown fields are accepted but ignored, and surfaced in `result.warnings[].fields`
+with code `unknown_field`.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "updated": true
+}
+```
+
+#### 🟢 `project.group.move`
+Reorder a group within the project. This renumbers `groupId` for the moved
+group and every group it crosses. `uniqueId` is a persistent id assigned at
+creation and is unaffected by the renumbering, so workspace refs and any
+script that pinned a `uniqueId` keep working unchanged. Pass `dryRun: true`
+to preview the renumbering without committing.
+
+**Parameters:**
+- `groupId` (int): Group id to move.
+- `newPosition` (int): New 0-based position; clamped to the valid range.
+- `dryRun` (bool, optional): If true, return the affected entities without
+  committing. Auto-runs without an approval card.
+- `expectedProjectEpoch` (int, optional): Same stale-project check as
+  `project.dataset.move`.
+
+**Returns:**
+```json
+{
+  "oldPosition": 0,
+  "newPosition": 1,
+  "moved": true,
+  "renumbered": [
+    {
+      "oldGroupId": 1,
+      "newGroupId": 0,
+      "title": "GPS",
+      "datasetCount": 3
+    }
+  ],
+  "warning": "Group reorder renumbers groupId. Dataset uniqueIds and Group.uniqueId stay stable, so workspace refs and xAxisId references survive untouched.",
+  "projectEpoch": 9
+}
+```
+With `dryRun: true`, the response additionally sets `"dryRun": true` and
+`"moved": false`, and nothing is written.
+
+**Errors:**
+- `MISSING_PARAM`: Missing `groupId` or `newPosition` parameter
+- `INVALID_PARAM`: `groupId` is out of range
 
 #### 🟢 `project.group.list`
 List all groups.
@@ -1751,6 +2151,446 @@ List all groups.
     }
   ],
   "groupCount": 1
+}
+```
+
+#### 🟢 `project.dataset.add`
+Add a dataset to a group.
+
+**Parameters:**
+- `groupId` (int, required): Group to attach the dataset to
+- `options` (int, required): Dataset options (bit flags 0-127): 1=Plot, 2=FFT, 4=Bar,
+  8=Gauge, 16=Compass, 32=LED, 64=Waterfall
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "options": 9
+}
+```
+
+#### 🟢 `project.dataset.addMany`
+Bulk-create multiple datasets on a group in one call (1-1024).
+
+**Parameters:**
+- `groupId` (int): Group to attach the datasets to
+- `count` (int): How many datasets to create (1-1024)
+- `options` (int): Visualization bit flags applied to every created dataset (same bits as `project.dataset.add`): 1=Plot, 2=FFT, 4=Bar, 8=Gauge, 16=Compass, 32=LED, 64=Waterfall
+- `titlePattern` (string, optional): Title template, e.g. `"LED {n}"`. `{n}` is replaced with `startNumber + i`, `{i}` with the zero-based index. Omit to keep the auto-generated title.
+- `startNumber` (int, optional): First `{n}` value. Default `1`.
+- `startIndex` (int, optional): First parser-slot index to assign. Default `-1` (auto-assign the next free slot); `0` leaves the index unset; `1+` assigns consecutive slots starting there.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "count": 3,
+  "created": [
+    {"groupId": 0, "datasetId": 4, "title": "LED 1", "index": 5, "uniqueId": "..."},
+    {"groupId": 0, "datasetId": 5, "title": "LED 2", "index": 6, "uniqueId": "..."},
+    {"groupId": 0, "datasetId": 6, "title": "LED 3", "index": 7, "uniqueId": "..."}
+  ]
+}
+```
+
+#### 🟢 `project.dataset.delete`
+Delete a dataset by id.
+
+**Parameters:**
+- `groupId` (int, required): Owning group id
+- `datasetId` (int, required): Dataset id within the group
+- `dryRun` (bool, optional): If true, return the affected entities without
+  committing. Auto-runs without an approval card.
+
+**Returns:**
+```json
+{
+  "deleted": {
+    "groupId": 0,
+    "groupTitle": "Sensors",
+    "datasetId": 0,
+    "uniqueId": 1024,
+    "title": "Temperature",
+    "units": "°C"
+  },
+  "renumbered": [
+    {"groupId": 0, "oldDatasetId": 1, "newDatasetId": 0, "uniqueId": 1025, "title": "Humidity"}
+  ],
+  "backupPath": "/path/to/backup.ssbak",
+  "warnings": [
+    "datasetId values in groupId=0 were renumbered; cached uniqueIds for the affected datasets are now stale -- re-read project state before further mutations.",
+    "Pre-mutation snapshot saved at backupPath; pass it to assistant.restore to undo."
+  ],
+  "projectEpoch": 9
+}
+```
+With `dryRun: true`, the response sets `"dryRun": true`, omits `backupPath`,
+and nothing is written.
+
+#### 🟢 `project.dataset.duplicate`
+Duplicate a dataset by id.
+
+**Parameters:**
+- `groupId` (int, required): Owning group id
+- `datasetId` (int, required): Dataset id within the group
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 0,
+  "duplicated": true
+}
+```
+
+#### 🟢 `project.dataset.update`
+Patch any subset of dataset fields by group id and dataset id.
+
+**Parameters:**
+- `groupId` (int, required): Target group id
+- `datasetId` (int, required): Target dataset id
+- `title`, `units`, `widget` (string, optional): `widget` is the widget identifier
+  string (e.g. `"bar"`, `"gauge"`)
+- `graph`, `fft`, `led`, `waterfall` (bool, optional): Toggle the same flags as
+  `project.dataset.setOption`; use here when patching multiple fields at once
+- `index` (int, optional): 1-based parser-output slot (`0` = unassigned); must be `>= 0`
+- `sourceId` (int, optional)
+- `xAxisId` (int, optional), `waterfallYAxis` (int, optional)
+- `fftSamples` (int, optional), `fftSamplingRate` (int, optional)
+- `fftMin`, `fftMax`, `pltMin`, `pltMax`, `wgtMin`, `wgtMax`, `ledHigh` (number, optional)
+- `alarmBands` (array, optional): Array of `{min, max, severity, color, label, blink}`
+  objects, `severity` 0-3 for Info/Ok/Warning/Critical. Replaces the dataset's entire
+  band list.
+- `alarmLow`, `alarmHigh`, `alarmEnabled` (optional): Legacy 2-band simple mode, used
+  only when `alarmBands` is not present
+- `displayTickCount` (int, optional, clamped to `>= 0`)
+- `displayFormat` (string, optional)
+- `decimalPoints` (int, optional, clamped to `-1..15`)
+- `log` (bool, optional)
+- `overviewDisplay` (bool, optional), `hideOnDashboard` (bool, optional)
+- `transformCode` (string, optional): Per-dataset value transform source
+- `transformLanguage` (int, optional): `-1`=inherit from source, `0`=JavaScript, `1`=Lua
+- `virtual` (bool, optional): Set `true` when the value comes from `transformCode`
+  rather than a parser-output slot; without it a dataset with no slot reads
+  `channels[index-1]` and stays empty
+
+Any applied field forces a tree rebuild, so the epoch-gated dashboard apply and editor
+reload fire. Unknown fields are accepted but ignored, and surfaced in
+`result.warnings[].fields` with code `unknown_field`.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 0,
+  "updated": true,
+  "projectEpoch": 12
+}
+```
+May also include `warnings` (unknown fields, stale-epoch), `warning` (transform
+language/code mismatch), and `hint` (when `transformCode` is set but `virtual` is
+`false` and `index <= 0`).
+
+#### 🟢 `project.dataset.move`
+Reorder a dataset within its group. This renumbers `datasetId` for the moved
+dataset and every dataset it crosses. `uniqueId` is a persistent id assigned
+at creation and is unaffected by the renumbering, so workspace refs and any
+script that pinned a `uniqueId` keep working unchanged. Pass `dryRun: true`
+to preview the renumbering without committing.
+
+**Parameters:**
+- `uniqueId` (int): uniqueId of the dataset to move.
+- `newPosition` (int): New 0-based position within the group; clamped to the
+  valid range.
+- `dryRun` (bool, optional): If true, return the affected entities without
+  committing. Auto-runs without an approval card.
+- `expectedProjectEpoch` (int, optional): The `projectEpoch` this call assumes
+  as current (from a prior `project.snapshot`/list read). When it no longer
+  matches, the response carries a `stale_project` warning instead of failing
+  the call.
+
+**Returns:**
+```json
+{
+  "uniqueId": 1024,
+  "groupId": 0,
+  "oldPosition": 0,
+  "newPosition": 2,
+  "moved": true,
+  "renumbered": [
+    {
+      "groupId": 0,
+      "oldDatasetId": 0,
+      "newDatasetId": 2,
+      "uniqueId": 1024,
+      "title": "Temperature"
+    }
+  ],
+  "warning": "Dataset reorder renumbers datasetId within the group. uniqueId stays stable across reorders, so workspace refs and xAxisId references survive untouched.",
+  "projectEpoch": 8
+}
+```
+With `dryRun: true`, the response additionally sets `"dryRun": true` and
+`"moved": false`, and nothing is written.
+
+**Errors:**
+- `MISSING_PARAM`: Missing `uniqueId` or `newPosition` parameter
+- `INVALID_PARAM`: No dataset has this `uniqueId`
+
+#### 🟢 `project.dataset.setOption`
+Toggle a single dataset option flag.
+
+> **Deprecated.** Prefer `project.dataset.setOptions`, which takes the full
+> bitfield in one call and removes the singular/plural ambiguity. Kept for
+> backward compatibility with existing scripts.
+
+**Parameters:**
+- `groupId` (int, required): Owning group id
+- `datasetId` (int, required): Dataset id within the group
+- `option` (string or int, required): Preferred form is a slug (`"plot"`,
+  `"fft"`, `"bar"`, `"gauge"`, `"compass"`, `"led"`, `"waterfall"`). An
+  integer `DatasetOption` bitflag is also accepted (1, 2, 4, 8, 16, 32, 64).
+- `enabled` (bool, required): Enable or disable
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "option": 8,
+  "optionSlug": "gauge",
+  "enabled": true
+}
+```
+
+#### 🟢 `project.dataset.setOptions`
+Apply several `DatasetOption` flags at once (plural form of `project.dataset.setOption`).
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `datasetId` (int): Dataset id within the group
+- `options` (array or int): Preferred form is an array of slugs, e.g. `["plot", "fft", "waterfall"]`. An integer bitfield is also accepted: 1=Plot, 2=FFT, 4=Bar, 8=Gauge, 16=Compass, 32=LED, 64=Waterfall (Pro).
+
+Any flag not present in `options` is disabled on the dataset. Bar/Gauge/Compass are mutually exclusive; if more than one is set, the highest bit wins. Updates the group's `compatibleWidgetTypes` immediately. Note: these are `DatasetOption` bitflags, not `DashboardWidget` enum values; the numbers do not line up with `project.workspace.addWidget`'s `widgetType`.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "options": 9,
+  "optionsSlugs": ["plot", "gauge"]
+}
+```
+
+#### 🟢 `project.dataset.setVirtual`
+Toggle the virtual flag on a dataset.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `datasetId` (int): Dataset id within the group
+- `virtual` (bool): Mark the dataset as virtual (computed by a transform, no slot in the parser output array)
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "virtual": true,
+  "updated": true
+}
+```
+
+#### 🟢 `project.dataset.setTransformCode`
+Set a dataset's per-value transform code.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `datasetId` (int): Dataset id within the group
+- `code` (string): Transform source (Lua or JS, must match `language`). Pass an empty string to clear it.
+- `language` (int, optional): 0=JavaScript, 1=Lua. If omitted, the dataset inherits the source's `frameParserLanguage` (Built-In sources inherit Lua).
+
+If this dataset is compute-only (no slot in the parser output array), also set `virtual: true` via `project.dataset.setVirtual` or `project.dataset.update` -- otherwise the dataset reads empty channel data. A transform may read RAW values from any dataset but only FINAL values of datasets earlier in `project.dataset.getExecutionOrder`.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "codeLength": 42,
+  "language": 1,
+  "updated": true
+}
+```
+When `language` was omitted, the response also includes `languageInherited: true` and an `inheritNotice` string. When the code's syntax looks like it does not match `language`, the response includes a `warning` string. When `code` is non-empty but the dataset is not virtual and has no parser slot (`index <= 0`), the response includes a `hint` string.
+
+#### 🟢 `project.dataset.transform.dryRun`
+Compile and run a value-transform script against sample values, without touching the live project or any dataset.
+
+**Parameters:**
+- `code` (string): Transform source. Must define `transform(value)`.
+- `language` (int): 0=JavaScript, 1=Lua
+- `values` (array of number|string): Sample values to pass through `transform()`. Each entry may be a number or a string.
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "outputs": [50.6, "on", null],
+  "hint": "outputs[i] is the result of transform(values[i]). null means transform returned a non-finite value -- the live runtime falls back to the raw value in that case."
+}
+```
+Returns an error response (not `ok:false`) if the script fails to compile or does not define `transform(value)`.
+
+#### 🟢 `project.dataset.getAlarmBands`
+Get a dataset's coloured alarm bands.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `datasetId` (int): Dataset id within the group
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "alarmBands": [
+    {"min": 80, "max": 100, "severity": 3, "color": "#ff0000", "label": "Overheat", "blink": true}
+  ],
+  "count": 1,
+  "rangeMin": 0,
+  "rangeMax": 100
+}
+```
+`rangeMin`/`rangeMax` are the dataset's `wgtMin`/`wgtMax`, returned so callers can validate band ranges before writing them back. An empty project (no bands configured) returns an empty `alarmBands` array. Applies to bar/gauge/meter widgets and LED-panel datasets; calling it on other widget types succeeds with an empty array.
+
+#### 🟢 `project.dataset.setAlarmBands`
+Atomically replace a dataset's alarm-band array.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `datasetId` (int): Dataset id within the group
+- `alarmBands` (array): Full replacement list. Each entry:
+  - `min` (number): Lower bound (inclusive)
+  - `max` (number): Upper bound (exclusive at top of range); entries with `max <= min` are dropped
+  - `severity` (int): 0=Info, 1=OK, 2=Warning, 3=Critical
+  - `color` (string, optional): `"#rrggbb"` override; empty/omitted uses the severity's theme colour
+  - `label` (string, optional): Band name, shown in band-edge notifications
+  - `blink` (bool, optional): LED panels flash the LED while the band is active
+
+Bands may have gaps and may overlap; rendering paints them in array order behind the value indicator. Severity of Warning or higher triggers a notification when the value enters the band (3-second per-dataset cooldown suppresses repeat spam). Pass an empty array to clear all alarms.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "datasetId": 2,
+  "count": 1,
+  "updated": true
+}
+```
+If any entries were dropped for `max <= min`, the response also includes `droppedInvalid` with the number of dropped entries.
+
+#### 🟢 `project.dataset.getByPath`
+Resolve a dataset by a `"Group/Dataset"` or `"Source/Group/Dataset"` title path
+(segments are titles, separated by `/`). Preferred over `getByTitle` for
+human-readable addressing, since a path survives renumbering of positional
+ids (`groupId`/`datasetId`).
+
+**Parameters:**
+- `path` (string): `'Group/Dataset'` or `'Source/Group/Dataset'`.
+
+**Returns:** Same object shape as an entry of `project.dataset.list`, plus
+`groupId`, `groupTitle`, `sourceId`, `uniqueId`, `enabledFeatures`,
+`enabledOptions`/`enabledOptionsSlugs`,
+`enabledWidgetTypes`/`enabledWidgetTypesSlugs`, `hasTransform`, `isVirtual`,
+and an `_explanations` object.
+```json
+{
+  "groupId": 0,
+  "groupTitle": "Sensors",
+  "sourceId": 0,
+  "datasetId": 1,
+  "uniqueId": 1024,
+  "index": 1,
+  "title": "Temperature",
+  "value": "25.3",
+  "units": "°C",
+  "widget": "bar",
+  "enabledFeatures": "plot, bar",
+  "enabledOptions": 3,
+  "enabledOptionsSlugs": ["plot", "bar"],
+  "hasTransform": false,
+  "isVirtual": false
+}
+```
+
+**Errors:**
+- `MISSING_PARAM`: Missing `path` parameter
+- `INVALID_PARAM`: `path` is not 2 or 3 `/`-separated segments, the source
+  segment (3-part path) doesn't match a source title, or no dataset matches
+
+#### 🟢 `project.dataset.getByTitle`
+Resolve a dataset by exact title match. Pass `sourceId` and/or `groupId` to
+disambiguate when the same title is reused across groups or sources.
+
+**Parameters:**
+- `title` (string): Dataset title (exact match).
+- `sourceId` (int, optional): Restrict the search to this source.
+- `groupId` (int, optional): Restrict the search to this group.
+
+**Returns:** Same object shape as `project.dataset.getByPath` above.
+
+**Errors:**
+- `MISSING_PARAM`: Missing `title` parameter
+- `INVALID_PARAM`: `title` is empty, no dataset matches, or the title is
+  ambiguous (multiple matches); an ambiguous match returns `errorData` with
+  a `matches` array (the full dataset objects) and a `hint` to narrow the
+  search with `sourceId`/`groupId` or switch to `getByPath`
+
+#### 🟢 `project.dataset.getByUniqueId`
+Resolve a dataset by its persisted `uniqueId`.
+
+**Parameters:**
+- `uniqueId` (int): Opaque persisted handle allocated at dataset creation;
+  stable across reorders. Read it from `project.dataset.list` or
+  `project.snapshot` responses; never compute it.
+
+**Returns:** Same object shape as `project.dataset.getByPath` above.
+
+**Errors:**
+- `MISSING_PARAM`: Missing `uniqueId` parameter
+- `INVALID_PARAM`: No dataset has this `uniqueId`
+
+#### 🟢 `project.dataset.getExecutionOrder`
+Return the order datasets execute in during transform processing (the same
+order `FrameBuilder` traverses groups/datasets). A transform can read the raw
+value of any dataset, but only reads the final (post-transform) value of
+datasets that appear earlier in this list.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "order": [
+    {
+      "uniqueId": 1024,
+      "title": "Temperature",
+      "sourceId": 0,
+      "groupId": 0,
+      "datasetId": 1,
+      "hasTransform": false,
+      "isVirtual": false,
+      "transformLanguage": 0
+    }
+  ],
+  "count": 1,
+  "_explanations": {
+    "summary": "Datasets execute in (group-array, dataset-array) order. A transform may read raw values of ALL datasets via datasetGetRaw(uid), but only final values of datasets EARLIER in this list via datasetGetFinal(uid)."
+  },
+  "projectEpoch": 7
 }
 ```
 
@@ -1775,6 +2615,67 @@ List all datasets.
 }
 ```
 
+#### 🟢 `project.action.add`
+Add new action.
+
+**Parameters:** None
+
+#### 🟢 `project.action.delete`
+Delete an action by id.
+
+**Parameters:**
+- `actionId` (int, required): Action id to delete
+
+**Returns:**
+```json
+{
+  "actionId": 0,
+  "deleted": true
+}
+```
+
+#### 🟢 `project.action.duplicate`
+Duplicate an action by id.
+
+**Parameters:**
+- `actionId` (int, required): Action id to duplicate
+
+**Returns:**
+```json
+{
+  "actionId": 0,
+  "duplicated": true
+}
+```
+
+#### 🟢 `project.action.update`
+Patch action fields by id.
+
+**Parameters:**
+- `actionId` (int, required): Target action id
+- `title` (string, optional)
+- `icon` (string, optional)
+- `txData` (string, optional): Data to transmit
+- `eolSequence` (string, optional): End-of-line sequence appended to `txData`
+- `timerMode` (int, optional): Timer mode enum
+- `timerIntervalMs` (int, optional)
+- `repeatCount` (int, optional)
+- `sourceId` (int, optional)
+- `txEncoding` (int, optional)
+- `binaryData` (bool, optional)
+- `autoExecuteOnConnect` (bool, optional)
+
+Unknown fields are accepted but ignored, and surfaced in `result.warnings[].fields`
+with code `unknown_field`.
+
+**Returns:**
+```json
+{
+  "actionId": 0,
+  "updated": true
+}
+```
+
 #### 🟢 `project.action.list`
 List all actions.
 
@@ -1786,7 +2687,896 @@ List all actions.
 }
 ```
 
-### Modbus Driver Commands - Pro (21)
+#### 🟢 `project.outputWidget.add`
+Add an output widget to a group. Output widgets attach to a group's output
+panel; they are a Pro dashboard feature, but this command runs in GPL builds
+too (the widget is stored in the project file) and only fails to render as
+an interactive control there.
+
+**Parameters:**
+- `groupId` (int): Group id to add the widget to
+- `type` (int): OutputWidgetType enum: 0=Button, 1=Slider, 2=Toggle,
+  3=TextField, 4=Knob
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "type": 0,
+  "added": true
+}
+```
+
+#### 🟢 `project.outputWidget.delete`
+Delete an output widget by id.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `widgetId` (int): Widget id within the group
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "widgetId": 0,
+  "deleted": true
+}
+```
+
+#### 🟢 `project.outputWidget.duplicate`
+Duplicate an output widget by id.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `widgetId` (int): Widget id within the group
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "widgetId": 0,
+  "duplicated": true
+}
+```
+
+#### 🟢 `project.outputWidget.get`
+Read the configuration of an output widget by id. Use this before rewriting
+`transmitFunction` so you preserve the widget's current ranges and labels.
+
+**Parameters:**
+- `groupId` (int): Owning group id
+- `widgetId` (int): Widget id within the group
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "widgetId": 0,
+  "type": 2,
+  "title": "Relay",
+  "icon": "toggle-power",
+  "monoIcon": false,
+  "minValue": 0,
+  "maxValue": 100,
+  "stepSize": 1,
+  "initialValue": 0,
+  "sourceId": 0,
+  "txEncoding": 0,
+  "transmitFunction": "function transmit(value) { return value ? [0x01] : [0x00]; }"
+}
+```
+
+#### 🟢 `project.outputWidget.update`
+Patch any subset of output-widget fields by id.
+
+**Parameters:**
+- `groupId` (int): Target group id
+- `widgetId` (int): Target widget index within the group
+- `title` (string, optional): Widget title
+- `icon` (string, optional): Icon identifier
+- `transmitFunction` (string, optional): JavaScript source defining
+  `transmit(value)`, converting UI state into device bytes. Validate first
+  with `project.outputWidget.dryRun`.
+- `sourceId` (int, optional): Target source/device id
+- `txEncoding` (int, optional): Text encoding for string payloads
+  (SerialStudio::TextEncoding enum, 0=UTF-8)
+- `monoIcon` (bool, optional): Use monochrome icon styling
+- `minValue` (double, optional): Minimum allowed value
+- `maxValue` (double, optional): Maximum allowed value
+- `stepSize` (double, optional): Value increment step
+- `initialValue` (double, optional): Initial widget value
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "widgetId": 0,
+  "updated": true
+}
+```
+Unrecognized parameter names are ignored and reported back as a `warnings`
+array (`code: "unknown_field"`) rather than failing the command.
+
+#### 🟢 `project.outputWidget.dryRun`
+Compile an output-widget transmit function without touching the live
+project. Verifies the script compiles and defines `transmit(value)`.
+`transmitFunction` is JavaScript only and runs with the same table API (plus,
+in Pro builds, the injected Modbus/CAN helper globals) as the live widget.
+Validate here before `project.outputWidget.update`.
+
+**Parameters:**
+- `code` (string): Transmit source. Must define `transmit(value)`
+- `inputValue` (string, optional): Sample value to run `transmit()` against
+- `hex` (bool, optional): Treat `inputValue` as space-separated hex bytes.
+  Default false.
+
+**Returns (compile error):**
+```json
+{
+  "ok": false,
+  "compileError": "SyntaxError: Expected token `}`",
+  "line": 3
+}
+```
+
+**Returns (compiled, no sample run):**
+```json
+{
+  "ok": true,
+  "hasTransmit": true,
+  "hint": "Compiled and transmit(value) is defined. Pass inputValue (and hex:true for hex byte input) to also execute it and see the produced bytes."
+}
+```
+
+**Returns (with `inputValue`):**
+```json
+{
+  "ok": true,
+  "hasTransmit": true,
+  "sampleRun": {
+    "ok": true,
+    "byteCount": 4,
+    "outputHex": "01 02 03 04"
+  }
+}
+```
+A failing sample run reports `sampleRun.ok: false` with `runtimeError` and
+`line` instead of `outputHex`/`byteCount`.
+
+#### 🟢 `project.painter.getCode`
+Get the Painter widget JavaScript for a group.
+
+**Parameters:**
+- `groupId` (int, required): Target group id
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "code": "function paint(ctx, w, h) { ... }"
+}
+```
+
+#### 🟢 `project.painter.setCode`
+Set the Painter widget code for a group. JavaScript only — Painter scripts run in
+`QJSEngine`, not Lua. The entry point is `paint(ctx, w, h)`, with globals `ctx` (2D
+canvas context, QPainter-like), `w`, `h` (canvas dimensions),
+`datasetGetFinal(uid)`/`datasetGetRaw(uid)`, and an optional zero-arg `onFrame()`
+callback. Validate with `project.painter.dryRun` before setting. The Painter widget
+itself requires a Pro license, but this command is not license-gated.
+
+**Parameters:**
+- `groupId` (int, required): Target group id (from `project.group.list`)
+- `code` (string, required): Painter widget JS source. Replaces any existing code
+  for the group.
+
+**Returns:**
+```json
+{
+  "groupId": 0,
+  "codeLength": 256
+}
+```
+
+#### 🟢 `project.painter.dryRun`
+Compile a painter program without touching the live project or rendering to a canvas.
+
+**Parameters:**
+- `code` (string): Painter source. Must define `paint(ctx, w, h)`.
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "hasPaint": true,
+  "hasOnFrame": false,
+  "hint": "Compile + paint() lookup succeeded. Note: dry-run does NOT actually render -- runtime errors inside paint() (out-of-bounds reads, missing moveTo before arc, etc.) only surface when the live widget mounts."
+}
+```
+On failure, `ok` is `false` and the response carries `compileError` (and `line` when the engine reports one) instead of `hasPaint`/`hasOnFrame`/`hint` -- either because the script failed to compile, or because it compiled but did not define `paint(ctx, w, h)`.
+
+#### 🟢 `project.frameParser.setCode`
+Set frame parser code.
+
+**Parameters:**
+- `code` (string): Frame parser source code
+- `language` (int, optional): 0=JavaScript, 1=Lua, 2=Built-In. Pass it to lock in the runtime engine; a mismatch silently fails to compile.
+
+#### 🟢 `project.frameParser.getCode`
+Get frame parser code.
+
+**Returns:**
+```json
+{
+  "sourceId": 0,
+  "language": 0,
+  "code": "function parse(frame) { ... }",
+  "codeLength": 256
+}
+```
+Built-In (`language: 2`) sources also return `template` and `params`, and `code` carries the JSON descriptor.
+
+#### 🟢 `project.frameParser.getConfig`
+Get the project-wide frame parser configuration (delimiters, checksum, operation mode, frame detection).
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "startSequence": "/*",
+  "endSequence": "*/",
+  "startSequences": ["/*"],
+  "endSequences": ["*/"],
+  "checksumAlgorithm": "CRC-16",
+  "operationMode": 0,
+  "frameDetection": 0
+}
+```
+`startSequence`/`endSequence` are the primary (first) delimiters; `startSequences`/`endSequences` list every configured delimiter. `operationMode` is 0=ProjectFile, 1=DeviceSendsJSON (Console Only), 2=QuickPlot. `frameDetection` is 0-3 (End Delimiter Only, Start and End Delimiter, No Delimiters, Start Delimiter Only).
+
+#### 🟢 `project.frameParser.update`
+Configure frame parser delimiters, checksum, frame detection, and operation mode.
+
+**Parameters:**
+- `sourceId` (int, optional): Source index (default 0)
+- `startSequence` (string, optional): Frame start delimiter
+- `endSequence` (string, optional): Frame end delimiter
+- `checksumAlgorithm` (string, optional): Checksum algorithm name
+- `frameDetection` (int, optional): Frame detection mode (0-3)
+- `operationMode` (int, optional): Operation mode (0-2)
+
+**Returns:**
+```json
+{
+  "updated": true,
+  "sourceId": 0
+}
+```
+`operationMode` is always applied project-wide (via `AppState`), regardless of `sourceId`. For `sourceId: 0`, `startSequence`/`endSequence`/`checksumAlgorithm`/`frameDetection` are the global frame parser settings and take effect immediately, resetting the frame reader. For a non-zero `sourceId`, those same fields configure a per-source override stored on that source instead of the global settings. Out-of-range `frameDetection`/`operationMode` values are ignored rather than rejected.
+
+#### 🟢 `project.frameParser.getLanguage`
+Get the script language used by the frame parser for a given source.
+
+**Parameters:**
+- `sourceId` (int, optional): Source identifier (default 0)
+
+**Returns:**
+```json
+{
+  "sourceId": 0,
+  "language": 0
+}
+```
+`language` is 0=JavaScript, 1=Lua, 2=Built-In. Fails with an `InvalidParam` error if `sourceId` does not match an existing source.
+
+#### 🟢 `project.frameParser.setLanguage`
+Switch a source between JavaScript, Lua, and Built-In frame parsers.
+
+**Parameters:**
+- `language` (int): Script language: 0=JavaScript, 1=Lua, 2=Built-In
+- `sourceId` (int, optional): Source identifier (default 0)
+
+**Returns:**
+```json
+{
+  "sourceId": 0,
+  "language": 1
+}
+```
+Switching to JavaScript or Lua **wipes** the source's existing frame parser code: the default template for the new language replaces it. To preserve the source, read it first with `project.frameParser.getCode`, switch, then write the translated code back with `project.frameParser.setCode`. Switching to Built-In (2) keeps any previously-saved template/params for that source (or seeds the default `delimited` template if none exists) and leaves the source's JS/Lua code intact for later round-trips. Fails with an `InvalidParam` error for an unknown `sourceId` or an out-of-range `language`.
+
+#### 🟢 `project.frameParser.listTemplates`
+List the available Built-In (C++) frame parser templates.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "templates": [
+    {
+      "id": "delimited",
+      "name": "Delimited",
+      "description": "Splits a frame on a separator character."
+    }
+  ],
+  "count": 1
+}
+```
+Built-In templates parse without user code. Inspect a template's parameters with `project.frameParser.getTemplateSchema` before applying it with `project.frameParser.setTemplate`.
+
+#### 🟢 `project.frameParser.getTemplate`
+Get the Built-In frame parser configuration for a source.
+
+**Parameters:**
+- `sourceId` (int, optional): Source index (default 0)
+
+**Returns:**
+```json
+{
+  "sourceId": 0,
+  "language": 2,
+  "template": "delimited",
+  "params": {}
+}
+```
+`template` is empty and `params` is empty when the source has never used the Built-In language. Fails with an `InvalidParam` error if `sourceId` does not match an existing source.
+
+#### 🟢 `project.frameParser.getTemplateSchema`
+Get the parameter schema of a Built-In frame parser template.
+
+**Parameters:**
+- `template` (string): Template id from `project.frameParser.listTemplates`
+
+**Returns:**
+```json
+{
+  "id": "delimited",
+  "name": "Delimited",
+  "description": "Splits a frame on a separator character.",
+  "params": [
+    {
+      "key": "separator",
+      "type": "char",
+      "label": "Separator",
+      "description": "Character used to split the frame",
+      "default": ","
+    }
+  ]
+}
+```
+Param `type` is one of `string`, `char`, `int`, `float`, `bool`, `enum` (enum options come from `options[].value`); numeric params may also carry `min`/`max`. Fails with an `InvalidParam` error for an unknown template id.
+
+#### 🟢 `project.frameParser.setTemplate`
+Select a Built-In frame parser template for a source and switch the source to the Built-In language.
+
+**Parameters:**
+- `template` (string): Template id from `project.frameParser.listTemplates`
+- `sourceId` (int, optional): Source index (default 0)
+- `params` (object, optional): Template parameters (see `project.frameParser.getTemplateSchema`); omitted keys use the schema defaults
+
+**Returns:**
+```json
+{
+  "sourceId": 0,
+  "language": 2,
+  "template": "delimited",
+  "params": { "separator": "," }
+}
+```
+Params are validated against the template's schema before the change is applied. Fails with an `InvalidParam` error for an unknown template id, invalid params, or an unknown `sourceId`. Preview the parsed output before or after applying with `project.frameParser.dryRun` (language 2, the JSON descriptor as `code`).
+
+#### 🟢 `project.frameParser.dryCompile`
+Compile-only check for frame parser code. Catches syntax errors and the "wrong-language" mismatch without executing the parser.
+
+**Parameters:**
+- `code` (string): Frame parser source.
+- `language` (int): 0=JavaScript, 1=Lua, 2=Built-In.
+
+**Returns:**
+```json
+{
+  "ok": false,
+  "language": "javascript",
+  "error": "Compile failed or parse(frame) is not defined.",
+  "warning": "Code looks like Lua but language is set to JavaScript."
+}
+```
+`ok:true` omits `error` and `warning`. `warning` is only produced for JavaScript/Lua when the code's shape suggests the other language; for Built-In (`language: 2`) `error` instead names the expected `{"template": id, "params": {...}}` descriptor shape.
+
+#### 🟢 `project.frameParser.dryRun`
+Compile and execute frame parser code against raw stream bytes, driving the full pipeline (extraction, decoder, `parse()`) without touching the live project.
+
+**Parameters:**
+- `code` (string): Frame parser source.
+- `language` (int): 0=JavaScript, 1=Lua.
+- `inputBytes` (string, optional): Raw stream bytes as UTF-8 text. Lossy for binary payloads.
+- `inputBytesHex` (string, optional): Raw stream bytes as a space-tolerant hex string. Binary-safe. One of `inputBytes` / `inputBytesHex` is required and must decode to a non-empty byte array.
+- `decoderMethod` (int, optional): 0=PlainText (default), 1=Hexadecimal, 2=Base64, 3=Binary. Binary is the only mode safe for non-text protocols (COBS, Modbus, custom binary).
+- `frameDetection` (int, optional): 0=EndDelimiterOnly (default), 1=StartAndEndDelimiter, 2=NoDelimiters, 3=StartDelimiterOnly.
+- `frameStart` (string, optional): Start delimiter. Hex when `hexadecimalDelimiters` is true.
+- `frameEnd` (string, optional): End delimiter. Hex when `hexadecimalDelimiters` is true.
+- `hexadecimalDelimiters` (bool, optional): Parse `frameStart`/`frameEnd` as hex bytes. Default: false.
+- `checksumAlgorithm` (string, optional): Checksum name to validate trailing bytes. Default: none.
+- `operationMode` (int, optional): 0=ProjectFile (default; runs decoder + parser), 2=QuickPlot (line extractor, comma-split, parser bypassed). 1=ConsoleOnly is invalid for this command.
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "frames": [
+    {
+      "rawHex": "32 35 2e 33 2c 36 30 0a",
+      "rawByteCount": 8,
+      "decoderOutput": "25.3,60",
+      "decoderIsBinary": false,
+      "rows": [["25.3", "60"]],
+      "rowCount": 1
+    }
+  ],
+  "frameCount": 1,
+  "extractedCount": 1,
+  "consumedBytes": 8,
+  "remainingBytes": 0,
+  "droppedFrames": 0,
+  "totalRows": 1,
+  "hint": "Bytes flow through extraction (delimiters / detection) -> decoder method -> parser, the same path the live FrameBuilder uses. Pick the Binary decoder for non-text streams (COBS, Modbus, custom binary) -- PlainText / Hex / Base64 route through QString::fromUtf8 and mojibake non-ASCII bytes."
+}
+```
+Returns an error response if extraction, decoding, or parser compile/execution fails.
+
+#### 🟢 `project.batch`
+Run several project mutations atomically with respect to autosave: all ops execute
+sequentially under one suspended-autosave window, and a single save is flushed at
+the end. Use this instead of more than ~5 sequential mutations (renames, retypes,
+reindexes) — N round-trips cost N times the latency and N times the autosave/tree-rebuild
+churn.
+
+**Parameters:**
+- `ops` (array, required): Up to 1024 `{command, params}` objects, executed in order.
+  `command` is a registered command name (e.g. `project.dataset.update`); nesting
+  `project.batch` is rejected. `params` is the arguments object exactly as passed at
+  the top level for that command.
+- `stopOnError` (bool, optional, default `false`): Abort the batch on the first op
+  failure. Default is best-effort — every op is attempted regardless of earlier
+  failures.
+- `dryRun` (bool, optional, default `false`): Preview every op without committing.
+  Rejected when any op's command is outside the dry-run-aware set (`project.dataset.delete`,
+  `project.group.delete`, `project.dataset.move`, `project.group.move`,
+  `project.workspace.delete`, `project.workspace.clearAll`, `project.new`, `project.open`,
+  `project.loadJson`, `project.template.apply`, `project.batch`,
+  `assistant.project.bulkApply`) — patch-style commands such as `project.dataset.update`,
+  `project.group.update`, `project.action.update`, and `project.painter.setCode` are not
+  in that set, so a batch mixing them with `dryRun:true` is rejected outright.
+
+**Not transactional:** already-applied ops are not rolled back if a later op fails —
+this is a save-suspend wrapper, not a database transaction.
+
+**Returns:**
+```json
+{
+  "results": [
+    {"index": 0, "command": "project.dataset.update", "success": true, "result": {}}
+  ],
+  "total": 1,
+  "succeeded": 1,
+  "failed": 0,
+  "aborted": false,
+  "autoSaveMode": "flushed"
+}
+```
+Each result entry carries `index`, `command`, `success`, and either `result` (the
+wrapped command's success payload) or `error` (`code`, `message`, optional `data`).
+When `dryRun` is true, the top-level response also includes `"dryRun": true`,
+`autoSaveMode` is `"none"`, and a `warning` notes that no ops were committed.
+
+**Example:**
+```json
+{
+  "ops": [
+    {"command": "project.dataset.update", "params": {"groupId": 0, "datasetId": 0, "title": "LED 1", "index": 1}},
+    {"command": "project.dataset.update", "params": {"groupId": 0, "datasetId": 1, "title": "LED 2", "index": 2}}
+  ]
+}
+```
+
+#### 🟢 `project.dryRun.endToEnd`
+Run one or more sample frames through the project's frame parser, then apply every dataset's transform in execution order, without touching live state.
+
+**Parameters:**
+- `sampleFrame` (string, optional): Single frame body (no delimiters). One of `sampleFrame` / `sampleFrames` is required.
+- `sampleFrames` (array of string, optional): Multiple frame bodies, run sequentially through one parser engine instance.
+- `sourceId` (int, optional): Source index to use for the parser and dataset transforms. Default: 0.
+- `code` (string, optional): Frame parser source override. Default: the live project's parser for `sourceId`.
+- `language` (int, optional): Parser language override, 0=JavaScript, 1=Lua. Default: the live source's language.
+- `verbose` (bool, optional): Include each row's raw cell value alongside its transformed value. Default: false.
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "sourceId": 0,
+  "frameCount": 1,
+  "frames": [
+    {
+      "rowCount": 1,
+      "rows": [
+        {
+          "rawCells": ["25.3", "60"],
+          "datasets": [
+            {
+              "uniqueId": 1001,
+              "title": "Temperature",
+              "groupId": 0,
+              "datasetId": 0,
+              "index": 1,
+              "isVirtual": false,
+              "final": 25.3,
+              "transformApplied": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+`rawCells[i]` maps to `dataset.index = i + 1`. The table API (`tableGet`/`tableSet`/`datasetGetRaw`/`datasetGetFinal`) is not injected here: transforms that read other datasets see 0/null; test those individually with `project.dataset.transform.dryRun`. If one or more dataset transforms fail to compile, the response still succeeds: their `final` value is `null`, their `uniqueId` is listed in `transformCompileFailures`, and a top-level `warning` is added. A frame-parser compile failure, a missing `sampleFrame`/`sampleFrames`, or an out-of-range `sourceId` returns an error response instead.
+
+### Workspace Commands (15)
+
+> `project.workspace.*` is a separate registered command family
+> (`WorkspacesHandler.cpp`) from Project Management above. It manages
+> dashboard workspaces (taskbar tabs) and the widget tiles pinned to them.
+> Every mutating command requires `ProjectFile` operation mode; `delete`,
+> `rename`, `update`, `addWidget`, and `removeWidget` also require
+> `customizeWorkspaces` to be enabled first via
+> `project.workspace.setCustomizeMode`. Workspace ids: `1000`-`1001` are
+> the auto-generated Overview/AllData workspaces, `1002`-`4999` are
+> auto-generated per-group/per-folder workspaces, `5000`+ are user-created.
+> `Group.uniqueId` (not the positional array index, not `Group.groupId`) is
+> the stable identifier used to attach widgets to a group; it never changes
+> across group reorders.
+
+#### 🟢 `project.workspace.list`
+List all workspaces with widget counts.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "workspaces": [
+    {"id": 1000, "title": "Overview", "icon": "qrc:/icons/panes/overview.svg", "description": "", "widgetCount": 4}
+  ],
+  "count": 1,
+  "customizeEnabled": false
+}
+```
+
+#### 🟢 `project.workspace.get`
+Return widget refs for a single workspace.
+
+**Parameters:**
+- `id` (int, required): Workspace id
+
+**Returns:**
+```json
+{
+  "id": 1000,
+  "title": "Overview",
+  "icon": "qrc:/icons/panes/overview.svg",
+  "description": "",
+  "widgets": [
+    {
+      "widgetType": 9,
+      "widgetTypeSlug": "plot",
+      "groupId": 1024,
+      "relativeIndex": 0,
+      "widgetId": "ws1000:plot:g1024:0"
+    }
+  ]
+}
+```
+Returns `INVALID_PARAM` if `id` does not match a live workspace.
+
+#### 🟢 `project.workspace.add`
+Create a new workspace. Requires `ProjectFile` mode.
+
+**Parameters:**
+- `title` (string, optional, default `"Workspace"`): Workspace title
+
+**Returns:**
+```json
+{
+  "id": 5000,
+  "title": "Workspace",
+  "added": true
+}
+```
+
+#### 🟢 `project.workspace.delete`
+Delete a workspace by id. Requires `ProjectFile` mode and `customizeWorkspaces`
+enabled (see `project.workspace.setCustomizeMode`).
+
+**Parameters:**
+- `id` (int, required): Workspace id
+- `dryRun` (bool, optional): If true, return the workspace + widgetCount that
+  would be removed without committing. Auto-runs without an approval card.
+
+**Returns:**
+```json
+{
+  "id": 5000,
+  "deleted": true,
+  "workspace": {"id": 5000, "title": "My Layout", "widgetCount": 3}
+}
+```
+With `dryRun: true`, the response adds `"dryRun": true` and a `warning`, sets
+`"deleted": false`, and nothing is written.
+
+#### 🟢 `project.workspace.clearAll`
+Wipe every workspace in one call. Forces `customizeWorkspaces` on and leaves
+an empty list. Use instead of looping `project.workspace.delete`: one
+approval card, one autosave flush. Follow with `project.workspace.autoGenerate`
+to restore the default Overview/AllData/per-group layout, or
+`project.workspace.add` + `addWidget` to build a custom layout. Requires
+`ProjectFile` mode; does not require `customizeWorkspaces` to already be on.
+
+**Parameters:**
+- `dryRun` (bool, optional): If true, return the list of workspaces that
+  would be cleared. Auto-runs without an approval card.
+
+**Returns:**
+```json
+{
+  "cleared": 3,
+  "remaining": 0,
+  "deleted": [
+    {"id": 1000, "title": "Overview", "widgetCount": 4}
+  ],
+  "hint": "All workspaces removed; customize mode is on. Call project.workspace.autoGenerate to recreate the default Overview/AllData/per-group layout, or build a custom layout with project.workspace.add + project.workspace.addWidget."
+}
+```
+With `dryRun: true`, the response instead carries `"dryRun": true`, `"cleared": 0`,
+`"remaining"` (unchanged workspace count), and `"wouldDelete"` in place of `"deleted"`.
+
+#### 🟢 `project.workspace.rename`
+Rename a workspace. Requires `ProjectFile` mode and `customizeWorkspaces` enabled.
+
+**Parameters:**
+- `id` (int, required): Workspace id
+- `title` (string, required): New workspace title (cannot be empty/whitespace)
+
+**Returns:**
+```json
+{
+  "id": 5000,
+  "title": "New Title",
+  "renamed": true
+}
+```
+
+#### 🟢 `project.workspace.update`
+Patch workspace `title`, `icon`, and/or `description`. Requires `ProjectFile`
+mode and `customizeWorkspaces` enabled. At least one optional field is required.
+
+**Parameters:**
+- `id` (int, required): Workspace id
+- `title` (string, optional): New title (cannot be empty/whitespace)
+- `icon` (string, optional): New icon path, e.g. `"qrc:/icons/panes/overview.svg"`
+- `description` (string, optional): Free-text intent / audience note
+
+**Returns:**
+```json
+{
+  "id": 5000,
+  "title": "New Title",
+  "updated": true
+}
+```
+Only the fields that were set are echoed back alongside `id` and `updated`.
+
+#### 🟢 `project.workspace.reorder`
+Reorder user-defined workspaces (`id >= 5000`) in the taskbar. System
+workspaces (auto-generated, ids `1000`-`4999`) keep their original slots.
+Requires `ProjectFile` mode.
+
+**Parameters:**
+- `workspaceIds` (array of int, required): Every current user-workspace id
+  (`>= 5000`), in the desired order. Must exactly match the set of current
+  user workspaces; partial reorders are rejected to avoid silent corruption.
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "newOrder": [5001, 5000, 5002]
+}
+```
+Returns `INVALID_PARAM` if any id is below 5000, or if the id set does not
+exactly match the current user workspaces.
+
+#### 🟢 `project.workspace.autoGenerate`
+Materialise the synthetic Overview/AllData/per-group workspaces into the
+customized set. No-op if already customized. Requires `ProjectFile` mode.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "firstWorkspaceId": 1000,
+  "generated": true
+}
+```
+`generated` is `false` and `firstWorkspaceId` is `-1` when the project was
+already customized (no-op).
+
+#### 🟢 `project.workspace.getCustomizeMode`
+Return the `customizeWorkspaces` flag.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "enabled": false
+}
+```
+
+#### 🟢 `project.workspace.setCustomizeMode`
+Flip the `customizeWorkspaces` flag. Requires `ProjectFile` mode. Most other
+`project.workspace.*` mutators require this flag to be `true` first.
+
+**Parameters:**
+- `enabled` (bool, required): Enable (true) or disable (false)
+
+**Returns:**
+```json
+{
+  "enabled": true,
+  "updated": true
+}
+```
+
+#### 🟢 `project.workspace.addWidget`
+Pin a visualization tile onto a workspace: the tile renders the dashboard
+widget of the given `widgetType` fed by the given `groupId`. Requires
+`ProjectFile` mode and `customizeWorkspaces` enabled. Call `project.group.list`
+(for `groupId` + `compatibleWidgetTypes`) and `project.workspace.list` (for
+`workspaceId`) before calling this command.
+
+**Parameters:**
+- `workspaceId` (int, required): Workspace id from `project.workspace.list`
+- `groupId` (int, required): `Group.uniqueId` from `project.group.list`
+  (stable across reorders), not the positional array index and not `Group.groupId`
+- `widgetType` (string or int, required): Widget kind. Preferred form is a
+  string slug: `"plot"`, `"fft"`, `"bar"`, `"gauge"`, `"compass"`, `"led"`,
+  `"datagrid"`, `"multiplot"`, `"accelerometer"`, `"gyroscope"`, `"gps"`,
+  `"plot3d"`, `"imageview"` (Pro), `"output-panel"` (Pro),
+  `"notification-log"` (Pro), `"waterfall"` (Pro), `"painter"` (Pro). An
+  integer `DashboardWidget` enum is also accepted for back-compat.
+- `datasetId` (int, optional): For per-dataset widgets
+  (plot/fft/bar/gauge/meter/compass/waterfall), pin the tile to this dataset
+  within `groupId`. When omitted, the first dataset in the group with the
+  matching option enabled is used. Ignored for group-level widgets.
+- `relativeIndex` (int, optional, discouraged): Dashboard-level global index
+  across all widgets of this type in the project. Omit it and the command
+  computes the correct index from `groupId` (and `datasetId` for per-dataset
+  widgets).
+
+**Returns:**
+```json
+{
+  "workspaceId": 5000,
+  "widgetType": 9,
+  "widgetTypeSlug": "plot",
+  "groupId": 1024,
+  "relativeIndex": 0,
+  "relativeIndexAutoAssigned": true,
+  "widgetId": "ws5000:plot:g1024:0",
+  "added": true
+}
+```
+`datasetId` is echoed back when it was supplied. `widgetId` is the opaque
+identifier to pass to `project.workspace.removeWidget`. Returns
+`INVALID_PARAM` if the workspace or group does not exist, `widgetType` is
+unknown or a sentinel value (`0`=Terminal, `17`=NoWidget), `widgetType` is
+not in the group's `compatibleWidgetTypes`, or `datasetId` is not in
+`groupId`.
+
+#### 🟢 `project.workspace.removeWidget`
+Detach a widget ref from a workspace. Requires `ProjectFile` mode and
+`customizeWorkspaces` enabled.
+
+**Parameters:**
+- `widgetId` (string, optional): Opaque identifier in the form
+  `"ws<workspaceId>:<slug>:g<groupId>:<relativeIndex>"` (returned by
+  `project.workspace.addWidget` and `project.workspace.get`). Provide either
+  `widgetId` or all four tuple fields below.
+- `workspaceId` (int, optional): Workspace id (tuple form)
+- `widgetType` (string or int, optional): `DashboardWidget` slug or enum (tuple form)
+- `groupId` (int, optional): `Group.uniqueId` of the source group (tuple form)
+- `relativeIndex` (int, optional): Relative widget index (tuple form)
+
+**Returns:**
+```json
+{
+  "workspaceId": 5000,
+  "widgetType": 9,
+  "widgetTypeSlug": "plot",
+  "groupId": 1024,
+  "relativeIndex": 0,
+  "widgetId": "ws5000:plot:g1024:0",
+  "removed": true
+}
+```
+Returns `INVALID_PARAM` for a malformed `widgetId`, or `MISSING_PARAM` if
+neither `widgetId` nor the full tuple is provided.
+
+#### 🟢 `project.workspace.validate`
+Walk workspace widget refs and report orphaned references (the
+group/dataset/widgetType combo no longer exists) plus groups not pinned to
+any workspace. Read-only: does not modify project state or toggle
+`customizeWorkspaces`, and does not require `ProjectFile` mode. Pair with
+`project.workspace.cleanup` to repair.
+
+**Parameters:**
+- `workspaceId` (int, optional): Limit validation to one workspace; omit to
+  validate all workspaces
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "issues": [],
+  "workspaceCount": 3,
+  "orphanedCount": 0,
+  "unreferencedGroups": [],
+  "issueCount": 0
+}
+```
+Each entry in `issues` carries `level` (`"error"` for orphaned refs,
+`"warning"` for unreferenced groups), `location`, and a `message`; orphan
+entries also carry `workspaceId`, `widgetType`, `widgetTypeSlug`, `groupId`,
+`relativeIndex`, and `widgetId`. `unreferencedGroups` (checked only when
+`workspaceId` is omitted) is skipped when validation is scoped to one workspace.
+
+#### 🟢 `project.workspace.cleanup`
+Drop workspace widget refs that no longer resolve to a live
+group/dataset/widgetType. Scope is orphans only: it does not touch refs where
+the group still exists but `compatibleWidgetTypes` has changed. Requires
+`ProjectFile` mode unless `dryRun` is true.
+
+**Parameters:**
+- `workspaceId` (int, optional): Limit cleanup to one workspace
+- `dryRun` (bool, optional, default `false`): Report what would be removed
+  without mutating
+
+**Returns:**
+```json
+{
+  "ok": true,
+  "dryRun": false,
+  "removed": 2,
+  "removedRefs": [
+    {
+      "workspaceId": 5000,
+      "widgetType": 9,
+      "widgetTypeSlug": "plot",
+      "groupId": 1024,
+      "relativeIndex": 0,
+      "widgetId": "ws5000:plot:g1024:0"
+    }
+  ]
+}
+```
+When `dryRun` is true, `removed` is the count of `removedRefs` and nothing
+is written.
+
+### Modbus Driver Commands - Pro (22)
 
 **Note:** These commands require a Serial Studio Pro license.
 
@@ -2262,6 +4052,179 @@ Get complete audio configuration.
   "selectedInputChannelConfig": 0,
   "selectedOutputSampleFormat": 0,
   "selectedOutputChannelConfig": 0
+}
+```
+
+### USB Driver Commands - Pro (7)
+
+**Note:** These commands require a Serial Studio Pro license. USB is a
+libusb-based driver (`BusType::RawUsb`); select it via `io.setBusType` with
+`busType=6` before configuring it.
+
+#### 🔵 `io.usb.setDeviceIndex`
+Select USB device by index.
+
+**Parameters:**
+- `deviceIndex` (int): USB device index (0 = placeholder)
+
+#### 🔵 `io.usb.setTransferMode`
+Set the transfer mode.
+
+**Parameters:**
+- `mode` (int): 0=Bulk, 1=Advanced, 2=Isochronous
+
+#### 🔵 `io.usb.setInEndpointIndex`
+Select the IN endpoint after connection.
+
+**Parameters:**
+- `endpointIndex` (int): IN endpoint index
+
+#### 🔵 `io.usb.setOutEndpointIndex`
+Select the OUT endpoint after connection.
+
+**Parameters:**
+- `endpointIndex` (int): OUT endpoint index
+
+#### 🔵 `io.usb.setIsoPacketSize`
+Set the ISO transfer packet size, in bytes.
+
+**Parameters:**
+- `size` (int): ISO transfer packet size in bytes (1-49152)
+
+#### 🔵 `io.usb.listDevices`
+Get list of available USB devices.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "devices": ["USB Device 0"],
+  "selectedIndex": 0
+}
+```
+
+#### 🔵 `io.usb.getConfig`
+Get complete USB driver configuration.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "deviceIndex": 0,
+  "transferMode": 0,
+  "inEndpointIndex": 0,
+  "outEndpointIndex": 0,
+  "isoPacketSize": 512,
+  "inEndpoints": [],
+  "outEndpoints": []
+}
+```
+
+### HID Driver Commands - Pro (3)
+
+**Note:** These commands require a Serial Studio Pro license. HID is a
+hidapi-based driver (`BusType::HidDevice`); select it via `io.setBusType`
+with `busType=7` before configuring it.
+
+#### 🔵 `io.hid.setDeviceIndex`
+Select HID device by index.
+
+**Parameters:**
+- `deviceIndex` (int): HID device index (0 = placeholder)
+
+#### 🔵 `io.hid.listDevices`
+Get list of available HID devices.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "devices": ["HID Device 0"],
+  "selectedIndex": 0
+}
+```
+
+#### 🔵 `io.hid.getConfig`
+Get complete HID driver configuration.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "deviceIndex": 0,
+  "usagePage": 0,
+  "usage": 0
+}
+```
+
+### Process I/O Driver Commands - Pro (7)
+
+**Note:** These commands require a Serial Studio Pro license. Process I/O
+(`BusType::Process`) either launches an external executable or attaches to a
+named pipe/FIFO; select it via `io.setBusType` with `busType=8` before
+configuring it. Executable and path parameters are checked against the
+same allow-list as other filesystem-facing commands.
+
+#### 🔵 `io.process.setMode`
+Set the driver mode.
+
+**Parameters:**
+- `mode` (int): 0=Launch, 1=NamedPipe
+
+#### 🔵 `io.process.setExecutable`
+Set the executable path for Launch mode.
+
+**Parameters:**
+- `executable` (string): Absolute path to the executable
+
+#### 🔵 `io.process.setArguments`
+Set the command-line arguments for Launch mode.
+
+**Parameters:**
+- `arguments` (string): Shell-style argument string
+
+#### 🔵 `io.process.setWorkingDir`
+Set the working directory for Launch mode.
+
+**Parameters:**
+- `workingDir` (string): Absolute path to the working directory
+
+#### 🔵 `io.process.setPipePath`
+Set the named pipe / FIFO path for NamedPipe mode.
+
+**Parameters:**
+- `pipePath` (string): Named pipe or FIFO path
+
+#### 🔵 `io.process.listRunning`
+Refresh and return the list of running processes.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "processes": [],
+  "count": 0
+}
+```
+
+#### 🔵 `io.process.getConfig`
+Get complete Process driver configuration.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "mode": 0,
+  "executable": "",
+  "arguments": "",
+  "workingDir": "",
+  "pipePath": ""
 }
 ```
 
@@ -2834,7 +4797,7 @@ while monitoring:
 
 **Solutions:**
 1. Verify Serial Studio is running
-2. Check API Server is enabled (Preferences → General → Advanced)
+2. Check API Server is enabled (Preferences → General → API & Plugins)
 3. Confirm you are connecting to port 7777
 4. Try: `telnet localhost 7777` or `nc localhost 7777`
 5. Check the firewall isn't blocking localhost connections
@@ -3013,7 +4976,7 @@ The MCP handler wraps the Serial Studio TCP API (port 7777) in an MCP-compliant 
 
 ### Getting Started with MCP
 
-1. Enable the API Server in Serial Studio (Preferences → General → Advanced → Enable API Server).
+1. Enable the API Server in Serial Studio (Preferences → General → API & Plugins → Enable API Server).
 2. Configure your MCP client (Claude Desktop, a custom MCP host, etc.) to connect to the Serial Studio MCP endpoint.
 3. The AI model can now call any API command as an MCP tool.
 

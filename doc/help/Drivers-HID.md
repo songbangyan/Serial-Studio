@@ -4,7 +4,7 @@ The HID driver lets Serial Studio talk to USB Human Interface Device (HID) class
 
 HID is the simplest path to a device that works on every consumer OS without per-vendor driver installs. Every modern OS includes a generic HID driver, so a HID-class device shows up immediately. This makes HID a good choice for custom controllers and low-cost data-acquisition devices.
 
-## What is USB HID?
+## USB HID basics
 
 The HID class was defined by the USB-IF in 1996 to handle "input devices for humans" generically. The original goal was to standardise keyboards, mice, joysticks, and game controllers so the OS would not need a per-vendor driver for each one. Over time, "human interface" stretched to include anything with a small periodic data stream: barcode scanners, RFID readers, fingerprint sensors, and simple instruments.
 
@@ -112,7 +112,7 @@ The TCP API and the in-app AI assistant configure this driver through the `io.hi
 | `io.hid.setDeviceIndex` | `deviceIndex` (integer) | Selected index and device name |
 | `io.hid.getConfig` | none | `deviceIndex`, `usagePage`, `usage` |
 
-Transport details and command safety tiers are in the [API Reference](API-Reference.md).
+Transport details are in the [API Reference](API-Reference.md); command safety tiers are in [AI Assistant](AI-Assistant.md#the-safety-tiers).
 
 ## Common pitfalls
 
@@ -125,7 +125,7 @@ Transport details and command safety tiers are in the [API Reference](API-Refere
 - **Composite device opens the wrong interface.** A composite device can register several HID interfaces (for example one for the keyboard interface and one for vendor data). Serial Studio merges interfaces that share VID, PID, and serial number into one list entry and opens the first interface hidapi reports. Check the read-only Usage Page / Usage fields after connecting; if the wrong interface opened, the firmware-side fix is to expose the data interface with a distinct serial number or its own VID:PID.
 - **Connected but no data arrives.** Some HID devices only send reports on state change. A gamepad reports when a button is pressed or an axis moves; if it is idle, nothing arrives. Move the device to confirm.
 - **Reports look corrupted.** Check whether the device uses *numbered* reports. If so, the first byte of each read is the report ID, not data. The frame parser must skip it, or split by ID when multiple report formats exist.
-- **macOS reads work but writes do not.** On macOS, output reports sometimes require `hid_send_feature_report` instead of `hid_write`, depending on how the device declares its output endpoints. This is a hidapi-level quirk; the workaround usually has to be made on the firmware side.
+- **macOS reads work but writes do not.** On macOS, output reports sometimes require `hid_send_feature_report` instead of `hid_write`, depending on how the device declares its output endpoints. This is a hidapi-level quirk; the workaround has to be made on the firmware side.
 - **Re-enumeration interval feels slow.** The default is 2 seconds. To speed up hotplug detection, edit `kEnumIntervalMs` in `app/src/IO/Drivers/HID.cpp` and rebuild.
 
 ## Further reading

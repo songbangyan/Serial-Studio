@@ -23,6 +23,7 @@ Options marked **(Pro)** are available only in commercial builds.
 | `-q`, `--quick-plot` | | Enable quick-plot mode (auto-detect CSV data). |
 | `-t`, `--fps` | `Hz` | Set the visualization refresh rate. |
 | `-n`, `--points` | `count` | Set the number of data points per plot. |
+| `--exit-after` | `seconds` | Quit gracefully after the given number of seconds (CI runs, PGO training). |
 
 ## Data Sources
 
@@ -58,7 +59,7 @@ pipeline.
 | Option | Argument | Description |
 |--------|----------|-------------|
 | `--no-toolbar` | | Hide the main window toolbar at startup. |
-| `--runtime` | | Operator runtime mode: hide toolbar, quit on disconnect. |
+| `--runtime` | | Operator runtime mode: hide toolbar, quit when the operator disconnects. An unexpected device drop shows the reconfigure dialog instead of quitting. |
 | `--shortcut-path` | `path` | Path of the shortcut that launched the process. |
 | `--csv-export` | | Enable CSV export on startup. |
 | `--mdf-export` | | Enable MDF4 export on startup. |
@@ -76,6 +77,7 @@ pipeline.
 |--------|----------|-------------|
 | `--activate` | `key` | Activate a license key and exit. |
 | `--deactivate` | | Deactivate the current license instance and exit. |
+| `--selftest-offline-license` | | Run the offline-certificate verifier self-test vectors and exit. |
 
 ## Modbus (Pro)
 

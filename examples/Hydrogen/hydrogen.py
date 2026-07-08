@@ -21,7 +21,7 @@
 #   r       : Radial distance from nucleus (for spatial context)
 #
 # Example frame:
-#  -0.283291,0.453772,0.125448,0.038142,0.621987
+#  -0.210105,0.459088,0.324181,0.095873,0.600000
 #
 # --- Use In Serial Studio ---
 # - Set input source to UDP on port 9000
@@ -34,8 +34,8 @@
 # --- Notes ---
 # - Not a true quantum mechanical solver. This is a visual/statistical
 #   approximation.
-# - It's recommended to enable the scatter plot features instead of the
-#   interpolated/line plots for better visualization.
+# - For a clearer point cloud, turn off Interpolate on the 3D Plot toolbar
+#   (or set the plot's interpolation mode to None).
 #
 
 import sys

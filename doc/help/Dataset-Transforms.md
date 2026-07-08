@@ -55,7 +55,7 @@ Non-numeric dataset values are still passed to the transform as a string. If the
 
 The function returns a number, or a string for text datasets (a returned string is kept as the dataset value). The returned value replaces the raw value everywhere: dashboard widgets, plots, CSV export, MDF4 export, and the API.
 
-If the function returns `nil` (Lua), `undefined`/`NaN`/`Infinity` (JS), or if an error happens, the raw value is kept unchanged so the data stream isn't interrupted. JavaScript exceptions fall back silently; a Lua error also logs a warning (with the error message and dataset ID) to the application log.
+If the function returns `nil` (Lua), `undefined`/`NaN`/`Infinity` (JS), or if an error happens, the raw value is kept unchanged so the data stream isn't interrupted. Both a JS exception and a Lua error log a warning (with the error message and dataset ID) to the application log; only the non-error fallback cases (`nil`/`undefined`/`NaN`/`Infinity`) are silent.
 
 ## Persistent state
 
@@ -427,7 +427,7 @@ Full reference, including argument types and longer examples (GPS fix reset, mod
 4. Write or pick a `transform(value)` function.
 5. Click **Apply** to save the transform to the dataset.
 
-When you open the editor on a dataset with no transform yet, it's pre-filled with a multiline comment explaining how `transform(value)` works and how top-level `local`/`var` state is captured. The placeholder isn't a real transform. If you click Apply without defining a `transform()` function, the placeholder is discarded and the dataset keeps showing raw values. Same rule if you later clear the code or write notes that never define `transform()`: nothing is saved to the project.
+When you open the editor on a dataset with no transform yet, it's pre-filled with a multiline comment explaining how `transform(value)` works and how top-level `local`/`var` state is captured. The placeholder isn't a real transform. If you click Apply without defining a `transform()` function, the placeholder is discarded and the dataset keeps showing raw values. Clearing the code entirely behaves the same way: nothing is saved, and the dialog closes. Writing non-empty text or comments that never define `transform()` is different: Apply refuses, showing "The value transform must define a transform(value) function." and leaving the dialog open until you either define `transform()` or click Clear.
 
 ### Switching languages
 
@@ -598,7 +598,7 @@ end
 1. The function has to be named `transform` (case-sensitive).
 2. It takes one required parameter (`value`), plus an optional second parameter (`info`) with frame metadata (`frameNumber`, `sourceId`, `timestampMs`).
 3. It has to return a number, or a string for text datasets (a returned string is kept as the dataset value).
-4. Returning `nil`, `NaN`, or `Infinity` falls back to the raw value, as does a script error (silent in JavaScript; logged in Lua).
+4. Returning `nil`, `NaN`, or `Infinity` falls back to the raw value, as does a script error (logged in both languages; only the non-error `nil`/`NaN`/`Infinity` fallback is silent).
 5. Each dataset picks its own transform language (Lua or JavaScript); datasets on the same source can mix the two. The source's frame parser language is only the default when none is picked.
 6. Datasets on the same source share one underlying scripting engine, but each dataset's top-level state is isolated. In JavaScript, declare stateful variables with `var`: an implicit (undeclared) global is written to the shared engine and leaks across datasets. In Lua each dataset chunk has its own environment, so bare globals (and `function foo() end` at chunk top level) stay isolated per dataset; `local` is still recommended for clarity and consistency with the JavaScript rule.
 7. The engine is sandboxed: no file I/O, no network, no OS commands.

@@ -4,7 +4,7 @@ Modbus is a long-standing industrial protocol. Designed in 1979 by Modicon for t
 
 Serial Studio Pro implements both **Modbus RTU** (over serial) and **Modbus TCP** (over Ethernet), and includes a [register-map importer](Auto-Generating-Projects.md) that turns vendor CSV/XML/JSON files into a working project automatically.
 
-## What is Modbus?
+## Modbus overview
 
 Modbus is a request/response, master/slave protocol for reading and writing memory locations on a remote device. The model is intentionally simple:
 
@@ -98,7 +98,7 @@ flowchart LR
     C --> D[CRC-16<br/>2 bytes]
 ```
 
-RTU usually runs on RS-485, which supports up to 247 slaves on a single pair of wires. Each slave has a unique address from 1 to 247; address 0 is reserved for broadcast.
+RTU usually runs on RS-485. Modbus addresses slaves 1 to 247; address 0 is reserved for broadcast. A physical RS-485 segment with standard transceivers is typically limited to 32 devices unless repeaters or reduced-load transceivers extend it.
 
 #### Modbus TCP
 
@@ -135,7 +135,7 @@ Setup is a hierarchy:
    - Register type (Holding Registers, Input Registers, Coils, Discrete Inputs).
    - Starting address (0-based, protocol numbering, 0-65535).
    - Count of entries to read in one request: 1 to 125. The cap applies to coil and discrete-input groups as well, even though the protocol allows more bits per read.
-4. **Poll Interval (ms).** How often Serial Studio restarts the read cycle. Default 100 ms, minimum 10 ms.
+4. **Poll Interval (ms).** How often Serial Studio restarts the read cycle. Default 100 ms. The Setup panel field accepts 50-60000 ms; the Socket API and the Project Editor's connection-settings form accept down to 10 ms.
 
 On each poll tick, Serial Studio reads the groups sequentially: it sends the request for the first group, waits for the reply, then moves to the next. Each reply is published to the frame parser as its own binary frame in RTU layout, `[slave address, function code, byte count, data...]`, with no CRC appended; the same layout is used on TCP connections. Register data arrives big-endian (high byte first); coil and discrete-input data arrives as packed bits, least-significant bit first. A reply that reports an error produces no frame. If a reply is still outstanding when the timer fires again, that cycle is skipped, so a slow slave lowers the effective poll rate instead of queueing requests. Requests time out after 1000 ms with 3 retries.
 
@@ -161,10 +161,10 @@ For step-by-step setup, see the [Protocol Setup Guides, Modbus section](Protocol
 - **Off-by-one address.** PLC numbering versus protocol numbering. If the docs say "holding register 40101", the protocol address is *100*, not 40101 and not 101.
 - **CRC errors on RTU.** Almost always a wiring or termination issue. RS-485 needs 120 Ω terminators at both ends of the trunk. Stub branches longer than a few inches corrupt the CRC at high baud rates.
 - **Wrong byte order for 32-bit values.** Read raw 16-bit registers, inspect the bytes, and compare them to the vendor documentation. Most modern devices use big-endian word and big-endian byte order. A float that reads as `1.234e-23` is being decoded with the wrong endianness.
-- **Polling too fast.** Some devices, especially older PLCs, cannot process requests faster than about one every 100 ms. Serial Studio accepts intervals down to 10 ms, but when a reply is still pending at the next tick the whole cycle is skipped, so an overdriven slave shows up as a low or irregular frame rate. Slow the poll interval down.
+- **Polling too fast.** Some devices, especially older PLCs, cannot process requests faster than about one every 100 ms. The Setup panel enforces a 50 ms floor, and the Socket API and Project Editor accept down to 10 ms, but when a reply is still pending at the next tick the whole cycle is skipped, so an overdriven slave shows up as a low or irregular frame rate. Slow the poll interval down.
 - **TCP works but RTU does not.** RS-485 is an unforgiving electrical environment: long cables, missing ground, intermittent termination, or missing bias resistors can all break it. Some adapters lack pull-up/pull-down on the idle bus and need an external biasing network. An oscilloscope on the line is the fastest way to diagnose this.
 - **"Illegal data address" exception.** The slave's memory map does not contain that register. Recheck the vendor documentation. Some PLCs only respond to addresses configured in their program; others allow reads of any address. Serial Studio discards error replies, so a group that triggers this exception produces no frames at all.
-- **Slave responds slowly under load.** Modern Modbus TCP is fast; Modbus RTU at 9600 baud is slow by design. A 60-register read takes about 12 ms of wire time alone, plus device processing time. Do not expect kilohertz polling on serial.
+- **Slave responds slowly under load.** Modern Modbus TCP is fast; Modbus RTU at 9600 baud is slow by design. A 60-register read takes about 140 ms of wire time alone at 9600 baud (a ~133-byte round trip), plus device processing time. Do not expect kilohertz polling on serial.
 
 ## Further reading
 

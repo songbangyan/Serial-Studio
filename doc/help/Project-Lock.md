@@ -59,7 +59,7 @@ If you need the project file itself protected from tampering (locked away from o
 3. Enter and confirm the password.
 4. Done. The project is saved with the new lock; the editor switches to its locked state immediately.
 
-If the two passwords don't match, Serial Studio shows a warning and leaves the project as it was. Empty passwords are rejected the same way.
+If the two passwords don't match, Serial Studio shows a warning and leaves the project as it was. Leaving the first password field empty silently cancels the lock, with no dialog, the same as clicking Cancel. Leaving only the confirmation field empty is treated as a mismatch and shows the same warning as non-matching passwords.
 
 ### Unlocking
 
@@ -105,7 +105,7 @@ The blurred overlay does double duty. You'll see the same backdrop in two situat
 | Trigger                                               | Backdrop says                          | Primary button |
 |-------------------------------------------------------|----------------------------------------|----------------|
 | Project is locked, app is in Project mode             | "This project is password protected"   | **Unlock**     |
-| Editor opened while in QuickPlot or Console-Only mode | "Editing is available in Project mode" | **Switch to Project Mode** |
+| Editor opened while in Quick Plot or Console Only mode | "Editing is available in Project mode" | **Switch to Project Mode** |
 
 Both states use the same blurred-glass treatment so the editor's chrome (toolbar, window caption) stays visible and you don't lose your place. Only the call to action changes.
 
@@ -130,5 +130,5 @@ Yes. The dashboard, exports, reports, and notifications are completely independe
 
 - [Project Editor](Project-Editor.md): the editor that the lock gates.
 - [Operator Deployments](Operator-Deployments.md): pair the lock with a runtime-mode deployment for a clean kiosk-style operator dashboard.
-- [Operation Modes](Operation-Modes.md): how Project mode, QuickPlot, and Console-Only relate to the editor overlay.
+- [Operation Modes](Operation-Modes.md): how Project mode, Quick Plot, and Console Only relate to the editor overlay.
 - [Pro vs Free Features](Pro-vs-Free.md): what's included with a Pro license.

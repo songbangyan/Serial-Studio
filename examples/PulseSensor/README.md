@@ -10,7 +10,7 @@ With Serial Studio you can use the **Quick Plot** feature to visualize the data,
 
 **Compatibility.** Works with any pulse sensor module connected to an analog pin on an Arduino. The program uses A0.
 
-### What is a photoplethysmogram (PPG)?
+### Photoplethysmogram (PPG) background
 
 A photoplethysmogram (PPG) is a signal that measures changes in blood volume in small blood vessels of the skin. It uses a light source (typically an LED) to shine light on the skin, and a phototransistor to measure how much light is reflected or passed through. When the heart beats, the amount of blood in the skin changes, which changes how much light is absorbed. The result is a waveform that shows each heartbeat as a peak.
 
@@ -22,8 +22,8 @@ You need a [pulse sensor](https://pulsesensor.com/) and an Arduino. Connect the 
 
 ### Connections
 
-- **Pulse sensor signal output.** Connect to A0 on the Arduino.
-- **Power and ground.** Connect VCC and GND of the pulse sensor to 5V and GND on the Arduino.
+Connect the pulse sensor's signal output to A0 on the Arduino, then wire VCC and GND on
+the sensor to 5V and GND on the Arduino.
 
 ## Step by step
 
@@ -62,9 +62,9 @@ The filtered signal is printed to serial so Serial Studio can visualize it.
 
 Once Serial Studio is set up:
 
-- **Connect.** Pick the correct serial port and set the baud rate to 115200.
-- **Visualize.** The filtered pulse signal plots in real time.
-- **Log to CSV.** Save the data straight from Serial Studio for offline analysis.
+- Pick the correct serial port and set the baud rate to 115200.
+- The filtered pulse signal plots in real time.
+- Save the data straight from Serial Studio for offline analysis.
 
 ### Troubleshooting
 

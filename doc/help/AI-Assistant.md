@@ -10,7 +10,7 @@ It is **bring-your-own-key**. You pick a provider (Anthropic, OpenAI, Google Gem
 
 The assistant talks to Serial Studio through the same command surface as the MCP/JSON-RPC API (see the [API Reference](API-Reference.md) for the full list). The short version: anything you can do in the Project Editor, the assistant can do for you, with two important caveats:
 
-- **It does not connect, disconnect, or change driver settings by default.** Anything that pokes the running connection (open/close port, change baud rate, change Modbus slave, write bytes to the device) is blocked from the AI surface unless you opt in by ticking **Allow device control** in the panel footer. With that toggle on, those commands become Always-confirm (you approve each call, even when Auto-approve edits is on); with it off they are refused outright so a wrong answer cannot knock you offline.
+- **It does not connect, disconnect, or change driver settings by default.** Anything that pokes the running connection (open/close port, change baud rate, change Modbus slave, write bytes to the device) is blocked from the AI surface unless you opt in by ticking **Allow device control** in the top bar. With that toggle on, those commands become Always-confirm (you approve each call, even when Auto-approve edits is on); with it off they are refused outright so a wrong answer cannot knock you offline.
 - **It can read documentation.** When you ask about a feature it doesn't already know, it pulls the relevant page from `doc/help/` directly off the Serial Studio repo so its answer matches the version you are running.
 
 Typical things people ask it to do:
@@ -40,13 +40,13 @@ Eight providers are wired in. They all do roughly the same job; the trade-offs a
 | **OpenRouter** | anthropic/claude-haiku-4.5 | Aggregator pricing per upstream model; some `:free` routes | OpenAI-compatible aggregator. Single key fans out to Anthropic, OpenAI, Google, Meta Llama, DeepSeek, Mistral, Qwen routes. Useful when you want to try several backends without juggling keys. |
 | **Local model** | (whatever your server has loaded) | Free | OpenAI-compatible local endpoint. Works with Ollama (default `http://localhost:11434/v1`), llama.cpp's `llama-server`, LM Studio, or vLLM. The model list is queried live from `/v1/models`. Nothing leaves your machine. |
 
-You switch providers from the footer combo box. Each provider keeps its own model selection. Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
+You switch providers from the combo box in the top bar. Each provider keeps its own model selection. Serial Studio remembers which model you picked per provider, so flipping back and forth doesn't reset anything.
 
 > **Anthropic and OpenAI have the most complete integrations today.** Anthropic surfaces cache read/write counts and adaptive extended thinking back to the UI; the OpenAI path uses server-side prompt caching (silent), parallel tool calls, and the GPT-5 / o-series developer-role conventions, with `reasoning_effort: none` so tool-calling stays responsive. Gemini also streams its thinking (extended thinking on 2.5 models) but has no cache reporting. DeepSeek, Groq, Mistral, OpenRouter, and Local all work for streaming chat and tool calls (Groq, Mistral, OpenRouter and DeepSeek run on the same OpenAI-compatible code path) but have neither cache reporting nor thinking integration.
 
 ### Local models
 
-The Local provider doesn't take an API key; it takes a base URL. Default is Ollama on `http://localhost:11434/v1`. To point at a different server, open **Manage Keys**, edit the URL field on the Local card, and click **Apply**. Common alternatives:
+The Local provider doesn't take an API key; it takes a base URL. Default is Ollama on `http://localhost:11434/v1`. To point at a different server, open **Manage API keys…**, edit the URL field on the Local card, and click **Apply**. Common alternatives:
 
 - LM Studio: `http://localhost:1234/v1`
 - llama.cpp `llama-server`: `http://localhost:8080/v1`
@@ -56,7 +56,7 @@ Whatever models are installed on the server show up in the model picker. Click t
 
 ### Getting a key
 
-The empty-conversation card has a **Get a key from <provider>** link that opens the right signup page. Once you have the key, click **Open API Key Setup** (or the wrench icon in the footer), paste the key, and save. The key is checked, redacted in the UI (you only ever see the last few characters), and persisted under your local app settings encrypted with a per-machine key.
+The empty-conversation card has a **Get a key from <provider>** link that opens the right signup page. Once you have the key, click **Open API Key Setup** (or the wrench icon in the top bar), paste the key, and save. The key is checked, shown in the dialog only as a **Key set** / **No key** status pill, and persisted under your local app settings encrypted with a per-machine key.
 
 You can change provider, change model, or revoke a key at any time from the same dialog. Revoking a key clears it from disk; revoking the active provider's key drops you back to the welcome screen until you paste a new one.
 
@@ -90,9 +90,11 @@ Every command is tagged at startup. There are five tiers:
 | **Device-gated** | Blocked by default; becomes **Always confirm** only when **Allow device control** is ticked. Driver settings, connection state, and anything that writes bytes to the device. | `io.connect`, `io.disconnect`, `io.setPaused`, `io.writeData`, `console.send`, every driver `set*` |
 | **Blocked** | Refused outright; never unblockable from the UI. The model is told it isn't available. | `licensing.activate`, `licensing.deactivate`, `licensing.setLicense`, and the other `licensing.*` mutations |
 
+Destructive actions the assistant takes are backed by automatic snapshots; see [Backups & Recovery](Backup-Recovery.md) to restore one, or ask the assistant to undo the change directly.
+
 You can approve a single call (**Approve**) or, when the assistant queues several mutations in a row, approve the whole batch at once (**Approve all**). Denial is logged and the assistant is told. It will usually offer an alternative or back off, not retry blindly.
 
-The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers. Two footer toggles tune this: **Auto-approve edits** runs **Confirm**-tier project edits without asking (Always-confirm, device-gated, and Blocked are unaffected), and **Allow device control** unblocks the device-gated commands above behind a one-time warning (each call still asks for approval).
+The full safety map ships in `app/rcc/ai/command_safety.json`. New commands default to **Confirm** until they're explicitly tagged, so adding an API method doesn't quietly grant the AI new powers. Two toggles in the top bar's settings menu tune this: **Auto-approve edits** runs **Confirm**-tier project edits without asking (Always-confirm, device-gated, and Blocked are unaffected), and **Allow device control** unblocks the device-gated commands above behind a one-time warning (each call still asks for approval).
 
 ## The composer
 
@@ -102,7 +104,7 @@ The bar at the bottom is the input. It has three controls:
 - **Trash icon**. Wipes the conversation. Cached prompt context is kept on the provider side (cheaper for follow-ups), but the history shown in the panel is cleared.
 - **Send / Cancel**. Round button on the far right. While the model is generating, the icon flips to **Cancel** and clicking it stops the stream. Anything already produced stays in the chat.
 
-While the assistant is working you'll see a thin animated stripe under the message list. The footer **Status** pill shows *Working* or *Ready* and, when prompt caching is in use, how many cached tokens the current turn read from or wrote to the cache.
+While the assistant is working you'll see a thin animated stripe under the message list; it disappears once the reply finishes.
 
 ## Privacy and what gets sent
 
@@ -138,7 +140,7 @@ Eight providers are wired in: Anthropic, OpenAI, Google Gemini, DeepSeek, Groq, 
 Yes. That's exactly what the **Confirm** tier is for. The card shows the command name and the full arguments object before you approve.
 
 **Can the assistant connect or disconnect my device?**
-Not unless you let it. Connection-state changes (`io.connect`, `io.disconnect`, `io.setPaused`) and every `set*` on every driver are device-gated: blocked by default, and the assistant can only read your device list and current configuration. Tick **Allow device control** in the footer and those commands become available as Always-confirm actions (you approve each call, even when Auto-approve edits is on).
+Not unless you let it. Connection-state changes (`io.connect`, `io.disconnect`, `io.setPaused`) and every `set*` on every driver are device-gated: blocked by default, and the assistant can only read your device list and current configuration. Tick **Allow device control** in the top bar and those commands become available as Always-confirm actions (you approve each call, even when Auto-approve edits is on).
 
 **Can it write data to my device?**
 Direct MCP write commands are device-gated: `console.send` (text/serial writes) and `io.writeData` (raw binary writes), alongside every driver `set*` and every connection-state command, are blocked until you tick **Allow device control** (then they ask for approval per call). A second group is blocked outright with no UI override: `licensing.*` mutations. MQTT broker credentials get a different guard: `project.mqtt.publisher.setConfig` and `project.mqtt.subscriber.setConfig` are Always-confirm, and the matching `getConfig` commands never return the stored password. The assistant can, however, propose **frame parser / transform / painter code that calls `deviceWrite()` or `actionFire()`** (scripting APIs that push bytes back to the device or trigger an existing project Action whenever the script decides to). Pushing the script is a **Confirm** tier action, so you see the exact code before it lands. Once approved and connected, the script will fire on incoming frames — review the logic carefully before approving anything that writes on every frame. For one-shot user-triggered commands, prefer an [Output Control](Output-Controls.md).
@@ -156,6 +158,7 @@ File an issue on the Serial Studio GitHub repo. Include the prompt, the reply, a
 
 - [API Reference](API-Reference.md): the command surface the assistant calls into.
 - [Project Editor](Project-Editor.md): the editor the assistant edits on your behalf.
+- [Backups & Recovery](Backup-Recovery.md): the rolling snapshots behind every restore and undo.
 - [Frame Parser Scripting](JavaScript-API.md): JavaScript and Lua frame parser API.
 - [Dataset Value Transforms](Dataset-Transforms.md): per-dataset transform scripts.
 - [Painter Widget](Painter-Widget.md): the painter API the assistant references when asked to write one.

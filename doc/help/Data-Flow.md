@@ -21,7 +21,7 @@ flowchart TD
 
 ## Stage 1: device and driver
 
-Your device sends raw bytes over one of ten supported transports: UART, TCP/UDP, Bluetooth LE, audio input, Modbus RTU/TCP, CAN Bus, MQTT, USB, HID, or Process I/O.
+Your device sends raw bytes over one of ten supported transports: UART, TCP/UDP, Bluetooth LE, audio input, Modbus RTU/TCP, CAN Bus, MQTT, USB, HID, or Process I/O. UART, TCP/UDP, and Bluetooth LE ship in the free edition. Audio input, Modbus, CAN Bus, MQTT, USB, HID, and Process I/O require [Serial Studio Pro](Pro-vs-Free.md).
 
 The selected driver receives bytes from the operating system and hands them off to the rest of the pipeline. No parsing happens here. The driver's only job is raw byte transport. Each driver handles its own protocol: serial framing, TCP streams, BLE characteristic notifications, audio sample buffers, and so on.
 
@@ -34,7 +34,7 @@ A 1 MB input buffer sits between the driver and the frame reader. It absorbs bur
 The frame reader scans the input buffer for frame boundaries and extracts complete frames. Four detection modes are available:
 
 - **End Delimiter Only.** Find the end marker and extract everything before it.
-- **Start and End Delimiter.** Find the start marker, then the end marker, and extract what's between them.
+- **Start + End Delimiter.** Find the start marker, then the end marker, and extract what's between them.
 - **Start Delimiter Only.** Frame boundaries fall between consecutive start markers.
 - **No Delimiters.** Pass all data through. Use this with a frame parser script (Lua or JavaScript) for length-prefixed or self-delimiting protocols.
 
@@ -55,14 +55,14 @@ No project file needed. This mode targets rapid prototyping with CSV-formatted s
 
 ### Project File mode
 
-1. Apply the configured decoder (Plain Text, Hexadecimal, Base64, or Binary Direct) to turn raw bytes into a parse-ready form.
+1. Apply the configured decoder (Plain Text (UTF-8), Hexadecimal, Base64, or Binary (Direct)) to turn raw bytes into a parse-ready form.
 2. Call the `parse(frame)` function in your chosen scripting engine (Lua 5.4 or JavaScript).
 3. The function returns a list of values (or a 2D list for multi-frame output).
 4. Map returned values to datasets by their Frame Index.
 5. For each dataset, apply its optional `transform(value)` function to convert the raw value into an engineering value. The walk is single-pass, in group then dataset order: a transform can read any dataset's raw value, but reading the final value of a dataset that comes later in the order returns the previous frame's result. Transforms can also read project constants and publish computed registers in the project's [Data Tables](Data-Tables.md); computed registers persist across frames. See [Dataset Value Transforms](Dataset-Transforms.md).
 6. Build the final frame with the populated dataset values. Virtual datasets (datasets with no Frame Index) are filled entirely by their transform at this point.
 
-### Multi-source projects
+### Multi-source projects (Pro)
 
 In multi-device projects, each device (source) is parsed independently, with its own frame reader and its own isolated script engine. Source frames are published to the dashboard independently, so one noisy source can't block or corrupt another.
 
@@ -113,3 +113,5 @@ When CSV export, MDF4 export, the session database, or the API server is active,
 - [Widget Reference](Widget-Reference.md): all 15+ widget types and their data requirements.
 - [Communication Protocols](Communication-Protocols.md): protocol comparison and setup.
 - [Troubleshooting](Troubleshooting.md): fixes for common problems.
+- [Threading and Timing Guarantees](Threading-and-Timing.md): which thread each stage runs on and what timing guarantees hold.
+- [The Data Hotpath](Data-Hotpath.md): the technical deep dive into this pipeline, for advanced users and plugin authors.

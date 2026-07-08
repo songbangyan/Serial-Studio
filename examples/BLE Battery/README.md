@@ -8,7 +8,7 @@ This [Serial Studio](https://github.com/Serial-Studio/Serial-Studio) project vis
 
 - Connects to BLE devices using Serial Studio's native BLE support.
 - Reads the Battery Level characteristic (0x2A19).
-- Shows the battery percentage (0 to 100) on a live gauge and a plot.
+- Shows the battery percentage (0 to 100) on a live gauge.
 - Parses raw binary data with no delimiters or framing.
 
 The project includes a control loop that selects the service and characteristic for you on connect.
@@ -20,7 +20,7 @@ Bluetooth Low Energy exposes battery level through the Battery Level characteris
 - **Service UUID:** `0x180A`. This project is wired to the Device Information Service, where the test device (an iPhone) advertises its battery characteristic. Devices that follow the standard expose it under the Battery Service, `0x180F` instead; change the service UUID in the control loop to match your hardware.
 - **Characteristic UUID:** `0x2A19`. Battery Level (`uint8`, 0 to 100).
 
-The bundled control loop picks the configured service, selects its first characteristic, subscribes to notifications (falling back to polling), and decodes the raw value with a 1-byte binary read.
+The bundled control loop picks the configured service, selects its first characteristic, subscribes to notifications, and independently polls the characteristic once per second regardless of subscription status. The frame parser and project settings decode the resulting 1-byte value.
 
 ## Project configuration
 
@@ -29,9 +29,9 @@ The bundled control loop picks the configured service, selects its first charact
 | Data Conversion   | Binary (Direct) |
 | Frame Detection   | No Delimiters   |
 | Checksum          | None            |
-| Dataset Index     | 1               |
+| Frame Index       | 1               |
 | Value Range       | 0 to 100        |
-| Widget            | Gauge, Plot     |
+| Widget            | Gauge           |
 | Units             | %               |
 | Title             | Battery Level   |
 

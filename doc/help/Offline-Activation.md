@@ -38,8 +38,8 @@ imports that license file.
 On the offline machine:
 
 1. Open the **About** dialog from the toolbar, then click **Manage License**.
-2. In the License Management dialog, click **Activate Offline…** to open the
-   offline activation wizard.
+2. In the Licensing dialog, click **Activate Offline…** to open the offline
+   activation wizard.
 3. Click **Save Device File…** and store the `.ssmachine` file.
 
 The device file identifies this machine and carries no personal information. It
@@ -79,8 +79,12 @@ Pro features unlock immediately, and no network request is made on this machine.
   long as its machine ID has not changed. The machine ID is derived from the
   operating system, not Serial Studio, and may change after an OS reinstall or
   a hardware replacement. Keep the license file somewhere safe.
-- Lifetime and test-stand license files do not expire. They keep working on
-  that machine with no further steps.
+- The certificate carries an expiry date set by the activation site, and
+  Serial Studio checks it on every startup, including lifetime and test-stand
+  licenses. When fewer than 14 days remain, the Licensing dialog shows a
+  countdown and a warning to request a new certificate. Repeat the
+  three-step exchange above to obtain and import a fresh `.sslic` file
+  before the current one expires.
 - The activation persists across restarts and needs no network on the offline
   machine.
 
@@ -112,4 +116,4 @@ alex@serial-studio.com.
 
 - [Pro vs Free](Pro-vs-Free.md) - Feature comparison and online activation.
 - [License Agreement](License-Agreement.md) - Full legal terms.
-- [Command-Line Interface](Command-Line-Interface.md) - Headless activation flags.
+- [Command-Line Interface](Command-Line-Interface.md) - License activation flags (online).

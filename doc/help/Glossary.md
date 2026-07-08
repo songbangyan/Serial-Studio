@@ -28,11 +28,15 @@ A single named channel of data, such as one temperature or one axis of an accele
 
 ## Dataset ID / Unique ID
 
-Two distinct identifiers for a dataset. The frame **index** says which field of the frame the value comes from; the **dataset ID** and **unique ID** identify the dataset itself across edits. Confusing index with ID is the most common project-editing trap. See [Dataset Identity Model](Identity-Model.md).
+Two distinct identifiers for a dataset. The frame **index** says which field of the frame the value comes from; the **dataset ID** is the dataset's slot inside its group, used to address mutating API calls, and it shifts when datasets are reordered; the **unique ID** is the one identifier that survives edits. Confusing index with ID, or dataset ID with unique ID, is the most common project-editing trap. See [Dataset Identity Model](Identity-Model.md).
 
 ## Driver
 
 The component that talks to one data source (UART, TCP/UDP, Bluetooth LE, MQTT, Modbus, CAN Bus, Audio, USB, HID, Process I/O). Drivers stamp each frame with its arrival time at the source boundary. See [Data Sources](Data-Sources.md).
+
+## Extension
+
+An add-on that extends Serial Studio: a theme, a frame parser, a project template, or a plugin. Extensions are browsed, installed, updated, and uninstalled from the **Extension Manager** dialog. See [Extensions](Extensions.md).
 
 ## Folder
 
@@ -62,9 +66,17 @@ A container that holds related datasets and maps them onto a composite widget su
 
 The performance-critical path from incoming bytes to the dashboard. It runs at 256 kHz+ without per-frame allocation. See [The Data Hotpath](Data-Hotpath.md).
 
+## Notification
+
+A dashboard-level event — Info, Warning, or Critical — posted from frame parsers, dataset transforms, output widget scripts, C++ code, or the MCP API. Events are grouped into free-form channels and shown in the Notification Log widget, with an optional native OS desktop notification. Notifications are a Pro feature. See [Notifications](Notifications.md).
+
 ## Operation mode
 
 How a connection treats incoming data: **Console Only** (no parsing), **Quick Plot** (auto-plot comma-separated values), or **Project File** (parse with a `.ssproj`). See [Operation Modes](Operation-Modes.md).
+
+## Plugin
+
+An external program (a Python script or a native binary) that connects to Serial Studio's API server over TCP/JSON or gRPC to provide custom real-time data processing, visualization, or analysis. Plugins are installed from the Extension Manager and launched with its Run button. See [Extensions](Extensions.md).
 
 ## Pro / Free
 

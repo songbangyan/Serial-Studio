@@ -4,9 +4,9 @@ A Python script that simulates a small electric motor on a test bench: a single 
 
 ## Overview
 
-This example exercises both new Pro widgets introduced in v3.3:
+This example exercises both Pro widgets, Waterfall and Painter:
 
-- **Waterfall (Campbell mode).** The vibration channel feeds a 512-sample FFT at 1 kHz. The waterfall's Y axis is bound to the RPM dataset, so the spectrogram becomes a Campbell diagram (frequency on X, RPM on Y, amplitude as colour). Order lines (1×, 2×, 3×) appear as straight rays through the origin; the bearing harmonic at 5.43× shows up as a diagonal line at a different slope.
+- **Waterfall (Campbell mode).** The vibration channel feeds a 512-sample FFT at 1 kHz. The waterfall's Y axis is bound to the RPM dataset, so the spectrogram becomes a Campbell diagram (frequency on X, RPM on Y, amplitude as color). Order lines (1×, 2×, 3×) appear as straight rays through the origin; the bearing harmonic at 5.43× shows up as a diagonal line at a different slope.
 - **Painter (audio VU meter).** Broadcast-style stereo VU with green/yellow/red zones, peak-hold markers that hold for 1.4 s before falling away, and dB-scale tick labels. All drawn in ~200 lines of JavaScript inside the project file.
 - **Painter (system schematic).** Live diagram of the rig: motor, bracket with accelerometer, and stereo microphones, each stage animated from its own dataset. The motor spins with RPM, the trace follows the vibration channel, and the mics pulse with level. ~380 lines of JavaScript.
 
@@ -78,7 +78,7 @@ The script logs frame count and current RPM/vibration every two seconds.
 ### 2. Configure Serial Studio
 
 1. Open Serial Studio (Pro build, since the Painter and Waterfall widgets are commercial features).
-2. **File → Open Project File**, choose `VibrationTestRig.ssproj`.
+2. Click **Open Project** in the toolbar (or **Select Project File** in the Setup pane) and choose `VibrationTestRig.ssproj`.
 3. The Network/UDP source is preconfigured for `127.0.0.1:9000`. Hit **Connect**.
 
 You should see:
@@ -90,9 +90,9 @@ You should see:
 
 ## What to play with
 
-- Open the **Project Editor** and pick either Painter group — the JS source is right there in the editor. Tweak the colour zones, the peak-hold time, the motor animation. Hit **Apply** and the widget recompiles live.
+- Open the **Project Editor** and pick either Painter group — the JS source is right there in the editor. Tweak the color zones, the peak-hold time, the motor animation, then close the editor window — the code commits automatically and the widget recompiles.
 - Disable the bearing harmonic (`--bearing-amp 0`) and watch the diagonal line in the waterfall disappear, leaving only the rays from the integer harmonics.
-- Lower `--rate` to 250 Hz and notice how the waterfall still renders cleanly because the FFT sampling rate is fixed at 1 kHz inside the project — what changes is how often the Painter widgets' `onFrame()` ticks.
+- Lower `--rate` to 250 Hz and notice how the waterfall still renders cleanly because the FFT sampling rate is fixed at 1 kHz inside the project. The Painter widgets' `onFrame()` runs on the dashboard's UI refresh rate (default 60 Hz), so it ticks at the same rate at both 1000 Hz and 250 Hz; only dropping `--rate` below 60 Hz would slow it down.
 
 ## Files
 

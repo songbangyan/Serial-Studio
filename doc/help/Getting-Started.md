@@ -1,14 +1,14 @@
 # Getting started with Serial Studio
 
-## What is Serial Studio?
+## Overview
 
 Serial Studio is a cross-platform telemetry dashboard for visualizing real-time data from embedded devices, sensors, and other data sources. It runs on Windows, macOS, and Linux.
 
 **Core capabilities:**
 
 - **Data sources.** Serial/UART, TCP/UDP, and Bluetooth LE are included in the free edition. MQTT, Modbus, CAN Bus, Audio input, raw USB, HID, and Process I/O are available in Pro.
-- **15+ widget types.** Plot, MultiPlot, FFT Plot, Bar, Gauge, Compass, Meter, Gyroscope, Accelerometer, GPS Map, Data Grid, LED Panel, Terminal, 3D Plot, Image View, plus Clock and Stopwatch utility widgets. The Plot widget can take its X axis from another dataset for XY/scatter plots (Pro). Bar, Gauge, and Meter each ship as a two-page swipe view (analog face + large digital readout) so the same tile shows both a quick-glance summary and the exact numeric value.
-- **Export.** Save sessions to CSV or MDF4 for offline analysis.
+- **15+ widget types.** Plot, MultiPlot, FFT Plot, Bar, Gauge, Compass, Meter, Gyroscope, Accelerometer, GPS Map, Data Grid, LED Panel, Terminal, 3D Plot (Pro), Image View (Pro), plus Clock and Stopwatch utility widgets. The Plot widget can take its X axis from another dataset for XY/scatter plots (Pro). Bar, Gauge, Meter, and Compass each ship as a two-page swipe view (analog face + large digital readout) so the same tile shows both a quick-glance summary and the exact numeric value.
+- **Export.** Save sessions to CSV or MDF4 (Pro) for offline analysis.
 - **Performance.** Built with Qt 6 and C++20, aimed at 256 kHz+ data rates.
 - **Three operation modes.** Console Only for inspecting the raw stream, Quick Plot for instant CSV visualization, and Project File for fully customized dashboards.
 
@@ -105,16 +105,16 @@ When you launch Serial Studio, the main window splits into four areas.
 The toolbar runs along the top of the window:
 
 - **Project controls.** Open and edit project files. The **Project Editor** button opens the [Project Editor](Project-Editor.md).
-- **I/O interface selector.** Choose between Serial Port, Network Socket, Bluetooth LE, and in Pro: Modbus, CAN Bus, Audio, USB, HID, or Process.
+- **I/O interface selector.** Choose between UART, Network, Bluetooth, and in Pro: Modbus, CAN Bus, Audio, USB, HID, or Process.
 - **Connect/Disconnect button.** Starts or stops the data connection.
 - **Examples browser.** Load example projects bundled with Serial Studio to see working configurations.
-- **CSV / MDF4 playback.** Replay previously recorded sessions.
+- **CSV / MDF4 (Pro) playback.** Replay previously recorded sessions.
 
 For a button-by-button map of the toolbar, the Setup panel, the dashboard taskbar, and every widget toolbar, see the [Toolbar & Button Reference](Toolbar-Reference.md).
 
 ### 2. Console (center, default view)
 
-When you first connect, the console panel shows raw incoming data from your device. You can switch between ASCII and hexadecimal display. The console is handy for confirming that your device is sending data before you configure a dashboard.
+When you first connect, the console panel shows raw incoming data from your device. You can switch between Plain Text and Hexadecimal display. The console is handy for confirming that your device is sending data before you configure a dashboard.
 
 ### 3. Dashboard (center, replaces the console)
 
@@ -127,7 +127,7 @@ The Setup panel is where you configure the connection:
 - **Operation mode.** Console Only, Quick Plot, or Project File.
 - **I/O interface settings.** Port, baud rate, IP address, and so on, depending on the interface.
 - **Frame parsing options.** Delimiters, data conversion, and other protocol settings.
-- **Export options.** Turn on CSV or MDF4 logging.
+- **Export options.** Turn on CSV or MDF4 (Pro) logging.
 
 You can resize the Setup panel by dragging its left edge to give the Dashboard more space.
 
@@ -164,7 +164,7 @@ The only requirement is that your device sends comma-separated numeric values te
 
 1. Open Serial Studio.
 2. In the Setup panel on the right, set the operation mode to **Quick Plot (Comma Separated Values)**.
-3. Set the I/O interface to **Serial Port**.
+3. Set the I/O interface to **UART**.
 4. Pick your device's COM port (for example `COM3` on Windows, `/dev/ttyUSB0` on Linux, `/dev/cu.usbmodem*` on macOS).
 5. Set the baud rate to `115200` (it has to match the value in your Arduino sketch).
 
@@ -194,7 +194,7 @@ Click the **Project Editor** button in the toolbar. That opens a separate editor
 
 ### Step 2: create a project
 
-1. Click **New Project**.
+1. Click **New**.
 2. Give the project a title (for example "My Sensor Dashboard").
 3. Configure frame detection: choose a frame-detection method (End Delimiter Only, Start
    Delimiter Only, Start + End Delimiter, or No Delimiters) depending on how your device
@@ -226,7 +226,7 @@ Console Only is a diagnostic mode. Serial Studio doesn't try to parse anything; 
 1. In the Setup panel, set the operation mode to **Console Only (No Parsing)**.
 2. Pick your I/O interface and configure the connection (port, baud rate, IP, and so on).
 3. Click **Connect**.
-4. Raw bytes appear in the terminal. Toggle between ASCII and hexadecimal display from the console toolbar.
+4. Raw bytes appear in the terminal. Toggle between Plain Text and Hexadecimal display from the console toolbar.
 5. Use the input box at the bottom of the console to send bytes back to the device.
 
 No dashboard, no CSV export, no parsing. Once the stream looks correct, switch to Quick Plot or Project File to visualize the data.

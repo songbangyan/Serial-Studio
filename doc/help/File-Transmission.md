@@ -25,7 +25,7 @@ flowchart LR
 
 ## Opening the File Transmission dialog
 
-Click the **File Transmission** button in the toolbar while a device connection is active. The dialog closes automatically if the connection drops.
+Open **File Transmission** from the dashboard taskbar, or from Start Menu → Tools → File Transmission, while a device connection is active. The dialog closes automatically if the connection drops.
 
 ## Transfer modes
 
@@ -33,9 +33,7 @@ Click the **File Transmission** button in the toolbar while a device connection 
 
 Sends the file line by line as text. Each line is terminated with a newline. A good fit for sending scripts, AT command sequences, or configuration files to devices that process text input.
 
-**Configuration:**
-
-- **Transmission interval.** Delay between consecutive lines (0 to 10,000 ms, default 100 ms). Raise this if the device needs time to process each line before accepting the next.
+Configuration sets the transmission interval, the delay between consecutive lines (range and default in the [Settings reference](#settings-reference) below). Raise it if the device needs time to process each line before accepting the next.
 
 **Behavior:**
 
@@ -47,10 +45,7 @@ Sends the file line by line as text. Each line is terminated with a newline. A g
 
 Sends the file in fixed-size binary blocks with no framing or error checking. Use this when the receiver expects raw bytes and handles its own integrity checks.
 
-**Configuration:**
-
-- **Block size.** Bytes per block (64 to 8,192, default 1,024).
-- **Transmission interval.** Delay between consecutive blocks (0 to 10,000 ms, default 100 ms).
+Configuration sets the block size and the transmission interval between blocks (ranges and defaults in the [Settings reference](#settings-reference) below).
 
 **Behavior:**
 
@@ -62,10 +57,7 @@ Sends the file in fixed-size binary blocks with no framing or error checking. Us
 
 A classic byte-oriented protocol that sends data in 128-byte blocks with CRC-16 error detection. The receiver initiates the transfer by sending a `C` character to request CRC mode.
 
-**Configuration:**
-
-- **Timeout.** How long to wait for receiver responses (1,000 to 60,000 ms, default 10,000 ms).
-- **Max retries.** Retry attempts per block on NAK or timeout (1 to 100, default 10).
+Configuration sets the timeout for receiver responses and the number of retry attempts per block on NAK or timeout (ranges and defaults in the [Settings reference](#settings-reference) below).
 
 **Protocol flow:**
 
@@ -110,18 +102,14 @@ Extends XMODEM-1K with a metadata block that carries the filename and file size,
 
 A streaming protocol that doesn't wait for per-block acknowledgment, which makes it much faster than XMODEM/YMODEM on high-latency or high-throughput links. It uses CRC-32 for stronger error detection and supports crash recovery.
 
-**Configuration:**
-
-- **Block size.** Bytes per data subpacket (64 to 8,192, default 1,024).
-- **Timeout.** How long to wait for receiver responses (1,000 to 60,000 ms, default 10,000 ms).
-- **Max retries.** Retry attempts on error (1 to 100, default 10).
+Configuration sets the block size per data subpacket, the timeout for receiver responses, and the number of retry attempts on error (ranges and defaults in the [Settings reference](#settings-reference) below).
 
 **Key features:**
 
-- **Streaming.** Data subpackets flow continuously without waiting for ACK after each one, maximizing throughput.
-- **Crash recovery.** If a transfer is interrupted and restarted, the receiver can request retransmission from a specific file offset (ZRPOS), so you don't resend data that already arrived.
-- **File metadata.** The ZFILE header carries the filename, size, and modification timestamp.
-- **ZDLE escaping.** Control characters are transparently escaped, so the data stream doesn't interfere with terminal or modem control sequences.
+- Data subpackets stream continuously without per-packet ACKs, maximizing throughput.
+- Crash recovery: a receiver restarting after an interrupted transfer can request retransmission from a specific file offset (ZRPOS) instead of starting over.
+- The ZFILE header carries the filename, size, and modification timestamp.
+- Control characters are escaped in transit (ZDLE) so the stream doesn't collide with terminal or modem control sequences.
 
 ## Progress and status
 
@@ -150,8 +138,15 @@ All settings are saved automatically and restored between sessions.
 
 ## Tips
 
-- **Picking a protocol.** Use ZMODEM when the receiver supports it: streaming transfers give higher throughput, and CRC-32 plus crash recovery handle unreliable links. Fall back to XMODEM/YMODEM if the receiver doesn't support ZMODEM.
-- **Slow receivers.** Raise the transmission interval (Plain Text / Raw Binary) or the timeout (protocol modes) if the device can't keep up.
-- **Noisy links.** Use smaller block sizes to cut the cost of retransmissions. For ZMODEM, 256 or 512 bytes is a good starting point on unreliable connections.
-- **Large files.** XMODEM-1K, YMODEM, or ZMODEM all reduce per-block overhead compared to standard XMODEM.
-- **Firmware uploads.** Many bootloaders support XMODEM or YMODEM natively. Check your device docs for the expected protocol.
+- Use ZMODEM when the receiver supports it: streaming transfers give higher throughput, and CRC-32 plus crash recovery handle unreliable links. Fall back to XMODEM/YMODEM otherwise.
+- If a slow receiver can't keep up, raise the transmission interval (Plain Text / Raw Binary) or the timeout (protocol modes).
+- Smaller block sizes cut the cost of retransmissions on noisy links; 256 or 512 bytes is a good starting point for ZMODEM on unreliable connections.
+- XMODEM-1K, YMODEM, and ZMODEM all reduce per-block overhead compared to standard XMODEM for large files.
+- Firmware bootloaders often support XMODEM or YMODEM natively; check the device documentation for the expected protocol.
+
+## See also
+
+- [Operator Deployments](Operator-Deployments.md): the `--file-transmission` flag exposes this dialog in runtime-mode builds.
+- [Toolbar Reference](Toolbar-Reference.md): where the File Transmission tool lives in the dashboard taskbar and Start Menu.
+- [Pro vs Free](Pro-vs-Free.md): edition gating for this feature.
+- [Communication Protocols](Communication-Protocols.md): the connections File Transmission sends data over.

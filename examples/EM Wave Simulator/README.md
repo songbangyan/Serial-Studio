@@ -4,6 +4,8 @@ A Python script that simulates a propagating electromagnetic plane wave (photon 
 
 ![EM wave simulator](doc/screenshot.png)
 
+> This project uses features available only with a paid license. See [serial-studio.com](https://serial-studio.com/) for details.
+
 ## Overview
 
 This example visualizes a Gaussian-enveloped linearly polarized electromagnetic wave packet described by Maxwell's equations:

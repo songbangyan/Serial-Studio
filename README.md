@@ -64,8 +64,8 @@ The Homebrew cask is community-maintained. It's available, but not officially te
 The recommended way to install on Linux is via the official [AppImage](https://appimage.org/). Download it from the [latest release](https://github.com/Serial-Studio/Serial-Studio/releases/latest), then make it executable and run it (replace `<version>` with the version you downloaded):
 
 ```bash
-chmod +x SerialStudio-Pro-<version>-Linux-x64.AppImage
-./SerialStudio-Pro-<version>-Linux-x64.AppImage
+chmod +x Serial-Studio-Pro-<version>-Linux-x64.AppImage
+./Serial-Studio-Pro-<version>-Linux-x64.AppImage
 ```
 
 If the AppImage fails to launch, your system is probably missing `libfuse2`:
@@ -116,10 +116,10 @@ An ARM64 AppImage is available for Raspberry Pi and similar boards. It runs well
 - **Multi-device:** several devices in one project, each with its own protocol (Pro).
 - **TCP API on port 7777:** 300+ commands for programmatic control (see the [API client example](./examples/API%20Test)).
 - **gRPC server on port 8888:** the same command set over protobuf, with frame and raw-data streaming (see the [gRPC reference](./doc/help/gRPC-Server.md)).
-- **AI Assistant (Pro):** in-app chat panel that edits the project (sources, datasets, parsers, transforms, output widgets, workspaces) by calling the project-editing API. Bring-your-own-key for Anthropic, OpenAI, Gemini, DeepSeek, Groq, Mistral, OpenRouter, or a local OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM); the local option runs fully offline. Mutating commands require explicit approval; connection control and device writes are permanently blocked. Hidden in operator deployments.
+- **AI Assistant (Pro):** in-app chat panel that edits the project (sources, datasets, parsers, transforms, output widgets, workspaces) by calling the project-editing API. Bring-your-own-key for Anthropic, OpenAI, Gemini, DeepSeek, Groq, Mistral, OpenRouter, or a local OpenAI-compatible server (Ollama, llama.cpp, LM Studio, vLLM); the local option runs fully offline. Mutating commands require explicit approval; connection control and device writes are blocked by default and only run as Always-confirm actions after the Allow device control toggle is enabled. Hidden in operator deployments.
 - **MCP integration:** external AI clients (Claude Desktop, custom MCP hosts) can call the full TCP API, including connection control and device writes, over the Model Context Protocol (see [MCP Client](./examples/MCP%20Client)).
 - **Throughput:** the parse pipeline sustains 256,000 frames per second, enforced as a CI benchmark gate on every pull request (see [Benchmark](./doc/help/Benchmark.md)).
-- **Cross-platform:** 60 FPS, under 50 ms latency, on Windows 10/11, macOS 13+ (Intel and Apple Silicon), Linux x64, and Raspberry Pi ARM64.
+- **Cross-platform:** 60 FPS on Windows 10/11, macOS 13+ (Intel and Apple Silicon), Linux x64, and Raspberry Pi ARM64.
 - **Dual licensed:** open source GPL-3.0 core with proprietary Pro features (see [LICENSE.md](LICENSE.md)).
 
 ## Quick start

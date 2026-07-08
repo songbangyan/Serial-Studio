@@ -28,6 +28,9 @@ Each arrow is either a direct in-thread call or a `Qt::DirectConnection` signal.
 queued connections are avoided on this path: at 10 kHz they fill Qt's event queue faster than
 the consumer can drain it, and the FrameReader's bounded queue starts dropping frames.
 
+MDF4 export, the Session Database, and the MQTT bridge are Pro-only; a free build compiles
+those sinks out and skips them in fan-out.
+
 ### Stage 1: driver
 
 Drivers wrap one transport each (UART, TCP/UDP, BLE, Audio, Modbus, CAN Bus, MQTT, USB, HID,
@@ -85,8 +88,8 @@ the frame into `FrameBuilder::hotpathRxFrame` or, for multi-source projects,
 `FrameBuilder` is where the project's parsing rules turn raw bytes into a populated `Frame`
 object. It runs three things in order:
 
-1. The selected **decoder** (Plain Text, Hexadecimal, Base64, or Binary Direct) converts the
-   raw bytes into the form `parse()` expects.
+1. The selected **decoder** (Plain Text (UTF8), Hexadecimal, Base64, or Binary (Direct))
+   converts the raw bytes into the form `parse()` expects.
 2. The **frame parser** (`parse(frame)` in Lua or JavaScript) returns an array of values. See
    [Frame Parser Scripting](JavaScript-API.md) for the full API.
 3. Per-dataset **transforms** (`transform(value)`) are called in group then dataset order. A
@@ -139,7 +142,7 @@ sinks receive it through a single detached copy, made once per frame and only wh
 one sink is active (cached in `m_anyAsyncSink`):
 
 - the dashboard (pooled frame, no copy),
-- CSV and MDF4 export workers,
+- the CSV and MDF4 (Pro) export workers,
 - the Session Database (Pro),
 - the API server (port 7777, MCP and legacy JSON-RPC),
 - the gRPC server (when built with `ENABLE_GRPC`),
@@ -257,8 +260,8 @@ Treat these as load-bearing:
 - `CircularBuffer` is single-producer / single-consumer. Never make it MPMC.
 - `Dashboard` is main-thread only. It receives the same `TimestampedFramePtr` that export
   workers receive, and reads from `frame->data` directly.
-- Export workers (CSV, MDF4, Session DB, API, gRPC, MQTT) consume from lock-free queues on
-  worker threads. They never block the main thread.
+- Export workers (CSV, MDF4 (Pro), Session Database (Pro), API, gRPC, MQTT (Pro)) consume
+  from lock-free queues on worker threads. They never block the main thread.
 
 If you're writing a plugin or a new driver, follow the existing drivers (see `BluetoothLE.h`
 and `BluetoothLE.cpp` as the canonical reference) and keep these invariants intact.

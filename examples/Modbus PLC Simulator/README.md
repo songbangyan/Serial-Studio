@@ -16,18 +16,14 @@ The simulator models a 50HP hydraulic power unit.
 
 ### Hardware model
 
-- **Motor.** 50HP VFD-controlled induction motor (0 to 3600 RPM).
-- **Pump.** 45cc/rev 9-piston axial pump with realistic efficiency curves.
+The 50HP VFD-controlled induction motor spins from 0 to 3600 RPM, driving a 45cc/rev 9-piston axial pump modeled with realistic efficiency curves.
+
 - **Control valve.** Proportional valve with first-order lag response.
 - **Sensors.** Temperature, pressure, flow, vibration, and motor load monitoring.
 
 ### Physics simulation
 
-- **VFD soft-start.** S-curve ramp from 0 to 1800 RPM over 10 seconds.
-- **PID pressure control.** Holds target pressure at 1500 PSI.
-- **Thermodynamic model.** Oil heating from pump inefficiency and valve throttling.
-- **Vibration analysis.** ISO 10816-compliant vibration monitoring.
-- **Realistic noise.** Ornstein-Uhlenbeck sensor noise on every measurement.
+The VFD ramps RPM from 0 to 1800 along a 10-second S-curve, then a PID loop holds pressure at 1500 PSI once the ramp settles. Oil temperature follows a thermodynamic model driven by pump inefficiency and valve throttling, and vibration is scored against ISO 10816 limits. Every measurement carries Ornstein-Uhlenbeck sensor noise on top of the underlying physics.
 
 ### Operational phases
 
@@ -75,7 +71,7 @@ The simulator supports pymodbus 3.x and 4.x automatically.
 
 ### 1. Start the PLC simulator
 
-Run the Python script to start the Modbus TCP server:
+The project's control script launches `plc_simulator.py` automatically once Serial Studio connects, so this step is only needed to run a modified copy first — for example with the `FAILURE_PROBABILITY` override described in [Observing failure modes](#observing-failure-modes) — before connecting:
 
 ```bash
 python3 plc_simulator.py
@@ -106,7 +102,7 @@ python3 plc_simulator.py
 
 1. **Load the project file:**
    - Open Serial Studio.
-   - File → Open → pick `Modbus PLC Simulator.ssproj`.
+   - On the toolbar, click **Open Project**, then pick `Modbus PLC Simulator.ssproj`.
 2. **Configure the Modbus connection:**
    - **I/O Interface:** `Modbus`.
    - **Protocol:** `Modbus TCP`.
@@ -116,21 +112,23 @@ python3 plc_simulator.py
    - **Register Type:** `Holding Registers (0x03)`.
    - **Start Address:** `0`.
    - **Register Count:** `9`.
-   - **Poll Interval:** `100 ms` (recommended).
+   - **Poll Interval (ms):** `100` (recommended).
 3. **Connect.** Click **Connect** in Serial Studio. The dashboard starts showing live telemetry.
 
 ## Visualizations
 
 The included project file (`Modbus PLC Simulator.ssproj`) provides:
 
-- **Status LEDs.** Emergency Stop and Running indicators.
-- **Temperature plot.** Oil temperature trend (72 to 180 °F).
-- **Pressure gauge.** System pressure (0 to 3000 PSI).
-- **RPM gauge.** Motor speed (0 to 3600 RPM).
-- **Valve position bar.** Control valve opening percentage.
-- **Flow rate graph.** Real-time pump flow monitoring.
-- **Motor load bar.** Motor load percentage.
-- **Vibration graph.** ISO 10816 vibration monitoring.
+| Widget | Shows |
+|--------|-------|
+| Status LEDs | Emergency Stop and Running indicators |
+| Temperature plot | Oil temperature trend (72 to 180 °F) |
+| Pressure gauge | System pressure (0 to 3000 PSI) |
+| RPM gauge | Motor speed (0 to 3600 RPM) |
+| Valve position bar | Control valve opening percentage |
+| Flow rate graph | Real-time pump flow monitoring |
+| Motor load bar | Motor load percentage |
+| Vibration graph | ISO 10816 vibration monitoring |
 
 ## Modbus register map CSV
 
@@ -156,11 +154,11 @@ Serial Studio's Modbus Map Importer auto-generates a Lua frame parser based on t
 
 ## Files
 
-- **plc_simulator.py.** Physics-based hydraulic test stand simulator with Modbus TCP server.
-- **Modbus PLC Simulator.ssproj.** Serial Studio project file with dashboard configuration.
-- **modbus_plc_simulator.csv.** Register map definition for the Modbus Map Importer.
-- **README.md.** This documentation.
-- **doc/screenshot.png.** Dashboard screenshot.
+- `plc_simulator.py`: physics-based hydraulic test stand simulator with a Modbus TCP server.
+- `Modbus PLC Simulator.ssproj`: project file with the dashboard, Modbus connection settings, and the embedded frame parser.
+- `modbus_plc_simulator.csv`: register map definition for the Modbus Map Importer.
+- `README.md`: this documentation.
+- `doc/screenshot.png`: dashboard screenshot.
 
 ## Observing failure modes
 
@@ -185,9 +183,7 @@ To force a failure for testing, change the `FAILURE_PROBABILITY` constant in `pl
 
 ### Network configuration
 
-- **Default port:** 5020 (change via `SERVER_PORT`).
-- **Binding:** 0.0.0.0 (accepts connections from any interface).
-- **Protocol:** Modbus TCP (application protocol).
+The server speaks Modbus TCP and binds to 0.0.0.0 (all interfaces) on port 5020 by default; change the port via the `SERVER_PORT` constant.
 
 ### Modbus compatibility
 
@@ -199,10 +195,10 @@ To force a failure for testing, change the `FAILURE_PROBABILITY` constant in `pl
 
 ### Custom register groups
 
-Serial Studio supports multi-group mode for polling non-contiguous register ranges. To poll specific registers:
+Serial Studio can poll multiple non-contiguous register ranges through register groups. To poll specific registers:
 
-1. Enable **Multi-Group Mode** in the Modbus setup pane.
-2. Add register groups with specific start addresses and counts.
+1. Click **Configure Register Groups…** in the Modbus setup pane, then **Add Group** for each additional register range.
+2. Set the start address and count for each group.
 3. Configure custom frame parsing for mixed data types.
 
 ### Integration with real PLCs

@@ -8,7 +8,7 @@ Support of any kind funds development, testing on real hardware, documentation, 
 
 ### Buy a Pro license
 
-The most direct way to support the project. A Pro license unlocks MQTT, Modbus, CAN Bus, MDF4 export, 3D visualization, and other features (the full list is in [Pro vs Free](Pro-vs-Free.md)), and it funds ongoing development. If you use Serial Studio at work, your purchasing or IT department can handle the transaction.
+The most direct way to support the project. A Pro license unlocks MQTT, Modbus, CAN Bus, MDF4 export, the 3D Plot widget, and other features (the full list is in [Pro vs Free](Pro-vs-Free.md)), and it funds ongoing development. If you use Serial Studio at work, your purchasing or IT department can handle the transaction.
 
 Store: <https://store.serial-studio.com/>
 
@@ -26,13 +26,17 @@ Repo: <https://github.com/Serial-Studio/Serial-Studio>
 
 ### Sponsor development
 
-Support development through GitHub Sponsors or PayPal donations. Links are on the project's GitHub page.
+Support development through GitHub Sponsors or PayPal donations.
+
+GitHub Sponsors: <https://github.com/sponsors/alex-spataru>
 
 PayPal: <https://www.paypal.com/donate?hosted_button_id=XN68J47QJKYDE>
 
 ### Report issues
 
 Improve quality by reporting bugs and suggesting improvements on GitHub Issues. Include steps to reproduce, expected behavior, and platform details.
+
+Issues: <https://github.com/Serial-Studio/Serial-Studio/issues>
 
 ### Contribute code
 
@@ -41,6 +45,8 @@ Pull requests for bug fixes, features, translations, or documentation are all we
 ### Share your projects
 
 Share what you've built with Serial Studio. Real-world use cases help other users and grow the community.
+
+Discussions: <https://github.com/Serial-Studio/Serial-Studio/discussions>
 
 ### Write about it
 

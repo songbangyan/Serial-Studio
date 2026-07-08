@@ -4,7 +4,7 @@ The CAN Bus driver lets Serial Studio capture frames from a Controller Area Netw
 
 Serial Studio Pro implements CAN through Qt's `QtSerialBus` module, which fronts SocketCAN (Linux), PEAK PCAN, Vector, SysTec, Tiny-CAN, and a virtual-CAN backend for testing. Serial Studio adds three backends of its own for consumer USB-CAN adapters: CANable and other gs_usb devices, slcan serial adapters, and the Seeed/Waveshare USB-CAN Analyzer; these appear in the same driver list and need no vendor SDK. DBC files are imported automatically by the [Auto-Generating Projects](Auto-Generating-Projects.md) flow.
 
-## What is CAN?
+## CAN basics
 
 The Controller Area Network was developed by Bosch in 1986 for in-vehicle communication and is standardised as ISO 11898. It is a multi-master, message-broadcast, differential-pair bus designed around four priorities:
 

@@ -23,11 +23,11 @@ Plugins can be written in any language (Python, C++, Go, Rust, Node.js, and so o
 
 ### What plugins can do
 
-- **Custom visualizations.** 3D renders, maps, specialized charts.
-- **Data processing.** Filtering, FFT analysis, anomaly detection.
-- **Export to external systems.** Push data to databases, cloud services, or other tools.
-- **Automated test sequences.** Connect, configure, validate, and report.
-- **Hardware control.** Send commands back to the device based on incoming data.
+- **Custom visualizations**: 3D renders, maps, specialized charts.
+- **Data processing**: filtering, FFT analysis, anomaly detection.
+- Push incoming data to databases, cloud services, or other external systems.
+- Run automated test sequences: connect, configure, validate, and report.
+- Send commands back to the device based on incoming data (hardware control).
 
 ## How Plugins Work
 
@@ -214,10 +214,12 @@ When using launcher scripts, set `"runtime": ""` in `info.json` (the script itse
 | `screenshot` | No | Relative path to a preview image. |
 | `files` | Yes | Array of relative file paths to download/install. Must include `info.json` itself. |
 | `entry` | Yes | Script or binary entry point (e.g., `"plugin.py"`, `"run.sh"`). |
-| `runtime` | Yes | Interpreter command (e.g., `"python3"`). Empty string `""` for native binaries or launcher scripts. |
+| `runtime` | No (defaults to `python3` if omitted) | Interpreter command (e.g., `"python3"`). Empty string `""` for native binaries or launcher scripts. |
 | `terminal` | No | `true` to launch in a system terminal window. Default: `false`. |
 | `grpc` | No | `true` if the plugin uses gRPC (port 8888). Serial Studio ensures the gRPC server is running before launch. Default: `false`. |
 | `platforms` | No | Per-platform overrides (see [Platform-Specific Builds](#platform-specific-builds)). |
+| `dependencies` | No | Array of `{name, executables, url, pip}`. Serial Studio checks each `executables` entry on `PATH` before launch and shows a "Missing Dependency" dialog with a link to `url` if none are found. An entry with a `pip` key is skipped from that check and instead triggers the "installing packages" venv message on launch. |
+| `icon` | No | Relative path to an image, shown next to the plugin in the Extension Manager's installed-plugins list. |
 
 ### Full Example
 
@@ -337,15 +339,19 @@ Resolution order: exact `os/arch` key first, then `os/*`, then `*`.
 
 Plugin state (window positions, settings, configurations) is saved in the project file alongside widget layout data. Different projects can have different plugin configurations.
 
-### When State is Saved
+### When to Save State
+
+Serial Studio never calls `extensions.saveState` on its own — call it from your plugin:
 
 - When the device disconnects.
-- When the plugin is stopped.
-- When Serial Studio exits.
+- Before the plugin exits.
+- After any change worth restoring later.
 
-### When State is Restored
+### When to Restore State
 
-- When the plugin starts (from saved project data).
+Call `extensions.loadState` from your plugin:
+
+- When the plugin starts (to read state from the currently open project).
 - When a new device connects (the project may have changed).
 
 ### Saving State via API
@@ -435,7 +441,7 @@ grpcurl -plaintext localhost:8888 serialstudio.SerialStudioAPI/ListCommands
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
-| Connection refused | API server not enabled | Enable in Preferences → General → Advanced |
+| Connection refused | API server not enabled | Enable in Preferences → General → API & Plugins → Enable API Server (Port 7777) |
 | `grpcio` import error | Package not installed | `pip install grpcio grpcio-tools` |
 | Plugin exits immediately | Unhandled exception | Set `"terminal": true` to see errors |
 | No frames streaming | Device not connected | Connect a device first |
@@ -469,6 +475,10 @@ my-extensions-repo/
 ```
 
 ### Hosting Options
+
+Adding any repository beyond the bundled default requires Serial Studio Pro on the
+installing user's side — Repository Settings and the `extensions.addRepository` command
+are Pro-only (see [Extension Manager API](#extension-manager-api)).
 
 - **GitHub**: Push to a repository and share the raw manifest URL:
   ```

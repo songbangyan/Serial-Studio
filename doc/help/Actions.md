@@ -4,6 +4,8 @@
 
 Actions let you put buttons on the Serial Studio dashboard that send commands back to the connected device. Typical uses include resetting a microcontroller, toggling an output pin, asking for a sensor reading, or sending calibration sequences. Each action is configured in the Project Editor and shows up automatically on the dashboard when you connect.
 
+For interactive controls with continuous values (sliders, knobs) or custom JavaScript data formatting, see [Output Controls](Output-Controls.md) (Pro license required).
+
 ## How actions work
 
 ```mermaid
@@ -36,7 +38,7 @@ When you click an action button (or a timer fires), Serial Studio transmits the 
   - Text mode example: `RST` or `GET_TEMP`. C-style escape sequences (`\n`, `\r`, `\t`, `\\`) are resolved before transmission.
   - Binary mode example: `FF 01 00 A3`.
 - **Text Encoding.** In text mode, the character encoding used to serialize the payload. This option is hidden when **Send as Binary** is enabled.
-- **End-of-Line Sequence.** Characters appended after the payload. Disabled in binary mode; append terminator bytes to the hex payload instead.
+- **End-of-Line Sequence.** Characters appended after the payload. Only editable while **Send as Binary** is off; if a sequence was already configured before switching to binary mode, it is still appended as raw bytes after the hex payload. Set it back to None before switching to binary mode to avoid the leftover bytes, or account for it directly in the hex payload.
 
 | Option                  | Bytes sent         |
 |-------------------------|--------------------|
@@ -47,7 +49,7 @@ When you click an action button (or a timer fires), Serial Studio transmits the 
 
 ### Execution behavior
 
-- **Auto-execute on connect.** When enabled, the action fires automatically as soon as the device connects. Handy for initialization sequences (for example sending a configuration command or enabling a sensor).
+- **Auto-Execute on Connect.** When enabled, the action fires automatically as soon as the device connects. Handy for initialization sequences (for example sending a configuration command or enabling a sensor).
 
 ### Timer behavior
 
@@ -141,7 +143,10 @@ Toggle an LED on or off with each click:
 
 **Symptom.** The action is configured in the Project Editor but no button shows up on the dashboard.
 
-**Fix.** Make sure the device is connected. Action buttons only appear on the dashboard while a connection is active.
+**Fix:**
+
+1. Make sure the device is connected. Action buttons only appear on the dashboard while a connection is active.
+2. Check Settings -> Dashboard -> Layout -> Show Actions Panel is enabled; when it's off, the action panel stays hidden even while connected.
 
 ### Command not received by the device
 
@@ -170,6 +175,8 @@ Toggle an LED on or off with each click:
 
 ## See also
 
+- [Output Controls](Output-Controls.md): interactive dashboard controls (button, slider, toggle, text field, knob) with custom JavaScript transmit functions; the richer, Pro-only alternative to an Action.
+- [Control Loop (setup / loop)](Control-Script.md): automates a connected device with `setup()`/`loop()` scripts; the automated counterpart to a manual Action.
 - [Project Editor](Project-Editor.md): full guide to creating and configuring projects.
 - [Widget Reference](Widget-Reference.md): all dashboard widget types.
 - [Data Sources](Data-Sources.md): configuring device connections.

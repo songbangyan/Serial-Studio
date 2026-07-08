@@ -55,12 +55,12 @@ For each CAN message:
 
 ### Widget inference
 
-The DBC importer is fairly aggressive about picking the right widget. It looks at signal names and groupings to detect:
+The DBC importer picks widgets from a fixed set of heuristics based on signal names, units, and groupings:
 
 - **GPS coordinates** (latitude/longitude pairs) → GPS Map widget.
-- **Accelerometer / gyroscope** triplets (X/Y/Z) → 3D motion widgets.
-- **Wheel speeds**, **tire pressures**, **temperature arrays**, **voltage arrays**, **battery cell clusters** → grouped multi-plot or bar widgets.
-- **Status flags** and single-bit signals → LEDs.
+- **Accelerometer / gyroscope** triplets (X/Y/Z) → the Accelerometer (3-axis bar) or Gyroscope (3-axis dial) group widget.
+- **Wheel speeds**, **tire pressures**, **temperature arrays**, **voltage arrays**, and similar per-signal quantities → a Bar, Meter, or Gauge inside the message's data grid, picked per signal from its unit and name (percent or a 0-100 range → Bar; rpm/speed/power → Meter; volts/amps/psi/bar/kPa/degrees → Gauge).
+- **Single-bit signals** → LEDs, regardless of name. Multi-bit signals named `odometer`, `trip`, `counter`, `timestamp`, or `status` get no default widget and are left for manual assignment.
 - Anything else → a plot or gauge based on numeric range.
 
 If the inference picks the wrong widget, change it in the Project Editor. The generated parser doesn't care which widget renders the value.
@@ -103,9 +103,9 @@ The detailed format spec for CSV, XML, and JSON register maps lives in [Protocol
 
 - **CSV** with a header row. Column order is flexible: `address`, `name`, `type`, `dataType`, `units`, `min`, `max`, `scale`, `offset`. Common aliases (`addr`, `register`, `data_type`, etc.) are auto-recognized. `#` lines are comments.
 - **XML** in either flat (`<register address="0" type="holding" .../>`) or nested (`<holding-registers><register address="0" .../></holding-registers>`) form.
-- **JSON** as either an array of registers or an object with per-type arrays.
+- **JSON** as an object: either a flat `{"registers": [...]}` array or per-type arrays (`holdingRegisters`, `inputRegisters`, `coils`, `discreteInputs`).
 
-You can usually get going with just `address` and `name`. Everything else has reasonable defaults.
+You only need `address` and `name`; everything else has a default.
 
 ## Protobuf import
 
@@ -130,7 +130,7 @@ The importer does not load the result into any specific driver. You wire the pro
 - A generated **Lua frame parser** containing a self-contained varint and length-delimited decoder plus per-message dispatch tables, so no runtime dependency on generated stubs is required.
 - A score-based top-level dispatcher: when the schema declares more than one root message, the parser inspects the incoming bytes and routes them to the matching message decoder.
 
-Strings, bytes, enums, and maps decode to their natural Lua representations; repeated scalar fields decode into arrays. Nested messages are flattened into the dataset list in declaration order so the dashboard layout follows the schema.
+Strings and bytes decode to Lua strings; numeric scalars, including enums, decode to Lua numbers. Repeated fields keep only the last-seen occurrence per frame (last-write-wins) — the generated parser does not accumulate arrays. Nested messages become their own group, added in declaration order, so the dashboard layout mirrors the schema's message tree.
 
 ### Limitations
 
