@@ -40,8 +40,10 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
     req.append("filePath");
     openSchema.insert("required", req);
   }
-  registry.registerCommand(
-    QStringLiteral("mdf4Player.open"), QStringLiteral("Open MDF4 file"), openSchema, &open);
+  registry.registerCommand(QStringLiteral("mdf4Player.open"),
+                           QStringLiteral("Open MDF4 file (params: filePath)"),
+                           openSchema,
+                           &open);
 
   QJsonObject emptySchema;
   emptySchema.insert("type", "object");
@@ -100,7 +102,7 @@ void API::Handlers::MDF4PlayerHandler::registerCommands()
     setProgressSchema.insert("required", req);
   }
   registry.registerCommand(QStringLiteral("mdf4Player.setProgress"),
-                           QStringLiteral("Seek to position"),
+                           QStringLiteral("Seek to position (params: progress: 0.0-1.0)"),
                            setProgressSchema,
                            &setProgress);
 

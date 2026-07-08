@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QHash>
 #include <QScopeGuard>
+#include <QSet>
 #include <QStringList>
 #include <QThread>
 #include <QUuid>
@@ -1913,8 +1914,10 @@ static const QVector<detail::AssistantToolDef>& metaToolRoster()
      QStringLiteral("One-shot composite of every readable status endpoint."),
      {}},
     {      QStringLiteral("meta.listCommands"),
-     QStringLiteral("List every available command (name + 1-line description), optionally "
-     "filtered by dotted prefix, paged with offset/limit."),
+     QStringLiteral(
+     "List every available command (name + 1-line description), optionally "
+     "filtered by dotted prefix, paged with offset/limit; namesOnly:true returns bare names "
+     "so large scopes fit in one reply."),
      {}},
     {   QStringLiteral("meta.describeCommand"),
      QStringLiteral("Fetch the full input schema and description for one command."),
@@ -1942,25 +1945,42 @@ static const QVector<detail::AssistantToolDef>& metaToolRoster()
   return kRoster;
 }
 
-/** @brief Returns a compact name+description list of every command, optionally
- *         filtered by prefix and windowed by offset/limit (limit 0 = all). */
-QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix, int offset, int limit) const
+/** @brief Returns a compact name+description list of every command (virtual tool defs win over
+ *         API-registry twins), optionally filtered by prefix, windowed by offset/limit (limit
+ *         0 = all), and reduced to bare name strings when namesOnly is set. */
+QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix,
+                                             int offset,
+                                             int limit,
+                                             bool namesOnly) const
 {
   static auto& apiRegistry = API::CommandRegistry::instance();
   const auto& commands     = apiRegistry.commands();
   static auto& aiReg       = AI::CommandRegistry::instance();
 
   QJsonArray entries;
-  auto appendVirtual = [&entries, &prefix](const QVector<detail::AssistantToolDef>& defs) {
-    for (const auto& def : defs) {
-      if (!prefix.isEmpty() && !def.name.startsWith(prefix))
-        continue;
+  QSet<QString> seen;
+  auto appendRow = [&entries, &seen, &prefix, namesOnly](const QString& name,
+                                                         const QString& description) {
+    if (!prefix.isEmpty() && !name.startsWith(prefix))
+      return;
 
-      QJsonObject row;
-      row[QStringLiteral("name")]        = def.name;
-      row[QStringLiteral("description")] = def.description;
-      entries.append(row);
+    if (seen.contains(name))
+      return;
+
+    seen.insert(name);
+    if (namesOnly) {
+      entries.append(name);
+      return;
     }
+
+    QJsonObject row;
+    row[QStringLiteral("name")]        = name;
+    row[QStringLiteral("description")] = description;
+    entries.append(row);
+  };
+  auto appendVirtual = [&appendRow](const QVector<detail::AssistantToolDef>& defs) {
+    for (const auto& def : defs)
+      appendRow(def.name, def.description);
   };
   appendVirtual(assistantToolDefs());
   appendVirtual(fsToolDefs());
@@ -1971,13 +1991,7 @@ QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix, int offset, 
     if (aiReg.safetyOf(def.name) == Safety::Blocked)
       continue;
 
-    if (!prefix.isEmpty() && !def.name.startsWith(prefix))
-      continue;
-
-    QJsonObject row;
-    row[QStringLiteral("name")]        = def.name;
-    row[QStringLiteral("description")] = def.description;
-    entries.append(row);
+    appendRow(def.name, def.description);
   }
 
   const int total = entries.size();

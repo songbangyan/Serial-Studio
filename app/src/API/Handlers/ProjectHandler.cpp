@@ -1022,13 +1022,27 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
                    "the snapshot, then pass `expectedProjectEpoch` to any later mutating "
                    "command (dataset.update/move/delete, group.move/delete) -- the response "
                    "will carry a stale_project warning if the project changed under you, "
-                   "so you can refetch before acting on now-shifted uniqueIds."),
+                   "so you can refetch before acting on now-shifted uniqueIds.\n"
+                   "Large projects: `sections` picks which blocks to include, and "
+                   "offset/limit windows the groups array (reply carries nextOffset); "
+                   "groupCount/datasetCount always reflect the whole project."),
     makeSchema(
       {
   },
       {{QStringLiteral("verbose"),
         QStringLiteral("boolean"),
-        QStringLiteral("Include frame parser source and source-level frame settings.")}}),
+        QStringLiteral("Include frame parser source and source-level frame settings.")},
+       typedArrayProp(QStringLiteral("sections"),
+                      QStringLiteral("Sections to include: any of \"sources\", \"groups\", "
+                                     "\"workspaces\", \"dataTables\" (default: all)."),
+                      QStringLiteral("string")),
+       {QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("Skip this many groups before returning results (default 0); pass the "
+                       "nextOffset from a previous reply to page through large projects.")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max groups to return (default 0 = all).")}}),
     &projectSnapshot);
 
   registry.registerCommand(

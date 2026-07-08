@@ -609,10 +609,11 @@ void AI::Conversation::runMetaListCommands(const QString& callId,
                                            const QJsonObject& arguments)
 {
   appendToolCallCard(callId, name, arguments, CallStatus::Running);
-  const auto prefix = arguments.value(QStringLiteral("prefix")).toString();
-  const int offset  = arguments.value(QStringLiteral("offset")).toInt(0);
-  const int limit   = arguments.value(QStringLiteral("limit")).toInt(0);
-  const auto reply  = m_dispatcher->listCommands(prefix, offset, limit);
+  const auto prefix    = arguments.value(QStringLiteral("prefix")).toString();
+  const int offset     = arguments.value(QStringLiteral("offset")).toInt(0);
+  const int limit      = arguments.value(QStringLiteral("limit")).toInt(0);
+  const bool namesOnly = arguments.value(QStringLiteral("namesOnly")).toBool(false);
+  const auto reply     = m_dispatcher->listCommands(prefix, offset, limit, namesOnly);
   recordToolResult(callId, name, reply);
   updateToolCallCard(callId, CallStatus::Done, reply);
   releaseOutstandingToolResult();
@@ -2137,14 +2138,22 @@ static void appendBasicMetaTools(QJsonArray& out)
                      "result reports truncated:true.");
     limitProp[QStringLiteral("minimum")] = 0;
     props[QStringLiteral("limit")]       = limitProp;
+    QJsonObject namesOnlyProp;
+    namesOnlyProp[QStringLiteral("type")] = QStringLiteral("boolean");
+    namesOnlyProp[QStringLiteral("description")] =
+      QStringLiteral("Return bare command-name strings with no descriptions (default false). "
+                     "Use to scan a large scope (io., project.) in one small reply, then "
+                     "meta.describeCommand the names you care about.");
+    props[QStringLiteral("namesOnly")]   = namesOnlyProp;
     schema[QStringLiteral("properties")] = props;
     out.append(makeMetaTool(QStringLiteral("meta.listCommands"),
                             QStringLiteral("List every available command (name + 1-line "
                                            "description) optionally filtered by dotted prefix "
                                            "and paged with offset/limit; replies carry total "
-                                           "and nextOffset when a window was applied. "
-                                           "Prefer meta.listCategories first when you don't yet "
-                                           "know the scope."),
+                                           "and nextOffset when a window was applied. Pass "
+                                           "namesOnly:true to fit a 100+ command scope in one "
+                                           "reply. Prefer meta.listCategories first when you "
+                                           "don't yet know the scope."),
                             schema));
   }
 }

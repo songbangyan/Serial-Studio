@@ -391,13 +391,27 @@ static QJsonObject buildGroupExplanations(const DataModel::Group& group)
 }
 
 /**
- * @brief Builds the groups+datasets array; writes total dataset count to @a totalDatasets.
+ * @brief Builds the groups+datasets array windowed by offset/limit (limit 0 = all); writes the
+ *        project-wide dataset count (all groups, not just the window) to @a totalDatasets.
  */
-static QJsonArray buildSnapshotGroups(const DataModel::ProjectModel& pm, int& totalDatasets)
+static QJsonArray buildSnapshotGroups(const DataModel::ProjectModel& pm,
+                                      int offset,
+                                      int limit,
+                                      int& totalDatasets)
 {
   QJsonArray groups;
-  totalDatasets = 0;
-  for (const auto& group : pm.groups()) {
+  totalDatasets   = 0;
+  const auto& all = pm.groups();
+  const int total = static_cast<int>(all.size());
+  const int start = qBound(0, offset, total);
+  const int count = limit > 0 ? qMin(limit, total - start) : total - start;
+
+  for (int i = 0; i < total; ++i) {
+    const auto& group  = all[static_cast<size_t>(i)];
+    totalDatasets     += static_cast<int>(group.datasets.size());
+    if (i < start || i >= start + count)
+      continue;
+
     QJsonObject g;
     g[Keys::GroupId]                  = group.groupId;
     g[Keys::Title]                    = group.title;
@@ -405,10 +419,9 @@ static QJsonArray buildSnapshotGroups(const DataModel::ProjectModel& pm, int& to
     g[QStringLiteral("datasetCount")] = static_cast<int>(group.datasets.size());
 
     QJsonArray ds;
-    for (const auto& dataset : group.datasets) {
+    for (const auto& dataset : group.datasets)
       ds.append(buildDatasetObject(dataset, group));
-      ++totalDatasets;
-    }
+
     g[QStringLiteral("datasets")]      = ds;
     g[QStringLiteral("_explanations")] = buildGroupExplanations(group);
     groups.append(g);
@@ -471,7 +484,9 @@ static QString buildSnapshotHint(int totalDatasets)
   if (totalDatasets >= 10)
     hint += QStringLiteral(" %1 datasets present -- bulk edits should go through project.batch "
                            "(ops: [{command, params}, ...]) instead of looping individual updates; "
-                           "project.dataset.addMany handles 'create N similar' patterns.")
+                           "project.dataset.addMany handles 'create N similar' patterns. If this "
+                           "snapshot is too large, pass sections:[\"groups\"] with offset/limit "
+                           "to page the groups array (reply carries nextOffset).")
               .arg(totalDatasets);
 
   return hint;
@@ -523,28 +538,50 @@ static QJsonObject buildSnapshotExplanations(const DataModel::ProjectModel& pm,
 }  // namespace API::Handlers
 
 /**
- * @brief Returns a structured snapshot of the active project (sources, groups, tables, hint).
+ * @brief Returns a structured snapshot of the active project (sources, groups, tables, hint),
+ *        filtered by the optional sections list and with the groups array paged by offset/limit.
  */
 API::CommandResponse API::Handlers::ProjectHandler::projectSnapshot(const QString& id,
                                                                     const QJsonObject& params)
 {
   const bool verbose    = params.value(QStringLiteral("verbose")).toBool(false);
+  const int offset      = params.value(QStringLiteral("offset")).toInt(0);
+  const int limit       = params.value(QStringLiteral("limit")).toInt(0);
+  const auto sections   = params.value(QStringLiteral("sections")).toArray();
   static const auto& pm = DataModel::ProjectModel::instance();
+
+  const auto wants = [&sections](QLatin1String section) {
+    return sections.isEmpty() || sections.contains(QJsonValue(section));
+  };
 
   QJsonObject snapshot;
   snapshot[Keys::Title]                = pm.title();
   snapshot[Keys::PointCount]           = pm.pointCount();
   snapshot[QStringLiteral("filePath")] = pm.jsonFilePath();
   snapshot[QStringLiteral("modified")] = pm.modified();
-  snapshot[QStringLiteral("sources")]  = buildSnapshotSources(pm, verbose);
+  if (wants(QLatin1String("sources")))
+    snapshot[QStringLiteral("sources")] = buildSnapshotSources(pm, verbose);
 
-  int totalDatasets                        = 0;
-  const QJsonArray groups                  = buildSnapshotGroups(pm, totalDatasets);
-  snapshot[QStringLiteral("groups")]       = groups;
-  snapshot[QStringLiteral("groupCount")]   = groups.size();
+  const int group_total = static_cast<int>(pm.groups().size());
+  int totalDatasets     = 0;
+  if (wants(QLatin1String("groups"))) {
+    const QJsonArray groups            = buildSnapshotGroups(pm, offset, limit, totalDatasets);
+    snapshot[QStringLiteral("groups")] = groups;
+    const int start                    = qBound(0, offset, group_total);
+    if (start + groups.size() < group_total)
+      snapshot[QStringLiteral("nextOffset")] = start + groups.size();
+  } else {
+    for (const auto& group : pm.groups())
+      totalDatasets += static_cast<int>(group.datasets.size());
+  }
+
+  snapshot[QStringLiteral("groupCount")]   = group_total;
   snapshot[QStringLiteral("datasetCount")] = totalDatasets;
-  snapshot[QStringLiteral("workspaces")]   = buildSnapshotWorkspaces(pm);
-  snapshot[QStringLiteral("dataTables")]   = buildSnapshotTables(pm);
+  if (wants(QLatin1String("workspaces")))
+    snapshot[QStringLiteral("workspaces")] = buildSnapshotWorkspaces(pm);
+
+  if (wants(QLatin1String("dataTables")))
+    snapshot[QStringLiteral("dataTables")] = buildSnapshotTables(pm);
 
   static auto& appState                     = AppState::instance();
   const int operationMode                   = static_cast<int>(appState.operationMode());
