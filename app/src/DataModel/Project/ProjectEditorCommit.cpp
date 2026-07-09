@@ -710,6 +710,14 @@ void DataModel::ProjectEditor::onDatasetFftItemChanged(QStandardItem* item,
       dataset.fftSamples = m_fftSamples.at(sampleIdx).toInt();
       break;
     }
+    case kDatasetView_FFT_Window: {
+      const int windowIdx = value.toInt();
+      if (windowIdx < 0 || windowIdx >= m_fftWindowValues.size())
+        return;
+
+      dataset.fftWindow = m_fftWindowValues.at(windowIdx);
+      break;
+    }
     case kDatasetView_FFT_SamplingRate:
       dataset.fftSamplingRate = value.toInt();
       break;
@@ -808,6 +816,11 @@ void DataModel::ProjectEditor::onDatasetItemChanged(QStandardItem* item)
   if (idInt == kDatasetView_FFT_Samples) {
     const int sampleIdx = value.toInt();
     if (sampleIdx < 0 || sampleIdx >= m_fftSamples.size())
+      return;
+  }
+  if (idInt == kDatasetView_FFT_Window) {
+    const int windowIdx = value.toInt();
+    if (windowIdx < 0 || windowIdx >= m_fftWindowValues.size())
       return;
   }
 

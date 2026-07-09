@@ -2258,6 +2258,8 @@ Patch any subset of dataset fields by group id and dataset id.
 - `sourceId` (int, optional)
 - `xAxisId` (int, optional), `waterfallYAxis` (int, optional)
 - `fftSamples` (int, optional), `fftSamplingRate` (int, optional)
+- `fftWindow` (int, optional): FFT window function, `0`-`14` (`5` = Blackman-Harris,
+  the default); see the dataset fields table in [Widget Reference](Widget-Reference.md#dataset-fields-reference)
 - `fftMin`, `fftMax`, `pltMin`, `pltMax`, `wgtMin`, `wgtMax`, `ledHigh` (number, optional)
 - `alarmBands` (array, optional): Array of `{min, max, severity, color, label, blink}`
   objects, `severity` 0-3 for Info/Ok/Warning/Critical. Replaces the dataset's entire

@@ -134,6 +134,7 @@ private:
   DSP::AxisData m_xData;
   DSP::AxisData m_yData;
   std::vector<float> m_window;
+  SerialStudio::FFTWindow m_windowType;
 
   SerialStudio::InterpolationMode m_interpolationMode;
 

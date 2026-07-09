@@ -252,6 +252,9 @@ void DataModel::ProjectEditor::onMultiSelectionItemChanged(QStandardItem* item)
   if (idInt == kDatasetView_FFT_Samples && (vIdx < 0 || vIdx >= m_fftSamples.size()))
     return;
 
+  if (idInt == kDatasetView_FFT_Window && (vIdx < 0 || vIdx >= m_fftWindowValues.size()))
+    return;
+
   auto& pm = m_projectModelRef;
 
   QVector<DataModel::Dataset> sel;

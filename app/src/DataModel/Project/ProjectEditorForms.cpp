@@ -1035,7 +1035,7 @@ void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
 }
 
 /**
- * @brief Appends FFT window-size, sampling rate, and min/max range rows.
+ * @brief Appends FFT window-size, window-function, sampling rate, and min/max range rows.
  */
 void DataModel::ProjectEditor::buildFftRangeRows(CustomModel* model,
                                                  const DataModel::Dataset& dataset)
@@ -1058,6 +1058,24 @@ void DataModel::ProjectEditor::buildFftRangeRows(CustomModel* model,
   fftWindow->setData(tr("Number of samples used for each FFT calculation window"),
                      ParameterDescription);
   model->appendRow(fftWindow);
+
+  const auto currentWindow = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
+  int windowFnIndex        = m_fftWindowValues.indexOf(currentWindow);
+  if (windowFnIndex < 0)
+    windowFnIndex = m_fftWindowValues.indexOf(SerialStudio::FFTWindowBlackmanHarris);
+
+  auto* fftWindowFn = new QStandardItem();
+  fftWindowFn->setEditable(fftSettingsEditable);
+  fftWindowFn->setData(ComboBox, WidgetType);
+  fftWindowFn->setData(m_fftWindows, ComboBoxData);
+  fftWindowFn->setData(windowFnIndex, EditableValue);
+  fftWindowFn->setData(fftWindowFn->isEditable(), Active);
+  fftWindowFn->setData(kDatasetView_FFT_Window, ParameterType);
+  fftWindowFn->setData(tr("FFT Window Function"), ParameterName);
+  fftWindowFn->setData(tr("Window applied before the transform to reduce spectral leakage; "
+                          "affects both the FFT plot and the waterfall"),
+                       ParameterDescription);
+  model->appendRow(fftWindowFn);
 
   auto* fftRate = new QStandardItem();
   fftRate->setEditable(fftSettingsEditable);

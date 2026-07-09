@@ -172,10 +172,18 @@ verifying.** `fftMin`/`fftMax` happen to be the same in both directions.
 | `"bar"`              | `wgtMin` / `wgtMax`                        | Fill is unusable without bounds.                  |
 | `"compass"`          | (none; fixed 0–360)                        | `wgtMin`/`wgtMax` ignored.                        |
 | `"meter"`            | `wgtMin` / `wgtMax`                        | Half-arc analog meter; needs bounds to draw scale and to size the digital-page value box. |
-| `"fft"`              | `fftMin` / `fftMax`                        | Expected raw signal range for input normalization (NOT a dB axis). Also tune `fftSamples` + `fftSamplingRate`. |
-| `"waterfall"` (Pro)  | `fftMin` / `fftMax`                        | Reuses the dataset's FFT settings, including the input-normalization range. |
+| `"fft"`              | `fftMin` / `fftMax`                        | Expected raw signal range for input normalization (NOT a dB axis). Also tune `fftSamples` + `fftSamplingRate` + `fftWindow`. |
+| `"waterfall"` (Pro)  | `fftMin` / `fftMax`                        | Reuses the dataset's FFT settings, including the input-normalization range and `fftWindow`. |
 | `"led"`              | (none; uses `ledHigh` threshold)           | `ledHigh` is on/off boundary.                     |
 | `"datagrid"`         | (none)                                     | Shows raw values.                                 |
+
+FFT and Waterfall also honor `fftWindow`, the window function applied before
+the transform (reduces spectral leakage). Integer values: 0=Rectangular,
+1=Bartlett, 2=Hann, 3=Hamming, 4=Blackman, 5=Blackman-Harris (default),
+6=Nuttall, 7=Blackman-Nuttall, 8=Flat Top, 9=Welch, 10=Bartlett-Hann,
+11=Bohman, 12=Cosine, 13=Lanczos, 14=Parzen. Out-of-range values are rejected
+by `project.dataset.update`. Same key name in both directions (write and read
+back as `fftWindow`).
 
 A single dataset that drives multiple visualizations (e.g. Plot + FFT +
 Waterfall) needs **every** relevant pair set:

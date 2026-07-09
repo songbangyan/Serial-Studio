@@ -314,6 +314,7 @@ bool DataModel::read(Dataset& d, const QJsonObject& obj)
   d.ledHigh           = SerialStudio::toDouble(ss_jsr(obj, Keys::LedHigh, 0));
   d.widget            = ss_jsr(obj, Keys::Widget, "").toString().simplified();
   d.fftSamplingRate   = ss_jsr(obj, Keys::FFTSamplingRate, -1).toInt();
+  d.fftWindow         = ss_jsr(obj, Keys::FFTWindow, SerialStudio::FFTWindowBlackmanHarris).toInt();
   d.displayTickCount  = ss_jsr(obj, Keys::DisplayTickCount, 5).toInt();
   d.displayFormat     = ss_jsr(obj, Keys::DisplayFormat, "0d").toString();
   d.decimalPoints     = ss_jsr(obj, Keys::DecimalPoints, -1).toInt();
@@ -327,6 +328,10 @@ bool DataModel::read(Dataset& d, const QJsonObject& obj)
 
   if (!d.value.isEmpty())
     d.numericValue = SerialStudio::toDouble(d.value, &d.isNumeric);
+
+  if (d.fftWindow < SerialStudio::FFTWindowRectangular
+      || d.fftWindow > SerialStudio::FFTWindowParzen)
+    d.fftWindow = SerialStudio::FFTWindowBlackmanHarris;
 
   if (!obj.contains(Keys::FFTMin) || !obj.contains(Keys::FFTMax)) {
     d.fftMin = SerialStudio::toDouble(ss_jsr(obj, Keys::Min, 0));

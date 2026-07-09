@@ -227,6 +227,7 @@ Datasets map to individual data fields in your device's output.
 
 - **Enable FFT Analysis.** Enable frequency-domain analysis.
 - **FFT Window Size.** Window size (64, 128, 256, 512, 1024, and so on).
+- **FFT Window Function.** Window applied before the transform to reduce spectral leakage; affects both the FFT plot and the waterfall. Default is **Blackman-Harris**. Options: Rectangular (None), Bartlett (Triangular), Hann, Hamming, Blackman, Blackman-Harris, Nuttall, Blackman-Nuttall, Flat Top, Welch, Bartlett-Hann, Bohman, Cosine (Sine), Lanczos, Parzen.
 - **FFT Sampling Rate.** In Hz. Has to match the actual data rate for correct frequency axis labeling.
 - **Minimum Value (optional) / Maximum Value (optional).** Y-axis range for the FFT plot; falls back to the General section's Minimum Value / Maximum Value when left unset.
 

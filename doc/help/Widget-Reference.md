@@ -155,16 +155,17 @@ flowchart TD
 - Auto-created for datasets with `fft: true`.
 - Real-time frequency spectrum analysis via Fast Fourier Transform (KissFFT).
 - Configurable FFT window size: 8 to 16384 samples (powers of 2). Default 256.
+- Selectable window function applied before the transform to reduce spectral leakage (15 options, from Rectangular to Flat Top). Default Blackman-Harris. The same window is used by the Waterfall widget.
 - Configurable sampling rate determines the frequency axis (default 100 Hz).
 - Configurable frequency range via `fftMin` and `fftMax`.
 - Best for: vibration frequency analysis, audio spectrum, signal quality.
-- Configuration fields: `fftSamples` (window size), `fftSamplingRate` (Hz), `fftMin`, `fftMax`.
+- Configuration fields: `fftSamples` (window size), `fftWindow` (window function), `fftSamplingRate` (Hz), `fftMin`, `fftMax`.
 
 ### Waterfall (Pro)
 
 - Auto-created for datasets with `waterfall: true`.
 - Scrolling time-frequency plot (spectrogram). Each row is one FFT magnitude spectrum, with the newest row drawn at the top and older rows scrolling down.
-- Reuses the dataset's FFT settings (`fftSamples`, `fftSamplingRate`, `fftMin`, `fftMax`). Enable both `fft: true` and `waterfall: true` if you want the FFT plot alongside the waterfall.
+- Reuses the dataset's FFT settings (`fftSamples`, `fftWindow`, `fftSamplingRate`, `fftMin`, `fftMax`). Enable both `fft: true` and `waterfall: true` if you want the FFT plot alongside the waterfall.
 - Magnitude is converted to dB. The dynamic range (`minDb` / `maxDb`) is adjustable from the widget toolbar.
 - Built-in color maps: Viridis, Inferno, Magma, Plasma, Turbo, Jet, Hot, Grayscale.
 - Mouse wheel to zoom, drag to pan, hover for a frequency/time readout. Reset view from the toolbar.
@@ -298,6 +299,7 @@ Every dataset in a project file supports these visualization-related fields:
 | `ledHigh`          | double | 80      | LED activation threshold (used only when `alarmBands` is empty). |
 | `alarmBands`       | array  | `[]`    | Colored value bands for bar/gauge/meter widgets and LED panels. Each entry: `{min, max, severity, color?, label?, blink?}`; see [Alarm bands](#alarm-bands). Legacy `alarmEnabled` / `alarmLow` / `alarmHigh` keys from older releases are still read and migrated to bands on load, but no longer written. |
 | `fftSamples`       | int    | 256     | FFT window size (power of 2, 8 to 16384). |
+| `fftWindow`        | int    | 5       | FFT window function, applied to both the FFT plot and the waterfall: 0 = Rectangular, 1 = Bartlett, 2 = Hann, 3 = Hamming, 4 = Blackman, 5 = Blackman-Harris, 6 = Nuttall, 7 = Blackman-Nuttall, 8 = Flat Top, 9 = Welch, 10 = Bartlett-Hann, 11 = Bohman, 12 = Cosine, 13 = Lanczos, 14 = Parzen. |
 | `fftSamplingRate`  | int    | 100     | FFT sampling rate in Hz. |
 | `fftMin`           | double | 0       | FFT frequency axis minimum. |
 | `fftMax`           | double | 0       | FFT frequency axis maximum. |

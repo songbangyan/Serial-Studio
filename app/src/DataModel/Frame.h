@@ -117,6 +117,7 @@ inline constexpr KeyView Label("label");
 inline constexpr KeyView Blink("blink");
 inline constexpr KeyView Severity("severity");
 inline constexpr KeyView FFTSamplingRate("fftSamplingRate");
+inline constexpr KeyView FFTWindow("fftWindow");
 inline constexpr KeyView TransformCode("transformCode");
 inline constexpr KeyView TransformLanguage("transformLanguage");
 inline constexpr KeyView DatasetId("datasetId");
@@ -411,6 +412,7 @@ struct alignas(8) Dataset {
   int datasetId         = 0;      ///< Unique ID within group
   int fftSamples        = 256;    ///< Number of samples for FFT
   int fftSamplingRate   = 100;    ///< Sampling rate for FFT
+  int fftWindow         = 5;      ///< FFT window (SerialStudio::FFTWindow; 5 = Blackman-Harris)
   int transformLanguage = -1;     ///< Transform script language (-1 = unset, 0 = JS, 1 = Lua)
   bool fft              = false;  ///< Enables FFT processing
   bool led              = false;  ///< Enables LED widget
@@ -1110,6 +1112,7 @@ void read_io_settings(QByteArray& frameStart,
   obj.insert(Keys::WgtMin, qMin(d.wgtMin, d.wgtMax));
   obj.insert(Keys::WgtMax, qMax(d.wgtMin, d.wgtMax));
   obj.insert(Keys::FFTSamplingRate, d.fftSamplingRate);
+  obj.insert(Keys::FFTWindow, d.fftWindow);
 
   if (!d.alarmBands.empty()) {
     QJsonArray bands;

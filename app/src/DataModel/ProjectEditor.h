@@ -615,6 +615,8 @@ private:
 #endif
 
   QStringList m_fftSamples;
+  QStringList m_fftWindows;
+  QList<SerialStudio::FFTWindow> m_fftWindowValues;
   QStringList m_timerModes;
   QStringList m_decoderOptions;
   QStringList m_checksumMethods;

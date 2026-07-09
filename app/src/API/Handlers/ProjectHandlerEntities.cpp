@@ -1451,7 +1451,8 @@ static void applyDatasetTextAndToggleFields(DataModel::Dataset& d,
 }
 
 /**
- * @brief Applies index/sourceId/numeric range fields; returns error string on bad index.
+ * @brief Applies index/sourceId/numeric range fields; returns error string on bad index or
+ *        fftWindow.
  */
 static QString applyDatasetNumericFields(DataModel::Dataset& d,
                                          const QJsonObject& params,
@@ -1481,6 +1482,15 @@ static QString applyDatasetNumericFields(DataModel::Dataset& d,
 
   if (takeParam(params, consumed, QStringLiteral("fftSamplingRate")))
     d.fftSamplingRate = params.value(QStringLiteral("fftSamplingRate")).toInt();
+
+  if (takeParam(params, consumed, QStringLiteral("fftWindow"))) {
+    const int fft_window = params.value(QStringLiteral("fftWindow")).toInt();
+    if (fft_window < SerialStudio::FFTWindowRectangular
+        || fft_window > SerialStudio::FFTWindowParzen)
+      return QStringLiteral("Invalid fftWindow: must be 0-14 (5 = Blackman-Harris)");
+
+    d.fftWindow = fft_window;
+  }
 
   if (takeParam(params, consumed, QStringLiteral("fftMin")))
     d.fftMin = SerialStudio::toDouble(params.value(QStringLiteral("fftMin")));

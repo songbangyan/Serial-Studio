@@ -61,6 +61,7 @@ typedef enum {
   kDatasetView_WgtMax,
   kDatasetView_FFT_Samples,
   kDatasetView_FFT_SamplingRate,
+  kDatasetView_FFT_Window,
   kDatasetView_xAxis,
   kDatasetView_Overview,
   kDatasetView_HideOnDashboard,

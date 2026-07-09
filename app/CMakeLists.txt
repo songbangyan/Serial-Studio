@@ -377,6 +377,7 @@ set(HEADERS
   src/UI/Widgets/PlotCurve.h
   src/UI/Widgets/DataGrid.h
   src/UI/Widgets/FFTPlot.h
+  src/UI/Widgets/FFTWindow.h
   src/UI/Widgets/Gyroscope.h
   src/UI/Widgets/Bar.h
   src/UI/Widgets/Meter.h

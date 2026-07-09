@@ -22,30 +22,7 @@
 #include "UI/Widgets/FFTPlot.h"
 
 #include "UI/Dashboard.h"
-
-//--------------------------------------------------------------------------------------------------
-// Static helper functions
-//--------------------------------------------------------------------------------------------------
-
-/**
- * @brief Computes a single coefficient of the 4-term Blackman-Harris window.
- */
-inline float blackman_harris_coeff(unsigned int i, unsigned int N)
-{
-  if (N <= 1)
-    return 1.0f;
-
-  constexpr float a0 = 0.35875f;
-  constexpr float a1 = 0.48829f;
-  constexpr float a2 = 0.14128f;
-  constexpr float a3 = 0.01168f;
-
-  const float two_pi = 6.28318530717958647692f;
-  const float k      = two_pi / static_cast<float>(N - 1);
-  const float x      = k * static_cast<float>(i);
-
-  return a0 - a1 * std::cos(x) + a2 * std::cos(2.0f * x) - a3 * std::cos(3.0f * x);
-}
+#include "UI/Widgets/FFTWindow.h"
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & initialization
@@ -69,6 +46,7 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   , m_center(0)
   , m_halfRange(1)
   , m_scaleIsValid(false)
+  , m_windowType(SerialStudio::FFTWindowBlackmanHarris)
   , m_interpolationMode(SerialStudio::InterpolationLinear)
   , m_plan(nullptr)
 {
@@ -78,6 +56,7 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
     const int clampedSamples            = qBound(8, dataset.fftSamples, kMaxFftSamples);
     m_size                              = 1 << static_cast<int>(std::log2(clampedSamples));
     m_samplingRate                      = qMax(1, dataset.fftSamplingRate);
+    m_windowType                        = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
     m_minX                              = 0;
     m_maxY                              = 0;
     m_minY                              = -100;
@@ -86,9 +65,7 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
     m_samples.resize(m_size);
     m_fftOutput.resize(m_size);
     m_window.resize(m_size);
-    const auto windowSize = static_cast<unsigned int>(m_size);
-    for (unsigned int i = 0; i < windowSize; ++i)
-      m_window[i] = blackman_harris_coeff(i, windowSize);
+    Widgets::fillFftWindow(m_windowType, m_window.data(), static_cast<unsigned int>(m_size));
 
     m_plan = kiss_fft_alloc(m_size, 0, nullptr, nullptr);
     if (!m_plan) {
@@ -289,9 +266,7 @@ bool Widgets::FFTPlot::rebuildFftPlan(int newSize)
   m_samples.resize(m_size);
   m_fftOutput.resize(m_size);
 
-  const auto windowSize = static_cast<unsigned int>(m_size);
-  for (unsigned int i = 0; i < windowSize; ++i)
-    m_window[i] = blackman_harris_coeff(i, windowSize);
+  Widgets::fillFftWindow(m_windowType, m_window.data(), static_cast<unsigned int>(m_size));
 
   if (m_plan) {
     kiss_fft_free(m_plan);

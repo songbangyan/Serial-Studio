@@ -637,6 +637,21 @@ void DataModel::ProjectEditor::generateComboBoxModels()
   m_fftSamples << "8" << "16" << "32" << "64" << "128" << "256" << "512"
                << "1024" << "2048" << "4096" << "8192" << "16384";
 
+  m_fftWindows.clear();
+  m_fftWindowValues.clear();
+  m_fftWindows << tr("Rectangular (None)") << tr("Bartlett (Triangular)") << tr("Hann")
+               << tr("Hamming") << tr("Blackman") << tr("Blackman-Harris") << tr("Nuttall")
+               << tr("Blackman-Nuttall") << tr("Flat Top") << tr("Welch") << tr("Bartlett-Hann")
+               << tr("Bohman") << tr("Cosine (Sine)") << tr("Lanczos") << tr("Parzen");
+  m_fftWindowValues << SerialStudio::FFTWindowRectangular << SerialStudio::FFTWindowBartlett
+                    << SerialStudio::FFTWindowHann << SerialStudio::FFTWindowHamming
+                    << SerialStudio::FFTWindowBlackman << SerialStudio::FFTWindowBlackmanHarris
+                    << SerialStudio::FFTWindowNuttall << SerialStudio::FFTWindowBlackmanNuttall
+                    << SerialStudio::FFTWindowFlatTop << SerialStudio::FFTWindowWelch
+                    << SerialStudio::FFTWindowBartlettHann << SerialStudio::FFTWindowBohman
+                    << SerialStudio::FFTWindowCosine << SerialStudio::FFTWindowLanczos
+                    << SerialStudio::FFTWindowParzen;
+
   m_timerModes.clear();
   m_timerModes << tr("Off") << tr("Auto Start") << tr("Start on Trigger") << tr("Toggle on Trigger")
                << tr("Repeat N Times");

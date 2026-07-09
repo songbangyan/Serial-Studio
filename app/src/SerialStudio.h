@@ -117,6 +117,29 @@ public:
   Q_ENUM(SweepMode)
 
   /**
+   * @brief Window function applied to the FFT/Waterfall input buffer. Persisted
+   *        as an integer, so this list is append-only -- never reorder or remove.
+   */
+  enum FFTWindow {
+    FFTWindowRectangular,
+    FFTWindowBartlett,
+    FFTWindowHann,
+    FFTWindowHamming,
+    FFTWindowBlackman,
+    FFTWindowBlackmanHarris,
+    FFTWindowNuttall,
+    FFTWindowBlackmanNuttall,
+    FFTWindowFlatTop,
+    FFTWindowWelch,
+    FFTWindowBartlettHann,
+    FFTWindowBohman,
+    FFTWindowCosine,
+    FFTWindowLanczos,
+    FFTWindowParzen,
+  };
+  Q_ENUM(FFTWindow)
+
+  /**
    * @brief Trigger edge polarity used to start a sweep.
    */
   enum TriggerEdge {

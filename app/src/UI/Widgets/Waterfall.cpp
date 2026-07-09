@@ -36,6 +36,7 @@
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
 #include "UI/Dashboard.h"
+#include "UI/Widgets/FFTWindow.h"
 
 //--------------------------------------------------------------------------------------------------
 // Constants
@@ -58,25 +59,6 @@ static constexpr double kMaxZoom       = 32.0;
 //--------------------------------------------------------------------------------------------------
 // Static helpers
 //--------------------------------------------------------------------------------------------------
-
-/**
- * @brief Computes a single coefficient of the 4-term Blackman-Harris window.
- */
-static inline float blackmanHarris(unsigned int i, unsigned int N)
-{
-  if (N <= 1)
-    return 1.0f;
-
-  constexpr float a0    = 0.35875f;
-  constexpr float a1    = 0.48829f;
-  constexpr float a2    = 0.14128f;
-  constexpr float a3    = 0.01168f;
-  constexpr float twoPi = 6.28318530717958647692f;
-  const float k         = twoPi / static_cast<float>(N - 1);
-  const float x         = k * static_cast<float>(i);
-
-  return a0 - a1 * std::cos(x) + a2 * std::cos(2.0f * x) - a3 * std::cos(3.0f * x);
-}
 
 /**
  * @brief Returns the largest power-of-two not exceeding @a value (and >= 8).
@@ -204,6 +186,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
   , m_index(index)
   , m_size(0)
   , m_samplingRate(0)
+  , m_windowType(SerialStudio::FFTWindowBlackmanHarris)
   , m_historySize(kDefaultHistory)
   , m_colorMap(Turbo)
   , m_writeRow(0)
@@ -241,6 +224,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
     const auto& dataset = GET_DATASET(SerialStudio::DashboardWaterfall, m_index);
     m_size              = floorPow2Bounded(dataset.fftSamples);
     m_samplingRate      = qMax(1, dataset.fftSamplingRate);
+    m_windowType        = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
 
     double minVal = dataset.fftMin;
     double maxVal = dataset.fftMax;
@@ -529,9 +513,7 @@ void Widgets::Waterfall::allocateFftPlan(int size)
   m_fftOutput.resize(m_size);
   m_dbCache.assign(m_size / 2, kFloorDb);
 
-  const auto windowSize = static_cast<unsigned int>(m_size);
-  for (unsigned int i = 0; i < windowSize; ++i)
-    m_window[i] = blackmanHarris(i, windowSize);
+  Widgets::fillFftWindow(m_windowType, m_window.data(), static_cast<unsigned int>(m_size));
 
   m_plan = kiss_fft_alloc(m_size, 0, nullptr, nullptr);
   if (!m_plan)

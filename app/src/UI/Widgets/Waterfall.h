@@ -31,6 +31,7 @@
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
+#include "SerialStudio.h"
 #include "UI/Dashboard.h"
 
 namespace Widgets {
@@ -230,6 +231,7 @@ private:
   int m_index;
   int m_size;
   int m_samplingRate;
+  SerialStudio::FFTWindow m_windowType;
   int m_historySize;
   int m_colorMap;
   int m_writeRow;
