@@ -210,21 +210,28 @@ Item {
     }
 
     //
+    // Control-transfer composer (Advanced Control mode, while connected)
+    //
+    UsbControlComposer {
+      Layout.columnSpan: 2
+      Layout.fillWidth: true
+      visible: Cpp_IO_USB.advancedModeEnabled && Cpp_IO_Manager.isConnected
+    }
+
+    //
     // Info block: pre-connect, spans both columns
     //
     Item {
       implicitHeight: 4
-      visible: !Cpp_IO_Manager.isConnected
+      visible: !Cpp_IO_Manager.isConnected && !Cpp_IO_USB.advancedModeEnabled
     } Item {
       implicitHeight: 4
-      visible: !Cpp_IO_Manager.isConnected
-    }
-
-    RowLayout {
+      visible: !Cpp_IO_Manager.isConnected && !Cpp_IO_USB.advancedModeEnabled
+    } RowLayout {
       spacing: 8
       Layout.columnSpan: 2
       Layout.fillWidth: true
-      visible: !Cpp_IO_Manager.isConnected
+      visible: !Cpp_IO_Manager.isConnected && !Cpp_IO_USB.advancedModeEnabled
 
       Image {
         sourceSize.width: 20

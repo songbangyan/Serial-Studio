@@ -101,7 +101,8 @@ typedef enum {
   kGroupView_ImgMode,
   kGroupView_ImgStart,
   kGroupView_ImgEnd,
-  kGroupView_Columns
+  kGroupView_Columns,
+  kGroupView_Dataset
 } GroupItem;
 
 /**

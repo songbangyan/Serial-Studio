@@ -820,6 +820,7 @@ if(BUILD_COMMERCIAL)
     qml/MainWindow/Panes/SetupPanes/Drivers/Modbus.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/HID.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/USB.qml
+    qml/MainWindow/Panes/SetupPanes/Drivers/UsbControlComposer.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/Process.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/ProcessPicker.qml
     qml/MainWindow/Panes/SetupPanes/Drivers/MQTT.qml

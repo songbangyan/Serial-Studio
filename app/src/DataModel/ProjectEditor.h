@@ -235,6 +235,7 @@ public:
     PasswordField,
     AutoIntField,
     Button,
+    NavRow,
   };
   Q_ENUM(EditorWidget)
 
@@ -509,6 +510,7 @@ private:
   void buildGroupXAxisRow(const DataModel::Group& group);
   void buildGroupWebViewRow(const DataModel::Group& group);
   void buildGroupImageSection(const DataModel::Group& group);
+  void buildGroupDatasetsSection(const DataModel::Group& group);
 
   void buildSourceCommonRows(const DataModel::Source& source);
   void buildSourceFrameDetectionRows(const DataModel::Source& source);

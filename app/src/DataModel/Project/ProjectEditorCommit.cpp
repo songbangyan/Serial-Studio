@@ -242,6 +242,12 @@ void DataModel::ProjectEditor::onGroupItemChanged(QStandardItem* item)
   auto& pm           = m_projectModelRef;
   const auto groupId = m_selectedGroup.groupId;
 
+  if (id == kGroupView_Dataset) {
+    const int datasetId = item->data(ParameterKey).toInt();
+    QTimer::singleShot(0, this, [this, groupId, datasetId] { selectDataset(groupId, datasetId); });
+    return;
+  }
+
   if (id == kGroupView_Title) {
     if (!applyGroupTitleEdit(value.toString(), groupId))
       return;

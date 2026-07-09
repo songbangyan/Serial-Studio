@@ -198,6 +198,39 @@ void DataModel::ProjectEditor::buildGroupImageSection(const DataModel::Group& gr
 }
 
 /**
+ * @brief Appends a "Datasets" section header plus one navigable row per dataset, so the group form
+ *        carries the folder-style navigation down to its datasets without leaving the model.
+ */
+void DataModel::ProjectEditor::buildGroupDatasetsSection(const DataModel::Group& group)
+{
+  if (group.datasets.empty())
+    return;
+
+  auto* hdr = new QStandardItem();
+  hdr->setData(SectionHeader, WidgetType);
+  hdr->setData(tr("Datasets"), PlaceholderValue);
+  hdr->setData("qrc:/icons/project-editor/model/dataset.svg", ParameterIcon);
+  m_groupModel->appendRow(hdr);
+
+  for (const auto& dataset : group.datasets) {
+    const auto widgets = SerialStudio::getDashboardWidgets(dataset);
+    QString icon       = QStringLiteral("qrc:/icons/project-editor/treeview/dataset.svg");
+    if (widgets.count() > 0)
+      icon = SerialStudio::dashboardWidgetIcon(widgets.first(), false);
+
+    auto* item = new QStandardItem();
+    item->setEditable(false);
+    item->setData(true, Active);
+    item->setData(NavRow, WidgetType);
+    item->setData(icon, ParameterIcon);
+    item->setData(dataset.datasetId, ParameterKey);
+    item->setData(kGroupView_Dataset, ParameterType);
+    item->setData(dataset.title, ParameterName);
+    m_groupModel->appendRow(item);
+  }
+}
+
+/**
  * @brief Appends the multiplot X-Axis selector (Time or Samples) to the group model.
  */
 void DataModel::ProjectEditor::buildGroupXAxisRow(const DataModel::Group& group)
@@ -286,6 +319,7 @@ void DataModel::ProjectEditor::buildGroupModel(const DataModel::Group& group)
     buildGroupWebViewRow(group);
 
   buildGroupImageSection(group);
+  buildGroupDatasetsSection(group);
 
   connect(
     m_groupModel, &CustomModel::itemChanged, this, &DataModel::ProjectEditor::onGroupItemChanged);

@@ -883,6 +883,8 @@
         <file>vendor/highlight-github.min.css</file>
         <file>vendor/highlight.LICENSE</file>
         <file>vendor/highlight.min.js</file>
+        <file>vendor/mermaid.LICENSE</file>
+        <file>vendor/mermaid.min.js</file>
         <file>vendor/sanitize.js</file>
         <file>vendor/sanitize.LICENSE</file>
         <file>vendor/showdown.LICENSE</file>

@@ -186,6 +186,8 @@ ColumnLayout {
       required property int column
       required property bool current
 
+      readonly property bool isNav: model.widgetType === ProjectEditor.NavRow
+
       //
       // Row background
       //
@@ -364,11 +366,12 @@ ColumnLayout {
           leftPadding: root.rtl ? 0 : 6
           rightPadding: root.rtl ? 6 : 0
           opacity: model.active ? 1 : 0.5
+          Layout.fillWidth: item.isNav
           Layout.alignment: Qt.AlignVCenter
-          Layout.minimumWidth: root.parameterWidth
-          Layout.maximumWidth: root.parameterWidth
           color: Cpp_ThemeManager.colors["table_text"]
           horizontalAlignment: Label.AlignLeft
+          Layout.minimumWidth: item.isNav ? 0 : root.parameterWidth
+          Layout.maximumWidth: item.isNav ? Number.POSITIVE_INFINITY : root.parameterWidth
 
           ToolTip.delay: 700
           visible: model.widgetType !== ProjectEditor.SectionHeader
@@ -392,10 +395,10 @@ ColumnLayout {
           width: 1
           Layout.fillHeight: true
           color: Cpp_ThemeManager.colors["table_separator"]
-          visible: model.widgetType !== ProjectEditor.SectionHeader
+          visible: model.widgetType !== ProjectEditor.SectionHeader && !item.isNav
         } Item {
           width: 6
-          visible: model.widgetType !== ProjectEditor.SectionHeader
+          visible: model.widgetType !== ProjectEditor.SectionHeader && !item.isNav
         }
 
         //
@@ -978,7 +981,24 @@ ColumnLayout {
         //
         Item {
           implicitWidth: 6
-          visible: model.widgetType !== ProjectEditor.SectionHeader
+          visible: model.widgetType !== ProjectEditor.SectionHeader && !item.isNav
+        }
+      }
+
+      //
+      // Full-row click target for navigation rows (e.g. dataset links)
+      //
+      MouseArea {
+        z: 2
+        enabled: item.isNav
+        visible: item.isNav
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+          root.modelPointer.setData(
+                view.index(item.row, item.column),
+                Date.now(),
+                ProjectEditor.EditableValue)
         }
       }
     }

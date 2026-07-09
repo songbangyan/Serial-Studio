@@ -103,6 +103,10 @@ signals:
   void inEndpointIndexChanged();
   void outEndpointIndexChanged();
   void isoPacketSizeChanged();
+  void controlTransferFinished(bool ok,
+                               int bytesTransferred,
+                               const QString& responseHex,
+                               const QString& message);
 
 public:
   enum class TransferMode {
@@ -155,6 +159,12 @@ public slots:
   void setOutEndpointIndex(const int index);
   void setIsoPacketSize(const int size);
   void setupExternalConnections();
+  void sendControlRequest(const QString& bmRequestType,
+                          const QString& bRequest,
+                          const QString& wValue,
+                          const QString& wIndex,
+                          const QString& payloadHex,
+                          const int readLength);
 
 private slots:
   void onReadError();
@@ -200,14 +210,8 @@ private:
                                          const libusb_device_descriptor& desc,
                                          const QString& savedSer) const;
 
-  [[nodiscard]] qint64 sendControlTransfer(uint8_t bmRequestType,
-                                           uint8_t bRequest,
-                                           uint16_t wValue,
-                                           uint16_t wIndex,
-                                           const QByteArray& data,
-                                           unsigned int timeout_ms);
-
   static void LIBUSB_CALL isoTransferCallback(libusb_transfer* transfer);
+  static void LIBUSB_CALL controlTransferCallback(libusb_transfer* transfer);
   static int LIBUSB_CALL hotplugCallback(libusb_context* ctx,
                                          libusb_device* device,
                                          libusb_hotplug_event event,
@@ -229,6 +233,7 @@ private:
   alignas(kCacheLine) std::atomic<bool> m_running;
   alignas(kCacheLine) std::atomic<bool> m_eventLoopRunning;
   alignas(kCacheLine) std::atomic<int> m_isoInFlight;
+  alignas(kCacheLine) std::atomic<bool> m_controlInFlight;
 
   QThread m_readThread;
   QThread m_eventThread;
@@ -250,6 +255,7 @@ private:
   uint8_t m_activeOutEpType;
 
   QList<libusb_transfer*> m_isoTransfers;
+  libusb_transfer* m_controlTransfer;
 };
 
 }  // namespace Drivers
