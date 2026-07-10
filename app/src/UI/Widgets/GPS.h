@@ -22,10 +22,13 @@
 #pragma once
 
 #include <QCache>
+#include <QHash>
 #include <QImage>
-#include <QNetworkAccessManager>
 #include <QQuickPaintedItem>
 #include <QSettings>
+
+class QNetworkReply;
+class QNetworkAccessManager;
 
 namespace Misc {
 class ThemeManager;
@@ -116,9 +119,9 @@ private slots:
   void updateTiles();
   void precacheWorld();
   void onThemeChanged();
-  void onTileFetched(QNetworkReply* reply);
 
 private:
+  void fetchCloudOverlay();
   void paintMap(QPainter* painter, const QSize& view);
   void paintPathData(QPainter* painter, const QSize& view);
   void paintAttributionText(QPainter* painter, const QSize& view);
@@ -132,25 +135,18 @@ private:
   [[nodiscard]] QString referenceUrl(const int tx, const int ty, const int zoom) const;
   [[nodiscard]] QString nasaWeatherUrl(const int tx, const int ty, const int zoom) const;
 
-  void requestTileIfNeeded(const QString& url);
   void preloadNextZoomTiles(int tx, int ty, int baseZoom);
 
-  bool renderFallbackTile(QPainter* painter,
-                          int tx,
-                          int ty,
-                          int baseZoom,
-                          const QRect& targetRect,
-                          double scaledTileSize);
+  static void requestTileIfNeeded(const QString& url);
+  static void onTileFetched(QNetworkReply* reply);
+
+  void renderFallbackTile(QPainter* painter, int tx, int ty, int baseZoom, const QRect& targetRect);
   void renderWeatherOverlay(
     QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect);
   void renderReferenceOverlay(
     QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect);
-  void renderCloudOverlay(QPainter* painter,
-                          int wrappedTx,
-                          int ty,
-                          int baseZoom,
-                          const QRect& targetRect,
-                          double scaledTileSize);
+  void renderCloudOverlay(
+    QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect);
   void renderTrajectoryPath(QPainter* painter,
                             const QSize& view,
                             int baseZoom,
@@ -163,6 +159,7 @@ private:
                                const QPointF& centerTileBase);
 
 protected:
+  void geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry) override;
   void wheelEvent(QWheelEvent* event) override;
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
@@ -201,11 +198,11 @@ private:
   QList<int> m_mapMaxZoom;
   QList<int> m_weatherDays;
 
-  QNetworkAccessManager m_network;
-
   static QList<GPS*> s_instances;
   static QCache<QString, QImage> s_tileCache;
   static QHash<QString, QNetworkReply*> s_pending;
+  static QHash<QString, int> s_retryCount;
+  static QNetworkAccessManager* s_network;
   static bool s_cacheInitialized;
 };
 }  // namespace Widgets

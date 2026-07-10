@@ -46,7 +46,7 @@ Item {
   property bool hasToolbar: root.height >= 220 && root.width >= toolbar.implicitWidth
 
   //
-  // Configure module widget on load, then restore persisted settings
+  // Configure module widget on load
   //
   onModelChanged: {
     if (model) {
@@ -54,7 +54,15 @@ Item {
       model.parent = container
       model.anchors.fill = container
       _mapType.model = model.mapTypes
+    }
+  }
 
+  //
+  // Restore persisted settings; runs after ALL initial properties are applied, since
+  // onModelChanged can fire while widgetId is still empty during object creation
+  //
+  Component.onCompleted: {
+    if (model) {
       const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
       model.autoCenter = s["autoCenter"] !== undefined ? s["autoCenter"] : model.autoCenter

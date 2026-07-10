@@ -21,11 +21,17 @@
 
 #include "UI/Widgets/GPS.h"
 
+#include <memory>
+#include <QCoreApplication>
 #include <QCursor>
 #include <QLinearGradient>
+#include <QNetworkAccessManager>
+#include <QNetworkDiskCache>
 #include <QNetworkReply>
 #include <QPainter>
 #include <QPainterPath>
+#include <QStandardPaths>
+#include <QTimer>
 
 #include "DSP.h"
 #include "Misc/CommonFonts.h"
@@ -51,12 +57,19 @@ constexpr double kInv180  = 1.0 / 180.0;
 constexpr double kInv120  = 1.0 / 120.0;
 constexpr double kInvPi   = 1.0 / M_PI;
 constexpr auto CLOUD_URL = "https://clouds.matteason.co.uk/images/4096x2048/clouds-alpha.png";
+
+constexpr int TILE_RETRY_LIMIT       = 3;
+constexpr int TILE_TRANSFER_TIMEOUT  = 15000;
+constexpr int TILE_MEM_CACHE_KB      = 256 * 1024;
+constexpr qint64 TILE_DISK_CACHE_MAX = qint64(256) * 1024 * 1024;
 // clang-format on
 
 QList<Widgets::GPS*> Widgets::GPS::s_instances;
 QCache<QString, QImage> Widgets::GPS::s_tileCache;
 QHash<QString, QNetworkReply*> Widgets::GPS::s_pending;
-bool Widgets::GPS::s_cacheInitialized = false;
+QHash<QString, int> Widgets::GPS::s_retryCount;
+QNetworkAccessManager* Widgets::GPS::s_network = nullptr;
+bool Widgets::GPS::s_cacheInitialized          = false;
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & initialization
@@ -84,14 +97,23 @@ Widgets::GPS::GPS(const int index, QQuickItem* parent)
 {
   s_instances.append(this);
 
-  setMipmap(true);
   setOpaquePainting(true);
   setAcceptHoverEvents(true);
   setAcceptedMouseButtons(Qt::AllButtons);
   setFlag(ItemHasContents, true);
 
   if (!s_cacheInitialized) {
-    s_tileCache.setMaxCost(2048);
+    s_tileCache.setMaxCost(TILE_MEM_CACHE_KB);
+
+    s_network = new QNetworkAccessManager(qApp);
+    s_network->setTransferTimeout(TILE_TRANSFER_TIMEOUT);
+
+    auto* diskCache = new QNetworkDiskCache(s_network);
+    const auto path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    diskCache->setCacheDirectory(path + QStringLiteral("/map-tiles"));
+    diskCache->setMaximumCacheSize(TILE_DISK_CACHE_MAX);
+    s_network->setCache(diskCache);
+
     s_cacheInitialized = true;
   }
 
@@ -118,23 +140,10 @@ Widgets::GPS::GPS(const int index, QQuickItem* parent)
   if (m_showNasaWeather && m_showWeather)
     m_showWeather = false;
 
-  if (m_showWeather) {
-    QUrl cloudUrl(CLOUD_URL);
-    QNetworkRequest request(cloudUrl);
-    QNetworkReply* reply = m_network.get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-      reply->deleteLater();
+  if (m_showWeather)
+    fetchCloudOverlay();
 
-      if (reply->error() == QNetworkReply::NoError) {
-        QByteArray imageData = reply->readAll();
-        QImage image;
-        if (image.loadFromData(imageData)) {
-          m_cloudOverlay = image;
-          update();
-        }
-      }
-    });
-  }
+  precacheWorld();
 
   onThemeChanged();
   connect(&m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::GPS::onThemeChanged);
@@ -147,18 +156,11 @@ Widgets::GPS::GPS(const int index, QQuickItem* parent)
 }
 
 /**
- * @brief Deregisters the widget and drops its in-flight tile requests from the shared map.
+ * @brief Deregisters the widget; shared in-flight tile requests keep running.
  */
 Widgets::GPS::~GPS()
 {
   s_instances.removeAll(this);
-
-  const auto owned = m_network.findChildren<QNetworkReply*>();
-  for (auto it = s_pending.begin(); it != s_pending.end();)
-    if (owned.contains(it.value()))
-      it = s_pending.erase(it);
-    else
-      ++it;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -307,17 +309,10 @@ void Widgets::GPS::setZoomLevel(int zoom)
     return;
 
   if (!autoCenter()) {
-    const QPointF pixelCenter(width() * 0.5, height() * 0.5);
-    const QPointF tileCenter = m_centerTile
-                             + QPointF((pixelCenter.x() - width() * 0.5) * kInvTile,
-                                       (pixelCenter.y() - height() * 0.5) * kInvTile);
+    const QPointF geo = tileToLatLon(m_centerTile, m_zoom);
 
-    const QPointF geo = tileToLatLon(tileCenter, m_zoom);
-
-    m_zoom                = z;
-    const QPointF newTile = latLonToTile(geo.x(), geo.y(), m_zoom);
-
-    m_centerTile = clampCenterTile(newTile);
+    m_zoom       = z;
+    m_centerTile = clampCenterTile(latLonToTile(geo.x(), geo.y(), m_zoom));
 
     updateTiles();
     update();
@@ -345,17 +340,10 @@ void Widgets::GPS::setZoomLevelPrecise(double zoom)
     return;
 
   if (!autoCenter()) {
-    const QPointF pixelCenter(width() * 0.5, height() * 0.5);
-    const QPointF tileCenter = m_centerTile
-                             + QPointF((pixelCenter.x() - width() * 0.5) * kInvTile,
-                                       (pixelCenter.y() - height() * 0.5) * kInvTile);
+    const QPointF geo = tileToLatLon(m_centerTile, m_zoom);
 
-    const QPointF geo = tileToLatLon(tileCenter, m_zoom);
-
-    m_zoom                = z;
-    const QPointF newTile = latLonToTile(geo.x(), geo.y(), m_zoom);
-
-    m_centerTile = clampCenterTile(newTile);
+    m_zoom       = z;
+    m_centerTile = clampCenterTile(latLonToTile(geo.x(), geo.y(), m_zoom));
 
     updateTiles();
     update();
@@ -443,23 +431,8 @@ void Widgets::GPS::setShowWeather(const bool enabled)
     else
       update();
 
-    if (enabled && m_cloudOverlay.isNull()) {
-      QUrl cloudUrl(CLOUD_URL);
-      QNetworkRequest request(cloudUrl);
-      QNetworkReply* reply = m_network.get(request);
-      connect(reply, &QNetworkReply::finished, this, [this, reply]() {
-        reply->deleteLater();
-
-        if (reply->error() == QNetworkReply::NoError) {
-          QByteArray imageData = reply->readAll();
-          QImage image;
-          if (image.loadFromData(imageData)) {
-            m_cloudOverlay = image;
-            update();
-          }
-        }
-      });
-    }
+    if (enabled && m_cloudOverlay.isNull())
+      fetchCloudOverlay();
 
     Q_EMIT showWeatherChanged();
   }
@@ -553,16 +526,40 @@ void Widgets::GPS::updateData()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Downloads a tile if it is not already cached or pending.
+ * @brief Downloads a tile if it is not already cached or pending, preferring the disk cache.
  */
 void Widgets::GPS::requestTileIfNeeded(const QString& url)
 {
+  Q_ASSERT(s_network);
+
   if (s_tileCache.contains(url) || s_pending.contains(url))
     return;
 
-  QNetworkReply* reply = m_network.get(QNetworkRequest(QUrl(url)));
-  s_pending[url]       = reply;
-  connect(reply, &QNetworkReply::finished, this, [=, this]() { onTileFetched(reply); });
+  QNetworkRequest request{QUrl(url)};
+  request.setAttribute(QNetworkRequest::CacheLoadControlAttribute, QNetworkRequest::PreferCache);
+
+  QNetworkReply* reply = s_network->get(request);
+  s_pending.insert(url, reply);
+  connect(reply, &QNetworkReply::finished, s_network, [reply]() { onTileFetched(reply); });
+}
+
+/**
+ * @brief Downloads the equirectangular cloud overlay image.
+ */
+void Widgets::GPS::fetchCloudOverlay()
+{
+  QNetworkReply* reply = s_network->get(QNetworkRequest(QUrl(CLOUD_URL)));
+  connect(reply, &QNetworkReply::finished, reply, &QObject::deleteLater);
+  connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+    if (reply->error() != QNetworkReply::NoError)
+      return;
+
+    QImage image;
+    if (image.loadFromData(reply->readAll())) {
+      m_cloudOverlay = image;
+      update();
+    }
+  });
 }
 
 /**
@@ -582,20 +579,21 @@ void Widgets::GPS::preloadNextZoomTiles(int tx, int ty, int baseZoom)
 }
 
 /**
- * @brief Requests all visible map tiles for the current view and zoom level.
+ * @brief Requests all visible map tiles (wrap-aware) plus adjacent-zoom preloads.
  */
 void Widgets::GPS::updateTiles()
 {
+  const QSize viewSize = size().toSize();
+  if (viewSize.isEmpty())
+    return;
+
   const int baseZoom          = qFloor(m_zoom);
   const double fractionalZoom = m_zoom - baseZoom;
   const double scale          = qPow(2.0, fractionalZoom);
-
-  const int tileSize          = 256;
-  const double scaledTileSize = tileSize * scale;
+  const double scaledTileSize = 256.0 * scale;
 
   const QPointF center = m_centerTile / scale;
-
-  const QSize viewSize = size().toSize();
+  const int maxTiles   = 1 << baseZoom;
 
   const int tilesX = qCeil(viewSize.width() / scaledTileSize) + 1;
   const int tilesY = qCeil(viewSize.height() / scaledTileSize) + 1;
@@ -605,23 +603,24 @@ void Widgets::GPS::updateTiles()
       const int tx = static_cast<int>(center.x()) + dx;
       const int ty = static_cast<int>(center.y()) + dy;
 
-      const int maxTiles = 1 << baseZoom;
-
-      if (tx < 0 || ty < 0 || tx >= maxTiles || ty >= maxTiles)
+      if (ty < 0 || ty >= maxTiles)
         continue;
 
-      const auto url = tileUrl(tx, ty, baseZoom);
+      const int wrappedTx = ((tx % maxTiles) + maxTiles) % maxTiles;
 
-      requestTileIfNeeded(url);
+      requestTileIfNeeded(tileUrl(wrappedTx, ty, baseZoom));
 
       if (m_showNasaWeather && baseZoom <= WEATHER_GIBS_MAX_ZOOM)
-        requestTileIfNeeded(nasaWeatherUrl(tx, ty, baseZoom));
+        requestTileIfNeeded(nasaWeatherUrl(wrappedTx, ty, baseZoom));
 
       if (m_enableReferenceLayer)
-        requestTileIfNeeded(referenceUrl(tx, ty, baseZoom));
+        requestTileIfNeeded(referenceUrl(wrappedTx, ty, baseZoom));
 
       if (fractionalZoom > 0.7)
-        preloadNextZoomTiles(tx, ty, baseZoom);
+        preloadNextZoomTiles(wrappedTx, ty, baseZoom);
+
+      if (fractionalZoom < 0.3 && baseZoom > MIN_ZOOM)
+        requestTileIfNeeded(tileUrl(wrappedTx >> 1, ty >> 1, baseZoom - 1));
     }
   }
 }
@@ -631,16 +630,9 @@ void Widgets::GPS::updateTiles()
  */
 void Widgets::GPS::precacheWorld()
 {
-  for (int tx = 0; tx < (1 << MIN_ZOOM); ++tx) {
-    for (int ty = 0; ty < (1 << MIN_ZOOM); ++ty) {
-      const QString url = tileUrl(tx, ty, MIN_ZOOM);
-      if (!s_tileCache.contains(url) && !s_pending.contains(url)) {
-        QNetworkReply* reply = m_network.get(QNetworkRequest(QUrl(url)));
-        s_pending[url]       = reply;
-        connect(reply, &QNetworkReply::finished, this, [=, this]() { onTileFetched(reply); });
-      }
-    }
-  }
+  for (int tx = 0; tx < (1 << MIN_ZOOM); ++tx)
+    for (int ty = 0; ty < (1 << MIN_ZOOM); ++ty)
+      requestTileIfNeeded(tileUrl(tx, ty, MIN_ZOOM));
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -662,25 +654,32 @@ void Widgets::GPS::onThemeChanged()
 }
 
 /**
- * @brief Called when a tile download finishes.
+ * @brief Called when a tile download finishes; caches on success, retries with backoff on error.
  */
 void Widgets::GPS::onTileFetched(QNetworkReply* reply)
 {
   const QString url = reply->url().toString();
+  reply->deleteLater();
+  s_pending.remove(url);
+
   if (reply->error() == QNetworkReply::NoError) {
-    QImage* image = new QImage();
+    auto image = std::make_unique<QImage>();
     if (image->loadFromData(reply->readAll())) {
-      s_tileCache.insert(url, image);
+      const int cost = qMax(1, static_cast<int>(image->sizeInBytes() / 1024));
+      s_tileCache.insert(url, image.release(), cost);
+      s_retryCount.remove(url);
+
       for (auto* instance : std::as_const(s_instances))
         instance->update();
     }
 
-    else
-      delete image;
+    return;
   }
 
-  reply->deleteLater();
-  s_pending.remove(url);
+  const int attempts = s_retryCount.value(url, 0) + 1;
+  s_retryCount.insert(url, attempts);
+  if (attempts <= TILE_RETRY_LIMIT)
+    QTimer::singleShot(1000 * attempts, s_network, [url]() { requestTileIfNeeded(url); });
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -688,47 +687,50 @@ void Widgets::GPS::onTileFetched(QNetworkReply* reply)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Renders a scaled ancestor tile when the target tile is not yet cached.
+ * @brief Approximates a missing tile from cached neighbors: the nearest cached ancestor is
+ *        drawn as a base (no intermediate copies), then any cached child quadrants are drawn
+ *        on top for extra sharpness while zooming out.
  */
-bool Widgets::GPS::renderFallbackTile(
-  QPainter* painter, int tx, int ty, int baseZoom, const QRect& targetRect, double scaledTileSize)
+void Widgets::GPS::renderFallbackTile(
+  QPainter* painter, int tx, int ty, int baseZoom, const QRect& targetRect)
 {
-  const int tileSize = 256;
-  for (int z = baseZoom - 1; z >= MIN_ZOOM; --z) {
-    const int dz              = baseZoom - z;
-    const int tileScale       = 1 << dz;
-    const int parentTx        = tx >> dz;
-    const int parentTy        = ty >> dz;
-    const int wrappedParentTx = (parentTx % (1 << z) + (1 << z)) % (1 << z);
-    const QString parentUrl   = tileUrl(wrappedParentTx, parentTy, z);
+  constexpr double tileSize = 256.0;
 
+  for (int z = baseZoom - 1; z >= MIN_ZOOM; --z) {
+    const int dz        = baseZoom - z;
+    const int tileScale = 1 << dz;
+    const int parentMax = 1 << z;
+    const int parentTx  = ((tx >> dz) % parentMax + parentMax) % parentMax;
+    const int parentTy  = ty >> dz;
+
+    const QString parentUrl = tileUrl(parentTx, parentTy, z);
     if (!s_tileCache.contains(parentUrl))
       continue;
 
-    auto* src = s_tileCache.object(parentUrl);
-    const QRect sourceRect((tx % tileScale) * (tileSize / tileScale),
-                           (ty % tileScale) * (tileSize / tileScale),
-                           tileSize / tileScale,
-                           tileSize / tileScale);
+    const double subSize = tileSize / tileScale;
+    const QRectF sourceRect(
+      (tx & (tileScale - 1)) * subSize, (ty & (tileScale - 1)) * subSize, subSize, subSize);
 
-    const auto cropped    = src->copy(sourceRect);
-    const int roundedSize = qRound(scaledTileSize);
-
-    QImage finalTile;
-    if (qAbs(baseZoom - z) > 5) {
-      QImage img = cropped.scaled(1, 1, Qt::IgnoreAspectRatio, Qt::FastTransformation);
-      finalTile  = QImage(roundedSize, roundedSize, QImage::Format_ARGB32);
-      finalTile.fill(img.pixelColor(0, 0));
-    } else {
-      finalTile =
-        cropped.scaled(roundedSize, roundedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
-
-    painter->drawImage(targetRect, finalTile);
-    return true;
+    painter->drawImage(QRectF(targetRect), *s_tileCache.object(parentUrl), sourceRect);
+    break;
   }
 
-  return false;
+  const int childZoom = baseZoom + 1;
+  if (childZoom > m_mapMaxZoom[m_mapType])
+    return;
+
+  const double halfW = targetRect.width() * 0.5;
+  const double halfH = targetRect.height() * 0.5;
+  for (int sx = 0; sx < 2; ++sx) {
+    for (int sy = 0; sy < 2; ++sy) {
+      const QString childUrl = tileUrl(tx * 2 + sx, ty * 2 + sy, childZoom);
+      if (!s_tileCache.contains(childUrl))
+        continue;
+
+      const QRectF quadrant(targetRect.x() + sx * halfW, targetRect.y() + sy * halfH, halfW, halfH);
+      painter->drawImage(quadrant, *s_tileCache.object(childUrl));
+    }
+  }
 }
 
 /**
@@ -791,34 +793,38 @@ void Widgets::GPS::paintMap(QPainter* painter, const QSize& view)
   const QPointF centerTileBase = m_centerTile / scale;
   const int centerX            = static_cast<int>(centerTileBase.x());
   const int centerY            = static_cast<int>(centerTileBase.y());
+  const int maxTiles           = 1 << baseZoom;
 
-  const int offsetX = qRound((centerTileBase.x() - centerX) * scaledTileSize);
-  const int offsetY = qRound((centerTileBase.y() - centerY) * scaledTileSize);
+  const double originX = view.width() * 0.5 - centerTileBase.x() * scaledTileSize;
+  const double originY = view.height() * 0.5 - centerTileBase.y() * scaledTileSize;
 
   const int tilesX = qCeil(view.width() / scaledTileSize) + 1;
   const int tilesY = qCeil(view.height() / scaledTileSize) + 1;
 
   for (int dx = -tilesX / 2; dx <= tilesX / 2; ++dx) {
     for (int dy = -tilesY / 2; dy <= tilesY / 2; ++dy) {
-      const int tx        = centerX + dx;
-      const int ty        = centerY + dy;
-      const int wrappedTx = (tx % (1 << baseZoom) + (1 << baseZoom)) % (1 << baseZoom);
+      const int tx = centerX + dx;
+      const int ty = centerY + dy;
 
-      if (ty < 0 || ty >= (1 << baseZoom))
+      if (ty < 0 || ty >= maxTiles)
         continue;
 
-      const QString url = tileUrl(wrappedTx, ty, baseZoom);
-      const int drawX   = view.width() / 2 + qRound(dx * scaledTileSize) - offsetX;
-      const int drawY   = view.height() / 2 + qRound(dy * scaledTileSize) - offsetY;
-      const QRect targetRect(drawX, drawY, qRound(scaledTileSize), qRound(scaledTileSize));
+      const int wrappedTx = ((tx % maxTiles) + maxTiles) % maxTiles;
 
+      const int x0 = qRound(originX + tx * scaledTileSize);
+      const int x1 = qRound(originX + (tx + 1) * scaledTileSize);
+      const int y0 = qRound(originY + ty * scaledTileSize);
+      const int y1 = qRound(originY + (ty + 1) * scaledTileSize);
+      const QRect targetRect(x0, y0, x1 - x0, y1 - y0);
+
+      const QString url = tileUrl(wrappedTx, ty, baseZoom);
       if (s_tileCache.contains(url))
         painter->drawImage(targetRect, *s_tileCache.object(url));
 
       else
-        renderFallbackTile(painter, tx, ty, baseZoom, targetRect, scaledTileSize);
+        renderFallbackTile(painter, wrappedTx, ty, baseZoom, targetRect);
 
-      renderCloudOverlay(painter, wrappedTx, ty, baseZoom, targetRect, scaledTileSize);
+      renderCloudOverlay(painter, wrappedTx, ty, baseZoom, targetRect);
       renderWeatherOverlay(painter, wrappedTx, ty, baseZoom, targetRect);
       renderReferenceOverlay(painter, wrappedTx, ty, baseZoom, targetRect);
     }
@@ -828,12 +834,8 @@ void Widgets::GPS::paintMap(QPainter* painter, const QSize& view)
 /**
  * @brief Overlays the equirectangular cloud image onto the given tile rect.
  */
-void Widgets::GPS::renderCloudOverlay(QPainter* painter,
-                                      int wrappedTx,
-                                      int ty,
-                                      int baseZoom,
-                                      const QRect& targetRect,
-                                      double scaledTileSize)
+void Widgets::GPS::renderCloudOverlay(
+  QPainter* painter, int wrappedTx, int ty, int baseZoom, const QRect& targetRect)
 {
   if (!m_showWeather || m_cloudOverlay.isNull() || baseZoom > WEATHER_MAX_ZOOM)
     return;
@@ -852,17 +854,10 @@ void Widgets::GPS::renderCloudOverlay(QPainter* painter,
   const double v0 = (90.0 - lat0) * kInv180;
   const double v1 = (90.0 - lat1) * kInv180;
 
-  const QRect sourceRect(int(u0 * cloudWidth),
-                         int(v0 * cloudHeight),
-                         int((u1 - u0) * cloudWidth),
-                         int((v1 - v0) * cloudHeight));
+  const QRectF sourceRect(
+    u0 * cloudWidth, v0 * cloudHeight, (u1 - u0) * cloudWidth, (v1 - v0) * cloudHeight);
 
-  const int roundedSize = qRound(scaledTileSize);
-  const QImage cropped =
-    m_cloudOverlay.copy(sourceRect)
-      .scaled(roundedSize, roundedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-  painter->drawImage(targetRect, cropped);
+  painter->drawImage(QRectF(targetRect), m_cloudOverlay, sourceRect);
 }
 
 /**
@@ -1145,6 +1140,17 @@ QString Widgets::GPS::nasaWeatherUrl(const int tx, const int ty, const int zoom)
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Requests tiles for the newly exposed area when the item is laid out or resized.
+ */
+void Widgets::GPS::geometryChange(const QRectF& newGeometry, const QRectF& oldGeometry)
+{
+  QQuickPaintedItem::geometryChange(newGeometry, oldGeometry);
+
+  if (newGeometry.size() != oldGeometry.size())
+    updateTiles();
+}
+
+/**
  * @brief Handles mouse wheel zooming.
  */
 void Widgets::GPS::wheelEvent(QWheelEvent* event)
@@ -1158,16 +1164,13 @@ void Widgets::GPS::wheelEvent(QWheelEvent* event)
   const bool isTouchpad =
     !event->pixelDelta().isNull() || event->source() == Qt::MouseEventSynthesizedBySystem;
 
+  const double zoomStep = 0.5;
+
   double newZoom;
-  if (isTouchpad) {
-    const double zoomFactor = 1.05;
-    const double deltaNorm  = -delta * kInv120;
-    const double factor     = qPow(zoomFactor, -deltaNorm);
-    newZoom                 = m_zoom * factor;
-  } else {
-    const double zoomStep = 0.5;
-    newZoom               = m_zoom + (delta > 0 ? zoomStep : -zoomStep);
-  }
+  if (isTouchpad)
+    newZoom = m_zoom + delta * kInv120 * zoomStep;
+  else
+    newZoom = m_zoom + (delta > 0 ? zoomStep : -zoomStep);
 
   newZoom =
     qBound(static_cast<double>(MIN_ZOOM), newZoom, static_cast<double>(m_mapMaxZoom[m_mapType]));
