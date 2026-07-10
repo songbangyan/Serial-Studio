@@ -24,12 +24,22 @@
 
 #include <cmath>
 #include <QCursor>
+#include <QQuickWindow>
+#include <QtNumeric>
 
 #include "DSP.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
 #include "UI/Dashboard.h"
+
+static constexpr float kNearPlane = 0.1f;
+static constexpr float kFarPlane  = 100.0f;
+
+static constexpr int kScaleShrinkDelay    = 30;
+static constexpr double kFitPadding       = 1.2;
+static constexpr double kInvFitSteps      = 1.0 / 6.0;
+static constexpr double kScaleShrinkRatio = 0.35;
 
 /**
  * @brief Integer-exponent 10^n via table lookup; std::pow fallback for out-of-band values.
@@ -68,6 +78,7 @@ Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   , m_cameraOffsetZ(-10)
   , m_eyeSeparation(0.069f)
   , m_anaglyph(false)
+  , m_autoScale(true)
   , m_autoCenter(false)
   , m_interpolate(true)
   , m_orbitNavigation(true)
@@ -76,7 +87,11 @@ Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   , m_dirtyGrid(true)
   , m_dirtyBackground(true)
   , m_dirtyCameraIndicator(true)
+  , m_dataUpdated(true)
+  , m_orbitOffsetX(0)
+  , m_orbitOffsetY(0)
   , m_targetWorldScale(1.0)
+  , m_shrinkTicks(0)
   , m_centerInitialized(false)
   , m_dashboard(UI::Dashboard::instance())
   , m_timerEvents(Misc::TimerEvents::instance())
@@ -111,9 +126,6 @@ Widgets::Plot3D::Plot3D(const int index, QQuickItem* parent)
   onThemeChanged();
   connect(
     &m_themeManager, &Misc::ThemeManager::themeChanged, this, &Widgets::Plot3D::onThemeChanged);
-
-  connect(
-    this, &Widgets::Plot3D::rangeChanged, this, [this] { m_targetWorldScale = idealWorldScale(); });
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -127,11 +139,11 @@ void Widgets::Plot3D::paint(QPainter* painter)
 {
   painter->setBackground(m_outerBackgroundColor);
 
-  if (m_dirtyGrid)
-    drawGrid();
-
   if (m_dirtyData)
     drawData();
+
+  if (m_dirtyGrid)
+    drawGrid();
 
   if (m_dirtyCameraIndicator)
     drawCameraIndicator();
@@ -155,36 +167,39 @@ void Widgets::Plot3D::paint(QPainter* painter)
   images.append(m_cameraIndicatorImg);
 
   if (anaglyphEnabled()) {
-    QImage left(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-    left.setDevicePixelRatio(qApp->devicePixelRatio());
-    left.fill(Qt::transparent);
+    const qreal dpr = displayPixelRatio();
+    if (m_anaglyphImg[0].size() != widgetSize() || m_anaglyphImg[0].devicePixelRatio() != dpr) {
+      m_anaglyphImg[0] = QImage(widgetSize(), QImage::Format_ARGB32_Premultiplied);
+      m_anaglyphImg[1] = QImage(widgetSize(), QImage::Format_ARGB32_Premultiplied);
+      m_anaglyphMerged = QImage(widgetSize(), QImage::Format_RGB32);
+      m_anaglyphImg[0].setDevicePixelRatio(dpr);
+      m_anaglyphImg[1].setDevicePixelRatio(dpr);
+      m_anaglyphMerged.setDevicePixelRatio(dpr);
+    }
 
-    QImage right(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-    right.setDevicePixelRatio(qApp->devicePixelRatio());
-    right.fill(Qt::transparent);
+    m_anaglyphImg[0].fill(Qt::transparent);
+    m_anaglyphImg[1].fill(Qt::transparent);
 
-    QPainter leftScene(&left);
+    QPainter leftScene(&m_anaglyphImg[0]);
     for (const auto* p : images)
       leftScene.drawImage(0, 0, p[0]);
 
-    QPainter rightScene(&right);
+    QPainter rightScene(&m_anaglyphImg[1]);
     for (const auto* p : images)
       rightScene.drawImage(0, 0, p[1]);
 
-    QImage finalImage(widgetSize(), QImage::Format_RGB32);
-    finalImage.setDevicePixelRatio(qApp->devicePixelRatio());
-    const int h = left.height();
-    const int w = left.width();
+    const int h = m_anaglyphImg[0].height();
+    const int w = m_anaglyphImg[0].width();
     for (int y = 0; y < h; ++y) {
-      const auto* lLine = reinterpret_cast<const QRgb*>(left.constScanLine(y));
-      const auto* rLine = reinterpret_cast<const QRgb*>(right.constScanLine(y));
-      auto* oLine       = reinterpret_cast<QRgb*>(finalImage.scanLine(y));
+      const auto* lLine = reinterpret_cast<const QRgb*>(m_anaglyphImg[0].constScanLine(y));
+      const auto* rLine = reinterpret_cast<const QRgb*>(m_anaglyphImg[1].constScanLine(y));
+      auto* oLine       = reinterpret_cast<QRgb*>(m_anaglyphMerged.scanLine(y));
 
       for (int x = 0; x < w; ++x)
         oLine[x] = qRgb(qRed(lLine[x]), qGreen(rLine[x]), qBlue(rLine[x]));
     }
 
-    painter->drawImage(0, 0, finalImage);
+    painter->drawImage(0, 0, m_anaglyphMerged);
   }
 
   else {
@@ -266,8 +281,7 @@ double Widgets::Plot3D::idealWorldScale() const
   if (maxExtent < 1e-9)
     return m_worldScale;
 
-  constexpr double kInv6  = 1.0 / 6.0;
-  const double targetStep = (maxExtent * 1.2) * kInv6;
+  const double targetStep = maxExtent * kFitPadding * kInvFitSteps;
   const double exponent   = std::floor(std::log10(targetStep));
   const double base       = fastPow10(exponent);
   double snappedStep;
@@ -320,6 +334,14 @@ bool Widgets::Plot3D::invertEyePositions() const
 }
 
 /**
+ * @brief Returns whether automatic world-scale tracking of the data extent is enabled.
+ */
+bool Widgets::Plot3D::autoScale() const
+{
+  return m_autoScale;
+}
+
+/**
  * @brief Returns whether auto-centering on incoming data is enabled.
  */
 bool Widgets::Plot3D::autoCenter() const
@@ -356,10 +378,12 @@ const QSize& Widgets::Plot3D::widgetSize() const
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Sets the zoom level of the 3D plot.
+ * @brief Sets the zoom level of the 3D plot; any explicit zoom disables automatic scaling.
  */
 void Widgets::Plot3D::setWorldScale(const double z)
 {
+  setAutoScale(false);
+
   auto limited = qBound(1e-9, z, 1e9);
   if (m_worldScale != limited) {
     m_worldScale = limited;
@@ -447,6 +471,17 @@ void Widgets::Plot3D::setCameraOffsetZ(const double offset)
 //--------------------------------------------------------------------------------------------------
 // Display option setters
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Enables or disables automatic world-scale tracking of the data extent.
+ */
+void Widgets::Plot3D::setAutoScale(const bool enabled)
+{
+  if (m_autoScale != enabled) {
+    m_autoScale = enabled;
+    Q_EMIT autoScaleChanged();
+  }
+}
 
 /**
  * @brief Enables or disables automatic centering on incoming data.
@@ -541,7 +576,8 @@ void Widgets::Plot3D::updateData()
   if (!VALIDATE_WIDGET(SerialStudio::DashboardPlot3D, m_index))
     return;
 
-  m_dirtyData = true;
+  m_dirtyData   = true;
+  m_dataUpdated = true;
 }
 
 /**
@@ -568,6 +604,16 @@ void Widgets::Plot3D::onThemeChanged()
   m_innerBackgroundColor = m_themeManager.getColor("widget_base");
   m_outerBackgroundColor = m_themeManager.getColor("widget_window");
   // clang-format on
+
+  const double invSteps = 1.0 / static_cast<double>(m_gradientPens.size() - 1);
+  for (std::size_t i = 0; i < m_gradientPens.size(); ++i) {
+    const double t = static_cast<double>(i) * invSteps;
+    QColor c;
+    c.setRedF(m_lineTailColor.redF() * (1 - t) + m_lineHeadColor.redF() * t);
+    c.setGreenF(m_lineTailColor.greenF() * (1 - t) + m_lineHeadColor.greenF() * t);
+    c.setBlueF(m_lineTailColor.blueF() * (1 - t) + m_lineHeadColor.blueF() * t);
+    m_gradientPens[i] = QPen(c, 2);
+  }
 
   markDirty();
 }
@@ -604,20 +650,80 @@ void Widgets::Plot3D::markCameraDirty()
  */
 void Widgets::Plot3D::updateSize()
 {
-  auto dpr = qApp->devicePixelRatio();
+  auto dpr = displayPixelRatio();
   m_size   = QSize(static_cast<int>(width() * dpr), static_cast<int>(height() * dpr));
 
   markDirty();
 }
 
 /**
- * @brief Renders the 3D plot foreground.
+ * @brief Returns the device pixel ratio of the hosting window, with an app-level fallback.
  */
-void Widgets::Plot3D::drawData()
+qreal Widgets::Plot3D::displayPixelRatio() const
 {
-  const auto& data = m_dashboard.plotData3D(m_index);
-  if (data.size() <= 0)
+  const auto* win = window();
+  return win ? win->devicePixelRatio() : qApp->devicePixelRatio();
+}
+
+/**
+ * @brief Re-derives the cached device-pixel size when the effective pixel ratio changes.
+ */
+void Widgets::Plot3D::itemChange(ItemChange change, const ItemChangeData& value)
+{
+  if (change == ItemDevicePixelRatioHasChanged)
+    updateSize();
+
+  QQuickPaintedItem::itemChange(change, value);
+}
+
+/**
+ * @brief Re-targets the world scale with hysteresis: refit immediately when data overflows
+ *        the fitted view, refit smaller only after a persistent shrink well below it. The
+ *        0.35 shrink ratio sits below the worst post-refit ideal/fitted ratio (2/5), so a
+ *        refit always lands inside the keep band and re-targeting can never oscillate.
+ */
+void Widgets::Plot3D::updateTargetScale()
+{
+  if (!m_centerInitialized) {
+    m_targetWorldScale = idealWorldScale();
     return;
+  }
+
+  const double dx        = m_maxPoint.x() - m_minPoint.x();
+  const double dy        = m_maxPoint.y() - m_minPoint.y();
+  const double dz        = m_maxPoint.z() - m_minPoint.z();
+  const double maxExtent = qMax(dz, qMax(dx, dy));
+  if (maxExtent < 1e-9)
+    return;
+
+  const double idealStep  = maxExtent * kFitPadding * kInvFitSteps;
+  const double fittedStep = 1.0 / m_targetWorldScale;
+  const double ratio      = idealStep / fittedStep;
+
+  if (ratio > 1.0) {
+    m_targetWorldScale = idealWorldScale();
+    m_shrinkTicks      = 0;
+  }
+
+  else if (ratio < kScaleShrinkRatio) {
+    if (++m_shrinkTicks >= kScaleShrinkDelay) {
+      m_targetWorldScale = idealWorldScale();
+      m_shrinkTicks      = 0;
+    }
+  }
+
+  else
+    m_shrinkTicks = 0;
+}
+
+/**
+ * @brief Scans the data extent and converges the camera center and world scale toward it,
+ *        stepping once per dashboard data update so pointer-driven repaints (orbit, pan)
+ *        cannot fast-forward the easing into a visible scale jump.
+ */
+void Widgets::Plot3D::updateCamera(const DSP::LineSeries3D& data)
+{
+  Q_ASSERT(!data.empty());
 
   QVector3D min = data.front();
   QVector3D max = data.front();
@@ -637,17 +743,64 @@ void Widgets::Plot3D::drawData()
     Q_EMIT rangeChanged();
   }
 
+  updateTargetScale();
+
+  bool moved = false;
   if (!m_centerInitialized) {
     m_centerPoint       = m_targetCenter;
     m_worldScale        = m_targetWorldScale;
     m_centerInitialized = true;
+    moved               = true;
   }
 
-  else if (m_autoCenter)
-    m_centerPoint += (m_targetCenter - m_centerPoint) * 0.08f;
+  else {
+    if (m_autoCenter && m_centerPoint != m_targetCenter) {
+      const QVector3D delta = m_targetCenter - m_centerPoint;
+      if (delta.lengthSquared() <= (max - min).lengthSquared() * 1e-8f)
+        m_centerPoint = m_targetCenter;
+      else
+        m_centerPoint += delta * 0.08f;
+
+      moved = true;
+    }
+
+    if (m_autoScale && m_worldScale != m_targetWorldScale) {
+      const double delta = m_targetWorldScale - m_worldScale;
+      if (std::abs(delta) <= m_targetWorldScale * 1e-3)
+        m_worldScale = m_targetWorldScale;
+      else
+        m_worldScale += delta * 0.15;
+
+      moved = true;
+    }
+  }
+
+  if (moved) {
+    m_dirtyGrid = true;
+    Q_EMIT cameraChanged();
+  }
+}
+
+/**
+ * @brief Renders the 3D plot foreground.
+ */
+void Widgets::Plot3D::drawData()
+{
+  const auto& data = m_dashboard.plotData3D(m_index);
+  if (data.empty()) {
+    m_plotImg[0] = QImage();
+    m_plotImg[1] = QImage();
+    m_dirtyData  = false;
+    return;
+  }
+
+  if (m_dataUpdated) {
+    updateCamera(data);
+    m_dataUpdated = false;
+  }
 
   QMatrix4x4 matrix;
-  matrix.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
+  matrix.perspective(45.0f, float(width()) / height(), kNearPlane, kFarPlane);
   matrix.translate(m_cameraOffsetX, m_cameraOffsetY, m_cameraOffsetZ);
 
   if (anaglyphEnabled()) {
@@ -688,7 +841,7 @@ void Widgets::Plot3D::drawData()
 void Widgets::Plot3D::drawGrid()
 {
   QMatrix4x4 matrix;
-  matrix.perspective(45.0f, float(width()) / height(), 0.1f, 100.0f);
+  matrix.perspective(45.0f, float(width()) / height(), kNearPlane, kFarPlane);
   matrix.translate(m_cameraOffsetX, m_cameraOffsetY, m_cameraOffsetZ);
 
   if (anaglyphEnabled()) {
@@ -729,7 +882,7 @@ void Widgets::Plot3D::drawGrid()
 void Widgets::Plot3D::drawBackground()
 {
   QImage img(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-  img.setDevicePixelRatio(qApp->devicePixelRatio());
+  img.setDevicePixelRatio(displayPixelRatio());
   img.fill(Qt::transparent);
 
   QPointF center(width() * 0.5f, height() * 0.5f);
@@ -793,9 +946,9 @@ double Widgets::Plot3D::gridStep(const double scale) const
   if (s == -1)
     s = m_worldScale;
 
-  const float rawStep  = 1.0f / s;
-  const float exponent = std::floor(std::log10(rawStep));
-  const float base     = static_cast<float>(fastPow10(exponent));
+  const double rawStep  = 1.0 / s;
+  const double exponent = std::floor(std::log10(rawStep));
+  const double base     = fastPow10(exponent);
 
   if (rawStep >= base * 5)
     return base * 5;
@@ -806,13 +959,14 @@ double Widgets::Plot3D::gridStep(const double scale) const
 }
 
 /**
- * @brief Projects 3D world-space points into 2D screen-space coordinates.
+ * @brief Projects 3D world-space points into 2D screen-space coordinates, writing a NaN
+ *        sentinel for points behind the near plane so callers can skip broken segments.
  */
-std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& points,
-                                                       const QMatrix4x4& matrix)
+const std::vector<QPointF>& Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& points,
+                                                              const QMatrix4x4& matrix)
 {
-  std::vector<QPointF> projected;
-  projected.reserve(points.size());
+  m_projected.clear();
+  m_projected.reserve(points.size());
 
   const float halfW = width() * 0.5f;
   const float halfH = height() * 0.5f;
@@ -820,8 +974,10 @@ std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& 
   for (const QVector3D& p : points) {
     QVector4D v = matrix * QVector4D(p, 1.0f);
 
-    if (DSP::isZero(v.w()))
+    if (v.w() < kNearPlane) {
+      m_projected.push_back(QPointF(qQNaN(), qQNaN()));
       continue;
+    }
 
     const float invW = 1.0f / v.w();
     const float ndcX = v.x() * invW;
@@ -829,14 +985,15 @@ std::vector<QPointF> Widgets::Plot3D::screenProjection(const DSP::LineSeries3D& 
 
     const float screenX = halfW + ndcX * halfW;
     const float screenY = halfH - ndcY * halfH;
-    projected.push_back(QPointF(screenX, screenY));
+    m_projected.push_back(QPointF(screenX, screenY));
   }
 
-  return projected;
+  return m_projected;
 }
 
 /**
- * @brief Projects and renders a 3D line as a faded 2D segment on screen.
+ * @brief Renders a near-plane-clipped 3D line as faded 2D segments, projecting only its two
+ *        endpoints since a projective transform maps straight lines to straight lines.
  */
 void Widgets::Plot3D::drawLine3D(QPainter& painter,
                                  const QMatrix4x4& matrix,
@@ -847,6 +1004,16 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
                                  Qt::PenStyle style)
 {
   constexpr int segmentCount = 40;
+
+  QVector4D a = matrix * QVector4D(p1, 1.0f);
+  QVector4D b = matrix * QVector4D(p2, 1.0f);
+  if (a.w() < kNearPlane && b.w() < kNearPlane)
+    return;
+
+  if (a.w() < kNearPlane)
+    a += (b - a) * ((kNearPlane - a.w()) / (b.w() - a.w()));
+  else if (b.w() < kNearPlane)
+    b += (a - b) * ((kNearPlane - b.w()) / (a.w() - b.w()));
 
   const float w     = width();
   const float h     = height();
@@ -860,18 +1027,15 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
   const float xLimit      = w * screenRatio;
   const float yLimit      = h * screenRatio;
 
+  const QPointF pStart(halfW + (a.x() / a.w()) * halfW, halfH - (a.y() / a.w()) * halfH);
+  const QPointF pEnd(halfW + (b.x() / b.w()) * halfW, halfH - (b.y() / b.w()) * halfH);
+  const QPointF span = pEnd - pStart;
+
+  QPen pen(color, lineWidth, style);
+  constexpr float kInvSegments = 1.0f / segmentCount;
   for (int i = 0; i < segmentCount; ++i) {
-    float t1    = float(i) / segmentCount;
-    float t2    = float(i + 1) / segmentCount;
-    QVector3D a = (1.0f - t1) * p1 + t1 * p2;
-    QVector3D b = (1.0f - t2) * p1 + t2 * p2;
-
-    const auto projected = screenProjection({a, b}, matrix);
-    if (projected.size() != 2)
-      continue;
-
-    const QPointF& pA = projected[0];
-    const QPointF& pB = projected[1];
+    const QPointF pA = pStart + span * (float(i) * kInvSegments);
+    const QPointF pB = pStart + span * (float(i + 1) * kInvSegments);
 
     const bool exceedPAx = std::abs(pA.x() - halfW) > xLimit;
     const bool exceedPBx = std::abs(pB.x() - halfW) > xLimit;
@@ -887,7 +1051,8 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
     QColor faded = color;
     faded.setAlphaF(color.alphaF() * alpha);
 
-    painter.setPen(QPen(faded, lineWidth, style));
+    pen.setColor(faded);
+    painter.setPen(pen);
     painter.drawLine(pA, pB);
   }
 }
@@ -902,7 +1067,7 @@ void Widgets::Plot3D::drawLine3D(QPainter& painter,
 QImage Widgets::Plot3D::renderGrid(const QMatrix4x4& matrix)
 {
   QImage img(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-  img.setDevicePixelRatio(qApp->devicePixelRatio());
+  img.setDevicePixelRatio(displayPixelRatio());
   img.fill(Qt::transparent);
 
   QPainter painter(&img);
@@ -968,7 +1133,7 @@ QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
   };
 
   QImage img(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-  img.setDevicePixelRatio(qApp->devicePixelRatio());
+  img.setDevicePixelRatio(displayPixelRatio());
   img.fill(Qt::transparent);
 
   if (width() < 240 || height() < 240)
@@ -1034,36 +1199,36 @@ QImage Widgets::Plot3D::renderCameraIndicator(const QMatrix4x4& matrix)
 QImage Widgets::Plot3D::renderData(const QMatrix4x4& matrix, const DSP::LineSeries3D& data)
 {
   QImage img(widgetSize(), QImage::Format_ARGB32_Premultiplied);
-  img.setDevicePixelRatio(qApp->devicePixelRatio());
+  img.setDevicePixelRatio(displayPixelRatio());
   img.fill(Qt::transparent);
 
   QPainter painter(&img);
   painter.setRenderHint(QPainter::Antialiasing, true);
 
-  auto points = screenProjection(data, matrix);
+  const auto& points = screenProjection(data, matrix);
 
   if (m_interpolate) {
-    const auto& endColor   = m_lineHeadColor;
-    const auto& startColor = m_lineTailColor;
     const auto numPoints   = static_cast<qsizetype>(points.size());
     const double invPoints = numPoints > 0 ? 1.0 / numPoints : 0.0;
+    const double lutScale  = static_cast<double>(m_gradientPens.size() - 1);
     for (qsizetype i = 1; i < numPoints; ++i) {
-      QColor c;
-      double t = double(i) * invPoints;
-      c.setRedF(startColor.redF() * (1 - t) + endColor.redF() * t);
-      c.setGreenF(startColor.greenF() * (1 - t) + endColor.greenF() * t);
-      c.setBlueF(startColor.blueF() * (1 - t) + endColor.blueF() * t);
+      const QPointF& a = points[i - 1];
+      const QPointF& b = points[i];
+      if (qIsNaN(a.x()) || qIsNaN(b.x()))
+        continue;
 
-      painter.setPen(QPen(c, 2));
-      painter.drawLine(points[i - 1], points[i]);
+      const auto idx = static_cast<std::size_t>(double(i) * invPoints * lutScale);
+      painter.setPen(m_gradientPens[idx]);
+      painter.drawLine(a, b);
     }
   }
 
   else {
     painter.setPen(Qt::NoPen);
     painter.setBrush(m_lineHeadColor);
-    for (const QPointF& pt : std::as_const(points))
-      painter.drawEllipse(pt, 1, 1);
+    for (const QPointF& pt : points)
+      if (!qIsNaN(pt.x()))
+        painter.drawEllipse(pt, 1, 1);
   }
 
   return img;
@@ -1086,11 +1251,11 @@ QPair<QMatrix4x4, QMatrix4x4> Widgets::Plot3D::eyeTransformations(const QMatrix4
 
   QMatrix4x4 lMatrix = matrix;
   lMatrix.translate(shift, 0.0f, 0.0f);
-  lMatrix.rotate(angleDeg, 0, 0, 1);
+  lMatrix.rotate(angleDeg, 0, 1, 0);
 
   QMatrix4x4 rMatrix = matrix;
   rMatrix.translate(-shift, 0.0f, 0.0f);
-  rMatrix.rotate(-angleDeg, 0, 0, 1);
+  rMatrix.rotate(-angleDeg, 0, 1, 0);
 
   return qMakePair(lMatrix, rMatrix);
 }

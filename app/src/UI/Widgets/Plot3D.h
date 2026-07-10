@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include <array>
 #include <QMatrix4x4>
 #include <QPainter>
 #include <QQuickPaintedItem>
@@ -94,11 +95,16 @@ class Plot3D : public QQuickPaintedItem {
              READ autoCenter
              WRITE setAutoCenter
              NOTIFY autoCenterChanged)
+  Q_PROPERTY(bool autoScale
+             READ autoScale
+             WRITE setAutoScale
+             NOTIFY autoScaleChanged)
   // clang-format on
 
 signals:
   void rangeChanged();
   void cameraChanged();
+  void autoScaleChanged();
   void autoCenterChanged();
   void eyeSeparationChanged();
   void anaglyphEnabledChanged();
@@ -125,6 +131,7 @@ public:
   [[nodiscard]] bool anaglyphEnabled() const;
   [[nodiscard]] bool invertEyePositions() const;
 
+  [[nodiscard]] bool autoScale() const;
   [[nodiscard]] bool autoCenter() const;
   [[nodiscard]] bool orbitNavigation() const;
   [[nodiscard]] bool interpolationEnabled() const;
@@ -139,6 +146,7 @@ public slots:
   void setCameraOffsetX(const double offset);
   void setCameraOffsetY(const double offset);
   void setCameraOffsetZ(const double offset);
+  void setAutoScale(const bool enabled);
   void setAutoCenter(const bool enabled);
   void setAnaglyphEnabled(const bool enabled);
   void setOrbitNavigation(const bool enabled);
@@ -154,6 +162,8 @@ private:
   void markDirty();
   void markCameraDirty();
   void updateSize();
+  void updateTargetScale();
+  void updateCamera(const DSP::LineSeries3D& data);
 
   void drawData();
   void drawGrid();
@@ -161,8 +171,10 @@ private:
   void drawCameraIndicator();
 
 private:
+  [[nodiscard]] qreal displayPixelRatio() const;
   [[nodiscard]] double gridStep(const double scale = -1) const;
-  std::vector<QPointF> screenProjection(const DSP::LineSeries3D& points, const QMatrix4x4& matrix);
+  const std::vector<QPointF>& screenProjection(const DSP::LineSeries3D& points,
+                                               const QMatrix4x4& matrix);
   void drawLine3D(QPainter& painter,
                   const QMatrix4x4& matrix,
                   const QVector3D& p1,
@@ -181,6 +193,7 @@ protected:
   void mouseMoveEvent(QMouseEvent* event) override;
   void mousePressEvent(QMouseEvent* event) override;
   void mouseReleaseEvent(QMouseEvent* event) override;
+  void itemChange(ItemChange change, const ItemChangeData& value) override;
 
 private:
   int m_index;
@@ -196,6 +209,7 @@ private:
   float m_eyeSeparation;
 
   bool m_anaglyph;
+  bool m_autoScale;
   bool m_autoCenter;
   bool m_interpolate;
   bool m_orbitNavigation;
@@ -205,6 +219,7 @@ private:
   bool m_dirtyGrid;
   bool m_dirtyBackground;
   bool m_dirtyCameraIndicator;
+  bool m_dataUpdated;
 
   QColor m_textColor;
   QColor m_xAxisColor;
@@ -218,21 +233,26 @@ private:
   QColor m_innerBackgroundColor;
   QColor m_outerBackgroundColor;
 
+  std::array<QPen, 64> m_gradientPens;
+  std::vector<QPointF> m_projected;
+
   QImage m_bgImg[2];
   QImage m_plotImg[2];
   QImage m_gridImg[2];
+  QImage m_anaglyphImg[2];
+  QImage m_anaglyphMerged;
   QImage m_cameraIndicatorImg[2];
 
   double m_orbitOffsetX;
   double m_orbitOffsetY;
   QPointF m_lastMousePos;
-  double m_minimumWorldScale;
 
   QVector3D m_minPoint;
   QVector3D m_maxPoint;
   QVector3D m_centerPoint;
   QVector3D m_targetCenter;
   double m_targetWorldScale;
+  int m_shrinkTicks;
   bool m_centerInitialized;
 
   QSize m_size;

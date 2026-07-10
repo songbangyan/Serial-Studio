@@ -57,14 +57,22 @@ Item {
   }
 
   //
-  // Configure widget on load, then restore persisted settings
+  // Configure widget on load
   //
   onModelChanged: {
     if (model) {
       model.visible = true
       model.parent = container
       model.anchors.fill = container
+    }
+  }
 
+  //
+  // Restore persisted settings; runs after ALL initial properties are applied, since
+  // onModelChanged can fire while widgetId is still empty during object creation
+  //
+  Component.onCompleted: {
+    if (model) {
       const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
       if (s["interpolationEnabled"] !== undefined)
@@ -150,11 +158,13 @@ Item {
   }
 
   //
-  // Moves the model to the given position & setup, with animations
+  // Moves the model to the given pose; zoom only animates once auto-scale is off
   //
   function animateToView(angleX, angleY, angleZ, offsetX, offsetY) {
-    zoomAnimation.to = model.idealWorldScale
-    zoomAnimation.start()
+    if (!model.autoScale) {
+      zoomAnimation.to = model.idealWorldScale
+      zoomAnimation.start()
+    }
 
     angleXAnimation.to = angleX
     angleXAnimation.start()
