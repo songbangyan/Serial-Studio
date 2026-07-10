@@ -1,5 +1,6 @@
 [
   { "id": "getting-started", "title": "Getting Started", "section": "Basics", "file": "Getting-Started.md" },
+  { "id": "linux-installation", "title": "Linux Installation", "section": "Basics", "file": "Linux-Installation.md" },
   { "id": "operation-modes", "title": "Operation Modes", "section": "Basics", "file": "Operation-Modes.md" },
   { "id": "data-sources", "title": "Data Sources", "section": "Basics", "file": "Data-Sources.md" },
   { "id": "toolbar-reference", "title": "Toolbar & Button Reference", "section": "Basics", "file": "Toolbar-Reference.md" },

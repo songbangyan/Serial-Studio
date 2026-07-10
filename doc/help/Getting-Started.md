@@ -57,8 +57,8 @@ A few install options are available.
 **AppImage (recommended):**
 
 ```bash
-chmod +x SerialStudio-*.AppImage
-./SerialStudio-*.AppImage
+chmod +x Serial-Studio-Pro-*.AppImage
+./Serial-Studio-Pro-*.AppImage
 ```
 
 You may need `libfuse2` first:
@@ -73,7 +73,9 @@ sudo apt update && sudo apt install libfuse2
 flatpak install flathub com.serial_studio.Serial-Studio
 ```
 
-DEB and RPM packages are also on the releases page.
+DEB and RPM packages are also on the releases page. Distribution-specific install steps and
+package signature verification (GPG key import for RPM) are covered in
+[Linux Installation](Linux-Installation.md).
 
 **Serial port permissions on Linux.** If your serial device doesn't show up, add your user to the `dialout` group:
 
