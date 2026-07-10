@@ -62,13 +62,20 @@ Item {
   //
   // Reparent the painted-item model into the central waterfall area
   //
-  onModelChanged: restoreSettings()
-  function restoreSettings() {
+  onModelChanged: {
+    if (model) {
+      model.parent = plotArea
+      model.anchors.fill = plotArea
+    }
+  }
+
+  //
+  // Restore persisted settings; runs after ALL initial properties are applied, since
+  // onModelChanged can fire while widgetId is still empty during object creation
+  //
+  Component.onCompleted: {
     if (!model)
       return
-
-    model.parent = plotArea
-    model.anchors.fill = plotArea
 
     const s = Cpp_JSON_ProjectModel.widgetSettings(widgetId)
 
