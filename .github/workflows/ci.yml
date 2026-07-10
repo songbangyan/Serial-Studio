@@ -493,7 +493,7 @@ jobs:
         gpg --export --armor "$GPG_KEY_ID" > signing-public-key.asc
 
         rpmsign --addsign "$RPM"
-        sudo rpm --import signing-public-key.asc
+        rpm --import signing-public-key.asc
         rpm -Kv "$RPM"
         rpm -K "$RPM" | grep -qi 'signatures OK'
 
@@ -931,7 +931,7 @@ jobs:
         gpg --export --armor "$GPG_KEY_ID" > signing-public-key.asc
 
         rpmsign --addsign "$RPM"
-        sudo rpm --import signing-public-key.asc
+        rpm --import signing-public-key.asc
         rpm -Kv "$RPM"
         rpm -K "$RPM" | grep -qi 'signatures OK'
 
