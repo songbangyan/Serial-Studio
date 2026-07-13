@@ -64,7 +64,7 @@ class HtmlReport : public QObject {
   Q_OBJECT
 
 signals:
-  void finished(const QString& outputPath, bool success);
+  void finished(const QString& outputPath, bool success, const QString& error);
   void progress(const QString& status, double percent);
 
 public:
@@ -102,6 +102,9 @@ private:
   void startPdfRender(const QString& html, const QString& pdfPath);
   void startPrinting();
   void probeReadiness();
+  void cleanupTempHtml();
+
+  [[nodiscard]] static QString writeTempHtml(const QString& html);
 
 private slots:
   void onLoadFinished(bool ok);
@@ -121,6 +124,7 @@ private:
   QWebEnginePage* m_page;
   bool m_printStarted;
   int m_readinessAttempts;
+  QString m_tempHtmlPath;
 #  endif
 };
 

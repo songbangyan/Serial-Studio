@@ -996,12 +996,10 @@ void Sessions::DatabaseManager::renderReportFromPayload(const ReportPayloadPtr& 
       Q_EMIT pdfExportProgressChanged();
     }
 
-    Misc::Utilities::showMessageBox(
-      tr("Report Failed"),
-      payload->error.isEmpty()
-        ? tr("Could not generate the report. Check the output path and try again.")
-        : payload->error,
-      QMessageBox::Warning);
+    Misc::Utilities::showMessageBox(tr("Report Failed"),
+                                    payload->error.isEmpty() ? tr("Could not generate the report.")
+                                                             : payload->error,
+                                    QMessageBox::Warning);
 
     Q_EMIT pdfExportFinished(QString(), false);
     m_pendingPdfActive = false;
@@ -1023,7 +1021,7 @@ void Sessions::DatabaseManager::renderReportFromPayload(const ReportPayloadPtr& 
   connect(renderer,
           &HtmlReport::finished,
           this,
-          [this, renderer, reportBusy](const QString& outputPath, bool ok) {
+          [this, renderer, reportBusy](const QString& outputPath, bool ok, const QString& error) {
             if (reportBusy) {
               m_pdfExportBusy     = false;
               m_pdfExportProgress = 1.0;
@@ -1036,10 +1034,10 @@ void Sessions::DatabaseManager::renderReportFromPayload(const ReportPayloadPtr& 
             if (ok) {
               Misc::Utilities::revealFile(outputPath);
             } else {
-              Misc::Utilities::showMessageBox(
-                tr("Report Failed"),
-                tr("Could not generate the report. Check the output path and try again."),
-                QMessageBox::Warning);
+              Misc::Utilities::showMessageBox(tr("Report Failed"),
+                                              error.isEmpty() ? tr("Could not generate the report.")
+                                                              : error,
+                                              QMessageBox::Warning);
             }
 
             m_pendingPdfActive = false;

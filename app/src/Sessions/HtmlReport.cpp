@@ -21,6 +21,7 @@
 #  include <QByteArray>
 #  include <QCoreApplication>
 #  include <QDateTime>
+#  include <QDir>
 #  include <QFile>
 #  include <QFileInfo>
 #  include <QImage>
@@ -32,6 +33,7 @@
 #  include <QPageLayout>
 #  include <QPageSize>
 #  include <QtDebug>
+#  include <QTemporaryFile>
 #  include <QTextStream>
 #  include <QTimer>
 #  include <QUrl>
@@ -158,6 +160,7 @@ Sessions::HtmlReport::HtmlReport(QObject* parent)
 Sessions::HtmlReport::~HtmlReport()
 {
 #  ifdef SERIAL_STUDIO_WITH_WEBENGINE
+  cleanupTempHtml();
   if (m_page) {
     m_page->deleteLater();
     m_page = nullptr;
@@ -193,7 +196,7 @@ void Sessions::HtmlReport::render(const ReportData& data,
                                   const HtmlReportOptions& opts)
 {
   if (!data.valid || opts.outputPath.isEmpty()) {
-    Q_EMIT finished(QString(), false);
+    Q_EMIT finished(QString(), false, tr("No session data or output path was provided."));
     return;
   }
 
@@ -209,7 +212,7 @@ void Sessions::HtmlReport::render(const ReportData& data,
 
   m_htmlCache = buildHtml();
   if (m_htmlCache.isEmpty()) {
-    Q_EMIT finished(QString(), false);
+    Q_EMIT finished(QString(), false, tr("Could not load the report template resources."));
     return;
   }
 
@@ -230,14 +233,19 @@ void Sessions::HtmlReport::render(const ReportData& data,
       || m_opts.format == HtmlReportOptions::Format::Both)
     writeHtmlArtifact(m_htmlPath, m_htmlCache, htmlOk);
 
+  const QString writeError =
+    htmlOk ? QString()
+           : tr("Could not write the report file. Verify that the destination folder is "
+                "writable.");
+
   if (m_opts.format == HtmlReportOptions::Format::Html) {
-    Q_EMIT finished(m_htmlPath, htmlOk);
+    Q_EMIT finished(m_htmlPath, htmlOk, writeError);
     return;
   }
 
 #  ifdef SERIAL_STUDIO_WITH_WEBENGINE
   if (!htmlOk && m_opts.format == HtmlReportOptions::Format::Both) {
-    Q_EMIT finished(m_htmlPath, false);
+    Q_EMIT finished(m_htmlPath, false, writeError);
     return;
   }
 
@@ -782,7 +790,49 @@ void Sessions::HtmlReport::writeHtmlArtifact(const QString& htmlPath,
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Loads the HTML into an off-screen QWebEnginePage and polls __reportReady.
+ * @brief Writes the report document to a unique temporary file and returns its path, or an empty
+ * string on I/O failure.
+ */
+QString Sessions::HtmlReport::writeTempHtml(const QString& html)
+{
+  QTemporaryFile file(QDir::tempPath() + QStringLiteral("/serial-studio-report-XXXXXX.html"));
+  file.setAutoRemove(false);
+  if (!file.open())
+    return QString();
+
+  QTextStream ts(&file);
+  ts.setEncoding(QStringConverter::Utf8);
+  ts << html;
+  ts.flush();
+
+  const QString path = file.fileName();
+  const bool ok      = (file.error() == QFileDevice::NoError);
+  file.close();
+
+  if (!ok) {
+    QFile::remove(path);
+    return QString();
+  }
+
+  return path;
+}
+
+/**
+ * @brief Deletes the staged temporary HTML document, if one exists.
+ */
+void Sessions::HtmlReport::cleanupTempHtml()
+{
+  if (m_tempHtmlPath.isEmpty())
+    return;
+
+  QFile::remove(m_tempHtmlPath);
+  m_tempHtmlPath.clear();
+}
+
+/**
+ * @brief Loads the HTML into an off-screen QWebEnginePage and polls __reportReady. The document is
+ * staged as a temporary file and loaded via file:// because setHtml() rejects content above
+ * Chromium's 2 MB data-URL cap, which multi-dataset reports routinely exceed.
  */
 void Sessions::HtmlReport::startPdfRender(const QString& html, const QString& pdfPath)
 {
@@ -790,21 +840,33 @@ void Sessions::HtmlReport::startPdfRender(const QString& html, const QString& pd
 
   Q_EMIT progress(tr("Loading rendering engine…"), 0.45);
 
+  cleanupTempHtml();
+  m_tempHtmlPath = writeTempHtml(html);
+  if (m_tempHtmlPath.isEmpty()) {
+    Q_EMIT finished(m_pdfPath,
+                    false,
+                    tr("Could not write a temporary file for the rendering "
+                       "engine."));
+    return;
+  }
+
   m_page = new QWebEnginePage(QWebEngineProfile::defaultProfile(), this);
 
   connect(m_page, &QWebEnginePage::loadFinished, this, &HtmlReport::onLoadFinished);
   connect(m_page, &QWebEnginePage::pdfPrintingFinished, this, &HtmlReport::onPdfPrintingFinished);
 
-  m_page->setHtml(html, QUrl(QStringLiteral("qrc:/templates/reports/")));
+  m_page->load(QUrl::fromLocalFile(m_tempHtmlPath));
 }
 
 /**
- * @brief Page parse done -- probe the readiness flag.
+ * @brief Page parse done -- drop the staged file and probe the readiness flag.
  */
 void Sessions::HtmlReport::onLoadFinished(bool ok)
 {
+  cleanupTempHtml();
+
   if (!ok) {
-    Q_EMIT finished(m_pdfPath, false);
+    Q_EMIT finished(m_pdfPath, false, tr("The rendering engine could not load the report page."));
     return;
   }
 
@@ -814,15 +876,19 @@ void Sessions::HtmlReport::onLoadFinished(bool ok)
 }
 
 /**
- * @brief Reads @c window.__reportReady; prints when set, otherwise reschedules (max 30 x 100ms).
+ * @brief Reads @c window.__reportReady every 100 ms and prints when set; the attempt ceiling
+ * scales with the chart count (capped at 60 s) so many-chart reports get time to render.
  */
 void Sessions::HtmlReport::probeReadiness()
 {
   if (m_printStarted || !m_page)
     return;
 
-  constexpr int kMaxAttempts = 30;
-  if (++m_readinessAttempts > kMaxAttempts) {
+  constexpr int kBaseAttempts   = 30;
+  constexpr int kAttemptCeiling = 600;
+  const int chartAttempts       = 2 * static_cast<int>(m_series.size());
+  const int maxAttempts         = std::min(kBaseAttempts + chartAttempts, kAttemptCeiling);
+  if (++m_readinessAttempts > maxAttempts) {
     qWarning() << "[HtmlReport] Ready flag never set -- printing anyway";
     startPrinting();
     return;
@@ -867,7 +933,11 @@ void Sessions::HtmlReport::startPrinting()
 void Sessions::HtmlReport::onPdfPrintingFinished(const QString& filePath, bool success)
 {
   Q_UNUSED(filePath);
-  Q_EMIT finished(m_pdfPath, success);
+  Q_EMIT finished(m_pdfPath,
+                  success,
+                  success ? QString()
+                          : tr("Could not write the PDF file. Close it in any other application "
+                               "and verify that the destination folder is writable."));
 }
 
 #  endif  // SERIAL_STUDIO_WITH_WEBENGINE

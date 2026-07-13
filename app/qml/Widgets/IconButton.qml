@@ -18,13 +18,14 @@ Button {
   padding: 4
   icon.width: iconSize
   icon.height: iconSize
+  icon.color: root.color
   opacity: enabled ? 1 : 0.5
-  icon.color: Cpp_ThemeManager.colors["button_text"]
 
   ToolTip.delay: 500
   ToolTip.visible: root.hovered && root.ToolTip.text !== ""
 
   property int iconSize: 18
+  property string color: palette.buttonText
   property bool mirrorIconInRtl: icon.source.toString() !== "qrc:/icons/buttons/apply.svg"
 
   readonly property bool hasText: text.length > 0
@@ -61,9 +62,9 @@ Button {
       Label {
         text: root.text
         font: root.font
+        color: root.color
         visible: root.hasText
         Layout.alignment: Qt.AlignVCenter
-        color: Cpp_ThemeManager.colors["button_text"]
       }
     }
   }
