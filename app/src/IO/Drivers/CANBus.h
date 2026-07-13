@@ -151,6 +151,8 @@ private:
   void showCanSupportError();
   [[nodiscard]] bool validateOpenPreconditions();
   void wireCanBusSignals();
+  [[nodiscard]] CapturedData::SteadyTimePoint rebaseFrameTimestamp(
+    qint64 stampUsec, CapturedData::SteadyTimePoint now) noexcept;
 
 private:
   QCanBusDevice* m_device;
@@ -161,6 +163,9 @@ private:
   quint8 m_pluginIndex;
   quint8 m_interfaceIndex;
   quint32 m_bitrate;
+
+  bool m_hwStampAnchored;
+  CapturedData::SteadyClock::duration m_hwStampOffset;
 
   QSettings m_settings;
   QString m_interfaceError;

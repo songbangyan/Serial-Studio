@@ -64,6 +64,8 @@ IO::Drivers::CANBus::CANBus()
   , m_pluginIndex(0)
   , m_interfaceIndex(0)
   , m_bitrate(500000)
+  , m_hwStampAnchored(false)
+  , m_hwStampOffset(CapturedData::SteadyClock::duration::zero())
 {
   m_pluginList = enumerateCanPlugins();
 
@@ -128,6 +130,8 @@ void IO::Drivers::CANBus::close()
  */
 void IO::Drivers::CANBus::doClose()
 {
+  m_hwStampAnchored = false;
+
   if (!m_device)
     return;
 
@@ -620,10 +624,10 @@ void IO::Drivers::CANBus::setupExternalConnections()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Drains every available CAN frame and publishes standard frames in the legacy
- * [ID_hi, ID_lo, DLC, payload...] layout (11-bit ids keep byte 0's top bit clear; padded to
- * 11 bytes) and extended frames as [0x80|ID28..24, ID23..16, ID15..8, ID7..0, DLC,
- * payload...] (padded to 13 bytes); payloads larger than 64 bytes are dropped as malformed.
+ * @brief Drains available CAN frames and publishes them in the legacy layout: standard frames
+ * as [ID_hi, ID_lo, DLC, payload...] (11 bytes), extended as [0x80|ID28..24, ID23..16,
+ * ID15..8, ID7..0, DLC, payload...] (13 bytes); payloads over 64 bytes are dropped. Plugin
+ * stamps are rebased via rebaseFrameTimestamp(); unstamped frames use drain time.
  */
 void IO::Drivers::CANBus::onFramesReceived()
 {
@@ -634,6 +638,7 @@ void IO::Drivers::CANBus::onFramesReceived()
     return;
 
   try {
+    const auto now = CapturedData::SteadyClock::now();
     while (m_device->framesAvailable() > 0) {
       const QCanBusFrame frame = m_device->readFrame();
 
@@ -666,11 +671,10 @@ void IO::Drivers::CANBus::onFramesReceived()
 
       const auto stamp       = frame.timeStamp();
       const qint64 stampUsec = stamp.seconds() * 1000000 + stamp.microSeconds();
-      if (stampUsec > 0) {
-        const CapturedData::SteadyTimePoint arrival{std::chrono::microseconds(stampUsec)};
-        publishReceivedData(std::move(data), arrival);
-      } else
-        publishReceivedData(std::move(data));
+      if (stampUsec > 0)
+        publishReceivedData(std::move(data), rebaseFrameTimestamp(stampUsec, now));
+      else
+        publishReceivedData(std::move(data), now);
     }
   } catch (const std::exception& e) {
     qWarning() << "CAN frame read failed:" << e.what();
@@ -715,6 +719,30 @@ void IO::Drivers::CANBus::onErrorOccurred(QCanBusDevice::CanBusError error)
 //--------------------------------------------------------------------------------------------------
 // Private methods
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Rebases plugin frame stamps onto the steady clock: QCanBusFrame stamps have no
+ * defined clock (SocketCAN: CLOCK_REALTIME, others device-relative), so verbatim use broke
+ * steady-clock consumers (io.getLatestFrame ageMs). An anchored offset preserves inter-frame
+ * spacing; stamps outside the plausible window re-anchor at @p now (device resets, NTP steps).
+ */
+IO::CapturedData::SteadyTimePoint IO::Drivers::CANBus::rebaseFrameTimestamp(
+  const qint64 stampUsec, const CapturedData::SteadyTimePoint now) noexcept
+{
+  constexpr auto kMaxStampLag = std::chrono::seconds(5);
+
+  const CapturedData::SteadyTimePoint hw{std::chrono::microseconds(stampUsec)};
+
+  if (m_hwStampAnchored) {
+    const auto arrival = hw + m_hwStampOffset;
+    if (arrival <= now && arrival >= now - kMaxStampLag)
+      return arrival;
+  }
+
+  m_hwStampAnchored = true;
+  m_hwStampOffset   = now - hw;
+  return now;
+}
 
 /**
  * @brief Returns a platform-specific hint when no CAN interfaces are found for a plugin.
