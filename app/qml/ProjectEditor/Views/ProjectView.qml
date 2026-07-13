@@ -145,8 +145,9 @@ Widgets.Pane {
             leftPadding: 8
             rightPadding: 8
             text: qsTr("Settings")
+            icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/buttons/wrench.svg"
+            icon.source: "qrc:/icons/console/settings.svg"
             onClicked: settingsPopup.visible ? settingsPopup.close() : settingsPopup.open()
 
             Popup {

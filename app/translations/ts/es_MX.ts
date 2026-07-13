@@ -7798,8 +7798,12 @@ Formato válido: 01 A2 FF 3C</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="362"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
         <source>HEX</source>
-        <translation>HEX</translation>
+        <translation type="vanished">HEX</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="387"/>
@@ -14989,67 +14993,67 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>Configuración</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
         <source>Time Range:</source>
         <translation>Rango de Tiempo:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
         <source>Point Count:</source>
         <translation>Cantidad de Puntos:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="240"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
         <source>Change-Driven Transforms:</source>
         <translation>Transformaciones Dirigidas por Cambios:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>Ejecuta la transformación de un conjunto de datos solo cuando cambia una de sus entradas. Acelera proyectos grandes basados en tablas; desactivado por defecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
         <source>Source</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
         <source>Sources</source>
         <translation>Fuentes</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="303"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
         <source>Group</source>
         <translation>Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
         <source>Groups</source>
         <translation>Grupos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="309"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
         <source>Dataset</source>
         <translation>Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
         <source>Datasets</source>
         <translation>Conjuntos de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="315"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Action</source>
         <translation>Acción</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
         <source>Actions</source>
         <translation>Acciones</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>Haz doble clic en un bloque para editarlo. Haz clic derecho en cualquier lugar para agregar un grupo, conjunto de datos, acción, tabla de datos o dispositivo.</translation>
     </message>
@@ -18594,107 +18598,176 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="164"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="165"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="173"/>
         <source>Select all</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="178"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
         <source>Clear</source>
         <translation>Limpiar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <source>Find</source>
+        <translation>Buscar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <source>Collapse</source>
+        <translation>Contraer</translation>
+    </message>
+    <message>
+        <source>Export Log</source>
+        <translation type="vanished">Exportar Registro</translation>
+    </message>
+    <message>
+        <source>Log console output to a file</source>
+        <translation type="vanished">Registrar salida de consola a un archivo</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <source>Settings</source>
+        <translation>Configuración</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <source>Console settings</source>
+        <translation>Configuración de consola</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="521"/>
         <source>Find in console</source>
         <translation>Buscar en consola</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="558"/>
         <source>%1 of %2</source>
         <translation>%1 de %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="297"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="559"/>
         <source>No results</source>
         <translation>Sin resultados</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="571"/>
         <source>Match case</source>
         <translation>Coincidir mayúsculas</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="324"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
         <source>Previous match</source>
         <translation>Coincidencia anterior</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="597"/>
         <source>Next match</source>
         <translation>Coincidencia siguiente</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="607"/>
         <source>Close search</source>
         <translation>Cerrar búsqueda</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Send a file to the connected device</source>
         <translation>Enviar un archivo al dispositivo conectado</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Search console output</source>
         <translation>Buscar salida de consola</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Contraer líneas repetidas en una sola entrada</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="441"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Resume</source>
+        <translation>Reanudar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Pause</source>
+        <translation>Pausar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <source>Resume console updates</source>
+        <translation>Reanudar Actualizaciones de Consola</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <source>Freeze the console display (data keeps logging)</source>
+        <translation>Congelar la visualización de la consola (los datos siguen registrándose)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <source>Text</source>
+        <translation>Texto</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <source>Plain text display mode</source>
+        <translation>Modo de visualización de texto plano</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="768"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <source>Hex display mode</source>
+        <translation>Modo de visualización Hex</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="661"/>
         <source>Send Data to Device</source>
         <translation>Enviar Datos al Dispositivo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="598"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="818"/>
         <source>Send data to the device</source>
         <translation>Enviar datos al dispositivo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="617"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
         <source>Show Timestamp</source>
         <translation>Mostrar Marca de Tiempo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
         <source>Echo</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="642"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
         <source>Emulate VT-100</source>
         <translation>Emular VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="655"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
         <source>ANSI Colors</source>
         <translation>Colores ANSI</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Display: %1</source>
-        <translation>Visualización: %1</translation>
+        <translation type="vanished">Visualización: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="688"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
         <source>Clear console output</source>
         <translation>Limpiar salida de consola</translation>
     </message>

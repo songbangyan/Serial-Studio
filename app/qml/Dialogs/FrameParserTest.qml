@@ -359,7 +359,7 @@ Widgets.SmartDialog {
           CheckBox {
             id: hexToggle
 
-            text: qsTr("HEX")
+            text: qsTr("Hex")
           }
         }
 

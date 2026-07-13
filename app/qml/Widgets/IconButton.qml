@@ -62,8 +62,8 @@ Button {
         text: root.text
         font: root.font
         visible: root.hasText
-        color: root.icon.color
         Layout.alignment: Qt.AlignVCenter
+        color: Cpp_ThemeManager.colors["button_text"]
       }
     }
   }

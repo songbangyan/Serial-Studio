@@ -7698,8 +7698,12 @@ Valid format: 01 A2 FF 3C</source>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="362"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
         <source>HEX</source>
-        <translation>HEX</translation>
+        <translation type="vanished">HEX</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="387"/>
@@ -14463,67 +14467,67 @@ Click Refresh to update the list.</source>
         <translation>הגדרות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
         <source>Time Range:</source>
         <translation>טווח זמן:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
         <source>Point Count:</source>
         <translation>מספר נקודות:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="240"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
         <source>Change-Driven Transforms:</source>
         <translation>טרנספורמציות מונעות-שינוי:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>הרץ טרנספורמציה של מערך נתונים רק כאשר אחד מהקלטים שלו משתנה. מאיץ פרויקטים גדולים מונעי-טבלאות; כבוי כברירת מחדל.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
         <source>Source</source>
         <translation>מקור</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
         <source>Sources</source>
         <translation>מקורות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="303"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
         <source>Group</source>
         <translation>קבוצה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
         <source>Groups</source>
         <translation>קבוצות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="309"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
         <source>Dataset</source>
         <translation>מערך נתונים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
         <source>Datasets</source>
         <translation>מערכי נתונים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="315"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Action</source>
         <translation>פעולה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
         <source>Actions</source>
         <translation>פעולות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>לחץ לחיצה כפולה על בלוק כדי לערוך אותו. לחץ לחיצה ימנית בכל מקום כדי להוסיף קבוצה, מערך נתונים, פעולה, טבלת נתונים או התקן.</translation>
     </message>
@@ -17942,107 +17946,176 @@ function parse(%1) { ... }
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="164"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="165"/>
         <source>Copy</source>
         <translation>העתק</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="173"/>
         <source>Select all</source>
         <translation>בחר הכל</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="178"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
         <source>Clear</source>
         <translation>נקה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <source>Find</source>
+        <translation>חיפוש</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <source>Collapse</source>
+        <translation>כווץ</translation>
+    </message>
+    <message>
+        <source>Export Log</source>
+        <translation type="vanished">ייצוא יומן</translation>
+    </message>
+    <message>
+        <source>Log console output to a file</source>
+        <translation type="vanished">רישום פלט קונסול לקובץ</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <source>Settings</source>
+        <translation>הגדרות</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <source>Console settings</source>
+        <translation>הגדרות קונסול</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="521"/>
         <source>Find in console</source>
         <translation>חיפוש בקונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="558"/>
         <source>%1 of %2</source>
         <translation>%1 מתוך %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="297"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="559"/>
         <source>No results</source>
         <translation>אין תוצאות</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="571"/>
         <source>Match case</source>
         <translation>התאמת אותיות גדולות/קטנות</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="324"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
         <source>Previous match</source>
         <translation>התאמה קודמת</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="597"/>
         <source>Next match</source>
         <translation>התאמה הבאה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="607"/>
         <source>Close search</source>
         <translation>סגירת חיפוש</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Send a file to the connected device</source>
         <translation>שליחת קובץ להתקן המחובר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Search console output</source>
         <translation>חיפוש בפלט הקונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>כיווץ שורות חוזרות לערך בודד</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="441"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Resume</source>
+        <translation>המשך</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Pause</source>
+        <translation>השהה</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <source>Resume console updates</source>
+        <translation>המשך עדכוני מסוף</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <source>Freeze the console display (data keeps logging)</source>
+        <translation>הקפא תצוגת מסוף (נתונים ממשיכים להירשם)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <source>Text</source>
+        <translation>טקסט</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <source>Plain text display mode</source>
+        <translation>מצב תצוגת טקסט רגיל</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="768"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <source>Hex display mode</source>
+        <translation>מצב תצוגה הקסדצימלי</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="661"/>
         <source>Send Data to Device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="598"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="818"/>
         <source>Send data to the device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="617"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
         <source>Show Timestamp</source>
         <translation>הצג חותמת זמן</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
         <source>Echo</source>
         <translation>הד</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="642"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
         <source>Emulate VT-100</source>
         <translation>אמולציה של VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="655"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
         <source>ANSI Colors</source>
         <translation>צבעי ANSI</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Display: %1</source>
-        <translation>תצוגה: %1</translation>
+        <translation type="vanished">תצוגה: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="688"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
         <source>Clear console output</source>
         <translation>נקה פלט קונסול</translation>
     </message>

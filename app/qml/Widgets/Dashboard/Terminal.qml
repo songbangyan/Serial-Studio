@@ -72,6 +72,7 @@ Item {
   property int minimumRows: 24
   property bool searchOpen: false
   property int minimumColumns: 80
+  readonly property bool hasToolbar: consoleToolbar.visible
   property int minimumHeight: Cpp_Console_Handler.defaultCharHeight * root.minimumRows
   property int minimumWidth: Cpp_Console_Handler.defaultCharWidth * root.minimumColumns
 
@@ -188,8 +189,267 @@ Item {
     id: layout
 
     spacing: 4
-    anchors.margins: 8
     anchors.fill: parent
+
+    //
+    // Console behavior toolbar
+    //
+    Rectangle {
+      id: consoleToolbar
+
+      implicitHeight: 48
+      Layout.fillWidth: true
+      visible: root.width > toolbarRow.implicitWidth + 16
+      color: Cpp_ThemeManager.colors["window_toolbar_background"]
+
+      Rectangle {
+        height: 1
+        width: parent.width
+        anchors.bottom: parent.bottom
+        color: Cpp_ThemeManager.colors["window_border"]
+      }
+
+      RowLayout {
+        id: toolbarRow
+
+        spacing: 4
+
+        anchors {
+          leftMargin: 8
+          rightMargin: 8
+          left: parent.left
+          right: parent.right
+          verticalCenter: parent.verticalCenter
+        }
+
+        Widgets.IconButton {
+          id: clearButton
+
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          implicitHeight: 32
+          text: qsTr("Clear")
+          onClicked: root.clear()
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          ToolTip.text: qsTr("Clear console output")
+          icon.source: "qrc:/icons/console/clear.svg"
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+        }
+
+        Widgets.IconButton {
+          id: searchButton
+
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          text: qsTr("Find")
+          implicitHeight: 32
+          checked: root.searchOpen
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          ToolTip.text: qsTr("Search console output")
+          icon.source: "qrc:/icons/console/search.svg"
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+
+          onClicked: {
+            if (root.searchOpen)
+              root.closeSearch()
+
+            else {
+              root.searchOpen = true
+              searchField.forceActiveFocus()
+              searchField.selectAll()
+            }
+          }
+        }
+
+        Widgets.IconButton  {
+          id: collapseButton
+
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          implicitHeight: 32
+          text: qsTr("Collapse")
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          checked: Cpp_Console_Handler.collapseDuplicates
+          icon.source: "qrc:/icons/console/collapse-duplicates.svg"
+          ToolTip.text: qsTr("Collapse repeated lines into a single entry")
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+          onClicked: Cpp_Console_Handler.collapseDuplicates = !Cpp_Console_Handler.collapseDuplicates
+        }
+
+        Rectangle {
+          implicitWidth: 1
+          implicitHeight: 24
+          color: Cpp_ThemeManager.colors["widget_border"]
+        }
+
+        Widgets.IconButton {
+          id: pauseButton
+
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          implicitHeight: 32
+          checked: terminal.paused
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          enabled: Cpp_IO_Manager.isConnected
+          onClicked: terminal.paused = !terminal.paused
+          text: terminal.paused ? qsTr("Resume") : qsTr("Pause")
+          icon.source: terminal.paused
+                       ? "qrc:/icons/dashboard-buttons/resume.svg"
+                       : "qrc:/icons/dashboard-buttons/pause.svg"
+          ToolTip.text: terminal.paused
+                        ? qsTr("Resume console updates")
+                        : qsTr("Freeze the console display (data keeps logging)")
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+        }
+
+        Item {
+          Layout.fillWidth: true
+        }
+
+        Widgets.IconButton {
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          text: qsTr("Text")
+          implicitHeight: 32
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          ToolTip.text: qsTr("Plain text display mode")
+          checked: Cpp_Console_Handler.displayMode === 0
+          onClicked: Cpp_Console_Handler.displayMode = 0
+          icon.source: "qrc:/icons/console/plain-text.svg"
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+        }
+
+        Widgets.IconButton {
+          flat: true
+          leftPadding: 8
+          icon.width: 18
+          icon.height: 18
+          rightPadding: 8
+          text: qsTr("Hex")
+          implicitHeight: 32
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          ToolTip.text: qsTr("Hex display mode")
+          checked: Cpp_Console_Handler.displayMode === 1
+          onClicked: Cpp_Console_Handler.displayMode = 1
+          icon.source: "qrc:/icons/console/hexadecimal.svg"
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+        }
+
+        Rectangle {
+          implicitWidth: 1
+          implicitHeight: 24
+          color: Cpp_ThemeManager.colors["widget_border"]
+        }
+
+        Widgets.IconButton {
+          id: settingsButton
+
+          flat: true
+          icon.width: 18
+          leftPadding: 8
+          icon.height: 18
+          rightPadding: 8
+          implicitHeight: 32
+          text: qsTr("Settings")
+          icon.color: "transparent"
+          Layout.alignment: Qt.AlignVCenter
+          ToolTip.text: qsTr("Console settings")
+          icon.source: "qrc:/icons/console/settings.svg"
+          Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+          onClicked: settingsPopup.visible ? settingsPopup.close() : settingsPopup.open()
+
+          Popup {
+            id: settingsPopup
+
+            margins: 8
+            padding: 12
+            y: settingsButton.height + 4
+            x: settingsButton.width - width
+            closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+            background: Rectangle {
+              radius: 4
+              opacity: 0.95
+              color: Cpp_ThemeManager.colors["window"]
+              border.color: Cpp_ThemeManager.colors["groupbox_border"]
+            }
+
+            contentItem: ColumnLayout {
+              spacing: 4
+
+              CheckBox {
+                id: timestampCheck
+
+                onCheckedChanged: {
+                  if (Cpp_Console_Handler.showTimestamp !== checked)
+                    Cpp_Console_Handler.showTimestamp = checked
+                }
+                text: qsTr("Show Timestamp")
+                checked: Cpp_Console_Handler.showTimestamp
+              }
+
+              CheckBox {
+                id: echoCheck
+
+                text: qsTr("Echo")
+                onCheckedChanged: {
+                  if (Cpp_Console_Handler.echo !== checked)
+                    Cpp_Console_Handler.echo = checked
+                }
+                checked: Cpp_Console_Handler.echo
+              }
+
+              CheckBox {
+                id: vt100Check
+
+                onCheckedChanged: {
+                  if (Cpp_Console_Handler.vt100Emulation !== checked)
+                    Cpp_Console_Handler.vt100Emulation = checked
+                }
+                opacity: enabled ? 1 : 0.8
+                text: qsTr("Emulate VT-100")
+                checked: Cpp_Console_Handler.vt100Emulation
+                enabled: !Cpp_Console_Handler.imageWidgetActive
+              }
+
+              CheckBox {
+                id: ansiColorsCheck
+
+                onCheckedChanged: {
+                  if (enabled && Cpp_Console_Handler.ansiColors !== checked)
+                    Cpp_Console_Handler.ansiColors = checked
+                }
+                text: qsTr("ANSI Colors")
+                opacity: enabled ? 1 : 0.8
+                checked: Cpp_Console_Handler.vt100Emulation && Cpp_Console_Handler.ansiColors
+                enabled: Cpp_Console_Handler.vt100Emulation && !Cpp_Console_Handler.imageWidgetActive
+              }
+            }
+          }
+        }
+      }
+    }
 
     //
     // Console display
@@ -197,9 +457,12 @@ Item {
     TerminalWidget {
       id: terminal
 
+      Layout.leftMargin: 8
+      Layout.rightMargin: 8
       Layout.fillWidth: true
       Layout.fillHeight: true
       ansiColors: Cpp_Console_Handler.ansiColors
+      Layout.topMargin: consoleToolbar.visible ? 0 : 8
       vt100emulation: Cpp_Console_Handler.vt100Emulation
       Layout.minimumHeight: root.minimal ? 0 : Cpp_Console_Handler.defaultCharHeight * root.minimumRows
       Layout.minimumWidth: root.minimal ? 0 : Cpp_Console_Handler.defaultCharWidth * root.minimumColumns
@@ -255,7 +518,6 @@ Item {
 
             implicitWidth: 164
             implicitHeight: 24
-            font: Cpp_Misc_CommonFonts.monoFont
             placeholderText: qsTr("Find in console") + "..."
             palette.base: Cpp_ThemeManager.colors["console_base"]
             palette.text: Cpp_ThemeManager.colors["console_text"]
@@ -272,18 +534,18 @@ Item {
             onTextChanged: terminal.setSearchQuery(text, caseButton.checked)
 
             Keys.onReturnPressed: (event) => {
-              if (event.modifiers & Qt.ShiftModifier)
-                terminal.searchPrevious()
-              else
-                terminal.searchNext()
-            }
+                                    if (event.modifiers & Qt.ShiftModifier)
+                                    terminal.searchPrevious()
+                                    else
+                                    terminal.searchNext()
+                                  }
 
             Keys.onEnterPressed: (event) => {
-              if (event.modifiers & Qt.ShiftModifier)
-                terminal.searchPrevious()
-              else
-                terminal.searchNext()
-            }
+                                   if (event.modifiers & Qt.ShiftModifier)
+                                   terminal.searchPrevious()
+                                   else
+                                   terminal.searchNext()
+                                 }
 
             Keys.onEscapePressed: root.closeSearch()
           }
@@ -356,6 +618,9 @@ Item {
     RowLayout {
       id: sendCtrl
 
+      Layout.leftMargin: 8
+      Layout.rightMargin: 8
+      Layout.bottomMargin: 8
       Layout.fillWidth: true
       visible: root.width > implicitWidth
 
@@ -374,57 +639,12 @@ Item {
         ToolTip.text: qsTr("Send a file to the connected device")
       }
 
-      Widgets.IconButton {
-        id: searchButton
-
-        iconSize: 16
-        implicitHeight: 24
-        Layout.maximumWidth: 24
-        Layout.alignment: Qt.AlignVCenter
-        icon.source: "qrc:/icons/buttons/search.svg"
-        ToolTip.text: qsTr("Search console output")
-        icon.color: root.searchOpen
-                    ? Cpp_ThemeManager.colors["accent"]
-                    : Cpp_ThemeManager.colors["button_text"]
-
-        onClicked: {
-          if (root.searchOpen)
-            root.closeSearch()
-
-          else {
-            root.searchOpen = true
-            searchField.forceActiveFocus()
-            searchField.selectAll()
-          }
-        }
-      }
-
-      Widgets.IconButton {
-        id: collapseButton
-
-        iconSize: 16
-        implicitHeight: 24
-        Layout.maximumWidth: 24
-        Layout.alignment: Qt.AlignVCenter
-        icon.source: "qrc:/icons/buttons/collapse-duplicates.svg"
-        ToolTip.text: qsTr("Collapse repeated lines into a single entry")
-        icon.color: Cpp_Console_Handler.collapseDuplicates
-                    ? Cpp_ThemeManager.colors["accent"]
-                    : Cpp_ThemeManager.colors["button_text"]
-        onClicked: Cpp_Console_Handler.collapseDuplicates = !Cpp_Console_Handler.collapseDuplicates
-      }
-
       Widgets.Combo {
         id: deviceCombo
 
         Layout.alignment: Qt.AlignVCenter
         model: Cpp_Console_Handler.deviceNames
         visible: Cpp_Console_Handler.multiDeviceMode
-
-        //
-        // Only a user selection updates the handler; onCurrentIndexChanged also fires when the
-        // device model repopulates, which would push a reset index over the preserved selection.
-        //
         onActivated: (index) => Cpp_Console_Handler.setCurrentDeviceIndex(index)
       }
 
@@ -545,7 +765,7 @@ Item {
       CheckBox {
         id: hexCheckbox
 
-        text: "HEX"
+        text: qsTr("Hex")
         onCheckedChanged: {
           const newValue = checked ? 1 : 0
           if (Cpp_Console_Handler.dataMode !== newValue)
@@ -561,9 +781,9 @@ Item {
         id: lineEndingCombo
 
         onActivated: (index) => {
-          if (Cpp_Console_Handler.lineEnding !== index)
-            Cpp_Console_Handler.lineEnding = index
-        }
+                       if (Cpp_Console_Handler.lineEnding !== index)
+                       Cpp_Console_Handler.lineEnding = index
+                     }
         opacity: enabled ? 1 : 0.5
         enabled: Cpp_IO_Manager.readWrite
         Layout.alignment: Qt.AlignVCenter
@@ -575,9 +795,9 @@ Item {
         id: checkumCombo
 
         onActivated: (index) => {
-          if (Cpp_Console_Handler.checksumMethod !== index)
-            Cpp_Console_Handler.checksumMethod = index
-        }
+                       if (Cpp_Console_Handler.checksumMethod !== index)
+                       Cpp_Console_Handler.checksumMethod = index
+                     }
         Layout.minimumWidth: 128
         opacity: enabled ? 1 : 0.5
         enabled: Cpp_IO_Manager.readWrite
@@ -600,94 +820,5 @@ Item {
       }
     }
 
-    //
-    // Terminal output options
-    //
-    RowLayout {
-      Layout.fillWidth: true
-      visible: root.width > implicitWidth
-
-      CheckBox {
-        id: timestampCheck
-
-        onCheckedChanged: {
-          if (Cpp_Console_Handler.showTimestamp !== checked)
-            Cpp_Console_Handler.showTimestamp = checked
-        }
-        text: qsTr("Show Timestamp")
-        Layout.alignment: Qt.AlignVCenter
-        checked: Cpp_Console_Handler.showTimestamp
-      }
-
-      CheckBox {
-        id: echoCheck
-
-        text: qsTr("Echo")
-        onCheckedChanged: {
-          if (Cpp_Console_Handler.echo !== checked)
-            Cpp_Console_Handler.echo = checked
-        }
-        checked: Cpp_Console_Handler.echo
-        Layout.alignment: Qt.AlignVCenter
-      }
-
-      CheckBox {
-        id: vt100Check
-
-        onCheckedChanged: {
-          if (Cpp_Console_Handler.vt100Emulation !== checked)
-            Cpp_Console_Handler.vt100Emulation = checked
-        }
-        opacity: enabled ? 1 : 0.8
-        text: qsTr("Emulate VT-100")
-        Layout.alignment: Qt.AlignVCenter
-        checked: Cpp_Console_Handler.vt100Emulation
-        enabled: !Cpp_Console_Handler.imageWidgetActive
-      }
-
-      CheckBox {
-        id: ansiColorsCheck
-
-        onCheckedChanged: {
-          if (enabled && Cpp_Console_Handler.ansiColors !== checked)
-            Cpp_Console_Handler.ansiColors = checked
-        }
-        text: qsTr("ANSI Colors")
-        opacity: enabled ? 1 : 0.8
-        Layout.alignment: Qt.AlignVCenter
-        checked: Cpp_Console_Handler.vt100Emulation && Cpp_Console_Handler.ansiColors
-        enabled: Cpp_Console_Handler.vt100Emulation && !Cpp_Console_Handler.imageWidgetActive
-      }
-
-      Item {
-        Layout.fillWidth: true
-      }
-
-      Widgets.Combo {
-        id: displayModeCombo
-
-        implicitHeight: 24
-        Layout.maximumWidth: 164
-        Layout.fillWidth: true        
-        Layout.alignment: Qt.AlignVCenter
-        model: Cpp_Console_Handler.displayModes
-        currentIndex: Cpp_Console_Handler.displayMode
-        displayText: qsTr("Display: %1").arg(currentText)
-
-        onActivated: (index) => {
-          if (Cpp_Console_Handler.displayMode !== index)
-            Cpp_Console_Handler.displayMode = index
-        }
-      }
-
-      Widgets.IconButton {
-        implicitHeight: 24
-        onClicked: root.clear()
-        Layout.maximumWidth: 32
-        opacity: enabled ? 1 : 0.5
-        ToolTip.text: qsTr("Clear console output")
-        icon.source: "qrc:/icons/buttons/clear.svg"
-      }
-    }
   }
 }

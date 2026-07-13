@@ -7798,8 +7798,12 @@ Valid format: 01 A2 FF 3C</source>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="362"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
         <source>HEX</source>
-        <translation>HEX</translation>
+        <translation type="vanished">HEX</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="387"/>
@@ -14989,67 +14993,67 @@ Click Refresh to update the list.</source>
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
         <source>Time Range:</source>
         <translation>시간 범위:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
         <source>Point Count:</source>
         <translation>포인트 수:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="240"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
         <source>Change-Driven Transforms:</source>
         <translation>변경 기반 변환:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>입력 중 하나가 변경될 때만 데이터셋의 변환을 실행합니다. 대규모 테이블 기반 프로젝트의 속도를 향상시키며, 기본적으로 비활성화되어 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
         <source>Source</source>
         <translation>소스</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
         <source>Sources</source>
         <translation>소스</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="303"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
         <source>Group</source>
         <translation>그룹</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
         <source>Groups</source>
         <translation>그룹</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="309"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
         <source>Dataset</source>
         <translation>데이터셋</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
         <source>Datasets</source>
         <translation>데이터셋</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="315"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Action</source>
         <translation>액션</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
         <source>Actions</source>
         <translation>작업</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>블록을 더블 클릭하여 편집합니다. 아무 곳이나 우클릭하여 그룹, 데이터셋, 액션, 데이터 테이블 또는 장치를 추가합니다.</translation>
     </message>
@@ -18594,107 +18598,176 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="164"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="165"/>
         <source>Copy</source>
         <translation>복사</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="173"/>
         <source>Select all</source>
         <translation>모두 선택</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="178"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <source>Find</source>
+        <translation>찾기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <source>Collapse</source>
+        <translation>축소</translation>
+    </message>
+    <message>
+        <source>Export Log</source>
+        <translation type="vanished">로그 내보내기</translation>
+    </message>
+    <message>
+        <source>Log console output to a file</source>
+        <translation type="vanished">콘솔 출력을 파일에 기록</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <source>Settings</source>
+        <translation>설정</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <source>Console settings</source>
+        <translation>콘솔 설정</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="521"/>
         <source>Find in console</source>
         <translation>콘솔에서 찾기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="558"/>
         <source>%1 of %2</source>
         <translation>%2 중 %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="297"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="559"/>
         <source>No results</source>
         <translation>결과 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="571"/>
         <source>Match case</source>
         <translation>대소문자 구분</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="324"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
         <source>Previous match</source>
         <translation>이전 일치 항목</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="597"/>
         <source>Next match</source>
         <translation>다음 일치 항목</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="607"/>
         <source>Close search</source>
         <translation>검색 닫기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Send a file to the connected device</source>
         <translation>연결된 장치로 파일 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Search console output</source>
         <translation>콘솔 출력 검색</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>반복되는 줄을 단일 항목으로 축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="441"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Resume</source>
+        <translation>재개</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Pause</source>
+        <translation>일시정지</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <source>Resume console updates</source>
+        <translation>콘솔 업데이트 재개</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <source>Freeze the console display (data keeps logging)</source>
+        <translation>콘솔 표시 정지 (데이터는 계속 기록됨)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <source>Text</source>
+        <translation>텍스트</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <source>Plain text display mode</source>
+        <translation>일반 텍스트 디스플레이 모드</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="768"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <source>Hex display mode</source>
+        <translation>Hex 디스플레이 모드</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="661"/>
         <source>Send Data to Device</source>
         <translation>장치로 데이터 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="598"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="818"/>
         <source>Send data to the device</source>
         <translation>장치로 데이터 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="617"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
         <source>Show Timestamp</source>
         <translation>타임스탬프 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
         <source>Echo</source>
         <translation>에코</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="642"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 에뮬레이션</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="655"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
         <source>ANSI Colors</source>
         <translation>ANSI 색상</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Display: %1</source>
-        <translation>표시: %1</translation>
+        <translation type="vanished">표시: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="688"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
         <source>Clear console output</source>
         <translation>콘솔 출력 지우기</translation>
     </message>

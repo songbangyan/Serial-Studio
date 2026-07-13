@@ -7798,8 +7798,12 @@ Platný formát: 01 A2 FF 3C</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="362"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
         <source>HEX</source>
-        <translation>HEX</translation>
+        <translation type="vanished">HEX</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/FrameParserTest.qml" line="387"/>
@@ -14989,67 +14993,67 @@ Klikněte na Obnovit pro aktualizaci seznamu.</translation>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
         <source>Time Range:</source>
         <translation>Časový Rozsah:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="221"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
         <source>Point Count:</source>
         <translation>Počet Bodů:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="240"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
         <source>Change-Driven Transforms:</source>
         <translation>Transformace Řízené Změnou:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>Spustit transformaci datové sady pouze při změně jednoho z jejích vstupů. Zrychluje velké projekty řízené tabulkami; ve výchozím nastavení vypnuto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
         <source>Source</source>
         <translation>Zdroj</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
         <source>Sources</source>
         <translation>Zdroje</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="303"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
         <source>Group</source>
         <translation>Skupina</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
         <source>Groups</source>
         <translation>Skupiny</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="309"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
         <source>Dataset</source>
         <translation>Datová Sada</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
         <source>Datasets</source>
         <translation>Datové Sady</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="315"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Action</source>
         <translation>Akce</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
         <source>Actions</source>
         <translation>Akce</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>Dvojklikem upravíte blok. Pravým tlačítkem kdekoli přidáte skupinu, datovou sadu, akci, datovou tabulku nebo zařízení.</translation>
     </message>
@@ -18594,107 +18598,176 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
 <context>
     <name>Terminal</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="164"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="165"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="173"/>
         <source>Select all</source>
         <translation>Vybrat vše</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="178"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
         <source>Clear</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <source>Find</source>
+        <translation>Najít</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <source>Collapse</source>
+        <translation>Sbalit</translation>
+    </message>
+    <message>
+        <source>Export Log</source>
+        <translation type="vanished">Exportovat Log</translation>
+    </message>
+    <message>
+        <source>Log console output to a file</source>
+        <translation type="vanished">Zaznamenat výstup konzole do souboru</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <source>Settings</source>
+        <translation>Nastavení</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <source>Console settings</source>
+        <translation>Nastavení konzole</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="521"/>
         <source>Find in console</source>
         <translation>Hledat v konzoli</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="558"/>
         <source>%1 of %2</source>
         <translation>%1 z %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="297"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="559"/>
         <source>No results</source>
         <translation>Žádné výsledky</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="571"/>
         <source>Match case</source>
         <translation>Rozlišovat velikost písmen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="324"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
         <source>Previous match</source>
         <translation>Předchozí shoda</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="597"/>
         <source>Next match</source>
         <translation>Následující shoda</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="607"/>
         <source>Close search</source>
         <translation>Zavřít vyhledávání</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Send a file to the connected device</source>
         <translation>Odeslat soubor do připojeného zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Search console output</source>
         <translation>Prohledat výstup konzole</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Sbalit opakující se řádky do jedné položky</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="441"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Resume</source>
+        <translation>Obnovit</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <source>Pause</source>
+        <translation>Pozastavit</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <source>Resume console updates</source>
+        <translation>Obnovit aktualizace konzole</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <source>Freeze the console display (data keeps logging)</source>
+        <translation>Zmrazit zobrazení konzole (data se nadále zaznamenávají)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <source>Text</source>
+        <translation>Text</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <source>Plain text display mode</source>
+        <translation>Režim zobrazení prostého textu</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="768"/>
+        <source>Hex</source>
+        <translation>Hex</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <source>Hex display mode</source>
+        <translation>Režim hexadecimálního zobrazení</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="661"/>
         <source>Send Data to Device</source>
         <translation>Odeslat data do zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="598"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="818"/>
         <source>Send data to the device</source>
         <translation>Odeslat data do zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="617"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
         <source>Show Timestamp</source>
         <translation>Zobrazit Časovou Značku</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
         <source>Echo</source>
         <translation>Echo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="642"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
         <source>Emulate VT-100</source>
         <translation>Emulovat VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="655"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
         <source>ANSI Colors</source>
         <translation>Barvy ANSI</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Display: %1</source>
-        <translation>Zobrazení: %1</translation>
+        <translation type="vanished">Zobrazení: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="688"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
         <source>Clear console output</source>
         <translation>Vymazat výstup konzole</translation>
     </message>

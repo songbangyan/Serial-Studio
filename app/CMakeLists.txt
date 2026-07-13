@@ -599,6 +599,7 @@ set(QML_SOURCES
   qml/Widgets/ProjectTableRow.qml
   qml/Widgets/ProNotice.qml
   qml/Widgets/SearchField.qml
+  qml/Widgets/SegmentedControl.qml
   qml/Widgets/SmartWindow.qml
   qml/Widgets/SmartDialog.qml
   qml/Widgets/SubMenuCombo.qml

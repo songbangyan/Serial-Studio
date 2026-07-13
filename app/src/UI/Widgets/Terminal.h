@@ -106,6 +106,10 @@ class Terminal : public QQuickPaintedItem {
   Q_PROPERTY(int terminalRows
              READ terminalRows
              NOTIFY terminalSizeChanged)
+  Q_PROPERTY(bool paused
+             READ paused
+             WRITE setPaused
+             NOTIFY pausedChanged)
   Q_PROPERTY(bool searchActive
              READ searchActive
              NOTIFY searchResultsChanged)
@@ -126,6 +130,7 @@ signals:
   void copyAvailableChanged();
   void scrollOffsetYChanged();
   void vt100EmulationChanged();
+  void pausedChanged();
   void ansiColorsChanged();
   void terminalSizeChanged();
   void searchResultsChanged();
@@ -158,6 +163,7 @@ public:
   [[nodiscard]] const QFont& font() const;
   [[nodiscard]] const QPalette& colorPalette() const;
 
+  [[nodiscard]] bool paused() const;
   [[nodiscard]] bool autoscroll() const;
   [[nodiscard]] bool ansiColors() const;
   [[nodiscard]] bool copyAvailable() const;
@@ -183,6 +189,7 @@ public slots:
   void clear();
   void selectAll();
   void setFont(const QFont& font);
+  void setPaused(const bool paused);
   void setAutoscroll(const bool enabled);
   void setScrollOffsetY(const int offset);
   void setColorPalette(const QPalette& palette);
@@ -321,6 +328,7 @@ private:
   QPoint m_selectionStartCursor;
 
   State m_state;
+  bool m_paused;
   bool m_autoscroll;
   bool m_ansiColors;
   bool m_emulateVt100;

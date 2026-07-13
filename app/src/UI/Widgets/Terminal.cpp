@@ -65,6 +65,7 @@ Widgets::Terminal::Terminal(QQuickItem* parent)
   , m_borderY(0)
   , m_scrollOffsetY(0)
   , m_state(Text)
+  , m_paused(false)
   , m_autoscroll(true)
   , m_ansiColors(false)
   , m_emulateVt100(false)
@@ -703,6 +704,15 @@ const QPalette& Widgets::Terminal::colorPalette() const
 }
 
 /**
+ * @brief Returns true while console display updates are frozen (data keeps flowing to the
+ *        raw buffer and export; only this view stops appending).
+ */
+bool Widgets::Terminal::paused() const
+{
+  return m_paused;
+}
+
+/**
  * @brief Checks if autoscroll is enabled.
  */
 bool Widgets::Terminal::autoscroll() const
@@ -1330,6 +1340,21 @@ void Widgets::Terminal::setFont(const QFont& font)
 }
 
 /**
+ * @brief Freezes or resumes console display updates.
+ */
+void Widgets::Terminal::setPaused(const bool paused)
+{
+  if (m_paused == paused)
+    return;
+
+  m_paused = paused;
+  Q_EMIT pausedChanged();
+
+  m_stateChanged = true;
+  update();
+}
+
+/**
  * @brief Enables or disables autoscroll.
  */
 void Widgets::Terminal::setAutoscroll(const bool enabled)
@@ -1515,6 +1540,9 @@ bool Widgets::Terminal::lineHasRtlChar(QStringView line)
  */
 void Widgets::Terminal::append(const QString& data)
 {
+  if (m_paused)
+    return;
+
   QString text;
   text.reserve(data.size());
 

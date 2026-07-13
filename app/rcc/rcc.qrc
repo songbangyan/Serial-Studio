@@ -892,5 +892,11 @@
         <file>vendor/showdown.min.js</file>
         <file>chat-viewer.html</file>
         <file>markdown-viewer.html</file>
+        <file>icons/console/clear.svg</file>
+        <file>icons/console/collapse-duplicates.svg</file>
+        <file>icons/console/search.svg</file>
+        <file>icons/console/settings.svg</file>
+        <file>icons/console/hexadecimal.svg</file>
+        <file>icons/console/plain-text.svg</file>
     </qresource>
 </RCC>
