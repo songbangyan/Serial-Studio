@@ -17,7 +17,7 @@ available; it follows Flatpak's own signing and update mechanism and is not cove
 
 ## Signing key
 
-> **Warning:** package signing was introduced after version 4.0.2, so the 4.0.2 packages are
+> **Warning:** package signing was introduced after version 4.0.4, so the 4.0.4 packages are
 > unsigned and fail the verification steps below. Signed packages are currently available
 > from the [continuous build](https://github.com/Serial-Studio/Serial-Studio/releases/tag/continuous)
 > only; version 4.0.3 will be the first signed release.
@@ -55,7 +55,7 @@ rpm -K Serial-Studio-Pro-*-Linux-x64.rpm
 Expected output:
 
 ```text
-Serial-Studio-Pro-4.0.2-Linux-x64.rpm: digests signatures OK
+Serial-Studio-Pro-4.0.4-Linux-x64.rpm: digests signatures OK
 ```
 
 Install with your package manager so dependencies resolve automatically:

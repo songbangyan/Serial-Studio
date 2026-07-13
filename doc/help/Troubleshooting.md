@@ -819,7 +819,7 @@ When reporting an issue, please include:
 Dashboard widgets show "NaN" instead of values
 
 ## System
-- Serial Studio v4.0.2
+- Serial Studio v4.0.4
 - Windows 11 Pro
 - Official binary installer
 
