@@ -107,7 +107,7 @@ Item {
   //
   // Window flags
   //
-  property bool hasToolbar: root.height >= 296
+  readonly property bool hasToolbar: toolbar.shown
 
   //
   // Sync configurable properties to model and persist changes
@@ -166,14 +166,11 @@ Item {
   //
   // Toolbar
   //
-  RowLayout {
+  WidgetToolbar {
     id: toolbar
 
-    spacing: 4
-    visible: root.hasToolbar
-    height: root.hasToolbar ? 48 : 0
-    LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Cpp_Misc_Translator.rtl
+    minWidgetHeight: 296
+    windowRoot: root.windowRoot
 
     anchors {
       leftMargin: 8

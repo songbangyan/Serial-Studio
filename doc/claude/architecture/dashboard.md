@@ -239,6 +239,47 @@ previews. Protocol helpers (CRC, NMEA, Modbus, SLCAN, GRBL, GCode, SCPI, binary 
 injected into the engine. Gated `FeatureTier >= Pro`
 (`None=0, Hobbyist=1, Trial=2, Pro=3, Enterprise=4`).
 
+## Dashboard Freeze Mode (Pro) — spec 0007
+
+One stored flag, one derived flag, one input gate — keep the three roles separate:
+
+- **Stored**: `ProjectModel::frozen` (`Keys::Frozen`, project JSON root, absent = false).
+  `setFrozen` is license-gated **only in the enable direction** (unfreeze must always work);
+  the loader (`loadFrozen`) and `serializeToJson` bypass the gate on purpose so an unlicensed
+  load/save cycle never strips the flag. `newJsonFile` resets it.
+- **Effective**: read-only `UI::Dashboard::frozen` = `ProjectModel::frozen() &&
+  proWidgetsEnabled()`, notify wired to `frozenChanged` + `activatedChanged` (covers
+  online/offline/trial — late activation re-derives without reload). Computed getter by
+  design: binding-time reads only, never on the frame path, no cached flag to invalidate.
+  QML consumes only this property.
+- **Input gate**: `WindowManager::frozen` (plain bool, bound from `Cpp_UI_Dashboard.frozen`
+  in DashboardCanvas). Early-outs in `startManualPress` (first statement — closes caption
+  drag, body drag, edge resize from both event entry points), `childMouseEventFilter`,
+  `mousePressEvent` (both branches), `mouseDoubleClickEvent`, `updateHoverCursor`.
+  `setFrozen(true)` aborts an in-flight drag/resize without committing geometry.
+
+Chrome hides via `WidgetDelegate.frozen` (`headerVisible`/`shadowEnabled`) and the
+`hasToolbar` mirror; non-chrome escape hatches are gated at `DashboardLayout`
+(close/minimize/toggleAutoLayout — the shortcut path opens the license dialog when the
+setter refuses an enable) and in `Taskbar.qml` (entry-click restore, right-click
+remove-from-workspace, auto-layout button). Freeze is orthogonal to `taskbarHidden` and
+deliberately mode-agnostic (persists across operation-mode switches within a session).
+
+## Widget Toolbars — `WidgetToolbar.qml` Owns the Policy
+
+Every canvas widget toolbar lives in `app/qml/Widgets/Dashboard/WidgetToolbar.qml`: a 48 px
+band hosting buttons in a horizontal `Flickable` that **scrolls when too narrow instead of
+hiding** (edge fades signal overflow; `interactive` only on overflow). Visibility policy:
+`shown = available && !frozen && parent.height >= minWidgetHeight` — width never hides it.
+Widgets declare buttons as children, set `windowRoot` (frozen reads
+`windowRoot.frozen === true`, so external pop-outs — where `frozen` is undefined — are
+unaffected) and expose `readonly property bool hasToolbar: toolbar.shown` for the
+delegate/band mirror. Layout-agnostic: consumers anchor it (or use Layout props — ImageView).
+Do NOT reintroduce per-widget `width >= toolbar.implicitWidth` hiding or imperative
+`hasToolbar` assignments — the scroll policy is what removed that binding-loop hazard.
+Terminal keeps its own toolbar (dashboard tool, external-window only — freeze never
+reaches it).
+
 ## Workspaces (`UI::Taskbar`)
 
 `app/qml/MainWindow/Taskbar/`: user-defined dashboard tabs.

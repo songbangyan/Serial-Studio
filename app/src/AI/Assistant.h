@@ -25,6 +25,7 @@
 
 #include "AI/ChatStore.h"
 #include "AI/KeyVault.h"
+#include "AI/MemoryStore.h"
 
 namespace AI {
 
@@ -77,6 +78,32 @@ class Assistant : public QObject {
              READ allowDeviceControl
              WRITE setAllowDeviceControl
              NOTIFY allowDeviceControlChanged)
+  Q_PROPERTY(bool contextProbeEnabled
+             READ contextProbeEnabled
+             WRITE setContextProbeEnabled
+             NOTIFY contextProbeEnabledChanged)
+  Q_PROPERTY(bool memoryEnabled
+             READ memoryEnabled
+             WRITE setMemoryEnabled
+             NOTIFY memoryEnabledChanged)
+  Q_PROPERTY(bool handoffSeedingEnabled
+             READ handoffSeedingEnabled
+             WRITE setHandoffSeedingEnabled
+             NOTIFY handoffSeedingEnabledChanged)
+  Q_PROPERTY(bool skillRoutingEnabled
+             READ skillRoutingEnabled
+             WRITE setSkillRoutingEnabled
+             NOTIFY skillRoutingEnabledChanged)
+  Q_PROPERTY(bool autoVerifyEnabled
+             READ autoVerifyEnabled
+             WRITE setAutoVerifyEnabled
+             NOTIFY autoVerifyEnabledChanged)
+  Q_PROPERTY(bool contextDegraded
+             READ contextDegraded
+             NOTIFY contextHealthChanged)
+  Q_PROPERTY(QString degradationDetail
+             READ degradationDetail
+             NOTIFY contextHealthChanged)
   // clang-format on
 
 signals:
@@ -90,6 +117,14 @@ signals:
   void cacheStatsChanged();
   void autoApproveEditsChanged();
   void allowDeviceControlChanged();
+  void contextProbeEnabledChanged();
+  void memoryEnabledChanged();
+  void handoffSeedingEnabledChanged();
+  void skillRoutingEnabledChanged();
+  void autoVerifyEnabledChanged();
+  void contextHealthChanged();
+  void memoryChanged();
+  void memoryProposed(const QString& category, const QString& text);
   void droppedPathAdded(const QString& displayName, bool isDir);
   void chatListChanged();
   void activeChatChanged();
@@ -118,6 +153,15 @@ public:
   [[nodiscard]] int cacheCreatedTokens() const noexcept;
   [[nodiscard]] bool autoApproveEdits() const noexcept;
   [[nodiscard]] bool allowDeviceControl() const noexcept;
+  [[nodiscard]] bool contextProbeEnabled() const noexcept;
+  [[nodiscard]] bool memoryEnabled() const noexcept;
+  [[nodiscard]] bool handoffSeedingEnabled() const noexcept;
+  [[nodiscard]] bool skillRoutingEnabled() const noexcept;
+  [[nodiscard]] bool autoVerifyEnabled() const noexcept;
+  [[nodiscard]] bool contextDegraded() const;
+  [[nodiscard]] QString degradationDetail() const;
+  [[nodiscard]] QString memoryIndex() const;
+  [[nodiscard]] QString handoffSeedText() const;
 
   Q_INVOKABLE [[nodiscard]] bool hasKey(int providerIdx) const;
   Q_INVOKABLE [[nodiscard]] QString redactedKey(int providerIdx) const;
@@ -127,12 +171,20 @@ public:
   Q_INVOKABLE [[nodiscard]] QString modelDisplayName(int providerIdx, const QString& modelId) const;
   Q_INVOKABLE [[nodiscard]] bool requiresApiKey(int providerIdx) const;
   Q_INVOKABLE [[nodiscard]] QString localBaseUrl() const;
+  Q_INVOKABLE [[nodiscard]] QVariantList memoryList() const;
+  Q_INVOKABLE [[nodiscard]] bool addMemory(const QString& category, const QString& text);
+  Q_INVOKABLE [[nodiscard]] bool updateMemory(const QString& id, const QString& text);
 
   void reportCacheStats(int readTokens, int createdTokens);
 
   void setCurrentProvider(int providerIdx);
   void setAutoApproveEdits(bool enabled);
   void setAllowDeviceControl(bool enabled);
+  void setContextProbeEnabled(bool enabled);
+  void setMemoryEnabled(bool enabled);
+  void setHandoffSeedingEnabled(bool enabled);
+  void setSkillRoutingEnabled(bool enabled);
+  void setAutoVerifyEnabled(bool enabled);
 
 public slots:
   void openKeyManager();
@@ -151,6 +203,8 @@ public slots:
   void denyToolCallGroup(const QString& family);
   void clearConversation();
   void newChat();
+  void newChatFromHandoff(const QString& id);
+  void deleteMemory(const QString& id);
   void switchChat(const QString& id);
   void deleteChat(const QString& id);
   void renameChat(const QString& id, const QString& title);
@@ -186,12 +240,18 @@ private:
   std::unique_ptr<ToolDispatcher> m_dispatcher;
   std::unique_ptr<Conversation> m_conversation;
   ChatStore m_chats;
+  MemoryStore m_memory;
   QString m_activeChatId;
   int m_currentProvider;
   int m_cacheReadTokens;
   int m_cacheCreatedTokens;
   bool m_autoApproveEdits;
   bool m_allowDeviceControl;
+  bool m_contextProbeEnabled;
+  bool m_memoryEnabled;
+  bool m_handoffSeedingEnabled;
+  bool m_skillRoutingEnabled;
+  bool m_autoVerifyEnabled;
 };
 
 }  // namespace AI

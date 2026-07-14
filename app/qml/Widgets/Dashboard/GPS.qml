@@ -42,8 +42,7 @@ Item {
   //
   // Window flags
   //
-  readonly property int toolbarHeight: 48
-  property bool hasToolbar: root.height >= 220 && root.width >= toolbar.implicitWidth
+  readonly property bool hasToolbar: toolbar.shown
 
   //
   // Configure module widget on load
@@ -82,13 +81,10 @@ Item {
   //
   // Add toolbar
   //
-  RowLayout {
+  WidgetToolbar {
     id: toolbar
 
-    spacing: 4
-    height: 48
-    LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Cpp_Misc_Translator.rtl
+    windowRoot: root.windowRoot
 
     anchors {
       leftMargin: 8
@@ -239,6 +235,6 @@ Item {
     id: container
 
     anchors.fill: parent
-    anchors.topMargin: root.hasToolbar ? root.toolbarHeight : 0
+    anchors.topMargin: toolbar.height
   }
 }

@@ -84,6 +84,7 @@ DataModel::ProjectModel::ProjectModel()
   , m_frameDetection(SerialStudio::EndDelimiterOnly)
   , m_pointCount(100)
   , m_plotTimeRange(10.0)
+  , m_frozen(false)
   , m_changeDrivenTransforms(false)
   , m_nextUniqueId(1)
   , m_modified(false)
@@ -782,6 +783,15 @@ double DataModel::ProjectModel::plotTimeRange() const noexcept
 }
 
 /**
+ * @brief Returns whether the dashboard is frozen into an operator panel (chrome hidden,
+ *        layout locked); the stored flag, independent of license state.
+ */
+bool DataModel::ProjectModel::frozen() const noexcept
+{
+  return m_frozen;
+}
+
+/**
  * @brief Returns whether change-driven transform execution is enabled for this project.
  */
 bool DataModel::ProjectModel::changeDrivenTransforms() const noexcept
@@ -1187,6 +1197,7 @@ void DataModel::ProjectModel::newJsonFile()
   m_title                    = tr("Untitled Project");
   m_pointCount               = 100;
   m_plotTimeRange            = 10.0;
+  m_frozen                   = false;
   m_changeDrivenTransforms   = false;
   m_nextUniqueId             = 1;
   m_controlScriptCode        = "";
@@ -1237,6 +1248,7 @@ void DataModel::ProjectModel::newJsonFile()
   Q_EMIT controlScriptChanged();
   Q_EMIT pointCountChanged();
   Q_EMIT plotTimeRangeChanged();
+  Q_EMIT frozenChanged();
   Q_EMIT changeDrivenTransformsChanged();
 
   if (wasLocked)
@@ -1325,6 +1337,23 @@ void DataModel::ProjectModel::setPlotTimeRange(const double seconds)
 
   setModified(true);
   Q_EMIT plotTimeRangeChanged();
+}
+
+/**
+ * @brief Sets the dashboard freeze flag; enabling is license-gated, disabling always works
+ *        so an expired license can never trap a project frozen.
+ */
+void DataModel::ProjectModel::setFrozen(const bool frozen)
+{
+  if (m_frozen == frozen)
+    return;
+
+  if (frozen && !SerialStudio::proWidgetsEnabled())
+    return;
+
+  m_frozen = frozen;
+  setModified(true);
+  Q_EMIT frozenChanged();
 }
 
 /**

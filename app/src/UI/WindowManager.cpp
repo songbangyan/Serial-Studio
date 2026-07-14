@@ -499,6 +499,7 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_zCounter(1)
   , m_layoutRestored(false)
   , m_autoLayoutEnabled(true)
+  , m_frozen(false)
   , m_userReordered(false)
   , m_suppressGeometrySignal(false)
   , m_manualCanvasWidth(0)
@@ -545,6 +546,14 @@ UI::WindowManager::~WindowManager()
 int UI::WindowManager::zCounter() const
 {
   return m_zCounter;
+}
+
+/**
+ * @brief Returns whether the dashboard is frozen (all window manipulation disabled).
+ */
+bool UI::WindowManager::frozen() const
+{
+  return m_frozen;
 }
 
 /**
@@ -1169,6 +1178,36 @@ void UI::WindowManager::setBackgroundImage(const QString& path)
 }
 
 /**
+ * @brief Freezes or unfreezes all window manipulation. Freezing aborts any in-flight
+ *        drag/resize without committing geometry, so an async freeze (late license
+ *        activation, project reload) cannot mutate a locked layout mid-gesture.
+ */
+void UI::WindowManager::setFrozen(const bool frozen)
+{
+  if (m_frozen == frozen)
+    return;
+
+  m_frozen = frozen;
+  if (m_frozen) {
+    ungrabMouse();
+    unsetCursor();
+
+    m_dragWindow    = nullptr;
+    m_targetWindow  = nullptr;
+    m_resizeWindow  = nullptr;
+    m_focusedWindow = nullptr;
+    m_resizeEdge    = ResizeEdge::None;
+
+    if (m_snapIndicatorVisible) {
+      m_snapIndicatorVisible = false;
+      Q_EMIT snapIndicatorChanged();
+    }
+  }
+
+  Q_EMIT frozenChanged();
+}
+
+/**
  * @brief Enables or disables automatic window layout.
  */
 void UI::WindowManager::setAutoLayoutEnabled(const bool enabled)
@@ -1576,7 +1615,7 @@ void UI::WindowManager::applyResizeCursor(ResizeEdge edge)
  */
 void UI::WindowManager::updateHoverCursor(const QPointF& pos)
 {
-  if (autoLayoutEnabled()) {
+  if (m_frozen || autoLayoutEnabled()) {
     unsetCursor();
     return;
   }
@@ -1884,7 +1923,7 @@ void UI::WindowManager::handleResizeMove(QMouseEvent* event, const QPoint& delta
  */
 bool UI::WindowManager::startManualPress(const QPointF& pos, Qt::MouseButton button)
 {
-  if (autoLayoutEnabled())
+  if (m_frozen || autoLayoutEnabled())
     return false;
 
   m_dragWindow      = nullptr;
@@ -1950,7 +1989,7 @@ bool UI::WindowManager::startManualPress(const QPointF& pos, Qt::MouseButton but
  */
 bool UI::WindowManager::childMouseEventFilter(QQuickItem* item, QEvent* event)
 {
-  if (autoLayoutEnabled() || event->type() != QEvent::MouseButtonPress)
+  if (m_frozen || autoLayoutEnabled() || event->type() != QEvent::MouseButtonPress)
     return false;
 
   auto* mouse       = static_cast<QMouseEvent*>(event);
@@ -1963,6 +2002,11 @@ bool UI::WindowManager::childMouseEventFilter(QQuickItem* item, QEvent* event)
  */
 void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 {
+  if (m_frozen) {
+    QQuickItem::mousePressEvent(event);
+    return;
+  }
+
   if (!autoLayoutEnabled()) {
     if (startManualPress(event->pos(), event->button())) {
       event->accept();
@@ -2128,6 +2172,11 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
  */
 void UI::WindowManager::mouseDoubleClickEvent(QMouseEvent* event)
 {
+  if (m_frozen) {
+    QQuickItem::mouseDoubleClickEvent(event);
+    return;
+  }
+
   m_focusedWindow = topmostWindowAt(event->pos());
   if (!m_focusedWindow) {
     QQuickItem::mouseDoubleClickEvent(event);

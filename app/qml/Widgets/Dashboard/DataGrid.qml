@@ -41,8 +41,9 @@ Item {
   //
   // Window flags
   //
+  readonly property bool hasToolbar: toolbar.shown
   readonly property bool rtl: Cpp_Misc_Translator.rtl
-  readonly property bool hasToolbar: root.height >= 220
+  readonly property bool frozen: windowRoot ? windowRoot.frozen === true : false
 
   //
   // Size-aware font scale: narrow windows shrink row text (and with it the
@@ -74,14 +75,10 @@ Item {
   //
   // Toolbar: Pause/Resume affordance (only when there's room)
   //
-  RowLayout {
+  WidgetToolbar {
     id: toolbar
 
-    spacing: 4
-    visible: root.hasToolbar
-    height: root.hasToolbar ? 48 : 0
-    LayoutMirroring.enabled: root.rtl
-    LayoutMirroring.childrenInherit: true
+    windowRoot: root.windowRoot
 
     anchors {
       leftMargin: 8
@@ -132,7 +129,8 @@ Item {
     Rectangle {
       id: header
 
-      height: root.headerHeight
+      visible: !root.frozen
+      height: root.frozen ? 0 : root.headerHeight
       anchors {
         top: parent.top
         left: parent.left

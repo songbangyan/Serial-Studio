@@ -62,6 +62,7 @@ end
 api = api or {}
 assistant = assistant or {}
 assistant.dataset = assistant.dataset or {}
+assistant.memory = assistant.memory or {}
 assistant.project = assistant.project or {}
 assistant.script = assistant.script or {}
 assistant.workspace = assistant.workspace or {}
@@ -130,6 +131,13 @@ function assistant.listCheckpoints(options)
   local p = {}
   if options then for k, v in pairs(options) do p[k] = v end end
   return apiCall('assistant.listCheckpoints', p)
+end
+
+function assistant.memory.propose(category, text)
+  local p = {}
+  p['category'] = category
+  p['text'] = text
+  return apiCall('assistant.memory.propose', p)
 end
 
 function assistant.project.bulkApply(ops)
@@ -212,6 +220,12 @@ function console.setChecksumMethod(methodIndex)
   return apiCall('console.setChecksumMethod', p)
 end
 
+function console.setCollapseDuplicates(enabled)
+  local p = {}
+  p['enabled'] = enabled
+  return apiCall('console.setCollapseDuplicates', p)
+end
+
 function console.setDataMode(modeIndex)
   local p = {}
   p['modeIndex'] = modeIndex
@@ -252,6 +266,12 @@ function console.setLineEnding(endingIndex)
   local p = {}
   p['endingIndex'] = endingIndex
   return apiCall('console.setLineEnding', p)
+end
+
+function console.setSearchCaseSensitive(enabled)
+  local p = {}
+  p['enabled'] = enabled
+  return apiCall('console.setSearchCaseSensitive', p)
 end
 
 function console.setShowTimestamp(enabled)

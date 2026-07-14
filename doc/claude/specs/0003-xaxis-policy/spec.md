@@ -1,7 +1,7 @@
 ---
 spec: 0003-xaxis-policy
 title: Plot X-axis pipeline unification
-status: in-progress   # draft -> approved -> in-progress -> done | shelved
+status: done          # draft -> approved -> in-progress -> done | shelved
 created: 2026-07-06
 author: Alex Spataru
 ---

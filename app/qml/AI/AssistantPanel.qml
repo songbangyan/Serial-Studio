@@ -271,6 +271,93 @@ Widgets.SmartDialog {
               MenuSeparator {}
 
               MenuItem {
+                id: probeToggleItem
+
+                checkable: true
+                text: qsTr("Context health check")
+                checked: Cpp_AI_Assistant.contextProbeEnabled
+                onToggled: Cpp_AI_Assistant.contextProbeEnabled = checked
+
+                Connections {
+                  target: Cpp_AI_Assistant
+                  function onContextProbeEnabledChanged() {
+                    probeToggleItem.checked = Cpp_AI_Assistant.contextProbeEnabled
+                  }
+                }
+              }
+
+              MenuItem {
+                id: memoryToggleItem
+
+                checkable: true
+                text: qsTr("Assistant memory")
+                checked: Cpp_AI_Assistant.memoryEnabled
+                onToggled: Cpp_AI_Assistant.memoryEnabled = checked
+
+                Connections {
+                  target: Cpp_AI_Assistant
+                  function onMemoryEnabledChanged() {
+                    memoryToggleItem.checked = Cpp_AI_Assistant.memoryEnabled
+                  }
+                }
+              }
+
+              MenuItem {
+                id: handoffToggleItem
+
+                checkable: true
+                text: qsTr("Carry context into new chats")
+                checked: Cpp_AI_Assistant.handoffSeedingEnabled
+                onToggled: Cpp_AI_Assistant.handoffSeedingEnabled = checked
+
+                Connections {
+                  target: Cpp_AI_Assistant
+                  function onHandoffSeedingEnabledChanged() {
+                    handoffToggleItem.checked = Cpp_AI_Assistant.handoffSeedingEnabled
+                  }
+                }
+              }
+
+              MenuItem {
+                id: routingToggleItem
+
+                checkable: true
+                text: qsTr("Preload skills automatically")
+                checked: Cpp_AI_Assistant.skillRoutingEnabled
+                onToggled: Cpp_AI_Assistant.skillRoutingEnabled = checked
+
+                Connections {
+                  target: Cpp_AI_Assistant
+                  function onSkillRoutingEnabledChanged() {
+                    routingToggleItem.checked = Cpp_AI_Assistant.skillRoutingEnabled
+                  }
+                }
+              }
+
+              MenuItem {
+                id: verifyToggleItem
+
+                checkable: true
+                text: qsTr("Verify edits automatically")
+                checked: Cpp_AI_Assistant.autoVerifyEnabled
+                onToggled: Cpp_AI_Assistant.autoVerifyEnabled = checked
+
+                Connections {
+                  target: Cpp_AI_Assistant
+                  function onAutoVerifyEnabledChanged() {
+                    verifyToggleItem.checked = Cpp_AI_Assistant.autoVerifyEnabled
+                  }
+                }
+              }
+
+              MenuSeparator {}
+
+              MenuItem {
+                text: qsTr("Manage memory…")
+                onTriggered: memoryManager.activate()
+              }
+
+              MenuItem {
                 text: qsTr("Manage API keys…")
                 onTriggered: Cpp_AI_Assistant.openKeyManager()
               }
@@ -691,7 +778,130 @@ Widgets.SmartDialog {
                   dropToast.opacity = 1
                   toastTimer.restart()
                 }
+                function onMemoryChanged() {
+                  toastLabel.text = qsTr("Assistant memory updated")
+                  dropToast.opacity = 1
+                  toastTimer.restart()
+                }
               }
+            }
+          }
+        }
+
+        //
+        // Persistent context-degradation banner. Advisory chrome only: it never
+        // disables or delays the composer below it.
+        //
+        Rectangle {
+          id: degradedBanner
+
+          radius: 8
+          border.width: 1
+          Layout.fillWidth: true
+          visible: Cpp_AI_Assistant.contextDegraded
+          implicitHeight: visible ? degradedRow.implicitHeight + 16 : 0
+          color: Cpp_ThemeManager.colors["groupbox_background"]
+          border.color: Cpp_ThemeManager.colors["alarm"]
+
+          RowLayout {
+            id: degradedRow
+
+            spacing: 8
+            anchors.margins: 8
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+
+            ColumnLayout {
+              spacing: 2
+              Layout.fillWidth: true
+
+              Label {
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+                text: qsTr("Context may be degraded")
+                color: Cpp_ThemeManager.colors["alarm"]
+                font: Cpp_Misc_CommonFonts.customUiFont(1, true)
+              }
+
+              Label {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                textFormat: Text.PlainText
+                font: Cpp_Misc_CommonFonts.uiFont
+                color: Cpp_ThemeManager.colors["text"]
+                text: Cpp_AI_Assistant.degradationDetail
+              }
+            }
+
+            Button {
+              text: qsTr("Start fresh chat")
+              onClicked: Cpp_AI_Assistant.newChatFromHandoff(Cpp_AI_Assistant.activeChatId)
+            }
+          }
+        }
+
+        //
+        // Memory-proposal chip: the assistant asked to remember something; nothing
+        // persists unless the user clicks Remember.
+        //
+        Rectangle {
+          id: memoryProposalChip
+
+          radius: 8
+          visible: false
+          border.width: 1
+          Layout.fillWidth: true
+          implicitHeight: visible ? proposalRow.implicitHeight + 16 : 0
+          color: Cpp_ThemeManager.colors["groupbox_background"]
+          border.color: Cpp_ThemeManager.colors["highlight"]
+
+          property string category: ""
+          property string factText: ""
+
+          Connections {
+            target: Cpp_AI_Assistant
+            function onMemoryProposed(category, text) {
+              memoryProposalChip.category = category
+              memoryProposalChip.factText = text
+              memoryProposalChip.visible = true
+            }
+            function onActiveChatChanged() {
+              memoryProposalChip.visible = false
+            }
+          }
+
+          RowLayout {
+            id: proposalRow
+
+            spacing: 8
+            anchors.margins: 8
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+
+            Label {
+              Layout.fillWidth: true
+              wrapMode: Text.WordWrap
+              textFormat: Text.PlainText
+              font: Cpp_Misc_CommonFonts.uiFont
+              color: Cpp_ThemeManager.colors["text"]
+              text: qsTr("Remember (%1)?").arg(memoryProposalChip.category)
+                    + " \"" + memoryProposalChip.factText + "\""
+            }
+
+            Button {
+              text: qsTr("Remember")
+              onClicked: {
+                if (Cpp_AI_Assistant.addMemory(memoryProposalChip.category,
+                                               memoryProposalChip.factText))
+                  memoryProposalChip.visible = false
+              }
+            }
+
+            Button {
+              text: qsTr("Dismiss")
+              onClicked: memoryProposalChip.visible = false
             }
           }
         }
@@ -874,5 +1084,14 @@ Widgets.SmartDialog {
     id: keyManager
 
     source: "qrc:/serial-studio.com/gui/qml/AI/KeyManagerDialog.qml"
+  }
+
+  //
+  // Embedded memory manager (loaded on demand)
+  //
+  DialogLoader {
+    id: memoryManager
+
+    source: "qrc:/serial-studio.com/gui/qml/AI/MemoryManagerDialog.qml"
   }
 }

@@ -25,6 +25,8 @@ public:
   [[nodiscard]] static QString roleBlock();
   [[nodiscard]] static QString scriptingDocsBlock();
   [[nodiscard]] static QString liveProjectStateBlock();
+  [[nodiscard]] static QString memoryIndexBlock();
+  [[nodiscard]] static QString handoffBlock();
   [[nodiscard]] static QString scriptingDocFor(const QString& kind);
 
   [[nodiscard]] static QStringList howToTasks();

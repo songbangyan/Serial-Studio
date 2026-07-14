@@ -165,6 +165,7 @@ inline constexpr KeyView WebViewUrl("webViewUrl");
 inline constexpr KeyView DashboardLayout("dashboardLayout");
 inline constexpr KeyView ActiveGroupId("activeGroupId");
 inline constexpr KeyView WidgetSettings("widgetSettings");
+inline constexpr KeyView Frozen("frozen");
 
 // Project-editor tree state (path-keyed node expansion map)
 inline constexpr KeyView TreeExpansion("treeExpansion");

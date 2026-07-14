@@ -550,6 +550,8 @@ Popup {
       expandable: false
       Layout.fillWidth: true
       text: qsTr("Auto Layout")
+      opacity: enabled ? 1 : 0.5
+      enabled: !Cpp_UI_Dashboard.frozen
       icon.source: "qrc:/icons/start/auto-layout.svg"
       checked: taskBar.windowManager.autoLayoutEnabled
       onCheckedChanged: {
@@ -565,6 +567,40 @@ Popup {
         target: taskBar.windowManager
         function onAutoLayoutEnabledChanged() {
           _autoLayoutBt.checked = taskBar.windowManager.autoLayoutEnabled
+        }
+      }
+    }
+
+    Widgets.MenuButton {
+      id: _freezeBt
+
+      readonly property bool freezeAllowed: Cpp_CommercialBuild
+                                            && (Cpp_Licensing_LemonSqueezy.isActivated
+                                                || Cpp_Licensing_Trial.trialEnabled)
+
+      checkable: true
+      expandable: false
+      Layout.fillWidth: true
+      text: qsTr("Freeze Dashboard")
+      checked: Cpp_UI_Dashboard.frozen
+      opacity: freezeAllowed ? 1 : 0.5
+      icon.source: "qrc:/icons/start/freeze.svg"
+      onClicked: {
+        if (_freezeBt.freezeAllowed)
+          Cpp_UI_Dashboard.setFrozen(!Cpp_UI_Dashboard.frozen)
+
+        else {
+          root.close()
+          app.showLicenseDialog()
+        }
+
+        _freezeBt.checked = Cpp_UI_Dashboard.frozen
+      }
+
+      Connections {
+        target: Cpp_UI_Dashboard
+        function onFrozenChanged() {
+          _freezeBt.checked = Cpp_UI_Dashboard.frozen
         }
       }
     }

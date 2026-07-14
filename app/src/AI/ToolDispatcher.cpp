@@ -368,6 +368,20 @@ static QJsonObject listCheckpointsInputSchema()
 }
 
 /**
+ * @brief Input schema for assistant.memory.propose.
+ */
+static QJsonObject memoryProposeInputSchema()
+{
+  QJsonObject props;
+  props[QStringLiteral("category")] = makeProperty(
+    QStringLiteral("string"), QStringLiteral("One of: user, feedback, project, reference."));
+  props[QStringLiteral("text")] =
+    makeProperty(QStringLiteral("string"),
+                 QStringLiteral("The fact to remember, stated plainly, under 400 characters."));
+  return makeObjectSchema(props, QJsonArray{QStringLiteral("category"), QStringLiteral("text")});
+}
+
+/**
  * @brief Returns the snapshot/dataset/workspace tool schemas exposed under the assistant.* prefix.
  */
 static QVector<detail::AssistantToolDef> assistantToolDefs()
@@ -424,6 +438,12 @@ static QVector<detail::AssistantToolDef> assistantToolDefs()
                     "first. Returns {checkpoints:[{path,timestamp,sizeBytes,label}],count,"
                     "directory}."),
      listCheckpointsInputSchema()},
+    {QStringLiteral("assistant.memory.propose"),
+     QStringLiteral("Propose remembering a small durable fact for future chats (a stated "
+                    "preference, a correction you were given, a project convention). The user "
+                    "sees a confirmation chip and decides; this call NEVER stores anything by "
+                    "itself."),
+     memoryProposeInputSchema()},
   };
 }
 
@@ -1844,7 +1864,8 @@ static QJsonObject executeAssistantTool(const QString& name, const QJsonObject& 
     return executeBulkApply(args);
 
   if (name == QStringLiteral("assistant.checkpoint") || name == QStringLiteral("assistant.restore")
-      || name == QStringLiteral("assistant.listCheckpoints"))
+      || name == QStringLiteral("assistant.listCheckpoints")
+      || name == QStringLiteral("assistant.memory.propose"))
     return runCommand(name, args);
 
   QJsonObject out;

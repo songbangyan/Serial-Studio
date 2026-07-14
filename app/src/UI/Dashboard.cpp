@@ -34,6 +34,7 @@
 
 #ifdef BUILD_COMMERCIAL
 #  include "Licensing/CommercialToken.h"
+#  include "Licensing/LemonSqueezy.h"
 #  include "Sessions/Player.h"
 #endif
 
@@ -243,6 +244,14 @@ UI::Dashboard::Dashboard()
 
   connect(this, &UI::Dashboard::widgetCountChanged, this, &UI::Dashboard::actionStatusChanged);
 
+  connect(
+    &projectModel, &DataModel::ProjectModel::frozenChanged, this, &UI::Dashboard::frozenChanged);
+#ifdef BUILD_COMMERCIAL
+  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
+  connect(
+    &lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, &UI::Dashboard::frozenChanged);
+#endif
+
   updateStreamAvailable();
 
   m_autoHideToolbar        = m_settings.value("Dashboard/AutoHideToolbar", false).toBool();
@@ -294,6 +303,16 @@ bool UI::Dashboard::showActionPanel() const noexcept
 bool UI::Dashboard::autoHideToolbar() const noexcept
 {
   return m_autoHideToolbar;
+}
+
+/**
+ * @brief Returns the effective dashboard freeze state: the project's stored flag gated on an
+ *        active Pro/Trial license; QML-binding-time only, never read on the frame path.
+ */
+bool UI::Dashboard::frozen() const
+{
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  return projectModel.frozen() && SerialStudio::proWidgetsEnabled();
 }
 
 /**
@@ -1156,6 +1175,16 @@ void UI::Dashboard::setAutoLayoutSpacing(const int spacing)
     m_settings.setValue("Dashboard/AutoLayoutSpacing", m_autoLayoutSpacing);
 
   Q_EMIT autoLayoutSpacingChanged();
+}
+
+/**
+ * @brief Forwards the freeze toggle to the project model, the single owner of the stored
+ *        flag; the effective state re-derives through the frozenChanged wiring.
+ */
+void UI::Dashboard::setFrozen(const bool frozen)
+{
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  projectModel.setFrozen(frozen);
 }
 
 /**

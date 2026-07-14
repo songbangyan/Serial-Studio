@@ -78,6 +78,9 @@ class ProjectModel : public QObject {
   Q_PROPERTY(double plotTimeRange
              READ plotTimeRange
              NOTIFY plotTimeRangeChanged)
+  Q_PROPERTY(bool frozen
+             READ frozen
+             NOTIFY frozenChanged)
   Q_PROPERTY(bool changeDrivenTransforms
              READ changeDrivenTransforms
              WRITE setChangeDrivenTransforms
@@ -128,6 +131,7 @@ signals:
   void saveStatusChanged();
   void pointCountChanged();
   void plotTimeRangeChanged();
+  void frozenChanged();
   void changeDrivenTransformsChanged();
   void jsonFileChanged();
   void projectFileChangedOnDisk();
@@ -229,6 +233,7 @@ public:
 
   [[nodiscard]] int pointCount() const noexcept;
   [[nodiscard]] double plotTimeRange() const noexcept;
+  [[nodiscard]] bool frozen() const noexcept;
   [[nodiscard]] bool changeDrivenTransforms() const noexcept;
   [[nodiscard]] int groupCount() const noexcept;
   [[nodiscard]] int datasetCount() const;
@@ -298,6 +303,7 @@ public slots:
   void setControlScriptCode(const QString& code);
   void setPointCount(const int points);
   void setPlotTimeRange(const double seconds);
+  void setFrozen(const bool frozen);
   void setChangeDrivenTransforms(const bool enabled);
   void clearJsonFilePath();
 
@@ -545,6 +551,7 @@ private:
   void loadWidgetSettingsAndWorkspaces(const QJsonObject& json);
   void loadPointCount(const QJsonObject& json);
   void loadPlotTimeRange(const QJsonObject& json);
+  void loadFrozen(const QJsonObject& json);
   void loadChangeDrivenTransforms(const QJsonObject& json);
   void migrateLegacyLayoutKeys();
   void migrateLegacyDashboardLayout(const QJsonObject& json);
@@ -603,6 +610,7 @@ private:
 
   int m_pointCount;
   double m_plotTimeRange;
+  bool m_frozen;
   bool m_changeDrivenTransforms;
   int m_nextUniqueId;
   bool m_modified;

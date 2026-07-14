@@ -13,9 +13,11 @@
 #include <QJsonObject>
 #include <QSet>
 
+#include "AI/Assistant.h"
 #include "AI/CommandRegistry.h"
 #include "AI/Logging.h"
 #include "AI/Redactor.h"
+#include "AI/SentinelProbe.h"
 #include "AI/ToolDispatcher.h"
 
 /**
@@ -32,6 +34,18 @@ static QString readResource(const QString& path)
   const auto data = file.readAll();
   file.close();
   return QString::fromUtf8(data);
+}
+
+/**
+ * @brief Cached accessor for the Assistant singleton (ContextBuilder is a stateless static
+ *        utility, so there is no ctor to capture the dependency in). Must never become
+ *        reachable from Assistant's own constructor -- that recurses the Meyers guard and
+ *        aborts at startup (the ProjectModel ctor-closure incident class).
+ */
+static AI::Assistant& assistantRef()
+{
+  static auto& singleton = AI::Assistant::instance();
+  return singleton;
 }
 
 /**
@@ -362,7 +376,8 @@ QString AI::ContextBuilder::roleBlock()
                         "reconstruct or guess them.\n"
                         "\n"
                         "Concise. No filler. Match the user's register. When unsure, list/"
-                        "describe/load skill before acting.\n");
+                        "describe/load skill before acting.\n")
+       + (assistantRef().contextProbeEnabled() ? SentinelProbe::instructionBlock() : QString());
 }
 
 // code-verify on
@@ -814,6 +829,42 @@ QString AI::ContextBuilder::liveProjectStateBlock()
   return out;
 }
 
+/**
+ * @brief Returns the capped index of user-approved remembered facts as an uncached tail
+ *        block, or empty when memory is off or holds nothing applicable.
+ */
+QString AI::ContextBuilder::memoryIndexBlock()
+{
+  const auto index = assistantRef().memoryIndex();
+  if (index.isEmpty())
+    return {};
+
+  QString out;
+  out += QStringLiteral("# Remembered facts (user-approved, from earlier chats)\n\n");
+  out += QStringLiteral("<untrusted source=\"assistant_memory\">\n");
+  out += neutralizeUntrustedDelimiter(index);
+  out += QStringLiteral("</untrusted>\n");
+  return out;
+}
+
+/**
+ * @brief Returns the previous chat's handoff digest as an uncached tail block, or empty
+ *        when this chat was not seeded or seeding is off.
+ */
+QString AI::ContextBuilder::handoffBlock()
+{
+  const auto seed = assistantRef().handoffSeedText();
+  if (seed.isEmpty())
+    return {};
+
+  QString out;
+  out += QStringLiteral("# Previous chat handoff (continue from here)\n\n");
+  out += QStringLiteral("<untrusted source=\"previous_chat\">\n");
+  out += neutralizeUntrustedDelimiter(seed);
+  out += QStringLiteral("\n</untrusted>\n");
+  return out;
+}
+
 //--------------------------------------------------------------------------------------------------
 // Composer
 //--------------------------------------------------------------------------------------------------
@@ -850,6 +901,28 @@ QJsonArray AI::ContextBuilder::buildSystemArray(bool includeScriptingDocs)
   live[QStringLiteral("type")] = QStringLiteral("text");
   live[QStringLiteral("text")] = liveProjectStateBlock();
   system.append(live);
+
+  const auto memory = memoryIndexBlock();
+  if (!memory.isEmpty()) {
+    QJsonObject block;
+    block[QStringLiteral("type")] = QStringLiteral("text");
+    block[QStringLiteral("text")] = memory;
+    system.append(block);
+  }
+
+  const auto handoff = handoffBlock();
+  if (!handoff.isEmpty()) {
+    QJsonObject block;
+    block[QStringLiteral("type")] = QStringLiteral("text");
+    block[QStringLiteral("text")] = handoff;
+    system.append(block);
+  }
+
+  qCDebug(serialStudioAI).nospace()
+    << "System blocks: role=" << role.value(QStringLiteral("text")).toString().size()
+    << " docs=" << (includeScriptingDocs ? 1 : 0)
+    << " probe=" << (assistantRef().contextProbeEnabled() ? 1 : 0) << " memory=" << memory.size()
+    << " handoff=" << handoff.size();
 
   return system;
 }

@@ -344,6 +344,7 @@ bool DataModel::ProjectModel::loadFromJsonDocument(const QJsonDocument& document
 
   loadPointCount(json);
   loadPlotTimeRange(json);
+  loadFrozen(json);
   loadChangeDrivenTransforms(json);
   migrateLegacyLayoutKeys();
   migrateLegacyDashboardLayout(json);
@@ -949,6 +950,15 @@ void DataModel::ProjectModel::loadPlotTimeRange(const QJsonObject& json)
 }
 
 /**
+ * @brief Resolves the dashboard freeze flag from JSON; absent means false. Writes the member
+ *        directly (never setFrozen) so an unlicensed load/save cycle preserves the flag.
+ */
+void DataModel::ProjectModel::loadFrozen(const QJsonObject& json)
+{
+  m_frozen = json.value(Keys::Frozen).toBool(false);
+}
+
+/**
  * @brief Resolves the change-driven-transforms flag from JSON; absent means false (opt-in).
  */
 void DataModel::ProjectModel::loadChangeDrivenTransforms(const QJsonObject& json)
@@ -1067,6 +1077,7 @@ void DataModel::ProjectModel::emitProjectLoadedSignals()
   Q_EMIT controlScriptChanged();
   Q_EMIT pointCountChanged();
   Q_EMIT plotTimeRangeChanged();
+  Q_EMIT frozenChanged();
   Q_EMIT changeDrivenTransformsChanged();
 
   if (!m_silentReload)

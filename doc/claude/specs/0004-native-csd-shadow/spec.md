@@ -1,7 +1,7 @@
 ---
 spec: 0004-native-csd-shadow
 title: Native OS/WM window shadows for CSD windows
-status: in-progress  # draft -> approved -> in-progress -> done | shelved
+status: done         # draft -> approved -> in-progress -> done | shelved
 created: 2026-07-07
 author: Alex Spataru
 ---

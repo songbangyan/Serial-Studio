@@ -54,6 +54,7 @@ Item {
   function minimizeActiveWindow()    { _mainLayout.minimizeActiveWindow() }
   function clearActiveWindow()       { _mainLayout.clearActiveWindow() }
   function toggleAutoLayout()        { _mainLayout.toggleAutoLayout() }
+  function toggleFreeze()            { _mainLayout.toggleFreeze() }
   function jumpToWorkspaceIndex(i)   { _mainLayout.jumpToWorkspaceIndex(i) }
 
   //

@@ -21,6 +21,12 @@ Rectangle {
   property string toolName: ""
   property string argsJson: ""
   property string resultJson: ""
+  property var verification: null
+
+  readonly property bool hasVerification: verification !== null
+                                          && verification !== undefined
+                                          && verification.ok !== undefined
+  readonly property bool verifiedOk: hasVerification && verification.ok === true
 
   //
   // True when the parent groups this card under a batched-confirm header
@@ -123,6 +129,29 @@ Rectangle {
       Rectangle {
         radius: 2
         border.width: 1
+        visible: root.hasVerification
+        implicitWidth: verifyPill.implicitWidth + 12
+        implicitHeight: verifyPill.implicitHeight + 4
+        border.color: root.verifiedOk
+                      ? Cpp_ThemeManager.colors["highlight"]
+                      : Cpp_ThemeManager.colors["alarm"]
+        color: Qt.darker(root.verifiedOk
+                         ? Cpp_ThemeManager.colors["highlight"]
+                         : Cpp_ThemeManager.colors["alarm"], 1.4)
+
+        Label {
+          id: verifyPill
+
+          anchors.centerIn: parent
+          text: root.verifiedOk ? qsTr("Verified") : qsTr("Verify failed")
+          font: Cpp_Misc_CommonFonts.customUiFont(0.85, true)
+          color: Cpp_ThemeManager.colors["highlighted_text"]
+        }
+      }
+
+      Rectangle {
+        radius: 2
+        border.width: 1
         border.color: root.statusColor
         implicitWidth: pill.implicitWidth + 12
         implicitHeight: pill.implicitHeight + 4
@@ -136,6 +165,40 @@ Rectangle {
           font: Cpp_Misc_CommonFonts.customUiFont(0.85, true)
           color: Cpp_ThemeManager.colors["highlighted_text"]
         }
+      }
+    }
+
+    //
+    // Failed-verification detail + recovery (restore stays behind the approval card)
+    //
+    RowLayout {
+      spacing: 8
+      Layout.fillWidth: true
+      visible: root.hasVerification && !root.verifiedOk
+
+      Label {
+        Layout.fillWidth: true
+        wrapMode: Text.WordWrap
+        textFormat: Text.PlainText
+        font: Cpp_Misc_CommonFonts.uiFont
+        color: Cpp_ThemeManager.colors["alarm"]
+        text: root.verification && root.verification.detail
+              ? qsTr("Verification failed: %1").arg(root.verification.detail)
+              : qsTr("The applied change failed its verification check.")
+      }
+
+      //
+      // The instruction is deliberately untranslated: the tool names are literal and the
+      // recovery flow must not vary by UI locale.
+      //
+      Button {
+        enabled: !Cpp_AI_Assistant.busy
+        text: qsTr("Restore checkpoint…")
+        font: Cpp_Misc_CommonFonts.uiFont
+        onClicked: Cpp_AI_Assistant.sendMessage(
+          "The last edit failed verification. Call assistant.listCheckpoints, then "
+          + "restore the most recent checkpoint with assistant.restore and wait for "
+          + "my approval.")
       }
     }
 

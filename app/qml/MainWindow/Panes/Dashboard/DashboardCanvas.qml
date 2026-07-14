@@ -385,6 +385,7 @@ Item {
       id: _wm
 
       anchors.fill: parent
+      frozen: Cpp_UI_Dashboard.frozen
       onRightClicked: (x, y) => contextMenu.popup(x, y)
 
       //
@@ -393,7 +394,7 @@ Item {
       HoverHandler {
         id: resizeHover
 
-        enabled: !_wm.autoLayoutEnabled
+        enabled: !_wm.autoLayoutEnabled && !_wm.frozen
         property point hoverPosition: resizeHover.point.position
         onHoveredChanged: if (!resizeHover.hovered) _wm.updateHoverCursor(Qt.point(-1, -1))
         onHoverPositionChanged: if (resizeHover.hovered) _wm.updateHoverCursor(hoverPosition)

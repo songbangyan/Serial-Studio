@@ -24,6 +24,7 @@
 #include "AI/Logging.h"
 #include "AI/Providers/Provider.h"
 #include "AI/Redactor.h"
+#include "AI/SkillRouter.h"
 #include "AI/ToolDispatcher.h"
 #include "DataModel/ProjectModel.h"
 #include "Licensing/CommercialToken.h"
@@ -195,9 +196,86 @@ void AI::Conversation::start(const QString& userText)
   m_pendingToolResultBlocks = QJsonArray();
   m_outstandingToolResults  = 0;
 
+  const bool was_degraded = m_probe.degraded();
+  m_probe.ensureKey(probeComplianceKey());
+  if (m_probe.degraded() != was_degraded)
+    Q_EMIT probeStateChanged();
+
   appendUserMessage(trimmed);
+  injectRoutedSkill(trimmed);
   setBusy(true);
   issueRequest();
+}
+
+/**
+ * @brief Returns the provider+model key the probe's compliance memory is filed under.
+ */
+QString AI::Conversation::probeComplianceKey() const
+{
+  if (!m_provider)
+    return QStringLiteral("none");
+
+  return m_provider->displayName() + QLatin1Char('/') + m_provider->currentModel();
+}
+
+/**
+ * @brief Validates the completed visible reply against the sentinel contract; runs only
+ *        on final replies (no pending tool calls) and only while the probe is enabled.
+ *        Notifies on any change of the (degraded, failure, drifted) tuple, not just the
+ *        boolean, so the banner detail refreshes when the failure kind shifts.
+ */
+void AI::Conversation::evaluateProbe()
+{
+  static auto& assistant = Assistant::instance();
+  if (!assistant.contextProbeEnabled())
+    return;
+
+  if (m_assistantText.isEmpty() || !m_pendingToolUseBlocks.isEmpty())
+    return;
+
+  const bool was_degraded = m_probe.degraded();
+  const auto was_failure  = m_probe.lastFailure();
+  const auto was_drifted  = m_probe.driftedSegment();
+  const auto outcome      = m_probe.evaluateReply(m_assistantText);
+  qCDebug(serialStudioAI) << "SentinelProbe: outcome" << static_cast<int>(outcome);
+
+  if (m_probe.degraded() != was_degraded || m_probe.lastFailure() != was_failure
+      || m_probe.driftedSegment() != was_drifted)
+    Q_EMIT probeStateChanged();
+}
+
+/**
+ * @brief Deterministic skill routing: injects the synthetic meta.loadSkill pair after the
+ *        user turn so weak models get domain knowledge without asking; the injected user
+ *        message carries a tool_result, so the budgeter's fresh-user-turn cuts skip it.
+ */
+void AI::Conversation::injectRoutedSkill(const QString& userText)
+{
+  static auto& assistant = Assistant::instance();
+  if (!assistant.skillRoutingEnabled())
+    return;
+
+  static const SkillRouter router;
+  const auto skill = router.match(userText, m_loadedSkills);
+  if (skill.isEmpty())
+    return;
+
+  const int budget = m_provider ? m_provider->capabilities().toolResultByteBudget : 4096;
+  const auto pair  = SkillRouter::buildInjectionPair(skill, budget);
+  if (pair.isEmpty())
+    return;
+
+  for (const auto& msg : pair)
+    m_history.append(msg);
+
+  m_loadedSkills.insert(skill);
+
+  auto row                              = m_uiMessages.last().toMap();
+  row[QStringLiteral("loadedSkill")]    = skill;
+  m_uiMessages[m_uiMessages.size() - 1] = row;
+  Q_EMIT messagesChanged();
+
+  qCDebug(serialStudioAI) << "SkillRouter: injected" << skill << "for this turn";
 }
 
 /**
@@ -315,6 +393,14 @@ void AI::Conversation::clear()
   cancel();
   m_history = QJsonArray();
   m_uiMessages.clear();
+  m_handoffSeed.clear();
+  m_loadedSkills.clear();
+
+  const bool was_degraded = m_probe.degraded();
+  m_probe.reset(probeComplianceKey());
+  if (was_degraded)
+    Q_EMIT probeStateChanged();
+
   m_assistantIndex = -1;
   m_assistantText.clear();
   m_pendingThinkingBlocks   = QJsonArray();
@@ -443,7 +529,8 @@ void AI::Conversation::flushPendingStreamUpdate()
     return;
 
   auto map = m_uiMessages.at(m_assistantIndex).toMap();
-  map.insert(QStringLiteral("text"), rewriteHelpLinks(m_assistantText));
+  map.insert(QStringLiteral("text"),
+             SentinelProbe::stripForDisplay(rewriteHelpLinks(m_assistantText)));
   map.insert(QStringLiteral("thinking"), m_assistantThinking);
   map.insert(QStringLiteral("streaming"), true);
   m_uiMessages[m_assistantIndex] = map;
@@ -914,6 +1001,8 @@ void AI::Conversation::onReplyFinished()
     return;
   }
 
+  evaluateProbe();
+
   if (!m_assistantText.isEmpty() || !m_pendingToolUseBlocks.isEmpty()) {
     QJsonArray content;
     for (const auto& tb : m_pendingThinkingBlocks)
@@ -1118,8 +1207,13 @@ void AI::Conversation::issueRequest()
     Q_EMIT messagesChanged();
   }
 
-  const auto tools = dispatcherTools();
-  m_reply          = m_provider->sendMessage(budgetedHistory(tools), tools, m_summaryForced);
+  const auto tools   = dispatcherTools();
+  const auto history = budgetedHistory(tools);
+  qCDebug(serialStudioAI) << "Request: history_items=" << history.size() << "tools=" << tools.size()
+                          << "loaded_skills=" << m_loadedSkills.size()
+                          << "handoff_seeded=" << !m_handoffSeed.isEmpty();
+
+  m_reply = m_provider->sendMessage(history, tools, m_summaryForced);
   if (!m_reply) {
     setLastError(tr("Provider returned no reply"));
     Q_EMIT errorOccurred(m_lastError);
@@ -1784,7 +1878,8 @@ void AI::Conversation::appendToolCallCard(const QString& callId,
  */
 void AI::Conversation::updateToolCallCard(const QString& callId,
                                           CallStatus status,
-                                          const QJsonObject& result)
+                                          const QJsonObject& result,
+                                          const QJsonObject& verification)
 {
   for (int i = m_uiMessages.size() - 1; i >= 0; --i) {
     auto map     = m_uiMessages.at(i).toMap();
@@ -1799,6 +1894,9 @@ void AI::Conversation::updateToolCallCard(const QString& callId,
       if (!result.isEmpty())
         card.insert(QStringLiteral("result"),
                     QString::fromUtf8(QJsonDocument(result).toJson(QJsonDocument::Indented)));
+
+      if (!verification.isEmpty())
+        card.insert(QStringLiteral("verification"), verification.toVariantMap());
 
       calls[c] = card;
       changed  = true;
@@ -1840,8 +1938,18 @@ void AI::Conversation::runToolCall(const QString& callId,
   const bool ok    = reply.value(QStringLiteral("ok")).toBool();
   qCDebug(serialStudioAI) << "Tool" << name << "result_ok=" << ok;
 
-  recordToolResult(callId, name, reply);
-  updateToolCallCard(callId, ok ? CallStatus::Done : CallStatus::Error, reply);
+  auto effective          = reply;
+  const auto verification = runAutoVerify(name, arguments, reply);
+  if (!verification.isEmpty())
+    effective[QStringLiteral("verification")] = verification;
+
+  recordToolResult(callId, name, effective);
+  updateToolCallCard(callId, ok ? CallStatus::Done : CallStatus::Error, effective, verification);
+
+  if (ok && name == QStringLiteral("assistant.memory.propose"))
+    Q_EMIT memoryProposed(arguments.value(QStringLiteral("category")).toString(),
+                          arguments.value(QStringLiteral("text")).toString());
+
   releaseOutstandingToolResult();
 
   const bool isMeta = name.startsWith(QStringLiteral("meta."));
@@ -1853,6 +1961,109 @@ void AI::Conversation::runToolCall(const QString& callId,
   const bool isReadOnly        = (safety == Safety::Safe);
   if (ok && !isMeta && !isExplicit && !isReadOnly)
     m_autoSaveTimer->start();
+}
+
+/**
+ * @brief Maps an apply-class mutation to its Safe-tier read-back check, mirroring the arg
+ *        construction assistant.script.apply proved out; returns false when no map exists.
+ */
+static bool readBackCommandFor(const QString& name,
+                               const QJsonObject& arguments,
+                               QString& cmd,
+                               QJsonObject& args)
+{
+  if (name == QStringLiteral("project.frameParser.setCode")) {
+    cmd  = QStringLiteral("project.frameParser.dryCompile");
+    args = arguments;
+    return true;
+  }
+
+  if (name == QStringLiteral("project.dataset.setTransformCode")) {
+    cmd  = QStringLiteral("project.dataset.transform.dryRun");
+    args = arguments;
+    if (!args.contains(QStringLiteral("values")))
+      args[QStringLiteral("values")] = QJsonArray{0.0};
+
+    return true;
+  }
+
+  if (name == QStringLiteral("project.painter.setCode")) {
+    cmd  = QStringLiteral("project.painter.dryRun");
+    args = arguments;
+    return true;
+  }
+
+  if (name == QStringLiteral("project.outputWidget.update")
+      && arguments.contains(QStringLiteral("transmitFunction"))) {
+    cmd  = QStringLiteral("project.outputWidget.dryRun");
+    args = QJsonObject{
+      {QStringLiteral("code"), arguments.value(QStringLiteral("transmitFunction"))}
+    };
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Harness-enforced verification after a successful apply-class mutation: runs the
+ *        matching Safe-tier read-back (asserted, never Confirm-class) and returns a
+ *        verification object for the tool result and card, or empty when not applicable.
+ */
+QJsonObject AI::Conversation::runAutoVerify(const QString& name,
+                                            const QJsonObject& arguments,
+                                            const QJsonObject& reply)
+{
+  static auto& assistant = Assistant::instance();
+  if (!assistant.autoVerifyEnabled() || !reply.value(QStringLiteral("ok")).toBool())
+    return {};
+
+  if (name == QStringLiteral("assistant.script.apply")) {
+    QJsonObject v;
+    v[QStringLiteral("ok")]     = true;
+    v[QStringLiteral("method")] = QStringLiteral("internal dry-run");
+    return v;
+  }
+
+  if (name == QStringLiteral("assistant.project.bulkApply")) {
+    const int failures = reply.value(QStringLiteral("failureCount")).toInt();
+    QJsonObject v;
+    v[QStringLiteral("ok")]     = failures == 0;
+    v[QStringLiteral("method")] = QStringLiteral("batch failure scan");
+    if (failures > 0)
+      v[QStringLiteral("detail")] = tr("%n operation(s) failed", nullptr, failures);
+
+    return v;
+  }
+
+  QString cmd;
+  QJsonObject args;
+  if (!readBackCommandFor(name, arguments, cmd, args))
+    return {};
+
+  static auto& registry = AI::CommandRegistry::instance();
+  const bool safe       = registry.safetyOf(cmd) == Safety::Safe;
+  Q_ASSERT(safe);
+  if (!safe) {
+    qCWarning(serialStudioAI) << "AutoVerify: refusing non-Safe read-back" << cmd;
+    return {};
+  }
+
+  const auto check = m_dispatcher->executeCommand(cmd, args, true);
+  bool check_ok    = check.value(QStringLiteral("ok")).toBool();
+  const auto inner = check.value(QStringLiteral("result")).toObject();
+  if (check_ok && inner.contains(QStringLiteral("ok")))
+    check_ok = inner.value(QStringLiteral("ok")).toBool();
+
+  QJsonObject v;
+  v[QStringLiteral("ok")]     = check_ok;
+  v[QStringLiteral("method")] = cmd;
+  if (!check_ok)
+    v[QStringLiteral("detail")] =
+      QString::fromUtf8(QJsonDocument(check).toJson(QJsonDocument::Compact)).left(300);
+
+  qCDebug(serialStudioAI) << "AutoVerify:" << name << "via" << cmd << "ok=" << check_ok;
+  return v;
 }
 
 /**
@@ -2449,6 +2660,10 @@ QJsonArray AI::Conversation::dispatcherTools() const
     essentials.removeAll(QStringLiteral("project.dataset.setOptions"));
   }
 
+  static auto& assistant = Assistant::instance();
+  if (assistant.memoryEnabled())
+    essentials.append(QStringLiteral("assistant.memory.propose"));
+
   const auto raw = m_dispatcher->availableTools();
 
   auto append = [&remapped](const QJsonObject& obj) {
@@ -2488,10 +2703,23 @@ QJsonArray AI::Conversation::dispatcherTools() const
  */
 QJsonObject AI::Conversation::snapshot() const
 {
+  QJsonArray loaded;
+  for (const auto& skill : m_loadedSkills)
+    loaded.append(skill);
+
+  QJsonObject probe;
+  probe[QStringLiteral("degraded")] = m_probe.degraded();
+  probe[QStringLiteral("failure")]  = static_cast<int>(m_probe.lastFailure());
+  probe[QStringLiteral("drifted")]  = m_probe.driftedSegment();
+
   QJsonObject doc;
-  doc[QStringLiteral("schema")]   = 1;
-  doc[QStringLiteral("history")]  = m_history;
-  doc[QStringLiteral("messages")] = QJsonArray::fromVariantList(m_uiMessages);
+  doc[QStringLiteral("schema")]       = 1;
+  doc[QStringLiteral("history")]      = m_history;
+  doc[QStringLiteral("messages")]     = QJsonArray::fromVariantList(m_uiMessages);
+  doc[QStringLiteral("handoff")]      = buildHandoffDigest();
+  doc[QStringLiteral("handoffSeed")]  = m_handoffSeed;
+  doc[QStringLiteral("loadedSkills")] = loaded;
+  doc[QStringLiteral("probe")]        = probe;
   return doc;
 }
 
@@ -2505,6 +2733,29 @@ void AI::Conversation::loadSnapshot(const QJsonObject& doc)
 
   m_history    = doc.value(QStringLiteral("history")).toArray();
   m_uiMessages = doc.value(QStringLiteral("messages")).toArray().toVariantList();
+
+  m_handoffSeed = doc.value(QStringLiteral("handoffSeed")).toString();
+  m_loadedSkills.clear();
+  const auto loaded = doc.value(QStringLiteral("loadedSkills")).toArray();
+  for (const auto& v : loaded)
+    m_loadedSkills.insert(v.toString());
+
+  const bool was_degraded = m_probe.degraded();
+  const auto was_failure  = m_probe.lastFailure();
+  const auto was_drifted  = m_probe.driftedSegment();
+  m_probe.reset(probeComplianceKey());
+  const auto probe = doc.value(QStringLiteral("probe")).toObject();
+  if (probe.value(QStringLiteral("degraded")).toBool()) {
+    const int failure = probe.value(QStringLiteral("failure")).toInt();
+    const auto kind   = failure == static_cast<int>(SentinelProbe::Outcome::Mutated)
+                        ? SentinelProbe::Outcome::Mutated
+                        : SentinelProbe::Outcome::Missing;
+    m_probe.restoreLatch(true, kind, probe.value(QStringLiteral("drifted")).toString().left(64));
+  }
+
+  if (m_probe.degraded() != was_degraded || m_probe.lastFailure() != was_failure
+      || m_probe.driftedSegment() != was_drifted)
+    Q_EMIT probeStateChanged();
 
   m_assistantIndex = -1;
   m_assistantText.clear();
@@ -2560,6 +2811,111 @@ QString AI::Conversation::firstUserText() const
 int AI::Conversation::messageCount() const noexcept
 {
   return static_cast<int>(m_uiMessages.size());
+}
+
+//--------------------------------------------------------------------------------------------------
+// Handoff digest & probe state
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Seeds this conversation with a previous chat's handoff digest; consumed by the
+ *        system-prompt tail for the life of the chat. Re-capped here because seeds also
+ *        arrive from on-disk chat files that a user (or corruption) may have grown.
+ */
+void AI::Conversation::setHandoffSeed(const QString& digest)
+{
+  m_handoffSeed = digest.left(kMaxDigestChars);
+}
+
+/**
+ * @brief Returns the handoff digest this chat was seeded with, or empty.
+ */
+QString AI::Conversation::handoffSeed() const
+{
+  return m_handoffSeed;
+}
+
+/**
+ * @brief Builds the deterministic handoff digest from the visible chat (no model call):
+ *        last user asks, recent completed non-meta tool actions, and the tail of the last
+ *        reply, secret-scrubbed and capped. Scans the tail in reverse and stops once the
+ *        digest inputs are full, so cost stays constant-bounded on long chats.
+ */
+QString AI::Conversation::buildHandoffDigest() const
+{
+  if (m_uiMessages.isEmpty())
+    return {};
+
+  QStringList asks;
+  QStringList actions;
+  QString last_reply;
+  for (int i = static_cast<int>(m_uiMessages.size()) - 1; i >= 0; --i) {
+    if (asks.size() >= 3 && !last_reply.isEmpty())
+      break;
+
+    const auto map  = m_uiMessages.at(i).toMap();
+    const auto role = map.value(QStringLiteral("role")).toString();
+    if (role == QStringLiteral("user") && asks.size() < 3) {
+      const auto text =
+        map.value(QStringLiteral("text")).toString().left(480).simplified().left(120);
+      if (!text.isEmpty())
+        asks.prepend(text);
+    }
+
+    if (role != QStringLiteral("assistant"))
+      continue;
+
+    if (last_reply.isEmpty())
+      last_reply = map.value(QStringLiteral("text")).toString().left(800).simplified().left(200);
+
+    const auto calls = map.value(QStringLiteral("toolCalls")).toList();
+    for (const auto& c : calls) {
+      const auto card = c.toMap();
+      const auto name = card.value(QStringLiteral("name")).toString();
+      const auto done =
+        card.value(QStringLiteral("status")).toInt() == static_cast<int>(CallStatus::Done);
+      if (done && !name.startsWith(QStringLiteral("meta.")) && !actions.contains(name)
+          && actions.size() < 10)
+        actions.append(name);
+    }
+  }
+
+  QString out;
+  out += QStringLiteral("Asked: ") + asks.join(QStringLiteral(" | ")) + QLatin1Char('\n');
+  if (!actions.isEmpty())
+    out += QStringLiteral("Actions: ") + actions.join(QStringLiteral(", ")) + QLatin1Char('\n');
+
+  if (!last_reply.isEmpty())
+    out += QStringLiteral("Last reply: ") + last_reply + QLatin1Char('\n');
+
+  (void)Redactor::scrub(out);
+  out.truncate(kMaxDigestChars);
+  return out;
+}
+
+/**
+ * @brief Returns true while this conversation has a latched context-degradation verdict.
+ */
+bool AI::Conversation::probeDegraded() const noexcept
+{
+  return m_probe.degraded();
+}
+
+/**
+ * @brief Returns a translated description of the latched degradation for the QML banner.
+ */
+QString AI::Conversation::probeDetail() const
+{
+  if (!m_probe.degraded())
+    return {};
+
+  if (m_probe.lastFailure() == SentinelProbe::Outcome::Missing)
+    return tr("The model stopped reproducing its context-integrity line. Long "
+              "conversations degrade silently; recent replies may be less reliable.");
+
+  return tr("The model altered its context-integrity line (drifted segment: %1). Long "
+            "conversations degrade silently; recent replies may be less reliable.")
+    .arg(m_probe.driftedSegment());
 }
 
 //--------------------------------------------------------------------------------------------------

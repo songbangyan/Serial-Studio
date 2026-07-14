@@ -27,6 +27,7 @@
 #include <QString>
 #include <QStringList>
 
+#include "AI/MemoryStore.h"
 #include "API/CommandRegistry.h"
 #include "API/EnumLabels.h"
 #include "API/SchemaBuilder.h"
@@ -982,6 +983,37 @@ API::CommandResponse API::Handlers::AssistantHandler::listCheckpoints(const QStr
   return CommandResponse::makeSuccess(id, result);
 }
 
+/**
+ * @brief Queue a memory proposal for user confirmation; deliberately side-effect-free --
+ *        nothing persists unless the user clicks the confirmation chip in the chat.
+ */
+API::CommandResponse API::Handlers::AssistantHandler::memoryPropose(const QString& id,
+                                                                    const QJsonObject& params)
+{
+  const auto category = params.value(QStringLiteral("category")).toString();
+  const auto text     = params.value(QStringLiteral("text")).toString().trimmed();
+
+  if (!AI::MemoryStore::categories().contains(category))
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Unknown category: '%1'. Use one of: user, feedback, project, reference.")
+        .arg(category));
+
+  if (text.isEmpty() || text.size() > AI::MemoryStore::kMaxFactChars)
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Provide a non-empty fact under %1 characters.")
+        .arg(AI::MemoryStore::kMaxFactChars));
+
+  QJsonObject result;
+  result[QStringLiteral("queued")] = true;
+  result[QStringLiteral("note")] =
+    QStringLiteral("Proposal shown to the user for confirmation; nothing has been stored.");
+  return CommandResponse::makeSuccess(id, result);
+}
+
 //--------------------------------------------------------------------------------------------------
 // Registration
 //--------------------------------------------------------------------------------------------------
@@ -1263,6 +1295,33 @@ void API::Handlers::AssistantHandler::registerCheckpointCommands()
 }
 
 /**
+ * @brief Register the consent-gated memory-proposal command.
+ */
+void API::Handlers::AssistantHandler::registerMemoryCommands()
+{
+  static auto& registry = CommandRegistry::instance();
+  registry.registerCommand(
+    QStringLiteral("assistant.memory.propose"),
+    QStringLiteral("Propose remembering a small durable fact for future chats (a stated "
+                   "preference, a correction you were given, a project convention). The "
+                   "user sees a confirmation chip and decides; this call NEVER stores "
+                   "anything by itself. Categories: user (who they are / preferences), "
+                   "feedback (corrections), project (facts about the open project), "
+                   "reference (where to find things)."),
+    API::makeSchema(
+      {
+        {QStringLiteral("category"),
+         QStringLiteral("string"),
+         QStringLiteral("One of: user, feedback, project, reference.")                },
+        {    QStringLiteral("text"),
+         QStringLiteral("string"),
+         QStringLiteral("The fact to remember, stated plainly, under 400 characters.")}
+  },
+      {}),
+    &API::Handlers::AssistantHandler::memoryPropose);
+}
+
+/**
  * @brief Wire every assistant.* command into CommandRegistry.
  */
 void API::Handlers::AssistantHandler::registerCommands()
@@ -1270,4 +1329,5 @@ void API::Handlers::AssistantHandler::registerCommands()
   registerResolverCommands();
   registerEditCommands();
   registerCheckpointCommands();
+  registerMemoryCommands();
 }

@@ -427,6 +427,10 @@ Widgets.SmartWindow {
     enabled: root.dashboardVisible
     onActivated: dashboard.toggleAutoLayout()
   } Shortcut {
+    sequence: "Ctrl+Shift+F"
+    enabled: root.dashboardVisible
+    onActivated: dashboard.toggleFreeze()
+  } Shortcut {
     sequence: "Ctrl+Home"
     enabled: root.dashboardVisible
     onActivated: dashboard.clearActiveWindow()

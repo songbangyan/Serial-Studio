@@ -16,10 +16,13 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTimer>
 #include <QVariantList>
 #include <QVariantMap>
+
+#include "AI/SentinelProbe.h"
 
 class QUrl;
 class QNetworkReply;
@@ -52,6 +55,7 @@ class Conversation : public QObject {
 
 public:
   static constexpr int kMaxToolCalls        = 25;
+  static constexpr int kMaxDigestChars      = 600;
   static constexpr int kMaxHistoryItems     = 400;
   static constexpr int kMaxUiMessageRows    = 600;
   static constexpr int kMaxTransientRetries = 2;
@@ -81,6 +85,12 @@ public:
   [[nodiscard]] QString firstUserText() const;
   [[nodiscard]] int messageCount() const noexcept;
 
+  void setHandoffSeed(const QString& digest);
+  [[nodiscard]] QString handoffSeed() const;
+  [[nodiscard]] QString buildHandoffDigest() const;
+  [[nodiscard]] bool probeDegraded() const noexcept;
+  [[nodiscard]] QString probeDetail() const;
+
   [[nodiscard]] QVariantList messages() const;
   [[nodiscard]] bool busy() const noexcept;
   [[nodiscard]] bool awaitingConfirmation() const noexcept;
@@ -92,6 +102,8 @@ signals:
   void awaitingConfirmationChanged();
   void lastErrorChanged();
   void errorOccurred(const QString& message);
+  void probeStateChanged();
+  void memoryProposed(const QString& category, const QString& text);
 
 public slots:
   void start(const QString& userText);
@@ -120,6 +132,9 @@ private:
   [[nodiscard]] int firstFreshUserTurnAt(int start) const;
   void reconcileHistoryToolPairs();
   bool reconcileHistoryToolPairsAt(int& i);
+  void injectRoutedSkill(const QString& userText);
+  void evaluateProbe();
+  [[nodiscard]] QString probeComplianceKey() const;
   void fetchHelpPage(const QString& callId, const QString& path);
   void fetchHelpIndex(const QString& callId, const QUrl& missedUrl);
   void completeHelpFetch(const QString& callId, const QUrl& url, QNetworkReply* reply);
@@ -129,11 +144,17 @@ private:
                           const QString& name,
                           const QJsonObject& arguments,
                           CallStatus status);
-  void updateToolCallCard(const QString& callId, CallStatus status, const QJsonObject& result = {});
+  void updateToolCallCard(const QString& callId,
+                          CallStatus status,
+                          const QJsonObject& result       = {},
+                          const QJsonObject& verification = {});
   void runToolCall(const QString& callId,
                    const QString& name,
                    const QJsonObject& arguments,
                    bool autoConfirmSafe);
+  [[nodiscard]] QJsonObject runAutoVerify(const QString& name,
+                                          const QJsonObject& arguments,
+                                          const QJsonObject& reply);
   void recordToolResult(const QString& callId, const QString& name, const QJsonObject& payload);
   bool dispatchMetaTool(const QString& callId, const QString& name, const QJsonObject& arguments);
   void dispatchByCallSafety(const QString& callId,
@@ -212,6 +233,10 @@ private:
   bool m_streamDirty;
 
   QTimer* m_autoSaveTimer;
+
+  QString m_handoffSeed;
+  QSet<QString> m_loadedSkills;
+  SentinelProbe m_probe;
 };
 
 }  // namespace AI

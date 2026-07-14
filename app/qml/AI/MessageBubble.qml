@@ -279,6 +279,7 @@ Item {
           resultJson: modelData.result
           statusValue: modelData.status
           Layout.topMargin: showSectionLabel ? 0 : 4
+          verification: modelData.verification !== undefined ? modelData.verification : null
         }
       }
     }
@@ -344,6 +345,29 @@ Item {
           MenuItem {
             text: qsTr("Select All")
             onTriggered: userText.selectAll()
+          }
+
+          MenuSeparator {}
+
+          Menu {
+            title: qsTr("Remember this…")
+
+            MenuItem {
+              text: qsTr("As a preference about me")
+              onTriggered: Cpp_AI_Assistant.addMemory("user", root.text)
+            }
+            MenuItem {
+              text: qsTr("As a correction / lesson")
+              onTriggered: Cpp_AI_Assistant.addMemory("feedback", root.text)
+            }
+            MenuItem {
+              text: qsTr("As a fact about this project")
+              onTriggered: Cpp_AI_Assistant.addMemory("project", root.text)
+            }
+            MenuItem {
+              text: qsTr("As a reference")
+              onTriggered: Cpp_AI_Assistant.addMemory("reference", root.text)
+            }
           }
         }
       }

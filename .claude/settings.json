@@ -80,6 +80,18 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/canary-check.py\"",
+            "timeout": 15,
+            "statusMessage": "Checking context canary"
+          }
+        ]
+      }
     ]
   }
 }

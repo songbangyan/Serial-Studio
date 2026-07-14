@@ -115,11 +115,17 @@ Widgets.Pane {
   }
 
   function closeActiveWindow() {
+    if (Cpp_UI_Dashboard.frozen)
+      return
+
     if (taskBar.activeWindow)
       taskBar.closeWindow(taskBar.activeWindow)
   }
 
   function minimizeActiveWindow() {
+    if (Cpp_UI_Dashboard.frozen)
+      return
+
     if (taskBar.activeWindow)
       taskBar.minimizeWindow(taskBar.activeWindow)
   }
@@ -129,7 +135,17 @@ Widgets.Pane {
   }
 
   function toggleAutoLayout() {
+    if (Cpp_UI_Dashboard.frozen)
+      return
+
     taskBar.windowManager.autoLayoutEnabled = !taskBar.windowManager.autoLayoutEnabled
+  }
+
+  function toggleFreeze() {
+    const target = !Cpp_UI_Dashboard.frozen
+    Cpp_UI_Dashboard.setFrozen(target)
+    if (target && !Cpp_UI_Dashboard.frozen)
+      app.showLicenseDialog()
   }
 
   function jumpToWorkspaceIndex(index) {

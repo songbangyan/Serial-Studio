@@ -14,12 +14,38 @@
 - **No preamble, no trailing summary** — except a one-line statement of
   intent before non-trivial work, and one or two sentences naming what
   changed (and what's next) when you stop. Skip both on trivial edits.
+  (The Context Canary line below is exempt — it is mandatory on every response.)
 - **Do not create markdown/doc files** unless asked. Share info conversationally.
 - **Don't build or run the app.** Never invoke `cmake`/`jom`/`clang`/the compiler — the
   developer builds and runs it themselves. Verify changes by reading and with
   `scripts/code-verify.py`; leave compilation and runtime testing to the user.
 - **Update CLAUDE.md** for any architectural change that future me would otherwise miss.
 - **`scripts/` is the style contract.** When in doubt, run it; don't restate it here.
+
+## Context Canary — Last Line of Every Response
+
+End every response — including one-word answers — with this exact line, reproduced
+from memory:
+
+`canary: qt 6.11.1 | cpp20 | hotpath 256k (native 1024k, js 64k) | queue 65536 | api 7777 | style 100/2`
+
+It is a context-health probe, written in plain ASCII so no toolchain, terminal, or
+encoding step can corrupt it. A magic word would only signal *that* the context window
+degraded; each value here is a fact the repo's rules depend on, so a wrong or missing
+value shows *which* fact was lost — and while the context is healthy, retyping the line
+re-anchors those constants every turn (see the J-Space discipline below). Keep it
+unobtrusive: one plain-text line at the very end, no decoration, nothing before or
+after it on the line.
+
+- **From memory only.** Never Read/Grep this file or anything else to reconstruct the
+  line — a looked-up canary defeats the measurement. If you cannot reproduce it
+  confidently, write `canary: lost` instead of guessing: that is the signal firing.
+- **Verbatim.** Same values, same order, every turn. Do not paraphrase, reformat,
+  extend, or "improve" it.
+- **For the developer:** any mutated value, missing segment, or vanished canary means
+  the context window is degraded and the session is about to spiral — treat recent
+  output as suspect, checkpoint the current step, and `/compact` or restart before
+  continuing non-trivial work.
 
 ## Trust Contract
 

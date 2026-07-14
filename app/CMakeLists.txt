@@ -577,6 +577,7 @@ set(QML_SOURCES
   qml/Widgets/Dashboard/PlotCommon.qml
   qml/Widgets/Dashboard/Stopwatch.qml
   qml/Widgets/Dashboard/Terminal.qml
+  qml/Widgets/Dashboard/WidgetToolbar.qml
   qml/Widgets/Dashboard/ValueFormat.js
   qml/Widgets/BigButton.qml
   qml/Widgets/BoundField.qml
@@ -699,6 +700,9 @@ if(BUILD_COMMERCIAL)
     src/AI/ContextBuilder.h
     src/AI/Conversation.h
     src/AI/ChatStore.h
+    src/AI/SentinelProbe.h
+    src/AI/MemoryStore.h
+    src/AI/SkillRouter.h
     src/AI/Providers/Provider.h
     src/AI/Providers/AnthropicProvider.h
     src/AI/Providers/AnthropicReply.h
@@ -792,6 +796,9 @@ if(BUILD_COMMERCIAL)
     src/AI/ContextBuilder.cpp
     src/AI/Conversation.cpp
     src/AI/ChatStore.cpp
+    src/AI/SentinelProbe.cpp
+    src/AI/MemoryStore.cpp
+    src/AI/SkillRouter.cpp
     src/AI/Providers/AnthropicProvider.cpp
     src/AI/Providers/AnthropicReply.cpp
     src/AI/Providers/OpenAIProvider.cpp
@@ -846,6 +853,7 @@ if(BUILD_COMMERCIAL)
     qml/AI/AssistantPanel.qml
     qml/AI/ChatSidebar.qml
     qml/AI/KeyManagerDialog.qml
+    qml/AI/MemoryManagerDialog.qml
     qml/AI/MessageBubble.qml
     qml/AI/MessageList.qml
     qml/AI/ToolCallCard.qml

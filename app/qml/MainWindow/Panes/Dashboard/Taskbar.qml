@@ -663,8 +663,12 @@ Item {
             onClicked: {
               const window = taskBar.windowData(model.windowId)
               if (window !== null) {
-                if (taskBar.windowState(window) !== SS_Ui.TaskbarModel.WindowNormal)
+                if (taskBar.windowState(window) !== SS_Ui.TaskbarModel.WindowNormal) {
+                  if (Cpp_UI_Dashboard.frozen)
+                    return
+
                   taskBar.showWindow(window)
+                }
 
                 taskBar.activeWindow = window
               }
@@ -673,7 +677,7 @@ Item {
             TapHandler {
               acceptedButtons: Qt.RightButton
               onTapped: {
-                if (taskBar && taskBar.activeGroupId >= 1000) {
+                if (taskBar && taskBar.activeGroupId >= 1000 && !Cpp_UI_Dashboard.frozen) {
                   root.tbRemoveWindowId = button.model.windowId
                   _tbContextMenu.popup()
                 }
@@ -911,7 +915,9 @@ Item {
       background: Item{}
       Layout.preferredWidth: 24
       Layout.preferredHeight: 24
+      opacity: enabled ? 1 : 0.5
       Layout.alignment: Qt.AlignVCenter
+      enabled: !Cpp_UI_Dashboard.frozen
       icon.source: "qrc:/icons/buttons/auto-layout.svg"
       icon.color: taskBar.windowManager.autoLayoutEnabled ?
                     Cpp_ThemeManager.colors["taskbar_highlight"] :
@@ -919,6 +925,38 @@ Item {
       onClicked: {
         taskBar.activeWindow = null
         taskBar.windowManager.autoLayoutEnabled = !taskBar.windowManager.autoLayoutEnabled
+      }
+    }
+
+    //
+    // Freeze dashboard button + passive frozen indicator (Pro)
+    //
+    Widgets.IconButton {
+      id: _freezeButton
+
+      readonly property bool freezeAllowed: Cpp_CommercialBuild
+                                            && (Cpp_Licensing_LemonSqueezy.isActivated
+                                                || Cpp_Licensing_Trial.trialEnabled)
+
+      iconSize: 16
+      background: Item{}
+      Layout.preferredWidth: 24
+      Layout.preferredHeight: 24
+      Layout.alignment: Qt.AlignVCenter
+      opacity: freezeAllowed ? 1 : 0.5
+      icon.source: "qrc:/icons/buttons/freeze.svg"
+      icon.color: Cpp_UI_Dashboard.frozen ?
+                    Cpp_ThemeManager.colors["taskbar_highlight"] :
+                    Cpp_ThemeManager.colors["taskbar_text"]
+      ToolTip.delay: 700
+      ToolTip.visible: hovered
+      ToolTip.text: Cpp_UI_Dashboard.frozen ? qsTr("Unfreeze Dashboard")
+                                            : qsTr("Freeze Dashboard")
+      onClicked: {
+        if (freezeAllowed)
+          Cpp_UI_Dashboard.setFrozen(!Cpp_UI_Dashboard.frozen)
+        else
+          app.showLicenseDialog()
       }
     }
 

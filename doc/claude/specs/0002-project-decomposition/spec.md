@@ -1,7 +1,7 @@
 ---
 spec: 0002-project-decomposition
 title: God-class decomposition (ProjectModel / ProjectEditor / ProjectHandler)
-status: in-progress   # draft -> approved -> in-progress -> done | shelved
+status: done          # draft -> approved -> in-progress -> done | shelved
 created: 2026-07-06
 author: Alex Spataru
 ---

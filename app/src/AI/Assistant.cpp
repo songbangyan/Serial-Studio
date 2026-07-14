@@ -24,6 +24,7 @@
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/Providers/OpenRouterProvider.h"
 #include "AI/ToolDispatcher.h"
+#include "DataModel/ProjectModel.h"
 #include "Licensing/CommercialToken.h"
 #include "Misc/Utilities.h"
 
@@ -56,6 +57,11 @@ AI::Assistant::Assistant()
   , m_cacheCreatedTokens(0)
   , m_autoApproveEdits(false)
   , m_allowDeviceControl(false)
+  , m_contextProbeEnabled(true)
+  , m_memoryEnabled(true)
+  , m_handoffSeedingEnabled(true)
+  , m_skillRoutingEnabled(true)
+  , m_autoVerifyEnabled(true)
 {
   m_nam          = std::make_unique<QNetworkAccessManager>(this);
   m_dispatcher   = std::make_unique<ToolDispatcher>(this);
@@ -74,6 +80,12 @@ AI::Assistant::Assistant()
   static auto& commandRegistry = CommandRegistry::instance();
   commandRegistry.setDeviceControlAllowed(m_allowDeviceControl);
 
+  m_contextProbeEnabled   = m_settings.value(QStringLiteral("ai/contextProbe"), true).toBool();
+  m_memoryEnabled         = m_settings.value(QStringLiteral("ai/memory"), true).toBool();
+  m_handoffSeedingEnabled = m_settings.value(QStringLiteral("ai/handoffSeeding"), true).toBool();
+  m_skillRoutingEnabled   = m_settings.value(QStringLiteral("ai/skillRouting"), true).toBool();
+  m_autoVerifyEnabled     = m_settings.value(QStringLiteral("ai/autoVerify"), true).toBool();
+
   m_conversation->setDispatcher(m_dispatcher.get());
   rewireConversationProvider();
 
@@ -81,6 +93,9 @@ AI::Assistant::Assistant()
     m_conversation.get(), &Conversation::busyChanged, this, &Assistant::onConversationBusyChanged);
   connect(
     m_conversation.get(), &Conversation::errorOccurred, this, &Assistant::onConversationError);
+  connect(
+    m_conversation.get(), &Conversation::probeStateChanged, this, &Assistant::contextHealthChanged);
+  connect(m_conversation.get(), &Conversation::memoryProposed, this, &Assistant::memoryProposed);
 
   initChats();
 }
@@ -240,6 +255,193 @@ void AI::Assistant::setAllowDeviceControl(bool enabled)
   static auto& commandRegistry = CommandRegistry::instance();
   commandRegistry.setDeviceControlAllowed(m_allowDeviceControl);
   Q_EMIT allowDeviceControlChanged();
+}
+
+/**
+ * @brief Returns whether the context-health sentinel probe is active.
+ */
+bool AI::Assistant::contextProbeEnabled() const noexcept
+{
+  return m_contextProbeEnabled;
+}
+
+/**
+ * @brief Persists the probe toggle; when off, no sentinel instruction is sent at all.
+ */
+void AI::Assistant::setContextProbeEnabled(bool enabled)
+{
+  if (m_contextProbeEnabled == enabled)
+    return;
+
+  m_contextProbeEnabled = enabled;
+  m_settings.setValue(QStringLiteral("ai/contextProbe"), enabled);
+  Q_EMIT contextProbeEnabledChanged();
+}
+
+/**
+ * @brief Returns whether persistent assistant memory rides on requests.
+ */
+bool AI::Assistant::memoryEnabled() const noexcept
+{
+  return m_memoryEnabled;
+}
+
+/**
+ * @brief Persists the memory toggle; when off, requests carry zero memory content.
+ */
+void AI::Assistant::setMemoryEnabled(bool enabled)
+{
+  if (m_memoryEnabled == enabled)
+    return;
+
+  m_memoryEnabled = enabled;
+  m_settings.setValue(QStringLiteral("ai/memory"), enabled);
+  Q_EMIT memoryEnabledChanged();
+}
+
+/**
+ * @brief Returns whether new chats can seed from a previous chat's handoff digest.
+ */
+bool AI::Assistant::handoffSeedingEnabled() const noexcept
+{
+  return m_handoffSeedingEnabled;
+}
+
+/**
+ * @brief Persists the handoff-seeding toggle.
+ */
+void AI::Assistant::setHandoffSeedingEnabled(bool enabled)
+{
+  if (m_handoffSeedingEnabled == enabled)
+    return;
+
+  m_handoffSeedingEnabled = enabled;
+  m_settings.setValue(QStringLiteral("ai/handoffSeeding"), enabled);
+  Q_EMIT handoffSeedingEnabledChanged();
+}
+
+/**
+ * @brief Returns whether deterministic skill routing pre-loads skill bodies.
+ */
+bool AI::Assistant::skillRoutingEnabled() const noexcept
+{
+  return m_skillRoutingEnabled;
+}
+
+/**
+ * @brief Persists the skill-routing toggle.
+ */
+void AI::Assistant::setSkillRoutingEnabled(bool enabled)
+{
+  if (m_skillRoutingEnabled == enabled)
+    return;
+
+  m_skillRoutingEnabled = enabled;
+  m_settings.setValue(QStringLiteral("ai/skillRouting"), enabled);
+  Q_EMIT skillRoutingEnabledChanged();
+}
+
+/**
+ * @brief Returns whether apply-class mutations are auto-verified by the application.
+ */
+bool AI::Assistant::autoVerifyEnabled() const noexcept
+{
+  return m_autoVerifyEnabled;
+}
+
+/**
+ * @brief Persists the auto-verify toggle.
+ */
+void AI::Assistant::setAutoVerifyEnabled(bool enabled)
+{
+  if (m_autoVerifyEnabled == enabled)
+    return;
+
+  m_autoVerifyEnabled = enabled;
+  m_settings.setValue(QStringLiteral("ai/autoVerify"), enabled);
+  Q_EMIT autoVerifyEnabledChanged();
+}
+
+/**
+ * @brief Returns true while the active conversation has a latched degradation verdict.
+ */
+bool AI::Assistant::contextDegraded() const
+{
+  return m_conversation && m_conversation->probeDegraded();
+}
+
+/**
+ * @brief Returns the translated description behind the degradation banner, or empty.
+ */
+QString AI::Assistant::degradationDetail() const
+{
+  return m_conversation ? m_conversation->probeDetail() : QString();
+}
+
+/**
+ * @brief Returns the capped memory index for the system-prompt tail; empty when the
+ *        feature is off or nothing applies, so a disabled feature costs zero tokens.
+ */
+QString AI::Assistant::memoryIndex() const
+{
+  if (!m_memoryEnabled || m_memory.isEmpty())
+    return {};
+
+  static auto& project = DataModel::ProjectModel::instance();
+  return m_memory.indexBlock(project.jsonFilePath());
+}
+
+/**
+ * @brief Returns the active chat's handoff seed for the system-prompt tail, or empty.
+ */
+QString AI::Assistant::handoffSeedText() const
+{
+  if (!m_handoffSeedingEnabled || !m_conversation)
+    return {};
+
+  return m_conversation->handoffSeed();
+}
+
+/**
+ * @brief Returns remembered facts as rows for the QML memory manager.
+ */
+QVariantList AI::Assistant::memoryList() const
+{
+  return m_memory.list();
+}
+
+/**
+ * @brief Persists a user-approved fact; project facts bind to the current project file.
+ */
+bool AI::Assistant::addMemory(const QString& category, const QString& text)
+{
+  static auto& project = DataModel::ProjectModel::instance();
+  const bool ok        = m_memory.addFact(category, text, project.jsonFilePath());
+  if (ok)
+    Q_EMIT memoryChanged();
+
+  return ok;
+}
+
+/**
+ * @brief Rewrites a remembered fact's text.
+ */
+bool AI::Assistant::updateMemory(const QString& id, const QString& text)
+{
+  const bool ok = m_memory.updateFact(id, text);
+  if (ok)
+    Q_EMIT memoryChanged();
+
+  return ok;
+}
+
+/**
+ * @brief Deletes a remembered fact; it never rides on a subsequent request.
+ */
+void AI::Assistant::deleteMemory(const QString& id)
+{
+  m_memory.removeFact(id);
+  Q_EMIT memoryChanged();
 }
 
 /**
@@ -546,6 +748,27 @@ void AI::Assistant::newChat()
 
   Q_EMIT chatListChanged();
   Q_EMIT activeChatChanged();
+}
+
+/**
+ * @brief Starts a fresh chat seeded with another chat's handoff digest; the active chat
+ *        digests live (its on-disk snapshot can lag the autosave), closed chats from disk.
+ */
+void AI::Assistant::newChatFromHandoff(const QString& id)
+{
+  QString digest;
+  if (m_handoffSeedingEnabled) {
+    if (id == m_activeChatId && m_conversation)
+      digest = m_conversation->buildHandoffDigest();
+    else if (m_chats.contains(id))
+      digest = m_chats.loadChat(id).value(QStringLiteral("handoff")).toString();
+  }
+
+  newChat();
+  if (m_conversation && !digest.isEmpty()) {
+    m_conversation->setHandoffSeed(digest);
+    qCDebug(serialStudioAI) << "Handoff seed carried into new chat (" << digest.size() << "chars )";
+  }
 }
 
 /**

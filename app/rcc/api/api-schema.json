@@ -52,6 +52,24 @@
         ]
     },
     {
+        "description": "Propose remembering a small durable fact for future chats (a stated preference, a correction you were given, a project convention). The user sees a confirmation chip and decides; this call NEVER stores anything by itself. Categories: user (who they are / preferences), feedback (corrections), project (facts about the open project), reference (where to find things).",
+        "name": "assistant.memory.propose",
+        "properties": {
+            "category": {
+                "description": "One of: user, feedback, project, reference.",
+                "type": "string"
+            },
+            "text": {
+                "description": "The fact to remember, stated plainly, under 400 characters.",
+                "type": "string"
+            }
+        },
+        "required": [
+            "category",
+            "text"
+        ]
+    },
+    {
         "description": "Run several project mutations atomically with respect to autosave. Identical contract to project.batch (max 1024 ops, stopOnError default false, NOT a database transaction) but pre-validates that no op tries to nest another batch. Pass dryRun:true at the top level to preview every op without committing -- forwarded to project.batch which rejects the dryRun when any op is not in the dryRun-aware command set.",
         "name": "assistant.project.bulkApply",
         "properties": {
@@ -307,6 +325,19 @@
         ]
     },
     {
+        "description": "Collapse consecutive duplicate lines",
+        "name": "console.setCollapseDuplicates",
+        "properties": {
+            "enabled": {
+                "description": "Whether to enable the feature",
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "enabled"
+        ]
+    },
+    {
         "description": "Set data mode",
         "name": "console.setDataMode",
         "properties": {
@@ -395,6 +426,19 @@
         },
         "required": [
             "endingIndex"
+        ]
+    },
+    {
+        "description": "Toggle case-sensitive console search",
+        "name": "console.setSearchCaseSensitive",
+        "properties": {
+            "enabled": {
+                "description": "Whether to enable the feature",
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "enabled"
         ]
     },
     {

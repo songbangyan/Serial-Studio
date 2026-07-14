@@ -244,6 +244,7 @@ QJsonObject DataModel::ProjectModel::serializeToJson() const
   json.insert(Keys::Title, m_title);
   json.insert(Keys::PointCount, m_pointCount);
   json.insert(Keys::PlotTimeRange, m_plotTimeRange);
+  json.insert(Keys::Frozen, m_frozen);
   json.insert(Keys::ChangeDrivenTransforms, m_changeDrivenTransforms);
   json.insert(Keys::HexadecimalDelimiters, m_hexadecimalDelimiters);
 

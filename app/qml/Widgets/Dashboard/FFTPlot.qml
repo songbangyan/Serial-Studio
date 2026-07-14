@@ -43,7 +43,7 @@ Item {
   //
   // Window flags
   //
-  property bool hasToolbar: true
+  readonly property bool hasToolbar: toolbar.shown
 
   //
   // Custom properties
@@ -107,7 +107,6 @@ Item {
   function updateWidgetOptions() {
     plot.yLabelVisible = root.userShowYLabel && (root.width >= 196)
     plot.xLabelVisible = root.userShowXLabel && (root.height >= (196 * 2/3))
-    root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
   }
 
   //
@@ -146,14 +145,10 @@ Item {
   //
   // Add toolbar
   //
-  RowLayout {
+  WidgetToolbar {
     id: toolbar
 
-    spacing: 4
-    visible: root.hasToolbar
-    height: root.hasToolbar ? 48 : 0
-    LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Cpp_Misc_Translator.rtl
+    windowRoot: root.windowRoot
 
     anchors {
       leftMargin: 8

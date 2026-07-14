@@ -43,21 +43,12 @@ Item {
   //
   // Window flags
   //
-  property bool hasToolbar: true
+  readonly property bool hasToolbar: toolbar.shown
 
   //
   // Size-aware font scale: shrinks colorbar text as the window gets small
   //
   readonly property real uiScale: Cpp_Misc_CommonFonts.autoScale(Math.min(width, height), 260)
-
-  //
-  // Default minimum size for toolbar visibility
-  //
-  onWidthChanged: updateWidgetOptions()
-  onHeightChanged: updateWidgetOptions()
-  function updateWidgetOptions() {
-    root.hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 200)
-  }
 
   //
   // Reparent the painted-item model into the central waterfall area
@@ -96,21 +87,16 @@ Item {
 
     if (s["colorbarVisible"] !== undefined)
       model.colorbarVisible = s["colorbarVisible"]
-
-    root.updateWidgetOptions()
   }
 
   //
   // Toolbar
   //
-  RowLayout {
+  WidgetToolbar {
     id: toolbar
 
-    spacing: 4
-    visible: root.hasToolbar
-    height: root.hasToolbar ? 48 : 0
-    LayoutMirroring.childrenInherit: true
-    LayoutMirroring.enabled: Cpp_Misc_Translator.rtl
+    minWidgetHeight: 200
+    windowRoot: root.windowRoot
 
     anchors {
       leftMargin: 8

@@ -60,6 +60,10 @@ class WindowManager : public QQuickItem {
              READ autoLayoutEnabled
              WRITE setAutoLayoutEnabled
              NOTIFY autoLayoutEnabledChanged)
+  Q_PROPERTY(bool frozen
+             READ frozen
+             WRITE setFrozen
+             NOTIFY frozenChanged)
   Q_PROPERTY(QRect snapIndicator
              READ snapIndicator
              NOTIFY snapIndicatorChanged)
@@ -70,6 +74,7 @@ class WindowManager : public QQuickItem {
 
 signals:
   void zCounterChanged();
+  void frozenChanged();
   void snapIndicatorChanged();
   void backgroundImageChanged();
   void autoLayoutEnabledChanged();
@@ -82,6 +87,7 @@ public:
   ~WindowManager();
 
   [[nodiscard]] int zCounter() const;
+  [[nodiscard]] bool frozen() const;
   [[nodiscard]] bool autoLayoutEnabled() const;
   [[nodiscard]] const QString& backgroundImage() const;
 
@@ -121,6 +127,7 @@ public slots:
   void updateHoverCursor(const QPointF& pos);
   void setBackgroundImage(const QString& path);
   void setAutoLayoutEnabled(const bool enabled);
+  void setFrozen(const bool frozen);
   void registerWindow(const int id, QQuickItem* item);
   void reconcileWindowOrder(const QVector<int>& taskbarOrder);
   void preloadPendingGeometries(const QJsonObject& layout);
@@ -175,6 +182,7 @@ private:
   int m_zCounter;
   bool m_layoutRestored;
   bool m_autoLayoutEnabled;
+  bool m_frozen;
   bool m_userReordered;
   bool m_suppressGeometrySignal;
   int m_manualCanvasWidth;

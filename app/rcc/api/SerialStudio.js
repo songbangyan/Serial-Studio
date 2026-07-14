@@ -354,6 +354,7 @@ if (typeof __ss_bridge !== 'undefined') {
 var api = (typeof api !== 'undefined') ? api : {};
 var assistant = (typeof assistant !== 'undefined') ? assistant : {};
 assistant.dataset = assistant.dataset || {};
+assistant.memory = assistant.memory || {};
 assistant.project = assistant.project || {};
 assistant.script = assistant.script || {};
 assistant.workspace = assistant.workspace || {};
@@ -422,6 +423,13 @@ assistant.listCheckpoints = function(options) {
   var p = {};
   if (options) for (var k in options) p[k] = options[k];
   return apiCall('assistant.listCheckpoints', p);
+};
+
+assistant.memory.propose = function(category, text) {
+  var p = {};
+  p['category'] = category;
+  p['text'] = text;
+  return apiCall('assistant.memory.propose', p);
 };
 
 assistant.project.bulkApply = function(ops) {
@@ -504,6 +512,12 @@ console.setChecksumMethod = function(methodIndex) {
   return apiCall('console.setChecksumMethod', p);
 };
 
+console.setCollapseDuplicates = function(enabled) {
+  var p = {};
+  p['enabled'] = enabled;
+  return apiCall('console.setCollapseDuplicates', p);
+};
+
 console.setDataMode = function(modeIndex) {
   var p = {};
   p['modeIndex'] = modeIndex;
@@ -544,6 +558,12 @@ console.setLineEnding = function(endingIndex) {
   var p = {};
   p['endingIndex'] = endingIndex;
   return apiCall('console.setLineEnding', p);
+};
+
+console.setSearchCaseSensitive = function(enabled) {
+  var p = {};
+  p['enabled'] = enabled;
+  return apiCall('console.setSearchCaseSensitive', p);
 };
 
 console.setShowTimestamp = function(enabled) {

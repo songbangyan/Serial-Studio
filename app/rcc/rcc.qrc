@@ -140,6 +140,7 @@
         <file>ai/build_search_index.py</file>
         <file>ai/command_safety.json</file>
         <file>ai/search_index.json</file>
+        <file>ai/skill_triggers.json</file>
         <file>api/api-schema.json</file>
         <file>api/prelude.js</file>
         <file>api/prelude.lua</file>
@@ -175,6 +176,7 @@
         <file>icons/buttons/export-csv.svg</file>
         <file>icons/buttons/falling-edge.svg</file>
         <file>icons/buttons/forward.svg</file>
+        <file>icons/buttons/freeze.svg</file>
         <file>icons/buttons/help.svg</file>
         <file>icons/buttons/html.svg</file>
         <file>icons/buttons/info.svg</file>
@@ -538,6 +540,7 @@
         <file>icons/start/export.svg</file>
         <file>icons/start/external-window.svg</file>
         <file>icons/start/file-transmission.svg</file>
+        <file>icons/start/freeze.svg</file>
         <file>icons/start/full-screen.svg</file>
         <file>icons/start/groups.svg</file>
         <file>icons/start/help.svg</file>

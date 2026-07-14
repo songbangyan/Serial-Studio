@@ -44,9 +44,7 @@ Item {
   //
   // Toolbar visibility
   //
-  property bool hasToolbar: true
-  onWidthChanged:  hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
-  onHeightChanged: hasToolbar = (root.width >= toolbar.implicitWidth) && (root.height >= 220)
+  readonly property bool hasToolbar: toolbar.shown
 
   //
   // Zoom / pan state
@@ -157,16 +155,13 @@ Item {
     //
     // Toolbar
     //
-    RowLayout {
+    WidgetToolbar {
       id: toolbar
 
-      spacing: 4
       Layout.leftMargin: 8
       Layout.fillWidth: true
-      Layout.preferredHeight: 48
-      LayoutMirroring.childrenInherit: true
-      LayoutMirroring.enabled: Cpp_Misc_Translator.rtl
-      visible: root.hasToolbar && model && model.frameCount > 0
+      windowRoot: root.windowRoot
+      available: !!root.model && root.model.frameCount > 0
 
       DashboardToolButton {
         ToolTip.text: qsTr("Export Images")

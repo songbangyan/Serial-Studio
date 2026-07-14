@@ -36,13 +36,19 @@ Widgets.MiniWindow {
   width: minimumWidth
   height: minimumHeight
   animationsEnabled: false
+  headerVisible: !root.frozen
   implicitWidth: minimumWidth
   implicitHeight: minimumHeight
   focused: taskBar.activeWindow === root
   windowControlsVisible: !Cpp_UI_TaskbarSettings.taskbarHidden
-  shadowEnabled: root.state === "normal"
+  shadowEnabled: !root.frozen && root.state === "normal"
                  && (!windowManager.autoLayoutEnabled
                      || Cpp_UI_Dashboard.autoLayoutSpacing > -1)
+
+  //
+  // Effective freeze state: WidgetToolbar instances read this via windowRoot
+  //
+  readonly property bool frozen: Cpp_UI_Dashboard.frozen
   visible: root.state === "normal" || root.state === "maximized"
            || root.hideAnimationRunning
 
@@ -211,7 +217,7 @@ Widgets.MiniWindow {
     anchors.fill: parent
     color: Cpp_ThemeManager.colors["widget_window"]
     border.color: Cpp_ThemeManager.colors["window_border"]
-    anchors.topMargin: root.captionHeight + (root.hasToolbar ? 48 : 0) - 1
+    anchors.topMargin: Math.max(0, root.captionHeight + (root.hasToolbar ? 48 : 0) - 1)
 
     Rectangle {
       anchors {
@@ -272,7 +278,7 @@ Widgets.MiniWindow {
     clip: true
     anchors.margins: 1
     anchors.fill: parent
-    anchors.topMargin: root.captionHeight
+    anchors.topMargin: Math.max(1, root.captionHeight)
     LayoutMirroring.enabled: false
     LayoutMirroring.childrenInherit: true
     Component.onCompleted: widgetLoader.createObject(container, {windowRoot: root})

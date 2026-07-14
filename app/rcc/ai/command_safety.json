@@ -5,6 +5,7 @@
     "assistant.checkpoint",
     "assistant.dataset.resolve",
     "assistant.listCheckpoints",
+    "assistant.memory.propose",
     "assistant.snapshot",
     "assistant.script.dryRun",
     "assistant.workspace.plan",

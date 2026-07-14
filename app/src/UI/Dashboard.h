@@ -91,6 +91,9 @@ class Dashboard : public QObject {
              READ  plotTimeRange
              WRITE setPlotTimeRange
              NOTIFY plotTimeRangeChanged)
+  Q_PROPERTY(bool frozen
+             READ frozen
+             NOTIFY frozenChanged)
   Q_PROPERTY(bool containsCommercialFeatures
              READ containsCommercialFeatures
              NOTIFY containsCommercialFeaturesChanged)
@@ -117,6 +120,7 @@ signals:
   void autoLayoutMarginChanged();
   void autoLayoutSpacingChanged();
   void plotTimeRangeChanged();
+  void frozenChanged();
   void containsCommercialFeaturesChanged();
 
 private:
@@ -137,6 +141,7 @@ public:
   [[nodiscard]] bool clockEnabled() const noexcept;
   [[nodiscard]] bool stopwatchEnabled() const noexcept;
   [[nodiscard]] bool autoHideToolbar() const noexcept;
+  [[nodiscard]] bool frozen() const;
   [[nodiscard]] double plotTimeRange() const noexcept;
   [[nodiscard]] bool pointsWidgetVisible() const;
   [[nodiscard]] bool containsCommercialFeatures() const noexcept;
@@ -205,6 +210,7 @@ public slots:
   void setAutoHideToolbar(const bool enabled);
   void setAutoLayoutMargin(const int margin);
   void setAutoLayoutSpacing(const int spacing);
+  void setFrozen(const bool frozen);
   void setPlotTimeRange(const double seconds);
   void setSettingsPersistent(const bool persistent);
   void activateAction(const int index, const bool guiTrigger = false);

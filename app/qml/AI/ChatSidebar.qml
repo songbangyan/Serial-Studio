@@ -155,6 +155,13 @@ Rectangle {
           }
 
           MenuItem {
+            text: qsTr("Continue in new chat")
+            height: visible ? implicitHeight : 0
+            visible: (del.modelData.count || 0) > 0
+            onTriggered: Cpp_AI_Assistant.newChatFromHandoff(del.modelData.id)
+          }
+
+          MenuItem {
             text: qsTr("Delete")
             onTriggered: Cpp_AI_Assistant.deleteChat(del.modelData.id)
           }
