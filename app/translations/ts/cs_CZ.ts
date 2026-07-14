@@ -37,12 +37,12 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="219"/>
+        <location filename="../../src/AI/Assistant.cpp" line="234"/>
         <source>Allow AI Device Control?</source>
         <translation>Povolit Ovládání Zařízení AI?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="220"/>
+        <location filename="../../src/AI/Assistant.cpp" line="235"/>
         <source>This lets the AI assistant configure devices, open and close connections, and send data to your hardware.
 
 Every device action still requires your explicit per-call approval in the chat, even when auto-approve is enabled. Only enable this if you trust the configured AI provider with hardware access.</source>
@@ -51,22 +51,22 @@ Every device action still requires your explicit per-call approval in the chat, 
 Každá akce se zařízením stále vyžaduje explicitní schválení pro každé volání v chatu, i když je povoleno automatické schvalování. Povolte pouze v případě, že důvěřujete nakonfigurovanému poskytovateli AI s přístupem k hardwaru.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="419"/>
+        <location filename="../../src/AI/Assistant.cpp" line="621"/>
         <source>Switch AI provider?</source>
         <translation>Přepnout poskytovatele AI?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="420"/>
+        <location filename="../../src/AI/Assistant.cpp" line="622"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Přepnutí na jiného poskytovatele vymaže aktuální konverzaci. Chcete pokračovat?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="423"/>
+        <location filename="../../src/AI/Assistant.cpp" line="625"/>
         <source>Assistant</source>
         <translation>Asistent</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="460"/>
+        <location filename="../../src/AI/Assistant.cpp" line="662"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI Asistent není v tomto sestavení k dispozici</translation>
     </message>
@@ -75,7 +75,7 @@ Každá akce se zařízením stále vyžaduje explicitní schválení pro každ�
         <translation type="vanished">AI Asistent vyžaduje licenci Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="465"/>
+        <location filename="../../src/AI/Assistant.cpp" line="667"/>
         <source>Set an API key first</source>
         <translation>Nejprve nastavte klíč API</translation>
     </message>
@@ -87,51 +87,66 @@ Každá akce se zařízením stále vyžaduje explicitní schválení pro každ�
         <translation type="vanished">Asistent AI vyžaduje licenci Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="169"/>
+        <location filename="../../src/AI/Conversation.cpp" line="170"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI Asistent není v tomto sestavení k dispozici</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="175"/>
+        <location filename="../../src/AI/Conversation.cpp" line="176"/>
         <source>AI subsystem not initialized</source>
         <translation>Subsystém AI není inicializován</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="181"/>
+        <location filename="../../src/AI/Conversation.cpp" line="182"/>
         <source>Already busy with a previous request</source>
         <translation>Již zpracovává předchozí požadavek</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="495"/>
+        <location filename="../../src/AI/Conversation.cpp" line="582"/>
         <source>Tool-call budget reached for this turn; no further tools will run.</source>
         <translation>Dosažen limit volání nástrojů pro toto kolo; žádné další nástroje nebudou spuštěny.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1107"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1196"/>
         <source>Waiting for %1 to respond. Loading the model and processing the prompt can take a while on local hardware...</source>
         <translation>Čekání na odpověď %1. Načítání modelu a zpracování dotazu může na lokálním hardwaru chvíli trvat...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1969"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2034"/>
+        <source>%1 operation(s) failed</source>
+        <translation>%1 operace selhala(y)</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2180"/>
         <source>You have reached the tool-call budget for this turn. Do not request more tools. Summarize what you found so far, and if the task is incomplete, say which steps remain so the user can tell you to continue.</source>
         <translation>Dosáhli jste limitu volání nástrojů pro toto kolo. Nepožadujte další nástroje. Shrňte, co jste dosud zjistili, a pokud úloha není dokončena, uveďte, které kroky zbývají, aby vám uživatel mohl říct, abyste pokračovali.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2913"/>
+        <source>The model stopped reproducing its context-integrity line. Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>Model přestal reprodukovat svůj řádek integrity kontextu. Dlouhé konverzace se tiše degradují; nedávné odpovědi mohou být méně spolehlivé.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2916"/>
+        <source>The model altered its context-integrity line (drifted segment: %1). Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>Model změnil svůj řádek integrity kontextu (unášený segment: %1). Dlouhé konverzace se tiše degradují; nedávné odpovědi mohou být méně spolehlivé.</translation>
     </message>
     <message>
         <source>Tool-call budget exceeded</source>
         <translation type="vanished">Překročen limit volání nástrojů</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="948"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1037"/>
         <source>(The model returned an empty response. Try rephrasing, switching to a different model, or checking that the request is allowed by the provider's safety filters.)</source>
         <translation>(Model vrátil prázdnou odpověď. Zkuste přeformulovat dotaz, přepnout na jiný model nebo zkontrolovat, zda je požadavek povolen bezpečnostními filtry poskytovatele.)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1111"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1200"/>
         <source>Sending request to %1...</source>
         <translation>Odesílání požadavku na %1…</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1124"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1218"/>
         <source>Provider returned no reply</source>
         <translation>Poskytovatel nevrátil žádnou odpověď</translation>
     </message>
@@ -397,23 +412,23 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
 <context>
     <name>Accelerometer</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="186"/>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="183"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="184"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="242"/>
         <source>G-FORCE</source>
         <translation>G-SÍLA</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="283"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="280"/>
         <source>PITCH ↕</source>
         <translation>NÁKLON ↕</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="320"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="317"/>
         <source>ROLL ↔</source>
         <translation>KLOPENÍ ↔</translation>
     </message>
@@ -996,72 +1011,102 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="274"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="277"/>
+        <source>Context health check</source>
+        <translation>Kontrola stavu kontextu</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="293"/>
+        <source>Assistant memory</source>
+        <translation>Paměť asistenta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="309"/>
+        <source>Carry context into new chats</source>
+        <translation>Přenést kontext do nových chatů</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="325"/>
+        <source>Preload skills automatically</source>
+        <translation>Načíst dovednosti automaticky</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <source>Verify edits automatically</source>
+        <translation>Ověřit úpravy automaticky</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <source>Manage memory…</source>
+        <translation>Spravovat paměť…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
         <source>Manage API keys…</source>
         <translation>Spravovat API klíče…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="428"/>
         <source>CSV vs MDF4 export - what is the difference?</source>
         <translation>Export CSV vs. MDF4 — jaký je rozdíl?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="344"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="431"/>
         <source>Plot, Bar, and Gauge - when to use each?</source>
         <translation>Graf, Sloupcový Graf a Měřidlo — kdy použít každý?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="416"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="503"/>
         <source>How can I help with your project?</source>
         <translation>Jak mohu pomoci s vaším projektem?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="417"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="504"/>
         <source>Set up your API key to get started</source>
         <translation>Nastavte svůj API klíč pro začátek</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="516"/>
         <source>Describe what you would like to build, and I will configure the sources, groups, datasets, frame parsers, and transforms for you.</source>
         <translation>Popište, co chcete vytvořit, a já nakonfiguruji zdroje, skupiny, datasety, analyzátory rámců a transformace za vás.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="519"/>
         <source>To start chatting, paste an API key for the selected provider. Keys are encrypted on this machine and never leave your computer except to talk to the provider you choose.</source>
         <translation>Pro zahájení konverzace vložte API klíč pro vybraného poskytovatele. Klíče jsou šifrovány na tomto počítači a nikdy neopustí váš počítač, kromě komunikace s poskytovatelem, kterého si zvolíte.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="453"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="540"/>
         <source>Open API Key Setup</source>
         <translation>Otevřít Nastavení API Klíče</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="463"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="550"/>
         <source>Get a key from %1</source>
         <translation>Získat klíč od %1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="337"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="424"/>
         <source>List the sources in this project</source>
         <translation>Vypsat zdroje v tomto projektu</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="334"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="421"/>
         <source>Help me discover Serial Studio's features</source>
         <translation>Pomozte mi objevit funkce Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="335"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="422"/>
         <source>What can this app do for my telemetry?</source>
         <translation>Co tato aplikace umí s mou telemetrií?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="336"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="423"/>
         <source>Walk me through what this project already contains</source>
         <translation>Proveďte mě tím, co tento projekt již obsahuje</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="340"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="427"/>
         <source>What is a session database, and why would I use one?</source>
         <translation>Co je databáze relací a proč bych ji měl používat?</translation>
     </message>
@@ -1070,12 +1115,12 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
         <translation type="vanished">Export CSV vs. MDF4 — jaký je rozdíl?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="342"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
         <source>What is a frame parser, and when do I need one?</source>
         <translation>Co je parser rámců a kdy ho potřebuji?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="343"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="430"/>
         <source>When should I use Lua vs JavaScript for the parser?</source>
         <translation>Kdy mám použít Lua vs. JavaScript pro parser?</translation>
     </message>
@@ -1084,122 +1129,152 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
         <translation type="vanished">Graf, Sloupcový Graf a Měřidlo — kdy použít každý?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="345"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
         <source>What is the difference between a transform and a frame parser?</source>
         <translation>Jaký je rozdíl mezi transformací a parserem rámců?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="348"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="435"/>
         <source>Add a UART source for an Arduino</source>
         <translation>Přidat UART zdroj pro Arduino</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="349"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="436"/>
         <source>Set up an IMU project from scratch</source>
         <translation>Nastavit IMU projekt od začátku</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="350"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="437"/>
         <source>Configure an MQTT subscriber</source>
         <translation>Nakonfigurovat MQTT odběratele</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="351"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="438"/>
         <source>Add a CAN bus source</source>
         <translation>Přidat zdroj sběrnice CAN</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="352"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="439"/>
         <source>Set up a Modbus poller</source>
         <translation>Nastavit Modbus poller</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="353"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="440"/>
         <source>Add a network (TCP/UDP) source</source>
         <translation>Přidat síťový zdroj (TCP/UDP)</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="354"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="441"/>
         <source>Write a CSV frame parser for me</source>
         <translation>Napsat CSV analyzátor rámců</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="355"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="442"/>
         <source>Help me parse a JSON frame</source>
         <translation>Pomoci mi parsovat JSON rámec</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="443"/>
         <source>Add an EMA smoothing transform to a dataset</source>
         <translation>Přidat EMA vyhlazovací transformaci k datasetu</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="357"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="444"/>
         <source>Decode hexadecimal frames</source>
         <translation>Dekódovat hexadecimální rámce</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="358"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="445"/>
         <source>Calibrate a sensor with a linear transform</source>
         <translation>Kalibrovat senzor s lineární transformací</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="448"/>
         <source>Suggest dashboard widgets for my data</source>
         <translation>Navrhnout widgety dashboardu pro moje data</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="362"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="449"/>
         <source>Build an executive overview workspace</source>
         <translation>Vytvořit přehledový workspace</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="363"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="450"/>
         <source>Add a painter widget for a custom visualization</source>
         <translation>Přidat widget painter pro vlastní vizualizaci</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="364"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="451"/>
         <source>Show Plot, FFT, and Waterfall for one dataset</source>
         <translation>Zobrazit Graf, FFT a Vodopád pro jeden dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="365"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="452"/>
         <source>Group my datasets into useful workspaces</source>
         <translation>Seskupit mé datasety do užitečných pracovních prostorů</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="644"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="731"/>
         <source>Drop files or folders to let the assistant read them</source>
         <translation>Přetáhněte soubory nebo složky, aby je asistent mohl přečíst</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="689"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="776"/>
         <source>Added folder "%1" - readable this session</source>
         <translation>Složka "%1" přidána – čitelná během této relace</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="690"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="777"/>
         <source>Added "%1" - readable this session</source>
         <translation>Soubor "%1" přidán – čitelný během této relace</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="774"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="782"/>
+        <source>Assistant memory updated</source>
+        <translation>Paměť asistenta aktualizována</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="822"/>
+        <source>Context may be degraded</source>
+        <translation>Kontext může být omezen</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <source>Start fresh chat</source>
+        <translation>Začít nový chat</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="889"/>
+        <source>Remember (%1)?</source>
+        <translation>Zapamatovat (%1)?</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="894"/>
+        <source>Remember</source>
+        <translation>Zapamatovat</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="903"/>
+        <source>Dismiss</source>
+        <translation>Zavřít</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="984"/>
         <source>Ask Serial Studio anything…</source>
         <translation>Zeptejte se Serial Studio na cokoliv…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="794"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1004"/>
         <source>Clear conversation</source>
         <translation>Vymazat konverzaci</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1048"/>
         <source>Stop generating</source>
         <translation>Zastavit generování</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="839"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1049"/>
         <source>Send message (Enter)</source>
         <translation>Odeslat zprávu (Enter)</translation>
     </message>
@@ -2218,21 +2293,26 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
     </message>
     <message>
         <location filename="../../qml/AI/ChatSidebar.qml" line="158"/>
+        <source>Continue in new chat</source>
+        <translation>Pokračovat v novém chatu</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="165"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="197"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="204"/>
         <source>Rename chat</source>
         <translation>Přejmenovat chat</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="217"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="224"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="222"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="229"/>
         <source>Rename</source>
         <translation>Přejmenovat</translation>
     </message>
@@ -2821,7 +2901,7 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="262"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="263"/>
         <source>Dashboard %1</source>
         <translation>Dashboard %1</translation>
     </message>
@@ -2867,17 +2947,17 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
         <translation>Aktivní jsou záložní widgety. Zakupte licenci pro plnou funkčnost.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="505"/>
         <source>Empty Workspace</source>
         <translation>Prázdný Pracovní Prostor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="518"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="519"/>
         <source>Use the search bar to find and add widgets, or right-click a widget in another workspace to add it here.</source>
         <translation>Použijte vyhledávací lištu k nalezení a přidání widgetů, nebo klikněte pravým tlačítkem na widget v jiném pracovním prostoru a přidejte jej sem.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="533"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="534"/>
         <source>Search Widgets</source>
         <translation>Hledat Widgety</translation>
     </message>
@@ -2890,17 +2970,17 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
         <translation>Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="215"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="231"/>
         <source>API Server Active (%1)</source>
         <translation>API Server Aktivní (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="216"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="232"/>
         <source>API Server Ready</source>
         <translation>API Server Připraven</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="217"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
         <source>API Server Off</source>
         <translation>API Server Vypnut</translation>
     </message>
@@ -2966,24 +3046,24 @@ Povolte pouze v důvěryhodných sítích. Nedůvěryhodní klienti mohou číst
 <context>
     <name>DataGrid</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="313"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="311"/>
         <source>Awaiting data…</source>
         <translation>Čekání na data…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="368"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="366"/>
         <source>Open %1 in a separate window</source>
         <translation>Otevřít %1 v samostatném okně</translation>
     </message>
@@ -5507,58 +5587,58 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
 <context>
     <name>DataModel::ProjectModel</name>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="365"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Lock Project</source>
         <translation>Zamknout Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="367"/>
         <source>Choose a password to lock the project:</source>
         <translation>Zvolte heslo pro zamknutí projektu:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Confirm the password:</source>
         <translation>Potvrďte heslo:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="379"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
         <source>Passwords do not match</source>
         <translation>Hesla se neshodují</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="381"/>
         <source>The two passwords you entered do not match. The project was not locked.</source>
         <translation>Zadaná hesla se neshodují. Projekt nebyl zamknut.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="414"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
         <source>Unlock Project</source>
         <translation>Odemknout Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="416"/>
         <source>Enter the project password:</source>
         <translation>Zadejte heslo projektu:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="425"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
         <source>Incorrect password</source>
         <translation>Nesprávné heslo</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="427"/>
         <source>The password you entered does not match the one stored in the project file.</source>
         <translation>Zadané heslo neodpovídá heslu uloženému v souboru projektu.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="457"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="458"/>
         <source>New Project</source>
         <translation>Nový Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="511"/>
         <source>Samples</source>
         <translation>Vzorky</translation>
     </message>
@@ -5592,60 +5672,60 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Projekt obsahuje neuložené změny!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>Project error</source>
         <translation>Chyba projektu</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
         <source>Project title cannot be empty!</source>
         <translation>Název projektu nesmí být prázdný!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
         <source>You need to add at least one group!</source>
         <translation>Je nutné přidat alespoň jednu skupinu!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>You need to add at least one dataset!</source>
         <translation>Je nutné přidat alespoň jednu datovou sadu!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="306"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="307"/>
         <source>Your project needs a title</source>
         <translation>Váš projekt potřebuje název</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="308"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="309"/>
         <source>Add a group to get started</source>
         <translation>Přidejte skupinu pro začátek</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="310"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="311"/>
         <source>Add a dataset to a group</source>
         <translation>Přidejte datovou sadu do skupiny</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="324"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="325"/>
         <source>Open the Project view at the top of the tree and enter a name. You can rename the project at any time.</source>
         <translation>Otevřete zobrazení Projektu v horní části stromu a zadejte název. Projekt můžete kdykoli přejmenovat.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="327"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="328"/>
         <source>Groups organize datasets into dashboard widgets. Use the Group button in the toolbar above to create one, then add datasets to it.</source>
         <translation>Skupiny organizují datové sady do widgetů dashboardu. Použijte tlačítko Skupina v panelu nástrojů výše pro vytvoření skupiny a poté do ní přidejte datové sady.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="331"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="332"/>
         <source>Datasets are the values that appear on the dashboard. Select a group in the tree and use the Dataset button in the toolbar to add one.</source>
         <translation>Datové sady jsou hodnoty, které se zobrazují na dashboardu. Vyberte skupinu ve stromu a použijte tlačítko Datová sada v panelu nástrojů pro přidání nové.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="509"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="558"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="559"/>
         <source>Time</source>
         <translation>Čas</translation>
     </message>
@@ -5665,21 +5745,21 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Uložit Projekt Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="401"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Soubory Projektu Serial Studio (*.ssproj)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1187"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="392"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1197"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <source>Untitled Project</source>
         <translation>Projekt Bez Názvu</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1203"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="548"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1214"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="549"/>
         <source>Device A</source>
         <translation>Zařízení A</translation>
     </message>
@@ -5699,47 +5779,47 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Chyba validace JSON</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="366"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
         <source>Project upgraded from an earlier file format</source>
         <translation>Projekt byl aktualizován ze staršího formátu souboru</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="368"/>
         <source>This project was saved with schema version %1; the current version is %2. Defaults have been applied to any new fields. Save the project to lock in the upgrade.</source>
         <translation>Tento projekt byl uložen se schématem verze %1; aktuální verze je %2. Výchozí hodnoty byly použity pro všechna nová pole. Uložte projekt pro potvrzení aktualizace.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="399"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="400"/>
         <source>Save Imported Project</source>
         <translation>Uložit Importovaný Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="601"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
         <source>Multi-source projects require a Pro license</source>
         <translation>Projekty s více zdroji vyžadují licenci Pro</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="603"/>
         <source>This project contains multiple data sources. Only the first source has been loaded. A Serial Studio Pro license is required to use multi-source projects.</source>
         <translation>Tento projekt obsahuje více zdrojů dat. Byl načten pouze první zdroj. Pro použití projektů s více zdroji je vyžadována licence Serial Studio Pro.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="845"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
         <source>Workspace IDs remapped on load</source>
         <translation>ID pracovních prostorů byly při načtení přečíslovány</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="847"/>
         <source>%1 custom workspace ID(s) overlapped the new reserved auto range and were moved into the user range. Save the project to make the remap permanent.</source>
         <translation>%1 vlastních ID pracovních prostorů se překrývalo s novým rezervovaným automatickým rozsahem a bylo přesunuto do uživatelského rozsahu. Uložte projekt pro trvalé zachování tohoto mapování.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1038"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1048"/>
         <source>Legacy frame parser function updated</source>
         <translation>Starší funkce parseru rámců aktualizována</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1039"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1049"/>
         <source>Your project used a legacy frame parser function with a 'separator' argument. It has been automatically migrated to the new format.</source>
         <translation>Váš projekt používal starší funkci parseru rámců s argumentem 'separator'. Byl automaticky migrován do nového formátu.</translation>
     </message>
@@ -5953,10 +6033,10 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Nová Sdílená Tabulka</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -5980,22 +6060,22 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Přejmenovat Tabulku</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
         <source>Rename Group</source>
         <translation>Přejmenovat Skupinu</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
         <source>Rename Dataset</source>
         <translation>Přejmenovat Datovou Sadu</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
         <source>Rename Data Source</source>
         <translation>Přejmenovat Zdroj Dat</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <source>Rename Action</source>
         <translation>Přejmenovat Akci</translation>
     </message>
@@ -6150,28 +6230,28 @@ Přidat %4 dataset(ů) s výchozími hodnotami šablony?</translation>
         <translation>Smazat Pracovní Prostor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="490"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
         <source>Project file removed from disk</source>
         <translation>Soubor projektu odstraněn z disku</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="492"/>
         <source>%1 was deleted or renamed by another program. Save the project to recreate it.</source>
         <translation>%1 byl smazán nebo přejmenován jiným programem. Uložte projekt pro jeho opětovné vytvoření.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="513"/>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="534"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="535"/>
         <source>Project file changed on disk</source>
         <translation>Soubor projektu změněn na disku</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="515"/>
         <source>%1 was modified by another program. The in-memory project was kept; reopen the file to load the external changes.</source>
         <translation>%1 byl upraven jiným programem. Projekt v paměti byl zachován; znovu otevřete soubor pro načtení externích změn.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="530"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="531"/>
         <source>The project file was modified by another program.
 
 Reload it and discard your unsaved changes?</source>
@@ -6180,7 +6260,7 @@ Reload it and discard your unsaved changes?</source>
 Načíst jej znovu a zahodit neuložené změny?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="532"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="533"/>
         <source>The project file was modified by another program.
 
 Reload it?</source>
@@ -6189,7 +6269,7 @@ Reload it?</source>
 Načíst jej znovu?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="563"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="564"/>
         <source>File save error</source>
         <translation>Chyba při ukládání souboru</translation>
     </message>
@@ -6204,7 +6284,7 @@ Načíst jej znovu?</translation>
         <translation>Smazat Položky</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="435"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="436"/>
         <source>File open error</source>
         <translation>Chyba při otevírání souboru</translation>
     </message>
@@ -7231,57 +7311,57 @@ Platný formát: 01 A2 FF 3C</translation>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="162"/>
         <source>Interpolation: %1</source>
         <translation>Interpolace: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="190"/>
         <source>Show Area Under Plot</source>
         <translation>Zobrazit Plochu Pod Grafem</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="208"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="225"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Resetovat Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="304"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="299"/>
         <source>Magnitude (dB)</source>
         <translation>Magnituda (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="300"/>
         <source>Frequency (Hz)</source>
         <translation>Frekvence (Hz)</translation>
     </message>
@@ -7959,37 +8039,37 @@ Platný formát: 01 A2 FF 3C</translation>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="113"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
         <source>Auto Center</source>
         <translation>Automatické Centrování</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="129"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
         <source>Plot Trajectory</source>
         <translation>Vykreslit Trajektorii</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="146"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
         <source>Zoom In</source>
         <translation>Přiblížit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="157"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
         <source>Zoom Out</source>
         <translation>Oddálit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="181"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>Show Weather</source>
         <translation>Zobrazit Počasí</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
         <source>NASA Weather Overlay</source>
         <translation>Vrstva Počasí NASA</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
         <source>Base Map: %1</source>
         <translation>Základní Mapa: %1</translation>
     </message>
@@ -8674,15 +8754,15 @@ Platný formát: 01 A2 FF 3C</translation>
 <context>
     <name>IO::Drivers::CANBus</name>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="321"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="327"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="333"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="325"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="331"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="337"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="342"/>
         <source>CAN Bus Not Available</source>
         <translation>CAN Sběrnice Není Dostupná</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="334"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
         <source>No CAN bus plugins found on this system.
 
 CAN bus support on macOS is limited and may require third-party hardware drivers.</source>
@@ -8691,37 +8771,37 @@ CAN bus support on macOS is limited and may require third-party hardware drivers
 Podpora CAN sběrnice v macOS je omezená a může vyžadovat ovladače hardwaru třetích stran.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="339"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="343"/>
         <source>No CAN bus plugins are available on this platform.</source>
         <translation>Na této platformě nejsou dostupné žádné pluginy pro CAN sběrnici.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="351"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="355"/>
         <source>Invalid CAN Configuration</source>
         <translation>Neplatná Konfigurace CAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="359"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="363"/>
         <source>Invalid Selection</source>
         <translation>Neplatný Výběr</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="368"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="372"/>
         <source>No Devices Available</source>
         <translation>Žádná Dostupná Zařízení</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="277"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="281"/>
         <source>CAN Device Creation Failed</source>
         <translation>Vytvoření CAN Zařízení Selhalo</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="304"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="308"/>
         <source>CAN Connection Failed</source>
         <translation>CAN Připojení Selhalo</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="322"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="326"/>
         <source>No CAN bus plugins found on this system.
 
 On Linux, ensure SocketCAN kernel modules are loaded.</source>
@@ -8730,7 +8810,7 @@ On Linux, ensure SocketCAN kernel modules are loaded.</source>
 V Linuxu se ujistěte, že jsou načteny moduly jádra SOCKETCAN.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="328"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="332"/>
         <source>No CAN bus plugins found on this system.
 
 On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
@@ -8739,103 +8819,103 @@ On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
 Ve Windows nainstalujte ovladače CAN hardware (PEAK, VECTOR atd.).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="352"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="356"/>
         <source>The CAN bus configuration is incomplete. Select a valid plugin and interface.</source>
         <translation>Konfigurace CAN sběrnice je neúplná. Vyberte platný modul a rozhraní.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="360"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="364"/>
         <source>The selected plugin or interface is no longer available. Refresh the lists and try again.</source>
         <translation>Vybraný modul nebo rozhraní již není dostupné. Obnovte seznamy a zkuste to znovu.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="369"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="373"/>
         <source>The plugin or interface list is empty. Refresh the lists and ensure your CAN hardware is connected.</source>
         <translation>Seznam modulů nebo rozhraní je prázdný. Obnovte seznamy a ujistěte se, že je CAN hardware připojen.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="278"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="282"/>
         <source>Unable to create CAN bus device. Check your hardware and drivers.</source>
         <translation>Nelze vytvořit CAN zařízení. Zkontrolujte hardware a ovladače.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="302"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="306"/>
         <source>Unable to connect to CAN bus device. Check your hardware connection and settings.</source>
         <translation>Nelze se připojit k CAN zařízení. Zkontrolujte hardwarové připojení a nastavení.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="701"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="705"/>
         <source>CAN Bus Error</source>
         <translation>Chyba Sběrnice CAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="702"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="706"/>
         <source>An error occurred but the CAN device is no longer available.</source>
         <translation>Došlo k chybě, ale zařízení CAN již není dostupné.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="709"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="713"/>
         <source>Error code: %1</source>
         <translation>Kód chyby: %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="712"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="716"/>
         <source>CAN Bus Communication Error</source>
         <translation>Chyba Komunikace Sběrnice CAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="791"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="819"/>
         <source>No CAN driver selected</source>
         <translation>Nebyl vybrán žádný ovladač CAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="731"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="759"/>
         <source>Load SocketCAN kernel modules first</source>
         <translation>Nejprve načtěte moduly jádra SOCKETCAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="727"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="755"/>
         <source>Connect a %1 adapter, then refresh</source>
         <translation>Připojte adaptér %1 a poté obnovte</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="762"/>
         <source>Set up a virtual CAN interface first</source>
         <translation>Nejprve nastavte virtuální rozhraní CAN</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="736"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="756"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="764"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="784"/>
         <source>No interfaces found for %1</source>
         <translation>Pro %1 nebyla nalezena žádná rozhraní</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="740"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
         <source>Install &lt;a href='https://www.peak-system.com/Drivers.523.0.html?&amp;L=1'&gt;PEAK CAN drivers&lt;/a&gt;</source>
         <translation>Nainstalujte &lt;a href='https://www.PEAK-system.com/Drivers.523.0.html?&amp;L=1'&gt;ovladače PEAK CAN&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="744"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="772"/>
         <source>Install &lt;a href='https://www.vector.com/us/en/products/products-a-z/libraries-drivers/'&gt;Vector CAN drivers&lt;/a&gt;</source>
         <translation>Nainstalujte &lt;a href='https://www.VECTOR.com/us/en/products/products-a-z/libraries-drivers/'&gt;ovladače VECTOR CAN&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="776"/>
         <source>Install &lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;SysTec CAN drivers&lt;/a&gt;</source>
         <translation>Nainstalujte &lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;ovladače SysTec CAN&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="751"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="779"/>
         <source>Install %1 drivers</source>
         <translation>Nainstalujte ovladače %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="754"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="782"/>
         <source>Install %1 drivers for macOS</source>
         <translation>Nainstalujte ovladače %1 pro macOS</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="796"/>
         <source>
 
 If the interface is down, bring it up first:
@@ -8846,32 +8926,32 @@ sudo ip link set %1 up type can bitrate %2
 </translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="875"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="903"/>
         <source>Plugin</source>
         <translation>Plugin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="883"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="911"/>
         <source>Interface</source>
         <translation>Rozhraní</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="891"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="919"/>
         <source>Bitrate</source>
         <translation>Přenosová Rychlost</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="900"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="928"/>
         <source>CAN FD</source>
         <translation>CAN FD</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="907"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="935"/>
         <source>Loopback</source>
         <translation>Zpětná Smyčka</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="914"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="942"/>
         <source>Listen-Only</source>
         <translation>Pouze Naslouchání</translation>
     </message>
@@ -10580,72 +10660,72 @@ Zařízení nemusí vystavovat datové endpointy ve své aktivní konfiguraci ne
 <context>
     <name>ImageView</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="66"/>
         <source>Normal</source>
         <translation>Normální</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="67"/>
         <source>Grayscale</source>
         <translation>Stupně Šedi</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
         <source>High Contrast</source>
         <translation>Vysoký Kontrast</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
         <source>Vivid</source>
         <translation>Živé</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
         <source>Night Vision</source>
         <translation>Noční Vidění</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
         <source>Infrared</source>
         <translation>Infračervené</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="74"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
         <source>Deep Blue</source>
         <translation>Tmavě Modrá</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="75"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
         <source>Amber</source>
         <translation>Jantarová</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
         <source>Export Images</source>
         <translation>Exportovat Obrázky</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="182"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
         <source>Open Export Folder</source>
         <translation>Otevřít Složku Exportu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="198"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
         <source>Zoom In</source>
         <translation>Přiblížit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="211"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
         <source>Zoom Out</source>
         <translation>Oddálit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="556"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="551"/>
         <source>Waiting for Image…</source>
         <translation>Čekání na Obrázek…</translation>
     </message>
@@ -10828,11 +10908,17 @@ Zařízení nemusí vystavovat datové endpointy ve své aktivní konfiguraci ne
         <translation>Vložte níže svůj licenční klíč pro odemčení funkcí Pro, jako jsou MQTT, 3D grafy a další.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
         <source>Your license includes 5 device activations.
 Plans include Monthly, Yearly, and Lifetime options.</source>
-        <translation>Vaše licence zahrnuje 5 aktivací zařízení.
+        <translation type="vanished">Vaše licence zahrnuje 5 aktivací zařízení.
 Plány zahrnují měsíční, roční a doživotní možnosti.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
+        <source>Your license includes 5 device activations.
+Yearly is the best value; Monthly and Lifetime plans are also available.</source>
+        <translation>Vaše licence zahrnuje 5 aktivací zařízení.
+Roční plán nabízí nejlepší hodnotu; k dispozici jsou také měsíční a doživotní plány.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="151"/>
@@ -12045,17 +12131,17 @@ Zadejte potřebná pověření.</translation>
         <translation>Prázdný Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="696"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="700"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="704"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="708"/>
         <source>Waiting for data…</source>
         <translation>Čekání na data…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="705"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="709"/>
         <source>Connecting to device…</source>
         <translation>Připojování k zařízení…</translation>
     </message>
@@ -12099,6 +12185,59 @@ Zadejte potřebná pověření.</translation>
         <location filename="../../qml/Dialogs/Mdf4Player.qml" line="23"/>
         <source>MDF4 Player</source>
         <translation>Přehrávač MDF4</translation>
+    </message>
+</context>
+<context>
+    <name>MemoryManagerDialog</name>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="23"/>
+        <source>Assistant Memory</source>
+        <translation>Paměť Asistenta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="50"/>
+        <source>Facts the assistant carries into every chat. Stored only on this computer. Delete anything you no longer want it to know.</source>
+        <translation>Fakta, která asistent přenáší do každého chatu. Uloženo pouze v tomto počítači. Smažte vše, co již nemá vědět.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>user</source>
+        <translation>uživatel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>feedback</source>
+        <translation>zpětná vazba</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>project</source>
+        <translation>projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>reference</source>
+        <translation>reference</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="73"/>
+        <source>Something the assistant should remember…</source>
+        <translation>Něco, co by si asistent měl zapamatovat…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="77"/>
+        <source>Remember</source>
+        <translation>Zapamatovat</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="146"/>
+        <source>Forget this fact</source>
+        <translation>Zapomenout tuto skutečnost</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="162"/>
+        <source>Nothing remembered yet. Add a fact above, or approve one when the assistant proposes it in chat.</source>
+        <translation>Zatím nic nezapamatováno. Přidejte skutečnost výše nebo schvalte návrh asistenta v chatu.</translation>
     </message>
 </context>
 <context>
@@ -12149,24 +12288,49 @@ Zadejte potřebná pověření.</translation>
         <translation>Zamítnout vše</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="332"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="384"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="436"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="333"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="408"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="460"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="337"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="389"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="441"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="338"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="413"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="465"/>
         <source>Copy All</source>
         <translation>Kopírovat Vše</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="345"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="397"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="346"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="421"/>
         <source>Select All</source>
         <translation>Vybrat Vše</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="353"/>
+        <source>Remember this…</source>
+        <translation>Zapamatovat si toto…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="356"/>
+        <source>As a preference about me</source>
+        <translation>Jako preferenci o mně</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="360"/>
+        <source>As a correction / lesson</source>
+        <translation>Jako opravu / poučení</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="364"/>
+        <source>As a fact about this project</source>
+        <translation>Jako fakt o tomto projektu</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="368"/>
+        <source>As a reference</source>
+        <translation>Jako reference</translation>
     </message>
 </context>
 <context>
@@ -13055,7 +13219,7 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
         <translation type="vanished">Interpolovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="300"/>
         <source>Interpolation: %1</source>
         <translation>Interpolace: %1</translation>
     </message>
@@ -13064,47 +13228,47 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
         <translation type="vanished">Zobrazit Legendy</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="327"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="338"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="350"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Režim Sweep / Trigger</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="386"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
         <source>Trigger Settings</source>
         <translation>Nastavení Triggeru</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
         <source>Reset View</source>
         <translation>Resetovat Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="416"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
@@ -14078,57 +14242,57 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
         <translation type="vanished">Interpolovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="291"/>
         <source>Interpolation: %1</source>
         <translation>Interpolace: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="304"/>
         <source>Show Area Under Plot</source>
         <translation>Zobrazit Plochu Pod Grafem</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="328"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="323"/>
         <source>Show X Axis Label</source>
         <translation>Zobrazit Popisek Osy X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="339"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="334"/>
         <source>Show Y Axis Label</source>
         <translation>Zobrazit Popisek Osy Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="351"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="346"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="375"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="370"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Režim Sweep / Trigger</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="387"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="382"/>
         <source>Trigger Settings</source>
         <translation>Nastavení Triggeru</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Reset View</source>
         <translation>Obnovit Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="412"/>
         <source>Axis Range Settings</source>
         <translation>Nastavení Rozsahu Os</translation>
     </message>
@@ -14136,52 +14300,52 @@ Přidejte skupiny výše pro dotazování více typů registrů.</translation>
 <context>
     <name>Plot3D</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="212"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="208"/>
         <source>Interpolate</source>
         <translation>Interpolovat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="226"/>
         <source>Orbit Navigation</source>
         <translation>Orbitální Navigace</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="240"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="236"/>
         <source>Pan Navigation</source>
         <translation>Posuvná Navigace</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="247"/>
         <source>Orthogonal View</source>
         <translation>Ortogonální Zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="253"/>
         <source>Top View</source>
         <translation>Pohled Shora</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="263"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="259"/>
         <source>Left View</source>
         <translation>Pohled Zleva</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="265"/>
         <source>Front View</source>
         <translation>Pohled Zepředu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
         <source>Auto Center</source>
         <translation>Automatické Centrování</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="302"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
         <source>Anaglyph 3D</source>
         <translation>Anaglyph 3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
         <source>Invert Eye Positions</source>
         <translation>Invertovat Pozice Očí</translation>
     </message>
@@ -16484,12 +16648,12 @@ Parametr oddělovače již není potřeba.</translation>
 <context>
     <name>Sessions::DatabaseManager</name>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1056"/>
         <source>Select logo image</source>
         <translation>Vybrat obrázek loga</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1060"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
         <source>Images (*.png *.jpg *.jpeg *.svg)</source>
         <translation>Obrázky (*.png *.jpg *.jpeg *.svg)</translation>
     </message>
@@ -16504,7 +16668,7 @@ Parametr oddělovače již není potřeba.</translation>
         <translation>Soubory relací (*.db)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1261"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1259"/>
         <source>Cannot open session file</source>
         <translation>Nelze otevřít soubor relace</translation>
     </message>
@@ -16519,7 +16683,7 @@ Parametr oddělovače již není potřeba.</translation>
         <translation>Odstranit Relaci</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1122"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1120"/>
         <source>No project data</source>
         <translation>Žádná data projektu</translation>
     </message>
@@ -16613,27 +16777,25 @@ Parametr oddělovače již není potřeba.</translation>
         <translation type="vanished">Příprava exportu…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Done</source>
         <translation>Hotovo</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="994"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Failed</source>
         <translation>Selhalo</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1040"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="999"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1037"/>
         <source>Report Failed</source>
         <translation>Sestava Selhala</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1002"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1041"/>
         <source>Could not generate the report. Check the output path and try again.</source>
-        <translation>Nelze vygenerovat sestavu. Zkontrolujte výstupní cestu a zkuste to znovu.</translation>
+        <translation type="vanished">Nelze vygenerovat sestavu. Zkontrolujte výstupní cestu a zkuste to znovu.</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="929"/>
@@ -16661,37 +16823,43 @@ Parametr oddělovače již není potřeba.</translation>
         <translation>HTML soubory (*.HTML)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1123"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1038"/>
+        <source>Could not generate the report.</source>
+        <translation>Nelze vygenerovat sestavu.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1121"/>
         <source>This session file does not contain an embedded project.</source>
         <translation>Tento soubor relace neobsahuje vložený projekt.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1132"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1130"/>
         <source>Invalid project data</source>
         <translation>Neplatná data projektu</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1133"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1131"/>
         <source>The embedded project JSON is malformed and cannot be restored.</source>
         <translation>Vložený JSON projektu je poškozený a nelze jej obnovit.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Restore Project</source>
         <translation>Obnovit Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Serial Studio projects (*.ssproj *.json)</source>
         <translation>Projekty Serial Studio (*.ssproj *.json)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Cannot write file</source>
         <translation>Nelze zapsat soubor</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Check file permissions and try again.</source>
         <translation>Zkontrolujte oprávnění souboru a zkuste to znovu.</translation>
     </message>
@@ -16741,208 +16909,238 @@ Parametr oddělovače již není potřeba.</translation>
 <context>
     <name>Sessions::HtmlReport</name>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="208"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="199"/>
+        <source>No session data or output path was provided.</source>
+        <translation>Nebyla poskytnuta data relace ani výstupní cesta.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="211"/>
         <source>Assembling report…</source>
         <translation>Sestavování reportu…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="216"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="215"/>
+        <source>Could not load the report template resources.</source>
+        <translation>Nelze načíst zdroje šablony sestavy.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="219"/>
         <source>Writing output…</source>
         <translation>Zápis výstupu…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="279"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="339"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="697"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="238"/>
+        <source>Could not write the report file. Verify that the destination folder is writable.</source>
+        <translation>Nelze zapsat soubor sestavy. Ověřte, že cílová složka je zapisovatelná.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="287"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="347"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="705"/>
         <source>Session Report</source>
         <translation>Report Relace</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="342"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="350"/>
         <source>Untitled project</source>
         <translation>Nepojmenovaný projekt</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="349"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="357"/>
         <source>Prepared by</source>
         <translation>Připravil</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="352"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="360"/>
         <source>Generated on %1</source>
         <translation>Vygenerováno %1</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="374"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
         <source>Test ID</source>
         <translation>ID Testu</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="376"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
         <source>Duration</source>
         <translation>Trvání</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="378"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="386"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="498"/>
         <source>Samples</source>
         <translation>Vzorky</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="380"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="388"/>
         <source>Parameters</source>
         <translation>Parametry</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="390"/>
         <source>Started</source>
         <translation>Zahájeno</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="392"/>
         <source>Ended</source>
         <translation>Ukončeno</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="420"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="428"/>
         <source>Project</source>
         <translation>Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="422"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="430"/>
         <source>Test identifier</source>
         <translation>Identifikátor testu</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="423"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="431"/>
         <source>Start time</source>
         <translation>Čas zahájení</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="424"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="432"/>
         <source>End time</source>
         <translation>Čas ukončení</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="425"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="433"/>
         <source>Total duration</source>
         <translation>Celková doba trvání</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="426"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="434"/>
         <source>Samples acquired</source>
         <translation>Získané vzorky</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="427"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="435"/>
         <source>Parameters logged</source>
         <translation>Zaznamenané parametry</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="443"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="451"/>
         <source>Classification</source>
         <translation>Klasifikace</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="450"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
         <source>Notes</source>
         <translation>Poznámky</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="466"/>
         <source>Test Information</source>
         <translation>Informace o Testu</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="479"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="487"/>
         <source>Parameter</source>
         <translation>Parametr</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="482"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
         <source>Units</source>
         <translation>Jednotky</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="491"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="499"/>
         <source>Minimum</source>
         <translation>Minimum</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="492"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="500"/>
         <source>Maximum</source>
         <translation>Maximum</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="493"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="649"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="501"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="657"/>
         <source>Mean</source>
         <translation>Průměr</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="494"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="502"/>
         <source>Std. Deviation</source>
         <translation>Směr. Odchylka</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="539"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="547"/>
         <source>Measurement Summary</source>
         <translation>Souhrn Měření</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="540"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="548"/>
         <source>click a column to sort</source>
         <translation>klikněte na sloupec pro řazení</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="565"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="573"/>
         <source>%1 samples over %2 seconds</source>
         <translation>%1 vzorků za %2 sekund</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="583"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="591"/>
         <source>Combined Parameter View</source>
         <translation>Kombinovaný Pohled Parametrů</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="584"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
         <source>click legend items to toggle signals</source>
         <translation>klikněte na položky legendy pro přepnutí signálů</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="600"/>
         <source>Parameter Trends</source>
         <translation>Trendy Parametrů</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="647"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="655"/>
         <source>Min</source>
         <translation>Min.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="648"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="656"/>
         <source>Max</source>
         <translation>Max.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="721"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="729"/>
         <source>Page %1 of %2</source>
         <translation>Stránka %1 z %2</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="791"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="841"/>
         <source>Loading rendering engine…</source>
         <translation>Načítání vykreslovacího jádra…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="811"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="848"/>
+        <source>Could not write a temporary file for the rendering engine.</source>
+        <translation>Nelze zapsat dočasný soubor pro vykreslovací engine.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="869"/>
+        <source>The rendering engine could not load the report page.</source>
+        <translation>Vykreslovací engine nemohl načíst stránku sestavy.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="873"/>
         <source>Rendering charts…</source>
         <translation>Vykreslování grafů…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="855"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="921"/>
         <source>Generating PDF…</source>
         <translation>Generování PDF…</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="939"/>
+        <source>Could not write the PDF file. Close it in any other application and verify that the destination folder is writable.</source>
+        <translation>Nelze zapsat soubor PDF. Zavřete jej v jiné aplikaci a ověřte, že cílová složka je zapisovatelná.</translation>
     </message>
 </context>
 <context>
@@ -18105,49 +18303,49 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="575"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
         <source>Full Screen</source>
         <translation>Celá Obrazovka</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="587"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
         <source>Add External Window</source>
         <translation>Přidat Externí Okno</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="872"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
         <source>Help Center</source>
         <translation>Centrum Nápovědy</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="703"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
         <source>Tools</source>
         <translation>Nástroje</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="832"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
         <source>No Tools Available</source>
         <translation>Žádné Nástroje k Dispozici</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Reset</source>
         <translation>Resetovat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Quit</source>
         <translation>Ukončit</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="958"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
         <source>Hide</source>
         <translation>Skrýt</translation>
     </message>
@@ -18158,31 +18356,31 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="776"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
         <source>Clock</source>
         <translation>Hodiny</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="783"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
         <source>Stopwatch</source>
         <translation>Stopky</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="800"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
         <source>Sessions</source>
         <translation>Relace</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="809"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
         <source>File Transmission</source>
         <translation>Přenos Souboru</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="817"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
         <source>AI Assistant</source>
         <translation>AI Asistent</translation>
     </message>
@@ -18207,55 +18405,60 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation>Spravovat Pluginy…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <source>Freeze Dashboard</source>
+        <translation>Zmrazit Dashboard</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
         <source>Export</source>
         <translation>Exportovat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="638"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
         <source>CSV File</source>
         <translation>Soubor CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="644"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>MDF4 File</source>
         <translation>Soubor MDF4</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="650"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>Console Transcript</source>
         <translation>Přepis Konzole</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="659"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
         <source>Session Database</source>
         <translation>Databáze Relací</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="673"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
         <source>No Export Formats Available</source>
         <translation>Žádné Exportní Formáty k Dispozici</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="759"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
         <source>Console</source>
         <translation>Konzole</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="768"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
         <source>Notifications</source>
         <translation>Oznámení</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="791"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
         <source>Preferences</source>
         <translation>Předvolby</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="947"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
         <source>Edit…</source>
         <translation>Upravit…</translation>
     </message>
@@ -18264,17 +18467,17 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="893"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
         <source>Resume</source>
         <translation>Pokračovat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="894"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Disconnect</source>
         <translation>Odpojit</translation>
     </message>
@@ -18544,52 +18747,62 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="953"/>
+        <source>Unfreeze Dashboard</source>
+        <translation>Uvolnit Dashboard</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="954"/>
+        <source>Freeze Dashboard</source>
+        <translation>Zmrazit Dashboard</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1026"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Připojeno k %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1027"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Nepřipojeno</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT Publisher</source>
         <translation>Vydavatel MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1061"/>
         <source>Status:</source>
         <translation>Stav:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1069"/>
         <source>Connected</source>
         <translation>Připojeno</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1070"/>
         <source>Disconnected</source>
         <translation>Odpojeno</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1077"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1090"/>
         <source>Mode:</source>
         <translation>Režim:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1103"/>
         <source>Messages sent:</source>
         <translation>Odesláno zpráv:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1117"/>
         <source>Open MQTT Settings</source>
         <translation>Otevřít Nastavení MQTT</translation>
     </message>
@@ -18603,7 +18816,7 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation type="vanished">Hledat widgety…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1163"/>
         <source>Remove from Workspace</source>
         <translation>Odebrat z pracovního prostoru</translation>
     </message>
@@ -18622,17 +18835,17 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
         <source>Clear</source>
         <translation>Vymazat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
         <source>Find</source>
         <translation>Najít</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
         <source>Collapse</source>
         <translation>Sbalit</translation>
     </message>
@@ -18645,138 +18858,138 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation type="vanished">Zaznamenat výstup konzole do souboru</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
         <source>Settings</source>
         <translation>Nastavení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
         <source>Console settings</source>
         <translation>Nastavení konzole</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="549"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
         <source>Find in console</source>
         <translation>Hledat v konzoli</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
         <source>%1 of %2</source>
         <translation>%1 z %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="587"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
         <source>No results</source>
         <translation>Žádné výsledky</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="599"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
         <source>Match case</source>
         <translation>Rozlišovat velikost písmen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
         <source>Previous match</source>
         <translation>Předchozí shoda</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
         <source>Next match</source>
         <translation>Následující shoda</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="635"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
         <source>Close search</source>
         <translation>Zavřít vyhledávání</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="667"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
         <source>Send a file to the connected device</source>
         <translation>Odeslat soubor do připojeného zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
         <source>Search console output</source>
         <translation>Prohledat výstup konzole</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Sbalit opakující se řádky do jedné položky</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
         <source>Resume console updates</source>
         <translation>Obnovit aktualizace konzole</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>Zmrazit zobrazení konzole (data se nadále zaznamenávají)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
         <source>Plain text display mode</source>
         <translation>Režim zobrazení prostého textu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="796"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
         <source>Hex display mode</source>
         <translation>Režim hexadecimálního zobrazení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="453"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
         <source>Scrollback Lines</source>
         <translation>Řádky Zpětného Posuvu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="689"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Send Data to Device</source>
         <translation>Odeslat data do zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="846"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
         <source>Send data to the device</source>
         <translation>Odeslat data do zařízení</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
         <source>Show Timestamp</source>
         <translation>Zobrazit Časovou Značku</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
         <source>Echo</source>
         <translation>Echo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
         <source>Emulate VT-100</source>
         <translation>Emulovat VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>ANSI Colors</source>
         <translation>Barvy ANSI</translation>
     </message>
@@ -18785,7 +18998,7 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
         <translation type="vanished">Zobrazení: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
         <source>Clear console output</source>
         <translation>Vymazat výstup konzole</translation>
     </message>
@@ -18876,70 +19089,95 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
 <context>
     <name>ToolCallCard</name>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="47"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="53"/>
         <source>Awaiting approval</source>
         <translation>Čeká na schválení</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="48"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="54"/>
         <source>Done</source>
         <translation>Hotovo</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="49"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="55"/>
         <source>Error</source>
         <translation>Chyba</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="50"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="56"/>
         <source>Denied</source>
         <translation>Zamítnuto</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="51"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="57"/>
         <source>Blocked</source>
         <translation>Blokováno</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="52"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="58"/>
         <source>Running</source>
         <translation>Spuštěno</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="152"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verified</source>
+        <translation>Ověřeno</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verify failed</source>
+        <translation>Ověření selhalo</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="186"/>
+        <source>Verification failed: %1</source>
+        <translation>Ověření selhalo: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="187"/>
+        <source>The applied change failed its verification check.</source>
+        <translation>Aplikovaná změna neprošla ověřovací kontrolou.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="196"/>
+        <source>Restore checkpoint…</source>
+        <translation>Obnovit kontrolní bod…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="215"/>
         <source>Approve</source>
         <translation>Schválit</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="158"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="221"/>
         <source>Deny</source>
         <translation>Zamítnout</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="175"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="238"/>
         <source>Arguments</source>
         <translation>Argumenty</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="212"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="272"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="275"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="335"/>
         <source>Copy</source>
         <translation>Kopírovat</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="217"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="277"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="280"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="340"/>
         <source>Copy All</source>
         <translation>Kopírovat Vše</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="225"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="285"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="288"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="348"/>
         <source>Select All</source>
         <translation>Vybrat Vše</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="233"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="296"/>
         <source>Result</source>
         <translation>Výsledek</translation>
     </message>
@@ -19484,33 +19722,33 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1738"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
         <source>Console</source>
         <translation>Konzole</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1746"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
         <source>Notifications</source>
         <translation>Oznámení</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1754"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
         <source>Clock</source>
         <translation>Hodiny</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1761"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
         <source>Stopwatch</source>
         <translation>Stopky</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1807"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1822"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Záložní)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1844"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
         <source>LED Panel (%1)</source>
         <translation>Panel LED (%1)</translation>
     </message>
@@ -19526,12 +19764,12 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
 <context>
     <name>UI::WindowManager</name>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1073"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1082"/>
         <source>Select Background Image</source>
         <translation>Vybrat Obrázek na Pozadí</translation>
     </message>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1075"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1084"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp)</source>
         <translation>Obrázky (*.png *.jpg *.jpeg *.bmp)</translation>
     </message>
@@ -19840,27 +20078,27 @@ Zapněte Vložit Projekt pro zabudování projektu do zástupce, aby fungoval i 
 <context>
     <name>Waterfall</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="244"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="230"/>
         <source>Show Colorbar</source>
         <translation>Zobrazit Barevnou Škálu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="243"/>
         <source>Show Axes &amp; Grid</source>
         <translation>Zobrazit Osy a Mřížku</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="256"/>
         <source>Show Crosshair</source>
         <translation>Zobrazit Zaměřovač</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Pause</source>
         <translation>Pozastavit</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Resume</source>
         <translation>Obnovit</translation>
     </message>
@@ -20169,7 +20407,7 @@ Chápu, že po jejím skončení budu muset zakoupit licenci nebo sestavit verzi
         <translation type="vanished">Odebrat z Pracovního Prostoru</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="344"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="350"/>
         <source>Device Disconnected</source>
         <translation>Zařízení Odpojeno</translation>
     </message>

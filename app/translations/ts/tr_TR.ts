@@ -37,12 +37,12 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="219"/>
+        <location filename="../../src/AI/Assistant.cpp" line="234"/>
         <source>Allow AI Device Control?</source>
         <translation>AI Cihaz Kontrolüne İzin Verilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="220"/>
+        <location filename="../../src/AI/Assistant.cpp" line="235"/>
         <source>This lets the AI assistant configure devices, open and close connections, and send data to your hardware.
 
 Every device action still requires your explicit per-call approval in the chat, even when auto-approve is enabled. Only enable this if you trust the configured AI provider with hardware access.</source>
@@ -51,22 +51,22 @@ Every device action still requires your explicit per-call approval in the chat, 
 Otomatik onay etkinleştirildiğinde bile her cihaz eylemi sohbette açık çağrı başına onayınızı gerektirir. Bunu yalnızca yapılandırılmış AI sağlayıcısına donanım erişimi konusunda güveniyorsanız etkinleştirin.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="419"/>
+        <location filename="../../src/AI/Assistant.cpp" line="621"/>
         <source>Switch AI provider?</source>
         <translation>AI sağlayıcısı değiştirilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="420"/>
+        <location filename="../../src/AI/Assistant.cpp" line="622"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Farklı bir sağlayıcıya geçiş mevcut konuşmayı temizler. Devam etmek istiyor musunuz?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="423"/>
+        <location filename="../../src/AI/Assistant.cpp" line="625"/>
         <source>Assistant</source>
         <translation>Asistan</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="460"/>
+        <location filename="../../src/AI/Assistant.cpp" line="662"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI Asistanı bu derlemede mevcut değil</translation>
     </message>
@@ -75,7 +75,7 @@ Otomatik onay etkinleştirildiğinde bile her cihaz eylemi sohbette açık çağ
         <translation type="vanished">AI Asistanı Pro lisansı gerektirir</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="465"/>
+        <location filename="../../src/AI/Assistant.cpp" line="667"/>
         <source>Set an API key first</source>
         <translation>Önce bir API anahtarı ayarlayın</translation>
     </message>
@@ -87,51 +87,66 @@ Otomatik onay etkinleştirildiğinde bile her cihaz eylemi sohbette açık çağ
         <translation type="vanished">AI Asistanı Pro lisansı gerektirir</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="169"/>
+        <location filename="../../src/AI/Conversation.cpp" line="170"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI Asistanı bu derlemede mevcut değil</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="175"/>
+        <location filename="../../src/AI/Conversation.cpp" line="176"/>
         <source>AI subsystem not initialized</source>
         <translation>AI alt sistemi başlatılmadı</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="181"/>
+        <location filename="../../src/AI/Conversation.cpp" line="182"/>
         <source>Already busy with a previous request</source>
         <translation>Önceki istek ile meşgul</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="495"/>
+        <location filename="../../src/AI/Conversation.cpp" line="582"/>
         <source>Tool-call budget reached for this turn; no further tools will run.</source>
         <translation>Bu tur için araç çağrısı bütçesine ulaşıldı; başka araç çalıştırılmayacak.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1107"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1196"/>
         <source>Waiting for %1 to respond. Loading the model and processing the prompt can take a while on local hardware...</source>
         <translation>%1 yanıt vermesi bekleniyor. Modelin yüklenmesi ve komutun işlenmesi yerel donanımda biraz zaman alabilir...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1969"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2034"/>
+        <source>%1 operation(s) failed</source>
+        <translation>%1 işlem başarısız oldu</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2180"/>
         <source>You have reached the tool-call budget for this turn. Do not request more tools. Summarize what you found so far, and if the task is incomplete, say which steps remain so the user can tell you to continue.</source>
         <translation>Bu tur için araç çağrısı bütçesine ulaştınız. Daha fazla araç talep etmeyin. Şimdiye kadar bulduklarınızı özetleyin ve görev tamamlanmadıysa, devam etmenizi söyleyebilmesi için kullanıcıya hangi adımların kaldığını belirtin.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2913"/>
+        <source>The model stopped reproducing its context-integrity line. Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>Model bağlam-bütünlük satırını yeniden üretmeyi durdurdu. Uzun konuşmalar sessizce bozulur; son yanıtlar daha az güvenilir olabilir.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2916"/>
+        <source>The model altered its context-integrity line (drifted segment: %1). Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>Model bağlam-bütünlük satırını değiştirdi (sapan segment: %1). Uzun konuşmalar sessizce bozulur; son yanıtlar daha az güvenilir olabilir.</translation>
     </message>
     <message>
         <source>Tool-call budget exceeded</source>
         <translation type="vanished">Araç çağrısı bütçesi aşıldı</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="948"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1037"/>
         <source>(The model returned an empty response. Try rephrasing, switching to a different model, or checking that the request is allowed by the provider's safety filters.)</source>
         <translation>(Model boş bir yanıt döndürdü. Yeniden ifade etmeyi, farklı bir modele geçmeyi veya isteğin sağlayıcının güvenlik filtreleri tarafından izin verildiğini kontrol etmeyi deneyin.)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1111"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1200"/>
         <source>Sending request to %1...</source>
         <translation>%1 adresine istek gönderiliyor...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1124"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1218"/>
         <source>Provider returned no reply</source>
         <translation>Sağlayıcı yanıt döndürmedi</translation>
     </message>
@@ -397,23 +412,23 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>Accelerometer</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="186"/>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="183"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="184"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="242"/>
         <source>G-FORCE</source>
         <translation>G-KUVVET</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="283"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="280"/>
         <source>PITCH ↕</source>
         <translation>YUNUSLAMA ↕</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="320"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="317"/>
         <source>ROLL ↔</source>
         <translation>YALPA ↔</translation>
     </message>
@@ -996,72 +1011,102 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="274"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="277"/>
+        <source>Context health check</source>
+        <translation>Bağlam sağlık kontrolü</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="293"/>
+        <source>Assistant memory</source>
+        <translation>Asistan belleği</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="309"/>
+        <source>Carry context into new chats</source>
+        <translation>Bağlamı yeni sohbetlere taşı</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="325"/>
+        <source>Preload skills automatically</source>
+        <translation>Becerileri otomatik ön yükle</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <source>Verify edits automatically</source>
+        <translation>Düzenlemeleri otomatik doğrula</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <source>Manage memory…</source>
+        <translation>Belleği yönet…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
         <source>Manage API keys…</source>
         <translation>API Anahtarlarını Yönet…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="428"/>
         <source>CSV vs MDF4 export - what is the difference?</source>
         <translation>CSV ve MDF4 dışa aktarma - fark nedir?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="344"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="431"/>
         <source>Plot, Bar, and Gauge - when to use each?</source>
         <translation>Plot, Bar ve Gauge - her birini ne zaman kullanmalı?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="416"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="503"/>
         <source>How can I help with your project?</source>
         <translation>Projenizle nasıl yardımcı olabilirim?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="417"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="504"/>
         <source>Set up your API key to get started</source>
         <translation>Başlamak için API anahtarınızı ayarlayın</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="516"/>
         <source>Describe what you would like to build, and I will configure the sources, groups, datasets, frame parsers, and transforms for you.</source>
         <translation>Ne oluşturmak istediğinizi açıklayın, kaynakları, grupları, veri kümelerini, çerçeve ayrıştırıcılarını ve dönüşümleri sizin için yapılandırayım.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="519"/>
         <source>To start chatting, paste an API key for the selected provider. Keys are encrypted on this machine and never leave your computer except to talk to the provider you choose.</source>
         <translation>Sohbete başlamak için seçilen sağlayıcı için bir API anahtarı yapıştırın. Anahtarlar bu makinede şifrelenir ve seçtiğiniz sağlayıcıyla iletişim kurmak dışında bilgisayarınızdan asla ayrılmaz.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="453"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="540"/>
         <source>Open API Key Setup</source>
         <translation>API Anahtarı Kurulumunu Aç</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="463"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="550"/>
         <source>Get a key from %1</source>
         <translation>%1 adresinden bir anahtar edinin</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="337"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="424"/>
         <source>List the sources in this project</source>
         <translation>Bu projedeki kaynakları listele</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="334"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="421"/>
         <source>Help me discover Serial Studio's features</source>
         <translation>Serial Studio'nun özelliklerini keşfetmeme yardım et</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="335"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="422"/>
         <source>What can this app do for my telemetry?</source>
         <translation>Bu uygulama telemetrim için ne yapabilir?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="336"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="423"/>
         <source>Walk me through what this project already contains</source>
         <translation>Bu projenin zaten neleri içerdiğini adım adım göster</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="340"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="427"/>
         <source>What is a session database, and why would I use one?</source>
         <translation>Oturum veritabanı nedir ve neden kullanmalıyım?</translation>
     </message>
@@ -1070,12 +1115,12 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation type="vanished">CSV ve MDF4 dışa aktarma — fark nedir?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="342"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
         <source>What is a frame parser, and when do I need one?</source>
         <translation>Frame ayrıştırıcı nedir ve ne zaman ihtiyacım olur?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="343"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="430"/>
         <source>When should I use Lua vs JavaScript for the parser?</source>
         <translation>Ayrıştırıcı için Lua ve JavaScript'ten hangisini ne zaman kullanmalıyım?</translation>
     </message>
@@ -1084,122 +1129,152 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation type="vanished">Plot, Bar ve Gauge — her birini ne zaman kullanmalı?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="345"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
         <source>What is the difference between a transform and a frame parser?</source>
         <translation>Transform ile frame ayrıştırıcı arasındaki fark nedir?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="348"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="435"/>
         <source>Add a UART source for an Arduino</source>
         <translation>Arduino için bir UART kaynağı ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="349"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="436"/>
         <source>Set up an IMU project from scratch</source>
         <translation>Sıfırdan bir IMU projesi kur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="350"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="437"/>
         <source>Configure an MQTT subscriber</source>
         <translation>MQTT abonesi yapılandır</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="351"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="438"/>
         <source>Add a CAN bus source</source>
         <translation>CAN Bus kaynağı ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="352"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="439"/>
         <source>Set up a Modbus poller</source>
         <translation>Modbus yoklayıcı kur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="353"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="440"/>
         <source>Add a network (TCP/UDP) source</source>
         <translation>Ağ (TCP/UDP) kaynağı ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="354"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="441"/>
         <source>Write a CSV frame parser for me</source>
         <translation>Benim için bir CSV çerçeve ayrıştırıcı yaz</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="355"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="442"/>
         <source>Help me parse a JSON frame</source>
         <translation>JSON frame ayrıştırmama yardım et</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="443"/>
         <source>Add an EMA smoothing transform to a dataset</source>
         <translation>Veri kümesine EMA yumuşatma dönüşümü ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="357"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="444"/>
         <source>Decode hexadecimal frames</source>
         <translation>Onaltılık frame'leri çöz</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="358"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="445"/>
         <source>Calibrate a sensor with a linear transform</source>
         <translation>Doğrusal dönüşümle sensör kalibre et</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="448"/>
         <source>Suggest dashboard widgets for my data</source>
         <translation>Verilerim için gösterge paneli widget'ları öner</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="362"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="449"/>
         <source>Build an executive overview workspace</source>
         <translation>Yönetici özet çalışma alanı oluştur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="363"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="450"/>
         <source>Add a painter widget for a custom visualization</source>
         <translation>Özel görselleştirme için çizici widget'ı ekle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="364"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="451"/>
         <source>Show Plot, FFT, and Waterfall for one dataset</source>
         <translation>Bir Veri Kümesi için Grafik, FFT ve Şelale Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="365"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="452"/>
         <source>Group my datasets into useful workspaces</source>
         <translation>Veri Kümelerimi Kullanışlı Çalışma Alanlarına Grupla</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="644"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="731"/>
         <source>Drop files or folders to let the assistant read them</source>
         <translation>Asistan tarafından okunması için dosya veya klasörleri buraya bırakın</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="689"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="776"/>
         <source>Added folder "%1" - readable this session</source>
         <translation>"%1" klasörü eklendi - bu oturum boyunca okunabilir</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="690"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="777"/>
         <source>Added "%1" - readable this session</source>
         <translation>"%1" eklendi - bu oturum boyunca okunabilir</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="774"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="782"/>
+        <source>Assistant memory updated</source>
+        <translation>Asistan belleği güncellendi</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="822"/>
+        <source>Context may be degraded</source>
+        <translation>Bağlam bozulmuş olabilir</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <source>Start fresh chat</source>
+        <translation>Yeni sohbet başlat</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="889"/>
+        <source>Remember (%1)?</source>
+        <translation>Hatırla (%1)?</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="894"/>
+        <source>Remember</source>
+        <translation>Hatırla</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="903"/>
+        <source>Dismiss</source>
+        <translation>Kapat</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="984"/>
         <source>Ask Serial Studio anything…</source>
         <translation>Serial Studio'ya herhangi bir şey sorun…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="794"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1004"/>
         <source>Clear conversation</source>
         <translation>Konuşmayı temizle</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1048"/>
         <source>Stop generating</source>
         <translation>Oluşturmayı durdur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="839"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1049"/>
         <source>Send message (Enter)</source>
         <translation>Mesaj gönder (Enter)</translation>
     </message>
@@ -2218,21 +2293,26 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
     </message>
     <message>
         <location filename="../../qml/AI/ChatSidebar.qml" line="158"/>
+        <source>Continue in new chat</source>
+        <translation>Yeni sohbette devam et</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="165"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="197"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="204"/>
         <source>Rename chat</source>
         <translation>Sohbeti Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="217"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="224"/>
         <source>Cancel</source>
         <translation>İptal</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="222"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="229"/>
         <source>Rename</source>
         <translation>Yeniden Adlandır</translation>
     </message>
@@ -2821,7 +2901,7 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="262"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="263"/>
         <source>Dashboard %1</source>
         <translation>Gösterge Paneli %1</translation>
     </message>
@@ -2867,17 +2947,17 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation>Yedek widget'lar etkin. Tam işlevsellik için lisans satın alın.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="505"/>
         <source>Empty Workspace</source>
         <translation>Boş Çalışma Alanı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="518"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="519"/>
         <source>Use the search bar to find and add widgets, or right-click a widget in another workspace to add it here.</source>
         <translation>Widget bulmak ve eklemek için arama çubuğunu kullanın veya başka bir çalışma alanındaki widget'a sağ tıklayarak buraya ekleyin.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="533"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="534"/>
         <source>Search Widgets</source>
         <translation>Widget'ları Ara</translation>
     </message>
@@ -2890,17 +2970,17 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
         <translation>Gösterge Paneli</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="215"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="231"/>
         <source>API Server Active (%1)</source>
         <translation>API Sunucusu Etkin (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="216"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="232"/>
         <source>API Server Ready</source>
         <translation>API Sunucusu Hazır</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="217"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
         <source>API Server Off</source>
         <translation>API Sunucusu Kapalı</translation>
     </message>
@@ -2966,24 +3046,24 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>DataGrid</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="313"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="311"/>
         <source>Awaiting data…</source>
         <translation>Veri bekleniyor…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="368"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="366"/>
         <source>Open %1 in a separate window</source>
         <translation>%1 öğesini ayrı bir pencerede aç</translation>
     </message>
@@ -5507,58 +5587,58 @@ Add %4 dataset(s) using the template's defaults?</source>
 <context>
     <name>DataModel::ProjectModel</name>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="365"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Lock Project</source>
         <translation>Projeyi Kilitle</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="367"/>
         <source>Choose a password to lock the project:</source>
         <translation>Projeyi kilitlemek için bir parola seçin:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Confirm the password:</source>
         <translation>Parolayı onaylayın:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="379"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
         <source>Passwords do not match</source>
         <translation>Parolalar Eşleşmiyor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="381"/>
         <source>The two passwords you entered do not match. The project was not locked.</source>
         <translation>Girdiğiniz iki parola eşleşmiyor. Proje kilitlenmedi.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="414"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
         <source>Unlock Project</source>
         <translation>Projenin Kilidini Aç</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="416"/>
         <source>Enter the project password:</source>
         <translation>Proje parolasını girin:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="425"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
         <source>Incorrect password</source>
         <translation>Yanlış Parola</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="427"/>
         <source>The password you entered does not match the one stored in the project file.</source>
         <translation>Girdiğiniz parola proje dosyasında saklanan parola ile eşleşmiyor.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="457"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="458"/>
         <source>New Project</source>
         <translation>Yeni Proje</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="511"/>
         <source>Samples</source>
         <translation>Örnekler</translation>
     </message>
@@ -5592,60 +5672,60 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Bu projede kaydedilmemiş değişiklikler var!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>Project error</source>
         <translation>Proje hatası</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
         <source>Project title cannot be empty!</source>
         <translation>Proje başlığı boş olamaz!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
         <source>You need to add at least one group!</source>
         <translation>En az bir grup eklemeniz gerekiyor!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>You need to add at least one dataset!</source>
         <translation>En az bir veri kümesi eklemeniz gerekiyor!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="306"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="307"/>
         <source>Your project needs a title</source>
         <translation>Projenizin bir başlığa ihtiyacı var</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="308"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="309"/>
         <source>Add a group to get started</source>
         <translation>Başlamak için bir grup ekleyin</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="310"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="311"/>
         <source>Add a dataset to a group</source>
         <translation>Bir gruba veri kümesi ekleyin</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="324"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="325"/>
         <source>Open the Project view at the top of the tree and enter a name. You can rename the project at any time.</source>
         <translation>Ağacın üst kısmındaki Proje görünümünü açın ve bir ad girin. Projeyi istediğiniz zaman yeniden adlandırabilirsiniz.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="327"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="328"/>
         <source>Groups organize datasets into dashboard widgets. Use the Group button in the toolbar above to create one, then add datasets to it.</source>
         <translation>Gruplar, veri kümelerini gösterge paneli widget'larında düzenler. Bir tane oluşturmak için yukarıdaki araç çubuğundaki Grup düğmesini kullanın, ardından ona veri kümeleri ekleyin.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="331"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="332"/>
         <source>Datasets are the values that appear on the dashboard. Select a group in the tree and use the Dataset button in the toolbar to add one.</source>
         <translation>Veri kümeleri, panoda görünen değerlerdir. Ağaçta bir grup seçin ve bir tane eklemek için araç çubuğundaki Veri Kümesi düğmesini kullanın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="509"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="558"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="559"/>
         <source>Time</source>
         <translation>Zaman</translation>
     </message>
@@ -5665,21 +5745,21 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Serial Studio Projesini Kaydet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="401"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio Proje Dosyaları (*.ssproj)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1187"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="392"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1197"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <source>Untitled Project</source>
         <translation>Adsız Proje</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1203"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="548"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1214"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="549"/>
         <source>Device A</source>
         <translation>Cihaz A</translation>
     </message>
@@ -5699,47 +5779,47 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>JSON doğrulama hatası</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="366"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
         <source>Project upgraded from an earlier file format</source>
         <translation>Proje önceki bir dosya formatından yükseltildi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="368"/>
         <source>This project was saved with schema version %1; the current version is %2. Defaults have been applied to any new fields. Save the project to lock in the upgrade.</source>
         <translation>Bu proje şema sürümü %1 ile kaydedildi; mevcut sürüm %2. Yeni alanlara varsayılanlar uygulandı. Yükseltmeyi kalıcı yapmak için projeyi kaydedin.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="399"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="400"/>
         <source>Save Imported Project</source>
         <translation>İçe Aktarılan Projeyi Kaydet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="601"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
         <source>Multi-source projects require a Pro license</source>
         <translation>Çoklu kaynak projeleri Pro lisansı gerektirir</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="603"/>
         <source>This project contains multiple data sources. Only the first source has been loaded. A Serial Studio Pro license is required to use multi-source projects.</source>
         <translation>Bu proje birden fazla veri kaynağı içeriyor. Yalnızca ilk kaynak yüklendi. Çoklu kaynak projelerini kullanmak için Serial Studio Pro lisansı gereklidir.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="845"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
         <source>Workspace IDs remapped on load</source>
         <translation>Çalışma Alanı Kimlikleri yüklemede yeniden eşlendi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="847"/>
         <source>%1 custom workspace ID(s) overlapped the new reserved auto range and were moved into the user range. Save the project to make the remap permanent.</source>
         <translation>%1 özel çalışma alanı kimliği yeni ayrılmış otomatik aralıkla çakıştı ve kullanıcı aralığına taşındı. Yeniden eşlemeyi kalıcı hale getirmek için projeyi kaydedin.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1038"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1048"/>
         <source>Legacy frame parser function updated</source>
         <translation>Eski çerçeve ayrıştırıcı fonksiyonu güncellendi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1039"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1049"/>
         <source>Your project used a legacy frame parser function with a 'separator' argument. It has been automatically migrated to the new format.</source>
         <translation>Projeniz 'separator' argümanlı eski bir çerçeve ayrıştırıcı işlevi kullanıyordu. Yeni biçime otomatik olarak taşındı.</translation>
     </message>
@@ -5953,10 +6033,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Yeni Paylaşılan Tablo</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -5980,22 +6060,22 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Tabloyu Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
         <source>Rename Group</source>
         <translation>Grubu Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
         <source>Rename Dataset</source>
         <translation>Veri Kümesini Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
         <source>Rename Data Source</source>
         <translation>Veri Kaynağını Yeniden Adlandır</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <source>Rename Action</source>
         <translation>Eylemi Yeniden Adlandır</translation>
     </message>
@@ -6150,28 +6230,28 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Çalışma Alanını Sil</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="490"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
         <source>Project file removed from disk</source>
         <translation>Proje dosyası diskten kaldırıldı</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="492"/>
         <source>%1 was deleted or renamed by another program. Save the project to recreate it.</source>
         <translation>%1 başka bir program tarafından silindi veya yeniden adlandırıldı. Yeniden oluşturmak için projeyi kaydedin.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="513"/>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="534"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="535"/>
         <source>Project file changed on disk</source>
         <translation>Proje dosyası diskte değiştirildi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="515"/>
         <source>%1 was modified by another program. The in-memory project was kept; reopen the file to load the external changes.</source>
         <translation>%1 başka bir program tarafından değiştirildi. Bellekteki proje korundu; harici değişiklikleri yüklemek için dosyayı yeniden açın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="530"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="531"/>
         <source>The project file was modified by another program.
 
 Reload it and discard your unsaved changes?</source>
@@ -6180,7 +6260,7 @@ Reload it and discard your unsaved changes?</source>
 Yeniden yüklensin ve kaydedilmemiş değişiklikler iptal edilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="532"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="533"/>
         <source>The project file was modified by another program.
 
 Reload it?</source>
@@ -6189,7 +6269,7 @@ Reload it?</source>
 Yeniden yüklensin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="563"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="564"/>
         <source>File save error</source>
         <translation>Dosya kaydetme hatası</translation>
     </message>
@@ -6204,7 +6284,7 @@ Yeniden yüklensin mi?</translation>
         <translation>Öğeleri Sil</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="435"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="436"/>
         <source>File open error</source>
         <translation>Dosya açma hatası</translation>
     </message>
@@ -7231,57 +7311,57 @@ Geçerli biçim: 01 A2 FF 3C</translation>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="162"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="190"/>
         <source>Show Area Under Plot</source>
         <translation>Grafik Altındaki Alanı Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="208"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="225"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="304"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="299"/>
         <source>Magnitude (dB)</source>
         <translation>Genlik (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="300"/>
         <source>Frequency (Hz)</source>
         <translation>Frekans (Hz)</translation>
     </message>
@@ -7959,37 +8039,37 @@ Geçerli biçim: 01 A2 FF 3C</translation>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="113"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
         <source>Auto Center</source>
         <translation>Otomatik Ortala</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="129"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
         <source>Plot Trajectory</source>
         <translation>Yörüngeyi Çiz</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="146"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
         <source>Zoom In</source>
         <translation>Yakınlaştır</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="157"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
         <source>Zoom Out</source>
         <translation>Uzaklaştır</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="181"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>Show Weather</source>
         <translation>Hava Durumunu Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA Hava Durumu Katmanı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
         <source>Base Map: %1</source>
         <translation>Temel Harita: %1</translation>
     </message>
@@ -8674,15 +8754,15 @@ Geçerli biçim: 01 A2 FF 3C</translation>
 <context>
     <name>IO::Drivers::CANBus</name>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="321"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="327"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="333"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="325"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="331"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="337"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="342"/>
         <source>CAN Bus Not Available</source>
         <translation>CAN Bus Kullanılamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="334"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
         <source>No CAN bus plugins found on this system.
 
 CAN bus support on macOS is limited and may require third-party hardware drivers.</source>
@@ -8691,37 +8771,37 @@ CAN bus support on macOS is limited and may require third-party hardware drivers
 macOS üzerinde CAN bus desteği sınırlıdır ve üçüncü taraf donanım sürücüleri gerektirebilir.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="339"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="343"/>
         <source>No CAN bus plugins are available on this platform.</source>
         <translation>Bu platformda CAN bus eklentisi mevcut değil.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="351"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="355"/>
         <source>Invalid CAN Configuration</source>
         <translation>Geçersiz CAN Yapılandırması</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="359"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="363"/>
         <source>Invalid Selection</source>
         <translation>Geçersiz Seçim</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="368"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="372"/>
         <source>No Devices Available</source>
         <translation>Kullanılabilir Cihaz Yok</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="277"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="281"/>
         <source>CAN Device Creation Failed</source>
         <translation>CAN Cihazı Oluşturma Başarısız</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="304"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="308"/>
         <source>CAN Connection Failed</source>
         <translation>CAN Bağlantısı Başarısız</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="322"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="326"/>
         <source>No CAN bus plugins found on this system.
 
 On Linux, ensure SocketCAN kernel modules are loaded.</source>
@@ -8730,7 +8810,7 @@ On Linux, ensure SocketCAN kernel modules are loaded.</source>
 Linux'ta SOCKETCAN çekirdek modüllerinin yüklendiğinden emin olun.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="328"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="332"/>
         <source>No CAN bus plugins found on this system.
 
 On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
@@ -8739,103 +8819,103 @@ On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
 Windows'ta CAN donanım sürücülerini yükleyin (PEAK, VECTOR, vb.).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="352"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="356"/>
         <source>The CAN bus configuration is incomplete. Select a valid plugin and interface.</source>
         <translation>CAN bus yapılandırması eksik. Geçerli bir eklenti ve arayüz seçin.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="360"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="364"/>
         <source>The selected plugin or interface is no longer available. Refresh the lists and try again.</source>
         <translation>Seçilen eklenti veya arayüz artık kullanılabilir değil. Listeleri yenileyin ve tekrar deneyin.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="369"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="373"/>
         <source>The plugin or interface list is empty. Refresh the lists and ensure your CAN hardware is connected.</source>
         <translation>Eklenti veya arayüz listesi boş. Listeleri yenileyin ve CAN donanımınızın bağlı olduğundan emin olun.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="278"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="282"/>
         <source>Unable to create CAN bus device. Check your hardware and drivers.</source>
         <translation>CAN bus cihazı oluşturulamıyor. Donanımınızı ve sürücülerinizi kontrol edin.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="302"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="306"/>
         <source>Unable to connect to CAN bus device. Check your hardware connection and settings.</source>
         <translation>CAN bus cihazına bağlanılamıyor. Donanım bağlantınızı ve ayarlarınızı kontrol edin.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="701"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="705"/>
         <source>CAN Bus Error</source>
         <translation>CAN Bus Hatası</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="702"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="706"/>
         <source>An error occurred but the CAN device is no longer available.</source>
         <translation>Bir hata oluştu ancak CAN cihazı artık kullanılamıyor.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="709"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="713"/>
         <source>Error code: %1</source>
         <translation>Hata kodu: %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="712"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="716"/>
         <source>CAN Bus Communication Error</source>
         <translation>CAN Bus İletişim Hatası</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="791"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="819"/>
         <source>No CAN driver selected</source>
         <translation>CAN sürücüsü seçilmedi</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="731"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="759"/>
         <source>Load SocketCAN kernel modules first</source>
         <translation>Önce SOCKETCAN çekirdek modüllerini yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="727"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="755"/>
         <source>Connect a %1 adapter, then refresh</source>
         <translation>Bir %1 adaptörü bağlayın, ardından yenileyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="762"/>
         <source>Set up a virtual CAN interface first</source>
         <translation>Önce sanal bir CAN arayüzü kurun</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="736"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="756"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="764"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="784"/>
         <source>No interfaces found for %1</source>
         <translation>%1 için arayüz bulunamadı</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="740"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
         <source>Install &lt;a href='https://www.peak-system.com/Drivers.523.0.html?&amp;L=1'&gt;PEAK CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.PEAK-system.com/Drivers.523.0.html?&amp;L=1'&gt;PEAK CAN sürücülerini&lt;/a&gt; yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="744"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="772"/>
         <source>Install &lt;a href='https://www.vector.com/us/en/products/products-a-z/libraries-drivers/'&gt;Vector CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.VECTOR.com/us/en/products/products-a-z/libraries-drivers/'&gt;VECTOR CAN sürücülerini&lt;/a&gt; yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="776"/>
         <source>Install &lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;SysTec CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;SysTec CAN sürücülerini&lt;/a&gt; yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="751"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="779"/>
         <source>Install %1 drivers</source>
         <translation>%1 sürücülerini yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="754"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="782"/>
         <source>Install %1 drivers for macOS</source>
         <translation>MacOS için %1 sürücülerini yükleyin</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="796"/>
         <source>
 
 If the interface is down, bring it up first:
@@ -8846,32 +8926,32 @@ sudo ip link set %1 up type can bitrate %2
 </translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="875"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="903"/>
         <source>Plugin</source>
         <translation>Eklenti</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="883"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="911"/>
         <source>Interface</source>
         <translation>Arayüz</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="891"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="919"/>
         <source>Bitrate</source>
         <translation>Bit Hızı</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="900"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="928"/>
         <source>CAN FD</source>
         <translation>CAN FD</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="907"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="935"/>
         <source>Loopback</source>
         <translation>Geri Döngü</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="914"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="942"/>
         <source>Listen-Only</source>
         <translation>Yalnızca Dinleme</translation>
     </message>
@@ -10580,72 +10660,72 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
 <context>
     <name>ImageView</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="66"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="67"/>
         <source>Grayscale</source>
         <translation>Gri Tonlama</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
         <source>High Contrast</source>
         <translation>Yüksek Kontrast</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
         <source>Vivid</source>
         <translation>Canlı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
         <source>Night Vision</source>
         <translation>Gece Görüşü</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
         <source>Infrared</source>
         <translation>Kızılötesi</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="74"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
         <source>Deep Blue</source>
         <translation>Koyu Mavi</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="75"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
         <source>Amber</source>
         <translation>Kehribar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
         <source>Export Images</source>
         <translation>Görselleri Dışa Aktar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="182"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
         <source>Open Export Folder</source>
         <translation>Dışa Aktarma Klasörünü Aç</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="198"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
         <source>Zoom In</source>
         <translation>Yakınlaştır</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="211"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
         <source>Zoom Out</source>
         <translation>Uzaklaştır</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="556"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="551"/>
         <source>Waiting for Image…</source>
         <translation>Görsel Bekleniyor…</translation>
     </message>
@@ -10828,11 +10908,17 @@ Cihaz, etkin yapılandırmasında veri uç noktalarını sunmuyor olabilir veya 
         <translation>MQTT, 3D çizim ve daha fazlası gibi Pro özelliklerinin kilidini açmak için lisans anahtarınızı aşağıya yapıştırın.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
         <source>Your license includes 5 device activations.
 Plans include Monthly, Yearly, and Lifetime options.</source>
-        <translation>Lisansınız 5 cihaz etkinleştirmesi içerir.
+        <translation type="vanished">Lisansınız 5 cihaz etkinleştirmesi içerir.
 Planlar Aylık, Yıllık ve Ömür Boyu seçeneklerini içerir.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
+        <source>Your license includes 5 device activations.
+Yearly is the best value; Monthly and Lifetime plans are also available.</source>
+        <translation>Lisansınız 5 cihaz etkinleştirmesi içerir.
+Yıllık en iyi değer; Aylık ve Ömür Boyu planlar da mevcuttur.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="151"/>
@@ -12045,17 +12131,17 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <translation>Boş Proje</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="696"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="700"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="704"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="708"/>
         <source>Waiting for data…</source>
         <translation>Veri bekleniyor…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="705"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="709"/>
         <source>Connecting to device…</source>
         <translation>Cihaza bağlanılıyor…</translation>
     </message>
@@ -12099,6 +12185,59 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <location filename="../../qml/Dialogs/Mdf4Player.qml" line="23"/>
         <source>MDF4 Player</source>
         <translation>MDF4 Oynatıcı</translation>
+    </message>
+</context>
+<context>
+    <name>MemoryManagerDialog</name>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="23"/>
+        <source>Assistant Memory</source>
+        <translation>Asistan Hafızası</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="50"/>
+        <source>Facts the assistant carries into every chat. Stored only on this computer. Delete anything you no longer want it to know.</source>
+        <translation>Asistanın her sohbete taşıdığı bilgiler. Yalnızca bu bilgisayarda saklanır. Artık bilmesini istemediğiniz her şeyi silin.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>user</source>
+        <translation>kullanıcı</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>feedback</source>
+        <translation>geri bildirim</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>project</source>
+        <translation>proje</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>reference</source>
+        <translation>referans</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="73"/>
+        <source>Something the assistant should remember…</source>
+        <translation>Asistanın hatırlaması gereken bir şey…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="77"/>
+        <source>Remember</source>
+        <translation>Hatırla</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="146"/>
+        <source>Forget this fact</source>
+        <translation>Bu bilgiyi unut</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="162"/>
+        <source>Nothing remembered yet. Add a fact above, or approve one when the assistant proposes it in chat.</source>
+        <translation>Henüz hiçbir şey hatırlanmadı. Yukarıdan bir bilgi ekleyin veya asistan sohbette önerdiğinde onaylayın.</translation>
     </message>
 </context>
 <context>
@@ -12149,24 +12288,49 @@ Lütfen gerekli kimlik bilgilerini sağlayın.</translation>
         <translation>Tümünü Reddet</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="332"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="384"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="436"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="333"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="408"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="460"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="337"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="389"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="441"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="338"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="413"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="465"/>
         <source>Copy All</source>
         <translation>Tümünü Kopyala</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="345"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="397"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="346"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="421"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="353"/>
+        <source>Remember this…</source>
+        <translation>Bunu hatırla…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="356"/>
+        <source>As a preference about me</source>
+        <translation>Hakkımda bir tercih olarak</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="360"/>
+        <source>As a correction / lesson</source>
+        <translation>Düzeltme / ders olarak</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="364"/>
+        <source>As a fact about this project</source>
+        <translation>Bu proje hakkında bir gerçek olarak</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="368"/>
+        <source>As a reference</source>
+        <translation>Referans olarak</translation>
     </message>
 </context>
 <context>
@@ -13055,7 +13219,7 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
         <translation type="vanished">Enterpolasyon Yap</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="300"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
@@ -13064,47 +13228,47 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
         <translation type="vanished">Lejantları Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="327"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="338"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="350"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Tarama / Tetikleme Modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="386"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
         <source>Trigger Settings</source>
         <translation>Tetikleme Ayarları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="416"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
@@ -14078,57 +14242,57 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
         <translation type="vanished">Enterpolasyon Yap</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="291"/>
         <source>Interpolation: %1</source>
         <translation>Enterpolasyon: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="304"/>
         <source>Show Area Under Plot</source>
         <translation>Grafik Altındaki Alanı Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="328"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="323"/>
         <source>Show X Axis Label</source>
         <translation>X Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="339"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="334"/>
         <source>Show Y Axis Label</source>
         <translation>Y Ekseni Etiketini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="351"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="346"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="375"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="370"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Tarama / Tetikleme Modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="387"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="382"/>
         <source>Trigger Settings</source>
         <translation>Tetikleme Ayarları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Reset View</source>
         <translation>Görünümü Sıfırla</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="412"/>
         <source>Axis Range Settings</source>
         <translation>Eksen Aralığı Ayarları</translation>
     </message>
@@ -14136,52 +14300,52 @@ Birden fazla kayıt türünü sorgulamak için yukarıdan grup ekleyin.</transla
 <context>
     <name>Plot3D</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="212"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="208"/>
         <source>Interpolate</source>
         <translation>Enterpolasyon Yap</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="226"/>
         <source>Orbit Navigation</source>
         <translation>Yörünge Navigasyonu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="240"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="236"/>
         <source>Pan Navigation</source>
         <translation>Kaydırma Navigasyonu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="247"/>
         <source>Orthogonal View</source>
         <translation>Ortogonal Görünüm</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="253"/>
         <source>Top View</source>
         <translation>Üstten Görünüm</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="263"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="259"/>
         <source>Left View</source>
         <translation>Soldan Görünüm</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="265"/>
         <source>Front View</source>
         <translation>Önden Görünüm</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
         <source>Auto Center</source>
         <translation>Otomatik Ortala</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="302"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
         <source>Anaglyph 3D</source>
         <translation>Anaglyph 3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
         <source>Invert Eye Positions</source>
         <translation>Göz Konumlarını Ters Çevir</translation>
     </message>
@@ -16484,12 +16648,12 @@ Ayırıcı parametresine artık gerek yok.</translation>
 <context>
     <name>Sessions::DatabaseManager</name>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1056"/>
         <source>Select logo image</source>
         <translation>Logo görselini seç</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1060"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
         <source>Images (*.png *.jpg *.jpeg *.svg)</source>
         <translation>Görseller (*.png *.jpg *.jpeg *.svg)</translation>
     </message>
@@ -16504,7 +16668,7 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <translation>Oturum dosyaları (*.db)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1261"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1259"/>
         <source>Cannot open session file</source>
         <translation>Oturum dosyası açılamıyor</translation>
     </message>
@@ -16519,7 +16683,7 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <translation>Oturumu Sil</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1122"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1120"/>
         <source>No project data</source>
         <translation>Proje verisi yok</translation>
     </message>
@@ -16613,27 +16777,25 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <translation type="vanished">Dışa aktarma hazırlanıyor…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Done</source>
         <translation>Tamamlandı</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="994"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Failed</source>
         <translation>Başarısız</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1040"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="999"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1037"/>
         <source>Report Failed</source>
         <translation>Rapor Başarısız</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1002"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1041"/>
         <source>Could not generate the report. Check the output path and try again.</source>
-        <translation>Rapor oluşturulamadı. Çıktı yolunu kontrol edin ve tekrar deneyin.</translation>
+        <translation type="vanished">Rapor oluşturulamadı. Çıktı yolunu kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="929"/>
@@ -16661,37 +16823,43 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <translation>HTML dosyaları (*.HTML)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1123"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1038"/>
+        <source>Could not generate the report.</source>
+        <translation>Rapor oluşturulamadı.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1121"/>
         <source>This session file does not contain an embedded project.</source>
         <translation>Bu oturum dosyası gömülü bir proje içermiyor.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1132"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1130"/>
         <source>Invalid project data</source>
         <translation>Geçersiz proje verisi</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1133"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1131"/>
         <source>The embedded project JSON is malformed and cannot be restored.</source>
         <translation>Gömülü proje JSON'u hatalı biçimlendirilmiş ve geri yüklenemiyor.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Restore Project</source>
         <translation>Projeyi Geri Yükle</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Serial Studio projects (*.ssproj *.json)</source>
         <translation>Serial Studio projeleri (*.ssproj *.json)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Cannot write file</source>
         <translation>Dosya yazılamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Check file permissions and try again.</source>
         <translation>Dosya izinlerini kontrol edin ve yeniden deneyin.</translation>
     </message>
@@ -16741,208 +16909,238 @@ Ayırıcı parametresine artık gerek yok.</translation>
 <context>
     <name>Sessions::HtmlReport</name>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="208"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="199"/>
+        <source>No session data or output path was provided.</source>
+        <translation>Oturum verisi veya çıktı yolu belirtilmedi.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="211"/>
         <source>Assembling report…</source>
         <translation>Rapor hazırlanıyor…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="216"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="215"/>
+        <source>Could not load the report template resources.</source>
+        <translation>Rapor şablonu kaynakları yüklenemedi.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="219"/>
         <source>Writing output…</source>
         <translation>Çıkış yazılıyor…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="279"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="339"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="697"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="238"/>
+        <source>Could not write the report file. Verify that the destination folder is writable.</source>
+        <translation>Rapor dosyası yazılamadı. Hedef klasörün yazılabilir olduğunu doğrulayın.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="287"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="347"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="705"/>
         <source>Session Report</source>
         <translation>Oturum Raporu</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="342"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="350"/>
         <source>Untitled project</source>
         <translation>Adsız proje</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="349"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="357"/>
         <source>Prepared by</source>
         <translation>Hazırlayan</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="352"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="360"/>
         <source>Generated on %1</source>
         <translation>Oluşturulma tarihi %1</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="374"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
         <source>Test ID</source>
         <translation>Test Kimliği</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="376"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
         <source>Duration</source>
         <translation>Süre</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="378"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="386"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="498"/>
         <source>Samples</source>
         <translation>Örnekler</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="380"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="388"/>
         <source>Parameters</source>
         <translation>Parametreler</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="390"/>
         <source>Started</source>
         <translation>Başlatıldı</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="392"/>
         <source>Ended</source>
         <translation>Sonlandırıldı</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="420"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="428"/>
         <source>Project</source>
         <translation>Proje</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="422"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="430"/>
         <source>Test identifier</source>
         <translation>Test Tanımlayıcısı</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="423"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="431"/>
         <source>Start time</source>
         <translation>Başlangıç Zamanı</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="424"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="432"/>
         <source>End time</source>
         <translation>Bitiş Zamanı</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="425"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="433"/>
         <source>Total duration</source>
         <translation>Toplam Süre</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="426"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="434"/>
         <source>Samples acquired</source>
         <translation>Alınan Örnekler</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="427"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="435"/>
         <source>Parameters logged</source>
         <translation>Kaydedilen Parametreler</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="443"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="451"/>
         <source>Classification</source>
         <translation>Sınıflandırma</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="450"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
         <source>Notes</source>
         <translation>Notlar</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="466"/>
         <source>Test Information</source>
         <translation>Test Bilgileri</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="479"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="487"/>
         <source>Parameter</source>
         <translation>Parametre</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="482"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
         <source>Units</source>
         <translation>Birimler</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="491"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="499"/>
         <source>Minimum</source>
         <translation>Minimum</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="492"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="500"/>
         <source>Maximum</source>
         <translation>Maksimum</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="493"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="649"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="501"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="657"/>
         <source>Mean</source>
         <translation>Ortalama</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="494"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="502"/>
         <source>Std. Deviation</source>
         <translation>Std. Sapma</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="539"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="547"/>
         <source>Measurement Summary</source>
         <translation>Ölçüm Özeti</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="540"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="548"/>
         <source>click a column to sort</source>
         <translation>sıralamak için bir sütuna tıklayın</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="565"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="573"/>
         <source>%1 samples over %2 seconds</source>
         <translation>%2 saniye boyunca %1 örnek</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="583"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="591"/>
         <source>Combined Parameter View</source>
         <translation>Birleşik Parametre Görünümü</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="584"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
         <source>click legend items to toggle signals</source>
         <translation>sinyalleri değiştirmek için gösterge öğelerine tıklayın</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="600"/>
         <source>Parameter Trends</source>
         <translation>Parametre Eğilimleri</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="647"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="655"/>
         <source>Min</source>
         <translation>Min</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="648"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="656"/>
         <source>Max</source>
         <translation>Maks</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="721"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="729"/>
         <source>Page %1 of %2</source>
         <translation>Sayfa %1 / %2</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="791"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="841"/>
         <source>Loading rendering engine…</source>
         <translation>Render motoru yükleniyor…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="811"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="848"/>
+        <source>Could not write a temporary file for the rendering engine.</source>
+        <translation>İşleme motoru için geçici dosya yazılamadı.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="869"/>
+        <source>The rendering engine could not load the report page.</source>
+        <translation>İşleme motoru rapor sayfasını yükleyemedi.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="873"/>
         <source>Rendering charts…</source>
         <translation>Grafikler render ediliyor…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="855"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="921"/>
         <source>Generating PDF…</source>
         <translation>PDF Oluşturuluyor…</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="939"/>
+        <source>Could not write the PDF file. Close it in any other application and verify that the destination folder is writable.</source>
+        <translation>PDF dosyası yazılamadı. Başka bir uygulamada kapalı olduğundan emin olun ve hedef klasörün yazılabilir olduğunu doğrulayın.</translation>
     </message>
 </context>
 <context>
@@ -18105,49 +18303,49 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="575"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
         <source>Full Screen</source>
         <translation>Tam Ekran</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="587"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
         <source>Add External Window</source>
         <translation>Harici Pencere Ekle</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="872"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
         <source>Help Center</source>
         <translation>Yardım Merkezi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="703"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
         <source>Tools</source>
         <translation>Araçlar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="832"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
         <source>No Tools Available</source>
         <translation>Kullanılabilir Araç Yok</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Reset</source>
         <translation>Sıfırla</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Quit</source>
         <translation>Çık</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="958"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
         <source>Delete</source>
         <translation>Sil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
         <source>Hide</source>
         <translation>Gizle</translation>
     </message>
@@ -18158,31 +18356,31 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="776"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
         <source>Clock</source>
         <translation>Saat</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="783"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
         <source>Stopwatch</source>
         <translation>Kronometre</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="800"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
         <source>Sessions</source>
         <translation>Oturumlar</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="809"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
         <source>File Transmission</source>
         <translation>Dosya İletimi</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="817"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
         <source>AI Assistant</source>
         <translation>Yapay Zeka Asistanı</translation>
     </message>
@@ -18207,55 +18405,60 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation>Eklentileri Yönet…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <source>Freeze Dashboard</source>
+        <translation>Gösterge Panelini Dondur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
         <source>Export</source>
         <translation>Dışa Aktar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="638"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
         <source>CSV File</source>
         <translation>CSV Dosyası</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="644"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>MDF4 File</source>
         <translation>MDF4 Dosyası</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="650"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>Console Transcript</source>
         <translation>Konsol Kaydı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="659"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
         <source>Session Database</source>
         <translation>Oturum Veritabanı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="673"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
         <source>No Export Formats Available</source>
         <translation>Kullanılabilir Dışa Aktarma Formatı Yok</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="759"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="768"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="791"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
         <source>Preferences</source>
         <translation>Tercihler</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="947"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
         <source>Edit…</source>
         <translation>Düzenle…</translation>
     </message>
@@ -18264,17 +18467,17 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="893"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="894"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Disconnect</source>
         <translation>Bağlantıyı Kes</translation>
     </message>
@@ -18544,52 +18747,62 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="953"/>
+        <source>Unfreeze Dashboard</source>
+        <translation>Gösterge Panelini Dondur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="954"/>
+        <source>Freeze Dashboard</source>
+        <translation>Gösterge Panelini Dondur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1026"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1 adresine bağlandı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1027"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Bağlı değil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Yayıncı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1061"/>
         <source>Status:</source>
         <translation>Durum:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1069"/>
         <source>Connected</source>
         <translation>Bağlı</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1070"/>
         <source>Disconnected</source>
         <translation>Bağlantı Kesildi</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1077"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1090"/>
         <source>Mode:</source>
         <translation>Mod:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1103"/>
         <source>Messages sent:</source>
         <translation>Gönderilen mesajlar:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1117"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT Ayarlarını Aç</translation>
     </message>
@@ -18603,7 +18816,7 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">Widget'ları ara…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1163"/>
         <source>Remove from Workspace</source>
         <translation>Çalışma Alanından Kaldır</translation>
     </message>
@@ -18622,17 +18835,17 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
         <source>Find</source>
         <translation>Bul</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
         <source>Collapse</source>
         <translation>Daralt</translation>
     </message>
@@ -18645,138 +18858,138 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">Konsol çıktısını bir dosyaya kaydet</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
         <source>Console settings</source>
         <translation>Konsol ayarları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="549"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
         <source>Find in console</source>
         <translation>Konsolda Bul</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
         <source>%1 of %2</source>
         <translation>%2 içinde %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="587"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
         <source>No results</source>
         <translation>Sonuç bulunamadı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="599"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
         <source>Match case</source>
         <translation>Büyük/küçük harf duyarlı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
         <source>Previous match</source>
         <translation>Önceki eşleşme</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
         <source>Next match</source>
         <translation>Sonraki eşleşme</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="635"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
         <source>Close search</source>
         <translation>Aramayı kapat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="667"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
         <source>Send a file to the connected device</source>
         <translation>Bağlı cihaza dosya gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
         <source>Search console output</source>
         <translation>Konsol çıktısında ara</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Tekrarlanan satırları tek girdi olarak daralt</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
         <source>Resume console updates</source>
         <translation>Konsol güncellemelerini devam ettir</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>Konsol görüntüsünü dondur (veri kaydı devam eder)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Text</source>
         <translation>Metin</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
         <source>Plain text display mode</source>
         <translation>Düz metin görüntüleme modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="796"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
         <source>Hex display mode</source>
         <translation>Hex görüntüleme modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="453"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
         <source>Scrollback Lines</source>
         <translation>Kaydırma Satırları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="689"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Send Data to Device</source>
         <translation>Cihaza Veri Gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="846"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
         <source>Send data to the device</source>
         <translation>Cihaza veri gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
         <source>Show Timestamp</source>
         <translation>Zaman Damgasını Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
         <source>Echo</source>
         <translation>Yankı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 Emülasyonu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>ANSI Colors</source>
         <translation>ANSI Renkleri</translation>
     </message>
@@ -18785,7 +18998,7 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">Görüntüleme: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
         <source>Clear console output</source>
         <translation>Konsol çıktısını temizle</translation>
     </message>
@@ -18876,70 +19089,95 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>ToolCallCard</name>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="47"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="53"/>
         <source>Awaiting approval</source>
         <translation>Onay bekleniyor</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="48"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="54"/>
         <source>Done</source>
         <translation>Tamamlandı</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="49"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="55"/>
         <source>Error</source>
         <translation>Hata</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="50"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="56"/>
         <source>Denied</source>
         <translation>Reddedildi</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="51"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="57"/>
         <source>Blocked</source>
         <translation>Engellendi</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="52"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="58"/>
         <source>Running</source>
         <translation>Çalışıyor</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="152"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verified</source>
+        <translation>Doğrulandı</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verify failed</source>
+        <translation>Doğrulama Başarısız</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="186"/>
+        <source>Verification failed: %1</source>
+        <translation>Doğrulama başarısız: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="187"/>
+        <source>The applied change failed its verification check.</source>
+        <translation>Uygulanan değişiklik doğrulama kontrolünden geçemedi.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="196"/>
+        <source>Restore checkpoint…</source>
+        <translation>Kontrol noktasını geri yükle…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="215"/>
         <source>Approve</source>
         <translation>Onayla</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="158"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="221"/>
         <source>Deny</source>
         <translation>Reddet</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="175"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="238"/>
         <source>Arguments</source>
         <translation>Argümanlar</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="212"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="272"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="275"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="335"/>
         <source>Copy</source>
         <translation>Kopyala</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="217"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="277"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="280"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="340"/>
         <source>Copy All</source>
         <translation>Tümünü Kopyala</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="225"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="285"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="288"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="348"/>
         <source>Select All</source>
         <translation>Tümünü Seç</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="233"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="296"/>
         <source>Result</source>
         <translation>Sonuç</translation>
     </message>
@@ -19484,33 +19722,33 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1738"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1746"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
         <source>Notifications</source>
         <translation>Bildirimler</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1754"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
         <source>Clock</source>
         <translation>Saat</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1761"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
         <source>Stopwatch</source>
         <translation>Kronometre</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1807"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1822"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Yedek)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1844"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
         <source>LED Panel (%1)</source>
         <translation>LED Paneli (%1)</translation>
     </message>
@@ -19526,12 +19764,12 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>UI::WindowManager</name>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1073"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1082"/>
         <source>Select Background Image</source>
         <translation>Arka Plan Görüntüsü Seç</translation>
     </message>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1075"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1084"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp)</source>
         <translation>Görüntüler (*.png *.jpg *.jpeg *.bmp)</translation>
     </message>
@@ -19840,27 +20078,27 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
 <context>
     <name>Waterfall</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="244"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="230"/>
         <source>Show Colorbar</source>
         <translation>Renk Çubuğunu Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="243"/>
         <source>Show Axes &amp; Grid</source>
         <translation>Eksenleri ve Izgarayı Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="256"/>
         <source>Show Crosshair</source>
         <translation>Artı İşaretini Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
@@ -20169,7 +20407,7 @@ Deneme sona erdiğinde lisans satın almam veya GPLv3 sürümünü derlemem gere
         <translation type="vanished">Çalışma Alanından Kaldır</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="344"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="350"/>
         <source>Device Disconnected</source>
         <translation>Cihaz Bağlantısı Kesildi</translation>
     </message>

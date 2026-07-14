@@ -37,12 +37,12 @@
 <context>
     <name>AI::Assistant</name>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="219"/>
+        <location filename="../../src/AI/Assistant.cpp" line="234"/>
         <source>Allow AI Device Control?</source>
         <translation>AI 장치 제어를 허용하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="220"/>
+        <location filename="../../src/AI/Assistant.cpp" line="235"/>
         <source>This lets the AI assistant configure devices, open and close connections, and send data to your hardware.
 
 Every device action still requires your explicit per-call approval in the chat, even when auto-approve is enabled. Only enable this if you trust the configured AI provider with hardware access.</source>
@@ -51,22 +51,22 @@ Every device action still requires your explicit per-call approval in the chat, 
 자동 승인이 활성화된 경우에도 모든 장치 작업은 채팅에서 호출별 명시적 승인이 필요합니다. 구성된 AI 공급자에게 하드웨어 액세스 권한을 신뢰하는 경우에만 활성화하십시오.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="419"/>
+        <location filename="../../src/AI/Assistant.cpp" line="621"/>
         <source>Switch AI provider?</source>
         <translation>AI 제공자를 전환하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="420"/>
+        <location filename="../../src/AI/Assistant.cpp" line="622"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>다른 제공자로 전환하면 현재 대화가 지워집니다. 계속하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="423"/>
+        <location filename="../../src/AI/Assistant.cpp" line="625"/>
         <source>Assistant</source>
         <translation>어시스턴트</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="460"/>
+        <location filename="../../src/AI/Assistant.cpp" line="662"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI 어시스턴트는 이 빌드에서 사용할 수 없습니다</translation>
     </message>
@@ -75,7 +75,7 @@ Every device action still requires your explicit per-call approval in the chat, 
         <translation type="vanished">AI 어시스턴트는 Pro 라이선스가 필요합니다</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="465"/>
+        <location filename="../../src/AI/Assistant.cpp" line="667"/>
         <source>Set an API key first</source>
         <translation>먼저 API 키를 설정하십시오</translation>
     </message>
@@ -87,51 +87,66 @@ Every device action still requires your explicit per-call approval in the chat, 
         <translation type="vanished">AI 어시스턴트는 Pro 라이선스가 필요합니다</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="169"/>
+        <location filename="../../src/AI/Conversation.cpp" line="170"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI 어시스턴트는 이 빌드에서 사용할 수 없습니다</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="175"/>
+        <location filename="../../src/AI/Conversation.cpp" line="176"/>
         <source>AI subsystem not initialized</source>
         <translation>AI 하위 시스템이 초기화되지 않음</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="181"/>
+        <location filename="../../src/AI/Conversation.cpp" line="182"/>
         <source>Already busy with a previous request</source>
         <translation>이전 요청을 처리 중입니다</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="495"/>
+        <location filename="../../src/AI/Conversation.cpp" line="582"/>
         <source>Tool-call budget reached for this turn; no further tools will run.</source>
         <translation>이번 턴의 도구 호출 한도에 도달했습니다. 더 이상 도구가 실행되지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1107"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1196"/>
         <source>Waiting for %1 to respond. Loading the model and processing the prompt can take a while on local hardware...</source>
         <translation>%1의 응답 대기 중. 로컬 하드웨어에서 모델 로드 및 프롬프트 처리에 시간이 걸릴 수 있습니다...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1969"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2034"/>
+        <source>%1 operation(s) failed</source>
+        <translation>%1개 작업 실패</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2180"/>
         <source>You have reached the tool-call budget for this turn. Do not request more tools. Summarize what you found so far, and if the task is incomplete, say which steps remain so the user can tell you to continue.</source>
         <translation>이번 턴의 도구 호출 한도에 도달했습니다. 더 이상 도구를 요청하지 마십시오. 지금까지 찾은 내용을 요약하고, 작업이 완료되지 않았다면 남은 단계를 알려 사용자가 계속 진행하도록 할 수 있습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2913"/>
+        <source>The model stopped reproducing its context-integrity line. Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>모델이 컨텍스트 무결성 라인 재생성을 중단했습니다. 긴 대화는 조용히 저하되며, 최근 응답의 신뢰도가 낮을 수 있습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Conversation.cpp" line="2916"/>
+        <source>The model altered its context-integrity line (drifted segment: %1). Long conversations degrade silently; recent replies may be less reliable.</source>
+        <translation>모델이 컨텍스트 무결성 라인을 변경했습니다(드리프트 세그먼트: %1). 긴 대화는 조용히 저하되며, 최근 응답의 신뢰도가 낮을 수 있습니다.</translation>
     </message>
     <message>
         <source>Tool-call budget exceeded</source>
         <translation type="vanished">도구 호출 한도 초과</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="948"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1037"/>
         <source>(The model returned an empty response. Try rephrasing, switching to a different model, or checking that the request is allowed by the provider's safety filters.)</source>
         <translation>(모델이 빈 응답을 반환했습니다. 다른 표현으로 다시 시도하거나, 다른 모델로 전환하거나, 제공업체의 안전 필터에서 요청이 허용되는지 확인하십시오.)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1111"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1200"/>
         <source>Sending request to %1...</source>
         <translation>%1에 요청 전송 중...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1124"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1218"/>
         <source>Provider returned no reply</source>
         <translation>제공업체가 응답을 반환하지 않음</translation>
     </message>
@@ -397,23 +412,23 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>Accelerometer</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="186"/>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="187"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="183"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="184"/>
         <source>Settings</source>
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="242"/>
         <source>G-FORCE</source>
         <translation>G-FORCE</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="283"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="280"/>
         <source>PITCH ↕</source>
         <translation>PITCH ↕</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="320"/>
+        <location filename="../../qml/Widgets/Dashboard/Accelerometer.qml" line="317"/>
         <source>ROLL ↔</source>
         <translation>ROLL ↔</translation>
     </message>
@@ -996,72 +1011,102 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="274"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="277"/>
+        <source>Context health check</source>
+        <translation>컨텍스트 상태 확인</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="293"/>
+        <source>Assistant memory</source>
+        <translation>어시스턴트 메모리</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="309"/>
+        <source>Carry context into new chats</source>
+        <translation>새 채팅에 컨텍스트 유지</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="325"/>
+        <source>Preload skills automatically</source>
+        <translation>스킬 자동 사전 로드</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <source>Verify edits automatically</source>
+        <translation>편집 자동 검증</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <source>Manage memory…</source>
+        <translation>메모리 관리…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
         <source>Manage API keys…</source>
         <translation>API 키 관리…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="341"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="428"/>
         <source>CSV vs MDF4 export - what is the difference?</source>
         <translation>CSV vs MDF4 내보내기 - 차이점은 무엇인가요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="344"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="431"/>
         <source>Plot, Bar, and Gauge - when to use each?</source>
         <translation>Plot, Bar, Gauge - 각각 언제 사용하나요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="416"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="503"/>
         <source>How can I help with your project?</source>
         <translation>프로젝트에 대해 어떻게 도와드릴까요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="417"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="504"/>
         <source>Set up your API key to get started</source>
         <translation>시작하려면 API 키를 설정하세요</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="516"/>
         <source>Describe what you would like to build, and I will configure the sources, groups, datasets, frame parsers, and transforms for you.</source>
         <translation>구축하려는 내용을 설명하시면 소스, 그룹, 데이터셋, 프레임 파서 및 변환을 구성해 드리겠습니다.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="519"/>
         <source>To start chatting, paste an API key for the selected provider. Keys are encrypted on this machine and never leave your computer except to talk to the provider you choose.</source>
         <translation>채팅을 시작하려면 선택한 공급자의 API 키를 붙여넣으세요. 키는 이 컴퓨터에서 암호화되며 선택한 공급자와 통신하는 경우를 제외하고는 컴퓨터 밖으로 전송되지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="453"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="540"/>
         <source>Open API Key Setup</source>
         <translation>API 키 설정 열기</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="463"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="550"/>
         <source>Get a key from %1</source>
         <translation>%1에서 키 받기</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="337"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="424"/>
         <source>List the sources in this project</source>
         <translation>이 프로젝트의 소스 목록 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="334"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="421"/>
         <source>Help me discover Serial Studio's features</source>
         <translation>Serial Studio 기능 알아보기</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="335"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="422"/>
         <source>What can this app do for my telemetry?</source>
         <translation>이 앱이 내 텔레메트리를 위해 무엇을 할 수 있나요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="336"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="423"/>
         <source>Walk me through what this project already contains</source>
         <translation>이 프로젝트에 이미 포함된 내용 안내</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="340"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="427"/>
         <source>What is a session database, and why would I use one?</source>
         <translation>세션 데이터베이스란 무엇이며, 왜 사용하나요?</translation>
     </message>
@@ -1070,12 +1115,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">CSV vs MDF4 내보내기 — 차이점은 무엇인가요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="342"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="429"/>
         <source>What is a frame parser, and when do I need one?</source>
         <translation>프레임 파서란 무엇이며, 언제 필요한가요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="343"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="430"/>
         <source>When should I use Lua vs JavaScript for the parser?</source>
         <translation>파서에 Lua와 JavaScript 중 언제 무엇을 사용해야 하나요?</translation>
     </message>
@@ -1084,122 +1129,152 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">Plot, Bar, Gauge — 각각 언제 사용하나요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="345"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="432"/>
         <source>What is the difference between a transform and a frame parser?</source>
         <translation>변환과 프레임 파서의 차이점은 무엇인가요?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="348"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="435"/>
         <source>Add a UART source for an Arduino</source>
         <translation>Arduino용 UART 소스 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="349"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="436"/>
         <source>Set up an IMU project from scratch</source>
         <translation>IMU 프로젝트 처음부터 설정하기</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="350"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="437"/>
         <source>Configure an MQTT subscriber</source>
         <translation>MQTT 구독자 구성</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="351"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="438"/>
         <source>Add a CAN bus source</source>
         <translation>CAN Bus 소스 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="352"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="439"/>
         <source>Set up a Modbus poller</source>
         <translation>Modbus 폴러 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="353"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="440"/>
         <source>Add a network (TCP/UDP) source</source>
         <translation>네트워크(TCP/UDP) 소스 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="354"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="441"/>
         <source>Write a CSV frame parser for me</source>
         <translation>CSV 프레임 파서 작성</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="355"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="442"/>
         <source>Help me parse a JSON frame</source>
         <translation>JSON 프레임 파싱 지원</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="356"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="443"/>
         <source>Add an EMA smoothing transform to a dataset</source>
         <translation>데이터셋에 EMA 스무딩 변환 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="357"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="444"/>
         <source>Decode hexadecimal frames</source>
         <translation>16진수 프레임 디코딩</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="358"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="445"/>
         <source>Calibrate a sensor with a linear transform</source>
         <translation>선형 변환으로 센서 보정</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="361"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="448"/>
         <source>Suggest dashboard widgets for my data</source>
         <translation>내 데이터에 적합한 대시보드 위젯 제안</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="362"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="449"/>
         <source>Build an executive overview workspace</source>
         <translation>경영진 개요 작업 공간 구축</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="363"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="450"/>
         <source>Add a painter widget for a custom visualization</source>
         <translation>사용자 정의 시각화를 위한 Painter 위젯 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="364"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="451"/>
         <source>Show Plot, FFT, and Waterfall for one dataset</source>
         <translation>하나의 데이터셋에 대한 플롯, FFT 및 워터폴 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="365"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="452"/>
         <source>Group my datasets into useful workspaces</source>
         <translation>데이터셋을 유용한 작업 공간으로 그룹화</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="644"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="731"/>
         <source>Drop files or folders to let the assistant read them</source>
         <translation>파일 또는 폴더를 드롭하여 어시스턴트가 읽을 수 있도록 하십시오</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="689"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="776"/>
         <source>Added folder "%1" - readable this session</source>
         <translation>폴더 "%1" 추가됨 - 이 세션에서 읽기 가능</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="690"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="777"/>
         <source>Added "%1" - readable this session</source>
         <translation>"%1" 추가됨 - 이 세션에서 읽기 가능</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="774"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="782"/>
+        <source>Assistant memory updated</source>
+        <translation>어시스턴트 메모리 업데이트됨</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="822"/>
+        <source>Context may be degraded</source>
+        <translation>컨텍스트가 저하될 수 있음</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <source>Start fresh chat</source>
+        <translation>새로운 채팅 시작</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="889"/>
+        <source>Remember (%1)?</source>
+        <translation>기억할까요 (%1)?</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="894"/>
+        <source>Remember</source>
+        <translation>기억</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="903"/>
+        <source>Dismiss</source>
+        <translation>무시</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="984"/>
         <source>Ask Serial Studio anything…</source>
         <translation>Serial Studio에 무엇이든 물어보세요…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="794"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1004"/>
         <source>Clear conversation</source>
         <translation>대화 지우기</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="838"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1048"/>
         <source>Stop generating</source>
         <translation>생성 중지</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/AssistantPanel.qml" line="839"/>
+        <location filename="../../qml/AI/AssistantPanel.qml" line="1049"/>
         <source>Send message (Enter)</source>
         <translation>메시지 전송 (Enter)</translation>
     </message>
@@ -2218,21 +2293,26 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     </message>
     <message>
         <location filename="../../qml/AI/ChatSidebar.qml" line="158"/>
+        <source>Continue in new chat</source>
+        <translation>새 채팅에서 계속</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="165"/>
         <source>Delete</source>
         <translation>삭제</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="197"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="204"/>
         <source>Rename chat</source>
         <translation>채팅 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="217"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="224"/>
         <source>Cancel</source>
         <translation>취소</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ChatSidebar.qml" line="222"/>
+        <location filename="../../qml/AI/ChatSidebar.qml" line="229"/>
         <source>Rename</source>
         <translation>이름 변경</translation>
     </message>
@@ -2821,7 +2901,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="262"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="263"/>
         <source>Dashboard %1</source>
         <translation>대시보드 %1</translation>
     </message>
@@ -2867,17 +2947,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>대체 위젯이 활성화되었습니다. 전체 기능을 사용하려면 라이선스를 구매하세요.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="505"/>
         <source>Empty Workspace</source>
         <translation>빈 작업 공간</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="518"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="519"/>
         <source>Use the search bar to find and add widgets, or right-click a widget in another workspace to add it here.</source>
         <translation>검색 바를 사용하여 위젯을 찾아 추가하거나, 다른 작업 공간의 위젯을 마우스 오른쪽 버튼으로 클릭하여 여기에 추가하세요.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="533"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="534"/>
         <source>Search Widgets</source>
         <translation>위젯 검색</translation>
     </message>
@@ -2890,17 +2970,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>대시보드</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="215"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="231"/>
         <source>API Server Active (%1)</source>
         <translation>API 서버 활성 (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="216"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="232"/>
         <source>API Server Ready</source>
         <translation>API 서버 준비됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="217"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
         <source>API Server Off</source>
         <translation>API 서버 꺼짐</translation>
     </message>
@@ -2966,24 +3046,24 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>DataGrid</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="98"/>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="99"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="95"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="96"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="313"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="311"/>
         <source>Awaiting data…</source>
         <translation>데이터 대기 중…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="368"/>
+        <location filename="../../qml/Widgets/Dashboard/DataGrid.qml" line="366"/>
         <source>Open %1 in a separate window</source>
         <translation>%1을(를) 별도 창에서 열기</translation>
     </message>
@@ -5507,58 +5587,58 @@ Add %4 dataset(s) using the template's defaults?</source>
 <context>
     <name>DataModel::ProjectModel</name>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="365"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Lock Project</source>
         <translation>프로젝트 잠금</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="366"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="367"/>
         <source>Choose a password to lock the project:</source>
         <translation>프로젝트를 잠글 비밀번호를 선택하세요:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="374"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="375"/>
         <source>Confirm the password:</source>
         <translation>비밀번호 확인:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="379"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
         <source>Passwords do not match</source>
         <translation>비밀번호 불일치</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="380"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="381"/>
         <source>The two passwords you entered do not match. The project was not locked.</source>
         <translation>입력한 두 비밀번호가 일치하지 않습니다. 프로젝트가 잠기지 않았습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="414"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
         <source>Unlock Project</source>
         <translation>프로젝트 잠금 해제</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="415"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="416"/>
         <source>Enter the project password:</source>
         <translation>프로젝트 비밀번호를 입력하세요:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="425"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
         <source>Incorrect password</source>
         <translation>잘못된 비밀번호</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="426"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="427"/>
         <source>The password you entered does not match the one stored in the project file.</source>
         <translation>입력한 비밀번호가 프로젝트 파일에 저장된 비밀번호와 일치하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="457"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="458"/>
         <source>New Project</source>
         <translation>새 프로젝트</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="511"/>
         <source>Samples</source>
         <translation>샘플</translation>
     </message>
@@ -5592,60 +5672,60 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>이 프로젝트에 저장되지 않은 수정 사항이 있습니다!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>Project error</source>
         <translation>프로젝트 오류</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="237"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="238"/>
         <source>Project title cannot be empty!</source>
         <translation>프로젝트 제목은 비워둘 수 없습니다!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="246"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="247"/>
         <source>You need to add at least one group!</source>
         <translation>최소 하나의 그룹을 추가해야 합니다!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="259"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="260"/>
         <source>You need to add at least one dataset!</source>
         <translation>최소 하나의 데이터셋을 추가해야 합니다!</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="306"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="307"/>
         <source>Your project needs a title</source>
         <translation>프로젝트에 제목이 필요합니다</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="308"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="309"/>
         <source>Add a group to get started</source>
         <translation>시작하려면 그룹을 추가하세요</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="310"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="311"/>
         <source>Add a dataset to a group</source>
         <translation>그룹에 데이터셋을 추가하세요</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="324"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="325"/>
         <source>Open the Project view at the top of the tree and enter a name. You can rename the project at any time.</source>
         <translation>트리 상단의 프로젝트 보기를 열고 이름을 입력하세요. 프로젝트는 언제든지 이름을 변경할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="327"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="328"/>
         <source>Groups organize datasets into dashboard widgets. Use the Group button in the toolbar above to create one, then add datasets to it.</source>
         <translation>그룹은 데이터셋을 대시보드 위젯으로 구성합니다. 위 도구 모음의 그룹 버튼을 사용하여 그룹을 생성한 다음 데이터셋을 추가하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="331"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="332"/>
         <source>Datasets are the values that appear on the dashboard. Select a group in the tree and use the Dataset button in the toolbar to add one.</source>
         <translation>데이터셋은 대시보드에 표시되는 값입니다. 트리에서 그룹을 선택하고 툴바의 데이터셋 버튼을 사용하여 추가하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="509"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="558"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="510"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="559"/>
         <source>Time</source>
         <translation>시간</translation>
     </message>
@@ -5665,21 +5745,21 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Serial Studio 프로젝트 저장</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="401"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio 프로젝트 파일 (*.ssproj)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1187"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="392"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1197"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <source>Untitled Project</source>
         <translation>제목 없는 프로젝트</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1203"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="548"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1214"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="549"/>
         <source>Device A</source>
         <translation>장치 A</translation>
     </message>
@@ -5699,47 +5779,47 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>JSON 유효성 검사 오류</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="366"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
         <source>Project upgraded from an earlier file format</source>
         <translation>프로젝트가 이전 파일 형식에서 업그레이드됨</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="367"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="368"/>
         <source>This project was saved with schema version %1; the current version is %2. Defaults have been applied to any new fields. Save the project to lock in the upgrade.</source>
         <translation>이 프로젝트는 스키마 버전 %1(으)로 저장되었습니다. 현재 버전은 %2입니다. 새 필드에는 기본값이 적용되었습니다. 업그레이드를 확정하려면 프로젝트를 저장하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="399"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="400"/>
         <source>Save Imported Project</source>
         <translation>가져온 프로젝트 저장</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="601"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
         <source>Multi-source projects require a Pro license</source>
         <translation>다중 소스 프로젝트는 Pro 라이선스가 필요합니다</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="602"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="603"/>
         <source>This project contains multiple data sources. Only the first source has been loaded. A Serial Studio Pro license is required to use multi-source projects.</source>
         <translation>이 프로젝트는 여러 데이터 소스를 포함하고 있습니다. 첫 번째 소스만 로드되었습니다. 다중 소스 프로젝트를 사용하려면 Serial Studio Pro 라이선스가 필요합니다.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="845"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
         <source>Workspace IDs remapped on load</source>
         <translation>워크스페이스 ID가 로드 시 재매핑됨</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="846"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="847"/>
         <source>%1 custom workspace ID(s) overlapped the new reserved auto range and were moved into the user range. Save the project to make the remap permanent.</source>
         <translation>%1개의 사용자 지정 작업 공간 ID가 새로 예약된 자동 범위와 겹쳐 사용자 범위로 이동되었습니다. 프로젝트를 저장하여 이 매핑을 영구적으로 만드세요.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1038"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1048"/>
         <source>Legacy frame parser function updated</source>
         <translation>레거시 프레임 파서 함수 업데이트됨</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1039"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="1049"/>
         <source>Your project used a legacy frame parser function with a 'separator' argument. It has been automatically migrated to the new format.</source>
         <translation>프로젝트에서 'separator' 인수를 사용하는 레거시 프레임 파서 함수가 사용되었습니다. 새 형식으로 자동 마이그레이션되었습니다.</translation>
     </message>
@@ -5953,10 +6033,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>새 공유 테이블</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -5980,22 +6060,22 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>테이블 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1557"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1586"/>
         <source>Rename Group</source>
         <translation>그룹 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1581"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1610"/>
         <source>Rename Dataset</source>
         <translation>데이터셋 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1608"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1637"/>
         <source>Rename Data Source</source>
         <translation>데이터 소스 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectModel.cpp" line="1627"/>
+        <location filename="../../src/DataModel/ProjectModel.cpp" line="1656"/>
         <source>Rename Action</source>
         <translation>액션 이름 변경</translation>
     </message>
@@ -6150,28 +6230,28 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>작업 공간 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="490"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
         <source>Project file removed from disk</source>
         <translation>프로젝트 파일이 디스크에서 제거됨</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="491"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="492"/>
         <source>%1 was deleted or renamed by another program. Save the project to recreate it.</source>
         <translation>%1이(가) 다른 프로그램에 의해 삭제되거나 이름이 변경되었습니다. 프로젝트를 저장하여 다시 생성하십시오.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="513"/>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="534"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="535"/>
         <source>Project file changed on disk</source>
         <translation>프로젝트 파일이 디스크에서 변경됨</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="514"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="515"/>
         <source>%1 was modified by another program. The in-memory project was kept; reopen the file to load the external changes.</source>
         <translation>%1이(가) 다른 프로그램에 의해 수정되었습니다. 메모리 내 프로젝트가 유지되었습니다. 외부 변경 사항을 로드하려면 파일을 다시 여십시오.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="530"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="531"/>
         <source>The project file was modified by another program.
 
 Reload it and discard your unsaved changes?</source>
@@ -6180,7 +6260,7 @@ Reload it and discard your unsaved changes?</source>
 다시 로드하고 저장하지 않은 변경 사항을 삭제하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="532"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="533"/>
         <source>The project file was modified by another program.
 
 Reload it?</source>
@@ -6189,7 +6269,7 @@ Reload it?</source>
 다시 로드하시겠습니까?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="563"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="564"/>
         <source>File save error</source>
         <translation>파일 저장 오류</translation>
     </message>
@@ -6204,7 +6284,7 @@ Reload it?</source>
         <translation>항목 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="435"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="436"/>
         <source>File open error</source>
         <translation>파일 열기 오류</translation>
     </message>
@@ -7231,57 +7311,57 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="162"/>
         <source>Interpolation: %1</source>
         <translation>보간: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="190"/>
         <source>Show Area Under Plot</source>
         <translation>플롯 아래 영역 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="213"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="208"/>
         <source>Show X Axis Label</source>
         <translation>X축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="225"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
         <source>Show Y Axis Label</source>
         <translation>Y축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="250"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="264"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="270"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="304"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="299"/>
         <source>Magnitude (dB)</source>
         <translation>크기 (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="300"/>
         <source>Frequency (Hz)</source>
         <translation>주파수 (Hz)</translation>
     </message>
@@ -7959,37 +8039,37 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="113"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
         <source>Auto Center</source>
         <translation>자동 중심</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="129"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
         <source>Plot Trajectory</source>
         <translation>궤적 플롯</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="146"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
         <source>Zoom In</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="157"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
         <source>Zoom Out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="181"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>Show Weather</source>
         <translation>날씨 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA 날씨 오버레이</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
         <source>Base Map: %1</source>
         <translation>기본 맵: %1</translation>
     </message>
@@ -8674,15 +8754,15 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>IO::Drivers::CANBus</name>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="321"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="327"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="333"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="325"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="331"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="337"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="342"/>
         <source>CAN Bus Not Available</source>
         <translation>CAN Bus 사용 불가</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="334"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="338"/>
         <source>No CAN bus plugins found on this system.
 
 CAN bus support on macOS is limited and may require third-party hardware drivers.</source>
@@ -8691,37 +8771,37 @@ CAN bus support on macOS is limited and may require third-party hardware drivers
 macOS의 CAN bus 지원은 제한적이며 타사 하드웨어 드라이버가 필요할 수 있습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="339"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="343"/>
         <source>No CAN bus plugins are available on this platform.</source>
         <translation>이 플랫폼에서는 CAN bus 플러그인을 사용할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="351"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="355"/>
         <source>Invalid CAN Configuration</source>
         <translation>잘못된 CAN 구성</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="359"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="363"/>
         <source>Invalid Selection</source>
         <translation>잘못된 선택</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="368"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="372"/>
         <source>No Devices Available</source>
         <translation>사용 가능한 장치 없음</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="277"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="281"/>
         <source>CAN Device Creation Failed</source>
         <translation>CAN 장치 생성 실패</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="304"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="308"/>
         <source>CAN Connection Failed</source>
         <translation>CAN 연결 실패</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="322"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="326"/>
         <source>No CAN bus plugins found on this system.
 
 On Linux, ensure SocketCAN kernel modules are loaded.</source>
@@ -8730,7 +8810,7 @@ On Linux, ensure SocketCAN kernel modules are loaded.</source>
 Linux에서는 SOCKETCAN 커널 모듈이 로드되었는지 확인하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="328"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="332"/>
         <source>No CAN bus plugins found on this system.
 
 On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
@@ -8739,103 +8819,103 @@ On Windows, install CAN hardware drivers (PEAK, Vector, etc.).</source>
 Windows에서는 CAN 하드웨어 드라이버(PEAK, VECTOR 등)를 설치하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="352"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="356"/>
         <source>The CAN bus configuration is incomplete. Select a valid plugin and interface.</source>
         <translation>CAN 버스 구성이 불완전합니다. 유효한 플러그인과 인터페이스를 선택하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="360"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="364"/>
         <source>The selected plugin or interface is no longer available. Refresh the lists and try again.</source>
         <translation>선택한 플러그인 또는 인터페이스를 더 이상 사용할 수 없습니다. 목록을 새로 고침하고 다시 시도하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="369"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="373"/>
         <source>The plugin or interface list is empty. Refresh the lists and ensure your CAN hardware is connected.</source>
         <translation>플러그인 또는 인터페이스 목록이 비어 있습니다. 목록을 새로 고침하고 CAN 하드웨어가 연결되어 있는지 확인하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="278"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="282"/>
         <source>Unable to create CAN bus device. Check your hardware and drivers.</source>
         <translation>CAN 버스 장치를 생성할 수 없습니다. 하드웨어와 드라이버를 확인하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="302"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="306"/>
         <source>Unable to connect to CAN bus device. Check your hardware connection and settings.</source>
         <translation>CAN 버스 장치에 연결할 수 없습니다. 하드웨어 연결 및 설정을 확인하세요.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="701"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="705"/>
         <source>CAN Bus Error</source>
         <translation>CAN Bus 오류</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="702"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="706"/>
         <source>An error occurred but the CAN device is no longer available.</source>
         <translation>오류가 발생했지만 CAN 장치를 더 이상 사용할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="709"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="713"/>
         <source>Error code: %1</source>
         <translation>오류 코드: %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="712"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="716"/>
         <source>CAN Bus Communication Error</source>
         <translation>CAN Bus 통신 오류</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="791"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="819"/>
         <source>No CAN driver selected</source>
         <translation>CAN 드라이버가 선택되지 않음</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="731"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="759"/>
         <source>Load SocketCAN kernel modules first</source>
         <translation>먼저 SOCKETCAN 커널 모듈을 로드하십시오</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="727"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="755"/>
         <source>Connect a %1 adapter, then refresh</source>
         <translation>%1 어댑터를 연결한 후 새로고침하십시오</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="762"/>
         <source>Set up a virtual CAN interface first</source>
         <translation>먼저 가상 CAN 인터페이스를 설정하십시오</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="736"/>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="756"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="764"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="784"/>
         <source>No interfaces found for %1</source>
         <translation>%1에 대한 인터페이스를 찾을 수 없음</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="740"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
         <source>Install &lt;a href='https://www.peak-system.com/Drivers.523.0.html?&amp;L=1'&gt;PEAK CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.PEAK-system.com/Drivers.523.0.html?&amp;L=1'&gt;PEAK CAN 드라이버&lt;/a&gt;를 설치하십시오</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="744"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="772"/>
         <source>Install &lt;a href='https://www.vector.com/us/en/products/products-a-z/libraries-drivers/'&gt;Vector CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.VECTOR.com/us/en/products/products-a-z/libraries-drivers/'&gt;VECTOR CAN 드라이버&lt;/a&gt;를 설치하십시오</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="776"/>
         <source>Install &lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;SysTec CAN drivers&lt;/a&gt;</source>
         <translation>&lt;a href='https://www.systec-electronic.com/en/company/support/driver'&gt;SysTec CAN 드라이버&lt;/a&gt; 설치</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="751"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="779"/>
         <source>Install %1 drivers</source>
         <translation>%1 드라이버 설치</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="754"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="782"/>
         <source>Install %1 drivers for macOS</source>
         <translation>macOS용 %1 드라이버 설치</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="768"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="796"/>
         <source>
 
 If the interface is down, bring it up first:
@@ -8846,32 +8926,32 @@ sudo ip link set %1 up type can bitrate %2
 </translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="875"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="903"/>
         <source>Plugin</source>
         <translation>플러그인</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="883"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="911"/>
         <source>Interface</source>
         <translation>인터페이스</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="891"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="919"/>
         <source>Bitrate</source>
         <translation>비트레이트</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="900"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="928"/>
         <source>CAN FD</source>
         <translation>CAN FD</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="907"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="935"/>
         <source>Loopback</source>
         <translation>루프백</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus.cpp" line="914"/>
+        <location filename="../../src/IO/Drivers/CANBus.cpp" line="942"/>
         <source>Listen-Only</source>
         <translation>수신 전용</translation>
     </message>
@@ -10580,72 +10660,72 @@ The device may not expose data endpoints in its active configuration, or it may 
 <context>
     <name>ImageView</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="66"/>
         <source>Normal</source>
         <translation>보통</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="67"/>
         <source>Grayscale</source>
         <translation>그레이스케일</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="68"/>
         <source>High Contrast</source>
         <translation>고대비</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="69"/>
         <source>Vivid</source>
         <translation>선명</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="70"/>
         <source>Night Vision</source>
         <translation>야간 투시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="71"/>
         <source>Infrared</source>
         <translation>적외선</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="74"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="72"/>
         <source>Deep Blue</source>
         <translation>딥 블루</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="75"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="73"/>
         <source>Amber</source>
         <translation>앰버</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="172"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
         <source>Export Images</source>
         <translation>이미지 내보내기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="182"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
         <source>Open Export Folder</source>
         <translation>내보내기 폴더 열기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="198"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
         <source>Zoom In</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="211"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
         <source>Zoom Out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="556"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="551"/>
         <source>Waiting for Image…</source>
         <translation>이미지 대기 중…</translation>
     </message>
@@ -10828,11 +10908,17 @@ The device may not expose data endpoints in its active configuration, or it may 
         <translation>MQTT, 3D 플로팅 등 Pro 기능을 잠금 해제하려면 아래에 라이선스 키를 붙여넣으세요.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
         <source>Your license includes 5 device activations.
 Plans include Monthly, Yearly, and Lifetime options.</source>
-        <translation>라이선스에는 5개의 기기 활성화가 포함됩니다.
+        <translation type="vanished">라이선스에는 5개의 기기 활성화가 포함됩니다.
 월간, 연간 및 평생 플랜이 있습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/LicenseManagement.qml" line="138"/>
+        <source>Your license includes 5 device activations.
+Yearly is the best value; Monthly and Lifetime plans are also available.</source>
+        <translation>라이선스에는 5개의 기기 활성화가 포함됩니다.
+연간 플랜이 가장 합리적이며, 월간 및 평생 플랜도 이용 가능합니다.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/LicenseManagement.qml" line="151"/>
@@ -12045,17 +12131,17 @@ Please provide the necessary credentials.</source>
         <translation>빈 프로젝트</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="696"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="700"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="704"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="708"/>
         <source>Waiting for data…</source>
         <translation>데이터 대기 중…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="705"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="709"/>
         <source>Connecting to device…</source>
         <translation>장치 연결 중…</translation>
     </message>
@@ -12099,6 +12185,59 @@ Please provide the necessary credentials.</source>
         <location filename="../../qml/Dialogs/Mdf4Player.qml" line="23"/>
         <source>MDF4 Player</source>
         <translation>MDF4 플레이어</translation>
+    </message>
+</context>
+<context>
+    <name>MemoryManagerDialog</name>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="23"/>
+        <source>Assistant Memory</source>
+        <translation>어시스턴트 메모리</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="50"/>
+        <source>Facts the assistant carries into every chat. Stored only on this computer. Delete anything you no longer want it to know.</source>
+        <translation>어시스턴트가 모든 채팅에 유지하는 정보입니다. 이 컴퓨터에만 저장됩니다. 더 이상 기억하지 않기를 원하는 내용은 삭제하세요.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>user</source>
+        <translation>사용자</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>feedback</source>
+        <translation>피드백</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>project</source>
+        <translation>프로젝트</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="65"/>
+        <source>reference</source>
+        <translation>참조</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="73"/>
+        <source>Something the assistant should remember…</source>
+        <translation>어시스턴트가 기억해야 할 내용…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="77"/>
+        <source>Remember</source>
+        <translation>기억</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="146"/>
+        <source>Forget this fact</source>
+        <translation>이 사실 삭제</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MemoryManagerDialog.qml" line="162"/>
+        <source>Nothing remembered yet. Add a fact above, or approve one when the assistant proposes it in chat.</source>
+        <translation>아직 기억된 내용이 없습니다. 위에 사실을 추가하거나 어시스턴트가 채팅에서 제안할 때 승인하세요.</translation>
     </message>
 </context>
 <context>
@@ -12149,24 +12288,49 @@ Please provide the necessary credentials.</source>
         <translation>모두 거부</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="332"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="384"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="436"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="333"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="408"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="460"/>
         <source>Copy</source>
         <translation>복사</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="337"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="389"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="441"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="338"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="413"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="465"/>
         <source>Copy All</source>
         <translation>모두 복사</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="345"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="397"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="346"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="421"/>
         <source>Select All</source>
         <translation>모두 선택</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="353"/>
+        <source>Remember this…</source>
+        <translation>기억하기…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="356"/>
+        <source>As a preference about me</source>
+        <translation>나에 대한 선호사항으로</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="360"/>
+        <source>As a correction / lesson</source>
+        <translation>수정/학습 내용으로</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="364"/>
+        <source>As a fact about this project</source>
+        <translation>이 프로젝트에 대한 사실로서</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/MessageBubble.qml" line="368"/>
+        <source>As a reference</source>
+        <translation>참조로서</translation>
     </message>
 </context>
 <context>
@@ -13055,7 +13219,7 @@ Add groups above to poll multiple register types.</source>
         <translation type="vanished">보간</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="305"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="300"/>
         <source>Interpolation: %1</source>
         <translation>보간: %1</translation>
     </message>
@@ -13064,47 +13228,47 @@ Add groups above to poll multiple register types.</source>
         <translation type="vanished">범례 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="327"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
         <source>Show X Axis Label</source>
         <translation>X축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="338"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
         <source>Show Y Axis Label</source>
         <translation>Y축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="350"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="357"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
         <source>Sweep / Trigger Mode</source>
         <translation>스윕 / 트리거 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="386"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
         <source>Trigger Settings</source>
         <translation>트리거 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="410"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="416"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
@@ -14078,57 +14242,57 @@ Add groups above to poll multiple register types.</source>
         <translation type="vanished">보간</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="296"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="291"/>
         <source>Interpolation: %1</source>
         <translation>보간: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="304"/>
         <source>Show Area Under Plot</source>
         <translation>플롯 아래 영역 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="328"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="323"/>
         <source>Show X Axis Label</source>
         <translation>X축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="339"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="334"/>
         <source>Show Y Axis Label</source>
         <translation>Y축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="351"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="346"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="358"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="353"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="375"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="370"/>
         <source>Sweep / Trigger Mode</source>
         <translation>스윕 / 트리거 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="387"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="382"/>
         <source>Trigger Settings</source>
         <translation>트리거 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="412"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
@@ -14136,52 +14300,52 @@ Add groups above to poll multiple register types.</source>
 <context>
     <name>Plot3D</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="212"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="208"/>
         <source>Interpolate</source>
         <translation>보간</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="226"/>
         <source>Orbit Navigation</source>
         <translation>궤도 탐색</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="240"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="236"/>
         <source>Pan Navigation</source>
         <translation>패닝 탐색</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="247"/>
         <source>Orthogonal View</source>
         <translation>직교 보기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="253"/>
         <source>Top View</source>
         <translation>상단 보기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="263"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="259"/>
         <source>Left View</source>
         <translation>좌측 보기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="269"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="265"/>
         <source>Front View</source>
         <translation>정면 보기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
         <source>Auto Center</source>
         <translation>자동 중심</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="302"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
         <source>Anaglyph 3D</source>
         <translation>애너글리프 3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
         <source>Invert Eye Positions</source>
         <translation>눈 위치 반전</translation>
     </message>
@@ -16484,12 +16648,12 @@ function parse(%1) { ... }
 <context>
     <name>Sessions::DatabaseManager</name>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1056"/>
         <source>Select logo image</source>
         <translation>로고 이미지 선택</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1060"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1058"/>
         <source>Images (*.png *.jpg *.jpeg *.svg)</source>
         <translation>이미지 (*.png *.jpg *.jpeg *.svg)</translation>
     </message>
@@ -16504,7 +16668,7 @@ function parse(%1) { ... }
         <translation>세션 파일 (*.db)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1261"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1259"/>
         <source>Cannot open session file</source>
         <translation>세션 파일을 열 수 없습니다</translation>
     </message>
@@ -16519,7 +16683,7 @@ function parse(%1) { ... }
         <translation>세션 삭제</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1122"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1120"/>
         <source>No project data</source>
         <translation>프로젝트 데이터 없음</translation>
     </message>
@@ -16613,27 +16777,25 @@ function parse(%1) { ... }
         <translation type="vanished">내보내기 준비 중…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Done</source>
         <translation>완료</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="994"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1030"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1028"/>
         <source>Failed</source>
         <translation>실패</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1040"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="999"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1037"/>
         <source>Report Failed</source>
         <translation>보고서 실패</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1002"/>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1041"/>
         <source>Could not generate the report. Check the output path and try again.</source>
-        <translation>보고서를 생성할 수 없습니다. 출력 경로를 확인하고 다시 시도하십시오.</translation>
+        <translation type="vanished">보고서를 생성할 수 없습니다. 출력 경로를 확인하고 다시 시도하십시오.</translation>
     </message>
     <message>
         <location filename="../../src/Sessions/DatabaseManager.cpp" line="929"/>
@@ -16661,37 +16823,43 @@ function parse(%1) { ... }
         <translation>HTML 파일 (*.HTML)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1123"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1000"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1038"/>
+        <source>Could not generate the report.</source>
+        <translation>보고서를 생성할 수 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1121"/>
         <source>This session file does not contain an embedded project.</source>
         <translation>이 세션 파일에는 내장된 프로젝트가 포함되어 있지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1132"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1130"/>
         <source>Invalid project data</source>
         <translation>잘못된 프로젝트 데이터</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1133"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1131"/>
         <source>The embedded project JSON is malformed and cannot be restored.</source>
         <translation>내장된 프로젝트 JSON이 손상되어 복원할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Restore Project</source>
         <translation>프로젝트 복원</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1143"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1141"/>
         <source>Serial Studio projects (*.ssproj *.json)</source>
         <translation>Serial Studio 프로젝트 (*.ssproj *.json)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Cannot write file</source>
         <translation>파일을 쓸 수 없음</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1151"/>
+        <location filename="../../src/Sessions/DatabaseManager.cpp" line="1149"/>
         <source>Check file permissions and try again.</source>
         <translation>파일 권한을 확인하고 다시 시도하십시오.</translation>
     </message>
@@ -16741,208 +16909,238 @@ function parse(%1) { ... }
 <context>
     <name>Sessions::HtmlReport</name>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="208"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="199"/>
+        <source>No session data or output path was provided.</source>
+        <translation>세션 데이터 또는 출력 경로가 제공되지 않았습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="211"/>
         <source>Assembling report…</source>
         <translation>보고서 생성 중…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="216"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="215"/>
+        <source>Could not load the report template resources.</source>
+        <translation>보고서 템플릿 리소스를 로드할 수 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="219"/>
         <source>Writing output…</source>
         <translation>출력 작성 중…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="279"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="339"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="697"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="238"/>
+        <source>Could not write the report file. Verify that the destination folder is writable.</source>
+        <translation>보고서 파일을 작성할 수 없습니다. 대상 폴더에 쓰기 권한이 있는지 확인하십시오.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="287"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="347"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="705"/>
         <source>Session Report</source>
         <translation>세션 보고서</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="342"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="350"/>
         <source>Untitled project</source>
         <translation>제목 없는 프로젝트</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="349"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="357"/>
         <source>Prepared by</source>
         <translation>작성자</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="352"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="360"/>
         <source>Generated on %1</source>
         <translation>%1에 생성됨</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="374"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
         <source>Test ID</source>
         <translation>테스트 ID</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="376"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
         <source>Duration</source>
         <translation>지속 시간</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="378"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="386"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="498"/>
         <source>Samples</source>
         <translation>샘플</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="380"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="388"/>
         <source>Parameters</source>
         <translation>매개변수</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="382"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="390"/>
         <source>Started</source>
         <translation>시작됨</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="384"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="392"/>
         <source>Ended</source>
         <translation>종료됨</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="420"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="428"/>
         <source>Project</source>
         <translation>프로젝트</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="422"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="430"/>
         <source>Test identifier</source>
         <translation>테스트 식별자</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="423"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="431"/>
         <source>Start time</source>
         <translation>시작 시간</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="424"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="432"/>
         <source>End time</source>
         <translation>종료 시간</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="425"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="433"/>
         <source>Total duration</source>
         <translation>총 지속 시간</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="426"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="434"/>
         <source>Samples acquired</source>
         <translation>획득한 샘플</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="427"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="435"/>
         <source>Parameters logged</source>
         <translation>기록된 매개변수</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="443"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="451"/>
         <source>Classification</source>
         <translation>분류</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="450"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
         <source>Notes</source>
         <translation>비고</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="458"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="466"/>
         <source>Test Information</source>
         <translation>테스트 정보</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="479"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="487"/>
         <source>Parameter</source>
         <translation>매개변수</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="482"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="490"/>
         <source>Units</source>
         <translation>단위</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="491"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="499"/>
         <source>Minimum</source>
         <translation>최소값</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="492"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="500"/>
         <source>Maximum</source>
         <translation>최대값</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="493"/>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="649"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="501"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="657"/>
         <source>Mean</source>
         <translation>평균</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="494"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="502"/>
         <source>Std. Deviation</source>
         <translation>표준 편차</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="539"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="547"/>
         <source>Measurement Summary</source>
         <translation>측정 요약</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="540"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="548"/>
         <source>click a column to sort</source>
         <translation>열을 클릭하여 정렬</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="565"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="573"/>
         <source>%1 samples over %2 seconds</source>
         <translation>%2초 동안 %1개 샘플</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="583"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="591"/>
         <source>Combined Parameter View</source>
         <translation>통합 파라미터 보기</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="584"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
         <source>click legend items to toggle signals</source>
         <translation>범례 항목을 클릭하여 신호 전환</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="592"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="600"/>
         <source>Parameter Trends</source>
         <translation>파라미터 추세</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="647"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="655"/>
         <source>Min</source>
         <translation>최소값</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="648"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="656"/>
         <source>Max</source>
         <translation>최대값</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="721"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="729"/>
         <source>Page %1 of %2</source>
         <translation>%2 중 %1 페이지</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="791"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="841"/>
         <source>Loading rendering engine…</source>
         <translation>렌더링 엔진 로드 중…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="811"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="848"/>
+        <source>Could not write a temporary file for the rendering engine.</source>
+        <translation>렌더링 엔진용 임시 파일을 작성할 수 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="869"/>
+        <source>The rendering engine could not load the report page.</source>
+        <translation>렌더링 엔진이 보고서 페이지를 로드할 수 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="873"/>
         <source>Rendering charts…</source>
         <translation>차트 렌더링 중…</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/HtmlReport.cpp" line="855"/>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="921"/>
         <source>Generating PDF…</source>
         <translation>PDF 생성 중…</translation>
+    </message>
+    <message>
+        <location filename="../../src/Sessions/HtmlReport.cpp" line="939"/>
+        <source>Could not write the PDF file. Close it in any other application and verify that the destination folder is writable.</source>
+        <translation>PDF 파일을 작성할 수 없습니다. 다른 응용 프로그램에서 파일을 닫고 대상 폴더에 쓰기 권한이 있는지 확인하십시오.</translation>
     </message>
 </context>
 <context>
@@ -18105,49 +18303,49 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="575"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
         <source>Full Screen</source>
         <translation>전체 화면</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="587"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
         <source>Add External Window</source>
         <translation>외부 창 추가</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="872"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
         <source>Help Center</source>
         <translation>도움말 센터</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="703"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
         <source>Tools</source>
         <translation>도구</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="832"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
         <source>No Tools Available</source>
         <translation>사용 가능한 도구 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Reset</source>
         <translation>재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Quit</source>
         <translation>종료</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="958"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
         <source>Delete</source>
         <translation>삭제</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
         <source>Hide</source>
         <translation>숨기기</translation>
     </message>
@@ -18158,31 +18356,31 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="776"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
         <source>Clock</source>
         <translation>시계</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="783"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
         <source>Stopwatch</source>
         <translation>스톱워치</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="800"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
         <source>Sessions</source>
         <translation>세션</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="809"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
         <source>File Transmission</source>
         <translation>파일 전송</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="817"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
         <source>AI Assistant</source>
         <translation>AI 어시스턴트</translation>
     </message>
@@ -18207,55 +18405,60 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>플러그인 관리…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <source>Freeze Dashboard</source>
+        <translation>대시보드 고정</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="638"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
         <source>CSV File</source>
         <translation>CSV 파일</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="644"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>MDF4 File</source>
         <translation>MDF4 파일</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="650"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>Console Transcript</source>
         <translation>콘솔 기록</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="659"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
         <source>Session Database</source>
         <translation>세션 데이터베이스</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="673"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
         <source>No Export Formats Available</source>
         <translation>사용 가능한 내보내기 형식 없음</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="759"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
         <source>Console</source>
         <translation>콘솔</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="768"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
         <source>Notifications</source>
         <translation>알림</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="791"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
         <source>Preferences</source>
         <translation>환경설정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="947"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
         <source>Edit…</source>
         <translation>편집…</translation>
     </message>
@@ -18264,17 +18467,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="893"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="894"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="921"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
         <source>Disconnect</source>
         <translation>연결 해제</translation>
     </message>
@@ -18544,52 +18747,62 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="953"/>
+        <source>Unfreeze Dashboard</source>
+        <translation>대시보드 고정 해제</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="954"/>
+        <source>Freeze Dashboard</source>
+        <translation>대시보드 고정</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1026"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1에 연결됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1027"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: 연결되지 않음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT Publisher</source>
         <translation>MQTT 발행자</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1061"/>
         <source>Status:</source>
         <translation>상태:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1069"/>
         <source>Connected</source>
         <translation>연결됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1070"/>
         <source>Disconnected</source>
         <translation>연결 해제됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1077"/>
         <source>Broker:</source>
         <translation>브로커:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1090"/>
         <source>Mode:</source>
         <translation>모드:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1103"/>
         <source>Messages sent:</source>
         <translation>전송된 메시지:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1117"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT 설정 열기</translation>
     </message>
@@ -18603,7 +18816,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">위젯 검색…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1163"/>
         <source>Remove from Workspace</source>
         <translation>작업 공간에서 제거</translation>
     </message>
@@ -18622,17 +18835,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="234"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
         <source>Clear</source>
         <translation>지우기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="251"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
         <source>Find</source>
         <translation>찾기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="281"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
         <source>Collapse</source>
         <translation>축소</translation>
     </message>
@@ -18645,138 +18858,138 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">콘솔 출력을 파일에 기록</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="374"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
         <source>Settings</source>
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="377"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
         <source>Console settings</source>
         <translation>콘솔 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="549"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
         <source>Find in console</source>
         <translation>콘솔에서 찾기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="586"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
         <source>%1 of %2</source>
         <translation>%2 중 %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="587"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
         <source>No results</source>
         <translation>결과 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="599"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
         <source>Match case</source>
         <translation>대소문자 구분</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
         <source>Previous match</source>
         <translation>이전 일치 항목</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="625"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
         <source>Next match</source>
         <translation>다음 일치 항목</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="635"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
         <source>Close search</source>
         <translation>검색 닫기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="667"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
         <source>Send a file to the connected device</source>
         <translation>연결된 장치로 파일 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
         <source>Search console output</source>
         <translation>콘솔 출력 검색</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="286"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>반복되는 줄을 단일 항목으로 축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="311"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="316"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
         <source>Resume console updates</source>
         <translation>콘솔 업데이트 재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="317"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>콘솔 표시 정지 (데이터는 계속 기록됨)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="331"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Text</source>
         <translation>텍스트</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
         <source>Plain text display mode</source>
         <translation>일반 텍스트 디스플레이 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="796"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
         <source>Hex</source>
         <translation>16진수</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
         <source>Hex display mode</source>
         <translation>Hex 디스플레이 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="453"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
         <source>Scrollback Lines</source>
         <translation>스크롤백 라인 수</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="689"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
         <source>Send Data to Device</source>
         <translation>장치로 데이터 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="846"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
         <source>Send data to the device</source>
         <translation>장치로 데이터 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="408"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
         <source>Show Timestamp</source>
         <translation>타임스탬프 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
         <source>Echo</source>
         <translation>에코</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="431"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 에뮬레이션</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="443"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>ANSI Colors</source>
         <translation>ANSI 색상</translation>
     </message>
@@ -18785,7 +18998,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">표시: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="238"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
         <source>Clear console output</source>
         <translation>콘솔 출력 지우기</translation>
     </message>
@@ -18876,70 +19089,95 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>ToolCallCard</name>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="47"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="53"/>
         <source>Awaiting approval</source>
         <translation>승인 대기 중</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="48"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="54"/>
         <source>Done</source>
         <translation>완료</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="49"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="55"/>
         <source>Error</source>
         <translation>오류</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="50"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="56"/>
         <source>Denied</source>
         <translation>거부됨</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="51"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="57"/>
         <source>Blocked</source>
         <translation>차단됨</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="52"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="58"/>
         <source>Running</source>
         <translation>실행 중</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="152"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verified</source>
+        <translation>검증됨</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <source>Verify failed</source>
+        <translation>검증 실패</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="186"/>
+        <source>Verification failed: %1</source>
+        <translation>검증 실패: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="187"/>
+        <source>The applied change failed its verification check.</source>
+        <translation>적용된 변경 사항이 검증 확인에 실패했습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="196"/>
+        <source>Restore checkpoint…</source>
+        <translation>체크포인트 복원…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="215"/>
         <source>Approve</source>
         <translation>승인</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="158"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="221"/>
         <source>Deny</source>
         <translation>거부</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="175"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="238"/>
         <source>Arguments</source>
         <translation>인수</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="212"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="272"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="275"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="335"/>
         <source>Copy</source>
         <translation>복사</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="217"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="277"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="280"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="340"/>
         <source>Copy All</source>
         <translation>모두 복사</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="225"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="285"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="288"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="348"/>
         <source>Select All</source>
         <translation>모두 선택</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="233"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="296"/>
         <source>Result</source>
         <translation>결과</translation>
     </message>
@@ -19484,33 +19722,33 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1738"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
         <source>Console</source>
         <translation>콘솔</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1746"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
         <source>Notifications</source>
         <translation>알림</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1754"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
         <source>Clock</source>
         <translation>시계</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1761"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
         <source>Stopwatch</source>
         <translation>스톱워치</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1807"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1822"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (대체)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1844"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
         <source>LED Panel (%1)</source>
         <translation>LED 패널 (%1)</translation>
     </message>
@@ -19526,12 +19764,12 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::WindowManager</name>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1073"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1082"/>
         <source>Select Background Image</source>
         <translation>배경 이미지 선택</translation>
     </message>
     <message>
-        <location filename="../../src/UI/WindowManager.cpp" line="1075"/>
+        <location filename="../../src/UI/WindowManager.cpp" line="1084"/>
         <source>Images (*.png *.jpg *.jpeg *.bmp)</source>
         <translation>이미지 (*.png *.jpg *.jpeg *.bmp)</translation>
     </message>
@@ -19840,27 +20078,27 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>Waterfall</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="244"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="230"/>
         <source>Show Colorbar</source>
         <translation>색상 막대 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="243"/>
         <source>Show Axes &amp; Grid</source>
         <translation>축 및 격자 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="256"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
@@ -20169,7 +20407,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">작업 공간에서 제거</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="344"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="350"/>
         <source>Device Disconnected</source>
         <translation>장치 연결 해제됨</translation>
     </message>

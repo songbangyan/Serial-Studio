@@ -2031,7 +2031,7 @@ QJsonObject AI::Conversation::runAutoVerify(const QString& name,
     v[QStringLiteral("ok")]     = failures == 0;
     v[QStringLiteral("method")] = QStringLiteral("batch failure scan");
     if (failures > 0)
-      v[QStringLiteral("detail")] = tr("%n operation(s) failed", nullptr, failures);
+      v[QStringLiteral("detail")] = tr("%1 operation(s) failed").arg(failures);
 
     return v;
   }
