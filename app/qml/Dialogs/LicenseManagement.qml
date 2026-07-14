@@ -135,7 +135,7 @@ Widgets.SmartDialog {
               opacity: 0.8
               Layout.fillWidth: true
               wrapMode: Label.WrapAtWordBoundaryOrAnywhere
-              text: qsTr("Your license includes 5 device activations.\nPlans include Monthly, Yearly, and Lifetime options.")
+              text: qsTr("Your license includes 5 device activations.\nYearly is the best value; Monthly and Lifetime plans are also available.")
             }
 
             RowLayout {

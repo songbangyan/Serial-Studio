@@ -151,7 +151,7 @@ Widgets.SmartDialog {
           Component.onCompleted: Qt.callLater(forceActiveFocus)
           onClicked: {
             root.close()
-            Qt.openUrlExternally("https://store.serial-studio.com/buy/ba46c099-0d51-4d98-9154-6be5c35bc1ec")
+            Qt.openUrlExternally("https://store.serial-studio.com/checkout/buy/e33e6d04-639f-46b7-bd68-b46d341c5b16")
           }
         }
       }
