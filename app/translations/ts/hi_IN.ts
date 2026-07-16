@@ -3257,12 +3257,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>JavaScript</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="136"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="131"/>
         <source>Language:</source>
         <translation>भाषा:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="139"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="134"/>
         <source>Template:</source>
         <translation>टेम्पलेट:</translation>
     </message>
@@ -3282,12 +3282,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>साफ़ करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="150"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="145"/>
         <source>Input:</source>
         <translation>इनपुट:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="153"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="148"/>
         <source>Output:</source>
         <translation>आउटपुट:</translation>
     </message>
@@ -3302,47 +3302,47 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="231"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="226"/>
         <source>Transform — %1</source>
         <translation>ट्रांसफ़ॉर्म — %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="311"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="306"/>
         <source>The value transform has a syntax error and was not applied.</source>
         <translation>मान ट्रांसफ़ॉर्म में सिंटैक्स त्रुटि है और लागू नहीं किया गया।</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="320"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="315"/>
         <source>The value transform must define a transform(value) function.</source>
         <translation>मान ट्रांसफ़ॉर्म में transform(value) फ़ंक्शन परिभाषित होना चाहिए।</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="321"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="316"/>
         <source>Define a transform(value) function that returns a number, or use Clear to remove the transform.</source>
         <translation>एक transform(value) फ़ंक्शन परिभाषित करें जो संख्या रिटर्न करे, या ट्रांसफ़ॉर्म हटाने के लिए Clear का उपयोग करें।</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="339"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="334"/>
         <source>Enter a value</source>
         <translation>मान दर्ज करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="346"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="341"/>
         <source>Invalid number</source>
         <translation>अमान्य संख्या</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="415"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="410"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>दस्तावेज़ फ़ॉर्मेट करें	Ctrl+Shift+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="416"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="411"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>चयन फ़ॉर्मेट करें	Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="527"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="528"/>
         <source>--
 -- Define a transform(value) function that receives the live
 -- dataset reading and returns a transformed number. If no
@@ -3401,7 +3401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 --</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="555"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="556"/>
         <source>/*
  * Define a transform(value) function that receives the live
  * dataset reading and returns a transformed number. If no
@@ -3458,17 +3458,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
  */</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="616"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="617"/>
         <source>Failed to create the Lua engine.</source>
         <translation>Lua इंजन बनाने में विफल।</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="655"/>
         <source>Line %1: %2</source>
         <translation>पंक्ति %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="808"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="809"/>
         <source>Select Template…</source>
         <translation>टेम्पलेट चुनें…</translation>
     </message>
@@ -3529,26 +3529,26 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
  * तैयार उदाहरणों के लिए टेम्पलेट ड्रॉपडाउन का उपयोग करें,</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="699"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="700"/>
         <source>Engine error</source>
         <translation>इंजन त्रुटि</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="722"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="735"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="752"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="763"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="723"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="736"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="753"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="764"/>
         <source>Error: %1</source>
         <translation>त्रुटि: %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="728"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="756"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="729"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="757"/>
         <source>Error: transform() not defined</source>
         <translation>त्रुटि: transform() परिभाषित नहीं है</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="740"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="741"/>
         <source>Error: transform() must return a number</source>
         <translation>त्रुटि: transform() को एक संख्या लौटानी चाहिए</translation>
     </message>
@@ -6484,12 +6484,12 @@ Reload it?</source>
 <context>
     <name>DataModel::TransmitTestDialog</name>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="154"/>
         <source>Invalid Hex Input</source>
         <translation>अमान्य Hex इनपुट</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="156"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
         <source>Please enter valid hexadecimal bytes.
 
 Valid format: 01 A2 FF 3C</source>
@@ -6498,78 +6498,78 @@ Valid format: 01 A2 FF 3C</source>
 मान्य प्रारूप: 01 A2 FF 3C</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="161"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="160"/>
         <source>No transmit function code to evaluate.</source>
         <translation>मूल्यांकन के लिए कोई ट्रांसमिट फ़ंक्शन कोड नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="178"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="177"/>
         <source>transmit function is not callable</source>
         <translation>ट्रांसमिट फ़ंक्शन कॉल करने योग्य नहीं है</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="238"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="239"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
         <source>Clear</source>
         <translation>साफ़ करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="240"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
         <source>Evaluate</source>
         <translation>मूल्यांकन करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
         <source>Input Value</source>
         <translation>इनपुट मान</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
         <source>Transmit Function Output</source>
         <translation>ट्रांसमिट फ़ंक्शन आउटपुट</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="267"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="246"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="270"/>
         <source>Enter value to transmit…</source>
         <translation>ट्रांसमिट करने के लिए मान दर्ज करें…</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="247"/>
         <source>Raw string output appears here</source>
         <translation>रॉ स्ट्रिंग आउटपुट यहाँ दिखाई देगा</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
         <source>Hex byte output appears here</source>
         <translation>हेक्स बाइट आउटपुट यहाँ दिखाई देगा</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="251"/>
         <source>Test Transmit Function</source>
         <translation>ट्रांसमिट फ़ंक्शन का परीक्षण करें</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="261"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="264"/>
         <source>Enter hex bytes (e.g., 01 A2 FF)</source>
         <translation>हेक्स बाइट्स दर्ज करें (उदा., 01 A2 FF)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="365"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="368"/>
         <source>(empty) No data returned</source>
         <translation>(खाली) कोई डेटा नहीं मिला</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="367"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="370"/>
         <source>0 bytes</source>
         <translation>0 बाइट्स</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="406"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="409"/>
         <source>%1 byte(s)</source>
         <translation>%1 बाइट(s)</translation>
     </message>
@@ -9058,67 +9058,67 @@ sudo ip link set %1 up type can bitrate %2
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>CANable एडाप्टर के लिए libusb को आरंभ करने में विफल।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>USB डिवाइस की गणना करने में असमर्थ।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>चयनित CANable एडाप्टर अब कनेक्ट नहीं है, या कोई अन्य एप्लिकेशन इसे खोले हुए है। Windows पर डिवाइस को WinUSB ड्राइवर का उपयोग करना चाहिए (candleLight इसे स्वचालित रूप से इंस्टॉल करता है)।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>CANable USB इंटरफ़ेस को क्लेम नहीं किया जा सका।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>CANable एडाप्टर लिखने के लिए खुला नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>CAN फ़्रेम को एडाप्टर पर ट्रांसमिट करने में विफल।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>CANable एडाप्टर द्वारा CAN Bus त्रुटि रिपोर्ट की गई।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>CAN फ़्रेम को बस पर स्वीकार नहीं किया गया।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>CANable एडाप्टर ने होस्ट-फ़ॉर्मेट हैंडशेक को अस्वीकार कर दिया।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
         <source>Could not read CANable timing constants.</source>
         <translation>CANable टाइमिंग कॉन्स्टेंट्स नहीं पढ़े जा सके।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>बिटरेट %1 bps इस CANable एडाप्टर द्वारा समर्थित नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>CANable एडाप्टर ने अनुरोधित बिटरेट को अस्वीकार कर दिया।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
         <source>Could not start the CANable channel.</source>
         <translation>CANable चैनल प्रारंभ नहीं हो सका।</translation>
     </message>
@@ -9815,27 +9815,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SeeedCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="206"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="206"/>
         <source>The bitrate %1 bps is not supported by the USB-CAN Analyzer.</source>
         <translation>बिटरेट %1 bps USB-CAN Analyzer द्वारा समर्थित नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="216"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="216"/>
         <source>Could not open serial port %1: %2</source>
         <translation>सीरियल पोर्ट %1 खोल नहीं सका: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="227"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="227"/>
         <source>Failed to initialize the USB-CAN Analyzer.</source>
         <translation>USB-CAN Analyzer प्रारंभ करने में विफल।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="264"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="264"/>
         <source>USB-CAN Analyzer is not open for writing.</source>
         <translation>USB-CAN Analyzer लिखने के लिए खुला नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="310"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="310"/>
         <source>CAN bus error reported by the USB-CAN Analyzer.</source>
         <translation>USB-CAN Analyzer द्वारा CAN Bus त्रुटि रिपोर्ट की गई।</translation>
     </message>
@@ -9843,27 +9843,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SlcanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="167"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="167"/>
         <source>The bitrate %1 bps is not a standard slcan rate.</source>
         <translation>बिटरेट %1 bps मानक slcan दर नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="177"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="177"/>
         <source>Could not open serial port %1: %2</source>
         <translation>सीरियल पोर्ट %1 खोल नहीं सका: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="190"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="190"/>
         <source>Failed to open the slcan channel.</source>
         <translation>slcan चैनल खोलने में विफल।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="229"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="229"/>
         <source>slcan adapter is not open for writing.</source>
         <translation>slcan एडाप्टर लिखने के लिए खुला नहीं है।</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="267"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="267"/>
         <source>CAN bus error reported by the slcan adapter.</source>
         <translation>slcan एडाप्टर द्वारा CAN Bus त्रुटि रिपोर्ट की गई।</translation>
     </message>
@@ -12707,12 +12707,12 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::HighDpiScaling</name>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="266"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="276"/>
         <source>Restart Required</source>
         <translation>रीस्टार्ट आवश्यक</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="267"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="277"/>
         <source>The new display scaling setting will take effect after restarting Serial Studio. Restart now to apply the change?</source>
         <translation>नई डिस्प्ले स्केलिंग सेटिंग Serial Studio को रीस्टार्ट करने के बाद प्रभावी होगी। बदलाव लागू करने के लिए अभी रीस्टार्ट करें?</translation>
     </message>
@@ -12890,92 +12890,92 @@ Would you like to open the download page?</source>
         <translation type="vanished">क्या %1 को स्वचालित रूप से अपडेट जाँचने चाहिए? आप "About" डायलॉग से मैन्युअल रूप से अपडेट जाँच सकते हैं</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="161"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Ok</source>
         <translation>ठीक है</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="163"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Save</source>
         <translation>सहेजें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="165"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Save all</source>
         <translation>सभी सहेजें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="167"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Open</source>
         <translation>खोलें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="169"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Yes</source>
         <translation>हाँ</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="171"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Yes to all</source>
         <translation>सभी के लिए हाँ</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>No</source>
         <translation>नहीं</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="175"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
         <source>No to all</source>
         <translation>सभी के लिए नहीं</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="177"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="208"/>
         <source>Abort</source>
         <translation>निरस्त करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="210"/>
         <source>Retry</source>
         <translation>पुनः प्रयास करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="181"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
         <source>Ignore</source>
         <translation>अनदेखा करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="183"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="214"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="216"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="187"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
         <source>Discard</source>
         <translation>त्यागें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="189"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="220"/>
         <source>Help</source>
         <translation>सहायता</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="222"/>
         <source>Apply</source>
         <translation>लागू करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="193"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="224"/>
         <source>Reset</source>
         <translation>रीसेट करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="195"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="226"/>
         <source>Restore defaults</source>
         <translation>डिफ़ॉल्ट पुनर्स्थापित करें</translation>
     </message>
@@ -15277,72 +15277,77 @@ Click Refresh to update the list.</source>
         <translation type="vanished">बिंदु:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="148"/>
         <source>Settings</source>
         <translation>सेटिंग्स</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="151"/>
+        <source>Project settings</source>
+        <translation>प्रोजेक्ट सेटिंग्स</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="177"/>
         <source>Time Range:</source>
         <translation>समय रेंज:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="225"/>
         <source>Point Count:</source>
         <translation>पॉइंट काउंट:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="244"/>
         <source>Change-Driven Transforms:</source>
         <translation>परिवर्तन-संचालित ट्रांसफॉर्म्स:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="254"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>डेटासेट का ट्रांसफॉर्म केवल तभी चलाएं जब उसके इनपुट में से कोई एक बदले। बड़े टेबल-आधारित प्रोजेक्ट्स को तेज़ करता है; डिफ़ॉल्ट रूप से बंद।</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="301"/>
         <source>Source</source>
         <translation>स्रोत</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="302"/>
         <source>Sources</source>
         <translation>स्रोत</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="307"/>
         <source>Group</source>
         <translation>समूह</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="308"/>
         <source>Groups</source>
         <translation>ग्रुप्स</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="313"/>
         <source>Dataset</source>
         <translation>डेटासेट</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="314"/>
         <source>Datasets</source>
         <translation>डेटासेट्स</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="319"/>
         <source>Action</source>
         <translation>एक्शन</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="320"/>
         <source>Actions</source>
         <translation>एक्शन्स</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="408"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>संपादित करने के लिए किसी ब्लॉक पर डबल-क्लिक करें। समूह, डेटासेट, क्रिया, डेटा तालिका, या डिवाइस जोड़ने के लिए कहीं भी राइट-क्लिक करें।</translation>
     </message>
@@ -16035,37 +16040,37 @@ function parse(%1) { ... }
         <translation>ट्रांसफर त्रुटि</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="300"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="310"/>
         <source>Automatic (System Default)</source>
         <translation>ऑटोमैटिक (सिस्टम डिफ़ॉल्ट)</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="301"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="311"/>
         <source>Fractional</source>
         <translation>फ्रैक्शनल</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="302"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="312"/>
         <source>Round to Nearest</source>
         <translation>निकटतम तक राउंड करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="303"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="313"/>
         <source>Round Up</source>
         <translation>ऊपर राउंड करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="304"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="314"/>
         <source>Round Down</source>
         <translation>नीचे राउंड करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="305"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="315"/>
         <source>Disable Scaling</source>
         <translation>स्केलिंग डिसेबल करें</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="306"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>कस्टम…</translation>
     </message>
@@ -18480,43 +18485,43 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="617"/>
         <source>Full Screen</source>
         <translation>पूर्ण स्क्रीन</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="629"/>
         <source>Add External Window</source>
         <translation>बाहरी विंडो जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="818"/>
         <source>Clock</source>
         <translation>घड़ी</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="825"/>
         <source>Stopwatch</source>
         <translation>स्टॉपवॉच</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="842"/>
         <source>Sessions</source>
         <translation>सेशन</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>File Transmission</source>
         <translation>फ़ाइल ट्रांसमिशन</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="859"/>
         <source>AI Assistant</source>
         <translation>AI असिस्टेंट</translation>
     </message>
@@ -18531,96 +18536,96 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>सभी छिपे हुए वर्कस्पेसेज़ दिखाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="580"/>
         <source>Freeze Dashboard</source>
         <translation>डैशबोर्ड फ्रीज़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="649"/>
         <source>Export</source>
         <translation>एक्सपोर्ट करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>CSV File</source>
         <translation>CSV फ़ाइल</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>MDF4 File</source>
         <translation>MDF4 फ़ाइल</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="692"/>
         <source>Console Transcript</source>
         <translation>कंसोल ट्रांसक्रिप्ट</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="701"/>
         <source>Session Database</source>
         <translation>सेशन डेटाबेस</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="715"/>
         <source>No Export Formats Available</source>
         <translation>कोई एक्सपोर्ट फॉर्मेट उपलब्ध नहीं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="745"/>
         <source>Tools</source>
         <translation>टूल्स</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="874"/>
         <source>No Tools Available</source>
         <translation>कोई टूल उपलब्ध नहीं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="942"/>
         <source>Reset</source>
         <translation>रीसेट करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Quit</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="989"/>
         <source>Edit…</source>
         <translation>एडिट करें…</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="801"/>
         <source>Console</source>
         <translation>कंसोल</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="810"/>
         <source>Notifications</source>
         <translation>नोटिफिकेशन</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="833"/>
         <source>Preferences</source>
         <translation>प्रेफरेंस</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="914"/>
         <source>Help Center</source>
         <translation>हेल्प सेंटर</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1000"/>
         <source>Delete</source>
         <translation>डिलीट करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1001"/>
         <source>Hide</source>
         <translation>छुपाएं</translation>
     </message>
@@ -18629,17 +18634,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="935"/>
         <source>Resume</source>
         <translation>फिर से शुरू करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Pause</source>
         <translation>रोकें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Disconnect</source>
         <translation>डिस्कनेक्ट करें</translation>
     </message>
@@ -18924,62 +18929,62 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>रोकें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="976"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
         <source>Unfreeze Dashboard</source>
         <translation>डैशबोर्ड अनफ्रीज़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="978"/>
         <source>Freeze Dashboard</source>
         <translation>डैशबोर्ड फ्रीज़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1049"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1 से कनेक्ट हो गया</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1074"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1075"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1084"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1085"/>
         <source>Status:</source>
         <translation>स्थिति:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1092"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
         <source>Connected</source>
         <translation>कनेक्टेड</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1094"/>
         <source>Disconnected</source>
         <translation>डिस्कनेक्टेड</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1100"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1101"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1113"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1114"/>
         <source>Mode:</source>
         <translation>मोड:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1126"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1127"/>
         <source>Messages sent:</source>
         <translation>भेजे गए संदेश:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1141"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT सेटिंग्स खोलें</translation>
     </message>
@@ -18993,7 +18998,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">विजेट खोजें…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1186"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1187"/>
         <source>Remove from Workspace</source>
         <translation>वर्कस्पेस से हटाएं</translation>
     </message>
@@ -19012,17 +19017,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
         <source>Clear</source>
         <translation>साफ़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
         <source>Find</source>
         <translation>खोजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
         <source>Collapse</source>
         <translation>संक्षिप्त करें</translation>
     </message>
@@ -19035,138 +19040,148 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">कंसोल आउटपुट को फ़ाइल में लॉग करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
         <source>Settings</source>
         <translation>सेटिंग्स</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
         <source>Console settings</source>
         <translation>कंसोल सेटिंग्स</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
         <source>Find in console</source>
         <translation>कंसोल में खोजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>%1 of %2</source>
         <translation>%2 में से %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
         <source>No results</source>
         <translation>कोई परिणाम नहीं</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
         <source>Match case</source>
         <translation>केस मिलाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
         <source>Previous match</source>
         <translation>पिछला मिलान</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
         <source>Next match</source>
         <translation>अगला मिलान</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
         <source>Close search</source>
         <translation>खोज बंद करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
         <source>Send a file to the connected device</source>
         <translation>कनेक्टेड डिवाइस पर फ़ाइल भेजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
         <source>Search console output</source>
         <translation>कंसोल आउटपुट खोजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <source>Utilities</source>
+        <translation>यूटिलिटीज़</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>दोहराई गई लाइनों को एकल एंट्री में संक्षिप्त करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Resume</source>
         <translation>फिर से शुरू करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Pause</source>
         <translation>रोकें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Resume console updates</source>
         <translation>कंसोल अपडेट फिर से शुरू करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>कंसोल डिस्प्ले फ्रीज करें (डेटा लॉगिंग जारी रहती है)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <source>Format</source>
+        <translation>फ़ॉर्मेट करें</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
         <source>Text</source>
         <translation>टेक्स्ट</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
         <source>Plain text display mode</source>
         <translation>सादा टेक्स्ट डिस्प्ले मोड</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
         <source>Hex</source>
         <translation>हेक्स</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
         <source>Hex display mode</source>
         <translation>Hex डिस्प्ले मोड</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
         <source>Scrollback Lines</source>
         <translation>स्क्रॉलबैक लाइनें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
         <source>Send Data to Device</source>
         <translation>डिवाइस को डेटा भेजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
         <source>Send data to the device</source>
         <translation>डिवाइस को डेटा भेजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
         <source>Show Timestamp</source>
         <translation>टाइमस्टैम्प दिखाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>Echo</source>
         <translation>Echo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 एमुलेट करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
         <source>ANSI Colors</source>
         <translation>ANSI रंग</translation>
     </message>
@@ -19175,7 +19190,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">डिस्प्ले: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
         <source>Clear console output</source>
         <translation>कंसोल आउटपुट साफ़ करें</translation>
     </message>
@@ -19899,33 +19914,33 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1777"/>
         <source>Console</source>
         <translation>कंसोल</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1785"/>
         <source>Notifications</source>
         <translation>सूचनाएं</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1793"/>
         <source>Clock</source>
         <translation>घड़ी</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1800"/>
         <source>Stopwatch</source>
         <translation>स्टॉपवॉच</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1846"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1861"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (फॉलबैक)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
         <source>LED Panel (%1)</source>
         <translation>LED पैनल (%1)</translation>
     </message>
@@ -20584,7 +20599,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">कार्यस्थान से हटाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="417"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="418"/>
         <source>Device Disconnected</source>
         <translation>डिवाइस डिस्कनेक्ट हो गया</translation>
     </message>

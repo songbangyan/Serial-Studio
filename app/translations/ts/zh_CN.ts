@@ -3257,12 +3257,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>JavaScript</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="136"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="131"/>
         <source>Language:</source>
         <translation>语言：</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="139"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="134"/>
         <source>Template:</source>
         <translation>模板：</translation>
     </message>
@@ -3282,12 +3282,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="150"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="145"/>
         <source>Input:</source>
         <translation>输入:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="153"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="148"/>
         <source>Output:</source>
         <translation>输出:</translation>
     </message>
@@ -3302,47 +3302,47 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="231"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="226"/>
         <source>Transform — %1</source>
         <translation>变换 — %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="311"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="306"/>
         <source>The value transform has a syntax error and was not applied.</source>
         <translation>数值转换存在语法错误，未应用。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="320"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="315"/>
         <source>The value transform must define a transform(value) function.</source>
         <translation>数值转换必须定义 transform(value) 函数。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="321"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="316"/>
         <source>Define a transform(value) function that returns a number, or use Clear to remove the transform.</source>
         <translation>定义一个返回数字的 transform(value) 函数，或使用"清除"移除转换。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="339"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="334"/>
         <source>Enter a value</source>
         <translation>输入一个值</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="346"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="341"/>
         <source>Invalid number</source>
         <translation>无效数字</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="415"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="410"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>格式化文档	Ctrl+Shift+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="416"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="411"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>格式化选区	Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="527"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="528"/>
         <source>--
 -- Define a transform(value) function that receives the live
 -- dataset reading and returns a transformed number. If no
@@ -3401,7 +3401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="555"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="556"/>
         <source>/*
  * Define a transform(value) function that receives the live
  * dataset reading and returns a transformed number. If no
@@ -3458,17 +3458,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="616"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="617"/>
         <source>Failed to create the Lua engine.</source>
         <translation>无法创建 Lua 引擎。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="655"/>
         <source>Line %1: %2</source>
         <translation>第 %1 行:%2</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="808"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="809"/>
         <source>Select Template…</source>
         <translation>选择模板…</translation>
     </message>
@@ -3529,26 +3529,26 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="699"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="700"/>
         <source>Engine error</source>
         <translation>引擎错误</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="722"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="735"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="752"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="763"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="723"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="736"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="753"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="764"/>
         <source>Error: %1</source>
         <translation>错误：%1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="728"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="756"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="729"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="757"/>
         <source>Error: transform() not defined</source>
         <translation>错误：未定义 transform()</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="740"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="741"/>
         <source>Error: transform() must return a number</source>
         <translation>错误：transform() 必须返回数值</translation>
     </message>
@@ -6484,12 +6484,12 @@ Reload it?</source>
 <context>
     <name>DataModel::TransmitTestDialog</name>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="154"/>
         <source>Invalid Hex Input</source>
         <translation>十六进制输入无效</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="156"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
         <source>Please enter valid hexadecimal bytes.
 
 Valid format: 01 A2 FF 3C</source>
@@ -6498,78 +6498,78 @@ Valid format: 01 A2 FF 3C</source>
 有效格式：01 A2 FF 3C</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="161"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="160"/>
         <source>No transmit function code to evaluate.</source>
         <translation>没有可评估的传输函数代码。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="178"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="177"/>
         <source>transmit function is not callable</source>
         <translation>传输函数不可调用</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="238"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="239"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="240"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
         <source>Evaluate</source>
         <translation>评估</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
         <source>Input Value</source>
         <translation>输入值</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
         <source>Transmit Function Output</source>
         <translation>传输函数输出</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="267"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="246"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="270"/>
         <source>Enter value to transmit…</source>
         <translation>输入要传输的值…</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="247"/>
         <source>Raw string output appears here</source>
         <translation>原始字符串输出显示在此处</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
         <source>Hex byte output appears here</source>
         <translation>十六进制字节输出显示在此处</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="251"/>
         <source>Test Transmit Function</source>
         <translation>测试传输函数</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="261"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="264"/>
         <source>Enter hex bytes (e.g., 01 A2 FF)</source>
         <translation>输入十六进制字节(例如 01 A2 FF)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="365"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="368"/>
         <source>(empty) No data returned</source>
         <translation>(空)未返回数据</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="367"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="370"/>
         <source>0 bytes</source>
         <translation>0 字节</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="406"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="409"/>
         <source>%1 byte(s)</source>
         <translation>%1 字节</translation>
     </message>
@@ -9058,67 +9058,67 @@ sudo ip link set %1 up type can bitrate %2
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>初始化 CANable 适配器的 libusb 失败。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>无法枚举 USB 设备。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>所选的 CANable 适配器已断开连接，或已被其他应用程序打开。在 Windows 上，设备必须使用 WinUSB 驱动程序（candleLight 会自动安装）。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>无法声明 CANable USB 接口。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>CANable 适配器未打开进行写入。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>无法将 CAN 帧传输到适配器。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>CANable 适配器报告 CAN 总线错误。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>CAN 帧在总线上未被应答。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>CANable 适配器拒绝了主机格式握手。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
         <source>Could not read CANable timing constants.</source>
         <translation>无法读取 CANable 时序常数。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>此 CANable 适配器不支持比特率 %1 bps。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>CANable 适配器拒绝了所请求的比特率。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
         <source>Could not start the CANable channel.</source>
         <translation>无法启动 CANable 通道。</translation>
     </message>
@@ -9815,27 +9815,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SeeedCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="206"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="206"/>
         <source>The bitrate %1 bps is not supported by the USB-CAN Analyzer.</source>
         <translation>USB-CAN 分析仪不支持比特率 %1 bps。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="216"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="216"/>
         <source>Could not open serial port %1: %2</source>
         <translation>无法打开串口 %1：%2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="227"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="227"/>
         <source>Failed to initialize the USB-CAN Analyzer.</source>
         <translation>USB-CAN 分析仪初始化失败。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="264"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="264"/>
         <source>USB-CAN Analyzer is not open for writing.</source>
         <translation>USB-CAN 分析仪未打开以进行写入。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="310"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="310"/>
         <source>CAN bus error reported by the USB-CAN Analyzer.</source>
         <translation>USB-CAN 分析仪报告 CAN 总线错误。</translation>
     </message>
@@ -9843,27 +9843,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SlcanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="167"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="167"/>
         <source>The bitrate %1 bps is not a standard slcan rate.</source>
         <translation>比特率 %1 bps 不是标准 slcan 速率。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="177"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="177"/>
         <source>Could not open serial port %1: %2</source>
         <translation>无法打开串口 %1：%2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="190"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="190"/>
         <source>Failed to open the slcan channel.</source>
         <translation>slcan 通道打开失败。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="229"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="229"/>
         <source>slcan adapter is not open for writing.</source>
         <translation>slcan 适配器未打开以进行写入。</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="267"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="267"/>
         <source>CAN bus error reported by the slcan adapter.</source>
         <translation>slcan 适配器报告 CAN 总线错误。</translation>
     </message>
@@ -12707,12 +12707,12 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::HighDpiScaling</name>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="266"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="276"/>
         <source>Restart Required</source>
         <translation>需要重启</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="267"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="277"/>
         <source>The new display scaling setting will take effect after restarting Serial Studio. Restart now to apply the change?</source>
         <translation>新的显示缩放设置将在重启 Serial Studio 后生效。现在重启以应用更改吗？</translation>
     </message>
@@ -12890,92 +12890,92 @@ Would you like to open the download page?</source>
         <translation type="vanished">%1 是否自动检查更新?您始终可以从"关于"对话框手动检查更新</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="161"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Ok</source>
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="163"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Save</source>
         <translation>保存</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="165"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Save all</source>
         <translation>全部保存</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="167"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Open</source>
         <translation>打开</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="169"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Yes</source>
         <translation>是</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="171"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Yes to all</source>
         <translation>全部选是</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>No</source>
         <translation>否</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="175"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
         <source>No to all</source>
         <translation>全部否</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="177"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="208"/>
         <source>Abort</source>
         <translation>中止</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="210"/>
         <source>Retry</source>
         <translation>重试</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="181"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
         <source>Ignore</source>
         <translation>忽略</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="183"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="214"/>
         <source>Close</source>
         <translation>关闭</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="216"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="187"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
         <source>Discard</source>
         <translation>放弃</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="189"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="220"/>
         <source>Help</source>
         <translation>帮助</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="222"/>
         <source>Apply</source>
         <translation>应用</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="193"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="224"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="195"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="226"/>
         <source>Restore defaults</source>
         <translation>恢复默认值</translation>
     </message>
@@ -15277,72 +15277,77 @@ Click Refresh to update the list.</source>
         <translation type="vanished">点数:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="148"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="151"/>
+        <source>Project settings</source>
+        <translation>项目设置</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="177"/>
         <source>Time Range:</source>
         <translation>时间范围:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="225"/>
         <source>Point Count:</source>
         <translation>点数:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="244"/>
         <source>Change-Driven Transforms:</source>
         <translation>变更驱动转换：</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="254"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>仅在数据集的输入之一发生变化时运行其转换。可加速大型表驱动项目；默认关闭。</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="301"/>
         <source>Source</source>
         <translation>源</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="302"/>
         <source>Sources</source>
         <translation>源</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="307"/>
         <source>Group</source>
         <translation>组</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="308"/>
         <source>Groups</source>
         <translation>组</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="313"/>
         <source>Dataset</source>
         <translation>数据集</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="314"/>
         <source>Datasets</source>
         <translation>数据集</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="319"/>
         <source>Action</source>
         <translation>操作</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="320"/>
         <source>Actions</source>
         <translation>操作</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="408"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>双击块进行编辑。右键单击任意位置以添加组、数据集、动作、数据表或设备。</translation>
     </message>
@@ -16035,37 +16040,37 @@ function parse(%1) { ... }
         <translation>传输错误</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="300"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="310"/>
         <source>Automatic (System Default)</source>
         <translation>自动（系统默认）</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="301"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="311"/>
         <source>Fractional</source>
         <translation>小数</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="302"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="312"/>
         <source>Round to Nearest</source>
         <translation>四舍五入</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="303"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="313"/>
         <source>Round Up</source>
         <translation>向上取整</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="304"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="314"/>
         <source>Round Down</source>
         <translation>向下取整</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="305"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="315"/>
         <source>Disable Scaling</source>
         <translation>禁用缩放</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="306"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>自定义…</translation>
     </message>
@@ -18465,49 +18470,49 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="617"/>
         <source>Full Screen</source>
         <translation>全屏</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="629"/>
         <source>Add External Window</source>
         <translation>添加外部窗口</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="914"/>
         <source>Help Center</source>
         <translation>帮助中心</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="745"/>
         <source>Tools</source>
         <translation>工具</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="874"/>
         <source>No Tools Available</source>
         <translation>无可用工具</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="942"/>
         <source>Reset</source>
         <translation>重置</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Quit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1000"/>
         <source>Delete</source>
         <translation>删除</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1001"/>
         <source>Hide</source>
         <translation>隐藏</translation>
     </message>
@@ -18518,31 +18523,31 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="818"/>
         <source>Clock</source>
         <translation>时钟</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="825"/>
         <source>Stopwatch</source>
         <translation>秒表</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="842"/>
         <source>Sessions</source>
         <translation>会话</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>File Transmission</source>
         <translation>文件传输</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="859"/>
         <source>AI Assistant</source>
         <translation>AI 助手</translation>
     </message>
@@ -18567,60 +18572,60 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>管理插件…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="580"/>
         <source>Freeze Dashboard</source>
         <translation>冻结仪表板</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="649"/>
         <source>Export</source>
         <translation>导出</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>CSV File</source>
         <translation>CSV 文件</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>MDF4 File</source>
         <translation>MDF4 文件</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="692"/>
         <source>Console Transcript</source>
         <translation>控制台记录</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="701"/>
         <source>Session Database</source>
         <translation>会话数据库</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="715"/>
         <source>No Export Formats Available</source>
         <translation>无可用导出格式</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="801"/>
         <source>Console</source>
         <translation>控制台</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="810"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="833"/>
         <source>Preferences</source>
         <translation>偏好设置</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="989"/>
         <source>Edit…</source>
         <translation>编辑…</translation>
     </message>
@@ -18629,17 +18634,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="935"/>
         <source>Resume</source>
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Pause</source>
         <translation>暂停</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Disconnect</source>
         <translation>断开连接</translation>
     </message>
@@ -18924,62 +18929,62 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>暂停</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="976"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
         <source>Unfreeze Dashboard</source>
         <translation>解冻仪表板</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="978"/>
         <source>Freeze Dashboard</source>
         <translation>冻结仪表板</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1049"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT：已连接到 %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT：未连接</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1074"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1075"/>
         <source>MQTT Publisher</source>
         <translation>MQTT 发布者</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1084"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1085"/>
         <source>Status:</source>
         <translation>状态:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1092"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
         <source>Connected</source>
         <translation>已连接</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1094"/>
         <source>Disconnected</source>
         <translation>已断开</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1100"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1101"/>
         <source>Broker:</source>
         <translation>代理:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1113"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1114"/>
         <source>Mode:</source>
         <translation>模式:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1126"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1127"/>
         <source>Messages sent:</source>
         <translation>已发送消息:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1141"/>
         <source>Open MQTT Settings</source>
         <translation>打开 MQTT 设置</translation>
     </message>
@@ -18993,7 +18998,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">搜索控件…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1186"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1187"/>
         <source>Remove from Workspace</source>
         <translation>从工作区移除</translation>
     </message>
@@ -19012,17 +19017,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
         <source>Find</source>
         <translation>查找</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
         <source>Collapse</source>
         <translation>折叠</translation>
     </message>
@@ -19035,138 +19040,148 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">将控制台输出记录到文件</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
         <source>Settings</source>
         <translation>设置</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
         <source>Console settings</source>
         <translation>控制台设置</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
         <source>Find in console</source>
         <translation>在控制台中查找</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>%1 of %2</source>
         <translation>%1 / %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
         <source>No results</source>
         <translation>无结果</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
         <source>Match case</source>
         <translation>区分大小写</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
         <source>Previous match</source>
         <translation>上一个匹配项</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
         <source>Next match</source>
         <translation>下一个匹配项</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
         <source>Close search</source>
         <translation>关闭搜索</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
         <source>Send a file to the connected device</source>
         <translation>向已连接设备发送文件</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
         <source>Search console output</source>
         <translation>搜索控制台输出</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <source>Utilities</source>
+        <translation>实用工具</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>将重复行折叠为单个条目</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Resume</source>
         <translation>恢复</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Pause</source>
         <translation>暂停</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Resume console updates</source>
         <translation>恢复控制台更新</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>冻结控制台显示(数据继续记录)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <source>Format</source>
+        <translation>格式化</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
         <source>Text</source>
         <translation>文本</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
         <source>Plain text display mode</source>
         <translation>纯文本显示模式</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
         <source>Hex</source>
         <translation>十六进制</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
         <source>Hex display mode</source>
         <translation>Hex 显示模式</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
         <source>Scrollback Lines</source>
         <translation>回滚行数</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
         <source>Send Data to Device</source>
         <translation>发送数据到设备</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
         <source>Send data to the device</source>
         <translation>发送数据到设备</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
         <source>Show Timestamp</source>
         <translation>显示时间戳</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>Echo</source>
         <translation>回显</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
         <source>Emulate VT-100</source>
         <translation>模拟 VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
         <source>ANSI Colors</source>
         <translation>ANSI 颜色</translation>
     </message>
@@ -19175,7 +19190,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">显示：%1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
         <source>Clear console output</source>
         <translation>清空控制台输出</translation>
     </message>
@@ -19899,33 +19914,33 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1777"/>
         <source>Console</source>
         <translation>控制台</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1785"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1793"/>
         <source>Clock</source>
         <translation>时钟</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1800"/>
         <source>Stopwatch</source>
         <translation>秒表</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1846"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1861"/>
         <source>%1 (Fallback)</source>
         <translation>%1(备用)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
         <source>LED Panel (%1)</source>
         <translation>LED 面板 (%1)</translation>
     </message>
@@ -20584,7 +20599,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">从工作区移除</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="417"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="418"/>
         <source>Device Disconnected</source>
         <translation>设备已断开连接</translation>
     </message>

@@ -3262,67 +3262,67 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>ביטול</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="136"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="131"/>
         <source>Language:</source>
         <translation>שפה:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="139"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="134"/>
         <source>Template:</source>
         <translation>תבנית:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="150"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="145"/>
         <source>Input:</source>
         <translation>קלט:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="153"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="148"/>
         <source>Output:</source>
         <translation>פלט:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="231"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="226"/>
         <source>Transform — %1</source>
         <translation>טרנספורמציה — %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="311"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="306"/>
         <source>The value transform has a syntax error and was not applied.</source>
         <translation>טרנספורמציית הערך מכילה שגיאת תחביר ולא הוחלה.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="320"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="315"/>
         <source>The value transform must define a transform(value) function.</source>
         <translation>טרנספורמציית הערך חייבת להגדיר פונקציית transform(value).</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="321"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="316"/>
         <source>Define a transform(value) function that returns a number, or use Clear to remove the transform.</source>
         <translation>הגדר פונקציית transform(value) שמחזירה מספר, או השתמש בניקוי כדי להסיר את הטרנספורמציה.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="339"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="334"/>
         <source>Enter a value</source>
         <translation>הזן ערך</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="346"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="341"/>
         <source>Invalid number</source>
         <translation>מספר לא חוקי</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="415"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="410"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>עצב מסמך	Ctrl+Shift+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="416"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="411"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>בחירת עיצוב	Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="527"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="528"/>
         <source>--
 -- Define a transform(value) function that receives the live
 -- dataset reading and returns a transformed number. If no
@@ -3381,7 +3381,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="555"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="556"/>
         <source>/*
  * Define a transform(value) function that receives the live
  * dataset reading and returns a transformed number. If no
@@ -3438,41 +3438,41 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
  */</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="616"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="617"/>
         <source>Failed to create the Lua engine.</source>
         <translation>יצירת מנוע Lua נכשלה.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="655"/>
         <source>Line %1: %2</source>
         <translation>שורה %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="699"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="700"/>
         <source>Engine error</source>
         <translation>שגיאת מנוע</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="722"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="735"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="752"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="763"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="723"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="736"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="753"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="764"/>
         <source>Error: %1</source>
         <translation>שגיאה: %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="728"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="756"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="729"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="757"/>
         <source>Error: transform() not defined</source>
         <translation>שגיאה: transform() לא מוגדרת</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="740"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="741"/>
         <source>Error: transform() must return a number</source>
         <translation>שגיאה: transform() חייבת להחזיר מספר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="808"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="809"/>
         <source>Select Template…</source>
         <translation>בחר תבנית…</translation>
     </message>
@@ -6388,12 +6388,12 @@ Reload it?</source>
 <context>
     <name>DataModel::TransmitTestDialog</name>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="154"/>
         <source>Invalid Hex Input</source>
         <translation>קלט HEX לא תקין</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="156"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
         <source>Please enter valid hexadecimal bytes.
 
 Valid format: 01 A2 FF 3C</source>
@@ -6402,78 +6402,78 @@ Valid format: 01 A2 FF 3C</source>
 פורמט תקין: 01 A2 FF 3C</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="161"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="160"/>
         <source>No transmit function code to evaluate.</source>
         <translation>אין קוד פונקציית שידור להערכה.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="178"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="177"/>
         <source>transmit function is not callable</source>
         <translation>לא ניתן לקרוא לפונקציית transmit</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="238"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="239"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
         <source>Clear</source>
         <translation>נקה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="240"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
         <source>Evaluate</source>
         <translation>הערך</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
         <source>Input Value</source>
         <translation>ערך קלט</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
         <source>Transmit Function Output</source>
         <translation>פלט פונקציית שידור</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="267"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="246"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="270"/>
         <source>Enter value to transmit…</source>
         <translation>הזן ערך לשידור…</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="247"/>
         <source>Raw string output appears here</source>
         <translation>פלט מחרוזת גולמית מופיע כאן</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
         <source>Hex byte output appears here</source>
         <translation>פלט בתים הקסדצימליים מופיע כאן</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="251"/>
         <source>Test Transmit Function</source>
         <translation>בדיקת פונקציית שידור</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="261"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="264"/>
         <source>Enter hex bytes (e.g., 01 A2 FF)</source>
         <translation>הזן בתים הקסדצימליים (לדוגמה, 01 A2 FF)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="365"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="368"/>
         <source>(empty) No data returned</source>
         <translation>(ריק) לא הוחזר מידע</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="367"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="370"/>
         <source>0 bytes</source>
         <translation>0 בתים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="406"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="409"/>
         <source>%1 byte(s)</source>
         <translation>%1 בתים</translation>
     </message>
@@ -8958,67 +8958,67 @@ sudo ip link set %1 up type can bitrate %2
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>אתחול libusb עבור מתאם CANable נכשל.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>לא ניתן לספור התקני USB.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>מתאם ה-CANable שנבחר אינו מחובר עוד, או שיישום אחר פתח אותו. ב-Windows ההתקן חייב להשתמש במנהל ההתקן WinUSB (candleLight מתקין אותו אוטומטית).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>לא ניתן לתפוס את ממשק ה-USB של CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>מתאם CANable אינו פתוח לכתיבה.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>כשל בשידור מסגרת CAN למתאם.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>שגיאת אפיק CAN דווחה על ידי מתאם ה-CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>מסגרת CAN לא אושרה על האפיק.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>מתאם CANable דחה את לחיצת היד בפורמט המארח.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
         <source>Could not read CANable timing constants.</source>
         <translation>לא ניתן לקרוא את קבועי התזמון של CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>קצב הסיביות %1 bps אינו נתמך על ידי מתאם CANable זה.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>מתאם CANable דחה את קצב הסיביות המבוקש.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
         <source>Could not start the CANable channel.</source>
         <translation>לא ניתן להפעיל את ערוץ CANable.</translation>
     </message>
@@ -9707,27 +9707,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SeeedCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="206"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="206"/>
         <source>The bitrate %1 bps is not supported by the USB-CAN Analyzer.</source>
         <translation>קצב הסיביות %1 bps אינו נתמך על ידי מנתח USB-CAN.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="216"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="216"/>
         <source>Could not open serial port %1: %2</source>
         <translation>לא ניתן לפתוח יציאה טורית %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="227"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="227"/>
         <source>Failed to initialize the USB-CAN Analyzer.</source>
         <translation>אתחול מנתח USB-CAN נכשל.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="264"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="264"/>
         <source>USB-CAN Analyzer is not open for writing.</source>
         <translation>מנתח USB-CAN אינו פתוח לכתיבה.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="310"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="310"/>
         <source>CAN bus error reported by the USB-CAN Analyzer.</source>
         <translation>שגיאת אפיק CAN דווחה על ידי מנתח USB-CAN.</translation>
     </message>
@@ -9735,27 +9735,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SlcanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="167"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="167"/>
         <source>The bitrate %1 bps is not a standard slcan rate.</source>
         <translation>קצב הסיביות %1 bps אינו קצב slcan סטנדרטי.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="177"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="177"/>
         <source>Could not open serial port %1: %2</source>
         <translation>לא ניתן לפתוח יציאה טורית %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="190"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="190"/>
         <source>Failed to open the slcan channel.</source>
         <translation>פתיחת ערוץ slcan נכשלה.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="229"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="229"/>
         <source>slcan adapter is not open for writing.</source>
         <translation>מתאם slcan אינו פתוח לכתיבה.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="267"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="267"/>
         <source>CAN bus error reported by the slcan adapter.</source>
         <translation>שגיאת אפיק CAN דווחה על ידי מתאם slcan.</translation>
     </message>
@@ -12209,12 +12209,12 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::HighDpiScaling</name>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="266"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="276"/>
         <source>Restart Required</source>
         <translation>נדרש אתחול מחדש</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="267"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="277"/>
         <source>The new display scaling setting will take effect after restarting Serial Studio. Restart now to apply the change?</source>
         <translation>הגדרת קנה המידה החדשה של התצוגה תיכנס לתוקף לאחר אתחול מחדש של Serial Studio. לאתחל כעת כדי להחיל את השינוי?</translation>
     </message>
@@ -12384,92 +12384,92 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::Utilities</name>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="161"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Ok</source>
         <translation>אישור</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="163"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Save</source>
         <translation>שמור</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="165"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Save all</source>
         <translation>שמור הכול</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="167"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Open</source>
         <translation>פתח</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="169"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Yes</source>
         <translation>כן</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="171"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Yes to all</source>
         <translation>כן לכול</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>No</source>
         <translation>לא</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="175"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
         <source>No to all</source>
         <translation>לא לכול</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="177"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="208"/>
         <source>Abort</source>
         <translation>בטל</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="210"/>
         <source>Retry</source>
         <translation>נסה שוב</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="181"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
         <source>Ignore</source>
         <translation>התעלם</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="183"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="214"/>
         <source>Close</source>
         <translation>סגור</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="216"/>
         <source>Cancel</source>
         <translation>ביטול</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="187"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
         <source>Discard</source>
         <translation>התעלם</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="189"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="220"/>
         <source>Help</source>
         <translation>עזרה</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="222"/>
         <source>Apply</source>
         <translation>החל</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="193"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="224"/>
         <source>Reset</source>
         <translation>אפס</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="195"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="226"/>
         <source>Restore defaults</source>
         <translation>שחזר ברירות מחדל</translation>
     </message>
@@ -14751,72 +14751,77 @@ Click Refresh to update the list.</source>
         <translation type="vanished">נקודות:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="148"/>
         <source>Settings</source>
         <translation>הגדרות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="151"/>
+        <source>Project settings</source>
+        <translation>הגדרות פרויקט</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="177"/>
         <source>Time Range:</source>
         <translation>טווח זמן:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="225"/>
         <source>Point Count:</source>
         <translation>מספר נקודות:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="244"/>
         <source>Change-Driven Transforms:</source>
         <translation>טרנספורמציות מונעות-שינוי:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="254"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>הרץ טרנספורמציה של מערך נתונים רק כאשר אחד מהקלטים שלו משתנה. מאיץ פרויקטים גדולים מונעי-טבלאות; כבוי כברירת מחדל.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="301"/>
         <source>Source</source>
         <translation>מקור</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="302"/>
         <source>Sources</source>
         <translation>מקורות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="307"/>
         <source>Group</source>
         <translation>קבוצה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="308"/>
         <source>Groups</source>
         <translation>קבוצות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="313"/>
         <source>Dataset</source>
         <translation>מערך נתונים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="314"/>
         <source>Datasets</source>
         <translation>מערכי נתונים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="319"/>
         <source>Action</source>
         <translation>פעולה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="320"/>
         <source>Actions</source>
         <translation>פעולות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="408"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>לחץ לחיצה כפולה על בלוק כדי לערוך אותו. לחץ לחיצה ימנית בכל מקום כדי להוסיף קבוצה, מערך נתונים, פעולה, טבלת נתונים או התקן.</translation>
     </message>
@@ -15509,37 +15514,37 @@ function parse(%1) { ... }
         <translation>שגיאת העברה</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="300"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="310"/>
         <source>Automatic (System Default)</source>
         <translation>אוטומטי (ברירת מחדל של המערכת)</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="301"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="311"/>
         <source>Fractional</source>
         <translation>שברי</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="302"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="312"/>
         <source>Round to Nearest</source>
         <translation>עיגול לקרוב ביותר</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="303"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="313"/>
         <source>Round Up</source>
         <translation>עיגול למעלה</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="304"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="314"/>
         <source>Round Down</source>
         <translation>עיגול למטה</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="305"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="315"/>
         <source>Disable Scaling</source>
         <translation>השבת קנה מידה</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="306"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>מותאם אישית…</translation>
     </message>
@@ -17796,67 +17801,67 @@ function parse(%1) { ... }
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="617"/>
         <source>Full Screen</source>
         <translation>מסך מלא</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="629"/>
         <source>Add External Window</source>
         <translation>הוסף חלון חיצוני</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="801"/>
         <source>Console</source>
         <translation>קונסול</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="810"/>
         <source>Notifications</source>
         <translation>התראות</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="818"/>
         <source>Clock</source>
         <translation>שעון</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="825"/>
         <source>Stopwatch</source>
         <translation>שעון עצר</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="833"/>
         <source>Preferences</source>
         <translation>העדפות</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="914"/>
         <source>Help Center</source>
         <translation>מרכז עזרה</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="842"/>
         <source>Sessions</source>
         <translation>סשנים</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>File Transmission</source>
         <translation>שידור קובץ</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="859"/>
         <source>AI Assistant</source>
         <translation>עוזר AI</translation>
     </message>
@@ -17911,87 +17916,87 @@ function parse(%1) { ... }
         <translation>אין תוספים מותקנים</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="580"/>
         <source>Freeze Dashboard</source>
         <translation>הקפאת לוח בקרה</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="649"/>
         <source>Export</source>
         <translation>ייצוא</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>CSV File</source>
         <translation>קובץ CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>MDF4 File</source>
         <translation>קובץ MDF4</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="692"/>
         <source>Console Transcript</source>
         <translation>תמליל קונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="701"/>
         <source>Session Database</source>
         <translation>מסד נתוני סשן</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="715"/>
         <source>No Export Formats Available</source>
         <translation>אין פורמטי ייצוא זמינים</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="745"/>
         <source>Tools</source>
         <translation>כלים</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="874"/>
         <source>No Tools Available</source>
         <translation>אין כלים זמינים</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="935"/>
         <source>Resume</source>
         <translation>המשך</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Pause</source>
         <translation>השהה</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="942"/>
         <source>Reset</source>
         <translation>אפס</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Quit</source>
         <translation>צא</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Disconnect</source>
         <translation>התנתק</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="989"/>
         <source>Edit…</source>
         <translation>ערוך…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1000"/>
         <source>Delete</source>
         <translation>מחק</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1001"/>
         <source>Hide</source>
         <translation>הסתר</translation>
     </message>
@@ -18281,67 +18286,67 @@ function parse(%1) { ... }
         <translation>השהה</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="976"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
         <source>Unfreeze Dashboard</source>
         <translation>בטל הקפאת לוח בקרה</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="978"/>
         <source>Freeze Dashboard</source>
         <translation>הקפא לוח בקרה</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1049"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: מחובר אל %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: לא מחובר</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1074"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1075"/>
         <source>MQTT Publisher</source>
         <translation>מפרסם MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1084"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1085"/>
         <source>Status:</source>
         <translation>מצב:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1092"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
         <source>Connected</source>
         <translation>מחובר</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1094"/>
         <source>Disconnected</source>
         <translation>מנותק</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1100"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1101"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1113"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1114"/>
         <source>Mode:</source>
         <translation>מצב:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1126"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1127"/>
         <source>Messages sent:</source>
         <translation>הודעות שנשלחו:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1141"/>
         <source>Open MQTT Settings</source>
         <translation>פתח הגדרות MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1186"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1187"/>
         <source>Remove from Workspace</source>
         <translation>הסר ממרחב העבודה</translation>
     </message>
@@ -18360,17 +18365,17 @@ function parse(%1) { ... }
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
         <source>Clear</source>
         <translation>נקה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
         <source>Find</source>
         <translation>חיפוש</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
         <source>Collapse</source>
         <translation>כווץ</translation>
     </message>
@@ -18383,138 +18388,148 @@ function parse(%1) { ... }
         <translation type="vanished">רישום פלט קונסול לקובץ</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
         <source>Settings</source>
         <translation>הגדרות</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
         <source>Console settings</source>
         <translation>הגדרות קונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
         <source>Find in console</source>
         <translation>חיפוש בקונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>%1 of %2</source>
         <translation>%1 מתוך %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
         <source>No results</source>
         <translation>אין תוצאות</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
         <source>Match case</source>
         <translation>התאמת אותיות גדולות/קטנות</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
         <source>Previous match</source>
         <translation>התאמה קודמת</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
         <source>Next match</source>
         <translation>התאמה הבאה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
         <source>Close search</source>
         <translation>סגירת חיפוש</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
         <source>Send a file to the connected device</source>
         <translation>שליחת קובץ להתקן המחובר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
         <source>Search console output</source>
         <translation>חיפוש בפלט הקונסול</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <source>Utilities</source>
+        <translation>כלי עזר</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>כיווץ שורות חוזרות לערך בודד</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Resume</source>
         <translation>המשך</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Pause</source>
         <translation>השהה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Resume console updates</source>
         <translation>המשך עדכוני מסוף</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>הקפא תצוגת מסוף (נתונים ממשיכים להירשם)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <source>Format</source>
+        <translation>עיצוב</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
         <source>Text</source>
         <translation>טקסט</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
         <source>Plain text display mode</source>
         <translation>מצב תצוגת טקסט רגיל</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
         <source>Hex</source>
         <translation>הקס</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
         <source>Hex display mode</source>
         <translation>מצב תצוגה הקסדצימלי</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
         <source>Scrollback Lines</source>
         <translation>שורות גלילה אחורה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
         <source>Send Data to Device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
         <source>Send data to the device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
         <source>Show Timestamp</source>
         <translation>הצג חותמת זמן</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>Echo</source>
         <translation>הד</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
         <source>Emulate VT-100</source>
         <translation>אמולציה של VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
         <source>ANSI Colors</source>
         <translation>צבעי ANSI</translation>
     </message>
@@ -18523,7 +18538,7 @@ function parse(%1) { ... }
         <translation type="vanished">תצוגה: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
         <source>Clear console output</source>
         <translation>נקה פלט קונסול</translation>
     </message>
@@ -19223,33 +19238,33 @@ function parse(%1) { ... }
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1777"/>
         <source>Console</source>
         <translation>קונסול</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1785"/>
         <source>Notifications</source>
         <translation>התראות</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1793"/>
         <source>Clock</source>
         <translation>שעון</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1800"/>
         <source>Stopwatch</source>
         <translation>שעון עצר</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1846"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1861"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (גיבוי)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
         <source>LED Panel (%1)</source>
         <translation>לוח LED (%1)</translation>
     </message>
@@ -19896,7 +19911,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>WidgetDelegate</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="417"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="418"/>
         <source>Device Disconnected</source>
         <translation>התקן מנותק</translation>
     </message>

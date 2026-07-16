@@ -3257,12 +3257,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>JavaScript</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="136"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="131"/>
         <source>Language:</source>
         <translation>Language:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="139"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="134"/>
         <source>Template:</source>
         <translation>Template:</translation>
     </message>
@@ -3282,12 +3282,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="150"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="145"/>
         <source>Input:</source>
         <translation>Input:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="153"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="148"/>
         <source>Output:</source>
         <translation>Output:</translation>
     </message>
@@ -3302,47 +3302,47 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="231"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="226"/>
         <source>Transform — %1</source>
         <translation>Transform — %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="311"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="306"/>
         <source>The value transform has a syntax error and was not applied.</source>
         <translation>The value transform has a syntax error and was not applied.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="320"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="315"/>
         <source>The value transform must define a transform(value) function.</source>
         <translation>The value transform must define a transform(value) function.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="321"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="316"/>
         <source>Define a transform(value) function that returns a number, or use Clear to remove the transform.</source>
         <translation>Define a transform(value) function that returns a number, or use Clear to remove the transform.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="339"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="334"/>
         <source>Enter a value</source>
         <translation>Enter a value</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="346"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="341"/>
         <source>Invalid number</source>
         <translation>Invalid number</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="415"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="410"/>
         <source>Format Document	Ctrl+Shift+I</source>
         <translation>Format Document	Ctrl+Shift+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="416"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="411"/>
         <source>Format Selection	Ctrl+I</source>
         <translation>Format Selection	Ctrl+I</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="527"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="528"/>
         <source>--
 -- Define a transform(value) function that receives the live
 -- dataset reading and returns a transformed number. If no
@@ -3401,7 +3401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="555"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="556"/>
         <source>/*
  * Define a transform(value) function that receives the live
  * dataset reading and returns a transformed number. If no
@@ -3458,12 +3458,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
  */</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="616"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="617"/>
         <source>Failed to create the Lua engine.</source>
         <translation>Failed to create the Lua engine.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="655"/>
         <source>Line %1: %2</source>
         <translation>Line %1: %2</translation>
     </message>
@@ -3524,31 +3524,31 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
  */</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="699"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="700"/>
         <source>Engine error</source>
         <translation>Engine error</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="722"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="735"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="752"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="763"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="723"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="736"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="753"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="764"/>
         <source>Error: %1</source>
         <translation>Error: %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="728"/>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="756"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="729"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="757"/>
         <source>Error: transform() not defined</source>
         <translation>Error: transform() not defined</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="740"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="741"/>
         <source>Error: transform() must return a number</source>
         <translation>Error: transform() must return a number</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="808"/>
+        <location filename="../../src/DataModel/Editors/DatasetTransformEditor.cpp" line="809"/>
         <source>Select Template…</source>
         <translation>Select Template…</translation>
     </message>
@@ -6484,12 +6484,12 @@ Reload it?</translation>
 <context>
     <name>DataModel::TransmitTestDialog</name>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="154"/>
         <source>Invalid Hex Input</source>
         <translation>Invalid Hex Input</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="156"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="155"/>
         <source>Please enter valid hexadecimal bytes.
 
 Valid format: 01 A2 FF 3C</source>
@@ -6498,78 +6498,78 @@ Valid format: 01 A2 FF 3C</source>
 Valid format: 01 A2 FF 3C</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="161"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="160"/>
         <source>No transmit function code to evaluate.</source>
         <translation>No transmit function code to evaluate.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="178"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="177"/>
         <source>transmit function is not callable</source>
         <translation>transmit function is not callable</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="238"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="239"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
         <source>Clear</source>
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="240"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
         <source>Evaluate</source>
         <translation>Evaluate</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="241"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
         <source>Input Value</source>
         <translation>Input Value</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="242"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
         <source>Transmit Function Output</source>
         <translation>Transmit Function Output</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="243"/>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="267"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="246"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="270"/>
         <source>Enter value to transmit…</source>
         <translation>Enter value to transmit…</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="244"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="247"/>
         <source>Raw string output appears here</source>
         <translation>Raw string output appears here</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="245"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
         <source>Hex byte output appears here</source>
         <translation>Hex byte output appears here</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="248"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="251"/>
         <source>Test Transmit Function</source>
         <translation>Test Transmit Function</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="261"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="264"/>
         <source>Enter hex bytes (e.g., 01 A2 FF)</source>
         <translation>Enter hex bytes (e.g., 01 A2 FF)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="365"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="368"/>
         <source>(empty) No data returned</source>
         <translation>(empty) No data returned</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="367"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="370"/>
         <source>0 bytes</source>
         <translation>0 bytes</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="406"/>
+        <location filename="../../src/DataModel/Dialogs/TransmitTestDialog.cpp" line="409"/>
         <source>%1 byte(s)</source>
         <translation>%1 byte(s)</translation>
     </message>
@@ -9058,67 +9058,67 @@ sudo ip link set %1 up type can bitrate %2</translation>
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>Failed to initialize libusb for the CANable adapter.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>Unable to enumerate USB devices.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>Could not claim the CANable USB interface.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>CANable adapter is not open for writing.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>Failed to transmit CAN frame to the adapter.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>CAN bus error reported by the CANable adapter.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>A CAN frame was not acknowledged on the bus.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>CANable adapter rejected the host-format handshake.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
         <source>Could not read CANable timing constants.</source>
         <translation>Could not read CANable timing constants.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>The bitrate %1 bps is not supported by this CANable adapter.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>CANable adapter rejected the requested bitrate.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
         <source>Could not start the CANable channel.</source>
         <translation>Could not start the CANable channel.</translation>
     </message>
@@ -9815,27 +9815,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SeeedCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="206"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="206"/>
         <source>The bitrate %1 bps is not supported by the USB-CAN Analyzer.</source>
         <translation>The bitrate %1 bps is not supported by the USB-CAN Analyzer.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="216"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="216"/>
         <source>Could not open serial port %1: %2</source>
         <translation>Could not open serial port %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="227"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="227"/>
         <source>Failed to initialize the USB-CAN Analyzer.</source>
         <translation>Failed to initialize the USB-CAN Analyzer.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="264"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="264"/>
         <source>USB-CAN Analyzer is not open for writing.</source>
         <translation>USB-CAN Analyzer is not open for writing.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SeeedCanBackend.cpp" line="310"/>
+        <location filename="../../src/IO/Drivers/CANBus/SeeedCanBackend.cpp" line="310"/>
         <source>CAN bus error reported by the USB-CAN Analyzer.</source>
         <translation>CAN bus error reported by the USB-CAN Analyzer.</translation>
     </message>
@@ -9843,27 +9843,27 @@ Check that your user is in the 'plugdev' group or that a udev rule grants access
 <context>
     <name>IO::Drivers::SlcanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="167"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="167"/>
         <source>The bitrate %1 bps is not a standard slcan rate.</source>
         <translation>The bitrate %1 bps is not a standard slcan rate.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="177"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="177"/>
         <source>Could not open serial port %1: %2</source>
         <translation>Could not open serial port %1: %2</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="190"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="190"/>
         <source>Failed to open the slcan channel.</source>
         <translation>Failed to open the slcan channel.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="229"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="229"/>
         <source>slcan adapter is not open for writing.</source>
         <translation>slcan adapter is not open for writing.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/SlcanBackend.cpp" line="267"/>
+        <location filename="../../src/IO/Drivers/CANBus/SlcanBackend.cpp" line="267"/>
         <source>CAN bus error reported by the slcan adapter.</source>
         <translation>CAN bus error reported by the slcan adapter.</translation>
     </message>
@@ -12707,12 +12707,12 @@ Would you like to open the download page?</translation>
 <context>
     <name>Misc::HighDpiScaling</name>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="266"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="276"/>
         <source>Restart Required</source>
         <translation>Restart Required</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="267"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="277"/>
         <source>The new display scaling setting will take effect after restarting Serial Studio. Restart now to apply the change?</source>
         <translation>The new display scaling setting will take effect after restarting Serial Studio. Restart now to apply the change?</translation>
     </message>
@@ -12890,92 +12890,92 @@ Would you like to open the download page?</translation>
         <translation type="vanished">Should %1 automatically check for updates? You can always check for updates manually from the "About" dialog</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="161"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="192"/>
         <source>Ok</source>
         <translation>Ok</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="163"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="194"/>
         <source>Save</source>
         <translation>Save</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="165"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="196"/>
         <source>Save all</source>
         <translation>Save all</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="167"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="198"/>
         <source>Open</source>
         <translation>Open</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="169"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="200"/>
         <source>Yes</source>
         <translation>Yes</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="171"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="202"/>
         <source>Yes to all</source>
         <translation>Yes to all</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="173"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="204"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="175"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="206"/>
         <source>No to all</source>
         <translation>No to all</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="177"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="208"/>
         <source>Abort</source>
         <translation>Abort</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="179"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="210"/>
         <source>Retry</source>
         <translation>Retry</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="181"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="212"/>
         <source>Ignore</source>
         <translation>Ignore</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="183"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="214"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="185"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="216"/>
         <source>Cancel</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="187"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="218"/>
         <source>Discard</source>
         <translation>Discard</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="189"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="220"/>
         <source>Help</source>
         <translation>Help</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="191"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="222"/>
         <source>Apply</source>
         <translation>Apply</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="193"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="224"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/Utilities.cpp" line="195"/>
+        <location filename="../../src/Misc/Utilities.cpp" line="226"/>
         <source>Restore defaults</source>
         <translation>Restore defaults</translation>
     </message>
@@ -15277,72 +15277,77 @@ Click Refresh to update the list.</translation>
         <translation type="vanished">Points:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="148"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="151"/>
+        <source>Project settings</source>
+        <translation>Project settings</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="177"/>
         <source>Time Range:</source>
         <translation>Time Range:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="225"/>
         <source>Point Count:</source>
         <translation>Point Count:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="244"/>
         <source>Change-Driven Transforms:</source>
         <translation>Change-Driven Transforms:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="254"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="301"/>
         <source>Source</source>
         <translation>Source</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="299"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="302"/>
         <source>Sources</source>
         <translation>Sources</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="307"/>
         <source>Group</source>
         <translation>Group</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="305"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="308"/>
         <source>Groups</source>
         <translation>Groups</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="313"/>
         <source>Dataset</source>
         <translation>Dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="311"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="314"/>
         <source>Datasets</source>
         <translation>Datasets</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="319"/>
         <source>Action</source>
         <translation>Action</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="320"/>
         <source>Actions</source>
         <translation>Actions</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="405"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="408"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</translation>
     </message>
@@ -16035,37 +16040,37 @@ The separator parameter is no longer needed.</translation>
         <translation>transfer error</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="300"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="310"/>
         <source>Automatic (System Default)</source>
         <translation>Automatic (System Default)</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="301"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="311"/>
         <source>Fractional</source>
         <translation>Fractional</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="302"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="312"/>
         <source>Round to Nearest</source>
         <translation>Round to Nearest</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="303"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="313"/>
         <source>Round Up</source>
         <translation>Round Up</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="304"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="314"/>
         <source>Round Down</source>
         <translation>Round Down</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="305"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="315"/>
         <source>Disable Scaling</source>
         <translation>Disable Scaling</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/HighDpiScaling.cpp" line="306"/>
+        <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>Custom…</translation>
     </message>
@@ -18470,29 +18475,29 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="611"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="617"/>
         <source>Full Screen</source>
         <translation>Full Screen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="623"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="629"/>
         <source>Add External Window</source>
         <translation>Add External Window</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="908"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="914"/>
         <source>Help Center</source>
         <translation>Help Center</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1000"/>
         <source>Delete</source>
         <translation>Delete</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="995"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1001"/>
         <source>Hide</source>
         <translation>Hide</translation>
     </message>
@@ -18503,19 +18508,19 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="818"/>
         <source>Clock</source>
         <translation>Clock</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="819"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="825"/>
         <source>Stopwatch</source>
         <translation>Stopwatch</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="836"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="842"/>
         <source>Sessions</source>
         <translation>Sessions</translation>
     </message>
@@ -18525,50 +18530,50 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>Manage Plugins…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="643"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="649"/>
         <source>Export</source>
         <translation>Export</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="674"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
         <source>CSV File</source>
         <translation>CSV File</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="680"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
         <source>MDF4 File</source>
         <translation>MDF4 File</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="686"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="692"/>
         <source>Console Transcript</source>
         <translation>Console Transcript</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="695"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="701"/>
         <source>Session Database</source>
         <translation>Session Database</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="709"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="715"/>
         <source>No Export Formats Available</source>
         <translation>No Export Formats Available</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="795"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="801"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="804"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="810"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="833"/>
         <source>Preferences</source>
         <translation>Preferences</translation>
     </message>
@@ -18578,13 +18583,13 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="845"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>File Transmission</source>
         <translation>File Transmission</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="859"/>
         <source>AI Assistant</source>
         <translation>AI Assistant</translation>
     </message>
@@ -18599,47 +18604,47 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>Show All Hidden Workspaces</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="584"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="580"/>
         <source>Freeze Dashboard</source>
         <translation>Freeze Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="739"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="745"/>
         <source>Tools</source>
         <translation>Tools</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="868"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="874"/>
         <source>No Tools Available</source>
         <translation>No Tools Available</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="935"/>
         <source>Resume</source>
         <translation>Resume</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="936"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="942"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Disconnect</source>
         <translation>Disconnect</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="957"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="963"/>
         <source>Quit</source>
         <translation>Quit</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="983"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="989"/>
         <source>Edit…</source>
         <translation>Edit…</translation>
     </message>
@@ -18924,62 +18929,62 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="976"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
         <source>Unfreeze Dashboard</source>
         <translation>Unfreeze Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="977"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="978"/>
         <source>Freeze Dashboard</source>
         <translation>Freeze Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1049"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Connected to %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1051"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Not connected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1074"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1075"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1084"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1085"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1092"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
         <source>Connected</source>
         <translation>Connected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1093"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1094"/>
         <source>Disconnected</source>
         <translation>Disconnected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1100"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1101"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1113"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1114"/>
         <source>Mode:</source>
         <translation>Mode:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1126"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1127"/>
         <source>Messages sent:</source>
         <translation>Messages sent:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1141"/>
         <source>Open MQTT Settings</source>
         <translation>Open MQTT Settings</translation>
     </message>
@@ -18993,7 +18998,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Search widgets…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1186"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1187"/>
         <source>Remove from Workspace</source>
         <translation>Remove from Workspace</translation>
     </message>
@@ -19012,17 +19017,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="232"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
         <source>Clear</source>
         <translation>Clear</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="247"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
         <source>Find</source>
         <translation>Find</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="275"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
         <source>Collapse</source>
         <translation>Collapse</translation>
     </message>
@@ -19035,138 +19040,148 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Log console output to a file</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="360"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
         <source>Console settings</source>
         <translation>Console settings</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="535"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
         <source>Find in console</source>
         <translation>Find in console</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="572"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>%1 of %2</source>
         <translation>%1 of %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="573"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
         <source>No results</source>
         <translation>No results</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="585"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
         <source>Match case</source>
         <translation>Match case</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
         <source>Previous match</source>
         <translation>Previous match</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="611"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
         <source>Next match</source>
         <translation>Next match</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="621"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
         <source>Close search</source>
         <translation>Close search</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="653"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
         <source>Send a file to the connected device</source>
         <translation>Send a file to the connected device</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="252"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
         <source>Search console output</source>
         <translation>Search console output</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="280"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <source>Utilities</source>
+        <translation>Utilities</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Collapse repeated lines into a single entry</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Resume</source>
         <translation>Resume</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="308"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Resume console updates</source>
         <translation>Resume console updates</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="309"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>Freeze the console display (data keeps logging)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <source>Format</source>
+        <translation>Format</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="325"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
         <source>Plain text display mode</source>
         <translation>Plain text display mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="336"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="782"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
         <source>Hex display mode</source>
         <translation>Hex display mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="439"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
         <source>Scrollback Lines</source>
         <translation>Scrollback Lines</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="675"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
         <source>Send Data to Device</source>
         <translation>Send Data to Device</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="832"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
         <source>Send data to the device</source>
         <translation>Send data to the device</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="394"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
         <source>Show Timestamp</source>
         <translation>Show Timestamp</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="401"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
         <source>Echo</source>
         <translation>Echo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="417"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
         <source>Emulate VT-100</source>
         <translation>Emulate VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
         <source>ANSI Colors</source>
         <translation>ANSI Colors</translation>
     </message>
@@ -19175,7 +19190,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Display: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="236"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
         <source>Clear console output</source>
         <translation>Clear console output</translation>
     </message>
@@ -19899,33 +19914,33 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1767"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1777"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1775"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1785"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1783"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1793"/>
         <source>Clock</source>
         <translation>Clock</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1790"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1800"/>
         <source>Stopwatch</source>
         <translation>Stopwatch</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1851"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1846"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1861"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Fallback)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1873"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
         <source>LED Panel (%1)</source>
         <translation>LED Panel (%1)</translation>
     </message>
@@ -20584,7 +20599,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">Remove from Workspace</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="417"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml" line="418"/>
         <source>Device Disconnected</source>
         <translation>Device Disconnected</translation>
     </message>

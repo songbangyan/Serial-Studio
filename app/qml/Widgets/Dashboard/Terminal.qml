@@ -228,8 +228,8 @@ Item {
           collapsible: true
           collapsePriority: 10
           compactCollapse: true
-          collapsedText: qsTr("View")
-          collapsedIcon: "qrc:/icons/console/search.svg"
+          collapsedText: qsTr("Utilities")
+          collapsedIcon: "qrc:/icons/console/utilities.svg"
           separatorColor: Cpp_ThemeManager.colors["widget_border"]
 
           Widgets.IconButton {
@@ -294,29 +294,11 @@ Item {
         }
 
         //
-        // Device write actions (always visible): send file, pause
+        // Pause
         //
         Widgets.RibbonSection {
           showSeparator: false
           separatorColor: Cpp_ThemeManager.colors["widget_border"]
-
-          Widgets.IconButton {
-            id: ftButton
-
-            flat: true
-            leftPadding: 8
-            rightPadding: 8
-            implicitHeight: 32
-            text: qsTr("Send File")
-            icon.color: "transparent"
-            enabled: Cpp_IO_Manager.readWrite
-            Layout.alignment: Qt.AlignVCenter
-            onClicked: app.showFileTransmission()
-            icon.source: "qrc:/icons/console/send-file.svg"
-            visible: Cpp_CommercialBuild && !app.runtimeMode
-            ToolTip.text: qsTr("Send a file to the connected device")
-            Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
-          }
 
           Widgets.IconButton {
             id: pauseButton
@@ -341,6 +323,9 @@ Item {
           }
         }
 
+        //
+        // Spacer
+        //
         Item {
           Layout.fillWidth: true
         }
@@ -681,6 +666,21 @@ Item {
       Layout.bottomMargin: 8
       Layout.fillWidth: true
       visible: root.width > implicitWidth
+
+      Widgets.IconButton {
+        iconSize: 16
+        id: ftButton
+
+        implicitHeight: 24
+        Layout.maximumWidth: 24
+        visible: !app.runtimeMode
+        opacity: enabled ? 1 : 0.5
+        enabled: Cpp_IO_Manager.readWrite
+        Layout.alignment: Qt.AlignVCenter
+        onClicked: app.showFileTransmission()
+        icon.source: "qrc:/icons/buttons/attach.svg"
+        ToolTip.text: qsTr("Send a file to the connected device")
+      }
 
       Widgets.Combo {
         id: deviceCombo
