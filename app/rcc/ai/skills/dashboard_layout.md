@@ -332,7 +332,11 @@ positional groupId you'd use in `project.group.update` /
 `project.dataset.*` CRUD calls. The same field name carries different
 semantics in different contexts: positional everywhere else, stable
 identity in workspace refs (so layouts survive group reorders). Read
-`uniqueId` from `project.group.list` and pass that.
+`uniqueId` from `project.group.list` and pass that. Going the other
+way (you hold a workspace-ref `groupId` and want the group's
+contents), call `project.group.get{uniqueId: <id>}`: it accepts
+either id space and returns both ids plus a compact dataset summary,
+so you never have to guess dataset titles from a bare ref.
 
 `relativeIndex` is a **dashboard-level global index across every widget
 of this type in the project**, NOT a per-workspace counter and NOT a

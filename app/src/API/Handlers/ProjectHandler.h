@@ -68,6 +68,7 @@ private:
   static void registerEndToEndDryRunCommand();
   static void registerListCommands();
   static void registerResolverCommands();
+  static void registerDiscoveryCommands();
   static void registerSnapshotAndMoveCommands();
   static void registerTemplateCommands();
 
@@ -140,6 +141,9 @@ private:
   static CommandResponse datasetGetByTitle(const QString& id, const QJsonObject& params);
   static CommandResponse datasetGetByPath(const QString& id, const QJsonObject& params);
   static CommandResponse datasetGetExecutionOrder(const QString& id, const QJsonObject& params);
+
+  static CommandResponse projectSearch(const QString& id, const QJsonObject& params);
+  static CommandResponse groupGet(const QString& id, const QJsonObject& params);
 
   static CommandResponse projectSnapshot(const QString& id, const QJsonObject& params);
 

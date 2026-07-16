@@ -158,6 +158,7 @@ UI::Dashboard::Dashboard()
   , m_clockEnabled(false)
   , m_stopwatchEnabled(false)
   , m_autoHideToolbar(false)
+  , m_showAlignmentGuides(true)
   , m_persistSettings(true)
   , m_autoLayoutMargin(0)
   , m_autoLayoutSpacing(-1)
@@ -258,6 +259,7 @@ UI::Dashboard::Dashboard()
 
   m_autoHideToolbar        = m_settings.value("Dashboard/AutoHideToolbar", false).toBool();
   m_showActionPanel        = m_settings.value("Dashboard/ShowActionPanel", true).toBool();
+  m_showAlignmentGuides    = m_settings.value("Dashboard/ShowAlignmentGuides", true).toBool();
   m_terminalEnabled        = m_settings.value("Dashboard/TerminalEnabled", false).toBool();
   m_notificationLogEnabled = m_settings.value("Dashboard/NotificationLogEnabled", false).toBool();
   m_clockEnabled           = m_settings.value("Dashboard/ClockEnabled", false).toBool();
@@ -305,6 +307,14 @@ bool UI::Dashboard::showActionPanel() const noexcept
 bool UI::Dashboard::autoHideToolbar() const noexcept
 {
   return m_autoHideToolbar;
+}
+
+/**
+ * @brief Returns true if smart alignment guides are shown during manual-mode gestures.
+ */
+bool UI::Dashboard::showAlignmentGuides() const noexcept
+{
+  return m_showAlignmentGuides;
 }
 
 /**
@@ -1148,6 +1158,20 @@ void UI::Dashboard::setAutoHideToolbar(const bool enabled)
     m_autoHideToolbar = enabled;
     m_settings.setValue("Dashboard/AutoHideToolbar", m_autoHideToolbar);
     Q_EMIT autoHideToolbarChanged();
+  }
+}
+
+/**
+ * @brief Shows or hides the smart alignment guides drawn during manual-mode gestures.
+ */
+void UI::Dashboard::setShowAlignmentGuides(const bool enabled)
+{
+  if (m_showAlignmentGuides != enabled) {
+    m_showAlignmentGuides = enabled;
+    if (m_persistSettings)
+      m_settings.setValue("Dashboard/ShowAlignmentGuides", m_showAlignmentGuides);
+
+    Q_EMIT showAlignmentGuidesChanged();
   }
 }
 

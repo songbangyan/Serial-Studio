@@ -3,7 +3,7 @@
 Serial Studio exposes ~300 commands. Your default tool list contains only
 ~50 of them, the curated essentials. Anything else, you discover.
 
-## Three discovery layers
+## Four discovery layers
 
 1. **Categories**: `meta.listCategories()` returns the top-level scopes
    — the first dotted segment of each command name (project, io, console,
@@ -11,14 +11,22 @@ Serial Studio exposes ~300 commands. Your default tool list contains only
    ui, sessions, licensing, notifications, extensions, scripts,
    controlScript, system, api, assistant, fs, meta) with one-line
    descriptions. MQTT commands live under `project.mqtt.*`, not a
-   top-level scope. Call this FIRST when you need to know what's even
+   top-level scope. Call this when you need to know what's even
    possible.
 
-2. **Commands within a scope**: `meta.listCommands{prefix: "io.uart."}`
+2. **Search the catalog**: `meta.search{query: "checksum"}` substring-
+   searches every command name AND description across all namespaces
+   and returns compact `{name, family, snippet}` rows (paged with
+   offset/limit). Use it when you know *what* you want but not what
+   the command is called — it beats guessing a prefix. Not to be
+   confused with `meta.searchDocs` (documentation) or `project.search`
+   (the contents of the user's project: datasets, groups, workspaces).
+
+3. **Commands within a scope**: `meta.listCommands{prefix: "io.uart."}`
    returns every command under that prefix with its 1-line description.
    Use the dotted prefix from `meta.listCategories`.
 
-3. **Per-command details**: `meta.describeCommand{name: "..."}` returns
+4. **Per-command details**: `meta.describeCommand{name: "..."}` returns
    the full JSON Schema for one command. Call this when you're about to
    invoke a command you haven't seen before, OR when you got a
    `validation_failed` error and want the exact field shape.

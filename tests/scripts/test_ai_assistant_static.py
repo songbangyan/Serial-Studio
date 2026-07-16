@@ -51,3 +51,40 @@ def test_search_index_contains_current_assistant_terms():
     assert "assistant.workspace.addTile" in body
     assert "assistant.script.apply" in body
     assert "assistant.project.bulkApply" in body
+
+
+def test_discovery_commands_are_safe_tier():
+    safety = json.loads(read_text("app/rcc/ai/command_safety.json"))
+    safe = set(safety["safe"])
+
+    assert "project.search" in safe
+    assert "project.group.get" in safe
+    tiers = ["confirm", "blocked", "deviceGated", "alwaysConfirm"]
+    for tier in tiers:
+        assert "project.search" not in set(safety[tier])
+        assert "project.group.get" not in set(safety[tier])
+
+
+def test_discovery_results_are_never_elided():
+    conversation = read_text("app/src/AI/Conversation.cpp")
+
+    for name in ("project.search", "project.group.get", "meta.search"):
+        assert f'QStringLiteral("{name}")' in conversation
+
+
+def test_meta_search_is_fully_wired():
+    conversation = read_text("app/src/AI/Conversation.cpp")
+    dispatcher = read_text("app/src/AI/ToolDispatcher.cpp")
+
+    assert conversation.count('QStringLiteral("meta.search")') >= 2
+    assert 'QStringLiteral("meta.search")' in dispatcher
+    assert "searchCommands" in dispatcher
+
+
+def test_incomplete_result_notices_are_distinct():
+    conversation = read_text("app/src/AI/Conversation.cpp")
+
+    assert "TOO LARGE" in conversation
+    assert "not the transcript-aging stub" in conversation
+    assert "SUCCEEDED when it ran" in conversation
+    assert "Not a size limit" in conversation

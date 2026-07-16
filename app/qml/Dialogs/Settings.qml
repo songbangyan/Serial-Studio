@@ -1010,6 +1010,29 @@ Widgets.SmartDialog {
           }
 
           Label {
+            text: qsTr("Show Alignment Guides")
+            color: Cpp_ThemeManager.colors["text"]
+          } Switch {
+            id: _showAlignmentGuides
+
+            Layout.rightMargin: -8
+            Layout.alignment: Qt.AlignRight
+            checked: Cpp_UI_Dashboard.showAlignmentGuides
+            palette.highlight: Cpp_ThemeManager.colors["switch_highlight"]
+            onCheckedChanged: {
+              if (checked !== Cpp_UI_Dashboard.showAlignmentGuides)
+                Cpp_UI_Dashboard.showAlignmentGuides = checked
+            }
+
+            Connections {
+              target: Cpp_UI_Dashboard
+              function onShowAlignmentGuidesChanged() {
+                _showAlignmentGuides.checked = Cpp_UI_Dashboard.showAlignmentGuides
+              }
+            }
+          }
+
+          Label {
             text: qsTr("Auto-Layout Margin")
             color: Cpp_ThemeManager.colors["text"]
           } SpinBox {
@@ -1932,6 +1955,7 @@ Widgets.SmartDialog {
           Cpp_Misc_ModuleManager.performanceMode = true
           Cpp_Misc_ModuleManager.inhibitIdleSleep = true
           Cpp_UI_Dashboard.autoHideToolbar = false
+          Cpp_UI_Dashboard.showAlignmentGuides = true
           Cpp_UI_Dashboard.autoLayoutMargin = 0
           Cpp_UI_Dashboard.autoLayoutSpacing = -1
           Cpp_UI_TaskbarSettings.resetToDefaults()

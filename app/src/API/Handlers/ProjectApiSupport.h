@@ -209,6 +209,46 @@ struct DatasetMatch {
 }
 
 /**
+ * @brief A resolved offset/limit window over a list of @c total items; nextOffset is -1 when
+ *        the window reaches the end.
+ */
+struct ListWindow {
+  int start      = 0;
+  int count      = 0;
+  int nextOffset = -1;
+};
+
+/**
+ * @brief Resolves offset/limit paging over @p total items; limit <= 0 means "everything after
+ *        offset" (the wire back-compat default shared with project.snapshot).
+ */
+[[nodiscard]] inline ListWindow applyWindow(int total, int offset, int limit)
+{
+  ListWindow window;
+  window.start = qBound(0, offset, total);
+  window.count = limit > 0 ? qMin(limit, total - window.start) : total - window.start;
+  if (window.start + window.count < total)
+    window.nextOffset = window.start + window.count;
+
+  return window;
+}
+
+/**
+ * @brief Adds a window self-identification block so a paged reply cannot be mistaken for the
+ *        full set (offset/count/total; matches the applyWindow result that produced it).
+ */
+inline void attachWindowInfo(QJsonObject& result, const ListWindow& window, int total)
+{
+  QJsonObject info;
+  info[QStringLiteral("offset")]   = window.start;
+  info[QStringLiteral("count")]    = window.count;
+  info[QStringLiteral("total")]    = total;
+  result[QStringLiteral("window")] = info;
+  if (window.nextOffset >= 0)
+    result[QStringLiteral("nextOffset")] = window.nextOffset;
+}
+
+/**
  * @brief Adds projectEpoch (monotonic mutation counter) to @p result.
  */
 inline void attachProjectEpoch(QJsonObject& result)

@@ -594,7 +594,8 @@ Item {
       visible: _wm.manualGestureActive && !_wm.autoLayoutEnabled && !_wm.frozen
 
       Repeater {
-        model: _gestureOverlay.visible ? _wm.alignmentGuides : []
+        model: _gestureOverlay.visible && Cpp_UI_Dashboard.showAlignmentGuides
+               ? _wm.alignmentGuides : []
 
         delegate: Rectangle {
           required property var modelData
@@ -608,7 +609,8 @@ Item {
       }
 
       Repeater {
-        model: _gestureOverlay.visible ? _wm.spacingIndicators : []
+        model: _gestureOverlay.visible && Cpp_UI_Dashboard.showAlignmentGuides
+               ? _wm.spacingIndicators : []
 
         delegate: Item {
           id: _spacingDelegate
@@ -642,7 +644,7 @@ Item {
         color: "transparent"
         x: _wm.sizeMatchRect.x
         y: _wm.sizeMatchRect.y
-        visible: _wm.sizeMatchVisible
+        visible: _wm.sizeMatchVisible && Cpp_UI_Dashboard.showAlignmentGuides
         width: _wm.sizeMatchRect.width
         height: _wm.sizeMatchRect.height
         border.color: Cpp_ThemeManager.colors["highlight"]

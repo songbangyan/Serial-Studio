@@ -56,20 +56,60 @@
 #include "ProjectApiSupport.h"
 
 /**
+ * @brief Builds the prose summary for groupsList; names come from the windowed rows only.
+ */
+static QString groupsListSummary(const std::vector<DataModel::Group>& groups,
+                                 const API::Handlers::ListWindow& window,
+                                 int total)
+{
+  if (groups.empty())
+    return QStringLiteral("No groups configured.");
+
+  if (window.count == 0)
+    return QStringLiteral("%1 groups; the requested offset is past the end.")
+      .arg(QString::number(total));
+
+  QStringList names;
+  for (int g = window.start; g < window.start + window.count; ++g) {
+    const auto& grp      = groups[static_cast<size_t>(g)];
+    const auto widgetStr = grp.widget.simplified();
+    names.append(
+      QStringLiteral("\"%1\"%2")
+        .arg(grp.title, widgetStr.isEmpty() ? QString() : QStringLiteral(" (%1)").arg(widgetStr)));
+  }
+
+  const QString shown =
+    window.count < total
+      ? QStringLiteral(" (showing %1-%2)")
+          .arg(QString::number(window.start), QString::number(window.start + window.count - 1))
+      : QString();
+  return QStringLiteral("%1 group%2%3: %4.")
+    .arg(QString::number(total),
+         total == 1 ? QString() : QStringLiteral("s"),
+         shown,
+         names.join(QStringLiteral(", ")));
+}
+
+/**
  * @brief List all groups with basic info
  */
 API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id,
                                                                const QJsonObject& params)
 {
-  Q_UNUSED(params)
-
   static auto& projectModel = DataModel::ProjectModel::instance();
   const auto& groups        = projectModel.groups();
 
-  QJsonArray groups_array;
-  for (const auto& group : groups) {
-    QJsonObject obj = DataModel::serialize(group);
+  const int total   = static_cast<int>(groups.size());
+  const auto window = applyWindow(total,
+                                  params.value(QStringLiteral("offset")).toInt(0),
+                                  params.value(QStringLiteral("limit")).toInt(0));
 
+  QJsonArray groups_array;
+  for (int g = window.start; g < window.start + window.count; ++g) {
+    const auto& group = groups[static_cast<size_t>(g)];
+    QJsonObject obj   = DataModel::serialize(group);
+
+    obj[Keys::GroupId]                  = group.groupId;
     obj[QStringLiteral("datasetCount")] = static_cast<int>(group.datasets.size());
 
     QJsonArray ds_summary;
@@ -113,23 +153,7 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
     groups_array.append(obj);
   }
 
-  QString summary;
-  if (groups.empty()) {
-    summary = QStringLiteral("No groups configured.");
-  } else {
-    QStringList names;
-    for (const auto& g : groups) {
-      const auto widgetStr = g.widget.simplified();
-      names.append(
-        QStringLiteral("\"%1\"%2")
-          .arg(g.title)
-          .arg(widgetStr.isEmpty() ? QString() : QStringLiteral(" (%1)").arg(widgetStr)));
-    }
-    summary = QStringLiteral("%1 group%2: %3.")
-                .arg(groups.size())
-                .arg(groups.size() == 1 ? QString() : QStringLiteral("s"))
-                .arg(names.join(QStringLiteral(", ")));
-  }
+  const QString summary = groupsListSummary(groups, window, total);
 
   int totalDatasets = 0;
   for (const auto& g : groups)
@@ -138,7 +162,9 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
   QJsonObject result;
   result[QStringLiteral("_summary")]   = summary;
   result[QStringLiteral("groups")]     = groups_array;
-  result[QStringLiteral("groupCount")] = static_cast<int>(groups.size());
+  result[QStringLiteral("groupCount")] = total;
+  attachWindowInfo(result, window, total);
+  attachProjectEpoch(result);
   if (groups.size() >= 5 || totalDatasets >= 10)
     result[QStringLiteral("_hint")] =
       QStringLiteral("%1 groups / %2 datasets present. For bulk edits across many "
@@ -157,35 +183,53 @@ API::CommandResponse API::Handlers::ProjectHandler::groupsList(const QString& id
 API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& id,
                                                                  const QJsonObject& params)
 {
-  Q_UNUSED(params)
-
   static auto& projectModel = DataModel::ProjectModel::instance();
   const auto& groups        = projectModel.groups();
 
-  QJsonArray datasets_array;
   int total_datasets = 0;
+  for (const auto& group : groups)
+    total_datasets += static_cast<int>(group.datasets.size());
 
+  const auto window = applyWindow(total_datasets,
+                                  params.value(QStringLiteral("offset")).toInt(0),
+                                  params.value(QStringLiteral("limit")).toInt(0));
+
+  QJsonArray datasets_array;
+  int flat_index = 0;
   for (const auto& group : groups) {
     for (const auto& dataset : group.datasets) {
-      datasets_array.append(buildDatasetObject(dataset, group));
-      ++total_datasets;
+      if (flat_index >= window.start && flat_index < window.start + window.count)
+        datasets_array.append(buildDatasetObject(dataset, group));
+
+      ++flat_index;
     }
   }
 
   QString summary;
   if (total_datasets == 0) {
     summary = QStringLiteral("No datasets configured.");
+  } else if (window.count == 0) {
+    summary = QStringLiteral("%1 datasets; the requested offset is past the end.")
+                .arg(QString::number(total_datasets));
   } else {
-    summary = QStringLiteral("%1 datasets across %2 group%3.")
-                .arg(total_datasets)
-                .arg(groups.size())
-                .arg(groups.size() == 1 ? QString() : QStringLiteral("s"));
+    const QString shown =
+      window.count < total_datasets
+        ? QStringLiteral(" (showing %1-%2)")
+            .arg(QString::number(window.start), QString::number(window.start + window.count - 1))
+        : QString();
+    summary = QStringLiteral("%1 datasets across %2 group%3%4.")
+                .arg(QString::number(total_datasets),
+                     QString::number(groups.size()),
+                     groups.size() == 1 ? QString() : QStringLiteral("s"),
+                     shown);
   }
 
   QJsonObject result;
   result[QStringLiteral("_summary")]     = summary;
   result[QStringLiteral("datasets")]     = datasets_array;
   result[QStringLiteral("datasetCount")] = total_datasets;
+  attachWindowInfo(result, window, total_datasets);
+  attachProjectEpoch(result);
   if (total_datasets >= 10)
     result[QStringLiteral("_hint")] =
       QStringLiteral("Bulk edits across %1 datasets: use project.batch (rename/retitle/reindex/"
@@ -518,30 +562,43 @@ API::CommandResponse API::Handlers::ProjectHandler::groupMove(const QString& id,
 API::CommandResponse API::Handlers::ProjectHandler::datasetGetExecutionOrder(
   const QString& id, const QJsonObject& params)
 {
-  Q_UNUSED(params)
-
   static auto& projectModel = DataModel::ProjectModel::instance();
   const auto& groups        = projectModel.groups();
 
+  int total = 0;
+  for (const auto& group : groups)
+    total += static_cast<int>(group.datasets.size());
+
+  const auto window = applyWindow(total,
+                                  params.value(QStringLiteral("offset")).toInt(0),
+                                  params.value(QStringLiteral("limit")).toInt(0));
+
   QJsonArray order;
+  int position = 0;
   for (const auto& group : groups) {
     for (const auto& dataset : group.datasets) {
-      QJsonObject entry;
-      entry[Keys::UniqueId]                      = dataset.uniqueId;
-      entry[Keys::Title]                         = dataset.title;
-      entry[Keys::SourceId]                      = dataset.sourceId;
-      entry[Keys::GroupId]                       = group.groupId;
-      entry[Keys::DatasetId]                     = dataset.datasetId;
-      entry[QStringLiteral("hasTransform")]      = !dataset.transformCode.isEmpty();
-      entry[QStringLiteral("isVirtual")]         = dataset.virtual_;
-      entry[QStringLiteral("transformLanguage")] = dataset.transformLanguage;
-      order.append(entry);
+      if (position >= window.start && position < window.start + window.count) {
+        QJsonObject entry;
+        entry[QStringLiteral("position")]          = position;
+        entry[Keys::UniqueId]                      = dataset.uniqueId;
+        entry[Keys::Title]                         = dataset.title;
+        entry[Keys::SourceId]                      = dataset.sourceId;
+        entry[Keys::GroupId]                       = group.groupId;
+        entry[Keys::DatasetId]                     = dataset.datasetId;
+        entry[QStringLiteral("hasTransform")]      = !dataset.transformCode.isEmpty();
+        entry[QStringLiteral("isVirtual")]         = dataset.virtual_;
+        entry[QStringLiteral("transformLanguage")] = dataset.transformLanguage;
+        order.append(entry);
+      }
+
+      ++position;
     }
   }
 
   QJsonObject result;
   result[QStringLiteral("order")] = order;
-  result[QStringLiteral("count")] = order.size();
+  result[QStringLiteral("count")] = total;
+  attachWindowInfo(result, window, total);
 
   QJsonObject ex;
   ex[QStringLiteral("summary")] =

@@ -31,10 +31,22 @@ common assumptions are wrong:
   other persisted refs survive untouched.
 
 Resolve unfamiliar datasets by path or title, then use the returned
-`uniqueId`:
+`uniqueId`. When you don't know the exact name, **search first** --
+`project.search` takes a case-insensitive substring and covers every
+entity type (datasets by title/alias/units; groups, actions, sources,
+workspaces, tables by title):
 
 ```
-// Looking up a dataset by name, in scripts or tools
+// Discovery: partial name -> compact typed rows with ids and paths
+project.search { query: "pressure" }
+project.search { query: "psia", type: "dataset" }
+
+// One group's contents without the full project. Accepts EITHER id
+// space: positional groupId, or uniqueId (what workspace refs carry
+// under the key "groupId" -- any suspiciously large "groupId" is one).
+project.group.get { uniqueId: 614 }
+
+// Exact lookup once you know the name/path
 project.dataset.getByPath { path: "Audio/Channel A" }
 project.dataset.getByTitle { title: "Channel A", groupId: 0 }
 project.dataset.getByUniqueId { uniqueId: 10001 }

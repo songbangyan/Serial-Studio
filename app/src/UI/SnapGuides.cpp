@@ -343,10 +343,10 @@ static void appendResizeCandidates(const UI::Snap::SnapInput& input,
   const int spacing = input.siblingSpacing;
 
   for (const auto& sibling : input.siblings) {
-    const int sLo     = rectLo(sibling, horiz);
-    const int sHi     = rectHi(sibling, horiz);
-    const int loEdge  = movingLo ? sLo : sLo - spacing;
-    const int hiEdge  = movingLo ? sHi + spacing : sHi;
+    const int sLo    = rectLo(sibling, horiz);
+    const int sHi    = rectHi(sibling, horiz);
+    const int loEdge = movingLo ? sLo : sLo - spacing;
+    const int hiEdge = movingLo ? sHi + spacing : sHi;
 
     appendIfViableResize({loEdge - edge, sLo, kRankEdge}, input, horiz, movingLo, out);
     appendIfViableResize({hiEdge - edge, sHi, kRankEdge}, input, horiz, movingLo, out);

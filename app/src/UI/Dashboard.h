@@ -79,6 +79,10 @@ class Dashboard : public QObject {
              READ  autoHideToolbar
              WRITE setAutoHideToolbar
              NOTIFY autoHideToolbarChanged)
+  Q_PROPERTY(bool showAlignmentGuides
+             READ  showAlignmentGuides
+             WRITE setShowAlignmentGuides
+             NOTIFY showAlignmentGuidesChanged)
   Q_PROPERTY(int autoLayoutMargin
              READ  autoLayoutMargin
              WRITE setAutoLayoutMargin
@@ -117,6 +121,7 @@ signals:
   void clockEnabledChanged();
   void stopwatchEnabledChanged();
   void autoHideToolbarChanged();
+  void showAlignmentGuidesChanged();
   void autoLayoutMarginChanged();
   void autoLayoutSpacingChanged();
   void plotTimeRangeChanged();
@@ -141,6 +146,7 @@ public:
   [[nodiscard]] bool clockEnabled() const noexcept;
   [[nodiscard]] bool stopwatchEnabled() const noexcept;
   [[nodiscard]] bool autoHideToolbar() const noexcept;
+  [[nodiscard]] bool showAlignmentGuides() const noexcept;
   [[nodiscard]] bool frozen() const;
   [[nodiscard]] double plotTimeRange() const noexcept;
   [[nodiscard]] bool pointsWidgetVisible() const;
@@ -208,6 +214,7 @@ public slots:
   void setClockEnabled(const bool enabled);
   void setStopwatchEnabled(const bool enabled);
   void setAutoHideToolbar(const bool enabled);
+  void setShowAlignmentGuides(const bool enabled);
   void setAutoLayoutMargin(const int margin);
   void setAutoLayoutSpacing(const int spacing);
   void setFrozen(const bool frozen);
@@ -413,6 +420,7 @@ private:
   bool m_clockEnabled;
   bool m_stopwatchEnabled;
   bool m_autoHideToolbar;
+  bool m_showAlignmentGuides;
   bool m_persistSettings;
 
   int m_autoLayoutMargin;

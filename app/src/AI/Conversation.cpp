@@ -720,6 +720,27 @@ bool AI::Conversation::dispatchMetaTool(const QString& callId,
     return true;
   }
 
+  if (name == QStringLiteral("meta.search")) {
+    appendToolCallCard(callId, name, arguments, CallStatus::Running);
+    const auto query = arguments.value(QStringLiteral("query")).toString().trimmed();
+    QJsonObject reply;
+    if (query.isEmpty()) {
+      reply[QStringLiteral("ok")]    = false;
+      reply[QStringLiteral("error")] = QStringLiteral("missing_query");
+      reply[QStringLiteral("hint")] =
+        QStringLiteral("query cannot be empty; use meta.listCommands to enumerate the catalog.");
+    } else {
+      reply = m_dispatcher->searchCommands(query,
+                                           arguments.value(QStringLiteral("offset")).toInt(0),
+                                           arguments.value(QStringLiteral("limit")).toInt(0));
+    }
+    const bool ok = reply.value(QStringLiteral("ok")).toBool();
+    recordToolResult(callId, name, reply);
+    updateToolCallCard(callId, ok ? CallStatus::Done : CallStatus::Error, reply);
+    releaseOutstandingToolResult();
+    return true;
+  }
+
   return false;
 }
 
@@ -1550,10 +1571,15 @@ bool AI::Conversation::reconcileHistoryToolPairsAt(int& i)
  */
 static QJsonObject elideAgedToolResult(QJsonObject block)
 {
-  block[QStringLiteral("content")] = QStringLiteral("[result elided -- ask again if needed]");
+  block[QStringLiteral("content")] =
+    QStringLiteral("[old result removed from the transcript to save space; the call itself "
+                   "SUCCEEDED when it ran. Not a size limit -- re-issue the same call only if "
+                   "you need this data again.]");
   if (block.contains(QStringLiteral("_gemini_response"))) {
     QJsonObject elided;
-    elided[QStringLiteral("elided")]          = QStringLiteral("ask again if needed");
+    elided[QStringLiteral("elided")] =
+      QStringLiteral("aged out of transcript; original call succeeded -- re-issue only if the "
+                     "data is needed again");
     block[QStringLiteral("_gemini_response")] = elided;
   }
   return block;
@@ -1561,8 +1587,9 @@ static QJsonObject elideAgedToolResult(QJsonObject block)
 
 /**
  * @brief Stubs older tool_result blocks; keeps the kKeepRecentUserTurns most recent verbatim.
- *        fs.* and small meta discovery results are never elided -- eliding a describeCommand
- *        or listCommands payload forces the model into blind retry loops.
+ *        fs.* and bounded discovery results (meta.* catalog/doc lookups, project.search,
+ *        project.group.get) are never elided -- eliding a discovery payload forces the model
+ *        into blind retry loops. Only in-budget-by-construction tools may join that set.
  */
 void AI::Conversation::ageHistoryToolResults()
 {
@@ -1602,11 +1629,13 @@ void AI::Conversation::ageHistoryToolResults()
       const bool isFsContent = toolName == QStringLiteral("fs.read")
                             || toolName == QStringLiteral("fs.search")
                             || toolName == QStringLiteral("fs.list");
-      const bool isDiscovery = toolName == QStringLiteral("meta.describeCommand")
-                            || toolName == QStringLiteral("meta.listCommands")
-                            || toolName == QStringLiteral("meta.listCategories")
-                            || toolName == QStringLiteral("meta.searchDocs")
-                            || toolName == QStringLiteral("meta.howTo");
+      const bool isDiscovery =
+        toolName == QStringLiteral("meta.describeCommand")
+        || toolName == QStringLiteral("meta.listCommands")
+        || toolName == QStringLiteral("meta.listCategories")
+        || toolName == QStringLiteral("meta.searchDocs") || toolName == QStringLiteral("meta.howTo")
+        || toolName == QStringLiteral("meta.search") || toolName == QStringLiteral("project.search")
+        || toolName == QStringLiteral("project.group.get");
       if (!isFsContent && !isDiscovery
           && block.value(QStringLiteral("type")).toString() == QStringLiteral("tool_result")
           && block.value(QStringLiteral("content")).toString().size() > 64) {
@@ -2216,9 +2245,12 @@ static QJsonObject makeTruncatedResult(const QJsonObject& scrubbed,
 
   out[QStringLiteral("truncated")] = true;
   out[QStringLiteral("note")] =
-    QStringLiteral("Result exceeded the %1-byte budget; 'preview' holds the first bytes of "
-                   "the full JSON. Narrow the call (offset/limit, prefix, fewer fields) "
-                   "instead of repeating it.")
+    QStringLiteral("Result was TOO LARGE for the %1-byte tool-result budget; 'preview' holds "
+                   "only its first bytes, and retrying the identical call will truncate again. "
+                   "Narrow the call instead: pass offset/limit to page, a query/type filter "
+                   "where supported, or find the item directly with project.search / "
+                   "meta.search (meta.describeCommand{name} lists each command's paging "
+                   "params). This is a size limit, not the transcript-aging stub.")
       .arg(budgetBytes);
   out[QStringLiteral("preview")] = QString::fromUtf8(fullBytes.left(budgetBytes - 512));
   return out;
@@ -2502,10 +2534,37 @@ static void appendBasicMetaTools(QJsonArray& out)
 }
 
 /**
- * @brief Appends meta.describeCommand, meta.executeCommand, meta.fetchHelp tools.
+ * @brief Appends meta.search, meta.describeCommand, meta.executeCommand, meta.fetchHelp tools.
  */
 static void appendCommandMetaTools(QJsonArray& out)
 {
+  {
+    QJsonObject schema;
+    schema[QStringLiteral("type")] = QStringLiteral("object");
+    QJsonObject props;
+    props[QStringLiteral("query")] =
+      stringProp(QStringLiteral("Substring to find in command names/descriptions "
+                                "(case-insensitive, non-empty)."));
+    QJsonObject offsetProp;
+    offsetProp[QStringLiteral("type")]        = QStringLiteral("integer");
+    offsetProp[QStringLiteral("description")] = QStringLiteral("First match to return.");
+    props[QStringLiteral("offset")]           = offsetProp;
+    QJsonObject limitProp;
+    limitProp[QStringLiteral("type")] = QStringLiteral("integer");
+    limitProp[QStringLiteral("description")] =
+      QStringLiteral("Max rows to return (default 25, max 100).");
+    props[QStringLiteral("limit")]       = limitProp;
+    schema[QStringLiteral("properties")] = props;
+    schema[QStringLiteral("required")]   = QJsonArray{QStringLiteral("query")};
+    out.append(makeMetaTool(
+      QStringLiteral("meta.search"),
+      QStringLiteral("Substring-search the command catalog itself (names + descriptions, every "
+                     "namespace) -- the index for the tool surface. Each row's name feeds "
+                     "meta.describeCommand. For documentation pages use meta.searchDocs "
+                     "instead."),
+      schema));
+  }
+
   {
     auto schema = objectSchemaWithProperty(
       QStringLiteral("name"),

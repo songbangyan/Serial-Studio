@@ -930,19 +930,112 @@ void API::Handlers::ProjectHandler::registerListCommands()
   static auto& registry = CommandRegistry::instance();
   const auto empty      = emptySchema();
 
-  registry.registerCommand(QStringLiteral("project.group.list"),
-                           QStringLiteral("List all groups with dataset counts"),
-                           empty,
-                           &groupsList);
-  registry.registerCommand(QStringLiteral("project.dataset.list"),
-                           QStringLiteral("List all datasets across all groups"),
-                           empty,
-                           &datasetsList);
+  registry.registerCommand(
+    QStringLiteral("project.group.list"),
+    QStringLiteral("List all groups with dataset counts. Large projects: pass offset/limit to "
+                   "page (reply carries window/nextOffset/projectEpoch); groupCount always "
+                   "reflects the whole project. Prefer project.search to find a group by name "
+                   "and project.group.get to inspect one group."),
+    makeSchema(
+      {
+  },
+      {{QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("First group index to return (default 0).")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max groups to return; omit or <=0 for all.")}}),
+    &groupsList);
+  registry.registerCommand(
+    QStringLiteral("project.dataset.list"),
+    QStringLiteral("List all datasets across all groups. Large projects: pass offset/limit to "
+                   "page the flattened dataset array (reply carries window/nextOffset/"
+                   "projectEpoch); datasetCount always reflects the whole project. Prefer "
+                   "project.search to find datasets by partial name."),
+    makeSchema(
+      {
+  },
+      {{QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("First dataset index to return (default 0).")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max datasets to return; omit or <=0 for all.")}}),
+    &datasetsList);
   registry.registerCommand(
     QStringLiteral("project.action.list"), QStringLiteral("List all actions"), empty, &actionsList);
 
   registerResolverCommands();
+  registerDiscoveryCommands();
   registerSnapshotAndMoveCommands();
+}
+
+/**
+ * @brief Register the discovery commands (project.search, project.group.get).
+ */
+void API::Handlers::ProjectHandler::registerDiscoveryCommands()
+{
+  static auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.search"),
+    QStringLiteral("Case-insensitive substring search across every project entity type: "
+                   "datasets (title, alias, units), groups, actions, sources, workspaces, and "
+                   "data tables (title/name). Returns compact typed rows -- never full objects "
+                   "-- with matchCount, window/nextOffset paging (default limit 20, max 100), "
+                   "and projectEpoch. THE starting point for finding anything in a large "
+                   "project; drill into hits with project.dataset.getByUniqueId / getByPath or "
+                   "project.group.get."),
+    makeSchema(
+      {
+        {QStringLiteral("query"),
+         QStringLiteral("string"),
+         QStringLiteral("Substring to find (case-insensitive); must be non-empty.")}
+  },
+      {{QStringLiteral("type"),
+        QStringLiteral("string|array"),
+        QStringLiteral("Restrict to one or more of: dataset, group, action, source, "
+                       "workspace, table.")},
+       {QString(Keys::GroupId),
+        QStringLiteral("integer"),
+        QStringLiteral("Only datasets in this positional groupId.")},
+       {QString(Keys::SourceId),
+        QStringLiteral("integer"),
+        QStringLiteral("Only entities bound to this sourceId.")},
+       {QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("First match to return (default 0).")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max rows to return (default 20, max 100).")}}),
+    &projectSearch);
+
+  registry.registerCommand(
+    QStringLiteral("project.group.get"),
+    QStringLiteral("Read one group plus a compact dataset summary (datasetId, uniqueId, index, "
+                   "title, units) without pulling the whole project. Address it by EITHER the "
+                   "positional groupId (what group.update / dataset CRUD take) OR the stable "
+                   "uniqueId (what workspace widget refs carry under the key 'groupId'); the "
+                   "response returns both ids. The summary pages via offset/limit (default 50, "
+                   "max 200)."),
+    makeSchema(
+      {
+  },
+      {{QString(Keys::GroupId),
+        QStringLiteral("integer"),
+        QStringLiteral("Positional group id (0..N-1, shifts on reorder). Mutually exclusive "
+                       "with uniqueId.")},
+       {QString(Keys::UniqueId),
+        QStringLiteral("integer"),
+        QStringLiteral("Stable persisted group id (sparse counter; what workspace refs "
+                       "carry). Mutually exclusive with groupId.")},
+       {QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("First dataset-summary row to return (default 0).")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max dataset-summary rows (default 50, max 200).")}}),
+    &groupGet);
 }
 
 /**
@@ -952,7 +1045,6 @@ void API::Handlers::ProjectHandler::registerListCommands()
 void API::Handlers::ProjectHandler::registerResolverCommands()
 {
   static auto& registry = CommandRegistry::instance();
-  const auto empty      = emptySchema();
 
   registry.registerCommand(
     QStringLiteral("project.dataset.getByUniqueId"),
@@ -1001,8 +1093,18 @@ void API::Handlers::ProjectHandler::registerResolverCommands()
     QStringLiteral("project.dataset.getExecutionOrder"),
     QStringLiteral("Returns the order datasets execute in during transform processing. "
                    "Useful for debugging cross-dataset transforms (a transform reads final "
-                   "values only for datasets earlier in this list)."),
-    empty,
+                   "values only for datasets earlier in this list). Large projects: pass "
+                   "offset/limit to page (each row carries its absolute `position`; reply "
+                   "carries window/nextOffset/projectEpoch)."),
+    makeSchema(
+      {
+  },
+      {{QStringLiteral("offset"),
+        QStringLiteral("integer"),
+        QStringLiteral("First execution position to return (default 0).")},
+       {QStringLiteral("limit"),
+        QStringLiteral("integer"),
+        QStringLiteral("Max rows to return; omit or <=0 for all.")}}),
     &datasetGetExecutionOrder);
 }
 

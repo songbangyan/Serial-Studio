@@ -538,7 +538,23 @@ QJsonObject AI::FileSandbox::search(const QJsonObject& args) const
   const auto files = gatherSearchFiles(readRoots(), kMaxSearchFiles);
   bool truncated   = files.size() >= kMaxSearchFiles;
   QJsonArray hits;
+  qint64 scannedBytes = 0;
+  int filesScanned    = 0;
+  int skippedLarge    = 0;
   for (const auto& file : files) {
+    const qint64 size = QFileInfo(file).size();
+    if (size > kMaxSearchFileBytes) {
+      ++skippedLarge;
+      continue;
+    }
+
+    if (scannedBytes + size > kMaxSearchScanBytes) {
+      truncated = true;
+      break;
+    }
+
+    scannedBytes += size;
+    ++filesScanned;
     searchFile(file, workspaceRoot(), needle, hits, truncated);
     if (hits.size() >= kMaxSearchHits) {
       truncated = true;
@@ -549,10 +565,18 @@ QJsonObject AI::FileSandbox::search(const QJsonObject& args) const
   QJsonObject out;
   out[QStringLiteral("ok")]           = true;
   out[QStringLiteral("query")]        = query;
-  out[QStringLiteral("filesScanned")] = files.size();
+  out[QStringLiteral("filesScanned")] = filesScanned;
   out[QStringLiteral("count")]        = hits.size();
   out[QStringLiteral("hits")]         = hits;
   out[QStringLiteral("truncated")]    = truncated;
+  if (skippedLarge > 0) {
+    out[QStringLiteral("skippedLargeFiles")] = skippedLarge;
+    out[QStringLiteral("hint")] =
+      QStringLiteral("%1 file(s) over the %2 MB per-file scan cap were skipped (large logs/"
+                     "exports); use fs.read with offset/limit to inspect a specific one.")
+        .arg(QString::number(skippedLarge), QString::number(kMaxSearchFileBytes / (1024 * 1024)));
+  }
+
   return out;
 }
 

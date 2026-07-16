@@ -14,6 +14,8 @@ The index of the source the dataset reads from. `0` for the default (and only) s
 
 The **positional** index of the group inside the project: `0` for the first group, `1` for the second, and so on. It is *not* a stable identity, because adding, deleting, or reordering groups renumbers it. For a group identifier that survives reorders, use the group's own `uniqueId` field. Workspace IDs live in a separate reserved range that starts at `1000` (Overview = `1000`, All Data = `1001`, per-group workspaces from `1002`, user workspaces from `5000`), so a workspace ID never collides with a positional `groupId`.
 
+One naming trap to know about: **workspace widget refs store the group's `uniqueId` under the JSON key `groupId`**. When you read workspace data (`project.workspace.get`, widget refs) and see a "groupId" that is far larger than the number of groups in the project, you are looking at a group `uniqueId`, not a positional index. Group `uniqueId` values come from the same sparse project counter as dataset `uniqueId`s: allocated once, never reused or compacted after deletes, so a valid id can be in the hundreds on a project with 80 groups. Passing such a value to a positional-id command (`project.group.update`, dataset CRUD) will hit the wrong group or fail. `project.group.get` accepts either id space explicitly: pass `groupId` for the positional index or `uniqueId` for the stable id.
+
 ### `datasetId`
 
 The dataset's slot inside its group. A group with three datasets will have `datasetId = 0, 1, 2`. If you reorder, insert, or delete datasets, `datasetId` is reassigned to match the new array index.
@@ -79,7 +81,7 @@ In other words:
 
 - **`datasetId` shifts when you rearrange.** Inserting a dataset at slot 0 renumbers everything that came after. If you cache `datasetId` in your script and then edit the project, refresh it from the API after every mutation.
 - **`uniqueId` does NOT follow `datasetId`.** It's persisted with the dataset and stays the same across reorders, renames, retypes, and moves between sources. The one exception is duplicate / copy-paste: a duplicated dataset receives a fresh `uniqueId` from the counter so the original and the copy stay distinguishable.
-- **`groupId` shifts when you rearrange.** Adding a new group at the top renumbers everything that came after. For a stable group identifier, use `Group.uniqueId` (returned by `project.group.list` under `uniqueId`); that's what workspace widget refs persist.
+- **`groupId` shifts when you rearrange.** Adding a new group at the top renumbers everything that came after. For a stable group identifier, use `Group.uniqueId` (returned by `project.group.list` under `uniqueId`); that's what workspace widget refs persist, and they label it `groupId` in their JSON (see the naming trap above). `project.group.get` resolves either form.
 - **`index` is yours to set.** The parser returns a positional array; you set each dataset's
   `index` in the Project Editor to choose which array slot it reads. The editor seeds sequential
   defaults, which you can override.

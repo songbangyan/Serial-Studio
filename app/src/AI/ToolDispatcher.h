@@ -32,6 +32,9 @@ public:
                                          int offset            = 0,
                                          int limit             = 0,
                                          bool namesOnly        = false) const;
+  [[nodiscard]] QJsonObject searchCommands(const QString& query,
+                                           int offset = 0,
+                                           int limit  = 0) const;
   [[nodiscard]] QJsonObject listCategories() const;
   [[nodiscard]] QString canonicalToolName(const QString& name) const;
   [[nodiscard]] QJsonObject describeCommand(const QString& name) const;

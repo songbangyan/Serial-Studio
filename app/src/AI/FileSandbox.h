@@ -23,13 +23,15 @@ namespace AI {
  */
 class FileSandbox {
 public:
-  static constexpr qint64 kMaxReadSlice  = 32 * 1024;
-  static constexpr qint64 kMaxWriteBytes = 4 * 1024 * 1024;
-  static constexpr int kMaxListEntries   = 2000;
-  static constexpr int kMaxSearchFiles   = 5000;
-  static constexpr int kMaxSearchHits    = 200;
-  static constexpr int kMaxRecurseDepth  = 16;
-  static constexpr int kBinarySniffBytes = 8192;
+  static constexpr qint64 kMaxReadSlice       = 32 * 1024;
+  static constexpr qint64 kMaxWriteBytes      = 4 * 1024 * 1024;
+  static constexpr qint64 kMaxSearchFileBytes = 4 * 1024 * 1024;
+  static constexpr qint64 kMaxSearchScanBytes = 64 * 1024 * 1024;
+  static constexpr int kMaxListEntries        = 2000;
+  static constexpr int kMaxSearchFiles        = 5000;
+  static constexpr int kMaxSearchHits         = 200;
+  static constexpr int kMaxRecurseDepth       = 16;
+  static constexpr int kBinarySniffBytes      = 8192;
 
   [[nodiscard]] static FileSandbox& instance();
 

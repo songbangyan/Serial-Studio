@@ -8,15 +8,11 @@
 
 #include "AI/ToolDispatcher.h"
 
-#include <functional>
-#include <QCoreApplication>
-#include <QEventLoop>
+#include <algorithm>
 #include <QFile>
 #include <QHash>
-#include <QScopeGuard>
 #include <QSet>
 #include <QStringList>
-#include <QThread>
 #include <QUuid>
 #include <QVector>
 
@@ -624,52 +620,19 @@ static QJsonObject fsToolDescription(const QString& name)
 }
 
 /**
- * @brief Runs blocking work on a worker thread; a main-thread reentrancy guard makes a
- *        re-entrant fs tool fail fast rather than spin a second nested event loop.
- */
-static QJsonObject runOffMainThread(const std::function<QJsonObject()>& work)
-{
-  if (QThread::currentThread() != qApp->thread())
-    return work();
-
-  static bool s_inNestedLoop = false;
-  if (s_inNestedLoop) {
-    QJsonObject out;
-    out[QStringLiteral("ok")]    = false;
-    out[QStringLiteral("error")] = QStringLiteral("fs_tool_busy");
-    out[QStringLiteral("hint")]  = QStringLiteral("Another filesystem tool is still running. Wait "
-                                                  "for it to finish, then retry this call.");
-    return out;
-  }
-
-  s_inNestedLoop = true;
-  const QScopeGuard clearGuard([] { s_inNestedLoop = false; });
-
-  QJsonObject result;
-  QEventLoop loop;
-  QThread* worker = QThread::create([&]() { result = work(); });
-  QObject::connect(worker, &QThread::finished, &loop, &QEventLoop::quit);
-  worker->start();
-  loop.exec();
-  worker->wait();
-  delete worker;
-  return result;
-}
-
-/**
- * @brief Routes an fs.* tool call to the FileSandbox primitive.
+ * @brief Routes an fs.* tool call to the bounded FileSandbox primitive, inline on the caller.
  */
 static QJsonObject executeFsTool(const QString& name, const QJsonObject& args)
 {
   static auto& sandbox = AI::FileSandbox::instance();
   if (name == QStringLiteral("fs.list"))
-    return runOffMainThread([&]() { return sandbox.list(args); });
+    return sandbox.list(args);
 
   if (name == QStringLiteral("fs.read"))
-    return runOffMainThread([&]() { return sandbox.read(args); });
+    return sandbox.read(args);
 
   if (name == QStringLiteral("fs.search"))
-    return runOffMainThread([&]() { return sandbox.search(args); });
+    return sandbox.search(args);
 
   if (name == QStringLiteral("fs.write"))
     return sandbox.write(args);
@@ -2036,6 +1999,12 @@ static const QVector<detail::AssistantToolDef>& metaToolRoster()
     {        QStringLiteral("meta.searchDocs"),
      QStringLiteral("Semantic search over bundled docs, skills, templates, and example scripts."),
      {}},
+    {            QStringLiteral("meta.search"),
+     QStringLiteral(
+     "Substring-search the command catalog itself (names + descriptions, every "
+     "namespace); rows feed meta.describeCommand. For documentation pages use meta.searchDocs "
+     "instead."),
+     {}},
   };
   return kRoster;
 }
@@ -2104,6 +2073,95 @@ QJsonObject AI::ToolDispatcher::listCommands(const QString& prefix,
   reply[QStringLiteral("commands")] = window;
   if (start + count < total)
     reply[QStringLiteral("nextOffset")] = start + count;
+
+  return reply;
+}
+
+/**
+ * @brief Case-insensitive name+description search over the merged tool catalog, sorted by
+ *        name so paging stays coherent across the rosters; dual-registered names dedupe on
+ *        first match (curated description wins, registry-only text can still surface it).
+ */
+QJsonObject AI::ToolDispatcher::searchCommands(const QString& query, int offset, int limit) const
+{
+  const QString needle = query.trimmed();
+  if (needle.isEmpty()) {
+    QJsonObject reply;
+    reply[QStringLiteral("ok")]    = false;
+    reply[QStringLiteral("error")] = QStringLiteral("missing_query");
+    reply[QStringLiteral("hint")] =
+      QStringLiteral("query cannot be empty; use meta.listCommands to enumerate the catalog.");
+    return reply;
+  }
+
+  struct Match {
+    QString name;
+    QString description;
+  };
+
+  QVector<Match> matches;
+  QSet<QString> seen;
+  auto consider = [&matches, &seen, &needle](const QString& name, const QString& description) {
+    if (seen.contains(name))
+      return;
+
+    if (!name.contains(needle, Qt::CaseInsensitive)
+        && !description.contains(needle, Qt::CaseInsensitive))
+      return;
+
+    seen.insert(name);
+    matches.append({name, description});
+  };
+  for (const auto& def : assistantToolDefs())
+    consider(def.name, def.description);
+
+  for (const auto& def : fsToolDefs())
+    consider(def.name, def.description);
+
+  for (const auto& def : metaToolRoster())
+    consider(def.name, def.description);
+
+  static auto& apiRegistry = API::CommandRegistry::instance();
+  static auto& aiReg       = AI::CommandRegistry::instance();
+  const auto& commands     = apiRegistry.commands();
+  for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
+    if (aiReg.safetyOf(it.value().name) == Safety::Blocked)
+      continue;
+
+    consider(it.value().name, it.value().description);
+  }
+
+  std::sort(
+    matches.begin(), matches.end(), [](const Match& a, const Match& b) { return a.name < b.name; });
+
+  constexpr int kDefaultLimit = 25;
+  constexpr int kMaxLimit     = 100;
+  const int total             = matches.size();
+  const int effective         = qBound(1, limit > 0 ? limit : kDefaultLimit, kMaxLimit);
+  const int start             = qBound(0, offset, total);
+  const int count             = qMin(effective, total - start);
+
+  QJsonArray rows;
+  for (int i = start; i < start + count; ++i) {
+    const auto& match = matches.at(i);
+    QJsonObject row;
+    row[QStringLiteral("name")]    = match.name;
+    row[QStringLiteral("family")]  = match.name.section(QLatin1Char('.'), 0, 0);
+    row[QStringLiteral("snippet")] = match.description.left(120);
+    rows.append(row);
+  }
+
+  QJsonObject reply;
+  reply[QStringLiteral("ok")]         = true;
+  reply[QStringLiteral("query")]      = query;
+  reply[QStringLiteral("matchCount")] = total;
+  reply[QStringLiteral("count")]      = rows.size();
+  reply[QStringLiteral("rows")]       = rows;
+  if (start + count < total)
+    reply[QStringLiteral("nextOffset")] = start + count;
+
+  reply[QStringLiteral("hint")] =
+    QStringLiteral("Call meta.describeCommand{name} on a row to get its full input schema.");
 
   return reply;
 }
@@ -2323,6 +2381,29 @@ static QJsonObject makeBlockedReply(const QString& name)
 }
 
 /**
+ * @brief Injects a bounded default `limit` for a whole-project list command called without
+ *        one (never overwrites a caller's limit; raw TCP/SDK clients bypass this). Limits are
+ *        calibrated per row shape -- a group.list row embeds full nested datasets, so its cap
+ *        bounds count not bytes; project.search / project.group.get are the compact paths.
+ */
+static QJsonObject withDefaultListLimit(const QString& name, const QJsonObject& args)
+{
+  static const QHash<QString, int> kDefaultLimits = {
+    {             QStringLiteral("project.dataset.list"),  4},
+    {               QStringLiteral("project.group.list"),  5},
+    {QStringLiteral("project.dataset.getExecutionOrder"), 20},
+  };
+
+  const int defaultLimit = kDefaultLimits.value(name, 0);
+  if (defaultLimit == 0 || args.contains(QStringLiteral("limit")))
+    return args;
+
+  QJsonObject bounded              = args;
+  bounded[QStringLiteral("limit")] = defaultLimit;
+  return bounded;
+}
+
+/**
  * @brief Validates args and forwards to API::CommandRegistry honoring AI safety tags.
  */
 QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
@@ -2379,7 +2460,7 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
 
   const auto callId        = QUuid::createUuid().toString(QUuid::WithoutBraces);
   static auto& apiRegistry = API::CommandRegistry::instance();
-  const auto response      = apiRegistry.execute(name, callId, args);
+  const auto response      = apiRegistry.execute(name, callId, withDefaultListLimit(name, args));
 
   QJsonObject reply;
   reply[QStringLiteral("ok")] = response.success;

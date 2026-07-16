@@ -1705,7 +1705,7 @@ Get the current visible plot time window, in seconds.
 python test_api.py send dashboard.getTimeRange
 ```
 
-### Project Management Commands (61)
+### Project Management Commands (63)
 
 > This section documents 61 of the 64 commands the live Project
 > Management module registers. `project.new`, `project.open`, and
@@ -2136,8 +2136,86 @@ With `dryRun: true`, the response additionally sets `"dryRun": true` and
 - `MISSING_PARAM`: Missing `groupId` or `newPosition` parameter
 - `INVALID_PARAM`: `groupId` is out of range
 
+#### 🟢 `project.search`
+Case-insensitive substring search across every project entity type: datasets
+(title, alias, units), groups, actions, sources, workspaces, and data tables
+(title/name). Returns compact typed rows, never full objects. The starting
+point for finding anything in a large project; drill into hits with
+`project.dataset.getByUniqueId` / `project.dataset.getByPath` or
+`project.group.get`.
+
+**Parameters:**
+- `query` (string, required): Substring to find; must be non-empty
+- `type` (string or array, optional): Restrict to one or more of `dataset`,
+  `group`, `action`, `source`, `workspace`, `table`
+- `groupId` (int, optional): Only datasets in this positional group
+- `sourceId` (int, optional): Only entities bound to this source
+- `offset` (int, optional): First match to return (default 0)
+- `limit` (int, optional): Max rows (default 20, max 100)
+
+**Returns:**
+```json
+{
+  "_summary": "3 matches for \"pressure\".",
+  "query": "pressure",
+  "matchCount": 3,
+  "rows": [
+    { "type": "group", "groupId": 4, "uniqueId": 614, "title": "Absolute Pressure (psia)", "datasetCount": 8 },
+    { "type": "dataset", "uniqueId": 731, "title": "PT-1", "path": "Absolute Pressure (psia)/PT-1", "groupId": 4, "groupTitle": "Absolute Pressure (psia)", "index": 3, "units": "psia", "matchedField": "units" }
+  ],
+  "window": { "offset": 0, "count": 3, "total": 3 },
+  "projectEpoch": 7
+}
+```
+
+Rows are grouped by type (sources, groups, datasets, actions, workspaces,
+tables) and follow project order within each type, so `offset` paging over an
+unchanged project is deterministic; `nextOffset` appears when more matches
+remain. `matchedField` appears on dataset rows that matched via `alias` or
+`units` rather than the title.
+
+#### 🟢 `project.group.get`
+Read one group plus a compact per-dataset summary without pulling the whole
+project. Address the group by either id space, never both:
+
+**Parameters:**
+- `groupId` (int, optional): Positional id (0..N-1, shifts on reorder); what
+  `project.group.update` and dataset CRUD take
+- `uniqueId` (int, optional): Stable persisted id (sparse counter); what
+  workspace widget refs carry under the key `groupId`
+- `offset` (int, optional): First dataset-summary row (default 0)
+- `limit` (int, optional): Max dataset-summary rows (default 50, max 200)
+
+**Returns:**
+```json
+{
+  "groupId": 4,
+  "uniqueId": 614,
+  "title": "Absolute Pressure (psia)",
+  "widget": "",
+  "sourceId": 0,
+  "datasetCount": 8,
+  "datasetSummary": [
+    { "datasetId": 0, "uniqueId": 731, "index": 3, "title": "PT-1", "units": "psia" }
+  ],
+  "window": { "offset": 0, "count": 8, "total": 8 },
+  "projectEpoch": 7
+}
+```
+
+Passing both selectors, neither, or an id that matches no group returns an
+explicit error whose hint explains the two id spaces.
+
 #### 🟢 `project.group.list`
-List all groups.
+List all groups. Each group row also embeds the group's full nested `datasets`
+array, so a single row can be large on a densely-populated group; on big
+projects prefer `project.search` (compact rows) to find a group and
+`project.group.get` to inspect one. Row order is positional, so a group's array
+position equals its `groupId`.
+
+**Parameters:**
+- `offset` (int, optional): First group to return (default 0)
+- `limit` (int, optional): Max groups to return; omit for all
 
 **Returns:**
 ```json
@@ -2145,14 +2223,23 @@ List all groups.
   "groups": [
     {
       "groupId": 0,
+      "uniqueId": 12,
       "title": "Sensors",
       "widget": "MultiPlot",
-      "datasetCount": 5
+      "datasetCount": 5,
+      "datasets": [ "...full dataset objects..." ]
     }
   ],
-  "groupCount": 1
+  "groupCount": 1,
+  "window": { "offset": 0, "count": 1, "total": 1 },
+  "projectEpoch": 7
 }
 ```
+
+`groupId` is the positional index (use it with `project.group.get` or the
+CRUD/update commands); `uniqueId` is the stable id. `groupCount` always reflects
+the whole project; when a `limit` windows the reply, `nextOffset` gives the next
+page's offset.
 
 #### 🟢 `project.dataset.add`
 Add a dataset to a group.
@@ -2575,13 +2662,16 @@ order `FrameBuilder` traverses groups/datasets). A transform can read the raw
 value of any dataset, but only reads the final (post-transform) value of
 datasets that appear earlier in this list.
 
-**Parameters:** None
+**Parameters:**
+- `offset` (int, optional): First execution position to return (default 0)
+- `limit` (int, optional): Max rows to return; omit for all
 
 **Returns:**
 ```json
 {
   "order": [
     {
+      "position": 0,
       "uniqueId": 1024,
       "title": "Temperature",
       "sourceId": 0,
@@ -2593,6 +2683,7 @@ datasets that appear earlier in this list.
     }
   ],
   "count": 1,
+  "window": { "offset": 0, "count": 1, "total": 1 },
   "_explanations": {
     "summary": "Datasets execute in (group-array, dataset-array) order. A transform may read raw values of ALL datasets via datasetGetRaw(uid), but only final values of datasets EARLIER in this list via datasetGetFinal(uid)."
   },
@@ -2602,6 +2693,10 @@ datasets that appear earlier in this list.
 
 #### 🟢 `project.dataset.list`
 List all datasets.
+
+**Parameters:**
+- `offset` (int, optional): First dataset to return (default 0)
+- `limit` (int, optional): Max datasets to return; omit for all
 
 **Returns:**
 ```json
@@ -2617,9 +2712,16 @@ List all datasets.
       "value": "25.3"
     }
   ],
-  "datasetCount": 5
+  "datasetCount": 5,
+  "window": { "offset": 0, "count": 5, "total": 5 },
+  "projectEpoch": 7
 }
 ```
+
+`datasetCount` always reflects the whole project; when a `limit` windows the
+reply, `nextOffset` gives the next page's offset. On large projects prefer
+`project.search` to find datasets and page this list instead of pulling it
+whole.
 
 #### 🟢 `project.action.add`
 Add new action.

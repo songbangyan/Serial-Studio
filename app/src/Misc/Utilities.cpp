@@ -108,9 +108,9 @@ QIcon Misc::Utilities::coloredSvgIcon(const QString& svgPath, const QColor& colo
   if (!renderer.isValid())
     return QIcon(svgPath);
 
-  const qreal dpr         = qApp->devicePixelRatio();
-  const QRectF logical    = QRectF(0, 0, 32, 32);
-  const QSize pixelSize   = (logical.size() * dpr).toSize();
+  const qreal dpr       = qApp->devicePixelRatio();
+  const QRectF logical  = QRectF(0, 0, 32, 32);
+  const QSize pixelSize = (logical.size() * dpr).toSize();
 
   QPixmap pixmap(pixelSize);
   pixmap.setDevicePixelRatio(dpr);

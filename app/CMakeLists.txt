@@ -260,6 +260,7 @@ set(SOURCES
   src/API/Handlers/ProjectHandlerEntities.cpp
   src/API/Handlers/ProjectHandlerParser.cpp
   src/API/Handlers/ProjectHandlerBatch.cpp
+  src/API/Handlers/ProjectHandlerDiscovery.cpp
   src/API/Handlers/ConsoleHandler.cpp
   src/API/Handlers/ControlScriptHandler.cpp
   src/API/Handlers/CSVPlayerHandler.cpp

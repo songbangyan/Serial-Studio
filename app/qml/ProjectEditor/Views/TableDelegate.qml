@@ -666,10 +666,11 @@ ColumnLayout {
 
                 datasetColorDialog.open()
               }
+
               Layout.maximumWidth: 32
               Layout.alignment: Qt.AlignVCenter
-              icon.color: Cpp_ThemeManager.colors["table_text"]
               icon.source: "qrc:/icons/buttons/color.svg"
+              icon.color: Cpp_ThemeManager.colors["table_text"]
 
               background: Item {}
             }
@@ -680,11 +681,11 @@ ColumnLayout {
               enabled: colorPickerLoader.modelActive
               opacity: colorPickerLoader.modelActive ? 1 : 0.5
 
-              onClicked: colorPickerRow.commit("")
               Layout.maximumWidth: 32
               Layout.alignment: Qt.AlignVCenter
+              onClicked: colorPickerRow.commit("")
+              icon.source: "qrc:/icons/buttons/close.svg"
               icon.color: Cpp_ThemeManager.colors["table_text"]
-              icon.source: "qrc:/icons/project-editor/actions/clear.svg"
 
               background: Item {}
             }
