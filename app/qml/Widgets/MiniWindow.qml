@@ -40,12 +40,23 @@ Item {
   property bool windowControlsVisible: true
 
   //
-  // Drag-region geometry consumed by the C++ window manager.
+  // Progressive caption collapse: close button + drag strip survive down to 48 px
+  //
+  readonly property bool showMaximize: root.width >= 88
+  readonly property bool showMinimize: root.width >= 120
+  readonly property bool showTitleLabel: root.width >= 148
+  readonly property bool showExternalButton: root.width >= 200
+
+  //
+  // Drag-region geometry consumed by the C++ window manager; hidden controls
+  // must contribute zero width or the caption hit-test eats the drag strip
   //
   readonly property int externControlWidth: externalWinBt.width
   readonly property int captionHeight: root.headerVisible ? 28 : 0
   readonly property int windowControlsWidth: root.windowControlsVisible
-                                             ? minBtMa.width + maxBtMa.width + closeBtMa.width
+                                             ? (root.showMinimize ? minBtMa.width : 0)
+                                               + (root.showMaximize ? maxBtMa.width : 0)
+                                               + closeBtMa.width
                                              : 0
 
   //
@@ -436,6 +447,8 @@ Item {
         icon.height: 18
         background: Item {}
         icon.color: _title.color
+        visible: root.showExternalButton
+        width: root.showExternalButton ? implicitWidth : 0
         Layout.alignment: Qt.AlignVCenter
         onClicked: root.externalWindowClicked()
         icon.source: "qrc:/icons/miniwindow/external.svg"
@@ -468,6 +481,7 @@ Item {
           text: root.title
           elide: Qt.ElideRight
           Layout.fillWidth: true
+          visible: root.showTitleLabel
           Layout.alignment: Qt.AlignVCenter
           horizontalAlignment: Qt.AlignLeft
           font: Cpp_Misc_CommonFonts.boldUiFont
@@ -475,11 +489,16 @@ Item {
                                 Cpp_ThemeManager.colors["window_caption_inactive_text"]
         }
 
+        Item {
+          Layout.fillWidth: true
+          visible: !root.showTitleLabel
+        }
+
         Controls.ToolButton {
           flat: true
           background: Item {}
           icon.color: _title.color
-          visible: root.windowControlsVisible
+          visible: root.windowControlsVisible && root.showMinimize
           Layout.alignment: Qt.AlignVCenter
           onClicked: root.minimizeClicked()
           icon.width: root.captionHeight / 2
@@ -504,7 +523,7 @@ Item {
               root.maximizeClicked()
           }
           background: Item {}
-          visible: root.windowControlsVisible
+          visible: root.windowControlsVisible && root.showMaximize
           Layout.alignment: Qt.AlignVCenter
           icon.width: root.captionHeight / 2
           icon.height: root.captionHeight / 2

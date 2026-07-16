@@ -342,6 +342,58 @@ Item {
       text: qsTr("Tile Windows")
       onTriggered: _wm.autoLayout()
     }
+
+    MenuSeparator {
+
+    }
+
+    MenuItem {
+      checkable: true
+      text: qsTr("Show Grid")
+      checked: _wm.gridEnabled
+      enabled: !_wm.autoLayoutEnabled
+      onTriggered: _wm.gridEnabled = checked
+    }
+
+    Menu {
+      title: qsTr("Grid Size")
+      enabled: !_wm.autoLayoutEnabled
+
+      MenuItem {
+        checkable: true
+        text: qsTr("%1 px").arg(8)
+        checked: _wm.gridSize === 8
+        onTriggered: _wm.gridSize = 8
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("%1 px").arg(16)
+        checked: _wm.gridSize === 16
+        onTriggered: _wm.gridSize = 16
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("%1 px").arg(24)
+        checked: _wm.gridSize === 24
+        onTriggered: _wm.gridSize = 24
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("%1 px").arg(32)
+        checked: _wm.gridSize === 32
+        onTriggered: _wm.gridSize = 32
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("%1 px").arg(64)
+        checked: _wm.gridSize === 64
+        onTriggered: _wm.gridSize = 64
+      }
+    }
   }
 
   //
@@ -376,6 +428,57 @@ Item {
       bottom: parent.bottom
       topMargin: commercialNotification.visible ? -1 : 0
       top: commercialNotification.visible ? commercialNotification.bottom : parent.top
+    }
+
+    //
+    // Manual-mode reference grid, painted under the windows and above the
+    // wallpaper; repaints only on size, grid-size, or theme changes
+    //
+    Canvas {
+      id: _gridCanvas
+
+      anchors.fill: parent
+      visible: _wm.gridEnabled && !_wm.autoLayoutEnabled && !_wm.frozen
+      onWidthChanged: requestPaint()
+      onHeightChanged: requestPaint()
+      onVisibleChanged: if (visible) requestPaint()
+
+      Connections {
+        target: _wm
+
+        function onGridSizeChanged() {
+          _gridCanvas.requestPaint()
+        }
+      }
+
+      Connections {
+        target: Cpp_ThemeManager
+
+        function onThemeChanged() {
+          _gridCanvas.requestPaint()
+        }
+      }
+
+      onPaint: {
+        const ctx = getContext("2d")
+        ctx.clearRect(0, 0, width, height)
+        ctx.strokeStyle = Cpp_ThemeManager.colors["canvas_grid"]
+        ctx.lineWidth = 1
+        ctx.beginPath()
+
+        const cell = Math.max(2, _wm.gridSize)
+        for (let gx = cell; gx < width; gx += cell) {
+          ctx.moveTo(gx + 0.5, 0)
+          ctx.lineTo(gx + 0.5, height)
+        }
+
+        for (let gy = cell; gy < height; gy += cell) {
+          ctx.moveTo(0, gy + 0.5)
+          ctx.lineTo(width, gy + 0.5)
+        }
+
+        ctx.stroke()
+      }
     }
 
     //
@@ -476,6 +579,102 @@ Item {
         anchors.rightMargin: _snapIndicator.touchesRight ? 1 : 0
         color: Cpp_ThemeManager.colors["snap_indicator_background"]
         border.color: Cpp_ThemeManager.colors["snap_indicator_border"]
+      }
+    }
+
+    //
+    // Manual-mode gesture overlay: smart-guide lines, equal-spacing gaps, the
+    // size-matched sibling highlight, and the live geometry badge
+    //
+    Item {
+      id: _gestureOverlay
+
+      anchors.fill: parent
+      z: _wm.zCounter + 9999
+      visible: _wm.manualGestureActive && !_wm.autoLayoutEnabled && !_wm.frozen
+
+      Repeater {
+        model: _gestureOverlay.visible ? _wm.alignmentGuides : []
+
+        delegate: Rectangle {
+          required property var modelData
+
+          x: modelData.x
+          y: modelData.y
+          width: Math.max(1, modelData.width)
+          height: Math.max(1, modelData.height)
+          color: Cpp_ThemeManager.colors["alignment_guide"]
+        }
+      }
+
+      Repeater {
+        model: _gestureOverlay.visible ? _wm.spacingIndicators : []
+
+        delegate: Item {
+          id: _spacingDelegate
+
+          required property var modelData
+
+          x: modelData.x
+          y: modelData.y
+          width: Math.max(1, modelData.width)
+          height: Math.max(1, modelData.height)
+
+          Rectangle {
+            opacity: 0.2
+            anchors.fill: parent
+            color: Cpp_ThemeManager.colors["alignment_guide"]
+          }
+
+          Label {
+            anchors.centerIn: parent
+            text: _spacingDelegate.modelData.gap
+            color: Cpp_ThemeManager.colors["alignment_guide"]
+            font: Cpp_Misc_CommonFonts.customUiFont(0.9, true)
+            visible: implicitWidth < _spacingDelegate.width - 2
+                     || implicitWidth < _spacingDelegate.height - 2
+          }
+        }
+      }
+
+      Rectangle {
+        border.width: 2
+        color: "transparent"
+        x: _wm.sizeMatchRect.x
+        y: _wm.sizeMatchRect.y
+        visible: _wm.sizeMatchVisible
+        width: _wm.sizeMatchRect.width
+        height: _wm.sizeMatchRect.height
+        border.color: Cpp_ThemeManager.colors["alignment_guide"]
+      }
+
+      Rectangle {
+        id: _gestureBadge
+
+        radius: 4
+        border.width: 1
+        implicitWidth: _badgeLabel.implicitWidth + 12
+        implicitHeight: _badgeLabel.implicitHeight + 6
+        color: Cpp_ThemeManager.colors["widget_window"]
+        border.color: Cpp_ThemeManager.colors["alignment_guide"]
+
+        readonly property rect g: _wm.manualGestureGeometry
+
+        x: Math.min(Math.max(4, g.x + (g.width - width) / 2),
+                    Math.max(4, _gestureOverlay.width - width - 4))
+        y: g.y >= height + 8 ? g.y - height - 6
+                             : Math.min(g.y + g.height + 6,
+                                        _gestureOverlay.height - height - 4)
+
+        Label {
+          id: _badgeLabel
+
+          anchors.centerIn: parent
+          color: Cpp_ThemeManager.colors["text"]
+          font: Cpp_Misc_CommonFonts.customUiFont(0.9, true)
+          text: _gestureBadge.g.x + ", " + _gestureBadge.g.y + "   "
+                + _gestureBadge.g.width + " x " + _gestureBadge.g.height
+        }
       }
     }
 

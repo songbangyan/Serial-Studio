@@ -144,6 +144,30 @@ TABLE_API_SHIM = r"""
     var rec = REG[ORDER[idx]];
     if (rec.computed) write(rec, v);
   };
+
+  // Dataset raw/final model for datasetGetRaw / datasetGetFinal. Mirrors the C++
+  // rule: a NUMBER argument is always a uniqueId, a STRING is always an alias, and
+  // the two are never coerced into each other; an unknown selector yields undefined.
+  var DS_RAW = {}, DS_FINAL = {}, ALIAS = {};
+  globalThis.__defineDataset = function (uid, alias) {
+    if (!(uid in DS_RAW)) { DS_RAW[uid] = undefined; DS_FINAL[uid] = undefined; }
+    if (alias) ALIAS[alias] = uid;
+  };
+  globalThis.__setDatasetRaw = function (uid, v) { DS_RAW[uid] = v; };
+  globalThis.__setDatasetFinal = function (uid, v) { DS_FINAL[uid] = v; };
+  function dsResolve(sel) {
+    if (typeof sel === "number") return (sel in DS_RAW) ? sel : undefined;
+    if (typeof sel === "string") return ALIAS.hasOwnProperty(sel) ? ALIAS[sel] : undefined;
+    return undefined;
+  }
+  globalThis.datasetGetRaw = function (sel) {
+    var uid = dsResolve(sel);
+    return uid === undefined ? undefined : DS_RAW[uid];
+  };
+  globalThis.datasetGetFinal = function (sel) {
+    var uid = dsResolve(sel);
+    return uid === undefined ? undefined : DS_FINAL[uid];
+  };
 })();
 """
 

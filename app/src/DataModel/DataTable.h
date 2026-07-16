@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QHash>
+#include <QJSValue>
 #include <QMap>
 #include <QObject>
 #include <QPair>
@@ -89,6 +90,12 @@ public:
   [[nodiscard]] const RegisterValue* getDatasetRaw(int uniqueId) const;
   [[nodiscard]] const RegisterValue* getDatasetFinal(int uniqueId) const;
 
+  [[nodiscard]] const RegisterValue* getDatasetRawByAlias(const QString& alias) const;
+  [[nodiscard]] const RegisterValue* getDatasetFinalByAlias(const QString& alias) const;
+
+  [[nodiscard]] const RegisterValue* getDatasetRawByAliasInterned(const char* alias) const;
+  [[nodiscard]] const RegisterValue* getDatasetFinalByAliasInterned(const char* alias) const;
+
   [[nodiscard]] QMap<QString, QMap<QString, RegisterValue>> snapshot() const;
 
 private:
@@ -97,12 +104,18 @@ private:
                    const RegisterValue& defaultVal,
                    RegisterType type);
 
+  void registerDatasetAlias(const QString& alias, int uniqueId);
+
+  [[nodiscard]] std::pair<int, int> resolveAliasSlotsInterned(const char* alias,
+                                                              const char* kind) const;
+
   [[nodiscard]] int indexOf(const QString& table, const QString& reg) const;
 
   void captureRead(int slot) const;
 
   void noteMissingLookup(const QString& table, const QString& reg) const;
   void noteMissingDataset(int uniqueId, const char* kind) const;
+  void noteMissingAlias(const QString& alias, const char* kind) const;
 
 private:
   bool m_initialized;
@@ -112,6 +125,7 @@ private:
   std::vector<RegisterValue> m_storage;
   QHash<QPair<QString, QString>, int> m_index;
   QHash<int, std::pair<int, int>> m_datasetIndex;
+  QHash<QString, std::pair<int, int>> m_aliasIndex;
 
   std::vector<bool> m_isComputed;
   std::vector<quint64> m_version;
@@ -120,6 +134,7 @@ private:
 
   mutable QSet<QPair<QString, QString>> m_warnedMissing;
   mutable QSet<int> m_warnedMissingDatasets;
+  mutable QSet<QString> m_warnedMissingAliases;
   mutable std::vector<int>* m_captureTarget;
 
   static constexpr int kInternedKeyCacheSize = 32;
@@ -132,6 +147,17 @@ private:
 
   mutable InternedKeyCacheEntry m_internedKeyCache[kInternedKeyCacheSize];
   mutable int m_internedKeyCacheNext = 0;
+
+  static constexpr int kInternedAliasCacheSize = 16;
+
+  struct InternedAliasCacheEntry {
+    const char* aliasPtr = nullptr;
+    int rawSlot          = -1;
+    int finSlot          = -1;
+  };
+
+  mutable InternedAliasCacheEntry m_internedAliasCache[kInternedAliasCacheSize];
+  mutable int m_internedAliasCacheNext = 0;
 };
 
 /**
@@ -153,8 +179,8 @@ public:
   Q_INVOKABLE [[nodiscard]] qint64 tableHandle(const QString& t, const QString& r);
   Q_INVOKABLE [[nodiscard]] QVariantList tableHandleMany(const QString& t,
                                                          const QVariantList& regs);
-  Q_INVOKABLE [[nodiscard]] QVariant datasetGetRaw(int uid);
-  Q_INVOKABLE [[nodiscard]] QVariant datasetGetFinal(int uid);
+  Q_INVOKABLE [[nodiscard]] QVariant datasetGetRaw(const QJSValue& sel);
+  Q_INVOKABLE [[nodiscard]] QVariant datasetGetFinal(const QJSValue& sel);
 #ifdef BUILD_COMMERCIAL
   Q_INVOKABLE qint64 mqttPublish(const QString& topic,
                                  const QByteArray& payload,

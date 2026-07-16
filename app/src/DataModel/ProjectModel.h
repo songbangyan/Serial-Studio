@@ -299,6 +299,8 @@ public slots:
   bool loadFromJsonDocument(const QJsonDocument& document, const QString& sourcePath = {});
   void importProjectFromJson(const QJsonObject& project, const QString& suggestedFileName);
 
+  Q_INVOKABLE [[nodiscard]] int seedDatasetAliases();
+
   void setTitle(const QString& title);
   void setControlScriptCode(const QString& code);
   void setPointCount(const int points);

@@ -56,6 +56,11 @@ painter contexts): `deviceWrite` (use `io.writeData` via `apiCall`), `actionFire
 instead), `clearPlots` / `setPlotPoints` / other `__ss_db` dashboard toggles (use the
 `dashboard.*` API commands).
 
+A dataset's raw/final value is still reachable here through the `__datasets__` system
+table: `project.dataTable.getValue { table: "__datasets__", name: "raw:<uniqueId>" }`
+(or `"final:<uniqueId>"`). If the dataset has a user-set `alias`, the register is also
+mirrored as `raw:<alias>` / `final:<alias>`.
+
 ## Canonical watchdog (connect-cycle safe)
 
 Use `ageMs` instead of bookkeeping arrival times with `Date.now()`: it is computed by the

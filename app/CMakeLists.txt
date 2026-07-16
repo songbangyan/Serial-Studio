@@ -211,6 +211,7 @@ set(SOURCES
   src/Misc/HelpCenter.cpp
   src/Misc/IconEngine.cpp
   src/Misc/GraphicsBackend.cpp
+  src/Misc/HighDpiScaling.cpp
   src/Misc/CrashTracker.cpp
   src/Misc/BackupManager.cpp
   src/Misc/CLI.cpp
@@ -223,6 +224,7 @@ set(SOURCES
   src/UI/Taskbar.cpp
   src/UI/TaskbarSettings.cpp
   src/UI/WindowManager.cpp
+  src/UI/SnapGuides.cpp
   src/UI/UISessionRegistry.cpp
   src/UI/WidgetRegistry.cpp
   src/UI/Widgets/LEDPanel.cpp
@@ -359,6 +361,7 @@ set(HEADERS
   src/Misc/HelpCenter.h
   src/Misc/IconEngine.h
   src/Misc/GraphicsBackend.h
+  src/Misc/HighDpiScaling.h
   src/Misc/CrashTracker.h
   src/Misc/BackupManager.h
   src/UI/Dashboard.h

@@ -141,8 +141,8 @@ console.error("...")
 // Data-table API (shared with transforms; see "Tables and registers")
 tableGet(tableName, registerName)              // -> number | string
 tableSet(tableName, registerName, value)       // user-table writes only
-datasetGetRaw(uniqueId)                        // raw value of any dataset
-datasetGetFinal(uniqueId)                      // final value of any dataset
+datasetGetRaw(uniqueId | "alias")              // raw value of any dataset (string = alias, number = uniqueId)
+datasetGetFinal(uniqueId | "alias")            // final value of any dataset
 
 // Closed-loop control APIs (shared with parsers and transforms)
 deviceWrite(data, sourceId?)                   // -> { ok, error? }
@@ -275,9 +275,11 @@ Two register types:
 
 A system-managed table named `__datasets__` is **always** present. It
 holds two registers per dataset: `raw:<uniqueId>` and `final:<uniqueId>`,
-populated by the FrameBuilder. You almost never read it through
-`tableGet`. Use `datasetGetRaw(uniqueId)` / `datasetGetFinal(uniqueId)`
-instead, which are faster and more legible.
+populated by the FrameBuilder. A dataset with a user-set `alias` also mirrors
+as `raw:<alias>` / `final:<alias>`. You almost never read it through
+`tableGet`. Use `datasetGetRaw(uniqueId | "alias")` /
+`datasetGetFinal(uniqueId | "alias")` instead — a string arg is an alias, a
+number a `uniqueId` — which are faster and more legible.
 
 For your own tables:
 

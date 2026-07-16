@@ -488,6 +488,22 @@ Widgets.Pane {
         }
 
         //
+        // Project-wide: fill every empty dataset alias from its title (existing aliases are
+        // left untouched), so getDataset-style script/API lookups get stable names in one action
+        //
+        MenuSeparator {
+          height: implicitHeight
+        }
+
+        MenuItem {
+          icon.width: 16
+          icon.height: 16
+          text: qsTr("Seed Aliases from Titles")
+          icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+          onTriggered: Cpp_JSON_ProjectModel.seedDatasetAliases()
+        }
+
+        //
         // Folder actions (workspaces, groups, shared-memory tables)
         //
         MenuSeparator {

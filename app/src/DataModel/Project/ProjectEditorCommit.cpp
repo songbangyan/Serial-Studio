@@ -25,6 +25,7 @@
 #include <QFileInfo>
 #include <QHash>
 #include <QJsonObject>
+#include <QMessageBox>
 #include <QSet>
 #include <QTimer>
 
@@ -556,12 +557,70 @@ void DataModel::ProjectEditor::onDatasetCommonItemChanged(QStandardItem* item,
     case kDatasetView_Color:
       dataset.color = value.toString().simplified();
       break;
+    case kDatasetView_Alias:
+      dataset.alias = value.toString().simplified();
+      break;
     case kDatasetView_TransformCode:
       dataset.transformCode = value.toString();
       break;
     default:
       break;
   }
+}
+
+/**
+ * @brief Returns true if @a alias is already assigned to a dataset other than @a selfUniqueId.
+ */
+bool DataModel::ProjectEditor::datasetAliasInUse(const QString& alias, int selfUniqueId) const
+{
+  for (const auto& group : m_projectModelRef.groups()) {
+    for (const auto& other : group.datasets)
+      if (other.uniqueId != selfUniqueId && other.alias == alias)
+        return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief Validates a proposed alias for the selected dataset: rejects a duplicate (message box +
+ *        deferred form snap-back) and warns on an all-digit alias. False means do not apply.
+ */
+bool DataModel::ProjectEditor::validateSelectedDatasetAlias(const QString& newAlias)
+{
+  if (newAlias.isEmpty())
+    return true;
+
+  if (datasetAliasInUse(newAlias, m_selectedDataset.uniqueId)) {
+    Misc::Utilities::showMessageBox(
+      tr("Alias \"%1\" is already in use").arg(newAlias),
+      tr("Dataset aliases must be unique across the project. The change was not applied."),
+      QMessageBox::Warning,
+      tr("Duplicate Alias"));
+
+    const int uid = m_selectedDataset.uniqueId;
+    QTimer::singleShot(0, this, [this, uid] {
+      if (m_selectedDataset.uniqueId == uid)
+        buildDatasetModel(m_selectedDataset);
+    });
+    return false;
+  }
+
+  bool allDigits = true;
+  for (const QChar c : newAlias)
+    if (!c.isDigit())
+      allDigits = false;
+
+  if (allDigits)
+    Misc::Utilities::showMessageBox(
+      tr("Alias \"%1\" contains only digits").arg(newAlias),
+      tr("Scripts must quote it as a string, e.g. getDataset(\"%1\"); a numeric argument is read "
+         "as a uniqueId, not this alias.")
+        .arg(newAlias),
+      QMessageBox::Information,
+      tr("Numeric Alias"));
+
+  return true;
 }
 
 /**
@@ -832,6 +891,8 @@ void DataModel::ProjectEditor::onDatasetItemChanged(QStandardItem* item)
     if (windowIdx < 0 || windowIdx >= m_fftWindowValues.size())
       return;
   }
+  if (idInt == kDatasetView_Alias && !validateSelectedDatasetAlias(value.toString().simplified()))
+    return;
 
   onDatasetCommonItemChanged(item, m_selectedDataset);
   onDatasetWidgetItemChanged(item, m_selectedDataset);

@@ -22,7 +22,6 @@
 
 #include "WindowManager.h"
 
-#include <optional>
 #include <QApplication>
 #include <QFile>
 #include <QFileDialog>
@@ -33,6 +32,7 @@
 
 #include "SerialStudio.h"
 #include "UI/Dashboard.h"
+#include "UI/SnapGuides.h"
 #include "UI/Taskbar.h"
 #include "UI/UISessionRegistry.h"
 
@@ -165,33 +165,51 @@ static QRect liftSnapBottom(QRect rect, int ch)
 }
 
 /**
- * @brief Returns the manual-mode snap rectangle for the dragged window's edges.
+ * @brief Maps a resize edge to the axis edges the gesture is moving.
  */
-static std::optional<QRect> computeSnapRect(
-  int left, int top, int right, int bottom, int cw, int ch)
+static UI::Snap::MovingEdges movingEdgesFor(const UI::WindowManager::ResizeEdge edge)
 {
-  if (left <= 0 && top <= 0)
-    return QRect(0, 0, cw / 2, ch / 2);
+  using ResizeEdge = UI::WindowManager::ResizeEdge;
+  const bool left =
+    edge == ResizeEdge::Left || edge == ResizeEdge::TopLeft || edge == ResizeEdge::BottomLeft;
+  const bool right =
+    edge == ResizeEdge::Right || edge == ResizeEdge::TopRight || edge == ResizeEdge::BottomRight;
+  const bool top =
+    edge == ResizeEdge::Top || edge == ResizeEdge::TopLeft || edge == ResizeEdge::TopRight;
+  const bool bottom =
+    edge == ResizeEdge::Bottom || edge == ResizeEdge::BottomLeft || edge == ResizeEdge::BottomRight;
+  return {left, right, top, bottom};
+}
 
-  if (right >= cw && top <= 0)
-    return QRect(cw / 2, 0, cw / 2, ch / 2);
+/**
+ * @brief Serializes guide lines and spacing gaps into the QVariantList shape the
+ *        QML overlay consumes.
+ */
+static void snapVisualsToVariants(const UI::Snap::SnapResult& result,
+                                  QVariantList& guides,
+                                  QVariantList& spacings)
+{
+  guides.reserve(result.guides.size());
+  for (const auto& guide : result.guides) {
+    QVariantMap entry;
+    entry["x"]      = guide.rect.x();
+    entry["y"]      = guide.rect.y();
+    entry["width"]  = guide.rect.width();
+    entry["height"] = guide.rect.height();
+    entry["center"] = guide.kind == UI::Snap::GuideKind::Center;
+    guides.append(entry);
+  }
 
-  if (left <= 0 && bottom >= ch)
-    return liftSnapBottom(QRect(0, ch / 2, cw / 2, ch / 2), ch);
-
-  if (right >= cw && bottom >= ch)
-    return liftSnapBottom(QRect(cw / 2, ch / 2, cw / 2, ch / 2), ch);
-
-  if (top <= 0)
-    return QRect(0, 0, cw, ch);
-
-  if (left <= 0)
-    return liftSnapBottom(QRect(0, 0, cw / 2, ch), ch);
-
-  if (right >= cw)
-    return liftSnapBottom(QRect(cw / 2, 0, cw / 2, ch), ch);
-
-  return std::nullopt;
+  spacings.reserve(result.spacings.size());
+  for (const auto& spacing : result.spacings) {
+    QVariantMap entry;
+    entry["x"]      = spacing.rect.x();
+    entry["y"]      = spacing.rect.y();
+    entry["width"]  = spacing.rect.width();
+    entry["height"] = spacing.rect.height();
+    entry["gap"]    = spacing.gap;
+    spacings.append(entry);
+  }
 }
 
 /**
@@ -508,6 +526,9 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   , m_lastCanvasHeight(0)
   , m_resizeEdge(ResizeEdge::None)
   , m_snapIndicatorVisible(false)
+  , m_gridEnabled(false)
+  , m_gridSize(16)
+  , m_manualGestureActive(false)
   , m_taskbar(nullptr)
   , m_dragWindow(nullptr)
   , m_targetWindow(nullptr)
@@ -521,6 +542,8 @@ UI::WindowManager::WindowManager(QQuickItem* parent)
   setAcceptedMouseButtons(Qt::AllButtons);
 
   m_backgroundImage = m_settings.value("WindowManager_Wallpaper").toString();
+  m_gridEnabled     = m_settings.value("WindowManager_GridEnabled", false).toBool();
+  m_gridSize        = qBound(2, m_settings.value("WindowManager_GridSize", 16).toInt(), 256);
 
   connect(this, &UI::WindowManager::widthChanged, this, &UI::WindowManager::triggerLayoutUpdate);
   connect(this, &UI::WindowManager::heightChanged, this, &UI::WindowManager::triggerLayoutUpdate);
@@ -586,6 +609,70 @@ bool UI::WindowManager::snapIndicatorVisible() const
 const QRect& UI::WindowManager::snapIndicator() const
 {
   return m_snapIndicator;
+}
+
+/**
+ * @brief Returns the grid cell size in pixels for manual-mode grid snapping.
+ */
+int UI::WindowManager::gridSize() const
+{
+  return m_gridSize;
+}
+
+/**
+ * @brief Returns whether the manual-mode layout grid (render + snap) is enabled.
+ */
+bool UI::WindowManager::gridEnabled() const
+{
+  return m_gridEnabled;
+}
+
+/**
+ * @brief Returns whether a size-matched sibling should be highlighted.
+ */
+bool UI::WindowManager::sizeMatchVisible() const
+{
+  return m_sizeMatchRect.isValid();
+}
+
+/**
+ * @brief Returns whether a manual move/resize gesture is currently in progress.
+ */
+bool UI::WindowManager::manualGestureActive() const
+{
+  return m_manualGestureActive;
+}
+
+/**
+ * @brief Returns the geometry of the sibling whose size the resize gesture matched.
+ */
+const QRect& UI::WindowManager::sizeMatchRect() const
+{
+  return m_sizeMatchRect;
+}
+
+/**
+ * @brief Returns the live geometry of the window being moved or resized.
+ */
+const QRect& UI::WindowManager::manualGestureGeometry() const
+{
+  return m_manualGestureGeometry;
+}
+
+/**
+ * @brief Returns the alignment guide lines for the active gesture.
+ */
+const QVariantList& UI::WindowManager::alignmentGuides() const
+{
+  return m_alignmentGuides;
+}
+
+/**
+ * @brief Returns the equal-spacing indicators for the active gesture.
+ */
+const QVariantList& UI::WindowManager::spacingIndicators() const
+{
+  return m_spacingIndicators;
 }
 
 /**
@@ -913,6 +1000,8 @@ void UI::WindowManager::clear()
   m_manualGeometries.clear();
   m_manualMargins.clear();
   m_pendingGeometries.clear();
+  m_snapSiblings.clear();
+  clearManualGesture();
 
   Q_EMIT zCounterChanged();
   Q_EMIT snapIndicatorChanged();
@@ -1162,6 +1251,9 @@ void UI::WindowManager::unregisterWindow(QQuickItem* item)
     }
   }
 
+  if (m_dragWindow || m_resizeWindow)
+    cacheSnapSiblings(m_dragWindow ? m_dragWindow : m_resizeWindow);
+
   triggerLayoutUpdate();
 }
 
@@ -1191,6 +1283,7 @@ void UI::WindowManager::setFrozen(const bool frozen)
   if (m_frozen) {
     ungrabMouse();
     unsetCursor();
+    clearManualGesture();
 
     m_dragWindow    = nullptr;
     m_targetWindow  = nullptr;
@@ -1205,6 +1298,33 @@ void UI::WindowManager::setFrozen(const bool frozen)
   }
 
   Q_EMIT frozenChanged();
+}
+
+/**
+ * @brief Enables or disables the manual-mode layout grid, persisting the choice.
+ */
+void UI::WindowManager::setGridEnabled(const bool enabled)
+{
+  if (m_gridEnabled == enabled)
+    return;
+
+  m_gridEnabled = enabled;
+  m_settings.setValue("WindowManager_GridEnabled", enabled);
+  Q_EMIT gridEnabledChanged();
+}
+
+/**
+ * @brief Sets the grid cell size in pixels (bounded to 2..256), persisting the choice.
+ */
+void UI::WindowManager::setGridSize(const int size)
+{
+  const int bounded = qBound(2, size, 256);
+  if (m_gridSize == bounded)
+    return;
+
+  m_gridSize = bounded;
+  m_settings.setValue("WindowManager_GridSize", bounded);
+  Q_EMIT gridSizeChanged();
 }
 
 /**
@@ -1319,27 +1439,93 @@ void UI::WindowManager::applyManualAnchors(const int newWidth, const int newHeig
 }
 
 /**
- * @brief Applies the manual snap indicator to the dragged window.
+ * @brief Caches the geometry of every visible normal window except the gesture
+ *        target, so per-move snap resolution never re-walks the window map.
  */
-void UI::WindowManager::applyManualSnap()
+void UI::WindowManager::cacheSnapSiblings(QQuickItem* target)
 {
-  if (!m_dragWindow || !m_snapIndicatorVisible)
-    return;
+  m_snapSiblings.clear();
+  m_snapSiblings.reserve(m_windows.size());
+  for (auto it = m_windows.constBegin(); it != m_windows.constEnd(); ++it) {
+    auto* win = it.value();
+    if (!win || win == target || !win->isVisible() || win->state() != "normal")
+      continue;
 
-  const int x = m_snapIndicator.x();
-  const int y = m_snapIndicator.y();
-  const int w = m_snapIndicator.width();
-  const int h = m_snapIndicator.height();
+    m_snapSiblings.append(extractGeometry(win));
+  }
+}
 
-  if (x == 0 && y == 0 && w >= width() && h >= height()) {
-    QMetaObject::invokeMethod(m_dragWindow, "maximizeClicked");
-    return;
+/**
+ * @brief Publishes the guide/spacing/size-match visuals of a snap resolution,
+ *        emitting only for the properties that actually changed.
+ */
+void UI::WindowManager::publishSnapGuides(const Snap::SnapResult& result)
+{
+  QVariantList guides;
+  QVariantList spacings;
+  snapVisualsToVariants(result, guides, spacings);
+
+  if (m_alignmentGuides != guides) {
+    m_alignmentGuides = std::move(guides);
+    Q_EMIT alignmentGuidesChanged();
   }
 
-  m_dragWindow->setX(x);
-  m_dragWindow->setY(y);
-  m_dragWindow->setWidth(w);
-  m_dragWindow->setHeight(h);
+  if (m_spacingIndicators != spacings) {
+    m_spacingIndicators = std::move(spacings);
+    Q_EMIT spacingIndicatorsChanged();
+  }
+
+  if (m_sizeMatchRect != result.sizeMatch) {
+    m_sizeMatchRect = result.sizeMatch;
+    Q_EMIT sizeMatchRectChanged();
+  }
+}
+
+/**
+ * @brief Clears the guide/spacing/size-match visuals, emitting only when needed.
+ */
+void UI::WindowManager::clearSnapGuides()
+{
+  if (!m_alignmentGuides.isEmpty()) {
+    m_alignmentGuides.clear();
+    Q_EMIT alignmentGuidesChanged();
+  }
+
+  if (!m_spacingIndicators.isEmpty()) {
+    m_spacingIndicators.clear();
+    Q_EMIT spacingIndicatorsChanged();
+  }
+
+  if (m_sizeMatchRect.isValid()) {
+    m_sizeMatchRect = QRect();
+    Q_EMIT sizeMatchRectChanged();
+  }
+}
+
+/**
+ * @brief Publishes the live geometry of the active manual gesture for the badge.
+ */
+void UI::WindowManager::publishManualGesture(const QRect& geometry)
+{
+  if (m_manualGestureActive && m_manualGestureGeometry == geometry)
+    return;
+
+  m_manualGestureActive   = true;
+  m_manualGestureGeometry = geometry;
+  Q_EMIT manualGestureChanged();
+}
+
+/**
+ * @brief Ends the manual gesture: hides the badge and clears every snap visual.
+ */
+void UI::WindowManager::clearManualGesture()
+{
+  clearSnapGuides();
+  if (!m_manualGestureActive)
+    return;
+
+  m_manualGestureActive = false;
+  Q_EMIT manualGestureChanged();
 }
 
 /**
@@ -1365,8 +1551,10 @@ void UI::WindowManager::constrainWindows()
     int winW = static_cast<int>(win->width());
     int winH = static_cast<int>(win->height());
 
-    const int minW = qMax(static_cast<int>(win->implicitWidth()), 100);
-    const int minH = qMax(static_cast<int>(win->implicitHeight()), 80);
+    const int floorW = autoLayoutEnabled() ? 100 : 48;
+    const int floorH = autoLayoutEnabled() ? 80 : 48;
+    const int minW   = qMax(static_cast<int>(win->implicitWidth()), floorW);
+    const int minH   = qMax(static_cast<int>(win->implicitHeight()), floorH);
 
     bool changed = false;
 
@@ -1758,26 +1946,6 @@ void UI::WindowManager::mouseMoveEvent(QMouseEvent* event)
 }
 
 /**
- * @brief Updates the manual-mode edge snap indicator based on the dragged window position.
- */
-void UI::WindowManager::updateManualSnapIndicator(
-  int newX, int newY, int w, int h, int canvasW, int canvasH)
-{
-  const auto snap = computeSnapRect(newX, newY, newX + w, newY + h, canvasW, canvasH);
-  if (snap.has_value()) {
-    m_snapIndicator        = *snap;
-    m_snapIndicatorVisible = true;
-    Q_EMIT snapIndicatorChanged();
-    return;
-  }
-
-  if (m_snapIndicatorVisible) {
-    m_snapIndicatorVisible = false;
-    Q_EMIT snapIndicatorChanged();
-  }
-}
-
-/**
  * @brief Applies a drag delta to the focused window and updates snap indicators.
  */
 void UI::WindowManager::handleDragMove(QMouseEvent* event, const QPoint& delta)
@@ -1789,23 +1957,37 @@ void UI::WindowManager::handleDragMove(QMouseEvent* event, const QPoint& delta)
   const int canvasW = static_cast<int>(width());
   const int canvasH = static_cast<int>(height());
 
-  if ((w >= canvasW - 20 || h >= canvasH - 20) && !autoLayoutEnabled()) {
-    w = static_cast<int>(m_dragWindow->implicitWidth());
-    h = static_cast<int>(m_dragWindow->implicitHeight());
-    m_dragWindow->setWidth(w);
-    m_dragWindow->setHeight(h);
+  if (!autoLayoutEnabled()) {
+    QRect rect(newX, newY, w, h);
+    if (event->modifiers() & Qt::AltModifier)
+      clearSnapGuides();
+
+    else {
+      const Snap::SnapInput in{rect,
+                               QSize(canvasW, canvasH),
+                               m_snapSiblings,
+                               Snap::kSnapThreshold,
+                               0,
+                               m_gridEnabled,
+                               m_gridSize};
+      const Snap::SnapResult res = Snap::resolveMoveSnap(in);
+      rect                       = res.rect;
+      publishSnapGuides(res);
+    }
+
+    const int x = qBound(0, rect.x(), qMax(0, canvasW - w));
+    const int y = qBound(0, rect.y(), qMax(0, canvasH - h));
+    m_dragWindow->setX(x);
+    m_dragWindow->setY(y);
+    publishManualGesture(QRect(x, y, w, h));
+    event->accept();
+    return;
   }
 
   newX = qBound(0, newX, canvasW - w);
   newY = qBound(0, newY, canvasH - h);
   m_dragWindow->setX(newX);
   m_dragWindow->setY(newY);
-
-  if (!autoLayoutEnabled()) {
-    updateManualSnapIndicator(newX, newY, w, h, canvasW, canvasH);
-    event->accept();
-    return;
-  }
 
   const QRect dragRect(newX, newY, w, h);
   m_targetWindow = findOverlapTarget(dragRect);
@@ -1899,6 +2081,24 @@ void UI::WindowManager::handleResizeMove(QMouseEvent* event, const QPoint& delta
 {
   QRect geometry = computeResizedGeometry(delta);
 
+  if (event->modifiers() & Qt::AltModifier)
+    clearSnapGuides();
+
+  else {
+    const int minSize = qMax(
+      1, static_cast<int>(qMin(m_resizeWindow->implicitWidth(), m_resizeWindow->implicitHeight())));
+    const Snap::SnapInput in{geometry,
+                             QSize(static_cast<int>(width()), static_cast<int>(height())),
+                             m_snapSiblings,
+                             Snap::kSnapThreshold,
+                             minSize,
+                             m_gridEnabled,
+                             m_gridSize};
+    const Snap::SnapResult res = Snap::resolveResizeSnap(in, movingEdgesFor(m_resizeEdge));
+    geometry                   = res.rect;
+    publishSnapGuides(res);
+  }
+
   const QRect unclamped = geometry;
   geometry.setX(qMax(0, geometry.x()));
   geometry.setY(qMax(0, geometry.y()));
@@ -1913,6 +2113,7 @@ void UI::WindowManager::handleResizeMove(QMouseEvent* event, const QPoint& delta
     m_resizeWindow->setY(geometry.y());
     m_resizeWindow->setWidth(geometry.width());
     m_resizeWindow->setHeight(geometry.height());
+    publishManualGesture(geometry);
     event->accept();
   }
 }
@@ -1954,6 +2155,7 @@ bool UI::WindowManager::startManualPress(const QPointF& pos, Qt::MouseButton but
   if (m_resizeEdge != ResizeEdge::None) {
     m_resizeWindow    = m_focusedWindow;
     m_initialGeometry = extractGeometry(m_focusedWindow);
+    cacheSnapSiblings(m_focusedWindow);
     grabMouse();
     return true;
   }
@@ -1973,6 +2175,7 @@ bool UI::WindowManager::startManualPress(const QPointF& pos, Qt::MouseButton but
 
   m_dragWindow      = m_focusedWindow;
   m_initialGeometry = extractGeometry(m_focusedWindow);
+  cacheSnapSiblings(m_focusedWindow);
   if (m_snapIndicatorVisible) {
     m_snapIndicatorVisible = false;
     Q_EMIT snapIndicatorChanged();
@@ -2142,7 +2345,6 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
   }
 
   else {
-    applyManualSnap();
     if (m_dragWindow)
       commitManualGeometry(m_dragWindow);
     else if (m_resizeWindow)
@@ -2151,6 +2353,7 @@ void UI::WindowManager::mouseReleaseEvent(QMouseEvent* event)
 
   ungrabMouse();
   unsetCursor();
+  clearManualGesture();
 
   if (m_snapIndicatorVisible) {
     m_snapIndicatorVisible = false;

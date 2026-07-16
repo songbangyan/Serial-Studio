@@ -174,9 +174,11 @@ declare `let alpha = 0.2` without clobbering each other.
 Transforms read and write two kinds of registers:
 
 **System table** (`__datasets__`, always present): two registers per
-dataset, `raw:<uniqueId>` and `final:<uniqueId>`. Read-only. Convenience
-helpers: `datasetGetRaw(uniqueId)` and `datasetGetFinal(uniqueId)`. Use
-those instead of `tableGet('__datasets__', 'raw:<uid>')`.
+dataset, `raw:<uniqueId>` and `final:<uniqueId>` (also mirrored as
+`raw:<alias>` / `final:<alias>` when the dataset has a user-set alias).
+Read-only. Convenience helpers: `datasetGetRaw(uniqueId | "alias")` and
+`datasetGetFinal(uniqueId | "alias")`. Use those instead of
+`tableGet('__datasets__', 'raw:<uid>')`.
 
 **User tables**: project-defined. Two register types:
 
@@ -195,9 +197,15 @@ tableHandle(tableName, registerName)           // -> handle (number), or -1; res
 tableHandleMany(tableName, registerNames)      // -> array of handles
 tableGetH(handle)                              // read by handle (fast path; no name lookup)
 tableSetH(handle, value)                       // write by handle (computed registers only)
-datasetGetRaw(uniqueId)                        // EARLIER dataset = this frame, later = previous frame
-datasetGetFinal(uniqueId)                      // EARLIER datasets only
+datasetGetRaw(uniqueId | "alias")              // EARLIER dataset = this frame, later = previous frame
+datasetGetFinal(uniqueId | "alias")            // EARLIER datasets only
 ```
+
+`datasetGetRaw`/`datasetGetFinal` take **either** a numeric `uniqueId` **or** a
+string dataset `alias` — a string is ALWAYS an alias, a number ALWAYS a
+uniqueId (no coercion). An unknown alias returns `undefined` with a one-time
+warning. An `alias` is an optional, unique, user-set name from the Project
+Editor; it survives `uniqueId` renumbering.
 
 For a transform that hits the same registers every frame, resolve handles
 once in a top-level variable and use `tableGetH`/`tableSetH`; a stale handle

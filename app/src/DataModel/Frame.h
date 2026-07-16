@@ -113,6 +113,7 @@ inline constexpr KeyView Overview("overviewDisplay");
 inline constexpr KeyView AlarmEnabled("alarmEnabled");
 inline constexpr KeyView AlarmBands("alarmBands");
 inline constexpr KeyView Color("color");
+inline constexpr KeyView Alias("alias");
 inline constexpr KeyView Label("label");
 inline constexpr KeyView Blink("blink");
 inline constexpr KeyView Severity("severity");
@@ -439,6 +440,7 @@ struct alignas(8) Dataset {
   QString units;           ///< Measurement units (e.g., degC)
   QString widget;          ///< Widget type (bar, gauge, etc.)
   QString color;           ///< Optional hex override; empty -> automatic (theme palette)
+  QString alias;           ///< Optional stable script/API name; empty -> address by uniqueId
   QString transformCode;   ///< Optional per-dataset transform script
   QString displayFormat =
     QStringLiteral("0d");  ///< Tick/value label format on analog widgets ("0d" = integer)
@@ -1132,6 +1134,9 @@ void read_io_settings(QByteArray& frameStart,
 
   if (!d.color.isEmpty())
     obj.insert(Keys::Color, d.color);
+
+  if (!d.alias.isEmpty())
+    obj.insert(Keys::Alias, d.alias);
 
   obj.insert(Keys::GroupId, d.groupId);
   obj.insert(Keys::DatasetId, d.datasetId);

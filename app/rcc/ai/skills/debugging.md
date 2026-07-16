@@ -153,9 +153,11 @@ compiled (project.validate) and that frames are arriving.
 
 ### "tableGet returns 0 / nothing in my transform"
 
-`tableGet(table, register)` and `datasetGetRaw/Final(uid)` return
+`tableGet(table, register)` and `datasetGetRaw/Final(uid | "alias")` return
 nil/empty when the key is missing AND log a one-shot warning to the
-runtime console. Look in the runtime log for
+runtime console. The dataset getters take either a numeric `uniqueId` or a
+string dataset `alias` (string = alias, number = uniqueId, no coercion); an
+unknown alias misses exactly like an unknown `uniqueId`. Look in the runtime log for
 `[DataTableStore] Missing register <table>/<reg>` or
 `[DataTableStore] datasetGet... called with unknown uniqueId N`.
 The warning fires on the FIRST miss per (table, register) pair --

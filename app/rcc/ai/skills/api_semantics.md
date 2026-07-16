@@ -49,6 +49,15 @@ const v = datasetGetFinal(uid)        // uid from the response above
 a dataset (or group) allocates a fresh `uniqueId`, so a copy is
 distinguishable from the original.
 
+**Alias — an optional, unique, user-owned name.** Separate from `uniqueId`
+(which stays the persisted stable identity); an alias survives `uniqueId`
+renumbering. Set/clear it with `project.dataset.update { alias: "..." }`
+(unique; empty string clears). Selectors that take a `uniqueId` parameter —
+`project.dataset.getByUniqueId`, `project.dataset.move`,
+`assistant.dataset.resolve`, and `dashboard.tailFrames`'s `uniqueIds` — accept
+a **string alias** there too: a JSON string is treated as an alias, a JSON
+number as a `uniqueId`. Don't invent aliases; they come from the user/editor.
+
 When users say "the third dataset," ask them which they mean: the
 project-editor row order is `datasetId`, the parser-output position is
 `index`. They CAN diverge if `index` was edited.
@@ -192,9 +201,11 @@ populate it directly; UART / network usually leave it 0.
   that collides across folders resolves to only one of them.
 
 `__datasets__` is the auto-generated system table. Each dataset has
-two registers: `raw:<uniqueId>` and `final:<uniqueId>`. You almost
-never read those directly; `datasetGetRaw` / `datasetGetFinal` are
-the typed shortcuts and avoid the string-key arithmetic.
+two registers: `raw:<uniqueId>` and `final:<uniqueId>` (also mirrored as
+`raw:<alias>` / `final:<alias>` when the dataset has a user-set alias). You
+almost never read those directly; `datasetGetRaw` / `datasetGetFinal` are
+the typed shortcuts (each accepts a numeric `uniqueId` or a string `alias`)
+and avoid the string-key arithmetic.
 
 ## Dataset options: slugs preferred, bitflags accepted
 

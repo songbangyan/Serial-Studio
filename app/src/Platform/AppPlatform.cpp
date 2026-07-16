@@ -429,7 +429,7 @@ char** injectPlatformArg(int& argc, char** argv, const char* platform)
 // code-verify on
 
 /**
- * @brief Performs platform fixups, fractional scaling, and WebEngine init. The performance
+ * @brief Performs platform fixups and WebEngine init. The performance
  *        hints honor "App/PerformanceMode" (Misc::ModuleManager), read here via raw QSettings
  *        because this runs before QApplication and the singletons exist.
  */
@@ -456,9 +456,6 @@ void prepareEnvironment(int& argc, char**& argv, const QString& shortcutPath)
     enableMacPerformanceMode();
 #  endif
 #endif
-
-  auto policy = Qt::HighDpiScaleFactorRoundingPolicy::PassThrough;
-  QApplication::setHighDpiScaleFactorRoundingPolicy(policy);
 
 #ifdef SERIAL_STUDIO_WITH_WEBENGINE
 #  if defined(Q_OS_LINUX)

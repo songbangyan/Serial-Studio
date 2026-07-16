@@ -49,7 +49,9 @@ The data-table API is injected here too. A table inside folders is addressed
 by its full `/`-joined folder path (top-level tables are bare names);
 `project.dataTable.list` reports that path. For a parser that writes many
 registers per frame, resolve handles once at load with `tableHandle` and use
-`tableGetH`/`tableSetH` on the hot path. Full reference in the transform and
+`tableGetH`/`tableSetH` on the hot path. `datasetGetRaw`/`datasetGetFinal`
+accept either a numeric `uniqueId` or a string dataset `alias` (string =
+alias, number = uniqueId; no coercion). Full reference in the transform and
 SDK docs.
 
 ## Performance

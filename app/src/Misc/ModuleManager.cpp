@@ -74,6 +74,7 @@
 #include "Misc/ExtensionManager.h"
 #include "Misc/GraphicsBackend.h"
 #include "Misc/HelpCenter.h"
+#include "Misc/HighDpiScaling.h"
 #include "Misc/IconEngine.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
@@ -768,6 +769,7 @@ void Misc::ModuleManager::registerCoreContextProperties(QQmlContext* ctx)
   ctx->setContextProperty("Cpp_ExtensionManager", &Misc::ExtensionManager::instance());
   ctx->setContextProperty("Cpp_Misc_IconEngine", &Misc::IconEngine::instance());
   ctx->setContextProperty("Cpp_Misc_GraphicsBackend", &Misc::GraphicsBackend::instance());
+  ctx->setContextProperty("Cpp_Misc_HighDpiScaling", &Misc::HighDpiScaling::instance());
   ctx->setContextProperty("Cpp_Misc_CrashTracker", &Misc::CrashTracker::instance());
   ctx->setContextProperty("Cpp_Misc_BackupManager", &Misc::BackupManager::instance());
   ctx->setContextProperty("Cpp_Benchmark_Runner", &Benchmark::BenchmarkRunner::instance());

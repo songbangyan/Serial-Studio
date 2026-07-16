@@ -169,6 +169,60 @@ void DataModel::ProjectModel::updateDataset(const int groupId,
 }
 
 /**
+ * @brief Returns @a base when unused, otherwise base with the lowest '-N' suffix (N>=2) not already
+ *        in @a used; the try count is bounded by the used-set size so it always terminates.
+ */
+static QString uniqueAliasCandidate(const QString& base, const QSet<QString>& used)
+{
+  if (!used.contains(base))
+    return base;
+
+  const int maxTries = static_cast<int>(used.size()) + 2;
+  for (int suffix = 2; suffix < maxTries + 2; ++suffix) {
+    const QString candidate = QStringLiteral("%1-%2").arg(base, QString::number(suffix));
+    if (!used.contains(candidate))
+      return candidate;
+  }
+
+  return base;
+}
+
+/**
+ * @brief Fills every empty dataset alias from its title (deduplicated), leaving existing aliases
+ *        untouched; returns the number seeded. One modified state + autosave for the whole batch.
+ */
+int DataModel::ProjectModel::seedDatasetAliases()
+{
+  QSet<QString> used;
+  for (const auto& group : m_groups)
+    for (const auto& ds : group.datasets)
+      if (!ds.alias.isEmpty())
+        used.insert(ds.alias);
+
+  int seeded = 0;
+  for (auto& group : m_groups) {
+    for (auto& ds : group.datasets) {
+      const QString base = ds.title.simplified();
+      if (!ds.alias.isEmpty() || base.isEmpty())
+        continue;
+
+      ds.alias = uniqueAliasCandidate(base, used);
+      used.insert(ds.alias);
+      ++seeded;
+    }
+  }
+
+  if (seeded > 0) {
+    m_runtimeDirty = true;
+    setModified(true);
+    Q_EMIT groupsChanged();
+    scheduleAutoSave();
+  }
+
+  return seeded;
+}
+
+/**
  * @brief Enables or disables a group; a disabled group is excluded from frame building while the
  *        editor still shows it greyed. Refreshes the runtime frame so the dashboard updates at
  * once.

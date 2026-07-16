@@ -176,10 +176,10 @@ Every transform has access to four built-in functions for reading and writing th
 |--------------------------------|--------------------------------|---------|
 | `tableGet(table, reg)`         | number, string, or nil/undefined | Read a user-defined register |
 | `tableSet(table, reg, value)`  | nothing                        | Write a **computed** register (constants are read-only) |
-| `datasetGetRaw(uniqueId)`      | number, string, or nil/undefined | Raw (pre-transform) value of any dataset in the current frame |
-| `datasetGetFinal(uniqueId)`    | number, string, or nil/undefined | Final (post-transform) value of any dataset already processed in the current frame |
+| `datasetGetRaw(uniqueId \| alias)`   | number, string, or nil/undefined | Raw (pre-transform) value of any dataset in the current frame |
+| `datasetGetFinal(uniqueId \| alias)` | number, string, or nil/undefined | Final (post-transform) value of any dataset already processed in the current frame |
 
-The API is identical in Lua and JavaScript. `table` and `reg` are strings. `uniqueId` is the integer unique ID shown next to each dataset in the Project Editor.
+The API is identical in Lua and JavaScript. `table` and `reg` are strings. The dataset lookup takes either the integer `uniqueId` shown next to each dataset in the Project Editor, or the dataset's alias string (the **Script Alias** field). A number argument is always a uniqueId and a string is always an alias, so `datasetGetRaw(128)` and `datasetGetRaw("128")` are different lookups. An unknown alias returns `nil`/`undefined` with a one-time console warning, the same as an unknown uniqueId.
 
 For a transform that touches the same registers on every value, resolving a name once to a **handle** and using `tableGetH` / `tableSetH` avoids the per-call name lookup. See [Fast table access with handles](SerialStudio-SDK.md#handles-the-fast-path-for-table-heavy-parsers).
 

@@ -199,7 +199,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetsList(const QString& 
 }
 
 /**
- * @brief Find a dataset by its uniqueId across all groups.
+ * @brief Find a dataset by its uniqueId (number) or alias (string) across all groups.
  */
 API::CommandResponse API::Handlers::ProjectHandler::datasetGetByUniqueId(const QString& id,
                                                                          const QJsonObject& params)
@@ -208,18 +208,12 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetGetByUniqueId(const Q
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: uniqueId"));
 
-  const int uniqueId        = params.value(Keys::UniqueId).toInt();
-  static auto& projectModel = DataModel::ProjectModel::instance();
-  const auto& groups        = projectModel.groups();
+  QString error;
+  const auto match = resolveDatasetSelector(params.value(Keys::UniqueId), error);
+  if (!match.dataset)
+    return CommandResponse::makeError(id, ErrorCode::InvalidParam, error);
 
-  for (const auto& group : groups) {
-    for (const auto& dataset : group.datasets)
-      if (dataset.uniqueId == uniqueId)
-        return CommandResponse::makeSuccess(id, buildDatasetObject(dataset, group));
-  }
-
-  return CommandResponse::makeError(
-    id, ErrorCode::InvalidParam, QStringLiteral("Dataset not found for uniqueId %1").arg(uniqueId));
+  return CommandResponse::makeSuccess(id, buildDatasetObject(*match.dataset, *match.group));
 }
 
 /**
@@ -371,34 +365,21 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& i
     return CommandResponse::makeError(
       id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: newPosition"));
 
-  const int uniqueId    = params.value(Keys::UniqueId).toInt();
   const int newPosition = params.value(QStringLiteral("newPosition")).toInt();
   const bool isDryRun   = params.value(QStringLiteral("dryRun")).toBool(false);
 
-  static auto& pm    = DataModel::ProjectModel::instance();
-  const auto& groups = pm.groups();
+  QString error;
+  const auto match = resolveDatasetSelector(params.value(Keys::UniqueId), error);
+  if (!match.dataset)
+    return CommandResponse::makeError(id, ErrorCode::InvalidParam, error);
 
-  const DataModel::Group* matchGroup     = nullptr;
-  const DataModel::Dataset* matchDataset = nullptr;
-  for (const auto& group : groups) {
-    for (const auto& dataset : group.datasets) {
-      if (dataset.uniqueId == uniqueId) {
-        matchGroup   = &group;
-        matchDataset = &dataset;
-        break;
-      }
-    }
-    if (matchDataset)
-      break;
-  }
+  const DataModel::Group* matchGroup     = match.group;
+  const DataModel::Dataset* matchDataset = match.dataset;
 
-  if (!matchDataset)
-    return CommandResponse::makeError(
-      id,
-      ErrorCode::InvalidParam,
-      QStringLiteral("Dataset not found for uniqueId %1").arg(uniqueId));
+  static auto& pm = DataModel::ProjectModel::instance();
 
-  const int oldPosition = matchDataset->datasetId;
+  const int datasetUniqueId = matchDataset->uniqueId;
+  const int oldPosition     = matchDataset->datasetId;
   const int clampedNewId =
     std::clamp(newPosition, 0, static_cast<int>(matchGroup->datasets.size()) - 1);
 
@@ -427,7 +408,7 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetMove(const QString& i
   if (isDryRun)
     result[QStringLiteral("dryRun")] = true;
 
-  result[Keys::UniqueId]                = uniqueId;
+  result[Keys::UniqueId]                = datasetUniqueId;
   result[Keys::GroupId]                 = matchGroup->groupId;
   result[QStringLiteral("oldPosition")] = oldPosition;
   result[QStringLiteral("newPosition")] = clampedNewId;

@@ -40,6 +40,7 @@ Widgets.Pane {
   readonly property int rowHeight: 30
   readonly property int colIdWidth: 80
   readonly property int colGroupWidth: 200
+  readonly property int colAliasWidth: 160
   readonly property int colUnitsWidth: 120
   readonly property int colActionWidth: 40
 
@@ -83,6 +84,7 @@ Widgets.Pane {
                            match(paddedId(d.uniqueId)) ||
                            match(d.groupTitle) ||
                            match(d.title) ||
+                           match(d.alias) ||
                            match(d.units)
                            )
   }
@@ -179,6 +181,7 @@ Widgets.Pane {
           { title: qsTr("ID"),      width: root.colIdWidth     },
           { title: qsTr("Group"),   width: root.colGroupWidth  },
           { title: qsTr("Dataset"), width: -1                  },
+          { title: qsTr("Alias"),   width: root.colAliasWidth  },
           { title: qsTr("Units"),   width: root.colUnitsWidth  },
           { title: "",              width: root.colActionWidth }
         ]
@@ -260,6 +263,23 @@ Widgets.Pane {
             }
 
             Label {
+              leftPadding: 8
+              text: modelData.alias
+              elide: Text.ElideRight
+              color: rowDelegate.textColor
+              Layout.alignment: Qt.AlignVCenter
+              font: Cpp_Misc_CommonFonts.monoFont
+              opacity: modelData.alias ? 1.0 : 0.5
+              Layout.preferredWidth: root.colAliasWidth
+            }
+
+            Rectangle {
+              implicitWidth: 1
+              Layout.fillHeight: true
+              color: rowDelegate.separatorColor
+            }
+
+            Label {
               opacity: 0.75
               leftPadding: 8
               text: modelData.units
@@ -282,7 +302,11 @@ Widgets.Pane {
             ToolButton {
               id: copyBtn
 
-              readonly property string accessCode: "datasetGetFinal(" + modelData.uniqueId + ")"
+              readonly property string accessCode: {
+                const a = String(modelData.alias || "")
+                return a.length > 0 ? "datasetGetFinal(\"" + a + "\")"
+                                    : "datasetGetFinal(" + modelData.uniqueId + ")"
+              }
 
               padding: 2
               flat: true

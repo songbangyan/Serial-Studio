@@ -200,7 +200,7 @@ void DataModel::ProjectEditor::buildMultiDatasetModel()
     const QVariant blank = intWidget ? QVariant(-1) : QVariant(QString());
 
     const int pt = ptVar.toInt();
-    if (pt == kDatasetView_Title || pt == kDatasetView_Index) {
+    if (pt == kDatasetView_Title || pt == kDatasetView_Index || pt == kDatasetView_Alias) {
       it->setEditable(false);
       it->setData(false, Active);
       it->setData(blank, EditableValue);

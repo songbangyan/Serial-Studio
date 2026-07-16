@@ -2637,15 +2637,17 @@ static int luaTableSetH(lua_State* L)
 }
 
 /**
- * @brief Lua C closure for datasetGetRaw(uniqueId).
+ * @brief Lua C closure for datasetGetRaw(uniqueIdOrAlias). A string arg is always an alias, a
+ *        number always a uniqueId -- never coerce one to the other (lua_type, not lua_isnumber).
  */
 static int luaDatasetGetRaw(lua_State* L)
 {
   auto* store = static_cast<DataModel::DataTableStore*>(lua_touserdata(L, lua_upvalueindex(1)));
   Q_ASSERT(store);
 
-  const int uid   = static_cast<int>(luaL_checkinteger(L, 1));
-  const auto* val = store->getDatasetRaw(uid);
+  const auto* val = (lua_type(L, 1) == LUA_TSTRING)
+                    ? store->getDatasetRawByAliasInterned(lua_tostring(L, 1))
+                    : store->getDatasetRaw(static_cast<int>(luaL_checkinteger(L, 1)));
 
   if (!val) {
     lua_pushnil(L);
@@ -2663,15 +2665,17 @@ static int luaDatasetGetRaw(lua_State* L)
 }
 
 /**
- * @brief Lua C closure for datasetGetFinal(uniqueId).
+ * @brief Lua C closure for datasetGetFinal(uniqueIdOrAlias). A string arg is always an alias, a
+ *        number always a uniqueId -- never coerce one to the other (lua_type, not lua_isnumber).
  */
 static int luaDatasetGetFinal(lua_State* L)
 {
   auto* store = static_cast<DataModel::DataTableStore*>(lua_touserdata(L, lua_upvalueindex(1)));
   Q_ASSERT(store);
 
-  const int uid   = static_cast<int>(luaL_checkinteger(L, 1));
-  const auto* val = store->getDatasetFinal(uid);
+  const auto* val = (lua_type(L, 1) == LUA_TSTRING)
+                    ? store->getDatasetFinalByAliasInterned(lua_tostring(L, 1))
+                    : store->getDatasetFinal(static_cast<int>(luaL_checkinteger(L, 1)));
 
   if (!val) {
     lua_pushnil(L);

@@ -109,7 +109,7 @@ The shared data tables are the cross-script blackboard (see [Data Tables](Data-T
 |---|---|---|
 | `tableGet(table, register)` | value or `undefined` | `tableGet(t, r) || fallback` works for missing registers. |
 | `tableSet(table, register, value)` | none | Stages the new value into the live runtime. An undefined/nil value is ignored. |
-| `datasetGetRaw(uniqueId)` / `datasetGetFinal(uniqueId)` | value | Read another dataset's pre/post-transform value by unique id. |
+| `datasetGetRaw(uniqueId \| alias)` / `datasetGetFinal(uniqueId \| alias)` | value | Read another dataset's pre/post-transform value. A number argument is a uniqueId; a string argument is the dataset's alias. |
 
 In a Control Loop these calls marshal to the GUI thread, so each costs a round-trip: read once per `loop()` pass, not in a tight inner loop.
 

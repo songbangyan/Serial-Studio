@@ -525,6 +525,7 @@ QVariantList DataModel::ProjectEditor::systemDatasetsSummary() const
 
       QVariantMap row;
       row[Keys::UniqueId] = uid;
+      row[Keys::Alias]    = ds.alias;
       row["groupTitle"]   = group.title;
       row["title"]        = ds.title;
       row["units"]        = ds.units;

@@ -25,6 +25,7 @@
 
 #include "API/CommandRegistry.h"
 #include "API/EnumLabels.h"
+#include "API/Handlers/ProjectApiSupport.h"
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
@@ -184,14 +185,16 @@ void API::Handlers::DashboardHandler::registerQueryCommands()
     countProp.insert(QStringLiteral("maximum"), 256);
 
     QJsonObject uidsItem;
-    uidsItem.insert(QStringLiteral("type"), QStringLiteral("integer"));
+    uidsItem.insert(QStringLiteral("type"),
+                    QJsonArray{QStringLiteral("integer"), QStringLiteral("string")});
 
     QJsonObject uidsProp;
     uidsProp.insert(QStringLiteral("type"), QStringLiteral("array"));
     uidsProp.insert(QStringLiteral("items"), uidsItem);
     uidsProp.insert(QStringLiteral("description"),
-                    QStringLiteral("Optional filter: only datasets whose uniqueId is in "
-                                   "this list. Empty/missing = every plot-enabled dataset."));
+                    QStringLiteral("Optional filter: only datasets whose uniqueId (integer) or "
+                                   "alias (string) is in this list; unresolved aliases are "
+                                   "skipped. Empty/missing = every plot-enabled dataset."));
 
     QJsonObject props;
     props.insert(QStringLiteral("count"), countProp);
@@ -462,6 +465,23 @@ API::CommandResponse API::Handlers::DashboardHandler::getData(const QString& id,
 }
 
 /**
+ * @brief Adds one tailFrames "uniqueIds" filter element -- a numeric uniqueId or a string alias --
+ *        to @p out; an unresolved alias is silently skipped, matching the filter's skip semantics.
+ */
+static void insertTailFrameFilterUid(const QJsonValue& selector, QSet<int>& out)
+{
+  if (!selector.isString()) {
+    out.insert(selector.toInt());
+    return;
+  }
+
+  QString error;
+  const auto match = API::Handlers::resolveDatasetSelector(selector, error);
+  if (match.dataset)
+    out.insert(match.dataset->uniqueId);
+}
+
+/**
  * @brief Returns the last N samples of every plot-enabled dataset.
  */
 API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& id,
@@ -476,7 +496,7 @@ API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& 
   if (params.contains(QStringLiteral("uniqueIds"))) {
     const auto arr = params.value(QStringLiteral("uniqueIds")).toArray();
     for (const auto& v : arr)
-      filterUids.insert(v.toInt());
+      insertTailFrameFilterUid(v, filterUids);
 
     filterActive = !filterUids.isEmpty();
   }

@@ -24,6 +24,7 @@
 #include <QHash>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QJsonValue>
 #include <QString>
 #include <QStringList>
 
@@ -136,6 +137,75 @@ inline QJsonObject buildDatasetObject(const DataModel::Dataset& dataset,
 
   dataset_obj[QStringLiteral("_explanations")] = explanations;
   return dataset_obj;
+}
+
+/**
+ * @brief A resolved dataset and its owning group; both null when resolution failed. The pointers
+ *        alias ProjectModel::groups() and are valid only until the next project mutation.
+ */
+struct DatasetMatch {
+  const DataModel::Group* group     = nullptr;
+  const DataModel::Dataset* dataset = nullptr;
+};
+
+/**
+ * @brief Returns the first dataset whose alias equals @p alias (assumed non-empty), or a null
+ *        match. Alias comparison is exact (whitespace already trimmed by the caller).
+ */
+[[nodiscard]] inline DatasetMatch findDatasetByAlias(const QString& alias)
+{
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  for (const auto& group : projectModel.groups()) {
+    for (const auto& dataset : group.datasets)
+      if (dataset.alias == alias)
+        return {&group, &dataset};
+  }
+
+  return {};
+}
+
+/**
+ * @brief Returns the dataset with the given stable uniqueId, or a null match.
+ */
+[[nodiscard]] inline DatasetMatch findDatasetByUniqueId(int uniqueId)
+{
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  for (const auto& group : projectModel.groups()) {
+    for (const auto& dataset : group.datasets)
+      if (dataset.uniqueId == uniqueId)
+        return {&group, &dataset};
+  }
+
+  return {};
+}
+
+/**
+ * @brief Resolves a dataset selector -- a numeric uniqueId or a string alias -- against the live
+ *        project. A string is always an alias and a number always a uniqueId. On failure @p error
+ *        names the unresolved selector; on success both match pointers are set.
+ */
+[[nodiscard]] inline DatasetMatch resolveDatasetSelector(const QJsonValue& selector, QString& error)
+{
+  if (selector.isString()) {
+    const QString alias = selector.toString().trimmed();
+    if (alias.isEmpty()) {
+      error = QStringLiteral("dataset alias cannot be empty");
+      return {};
+    }
+
+    const auto match = findDatasetByAlias(alias);
+    if (!match.dataset)
+      error = QStringLiteral("Dataset not found for alias '%1'").arg(alias);
+
+    return match;
+  }
+
+  const int uniqueId = selector.toInt();
+  const auto match   = findDatasetByUniqueId(uniqueId);
+  if (!match.dataset)
+    error = QStringLiteral("Dataset not found for uniqueId %1").arg(uniqueId);
+
+  return match;
 }
 
 /**

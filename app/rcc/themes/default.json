@@ -127,6 +127,8 @@
 
     "snap_indicator_border":"#1A83CA",
     "snap_indicator_background":"#401A83CA",
+    "alignment_guide":"#E9328C",
+    "canvas_grid":"#3D6C7380",
 
     "table_text":"#232629",
     "table_cell_bg":"#f9f9f9",

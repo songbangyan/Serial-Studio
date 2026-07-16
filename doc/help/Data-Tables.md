@@ -43,6 +43,8 @@ Serial Studio maintains one built-in table called `__datasets__`, generated auto
 
 `<uniqueId>` is the integer unique ID shown next to each dataset in the Project Editor. For the rules around `uniqueId`, `datasetId`, and `index`, see the [Dataset Identity Model](Identity-Model.md).
 
+If a dataset has an alias set (the **Script Alias** field in the Project Editor), the same two registers are also exposed under that name, `raw:<alias>` and `final:<alias>`. This is how a Control Loop or the API reads a dataset value by alias: `tableGet("__datasets__", "final:ATAM1-CH1")` resolves the same value that `datasetGetFinal("ATAM1-CH1")` returns from a transform.
+
 In practice you'll rarely read `__datasets__` directly. The convenience functions `datasetGetRaw(uid)` and `datasetGetFinal(uid)` wrap it with a cleaner API and are the recommended way to read dataset values inside a transform.
 
 ## The transform API
@@ -53,8 +55,8 @@ Four functions are injected into every transform engine. Lua and JavaScript beha
 |--------------------------------|-----------------------------------------|---------|
 | `tableGet(table, reg)`         | table name, register name               | number / string / nil (Lua) / undefined (JS) |
 | `tableSet(table, reg, value)`  | table name, register name, number or string | nothing (no-op if the register is a constant or doesn't exist) |
-| `datasetGetRaw(uniqueId)`      | integer unique ID                       | number / string / nil / undefined |
-| `datasetGetFinal(uniqueId)`    | integer unique ID                       | number / string / nil / undefined |
+| `datasetGetRaw(uniqueId \| alias)`   | integer uniqueId or alias string        | number / string / nil / undefined |
+| `datasetGetFinal(uniqueId \| alias)` | integer uniqueId or alias string        | number / string / nil / undefined |
 
 **Read a constant from a user table:**
 
@@ -200,6 +202,8 @@ function transform(value)
   return v * i
 end
 ```
+
+If the source datasets have aliases, the same transform reads by name, which keeps it readable in a large project: `datasetGetFinal("voltage")` and `datasetGetFinal("current")`.
 
 Other classics that fit this shape: IMU accelerometer magnitude `sqrt(ax² + ay² + az²)`, RMS of three phase currents, torque × angular velocity, differential pressure from two absolute pressure channels.
 

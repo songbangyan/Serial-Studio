@@ -70,6 +70,14 @@ project.dataset.getByTitle { title: "...", groupId?, sourceId? }
 project.dataset.getByUniqueId { uniqueId: ... }
 ```
 
+The `uniqueId` parameter also accepts a string dataset **alias** (a JSON
+string is treated as an alias, a JSON number as a `uniqueId`) — on
+`getByUniqueId`, `project.dataset.move`, and `assistant.dataset.resolve`. An
+alias is an optional, unique, user-owned name set via
+`project.dataset.update { alias: "..." }` (empty string clears it); it is
+separate from `uniqueId` and survives `uniqueId` renumbering. Aliases come
+from the user/editor — don't invent them.
+
 `group.list` is denser than `dataset.list`: it shows groups and a
 summary of each dataset (title, units, uniqueId, etc.). Use it when
 you need group-level metadata; use `project.snapshot` when you need

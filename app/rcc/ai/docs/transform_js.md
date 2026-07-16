@@ -79,9 +79,16 @@ tableHandle(tableName, registerName)           // -> handle (number), or -1; res
 tableHandleMany(tableName, registerNames)      // -> array of handles
 tableGetH(handle)                              // read by handle (fast path; no name lookup)
 tableSetH(handle, value)                       // write by handle (computed registers only)
-datasetGetRaw(uniqueId)                        // raw value; EARLIER dataset = this frame, later = previous frame
-datasetGetFinal(uniqueId)                      // final value of an EARLIER dataset (this frame)
+datasetGetRaw(uniqueId | "alias")              // raw value; EARLIER dataset = this frame, later = previous frame
+datasetGetFinal(uniqueId | "alias")            // final value of an EARLIER dataset (this frame)
 ```
+
+Both accept **either** a numeric `uniqueId` **or** a string `alias`. A string
+arg is ALWAYS an alias, a number ALWAYS a uniqueId — no coercion, so
+`datasetGetRaw("128")` is not `datasetGetRaw(128)`. An unknown alias returns
+`undefined` (one-time warning), same as an unknown `uniqueId`. An alias is an
+optional, unique, user-set name from the Project Editor; it survives `uniqueId`
+renumbering and mirrors as `__datasets__` registers `raw:<alias>` / `final:<alias>`.
 
 For a transform that hits the same registers every call, resolve handles once in a top-level
 variable and use `tableGetH`/`tableSetH` instead of the name-keyed calls. A stale handle (after a

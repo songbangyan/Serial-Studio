@@ -319,6 +319,8 @@ bool DataModel::read(Dataset& d, const QJsonObject& obj)
   if (!d.color.isEmpty() && !QColor::fromString(d.color).isValid())
     d.color.clear();
 
+  d.alias = ss_jsr(obj, Keys::Alias, "").toString().simplified();
+
   d.fftSamplingRate   = ss_jsr(obj, Keys::FFTSamplingRate, -1).toInt();
   d.fftWindow         = ss_jsr(obj, Keys::FFTWindow, SerialStudio::FFTWindowBlackmanHarris).toInt();
   d.displayTickCount  = ss_jsr(obj, Keys::DisplayTickCount, 5).toInt();

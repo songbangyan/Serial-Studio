@@ -77,8 +77,8 @@ if (typeof __ss !== 'undefined') {
   tableHandleMany = function(t, regs) { return __ss.tableHandleMany(t, regs); };
   tableGetH       = function(h)       { return __ss.tableGetH(h); };
   tableSetH       = function(h, v)    { __ss.tableSetH(h, v); };
-  datasetGetRaw   = function(uid)     { return __ss.datasetGetRaw(uid); };
-  datasetGetFinal = function(uid)     { return __ss.datasetGetFinal(uid); };
+  datasetGetRaw   = function(uidOrAlias) { return __ss.datasetGetRaw(uidOrAlias); };
+  datasetGetFinal = function(uidOrAlias) { return __ss.datasetGetFinal(uidOrAlias); };
   if (__ss.mqttPublish)
     mqttPublish = function(t, p, q, r) { return __ss.mqttPublish(t, p, q, r); };
 } else if (typeof __ss_control !== 'undefined' && typeof __ss_bridge !== 'undefined') {

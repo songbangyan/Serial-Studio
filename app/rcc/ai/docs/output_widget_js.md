@@ -39,7 +39,9 @@ There is a maximum payload size; oversized returns are dropped with an error.
 ## Injected protocol helpers (globals)
 
 The Modbus/CAN helpers below are injected as globals, alongside the full
-host API: `apiCall`, `tableGet`/`tableSet`, `datasetGetRaw`/`datasetGetFinal`,
+host API: `apiCall`, `tableGet`/`tableSet`, `datasetGetRaw`/`datasetGetFinal`
+(each takes a numeric `uniqueId` or a string dataset `alias`: string = alias,
+number = uniqueId, no coercion),
 `deviceWrite`, `actionFire`, `notify*`, the dashboard helpers, and the
 generated `SerialStudio` SDK. Protocol logic beyond these helpers you build
 yourself in the function body (see the bundled reference

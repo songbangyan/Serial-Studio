@@ -265,6 +265,29 @@ setter refuses an enable) and in `Taskbar.qml` (entry-click restore, right-click
 remove-from-workspace, auto-layout button). Freeze is orthogonal to `taskbarHidden` and
 deliberately mode-agnostic (persists across operation-mode switches within a session).
 
+## Manual Layout Mode — Smart Guides & the 48x48 Floor (spec 0010)
+
+Manual-mode (auto-layout off) drag/resize snapping lives in `UI::Snap`
+(`app/src/UI/SnapGuides.h/.cpp`): a pure, stateless resolver (`resolveMoveSnap` /
+`resolveResizeSnap`) that `WindowManager` feeds per mouse move with the candidate rect, the
+sibling rects cached at gesture start (`cacheSnapSiblings`), and the grid settings. Rules the
+resolver encodes: nearest candidate within 6 px per axis, edges beat centers beat spacing on
+ties, any smart candidate suppresses grid quantization on that axis, all candidates stay
+canvas-bounded, and resize picks never move a non-moving edge. Alt (sampled from the move
+event's modifiers) bypasses snapping; the geometry badge still tracks. Visuals publish through
+`WindowManager` notify properties (`alignmentGuides`, `spacingIndicators`, `sizeMatchRect`,
+`manualGestureActive`/`manualGestureGeometry`) rendered by `DashboardCanvas.qml`, and are
+cleared on release, `setFrozen(true)`, and `clear()` — the same abort points the freeze input
+gate uses. The old half/quarter-canvas Aero snap is **auto-mode only** (drag-to-swap
+indicator); manual mode is pure freeform + guides. Grid prefs are QSettings
+(`WindowManager_GridEnabled`/`WindowManager_GridSize`), toggled from the canvas context menu.
+Minimum window size is mode-dependent via `WidgetDelegate.minimumWidth/Height`
+(48x48 manual, 356x320 auto) which feed `implicitWidth/Height` — the floor
+`computeResizedGeometry` and `constrainWindows` (48 fallback in manual, 100x80 in auto) read.
+`MiniWindow` collapses caption chrome progressively below 200 px (external button, title,
+minimize, maximize; close never hides) and its `externControlWidth`/`windowControlsWidth`
+count only visible controls, which the C++ caption hit-test depends on.
+
 ## Widget Toolbars — `WidgetToolbar.qml` Owns the Policy
 
 Every canvas widget toolbar lives in `app/qml/Widgets/Dashboard/WidgetToolbar.qml`: a 48 px

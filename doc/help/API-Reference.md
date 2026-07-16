@@ -2252,6 +2252,8 @@ Patch any subset of dataset fields by group id and dataset id.
 - `datasetId` (int, required): Target dataset id
 - `title`, `units`, `widget` (string, optional): `widget` is the widget identifier
   string (e.g. `"bar"`, `"gauge"`)
+- `alias` (string, optional): Stable user-chosen dataset name used for script and API
+  lookups. Must be unique across the project; an empty string clears it
 - `graph`, `fft`, `led`, `waterfall` (bool, optional): Toggle the same flags as
   `project.dataset.setOption`; use here when patching multiple fields at once
 - `index` (int, optional): 1-based parser-output slot (`0` = unassigned); must be `>= 0`
@@ -2302,7 +2304,8 @@ script that pinned a `uniqueId` keep working unchanged. Pass `dryRun: true`
 to preview the renumbering without committing.
 
 **Parameters:**
-- `uniqueId` (int): uniqueId of the dataset to move.
+- `uniqueId` (int or string): uniqueId of the dataset to move. A string value is
+  resolved as the dataset's alias.
 - `newPosition` (int): New 0-based position within the group; clamped to the
   valid range.
 - `dryRun` (bool, optional): If true, return the affected entities without
@@ -2555,9 +2558,10 @@ disambiguate when the same title is reused across groups or sources.
 Resolve a dataset by its persisted `uniqueId`.
 
 **Parameters:**
-- `uniqueId` (int): Opaque persisted handle allocated at dataset creation;
+- `uniqueId` (int or string): Opaque persisted handle allocated at dataset creation;
   stable across reorders. Read it from `project.dataset.list` or
-  `project.snapshot` responses; never compute it.
+  `project.snapshot` responses; never compute it. A string value is resolved as the
+  dataset's alias instead.
 
 **Returns:** Same object shape as `project.dataset.getByPath` above.
 

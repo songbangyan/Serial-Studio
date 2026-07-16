@@ -142,7 +142,7 @@ theme            // ThemeManager palette; widget_base, widget_border,
                  // widget_text, widget_highlight, alarm, etc.
                  // theme.widget_colors is an array of per-channel colors.
 console          // log/warn/error to the editor status pane
-tableGet, tableSet, datasetGetRaw, datasetGetFinal
+tableGet, tableSet, datasetGetRaw, datasetGetFinal  // dataset getters take a uniqueId (number) OR an alias (string)
 deviceWrite(data, sourceId?)  // -> {ok, error?}  -- defaults to group.sourceId
 actionFire(actionId)          // -> {ok, error?}  -- triggers a project Action
 

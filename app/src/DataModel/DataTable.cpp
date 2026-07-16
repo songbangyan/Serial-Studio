@@ -137,6 +137,12 @@ void DataModel::DataTableStore::initialize(const std::vector<TableDef>& userTabl
 
   m_tableRegNames.emplace_back(kSystemTable, std::move(sysRegNames));
 
+  for (const auto& group : templateFrame.groups) {
+    for (const auto& dataset : group.datasets)
+      if (!dataset.alias.isEmpty())
+        registerDatasetAlias(dataset.alias, dataset.uniqueId);
+  }
+
   m_initialized = true;
 }
 
@@ -148,11 +154,13 @@ void DataModel::DataTableStore::clear()
   m_storage.clear();
   m_index.clear();
   m_datasetIndex.clear();
+  m_aliasIndex.clear();
   m_isComputed.clear();
   m_version.clear();
   m_tableRegNames.clear();
   m_warnedMissing.clear();
   m_warnedMissingDatasets.clear();
+  m_warnedMissingAliases.clear();
   clearLookupCache();
   m_initialized = false;
 }
@@ -166,6 +174,11 @@ void DataModel::DataTableStore::clearLookupCache() const
     entry = InternedKeyCacheEntry{};
 
   m_internedKeyCacheNext = 0;
+
+  for (auto& entry : m_internedAliasCache)
+    entry = InternedAliasCacheEntry{};
+
+  m_internedAliasCacheNext = 0;
 }
 
 /**
@@ -516,6 +529,98 @@ const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetFinal(int u
   return &m_storage[static_cast<size_t>(it->second)];
 }
 
+/**
+ * @brief Returns the raw (pre-transform) value for a dataset addressed by its alias.
+ */
+const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetRawByAlias(
+  const QString& alias) const
+{
+  Q_ASSERT(m_initialized);
+
+  const auto it = m_aliasIndex.constFind(alias);
+  if (it == m_aliasIndex.constEnd()) [[unlikely]] {
+    noteMissingAlias(alias, "raw");
+    return nullptr;
+  }
+
+  captureRead(it->first);
+  return &m_storage[static_cast<size_t>(it->first)];
+}
+
+/**
+ * @brief Returns the final (post-transform) value for a dataset addressed by its alias.
+ */
+const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetFinalByAlias(
+  const QString& alias) const
+{
+  Q_ASSERT(m_initialized);
+
+  const auto it = m_aliasIndex.constFind(alias);
+  if (it == m_aliasIndex.constEnd()) [[unlikely]] {
+    noteMissingAlias(alias, "final");
+    return nullptr;
+  }
+
+  captureRead(it->second);
+  return &m_storage[static_cast<size_t>(it->second)];
+}
+
+/**
+ * @brief Hot-path alias resolver keyed by Lua's interned string pointers; returns {rawSlot,
+ *        finSlot} or {-1,-1} on miss, caching both so a repeated literal alias never re-hashes
+ *        and an unknown alias warns only once. Cleared by clearLookupCache() before a Lua close.
+ */
+std::pair<int, int> DataModel::DataTableStore::resolveAliasSlotsInterned(const char* alias,
+                                                                         const char* kind) const
+{
+  Q_ASSERT(m_initialized);
+
+  for (const auto& entry : m_internedAliasCache)
+    if (entry.aliasPtr == alias)
+      return {entry.rawSlot, entry.finSlot};
+
+  const auto it     = m_aliasIndex.constFind(QString::fromUtf8(alias));
+  const bool found  = (it != m_aliasIndex.constEnd());
+  const int rawSlot = found ? it->first : -1;
+  const int finSlot = found ? it->second : -1;
+
+  m_internedAliasCache[m_internedAliasCacheNext] = {alias, rawSlot, finSlot};
+  m_internedAliasCacheNext = (m_internedAliasCacheNext + 1) % kInternedAliasCacheSize;
+
+  if (!found) [[unlikely]]
+    noteMissingAlias(QString::fromUtf8(alias), kind);
+
+  return {rawSlot, finSlot};
+}
+
+/**
+ * @brief Returns the raw (pre-transform) value for a dataset addressed by an interned alias.
+ */
+const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetRawByAliasInterned(
+  const char* alias) const
+{
+  const auto slotPair = resolveAliasSlotsInterned(alias, "raw");
+  if (slotPair.first < 0) [[unlikely]]
+    return nullptr;
+
+  captureRead(slotPair.first);
+  return &m_storage[static_cast<size_t>(slotPair.first)];
+}
+
+/**
+ * @brief Returns the final (post-transform) value for a dataset addressed by an interned alias.
+ */
+const DataModel::RegisterValue* DataModel::DataTableStore::getDatasetFinalByAliasInterned(
+  const char* alias) const
+{
+  const auto slotPair = resolveAliasSlotsInterned(alias, "final");
+  if (slotPair.second < 0) [[unlikely]]
+    return nullptr;
+
+  captureRead(slotPair.second);
+  return &m_storage[static_cast<size_t>(slotPair.second)];
+}
+
 //--------------------------------------------------------------------------------------------------
 // Export support
 //--------------------------------------------------------------------------------------------------
@@ -563,6 +668,34 @@ void DataModel::DataTableStore::addRegister(const QString& table,
 }
 
 /**
+ * @brief Mirrors a dataset alias onto its existing raw/final slots for by-alias and table lookups;
+ *        a duplicate alias is skipped with a warning and a name that collides with a real register
+ *        keeps the register, so the canonical uniqueId identity always wins. Adds no storage.
+ */
+void DataModel::DataTableStore::registerDatasetAlias(const QString& alias, int uniqueId)
+{
+  const auto ds = m_datasetIndex.constFind(uniqueId);
+  if (ds == m_datasetIndex.constEnd()) [[unlikely]]
+    return;
+
+  if (m_aliasIndex.constFind(alias) != m_aliasIndex.constEnd()) [[unlikely]] {
+    qWarning().noquote() << "[DataTableStore] Duplicate dataset alias" << alias
+                         << "-- alias lookups resolve to the first dataset that declared it";
+    return;
+  }
+
+  m_aliasIndex.insert(alias, ds.value());
+
+  const auto rawKey = qMakePair(kSystemTable, kRawPrefix + alias);
+  const auto finKey = qMakePair(kSystemTable, kFinalPrefix + alias);
+  if (m_index.constFind(rawKey) == m_index.constEnd())
+    m_index.insert(rawKey, ds->first);
+
+  if (m_index.constFind(finKey) == m_index.constEnd())
+    m_index.insert(finKey, ds->second);
+}
+
+/**
  * @brief Resolves a (table, register) pair to a storage offset, or -1.
  */
 int DataModel::DataTableStore::indexOf(const QString& table, const QString& reg) const
@@ -599,6 +732,19 @@ void DataModel::DataTableStore::noteMissingDataset(int uniqueId, const char* kin
   m_warnedMissingDatasets.insert(uniqueId);
   qWarning().noquote() << "[DataTableStore] datasetGet" << kind << "called with unknown uniqueId"
                        << uniqueId << "-- returns nil/empty";
+}
+
+/**
+ * @brief Logs a one-shot warning for an unknown dataset alias lookup.
+ */
+void DataModel::DataTableStore::noteMissingAlias(const QString& alias, const char* kind) const
+{
+  if (m_warnedMissingAliases.contains(alias))
+    return;
+
+  m_warnedMissingAliases.insert(alias);
+  qWarning().noquote() << "[DataTableStore] datasetGet" << kind << "called with unknown alias"
+                       << alias << "-- returns nil/empty";
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -699,13 +845,19 @@ void DataModel::TableApiBridge::tableSetH(qint64 h, const QVariant& v)
 }
 
 /**
- * @brief Returns the raw (pre-transform) value of a dataset.
+ * @brief Returns the raw (pre-transform) value of a dataset selected by uniqueId (number) or alias
+ *        (string). A string is never coerced to a number, so "128" and 128 are distinct lookups.
  */
-QVariant DataModel::TableApiBridge::datasetGetRaw(int uid)
+QVariant DataModel::TableApiBridge::datasetGetRaw(const QJSValue& sel)
 {
   Q_ASSERT(store);
 
-  const auto* val = store->getDatasetRaw(uid);
+  const RegisterValue* val = nullptr;
+  if (sel.isString())
+    val = store->getDatasetRawByAlias(sel.toString());
+  else if (sel.isNumber())
+    val = store->getDatasetRaw(sel.toInt());
+
   if (!val)
     return QVariant();
 
@@ -713,13 +865,19 @@ QVariant DataModel::TableApiBridge::datasetGetRaw(int uid)
 }
 
 /**
- * @brief Returns the final (post-transform) value of a dataset.
+ * @brief Returns the final (post-transform) value of a dataset selected by uniqueId (number) or
+ *        alias (string). A string is never coerced to a number, so "128" and 128 differ.
  */
-QVariant DataModel::TableApiBridge::datasetGetFinal(int uid)
+QVariant DataModel::TableApiBridge::datasetGetFinal(const QJSValue& sel)
 {
   Q_ASSERT(store);
 
-  const auto* val = store->getDatasetFinal(uid);
+  const RegisterValue* val = nullptr;
+  if (sel.isString())
+    val = store->getDatasetFinalByAlias(sel.toString());
+  else if (sel.isNumber())
+    val = store->getDatasetFinal(sel.toInt());
+
   if (!val)
     return QVariant();
 

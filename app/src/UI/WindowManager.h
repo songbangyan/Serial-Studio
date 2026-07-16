@@ -31,6 +31,7 @@
 #include <QQuickItem>
 #include <QRect>
 #include <QSettings>
+#include <QVariant>
 #include <QVector>
 
 namespace detail {
@@ -41,6 +42,10 @@ namespace UI {
 class Taskbar;
 class Dashboard;
 class UISessionRegistry;
+
+namespace Snap {
+struct SnapResult;
+}  // namespace Snap
 
 /**
  * @brief Manages layout, geometry, z-ordering, and interactive manipulation of
@@ -70,14 +75,46 @@ class WindowManager : public QQuickItem {
   Q_PROPERTY(bool snapIndicatorVisible
              READ snapIndicatorVisible
              NOTIFY snapIndicatorChanged)
+  Q_PROPERTY(QVariantList alignmentGuides
+             READ alignmentGuides
+             NOTIFY alignmentGuidesChanged)
+  Q_PROPERTY(QVariantList spacingIndicators
+             READ spacingIndicators
+             NOTIFY spacingIndicatorsChanged)
+  Q_PROPERTY(QRect sizeMatchRect
+             READ sizeMatchRect
+             NOTIFY sizeMatchRectChanged)
+  Q_PROPERTY(bool sizeMatchVisible
+             READ sizeMatchVisible
+             NOTIFY sizeMatchRectChanged)
+  Q_PROPERTY(bool manualGestureActive
+             READ manualGestureActive
+             NOTIFY manualGestureChanged)
+  Q_PROPERTY(QRect manualGestureGeometry
+             READ manualGestureGeometry
+             NOTIFY manualGestureChanged)
+  Q_PROPERTY(bool gridEnabled
+             READ gridEnabled
+             WRITE setGridEnabled
+             NOTIFY gridEnabledChanged)
+  Q_PROPERTY(int gridSize
+             READ gridSize
+             WRITE setGridSize
+             NOTIFY gridSizeChanged)
   // clang-format on
 
 signals:
   void zCounterChanged();
   void frozenChanged();
+  void gridSizeChanged();
+  void gridEnabledChanged();
+  void sizeMatchRectChanged();
+  void manualGestureChanged();
   void snapIndicatorChanged();
+  void alignmentGuidesChanged();
   void backgroundImageChanged();
   void autoLayoutEnabledChanged();
+  void spacingIndicatorsChanged();
   void rightClicked(int x, int y);
   void zOrderChanged(QQuickItem* item);
   void geometryChanged(QQuickItem* item);
@@ -93,6 +130,15 @@ public:
 
   [[nodiscard]] bool snapIndicatorVisible() const;
   [[nodiscard]] const QRect& snapIndicator() const;
+
+  [[nodiscard]] int gridSize() const;
+  [[nodiscard]] bool gridEnabled() const;
+  [[nodiscard]] bool sizeMatchVisible() const;
+  [[nodiscard]] bool manualGestureActive() const;
+  [[nodiscard]] const QRect& sizeMatchRect() const;
+  [[nodiscard]] const QRect& manualGestureGeometry() const;
+  [[nodiscard]] const QVariantList& alignmentGuides() const;
+  [[nodiscard]] const QVariantList& spacingIndicators() const;
 
   [[nodiscard]] Q_INVOKABLE int zOrder(QQuickItem* item) const;
   [[nodiscard]] Q_INVOKABLE QJsonObject serializeLayout() const;
@@ -128,6 +174,8 @@ public slots:
   void setBackgroundImage(const QString& path);
   void setAutoLayoutEnabled(const bool enabled);
   void setFrozen(const bool frozen);
+  void setGridEnabled(const bool enabled);
+  void setGridSize(const int size);
   void registerWindow(const int id, QQuickItem* item);
   void reconcileWindowOrder(const QVector<int>& taskbarOrder);
   void preloadPendingGeometries(const QJsonObject& layout);
@@ -155,13 +203,17 @@ private:
   void handleDragMove(QMouseEvent* event, const QPoint& delta);
   void handleResizeMove(QMouseEvent* event, const QPoint& delta);
   void applyManualAnchors(int newWidth, int newHeight);
-  void applyManualSnap();
+
+  void clearSnapGuides();
+  void clearManualGesture();
+  void cacheSnapSiblings(QQuickItem* target);
+  void publishManualGesture(const QRect& geometry);
+  void publishSnapGuides(const Snap::SnapResult& result);
 
   [[nodiscard]] bool tryReorderDraggedWindow();
 
   void commitManualGeometry(QQuickItem* window);
   void storeManualGeometry(int id, QQuickItem* item, int canvasWidth = -1, int canvasHeight = -1);
-  void updateManualSnapIndicator(int newX, int newY, int w, int h, int canvasW, int canvasH);
 
   [[nodiscard]] QRect computeResizedGeometry(const QPoint& delta) const;
 
@@ -202,6 +254,15 @@ private:
 
   QRect m_snapIndicator;
   bool m_snapIndicatorVisible;
+
+  bool m_gridEnabled;
+  int m_gridSize;
+  bool m_manualGestureActive;
+  QRect m_manualGestureGeometry;
+  QRect m_sizeMatchRect;
+  QVariantList m_alignmentGuides;
+  QVariantList m_spacingIndicators;
+  QVector<QRect> m_snapSiblings;
 
   QRect m_initialGeometry;
   QPoint m_initialMousePos;

@@ -64,6 +64,20 @@ static QJsonObject makeProperty(const QString& type, const QString& description)
 }
 
 /**
+ * @brief Builds a `{type, description}` fragment that accepts either of two JSON Schema types; a
+ *        JSON number keeps its numeric meaning and a JSON string keeps its string meaning.
+ */
+static QJsonObject makeMultiTypeProperty(const QString& typeA,
+                                         const QString& typeB,
+                                         const QString& description)
+{
+  QJsonObject prop;
+  prop[QStringLiteral("type")]        = QJsonArray{typeA, typeB};
+  prop[QStringLiteral("description")] = description;
+  return prop;
+}
+
+/**
  * @brief Builds an `array`-typed property with a full items sub-schema.
  */
 static QJsonObject makeArrayProperty(const QString& description, const QJsonObject& items)
@@ -136,8 +150,12 @@ static QJsonObject datasetInputSchema()
                                 "to an exact title match."));
   props[QStringLiteral("title")] =
     makeProperty(QStringLiteral("string"), QStringLiteral("Exact dataset title."));
-  props[Keys::UniqueId] =
-    makeProperty(QStringLiteral("integer"), QStringLiteral("Opaque dataset uniqueId."));
+  props[Keys::UniqueId] = makeMultiTypeProperty(
+    QStringLiteral("integer"),
+    QStringLiteral("string"),
+    QStringLiteral("Dataset selector: integer uniqueId (opaque, from snapshot/list) or string "
+                   "alias set in the editor. A JSON number is a uniqueId; a JSON string is always "
+                   "an alias, never a uniqueId."));
   props[QStringLiteral("groupId")] =
     makeProperty(QStringLiteral("integer"), QStringLiteral("Optional group filter."));
   props[Keys::SourceId] =
@@ -289,8 +307,10 @@ static QJsonObject scriptPropsBag()
     makeProperty(QStringLiteral("integer"), QStringLiteral("Target dataset id for transforms."));
   props[QStringLiteral("dataset")] =
     makeProperty(QStringLiteral("string"), QStringLiteral("Dataset path/title for transforms."));
-  props[Keys::UniqueId] =
-    makeProperty(QStringLiteral("integer"), QStringLiteral("Dataset uniqueId for transforms."));
+  props[Keys::UniqueId] = makeMultiTypeProperty(
+    QStringLiteral("integer"),
+    QStringLiteral("string"),
+    QStringLiteral("Dataset selector for transforms: integer uniqueId or string alias."));
   props[QStringLiteral("virtual")] =
     makeProperty(QStringLiteral("boolean"),
                  QStringLiteral("For transform apply: mark dataset virtual before setting code."));
@@ -788,7 +808,7 @@ static QJsonObject resolveDataset(const QJsonObject& args)
   QString method;
   if (args.contains(Keys::UniqueId)) {
     QJsonObject params;
-    params[Keys::UniqueId] = args.value(Keys::UniqueId).toInt();
+    params[Keys::UniqueId] = args.value(Keys::UniqueId);
     const auto reply       = tryResolve(QStringLiteral("project.dataset.getByUniqueId"), params);
     if (reply.value(QStringLiteral("ok")).toBool()) {
       resolved = reply.value(QStringLiteral("result")).toObject();
@@ -1088,7 +1108,7 @@ static QJsonObject scriptTargetDataset(const QJsonObject& args)
 
   QJsonObject dsArgs;
   if (args.contains(Keys::UniqueId))
-    dsArgs[Keys::UniqueId] = args.value(Keys::UniqueId).toInt();
+    dsArgs[Keys::UniqueId] = args.value(Keys::UniqueId);
 
   if (!args.value(QStringLiteral("dataset")).toString().isEmpty()) {
     const auto datasetName = args.value(QStringLiteral("dataset")).toString();
@@ -1653,7 +1673,7 @@ static QJsonObject resolveTileDataset(const QJsonObject& args, QJsonObject& grou
 
   QJsonObject dsArgs;
   if (args.contains(Keys::UniqueId))
-    dsArgs[Keys::UniqueId] = args.value(Keys::UniqueId).toInt();
+    dsArgs[Keys::UniqueId] = args.value(Keys::UniqueId);
 
   const auto datasetName = args.value(QStringLiteral("dataset")).toString();
   if (datasetName.contains(QLatin1Char('/')))

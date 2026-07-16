@@ -913,6 +913,8 @@ void DataModel::ProjectEditor::addGeneralSection(CustomModel* model,
                      ParameterDescription);
   model->appendRow(unitsItem);
 
+  addDatasetAliasRow(model, dataset);
+
   auto* colorItem = new QStandardItem();
   colorItem->setEditable(true);
   colorItem->setData(true, Active);
@@ -927,6 +929,26 @@ void DataModel::ProjectEditor::addGeneralSection(CustomModel* model,
   model->appendRow(colorItem);
 
   addDatasetRangeRows(model, dataset);
+}
+
+/**
+ * @brief Appends the optional per-dataset alias row: a stable name for script/API dataset lookups.
+ */
+void DataModel::ProjectEditor::addDatasetAliasRow(CustomModel* model,
+                                                  const DataModel::Dataset& dataset)
+{
+  auto* aliasItem = new QStandardItem();
+  aliasItem->setEditable(true);
+  aliasItem->setData(true, Active);
+  aliasItem->setData(TextField, WidgetType);
+  aliasItem->setData(dataset.alias, EditableValue);
+  aliasItem->setData(kDatasetView_Alias, ParameterType);
+  aliasItem->setData(tr("Stable name"), PlaceholderValue);
+  aliasItem->setData(tr("Script Alias"), ParameterName);
+  aliasItem->setData(tr("Stable name for getDataset-style script/API lookups; must be unique "
+                        "(optional)"),
+                     ParameterDescription);
+  model->appendRow(aliasItem);
 }
 
 /**

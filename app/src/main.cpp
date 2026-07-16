@@ -32,6 +32,7 @@
 #include "Misc/CLI.h"
 #include "Misc/CrashTracker.h"
 #include "Misc/GraphicsBackend.h"
+#include "Misc/HighDpiScaling.h"
 #include "Misc/ModuleManager.h"
 #include "Platform/AppPlatform.h"
 
@@ -116,6 +117,7 @@ int main(int argc, char** argv)
 
   Misc::CrashTracker::instance().setCheckpoint(QStringLiteral("graphics-backend-apply"));
   Misc::GraphicsBackend::applyConfiguredBackend();
+  Misc::HighDpiScaling::applyConfiguredPolicy();
 
   Misc::CrashTracker::instance().setCheckpoint(QStringLiteral("qapplication-construct"));
   QApplication app(argc, argv);

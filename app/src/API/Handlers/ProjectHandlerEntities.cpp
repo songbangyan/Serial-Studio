@@ -1414,6 +1414,22 @@ static bool takeParam(const QJsonObject& params, QSet<QString>& consumed, const 
 }
 
 /**
+ * @brief Returns true if @a alias is already assigned to a dataset other than @a selfUniqueId,
+ *        enforcing project-wide alias uniqueness at edit time.
+ */
+static bool aliasInUseByOtherDataset(const QString& alias, int selfUniqueId)
+{
+  static auto& project = DataModel::ProjectModel::instance();
+  for (const auto& group : project.groups()) {
+    for (const auto& other : group.datasets)
+      if (other.uniqueId != selfUniqueId && other.alias == alias)
+        return true;
+  }
+
+  return false;
+}
+
+/**
  * @brief Applies title/units/widget text fields and visualization toggles to @a d; returns a
  *        non-empty error string when a value is rejected.
  */
@@ -1437,6 +1453,16 @@ static QString applyDatasetTextAndToggleFields(DataModel::Dataset& d,
         .arg(color);
 
     d.color = color;
+  }
+
+  if (takeParam(params, consumed, Keys::Alias)) {
+    const auto alias = params.value(Keys::Alias).toString().simplified();
+    if (!alias.isEmpty() && aliasInUseByOtherDataset(alias, d.uniqueId))
+      return QStringLiteral("Alias '%1' is already used by another dataset; aliases must be "
+                            "unique across the project")
+        .arg(alias);
+
+    d.alias = alias;
   }
 
   if (takeParam(params, consumed, QStringLiteral("widget"))) {

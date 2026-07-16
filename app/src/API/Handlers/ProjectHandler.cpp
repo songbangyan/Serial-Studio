@@ -956,14 +956,15 @@ void API::Handlers::ProjectHandler::registerResolverCommands()
 
   registry.registerCommand(
     QStringLiteral("project.dataset.getByUniqueId"),
-    QStringLiteral("Resolve a dataset by its uniqueId. Returns the same shape as the "
-                   "elements of project.dataset.list."),
+    QStringLiteral("Resolve a dataset by its uniqueId (number) or alias (string). Returns the "
+                   "same shape as the elements of project.dataset.list."),
     makeSchema({
       {QString(Keys::UniqueId),
-       QStringLiteral("integer"),
+       QStringLiteral("integer|string"),
        QStringLiteral(
-         "Opaque persisted handle allocated at dataset creation; stable across reorders. "
-         "Read it from list/snapshot responses, never compute it.")}
+         "Dataset selector: an integer uniqueId (opaque persisted handle allocated at dataset "
+         "creation, stable across reorders; read it from list/snapshot, never compute it) OR a "
+         "string alias assigned in the editor. A string is always an alias, never a uniqueId.")}
   }),
     &datasetGetByUniqueId);
 
@@ -1063,8 +1064,8 @@ void API::Handlers::ProjectHandler::registerSnapshotAndMoveCommands()
     makeSchema(
       {
         {      QString(Keys::UniqueId),
-         QStringLiteral("integer"),
-         QStringLiteral("Dataset uniqueId to move.")                                     },
+         QStringLiteral("integer|string"),
+         QStringLiteral("Dataset selector to move: integer uniqueId or string alias.")   },
         {QStringLiteral("newPosition"),
          QStringLiteral("integer"),
          QStringLiteral("New 0-based position within the group; clamped to valid range.")}
@@ -1176,6 +1177,7 @@ void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
     QStringLiteral("Patch dataset fields by id (params: groupId, datasetId, plus any of "
                    "title, units, widget, index, sourceId, graph, fft, led, waterfall, "
                    "color ('#rrggbb' or any Qt color name; empty = automatic theme color), "
+                   "alias (stable script/API name; must be unique, empty clears it), "
                    "log, overviewDisplay, hideOnDashboard, xAxisId, "
                    "waterfallYAxis, fftSamples, fftSamplingRate, "
                    "fftWindow (0=Rectangular, 1=Bartlett, 2=Hann, 3=Hamming, 4=Blackman, "

@@ -131,6 +131,8 @@
 
     "snap_indicator_border":"#0078D4",
     "snap_indicator_background":"#400078D4",
+    "alignment_guide":"#E3008C",
+    "canvas_grid":"#3D8A8A8A",
 
     "table_text":"#1F1F1F",
     "table_cell_bg":"#FFFFFF",

@@ -442,6 +442,7 @@ private:
   [[nodiscard]] QHash<int, QVariant> datasetEditValues(const DataModel::Dataset& dataset);
 
   void addGeneralSection(CustomModel* model, const DataModel::Dataset& dataset);
+  void addDatasetAliasRow(CustomModel* model, const DataModel::Dataset& dataset);
   void addDatasetRangeRows(CustomModel* model, const DataModel::Dataset& dataset);
   void addPlotSection(CustomModel* model, const DataModel::Dataset& dataset);
   void addFFTSection(CustomModel* model, const DataModel::Dataset& dataset);
@@ -539,6 +540,8 @@ private:
                              bool rangeEnabled);
 
   void onDatasetCommonItemChanged(QStandardItem* item, DataModel::Dataset& dataset);
+  [[nodiscard]] bool datasetAliasInUse(const QString& alias, int selfUniqueId) const;
+  [[nodiscard]] bool validateSelectedDatasetAlias(const QString& newAlias);
   void onDatasetWidgetItemChanged(QStandardItem* item, DataModel::Dataset& dataset);
   void onDatasetRangeItemChanged(QStandardItem* item, DataModel::Dataset& dataset);
   void onDatasetFftItemChanged(QStandardItem* item, DataModel::Dataset& dataset);

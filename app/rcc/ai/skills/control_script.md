@@ -106,7 +106,10 @@ marshalled through
 `project.dataTable.getValue` / `setValue` (each call is a thread round-trip:
 read once per `loop()` pass, not in tight inner loops). `tableGet` returns
 `undefined` for unknown registers, so `tableGet(t, r) || fallback` works.
-`datasetGetRaw` / `datasetGetFinal` remain parser/transform-only.
+`datasetGetRaw` / `datasetGetFinal` remain parser/transform-only. To read a
+dataset value here, go through the `__datasets__` system table: `tableGet` (or
+`project.dataTable.getValue`) on register `raw:<uniqueId>` / `final:<uniqueId>`,
+also mirrored as `raw:<alias>` / `final:<alias>` when the dataset has an alias.
 
 Canonical communication-loss watchdog (tables + refreshDashboard):
 

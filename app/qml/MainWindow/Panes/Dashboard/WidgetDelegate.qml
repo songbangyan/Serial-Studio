@@ -51,8 +51,8 @@ Widgets.MiniWindow {
   readonly property bool frozen: Cpp_UI_Dashboard.frozen
 
   //
-  // Panel-style freeze chrome (title header + kept border), on by default; instrument
-  // widgets that paint their own title (Bar, Gauge, Meter) opt out via windowRoot
+  // Panel-style freeze header, on by default; instrument widgets that paint their
+  // own title (Bar, Gauge, Meter) opt out via windowRoot. The border always stays.
   //
   property bool frozenPanel: true
   readonly property bool frozenHeaderVisible: root.frozen && root.frozenPanel
@@ -83,10 +83,11 @@ Widgets.MiniWindow {
   signal externalWidgetRequested(int windowId)
 
   //
-  // Set minimum size
+  // Set minimum size: manual mode allows dense instrument tiles down to 48x48,
+  // auto-layout keeps the packing-friendly floor
   //
-  readonly property int minimumWidth: 356
-  readonly property int minimumHeight: 320
+  readonly property int minimumWidth: windowManager.autoLayoutEnabled ? 356 : 48
+  readonly property int minimumHeight: windowManager.autoLayoutEnabled ? 320 : 48
 
   //
   // Button events
@@ -231,7 +232,7 @@ Widgets.MiniWindow {
     clip: true
     radius: root.radius
     anchors.fill: parent
-    border.width: root.frozen && !root.frozenPanel ? 0 : 1
+    border.width: 1
     color: Cpp_ThemeManager.colors["widget_window"]
     border.color: Cpp_ThemeManager.colors["window_border"]
     anchors.topMargin: Math.max(0, root.captionHeight + (root.hasToolbar ? 48 : 0) - 1)

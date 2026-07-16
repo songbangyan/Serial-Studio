@@ -7,7 +7,7 @@
 --
 --   Data tables / dataset access (FrameBuilder):
 --     tableGet(table, row)        tableSet(table, row, value)
---     datasetGetRaw(uniqueId)     datasetGetFinal(uniqueId)
+--     datasetGetRaw(uidOrAlias)   datasetGetFinal(uidOrAlias)
 --     mqttPublish(topic, payload, qos, retain)   -- commercial builds only
 --
 --   Device output:

@@ -1043,7 +1043,7 @@ void API::Handlers::AssistantHandler::registerResolverCommands()
     QStringLiteral("Resolve a dataset by path, title, or uniqueId in one call -- "
                    "dispatches to project.dataset.getByPath / .getByTitle / .getByUniqueId "
                    "depending on which key is set. Exactly one of {path, title, uniqueId} "
-                   "must be provided."),
+                   "must be provided; uniqueId also accepts a string alias."),
     API::makeSchema(
       {
   },
@@ -1055,8 +1055,9 @@ void API::Handlers::AssistantHandler::registerResolverCommands()
         QStringLiteral("string"),
         QStringLiteral("Dataset title (may be ambiguous if duplicate titles exist).")},
        {Keys::UniqueId,
-        QStringLiteral("integer"),
-        QStringLiteral("Opaque uniqueId from a prior snapshot/list call.")}}),
+        QStringLiteral("integer|string"),
+        QStringLiteral("Opaque integer uniqueId from a prior snapshot/list call, or a string "
+                       "alias set in the editor. A JSON string is always an alias.")}}),
     &API::Handlers::AssistantHandler::datasetResolve);
 
   registry.registerCommand(

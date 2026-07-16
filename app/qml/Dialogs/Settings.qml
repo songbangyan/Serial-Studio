@@ -502,6 +502,71 @@ Widgets.SmartDialog {
             }
           }
 
+          Label {
+            text: qsTr("Display Scaling")
+            visible: Cpp_Misc_HighDpiScaling.configurable
+            color: Cpp_ThemeManager.colors["text"]
+          } Widgets.Combo {
+            id: _hidpiScaling
+
+            Layout.fillWidth: true
+            visible: Cpp_Misc_HighDpiScaling.configurable
+            model: Cpp_Misc_HighDpiScaling.availableModes.map(e => e.label)
+            currentIndex: {
+              const list = Cpp_Misc_HighDpiScaling.availableModes
+              for (let i = 0; i < list.length; ++i)
+                if (list[i].id === Cpp_Misc_HighDpiScaling.currentMode)
+                  return i
+
+              return 0
+            }
+
+            onActivated: (index) => {
+              const list = Cpp_Misc_HighDpiScaling.availableModes
+              if (index < 0 || index >= list.length)
+                return
+
+              const id = list[index].id
+              if (id === Cpp_Misc_HighDpiScaling.currentMode)
+                return
+
+              Cpp_Misc_HighDpiScaling.currentMode = id
+              Cpp_Misc_HighDpiScaling.promptRestartAndQuit()
+            }
+          }
+
+          Label {
+            text: qsTr("Custom Scale (%)")
+            visible: Cpp_Misc_HighDpiScaling.configurable
+                     && Cpp_Misc_HighDpiScaling.customSelected
+            color: Cpp_ThemeManager.colors["text"]
+          } SpinBox {
+            id: _hidpiPercent
+
+            from: Cpp_Misc_HighDpiScaling.minimumPercent
+            to: Cpp_Misc_HighDpiScaling.maximumPercent
+            stepSize: 25
+            editable: true
+            Layout.fillWidth: true
+            value: Cpp_Misc_HighDpiScaling.customPercent
+            visible: Cpp_Misc_HighDpiScaling.configurable
+                     && Cpp_Misc_HighDpiScaling.customSelected
+            onValueModified: {
+              if (value === Cpp_Misc_HighDpiScaling.customPercent)
+                return
+
+              Cpp_Misc_HighDpiScaling.customPercent = value
+              Cpp_Misc_HighDpiScaling.promptRestartAndQuit()
+            }
+
+            Connections {
+              target: Cpp_Misc_HighDpiScaling
+              function onCustomPercentChanged() {
+                _hidpiPercent.value = Cpp_Misc_HighDpiScaling.customPercent
+              }
+            }
+          }
+
           Item {
             implicitHeight: 2
             Layout.columnSpan: 2
