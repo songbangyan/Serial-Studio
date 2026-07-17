@@ -169,7 +169,7 @@ says no new tier gate; the freeze *header* only renders inside Pro-gated freeze 
   `widgetDisplayChanged`, the `widgetSettings(root.widgetId)` restore pattern). Effective
   mode drives `frozenHeaderVisible`; exposed on `windowRoot` for instruments. The caption's
   left-edge button becomes a menu button (`menu.svg`, replacing the external-window button;
-  MiniWindow emits `menuClicked`): "Rename Widget…" (`wrench.svg`), a "Freeze Title"
+  MiniWindow emits `menuClicked`): "Rename Widget…" (`rename.svg`), a "Freeze Title"
   submenu (`freeze.svg`) with Title Bar (`visible.svg`) / Painted Title (`color.svg`,
   instruments only) / Hidden (`invisible.svg`), and "Open in External Window"
   (`expand.svg`, absorbing the removed button). *(Revised 2026-07-16 from the original

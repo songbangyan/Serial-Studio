@@ -98,19 +98,25 @@ Widgets.MiniWindow {
     id: widgetMenu
 
     MenuItem {
+      icon.width: 16
+      icon.height: 16
       text: qsTr("Rename Widget…")
       enabled: root.displayEditable
-      icon.source: "qrc:/icons/buttons/wrench.svg"
+      icon.source: "qrc:/icons/buttons/rename.svg"
       onTriggered: Cpp_JSON_ProjectModel.promptRenameWidget(root.entityWidgetType,
                                                             root.entityUniqueId, root.title)
     }
 
     Menu {
+      icon.width: 16
+      icon.height: 16
       title: qsTr("Freeze Title")
       icon.source: "qrc:/icons/buttons/freeze.svg"
 
       MenuItem {
+        icon.width: 16
         checkable: true
+        icon.height: 16
         text: qsTr("Title Bar")
         enabled: root.displayEditable
         checked: root.effectiveFreezeTitle === "bar"
@@ -120,10 +126,13 @@ Widgets.MiniWindow {
       }
 
       MenuItem {
+        icon.width: 16
         checkable: true
+        icon.height: 16
         text: qsTr("Painted Title")
         visible: root.paintsOwnTitle
         enabled: root.displayEditable
+        height: visible ? implicitHeight : 0
         icon.source: "qrc:/icons/buttons/color.svg"
         checked: root.effectiveFreezeTitle === "painted"
         onTriggered: Cpp_JSON_ProjectModel.setFreezeTitleMode(root.entityWidgetType,
@@ -131,7 +140,9 @@ Widgets.MiniWindow {
       }
 
       MenuItem {
+        icon.width: 16
         checkable: true
+        icon.height: 16
         text: qsTr("Hidden")
         enabled: root.displayEditable
         checked: root.effectiveFreezeTitle === "hidden"
@@ -146,6 +157,8 @@ Widgets.MiniWindow {
     }
 
     MenuItem {
+      icon.width: 16
+      icon.height: 16
       text: qsTr("Open in External Window")
       icon.source: "qrc:/icons/buttons/expand.svg"
       onTriggered: root.externalWindowClicked()

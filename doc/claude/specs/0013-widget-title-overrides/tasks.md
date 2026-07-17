@@ -187,7 +187,7 @@ updated: 2026-07-16
   left caption button becomes a menu button (`menu.svg`, emits `menuClicked`; the
   external-window button is removed and `externControlWidth` → `menuControlWidth`, updated
   at the three WindowManager.cpp drag-region reads). WidgetDelegate opens a caption menu:
-  "Rename Widget…" (`wrench.svg` → `promptRenameWidget`), "Freeze Title" submenu
+  "Rename Widget…" (`rename.svg` → `promptRenameWidget`), "Freeze Title" submenu
   (`freeze.svg`) with Title Bar / Painted Title (instruments only) / Hidden
   (`visible.svg`/`color.svg`/`invisible.svg`), and "Open in External Window"
   (`expand.svg`, emits the delegate-level `externalWindowClicked` DashboardCanvas already
