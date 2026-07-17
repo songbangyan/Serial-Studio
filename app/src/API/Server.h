@@ -49,9 +49,9 @@ class ServerWorker : public DataModel::FrameConsumerWorker<DataModel::Timestampe
   // clang-format on
 
 signals:
-  void socketRemoved(QTcpSocket* socket);
   void clientCountChanged(int count);
-  void dataReceived(QTcpSocket* socket, const QByteArray& data);
+  void socketRemoved(QTcpSocket* socket, const QString& sessionId);
+  void dataReceived(QTcpSocket* socket, const QString& sessionId, const QByteArray& data);
 
 public:
   using DataModel::FrameConsumerWorker<DataModel::TimestampedFramePtr>::FrameConsumerWorker;
@@ -61,12 +61,12 @@ public:
 
 public slots:
   void closeResources() override;
-  void addSocket(QTcpSocket* socket);
   void removeSocket(QTcpSocket* socket);
   void writeRawData(const QByteArray& data);
   void broadcastEvent(const QJsonObject& event);
-  void writeToSocket(QTcpSocket* socket, const QByteArray& data);
-  void disconnectSocket(QTcpSocket* socket);
+  void addSocket(QTcpSocket* socket, const QString& sessionId);
+  void disconnectSocket(QTcpSocket* socket, const QString& sessionId);
+  void writeToSocket(QTcpSocket* socket, const QString& sessionId, const QByteArray& data);
 
 protected:
   void processItems(const std::vector<DataModel::TimestampedFramePtr>& items) override;
@@ -76,7 +76,7 @@ private slots:
   void onSocketDisconnected();
 
 private:
-  QVector<QTcpSocket*> m_sockets;
+  QHash<QTcpSocket*, QString> m_sockets;
 };
 
 /**
@@ -141,9 +141,9 @@ protected:
 private slots:
   void acceptConnection();
   void onClientCountChanged(int count);
-  void onSocketDisconnected(QTcpSocket* socket);
-  void onDataReceived(QTcpSocket* socket, const QByteArray& data);
   void onErrorOccurred(const QAbstractSocket::SocketError socketError);
+  void onSocketDisconnected(QTcpSocket* socket, const QString& sessionId);
+  void onDataReceived(QTcpSocket* socket, const QString& sessionId, const QByteArray& data);
 
 private:
   struct ConnectionState {

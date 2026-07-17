@@ -73,9 +73,6 @@ if(PRODUCTION_OPTIMIZATION)
       set(DISABLE_LTO ON)
       set(ENABLE_HARDENING ON CACHE BOOL "Auto-enabled hardening for sandboxed builds" FORCE)
       message(STATUS "Sandboxed build detected, disabling LTO and enabling hardening")
-   elseif(APPLE)
-      set(DISABLE_LTO ON)
-      message(STATUS "macOS build: LTO force-disabled (Xcode ld unwind stripping, llvm-project#135888)")
    else()
       set(DISABLE_LTO OFF)
    endif()
@@ -234,10 +231,12 @@ if(PRODUCTION_OPTIMIZATION)
    elseif(APPLE)
       message(STATUS "Production branch: AppleClang (macOS)")
 
-      # LTO is force-disabled on macOS (DISABLE_LTO set above): Xcode's ld drops DWARF
-      # exception unwind under -flto for compact-unwind fallback functions
-      # (llvm/llvm-project#135888), so the -flto/-fwhole-program-vtables blocks below are
-      # skipped here. Frame pointers stay on: the Apple arm64 ABI walks x29 chains — but only
+      # LTO is on: Xcode's ld drops DWARF exception unwind under -flto for compact-unwind
+      # fallback functions (llvm/llvm-project#135888), but the throw-across-LTO hazard is
+      # confined to Lua, and the lua54 target opts out of LTO with DWARF-only unwind
+      # (lib/lua/CMakeLists.txt). The 2026-07 CI hang that once implicated LTO was
+      # root-caused to an API::Server socket ABA race, so the blanket disable is gone.
+      # Frame pointers stay on: the Apple arm64 ABI walks x29 chains — but only
       # non-leaf frames must keep them, so -momit-leaf-frame-pointer frees x29 in leaf loops
       # (tokenizer/DSP). Hidden visibility stays on for tighter symbol binding.
       add_compile_options(

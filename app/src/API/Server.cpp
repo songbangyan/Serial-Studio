@@ -150,7 +150,8 @@ void API::ServerWorker::closeResources()
 {
   Q_ASSERT(QThread::currentThread() == thread());
 
-  for (auto* socket : std::as_const(m_sockets)) {
+  for (auto it = m_sockets.keyBegin(); it != m_sockets.keyEnd(); ++it) {
+    auto* socket = *it;
     if (socket) {
       socket->abort();
       socket->deleteLater();
@@ -164,17 +165,20 @@ void API::ServerWorker::closeResources()
 }
 
 /**
- * @brief Adds a socket to the worker thread
+ * @brief Adds a socket to the worker thread, keyed to its immutable session id. The session id
+ *        is the connection's real identity: socket pointers get reused by the allocator across
+ *        connect/disconnect cycles, so every queued cross-thread hop must carry and verify it.
  */
-void API::ServerWorker::addSocket(QTcpSocket* socket)
+void API::ServerWorker::addSocket(QTcpSocket* socket, const QString& sessionId)
 {
   Q_ASSERT(socket);
+  Q_ASSERT(!sessionId.isEmpty());
   Q_ASSERT(socket->state() != QAbstractSocket::UnconnectedState);
 
   if (!socket)
     return;
 
-  m_sockets.append(socket);
+  m_sockets.insert(socket, sessionId);
   connect(socket, &QTcpSocket::readyRead, this, &ServerWorker::onSocketReadyRead);
   connect(socket, &QTcpSocket::disconnected, this, &ServerWorker::onSocketDisconnected);
 
@@ -182,16 +186,19 @@ void API::ServerWorker::addSocket(QTcpSocket* socket)
 }
 
 /**
- * @brief Removes a socket from the worker thread
+ * @brief Removes a socket from the worker thread. Reads the session id from the live socket
+ *        entry before scheduling deletion so the removal notification identifies the exact
+ *        connection generation, never a later pointer reuse.
  */
 void API::ServerWorker::removeSocket(QTcpSocket* socket)
 {
   Q_ASSERT(socket);
   Q_ASSERT(m_sockets.contains(socket));
 
-  m_sockets.removeAll(socket);
+  const QString sessionId = m_sockets.value(socket);
+  m_sockets.remove(socket);
 
-  Q_EMIT socketRemoved(socket);
+  Q_EMIT socketRemoved(socket, sessionId);
   Q_EMIT clientCountChanged(m_sockets.count());
 
   if (socket)
@@ -211,9 +218,11 @@ void API::ServerWorker::writeRawData(const QByteArray& data)
   const QJsonDocument document(object);
   const auto json = document.toJson(QJsonDocument::Compact) + "\n";
 
-  for (auto* socket : std::as_const(m_sockets))
+  for (auto it = m_sockets.keyBegin(); it != m_sockets.keyEnd(); ++it) {
+    auto* socket = *it;
     if (socket && socket->isWritable())
       socket->write(json);
+  }
 }
 
 /**
@@ -229,41 +238,48 @@ void API::ServerWorker::broadcastEvent(const QJsonObject& event)
   const QJsonDocument document(event);
   const auto json = document.toJson(QJsonDocument::Compact) + "\n";
 
-  for (auto* socket : std::as_const(m_sockets))
+  for (auto it = m_sockets.keyBegin(); it != m_sockets.keyEnd(); ++it) {
+    auto* socket = *it;
     if (socket && socket->isWritable())
       socket->write(json);
+  }
 }
 
 /**
- * @brief Handles incoming data from a socket (worker thread)
+ * @brief Handles incoming data from a socket (worker thread), tagging it with the session id
+ *        so the main thread can reject data attributed to a stale pointer generation.
  */
 void API::ServerWorker::onSocketReadyRead()
 {
   auto* socket = qobject_cast<QTcpSocket*>(sender());
-  if (socket)
-    Q_EMIT dataReceived(socket, socket->readAll());
+  if (socket && m_sockets.contains(socket))
+    Q_EMIT dataReceived(socket, m_sockets.value(socket), socket->readAll());
 }
 
 /**
- * @brief Writes data to a specific socket (worker thread)
+ * @brief Writes data to a specific socket (worker thread); dropped when the session id no
+ *        longer matches, which means the target connection is gone.
  */
-void API::ServerWorker::writeToSocket(QTcpSocket* socket, const QByteArray& data)
+void API::ServerWorker::writeToSocket(QTcpSocket* socket,
+                                      const QString& sessionId,
+                                      const QByteArray& data)
 {
   Q_ASSERT(socket);
   Q_ASSERT(!data.isEmpty());
 
-  if (socket && m_sockets.contains(socket) && socket->isWritable())
+  if (socket && m_sockets.value(socket) == sessionId && socket->isWritable())
     socket->write(data);
 }
 
 /**
- * @brief Disconnects a socket (worker thread)
+ * @brief Disconnects a socket (worker thread); a session id mismatch means the connection
+ *        already ended, so the request is ignored instead of hitting an unrelated socket.
  */
-void API::ServerWorker::disconnectSocket(QTcpSocket* socket)
+void API::ServerWorker::disconnectSocket(QTcpSocket* socket, const QString& sessionId)
 {
   Q_ASSERT(socket);
 
-  if (socket && m_sockets.contains(socket)) {
+  if (socket && m_sockets.value(socket) == sessionId) {
     socket->flush();
     socket->disconnectFromHost();
   }
@@ -300,9 +316,11 @@ void API::ServerWorker::processItems(const std::vector<DataModel::TimestampedFra
   const QJsonDocument document(object);
   const auto json = document.toJson(QJsonDocument::Compact) + "\n";
 
-  for (auto* socket : std::as_const(m_sockets))
+  for (auto it = m_sockets.keyBegin(); it != m_sockets.keyEnd(); ++it) {
+    auto* socket = *it;
     if (socket && socket->isWritable())
       socket->write(json);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -344,7 +362,7 @@ API::Server::Server()
   connect(worker,
           &ServerWorker::socketRemoved,
           this,
-          qOverload<QTcpSocket*>(&Server::onSocketDisconnected),
+          &Server::onSocketDisconnected,
           Qt::QueuedConnection);
 
   connect(&m_server, &QTcpServer::newConnection, this, &Server::acceptConnection);
@@ -705,7 +723,7 @@ void API::Server::handleAuthHandshake(QTcpSocket* socket,
   if (!state.buffer.isEmpty()) {
     const QByteArray pipelined = state.buffer;
     state.buffer.clear();
-    onDataReceived(socket, pipelined);
+    onDataReceived(socket, state.sessionId, pipelined);
   }
 }
 
@@ -756,18 +774,24 @@ void API::Server::broadcastLifecycleEvent(const QString& eventName)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Sends a response to a specific client socket via the worker thread.
+ * @brief Sends a response to a specific client socket via the worker thread, tagged with the
+ *        connection's session id so a reused socket pointer can never receive it.
  */
 void API::Server::sendResponseToSocket(QTcpSocket* socket, const QByteArray& response)
 {
   Q_ASSERT(socket);
   Q_ASSERT(!response.isEmpty());
 
+  const auto it = m_connections.constFind(socket);
+  if (it == m_connections.constEnd())
+    return;
+
   auto* worker = static_cast<ServerWorker*>(m_worker);
   QMetaObject::invokeMethod(worker,
                             "writeToSocket",
                             Qt::QueuedConnection,
                             Q_ARG(QTcpSocket*, socket),
+                            Q_ARG(QString, it->sessionId),
                             Q_ARG(QByteArray, response));
 }
 
@@ -787,8 +811,11 @@ void API::Server::disconnectClient(QTcpSocket* socket,
   sendResponseToSocket(socket, response);
 
   auto* worker = static_cast<ServerWorker*>(m_worker);
-  QMetaObject::invokeMethod(
-    worker, "disconnectSocket", Qt::QueuedConnection, Q_ARG(QTcpSocket*, socket));
+  QMetaObject::invokeMethod(worker,
+                            "disconnectSocket",
+                            Qt::QueuedConnection,
+                            Q_ARG(QTcpSocket*, socket),
+                            Q_ARG(QString, state.sessionId));
   state.buffer.clear();
 }
 
@@ -1149,8 +1176,11 @@ void API::Server::processRawLine(QTcpSocket* socket, ConnectionState& state, con
         .toJsonBytes());
 
     auto* worker = static_cast<ServerWorker*>(m_worker);
-    QMetaObject::invokeMethod(
-      worker, "disconnectSocket", Qt::QueuedConnection, Q_ARG(QTcpSocket*, socket));
+    QMetaObject::invokeMethod(worker,
+                              "disconnectSocket",
+                              Qt::QueuedConnection,
+                              Q_ARG(QTcpSocket*, socket),
+                              Q_ARG(QString, state.sessionId));
     return;
   }
 
@@ -1175,9 +1205,13 @@ void API::Server::processRawLine(QTcpSocket* socket, ConnectionState& state, con
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Handles incoming data from worker thread.
+ * @brief Handles incoming data from worker thread. The session id must match the entry for
+ *        this socket pointer; a mismatch means the data belongs to an earlier connection whose
+ *        freed socket address was reused, so it is dropped instead of corrupting the new one.
  */
-void API::Server::onDataReceived(QTcpSocket* socket, const QByteArray& data)
+void API::Server::onDataReceived(QTcpSocket* socket,
+                                 const QString& sessionId,
+                                 const QByteArray& data)
 {
   Q_ASSERT(socket);
   Q_ASSERT(!data.isEmpty());
@@ -1185,10 +1219,11 @@ void API::Server::onDataReceived(QTcpSocket* socket, const QByteArray& data)
   if (!enabled() || data.isEmpty() || !socket)
     return;
 
-  if (!m_connections.contains(socket))
+  const auto it = m_connections.find(socket);
+  if (it == m_connections.end() || it->sessionId != sessionId)
     return;
 
-  auto& state = m_connections[socket];
+  auto& state = *it;
 
   if (!validateRateLimits(socket, state, data))
     return;
@@ -1279,6 +1314,12 @@ void API::Server::acceptConnection()
   state.peerAddress = socket->peerAddress().toString();
   state.peerPort    = socket->peerPort();
 
+  const auto stale = m_connections.constFind(socket);
+  if (stale != m_connections.constEnd()) {
+    static auto& mcpHandler = MCPHandler::instance();
+    mcpHandler.clearSession(stale->sessionId);
+  }
+
   state.authenticated = !(m_externalConnections && !socket->peerAddress().isLoopback());
   m_connections.insert(socket, state);
 
@@ -1289,7 +1330,11 @@ void API::Server::acceptConnection()
   socket->moveToThread(&m_workerThread);
 
   auto* worker = static_cast<ServerWorker*>(m_worker);
-  QMetaObject::invokeMethod(worker, "addSocket", Qt::QueuedConnection, Q_ARG(QTcpSocket*, socket));
+  QMetaObject::invokeMethod(worker,
+                            "addSocket",
+                            Qt::QueuedConnection,
+                            Q_ARG(QTcpSocket*, socket),
+                            Q_ARG(QString, state.sessionId));
 }
 
 /**
@@ -1301,21 +1346,24 @@ void API::Server::onErrorOccurred(const QAbstractSocket::SocketError socketError
 }
 
 /**
- * @brief Clears socket buffers when worker reports socket removal.
+ * @brief Clears connection state when the worker reports socket removal. The removal is only
+ *        honored when the session id matches: the queued notification can arrive after a new
+ *        connection reused the freed socket's address, and removing that entry would leave the
+ *        new client permanently unanswered (macOS CI hang, 2026-07).
  */
-void API::Server::onSocketDisconnected(QTcpSocket* socket)
+void API::Server::onSocketDisconnected(QTcpSocket* socket, const QString& sessionId)
 {
   if (!socket)
     return;
 
-  if (m_connections.contains(socket)) {
-    const auto& state       = m_connections[socket];
+  const auto it = m_connections.constFind(socket);
+  if (it != m_connections.constEnd() && it->sessionId == sessionId) {
     static auto& mcpHandler = MCPHandler::instance();
-    mcpHandler.clearSession(state.sessionId);
+    mcpHandler.clearSession(sessionId);
     qInfo() << "[API] Client disconnected (via worker):"
             << "- Remaining clients:" << (m_connections.size() - 1);
 
-    m_connections.remove(socket);
+    m_connections.erase(it);
   }
 }
 
