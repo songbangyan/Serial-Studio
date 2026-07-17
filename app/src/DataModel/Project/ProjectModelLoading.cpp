@@ -807,6 +807,7 @@ void DataModel::ProjectModel::resolveDatasetVirtualFlags()
 void DataModel::ProjectModel::loadWidgetSettingsAndWorkspaces(const QJsonObject& json)
 {
   m_widgetSettings  = json.value(Keys::WidgetSettings).toObject();
+  m_widgetDisplay   = json.value(Keys::WidgetDisplay).toObject();
   m_treeExpansion   = json.value(Keys::TreeExpansion).toObject();
   m_diagramCollapse = json.value(Keys::DiagramCollapse).toObject();
 

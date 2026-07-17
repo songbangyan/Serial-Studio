@@ -603,8 +603,10 @@ QHash<qint64, DataModel::ProjectEditor::ResolvedWidget> DataModel::ProjectEditor
       groupRunning.insert(typeKey, relIdx + 1);
 
       ResolvedWidget entry;
-      entry.groupTitle   = g.title;
-      entry.datasetTitle = QString();
+      entry.groupTitle    = g.title;
+      entry.datasetTitle  = QString();
+      entry.uniqueId      = g.uniqueId;
+      entry.isGroupWidget = true;
       lookup.insert(workspaceWidgetKey(typeKey, g.uniqueId, relIdx), entry);
     }
 
@@ -617,6 +619,7 @@ QHash<qint64, DataModel::ProjectEditor::ResolvedWidget> DataModel::ProjectEditor
       ResolvedWidget entry;
       entry.groupTitle   = g.title;
       entry.datasetTitle = ds.title;
+      entry.uniqueId     = ds.uniqueId;
       lookup.insert(workspaceWidgetKey(typeKey, g.uniqueId, relIdx), entry);
     };
 
@@ -640,8 +643,11 @@ QHash<qint64, DataModel::ProjectEditor::ResolvedWidget> DataModel::ProjectEditor
       groupRunning.insert(typeKey, relIdx + 1);
 
       ResolvedWidget entry;
-      entry.groupTitle   = g.title;
-      entry.datasetTitle = QString();
+      entry.groupTitle    = g.title;
+      entry.datasetTitle  = QString();
+      entry.uniqueId      = g.uniqueId;
+      entry.isGroupWidget = true;
+      entry.isLedPanel    = true;
       lookup.insert(workspaceWidgetKey(typeKey, g.uniqueId, relIdx), entry);
     }
   }
@@ -674,16 +680,35 @@ QVariantList DataModel::ProjectEditor::widgetsForWorkspace(int workspaceId) cons
     row["widgetType"]     = ref.widgetType;
     row["widgetTypeName"] = SerialStudio::dashboardWidgetTitle(
       static_cast<SerialStudio::DashboardWidget>(ref.widgetType));
-    row["groupId"]       = ref.groupUniqueId;
-    row["relativeIndex"] = ref.relativeIndex;
-    row["groupTitle"]    = QString();
-    row["datasetTitle"]  = QString();
+    row["groupId"]         = ref.groupUniqueId;
+    row["relativeIndex"]   = ref.relativeIndex;
+    row["groupTitle"]      = QString();
+    row["datasetTitle"]    = QString();
+    row[Keys::UniqueId]    = -1;
+    row["isGroupWidget"]   = false;
+    row["isLedPanel"]      = false;
+    row["displayTitle"]    = QString();
+    row["fallbackTitle"]   = QString();
+    row["freezeTitleMode"] = SerialStudio::dashboardWidgetPaintsTitle(
+                               static_cast<SerialStudio::DashboardWidget>(ref.widgetType))
+                             ? QStringLiteral("painted")
+                             : QStringLiteral("bar");
 
     const auto it =
       lookup.constFind(workspaceWidgetKey(ref.widgetType, ref.groupUniqueId, ref.relativeIndex));
     if (it != lookup.constEnd()) {
-      row["groupTitle"]   = it->groupTitle;
-      row["datasetTitle"] = it->datasetTitle;
+      row["groupTitle"]    = it->groupTitle;
+      row["datasetTitle"]  = it->datasetTitle;
+      row[Keys::UniqueId]  = it->uniqueId;
+      row["isGroupWidget"] = it->isGroupWidget;
+      row["isLedPanel"]    = it->isLedPanel;
+      if (it->uniqueId >= 0) {
+        const auto entity      = pm.displayTitle(it->uniqueId);
+        row["displayTitle"]    = pm.widgetDisplayTitle(ref.widgetType, it->uniqueId);
+        row["freezeTitleMode"] = pm.freezeTitleMode(ref.widgetType, it->uniqueId);
+        row["fallbackTitle"] =
+          !entity.isEmpty() ? entity : (it->isGroupWidget ? it->groupTitle : it->datasetTitle);
+      }
     }
 
     result.append(row);

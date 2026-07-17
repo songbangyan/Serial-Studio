@@ -116,7 +116,7 @@ Widgets.SmartWindow {
 
         widgetIndex: window.widgetIndex
         Component.onCompleted: {
-          windowRoot.title       = widgetTitle
+          windowRoot.title       = Qt.binding(function() { return dashboardWidget.widgetTitle })
           windowRoot.deviceIndex = widgetSourceId
           if (windowRoot.icon !== undefined)
             windowRoot.icon = SerialStudio.dashboardWidgetIcon(widgetType)

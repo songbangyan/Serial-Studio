@@ -153,6 +153,7 @@ DataModel::ProjectModel::ProjectModel()
   connect(this, &ProjectModel::groupsChanged, this, &ProjectModel::saveStatusChanged);
 
   connect(this, &ProjectModel::widgetSettingsChanged, this, &ProjectModel::scheduleAutoSave);
+  connect(this, &ProjectModel::widgetDisplayChanged, this, &ProjectModel::scheduleAutoSave);
   connect(this, &ProjectModel::sourceChanged, this, &ProjectModel::scheduleAutoSave);
   connect(this, &ProjectModel::sourcesChanged, this, &ProjectModel::scheduleAutoSave);
   connect(this, &ProjectModel::sourceFrameParserCodeChanged, this, &ProjectModel::scheduleAutoSave);
@@ -759,6 +760,59 @@ QJsonObject DataModel::ProjectModel::pluginState(const QString& pluginId) const
 }
 
 /**
+ * @brief Builds the widget-scoped subkey ("<type>:<uid>") used by the titles and
+ *        freezeTitle maps.
+ */
+static QString widget_scope_key(int widgetType, int uniqueId)
+{
+  return QString::number(widgetType) + QLatin1Char(':') + QString::number(uniqueId);
+}
+
+/**
+ * @brief Returns the entity-level display-title override for the given unique ID (empty =
+ *        no entity-level override; widget-level entries may still exist).
+ */
+QString DataModel::ProjectModel::displayTitle(int uniqueId) const
+{
+  const auto titles = m_widgetDisplay.value(Keys::Titles).toObject();
+  return titles.value(QString::number(uniqueId)).toString();
+}
+
+/**
+ * @brief Returns the widget-level display-title override for (widgetType, uniqueId); this
+ *        scope wins over the entity-level override during resolution.
+ */
+QString DataModel::ProjectModel::widgetDisplayTitle(int widgetType, int uniqueId) const
+{
+  const auto titles = m_widgetDisplay.value(Keys::Titles).toObject();
+  return titles.value(widget_scope_key(widgetType, uniqueId)).toString();
+}
+
+/**
+ * @brief Returns the freeze-title mode ("bar", "painted" or "hidden") for the given widget;
+ *        unset widgets resolve to "painted" for title-painting instruments, "bar" otherwise.
+ */
+QString DataModel::ProjectModel::freezeTitleMode(int widgetType, int uniqueId) const
+{
+  const auto modes = m_widgetDisplay.value(Keys::FreezeTitle).toObject();
+  const auto mode  = modes.value(widget_scope_key(widgetType, uniqueId)).toString();
+  if (!mode.isEmpty())
+    return mode;
+
+  const auto widget = static_cast<SerialStudio::DashboardWidget>(widgetType);
+  return SerialStudio::dashboardWidgetPaintsTitle(widget) ? QStringLiteral("painted")
+                                                          : QStringLiteral("bar");
+}
+
+/**
+ * @brief Returns the full display-title override map (uniqueId -> title).
+ */
+QJsonObject DataModel::ProjectModel::displayTitles() const
+{
+  return m_widgetDisplay.value(Keys::Titles).toObject();
+}
+
+/**
  * @brief Returns true if the project uses any commercial-only features.
  */
 bool DataModel::ProjectModel::containsCommercialFeatures() const
@@ -989,6 +1043,119 @@ void DataModel::ProjectModel::saveWidgetSetting(const QString& widgetId,
 }
 
 /**
+ * @brief Stages one titles-map entry under @p key; an empty title removes the entry.
+ *        Display-only: canonical dataset/group titles are never touched.
+ */
+void DataModel::ProjectModel::stageDisplayTitle(const QString& key, const QString& title)
+{
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  auto titles    = m_widgetDisplay.value(Keys::Titles).toObject();
+  const auto old = titles.value(key).toString();
+  if (old == title)
+    return;
+
+  if (title.isEmpty())
+    titles.remove(key);
+  else
+    titles.insert(key, title);
+
+  if (titles.isEmpty())
+    m_widgetDisplay.remove(Keys::Titles);
+  else
+    m_widgetDisplay.insert(Keys::Titles, titles);
+
+  setModified(true);
+  Q_EMIT widgetDisplayChanged();
+}
+
+/**
+ * @brief Stages an entity-level display-title override (every widget of the dataset/group
+ *        with the given unique ID); an empty title removes the entry.
+ */
+void DataModel::ProjectModel::setDisplayTitle(int uniqueId, const QString& title)
+{
+  stageDisplayTitle(QString::number(uniqueId), title);
+}
+
+/**
+ * @brief Stages a widget-level display-title override for (widgetType, uniqueId); wins over
+ *        the entity-level entry, an empty title removes it.
+ */
+void DataModel::ProjectModel::setWidgetDisplayTitle(int widgetType,
+                                                    int uniqueId,
+                                                    const QString& title)
+{
+  stageDisplayTitle(widget_scope_key(widgetType, uniqueId), title);
+}
+
+/**
+ * @brief Prompts for a widget display title and stages it as a widget-level override;
+ *        clearing the field restores the entity-level or canonical title.
+ */
+void DataModel::ProjectModel::promptRenameWidget(int widgetType,
+                                                 int uniqueId,
+                                                 const QString& currentTitle)
+{
+  if (widgetType < 0 || uniqueId < 0)
+    return;
+
+  bool ok            = false;
+  const QString name = QInputDialog::getText(nullptr,
+                                             tr("Rename Widget"),
+                                             tr("Display title (empty restores the original):"),
+                                             QLineEdit::Normal,
+                                             currentTitle,
+                                             &ok);
+
+  if (!ok || name.trimmed() == currentTitle)
+    return;
+
+  setWidgetDisplayTitle(widgetType, uniqueId, name.trimmed());
+}
+
+/**
+ * @brief Stages the freeze-title mode ("bar", "painted" or "hidden") for the given widget;
+ *        "painted" is only valid for title-painting instruments, and writing a widget's
+ *        per-type default removes the stored entry instead of recording it.
+ */
+void DataModel::ProjectModel::setFreezeTitleMode(int widgetType, int uniqueId, const QString& mode)
+{
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  const auto widget = static_cast<SerialStudio::DashboardWidget>(widgetType);
+  const bool paints = SerialStudio::dashboardWidgetPaintsTitle(widget);
+  if (mode != QLatin1String("bar") && mode != QLatin1String("hidden")
+      && !(mode == QLatin1String("painted") && paints))
+    return;
+
+  const auto fallback = paints ? QLatin1String("painted") : QLatin1String("bar");
+  const auto key      = widget_scope_key(widgetType, uniqueId);
+  auto modes          = m_widgetDisplay.value(Keys::FreezeTitle).toObject();
+  const auto old      = modes.value(key).toString();
+  const auto now      = (mode == fallback) ? QString() : mode;
+  if (old == now)
+    return;
+
+  if (now.isEmpty())
+    modes.remove(key);
+  else
+    modes.insert(key, now);
+
+  if (modes.isEmpty())
+    m_widgetDisplay.remove(Keys::FreezeTitle);
+  else
+    m_widgetDisplay.insert(Keys::FreezeTitle, modes);
+
+  setModified(true);
+  Q_EMIT widgetDisplayChanged();
+}
+
+/**
  * @brief Persists the external dashboard windows and prunes layouts of closed windows.
  */
 void DataModel::ProjectModel::setExternalWindows(const QJsonArray& windows)
@@ -1206,6 +1373,7 @@ void DataModel::ProjectModel::newJsonFile()
   m_frameDecoder    = SerialStudio::PlainText;
   m_frameDetection  = SerialStudio::EndDelimiterOnly;
   m_widgetSettings  = QJsonObject();
+  m_widgetDisplay   = QJsonObject();
   m_treeExpansion   = QJsonObject();
   m_diagramCollapse = QJsonObject();
 

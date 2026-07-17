@@ -34,6 +34,7 @@ public:
 private:
   static void registerModeAndFpsCommands();
   static void registerTimeRangeCommands();
+  static void registerWidgetDisplayCommands();
   static void registerQueryCommands();
 
   static CommandResponse setOperationMode(const QString& id, const QJsonObject& params);
@@ -42,6 +43,9 @@ private:
   static CommandResponse getFPS(const QString& id, const QJsonObject& params);
   static CommandResponse setTimeRange(const QString& id, const QJsonObject& params);
   static CommandResponse getTimeRange(const QString& id, const QJsonObject& params);
+  static CommandResponse setWidgetTitle(const QString& id, const QJsonObject& params);
+  static CommandResponse getWidgetTitles(const QString& id, const QJsonObject& params);
+  static CommandResponse setWidgetFreezeTitle(const QString& id, const QJsonObject& params);
   static CommandResponse getStatus(const QString& id, const QJsonObject& params);
   static CommandResponse getData(const QString& id, const QJsonObject& params);
   static CommandResponse tailFrames(const QString& id, const QJsonObject& params);

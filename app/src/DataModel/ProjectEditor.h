@@ -365,6 +365,9 @@ public:
   struct ResolvedWidget {
     QString groupTitle;
     QString datasetTitle;
+    int uniqueId       = -1;
+    bool isGroupWidget = false;
+    bool isLedPanel    = false;
   };
 
   [[nodiscard]] static qint64 workspaceWidgetKey(int widgetType, int groupId, int relIdx);

@@ -541,6 +541,15 @@ bool SerialStudio::isDashboardTool(const SerialStudio::DashboardWidget w)
 }
 
 /**
+ * @brief Returns true when the widget paints its own title on the instrument face; these
+ *        widgets default to the "painted" freeze-title mode instead of "bar".
+ */
+bool SerialStudio::dashboardWidgetPaintsTitle(const SerialStudio::DashboardWidget w)
+{
+  return w == DashboardBar || w == DashboardGauge || w == DashboardMeter;
+}
+
+/**
  * @brief Retrieves a list of dashboard widgets for a specified JSON dataset.
  */
 QList<SerialStudio::DashboardWidget> SerialStudio::getDashboardWidgets(

@@ -90,10 +90,16 @@ UI::DashboardWidget::DashboardWidget(QQuickItem* parent)
 {
   connect(
     this, &UI::DashboardWidget::widgetIndexChanged, this, &UI::DashboardWidget::widgetColorChanged);
+  connect(
+    this, &UI::DashboardWidget::widgetIndexChanged, this, &UI::DashboardWidget::widgetTitleChanged);
   connect(&m_themeManager,
           &Misc::ThemeManager::themeChanged,
           this,
           &UI::DashboardWidget::widgetColorChanged);
+  connect(&m_dashboard,
+          &UI::Dashboard::displayTitlesChanged,
+          this,
+          &UI::DashboardWidget::widgetTitleChanged);
 }
 
 /**
@@ -183,6 +189,23 @@ QString UI::DashboardWidget::widgetId() const
     .arg(static_cast<int>(m_widgetType))
     .arg(info.groupId)
     .arg(info.datasetIndex);
+}
+
+/**
+ * @brief Returns the stable uniqueId of the dataset or group backing this widget (-1 if none).
+ */
+int UI::DashboardWidget::widgetUniqueId() const
+{
+  if (!VALIDATE_WIDGET(m_widgetType, m_relativeIndex))
+    return -1;
+
+  if (SerialStudio::isGroupWidget(m_widgetType))
+    return GET_GROUP(m_widgetType, m_relativeIndex).uniqueId;
+
+  if (SerialStudio::isDatasetWidget(m_widgetType))
+    return GET_DATASET(m_widgetType, m_relativeIndex).uniqueId;
+
+  return -1;
 }
 
 /**

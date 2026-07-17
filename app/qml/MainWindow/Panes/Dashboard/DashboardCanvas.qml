@@ -504,6 +504,19 @@ Item {
       }
 
       //
+      // Freeze-mode focus follow: focus the widget under the cursor, since
+      // click-to-focus is suppressed while the layout is frozen
+      //
+      HoverHandler {
+        id: freezeFocusHover
+
+        enabled: _wm.frozen
+        property point hoverPosition: freezeFocusHover.point.position
+        onHoverPositionChanged: if (freezeFocusHover.hovered)
+                                  _wm.focusWindowUnderCursor(hoverPosition)
+      }
+
+      //
       // Re-tile when the auto-layout margin/spacing preferences change
       //
       Connections {
@@ -593,9 +606,13 @@ Item {
       z: _wm.zCounter + 9999
       visible: _wm.manualGestureActive && !_wm.autoLayoutEnabled && !_wm.frozen
 
+      //
+      // Single opacity knob for the smart-guide visuals; keeps them subtle.
+      //
+      readonly property real guideOpacity: 0.8
+
       Repeater {
-        model: _gestureOverlay.visible && Cpp_UI_Dashboard.showAlignmentGuides
-               ? _wm.alignmentGuides : []
+        model: _gestureOverlay.visible ? _wm.alignmentGuides : []
 
         delegate: Rectangle {
           required property var modelData
@@ -604,13 +621,13 @@ Item {
           y: modelData.y
           width: Math.max(1, modelData.width)
           height: Math.max(1, modelData.height)
+          opacity: _gestureOverlay.guideOpacity
           color: Cpp_ThemeManager.colors["highlight"]
         }
       }
 
       Repeater {
-        model: _gestureOverlay.visible && Cpp_UI_Dashboard.showAlignmentGuides
-               ? _wm.spacingIndicators : []
+        model: _gestureOverlay.visible ? _wm.spacingIndicators : []
 
         delegate: Item {
           id: _spacingDelegate
@@ -621,6 +638,7 @@ Item {
           y: modelData.y
           width: Math.max(1, modelData.width)
           height: Math.max(1, modelData.height)
+          opacity: _gestureOverlay.guideOpacity
 
           Rectangle {
             opacity: 0.2
@@ -644,39 +662,11 @@ Item {
         color: "transparent"
         x: _wm.sizeMatchRect.x
         y: _wm.sizeMatchRect.y
-        visible: _wm.sizeMatchVisible && Cpp_UI_Dashboard.showAlignmentGuides
+        visible: _wm.sizeMatchVisible
         width: _wm.sizeMatchRect.width
         height: _wm.sizeMatchRect.height
+        opacity: _gestureOverlay.guideOpacity
         border.color: Cpp_ThemeManager.colors["highlight"]
-      }
-
-      Rectangle {
-        id: _gestureBadge
-
-        radius: 4
-        border.width: 1
-        implicitWidth: _badgeLabel.implicitWidth + 12
-        implicitHeight: _badgeLabel.implicitHeight + 6
-        color: Cpp_ThemeManager.colors["highlight"]
-        border.color: Cpp_ThemeManager.colors["highlight"]
-
-        readonly property rect g: _wm.manualGestureGeometry
-
-        x: Math.min(Math.max(4, g.x + (g.width - width) / 2),
-                    Math.max(4, _gestureOverlay.width - width - 4))
-        y: g.y >= height + 8 ? g.y - height - 6
-                             : Math.min(g.y + g.height + 6,
-                                        _gestureOverlay.height - height - 4)
-
-        Label {
-          id: _badgeLabel
-
-          anchors.centerIn: parent
-          color: Cpp_ThemeManager.colors["highlighted_text"]
-          font: Cpp_Misc_CommonFonts.customUiFont(0.9, true)
-          text: _gestureBadge.g.x + ", " + _gestureBadge.g.y + "   "
-                + _gestureBadge.g.width + " x " + _gestureBadge.g.height
-        }
       }
     }
 

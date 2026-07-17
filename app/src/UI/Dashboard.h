@@ -126,6 +126,7 @@ signals:
   void autoLayoutSpacingChanged();
   void plotTimeRangeChanged();
   void frozenChanged();
+  void displayTitlesChanged();
   void containsCommercialFeaturesChanged();
 
 private:
@@ -249,8 +250,10 @@ public slots:
 
   void hotpathRxFrame(const DataModel::TimestampedFramePtr& frame);
   void updateStreamAvailable();
+  void refreshDisplayTitles();
 
 private:
+  void restorePersistedSettings();
   void connectStreamAvailableInputs();
   void updateDashboardData(const DataModel::Frame& frame);
   void reconfigureDashboard(const DataModel::Frame& frame);
@@ -289,6 +292,7 @@ private:
 #endif
 
   void buildWidgetGroups(const DataModel::Frame& frame, bool pro);
+  void applyDisplayTitles();
   void registerWidgets();
   void buildDatasetReferences();
   void rebuildDatasetReferences();

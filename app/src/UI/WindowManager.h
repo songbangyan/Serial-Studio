@@ -171,6 +171,7 @@ public slots:
   void setTaskbar(QQuickItem* taskbar);
   void unregisterWindow(QQuickItem* item);
   void updateHoverCursor(const QPointF& pos);
+  void focusWindowUnderCursor(const QPointF& pos);
   void setBackgroundImage(const QString& path);
   void setAutoLayoutEnabled(const bool enabled);
   void setFrozen(const bool frozen);

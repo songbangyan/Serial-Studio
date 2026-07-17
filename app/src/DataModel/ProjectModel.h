@@ -153,6 +153,7 @@ signals:
   void sourceFrameParserParamsChanged(int sourceId);
   void activeGroupIdChanged();
   void widgetSettingsChanged();
+  void widgetDisplayChanged();
   void editorWorkspacesChanged();
   void activeWorkspacesChanged();
   void tablesChanged();
@@ -275,6 +276,11 @@ public:
   Q_INVOKABLE [[nodiscard]] QJsonObject widgetSettings(const QString& widgetId) const;
   Q_INVOKABLE [[nodiscard]] QJsonObject pluginState(const QString& pluginId) const;
   Q_INVOKABLE [[nodiscard]] QJsonArray externalWindows() const;
+  Q_INVOKABLE [[nodiscard]] QString displayTitle(int uniqueId) const;
+  Q_INVOKABLE [[nodiscard]] QString widgetDisplayTitle(int widgetType, int uniqueId) const;
+  Q_INVOKABLE [[nodiscard]] QString freezeTitleMode(int widgetType, int uniqueId) const;
+
+  [[nodiscard]] QJsonObject displayTitles() const;
 
   [[nodiscard]] const QJsonObject& treeExpansion() const noexcept;
   [[nodiscard]] const QJsonObject& diagramCollapse() const noexcept;
@@ -285,6 +291,10 @@ public slots:
 
   void savePluginState(const QString& pluginId, const QJsonObject& state);
   void saveWidgetSetting(const QString& widgetId, const QString& key, const QVariant& value);
+  void setDisplayTitle(int uniqueId, const QString& title);
+  void setWidgetDisplayTitle(int widgetType, int uniqueId, const QString& title);
+  void setFreezeTitleMode(int widgetType, int uniqueId, const QString& mode);
+  void promptRenameWidget(int widgetType, int uniqueId, const QString& currentTitle);
   void setExternalWindows(const QJsonArray& windows);
   void setTreeExpansion(const QJsonObject& expansion);
   void setDiagramCollapse(const QJsonObject& state);
@@ -551,6 +561,7 @@ private:
   void resolveDatasetTransformLanguages();
   void resolveDatasetVirtualFlags();
   void loadWidgetSettingsAndWorkspaces(const QJsonObject& json);
+  void stageDisplayTitle(const QString& key, const QString& title);
   void loadPointCount(const QJsonObject& json);
   void loadPlotTimeRange(const QJsonObject& json);
   void loadFrozen(const QJsonObject& json);
@@ -656,6 +667,7 @@ private:
   DataModel::OutputWidget m_selectedOutputWidget;
 
   QJsonObject m_widgetSettings;
+  QJsonObject m_widgetDisplay;
   QJsonObject m_mqttPublisher;
   QJsonObject m_treeExpansion;
   QJsonObject m_diagramCollapse;

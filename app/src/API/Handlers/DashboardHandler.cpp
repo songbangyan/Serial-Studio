@@ -29,6 +29,7 @@
 #include "AppState.h"
 #include "DataModel/Frame.h"
 #include "DataModel/FrameBuilder.h"
+#include "DataModel/ProjectModel.h"
 #include "DSP.h"
 #include "Misc/TimerEvents.h"
 #include "SerialStudio.h"
@@ -45,6 +46,7 @@ void API::Handlers::DashboardHandler::registerCommands()
 {
   registerModeAndFpsCommands();
   registerTimeRangeCommands();
+  registerWidgetDisplayCommands();
   registerQueryCommands();
 }
 
@@ -153,6 +155,95 @@ void API::Handlers::DashboardHandler::registerTimeRangeCommands()
     QStringLiteral("Get the visible plot time window (alias of dashboard.getTimeRange)."),
     emptySchema,
     &getTimeRange);
+}
+
+/**
+ * @brief Register widget display-title override and freeze-title mode commands.
+ */
+void API::Handlers::DashboardHandler::registerWidgetDisplayCommands()
+{
+  static auto& registry = CommandRegistry::instance();
+
+  QJsonObject emptySchema;
+  emptySchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  emptySchema.insert(QStringLiteral("properties"), QJsonObject());
+
+  QJsonObject uidProp;
+  uidProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
+  uidProp.insert(QStringLiteral("description"),
+                 QStringLiteral("Stable uniqueId of the dataset or group the widget displays"));
+
+  QJsonObject typeProp;
+  typeProp.insert(QStringLiteral("type"), QStringLiteral("integer"));
+  typeProp.insert(QStringLiteral("description"),
+                  QStringLiteral("SerialStudio::DashboardWidget enum value of the widget"));
+
+  QJsonObject titleProp;
+  titleProp.insert(QStringLiteral("type"), QStringLiteral("string"));
+  titleProp.insert(QStringLiteral("description"),
+                   QStringLiteral("Display title override; empty or absent clears the override"));
+
+  QJsonObject titleProps;
+  titleProps.insert(Keys::UniqueId, uidProp);
+  titleProps.insert(QStringLiteral("title"), titleProp);
+  titleProps.insert(QStringLiteral("widgetType"), typeProp);
+
+  QJsonObject setTitleSchema;
+  setTitleSchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  setTitleSchema.insert(QStringLiteral("properties"), titleProps);
+  setTitleSchema.insert(QStringLiteral("required"), QJsonArray{QString(Keys::UniqueId)});
+
+  registry.registerCommand(
+    QStringLiteral("project.dashboard.setWidgetTitle"),
+    QStringLiteral("Set a display-title override for the dataset/group with the given uniqueId. "
+                   "Without widgetType the override is entity-level (every widget of that "
+                   "dataset/group); with widgetType it targets only that widget kind (e.g. only "
+                   "the FFT of a dataset) and wins over the entity-level entry. Display-only: "
+                   "widget captions, freeze headers, painted instrument titles and taskbar "
+                   "entries show it, while exports, dashboard.getData and project.* responses "
+                   "keep the canonical title. Empty/absent title clears the override."),
+    setTitleSchema,
+    &setWidgetTitle);
+
+  registry.registerCommand(
+    QStringLiteral("project.dashboard.getWidgetTitles"),
+    QStringLiteral("Get every display-title override (entity-level rows carry only uniqueId; "
+                   "widget-level rows also carry widgetType), each annotated with the canonical "
+                   "title it shadows (canonical:null when the target no longer exists)."),
+    emptySchema,
+    &getWidgetTitles);
+
+  QJsonObject modeProp;
+  modeProp.insert(QStringLiteral("type"), QStringLiteral("string"));
+  modeProp.insert(
+    QStringLiteral("enum"),
+    QJsonArray{QStringLiteral("bar"), QStringLiteral("painted"), QStringLiteral("hidden")});
+  modeProp.insert(QStringLiteral("description"),
+                  QStringLiteral("Freeze-title mode: bar (panel header), painted (title on the "
+                                 "instrument face; Bar/Gauge/Meter only), hidden (no title "
+                                 "while frozen)"));
+
+  QJsonObject modeProps;
+  modeProps.insert(QStringLiteral("widgetType"), typeProp);
+  modeProps.insert(Keys::UniqueId, uidProp);
+  modeProps.insert(QStringLiteral("mode"), modeProp);
+
+  QJsonObject setModeSchema;
+  setModeSchema.insert(QStringLiteral("type"), QStringLiteral("object"));
+  setModeSchema.insert(QStringLiteral("properties"), modeProps);
+  setModeSchema.insert(
+    QStringLiteral("required"),
+    QJsonArray{QStringLiteral("widgetType"), QString(Keys::UniqueId), QStringLiteral("mode")});
+
+  registry.registerCommand(
+    QStringLiteral("project.dashboard.setWidgetFreezeTitle"),
+    QStringLiteral("Set the freeze-mode title presentation for one widget (widgetType + "
+                   "uniqueId): bar shows the panel header, painted shows the title on the "
+                   "instrument face (Bar/Gauge/Meter only, their default), hidden shows no "
+                   "title while the dashboard is frozen. Every other widget type defaults to "
+                   "bar; writing a widget's default clears its stored entry."),
+    setModeSchema,
+    &setWidgetFreezeTitle);
 }
 
 /**
@@ -392,6 +483,205 @@ API::CommandResponse API::Handlers::DashboardHandler::getTimeRange(const QString
 
   QJsonObject result;
   result[QStringLiteral("seconds")] = seconds;
+
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Resolves the canonical dataset/group title for a uniqueId; found reports success.
+ */
+static QString canonicalTitleForUniqueId(int uniqueId, bool& found)
+{
+  static auto& projectModel = DataModel::ProjectModel::instance();
+
+  found = false;
+  for (const auto& group : projectModel.groups()) {
+    if (group.uniqueId == uniqueId) {
+      found = true;
+      return group.title;
+    }
+
+    for (const auto& dataset : group.datasets) {
+      if (dataset.uniqueId == uniqueId) {
+        found = true;
+        return dataset.title;
+      }
+    }
+  }
+
+  return QString();
+}
+
+/**
+ * @brief Set (or clear) the display-title override for a dataset/group uniqueId
+ */
+API::CommandResponse API::Handlers::DashboardHandler::setWidgetTitle(const QString& id,
+                                                                     const QJsonObject& params)
+{
+  if (!params.contains(Keys::UniqueId)) {
+    return CommandResponse::makeError(
+      id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: uniqueId"));
+  }
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::OperationFailed,
+      QStringLiteral("Display-title overrides require ProjectFile mode with a loaded project."));
+  }
+
+  const int uniqueId = params.value(Keys::UniqueId).toInt(-1);
+  bool found         = false;
+  const auto canon   = canonicalTitleForUniqueId(uniqueId, found);
+  if (!found) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("No dataset or group with uniqueId %1 exists in this project.").arg(uniqueId));
+  }
+
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const bool widgetScoped   = params.contains(QStringLiteral("widgetType"));
+  const int widgetType      = params.value(QStringLiteral("widgetType")).toInt(-1);
+  const auto title          = params.value(QStringLiteral("title")).toString().trimmed();
+
+  QString previous;
+  if (widgetScoped) {
+    previous = projectModel.widgetDisplayTitle(widgetType, uniqueId);
+    projectModel.setWidgetDisplayTitle(widgetType, uniqueId, title);
+  } else {
+    previous = projectModel.displayTitle(uniqueId);
+    projectModel.setDisplayTitle(uniqueId, title);
+  }
+
+  QJsonObject result;
+  result[Keys::UniqueId]              = uniqueId;
+  result[QStringLiteral("title")]     = title;
+  result[QStringLiteral("previous")]  = previous;
+  result[QStringLiteral("canonical")] = canon;
+  result[QStringLiteral("cleared")]   = title.isEmpty();
+  result[QStringLiteral("scope")] =
+    widgetScoped ? QStringLiteral("widget") : QStringLiteral("entity");
+  if (widgetScoped)
+    result[QStringLiteral("widgetType")] = widgetType;
+
+  result[QStringLiteral("_summary")] =
+    title.isEmpty()
+      ? QStringLiteral("Cleared the %1-level display title for uniqueId %2.")
+          .arg(widgetScoped ? QStringLiteral("widget") : QStringLiteral("entity"))
+          .arg(uniqueId)
+      : QStringLiteral("%1 for uniqueId %2 now displays \"%3\" (canonical title \"%4\" is "
+                       "unchanged in exports and API data).")
+          .arg(widgetScoped ? QStringLiteral("The selected widget kind")
+                            : QStringLiteral("Every widget"))
+          .arg(uniqueId)
+          .arg(title)
+          .arg(canon);
+
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Get every display-title override, annotated with the canonical title it shadows
+ */
+API::CommandResponse API::Handlers::DashboardHandler::getWidgetTitles(const QString& id,
+                                                                      const QJsonObject& params)
+{
+  Q_UNUSED(params)
+
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto overrides      = projectModel.displayTitles();
+
+  QJsonArray titles;
+  for (auto it = overrides.constBegin(); it != overrides.constEnd(); ++it) {
+    const auto key     = it.key();
+    const int sep      = key.indexOf(QLatin1Char(':'));
+    const bool scoped  = sep > 0;
+    const int uniqueId = scoped ? key.mid(sep + 1).toInt() : key.toInt();
+    bool found         = false;
+    const auto canon   = canonicalTitleForUniqueId(uniqueId, found);
+
+    QJsonObject row;
+    row[Keys::UniqueId]              = uniqueId;
+    row[QStringLiteral("title")]     = it.value().toString();
+    row[QStringLiteral("scope")]     = scoped ? QStringLiteral("widget") : QStringLiteral("entity");
+    row[QStringLiteral("canonical")] = found ? QJsonValue(canon) : QJsonValue();
+    if (scoped)
+      row[QStringLiteral("widgetType")] = key.left(sep).toInt();
+
+    titles.append(row);
+  }
+
+  QJsonObject result;
+  result[QStringLiteral("titles")] = titles;
+  result[QStringLiteral("count")]  = titles.size();
+
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Set the freeze-title mode for one widget (widgetType + uniqueId)
+ */
+API::CommandResponse API::Handlers::DashboardHandler::setWidgetFreezeTitle(
+  const QString& id, const QJsonObject& params)
+{
+  const QStringList required = {
+    QStringLiteral("widgetType"), QString(Keys::UniqueId), QStringLiteral("mode")};
+  for (const auto& key : required) {
+    if (!params.contains(key)) {
+      return CommandResponse::makeError(
+        id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: %1").arg(key));
+    }
+  }
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::OperationFailed,
+      QStringLiteral("Freeze-title modes require ProjectFile mode with a loaded project."));
+  }
+
+  const int widgetType = params.value(QStringLiteral("widgetType")).toInt(-1);
+  const bool paints    = SerialStudio::dashboardWidgetPaintsTitle(
+    static_cast<SerialStudio::DashboardWidget>(widgetType));
+
+  const auto mode = params.value(QStringLiteral("mode")).toString();
+  if (mode != QLatin1String("bar") && mode != QLatin1String("painted")
+      && mode != QLatin1String("hidden")) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Invalid mode \"%1\": must be bar, painted or hidden.").arg(mode));
+  }
+
+  if (mode == QLatin1String("painted") && !paints) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("Mode \"painted\" is only valid for Bar, Gauge and Meter widgets."));
+  }
+
+  const int uniqueId = params.value(Keys::UniqueId).toInt(-1);
+  bool found         = false;
+  (void)canonicalTitleForUniqueId(uniqueId, found);
+  if (!found) {
+    return CommandResponse::makeError(
+      id,
+      ErrorCode::InvalidParam,
+      QStringLiteral("No dataset or group with uniqueId %1 exists in this project.").arg(uniqueId));
+  }
+
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  const auto previous       = projectModel.freezeTitleMode(widgetType, uniqueId);
+  projectModel.setFreezeTitleMode(widgetType, uniqueId, mode);
+
+  QJsonObject result;
+  result[QStringLiteral("widgetType")] = widgetType;
+  result[Keys::UniqueId]               = uniqueId;
+  result[QStringLiteral("mode")]       = mode;
+  result[QStringLiteral("previous")]   = previous;
 
   return CommandResponse::makeSuccess(id, result);
 }

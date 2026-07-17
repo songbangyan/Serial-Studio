@@ -41,6 +41,15 @@ Item {
   required property string widgetId
 
   //
+  // Freeze-mode title gate: the delegate arbitrates the per-widget mode; painted titles
+  // hide while frozen unless the effective mode is "painted" (name shown at most once)
+  //
+  readonly property bool titleFrozenOut: windowRoot && windowRoot.frozen === true
+                                         && windowRoot.effectiveFreezeTitle !== "painted"
+  readonly property string displayTitle: windowRoot && windowRoot.title ? windowRoot.title
+                                                                        : model.title
+
+  //
   // Spring follower emulates a real spring-driven movement: it tracks moving targets
   // continuously instead of restarting a fixed-duration animation on every sample.
   //
@@ -159,8 +168,8 @@ Item {
           Layout.row: 0
           Layout.column: 0
           Layout.fillWidth: true
-          text: root.model.title
-          active: root.height >= 110
+          text: root.displayTitle
+          active: root.height >= 110 && !root.titleFrozenOut
         }
 
         //
@@ -676,8 +685,8 @@ Item {
             width: Math.min(implicitWidth, digitalPage.width - 32)
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
-            text: root.model.title
-            visible: root.model.title.length > 0
+            text: root.displayTitle
+            visible: root.displayTitle.length > 0 && !root.titleFrozenOut
             color: root.model.alarmTriggered
                    ? (digitalBox.alarmFlashOn ? "#ffffff" : Cpp_ThemeManager.alarmColorForSeverity(root.model.activeBandSeverity))
                    : root.color
@@ -729,9 +738,6 @@ Item {
   // Restore per-widget page from project settings, then persist on change.
   //
   Component.onCompleted: {
-    if (windowRoot && windowRoot.frozenPanel !== undefined)
-      windowRoot.frozenPanel = false
-
     root.restoringPage = true
     const s = Cpp_JSON_ProjectModel.widgetSettings(root.widgetId)
     if (s["page"] !== undefined)

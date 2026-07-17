@@ -168,6 +168,11 @@ inline constexpr KeyView ActiveGroupId("activeGroupId");
 inline constexpr KeyView WidgetSettings("widgetSettings");
 inline constexpr KeyView Frozen("frozen");
 
+// Widget display overrides (ProjectModel state, never serialized into frames)
+inline constexpr KeyView WidgetDisplay("widgetDisplay");
+inline constexpr KeyView Titles("titles");
+inline constexpr KeyView FreezeTitle("freezeTitle");
+
 // Project-editor tree state (path-keyed node expansion map)
 inline constexpr KeyView TreeExpansion("treeExpansion");
 

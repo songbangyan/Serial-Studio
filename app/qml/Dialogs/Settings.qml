@@ -971,6 +971,56 @@ Widgets.SmartDialog {
           }
 
           Label {
+            text: qsTr("Auto-Layout Margin")
+            color: Cpp_ThemeManager.colors["text"]
+          } SpinBox {
+            id: _autoLayoutMargin
+
+            from: 0
+            stepSize: 1
+            editable: true
+            to: 2147483647
+            Layout.fillWidth: true
+            value: Cpp_UI_Dashboard.autoLayoutMargin
+            onValueChanged: {
+              if (value !== Cpp_UI_Dashboard.autoLayoutMargin)
+                Cpp_UI_Dashboard.autoLayoutMargin = value
+            }
+
+            Connections {
+              target: Cpp_UI_Dashboard
+              function onAutoLayoutMarginChanged() {
+                _autoLayoutMargin.value = Cpp_UI_Dashboard.autoLayoutMargin
+              }
+            }
+          }
+
+          Label {
+            text: qsTr("Auto-Layout Spacing")
+            color: Cpp_ThemeManager.colors["text"]
+          } SpinBox {
+            id: _autoLayoutSpacing
+
+            from: -1
+            stepSize: 1
+            editable: true
+            to: 2147483647
+            Layout.fillWidth: true
+            value: Cpp_UI_Dashboard.autoLayoutSpacing
+            onValueChanged: {
+              if (value !== Cpp_UI_Dashboard.autoLayoutSpacing)
+                Cpp_UI_Dashboard.autoLayoutSpacing = value
+            }
+
+            Connections {
+              target: Cpp_UI_Dashboard
+              function onAutoLayoutSpacingChanged() {
+                _autoLayoutSpacing.value = Cpp_UI_Dashboard.autoLayoutSpacing
+              }
+            }
+          }
+
+          Label {
             text: qsTr("Show Actions Panel")
             color: Cpp_ThemeManager.colors["text"]
           } Switch {
@@ -1028,56 +1078,6 @@ Widgets.SmartDialog {
               target: Cpp_UI_Dashboard
               function onShowAlignmentGuidesChanged() {
                 _showAlignmentGuides.checked = Cpp_UI_Dashboard.showAlignmentGuides
-              }
-            }
-          }
-
-          Label {
-            text: qsTr("Auto-Layout Margin")
-            color: Cpp_ThemeManager.colors["text"]
-          } SpinBox {
-            id: _autoLayoutMargin
-
-            from: 0
-            stepSize: 1
-            editable: true
-            to: 2147483647
-            Layout.fillWidth: true
-            value: Cpp_UI_Dashboard.autoLayoutMargin
-            onValueChanged: {
-              if (value !== Cpp_UI_Dashboard.autoLayoutMargin)
-                Cpp_UI_Dashboard.autoLayoutMargin = value
-            }
-
-            Connections {
-              target: Cpp_UI_Dashboard
-              function onAutoLayoutMarginChanged() {
-                _autoLayoutMargin.value = Cpp_UI_Dashboard.autoLayoutMargin
-              }
-            }
-          }
-
-          Label {
-            text: qsTr("Auto-Layout Spacing")
-            color: Cpp_ThemeManager.colors["text"]
-          } SpinBox {
-            id: _autoLayoutSpacing
-
-            from: -1
-            stepSize: 1
-            editable: true
-            to: 2147483647
-            Layout.fillWidth: true
-            value: Cpp_UI_Dashboard.autoLayoutSpacing
-            onValueChanged: {
-              if (value !== Cpp_UI_Dashboard.autoLayoutSpacing)
-                Cpp_UI_Dashboard.autoLayoutSpacing = value
-            }
-
-            Connections {
-              target: Cpp_UI_Dashboard
-              function onAutoLayoutSpacingChanged() {
-                _autoLayoutSpacing.value = Cpp_UI_Dashboard.autoLayoutSpacing
               }
             }
           }
@@ -1946,33 +1946,48 @@ Widgets.SmartDialog {
         icon.source: "qrc:/icons/buttons/refresh.svg"
         onClicked: {
           Cpp_ThemeManager.theme = 0
-          Cpp_UI_Dashboard.plotTimeRange = 10
-          Cpp_UI_Dashboard.points = 1000
-          Cpp_Misc_TimerEvents.fps = 60
+          if (Cpp_NativeWindow.csdAvailable)
+            Cpp_NativeWindow.csdEnabled = true
+
           Cpp_API_Server.enabled = false
           Cpp_API_Server.externalConnections = false
+          if (Cpp_Misc_GraphicsBackend.configurable)
+            Cpp_Misc_GraphicsBackend.currentBackend = 0
+
+          if (Cpp_Misc_HighDpiScaling.configurable) {
+            Cpp_Misc_HighDpiScaling.currentMode = 1
+            Cpp_Misc_HighDpiScaling.customPercent = 100
+          }
           Cpp_Misc_ModuleManager.automaticUpdates = true
           Cpp_Misc_ModuleManager.performanceMode = true
           Cpp_Misc_ModuleManager.inhibitIdleSleep = true
+          Cpp_UI_Dashboard.plotTimeRange = 10
+          Cpp_UI_Dashboard.points = 1000
+          Cpp_Misc_TimerEvents.fps = 60
           Cpp_UI_Dashboard.autoHideToolbar = false
-          Cpp_UI_Dashboard.showAlignmentGuides = true
+          Cpp_UI_Dashboard.showActionPanel = true
+          Cpp_UI_Dashboard.showAlignmentGuides = false
           Cpp_UI_Dashboard.autoLayoutMargin = 0
           Cpp_UI_Dashboard.autoLayoutSpacing = -1
           Cpp_UI_TaskbarSettings.resetToDefaults()
           Cpp_Console_Handler.fontFamily = Cpp_Misc_CommonFonts.monoFont.family
           Cpp_Console_Handler.fontSize = Cpp_Misc_CommonFonts.monoFont.pointSize
           Cpp_Console_Handler.scrollbackLines = 1000
-          Cpp_Console_Handler.echo = false
+          Cpp_Console_Handler.echo = true
           Cpp_Console_Handler.showTimestamp = false
           Cpp_Console_Handler.vt100Emulation = true
           Cpp_Console_Handler.ansiColors = true
           Cpp_Console_Handler.dataMode = 0
           Cpp_Console_Handler.displayMode = 0
-          Cpp_Console_Handler.lineEnding = 1
+          Cpp_Console_Handler.lineEnding = 0
           Cpp_Console_Handler.encoding = 0
           Cpp_Console_Handler.checksumMethod = 0
           Cpp_Misc_CommonFonts.widgetFontScale = 1.0
           Cpp_Misc_CommonFonts.widgetFontFamily = Cpp_Misc_CommonFonts.monoFont.family
+          Cpp_Notifications.systemNotificationsEnabled = false
+          Cpp_Notifications.routeWarningsToNotifications = false
+          if (Cpp_CommercialBuild)
+            Cpp_Image_Export.exportEnabled = false
         }
       }
 

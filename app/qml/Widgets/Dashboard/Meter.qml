@@ -39,6 +39,15 @@ Item {
   required property MeterModel model
 
   //
+  // Freeze-mode title gate: the delegate arbitrates the per-widget mode; painted titles
+  // hide while frozen unless the effective mode is "painted" (name shown at most once)
+  //
+  readonly property bool titleFrozenOut: windowRoot && windowRoot.frozen === true
+                                         && windowRoot.effectiveFreezeTitle !== "painted"
+  readonly property string displayTitle: windowRoot && windowRoot.title ? windowRoot.title
+                                                                        : model.title
+
+  //
   // Spring follower emulates a real spring-driven movement: it tracks moving targets
   // continuously instead of restarting a fixed-duration animation on every sample.
   //
@@ -581,14 +590,14 @@ Item {
           readonly property real halfWidth: (rowInnerWidth - 4) / 2
           readonly property bool titleFits: titleTextMetrics.width <= halfWidth - 8
           readonly property bool valueFits: valueBoxMetrics.width + 18 <= halfWidth
-          readonly property bool showTitle: root.model.title.length > 0
+          readonly property bool showTitle: root.displayTitle.length > 0 && !root.titleFrozenOut
                                             && titleFits && valueFits
 
           TextMetrics {
             id: titleTextMetrics
 
             font.bold: true
-            text: root.model.title
+            text: root.displayTitle
             font.pixelSize: digitalFontSize
             font.family: Cpp_Misc_CommonFonts.widgetFontFamily
           }
@@ -612,7 +621,7 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: 4
                 anchors.rightMargin: 4
-                text: root.model.title
+                text: root.displayTitle
                 font.pixelSize: digitalFontSize
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
@@ -1000,8 +1009,8 @@ Item {
             width: Math.min(implicitWidth, digitalPage.width - 32)
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
-            text: root.model.title
-            visible: root.model.title.length > 0
+            text: root.displayTitle
+            visible: root.displayTitle.length > 0 && !root.titleFrozenOut
             color: root.model.alarmTriggered
                    ? (digitalBox.alarmFlashOn ? "#ffffff" : Cpp_ThemeManager.alarmColorForSeverity(root.model.activeBandSeverity))
                    : root.color
@@ -1053,9 +1062,6 @@ Item {
   // Restore per-widget page from project settings, then persist on change.
   //
   Component.onCompleted: {
-    if (windowRoot && windowRoot.frozenPanel !== undefined)
-      windowRoot.frozenPanel = false
-
     root.restoringPage = true
     const s = Cpp_JSON_ProjectModel.widgetSettings(root.widgetId)
     if (s["page"] !== undefined)

@@ -1818,6 +1818,20 @@ void UI::WindowManager::updateHoverCursor(const QPointF& pos)
 }
 
 /**
+ * @brief Freeze-mode focus follow: makes the window under the cursor active
+ *        (raising it), since click-to-focus is suppressed while frozen.
+ */
+void UI::WindowManager::focusWindowUnderCursor(const QPointF& pos)
+{
+  if (!m_frozen || !m_taskbar)
+    return;
+
+  auto* target = topmostWindowAt(pos);
+  if (target && m_taskbar->activeWindow() != target)
+    m_taskbar->setActiveWindow(target);
+}
+
+/**
  * @brief Updates the cursor when hovering over resizable edges in manual layout mode.
  */
 void UI::WindowManager::hoverMoveEvent(QHoverEvent* event)
@@ -1970,7 +1984,8 @@ void UI::WindowManager::handleDragMove(QMouseEvent* event, const QPoint& delta)
                                0,
                                m_gridEnabled,
                                m_gridSize,
-                               qMax(-1, m_dashboard.autoLayoutSpacing())};
+                               qMax(-1, m_dashboard.autoLayoutSpacing()),
+                               m_dashboard.showAlignmentGuides()};
       const Snap::SnapResult res = Snap::resolveMoveSnap(in);
       rect                       = res.rect;
       publishSnapGuides(res);
@@ -2095,7 +2110,8 @@ void UI::WindowManager::handleResizeMove(QMouseEvent* event, const QPoint& delta
                              minSize,
                              m_gridEnabled,
                              m_gridSize,
-                             qMax(-1, m_dashboard.autoLayoutSpacing())};
+                             qMax(-1, m_dashboard.autoLayoutSpacing()),
+                             m_dashboard.showAlignmentGuides()};
     const Snap::SnapResult res = Snap::resolveResizeSnap(in, movingEdgesFor(m_resizeEdge));
     geometry                   = res.rect;
     publishSnapGuides(res);
@@ -2164,9 +2180,9 @@ bool UI::WindowManager::startManualPress(const QPointF& pos, Qt::MouseButton but
 
   const auto local     = m_focusedWindow->mapFromItem(this, m_initialMousePos);
   const int captionH   = m_focusedWindow->property("captionHeight").toInt();
-  const int externcW   = m_focusedWindow->property("externControlWidth").toInt();
+  const int menuCtlW   = m_focusedWindow->property("menuControlWidth").toInt();
   const int buttonsW   = m_focusedWindow->property("windowControlsWidth").toInt();
-  const bool onCaption = local.y() <= captionH && local.x() > externcW
+  const bool onCaption = local.y() <= captionH && local.x() > menuCtlW
                       && local.x() <= m_focusedWindow->width() - buttonsW;
   const bool onControls = local.y() <= captionH && !onCaption;
   if (onControls)
@@ -2262,11 +2278,11 @@ void UI::WindowManager::mousePressEvent(QMouseEvent* event)
 
   bool captionClick     = false;
   const int captionH    = m_focusedWindow->property("captionHeight").toInt();
-  const int externcW    = m_focusedWindow->property("externControlWidth").toInt();
+  const int menuCtlW    = m_focusedWindow->property("menuControlWidth").toInt();
   const int buttonsW    = m_focusedWindow->property("windowControlsWidth").toInt();
   const auto mouseClick = m_focusedWindow->mapFromItem(this, m_initialMousePos);
   if (mouseClick.y() <= captionH) {
-    if (mouseClick.x() <= m_focusedWindow->width() - buttonsW && mouseClick.x() > externcW)
+    if (mouseClick.x() <= m_focusedWindow->width() - buttonsW && mouseClick.x() > menuCtlW)
       captionClick = true;
     else {
       QQuickItem::mousePressEvent(event);
@@ -2389,11 +2405,11 @@ void UI::WindowManager::mouseDoubleClickEvent(QMouseEvent* event)
   }
 
   const int captionH  = m_focusedWindow->property("captionHeight").toInt();
-  const int externcW  = m_focusedWindow->property("externControlWidth").toInt();
+  const int menuCtlW  = m_focusedWindow->property("menuControlWidth").toInt();
   const int buttonsW  = m_focusedWindow->property("windowControlsWidth").toInt();
   const auto localPos = m_focusedWindow->mapFromItem(this, event->pos());
   if (localPos.y() <= captionH && localPos.x() <= m_focusedWindow->width() - buttonsW
-      && localPos.x() > externcW) {
+      && localPos.x() > menuCtlW) {
     const QString state = m_focusedWindow->property("state").toString();
 
     if (state == "maximized")

@@ -436,10 +436,12 @@ UI::Snap::SnapResult UI::Snap::resolveMoveSnap(const SnapInput& input)
   horizontal.reserve(input.siblings.size() * 5 + 88);
   vertical.reserve(input.siblings.size() * 5 + 88);
 
-  appendAlignCandidates(input, true, horizontal);
-  appendAlignCandidates(input, false, vertical);
-  appendSpacingCandidates(input, true, horizontal);
-  appendSpacingCandidates(input, false, vertical);
+  if (input.smartGuidesEnabled) {
+    appendAlignCandidates(input, true, horizontal);
+    appendAlignCandidates(input, false, vertical);
+    appendSpacingCandidates(input, true, horizontal);
+    appendSpacingCandidates(input, false, vertical);
+  }
 
   const auto pickX = pickCandidate(horizontal);
   const auto pickY = pickCandidate(vertical);
@@ -495,14 +497,18 @@ UI::Snap::SnapResult UI::Snap::resolveResizeSnap(const SnapInput& input, const M
   candidates.reserve(input.siblings.size() * 3 + 32);
 
   if (horizMoving) {
-    appendResizeCandidates(input, true, edges.left, candidates);
+    if (input.smartGuidesEnabled)
+      appendResizeCandidates(input, true, edges.left, candidates);
+
     pickX = pickCandidate(candidates);
     applyResizePick(pickX, input, true, edges.left, result.rect);
   }
 
   if (vertMoving) {
     candidates.clear();
-    appendResizeCandidates(input, false, edges.top, candidates);
+    if (input.smartGuidesEnabled)
+      appendResizeCandidates(input, false, edges.top, candidates);
+
     pickY = pickCandidate(candidates);
     applyResizePick(pickY, input, false, edges.top, result.rect);
   }

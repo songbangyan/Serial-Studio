@@ -58,9 +58,9 @@ struct SpacingIndicator {
 
 /**
  * @brief Inputs for one snap resolution: candidate geometry, canvas extents,
- *        sibling rects and snap settings. minSize bounds resize snaps only.
- *        siblingSpacing is the flush-snap gap against a neighbor (-1 shares a
- *        1-px border like the auto-layout spacing; 0 abuts edge to edge).
+ *        sibling rects and snap settings. minSize bounds resize snaps only;
+ *        siblingSpacing is the flush-snap gap against a neighbor. When
+ *        smartGuidesEnabled is off, only grid quantization applies.
  */
 struct SnapInput {
   QRect rect;
@@ -71,6 +71,7 @@ struct SnapInput {
   bool gridEnabled;
   int gridSize;
   int siblingSpacing;
+  bool smartGuidesEnabled;
 };
 
 /**

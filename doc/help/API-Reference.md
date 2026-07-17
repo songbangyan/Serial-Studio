@@ -1551,7 +1551,7 @@ Get console configuration.
 }
 ```
 
-### Dashboard Configuration Commands (7)
+### Dashboard Configuration Commands (10)
 
 > This section documents a representative subset; the live Dashboard
 > Configuration module registers 13 commands. Run `api.getCommands` for the
@@ -1704,6 +1704,122 @@ Get the current visible plot time window, in seconds.
 ```bash
 python test_api.py send dashboard.getTimeRange
 ```
+
+#### 🟢 `project.dashboard.setWidgetTitle`
+Set (or clear) a display-title override for the dataset or group with the given `uniqueId`.
+
+Overrides come in two scopes. Without `widgetType` the override is **entity-level**: every
+widget of that dataset or group displays it. With `widgetType` it is **widget-level** and
+targets only that widget kind, so a dataset shown as Plot, FFT, and Waterfall can give
+each its own name. Widget-level wins over entity-level, which wins over the canonical
+title.
+
+Display-only: widget window captions, freeze-mode headers, painted instrument titles
+(Bar/Gauge/Meter), taskbar entries, and popped-out windows show the override. CSV/MDF4
+exports, `dashboard.getData`, and every `project.*` response keep the canonical title, so
+tooling keyed on dataset titles is unaffected. Overrides are persisted in the project
+file under `widgetDisplay.titles` and survive group/dataset reorders (keyed by the stable
+`uniqueId`, not a positional index).
+
+**Parameters:**
+- `uniqueId` (int): Stable uniqueId of the dataset or group the widget displays
+- `title` (string, optional): Display title; empty or absent clears the override
+- `widgetType` (int, optional): `SerialStudio::DashboardWidget` enum value; present =
+  widget-level override for that widget kind only
+
+**Returns:**
+```json
+{
+  "uniqueId": 614,
+  "title": "Pressure Spectrum",
+  "previous": "",
+  "canonical": "PT-01-RAW",
+  "cleared": false,
+  "scope": "widget",
+  "widgetType": 7
+}
+```
+
+**Example:**
+```bash
+# Rename every widget of the dataset at once (entity-level)
+python test_api.py send project.dashboard.setWidgetTitle -p uniqueId=614 -p "title=Chamber Pressure"
+
+# Give only the FFT its own name (widget-level, wins over the entity-level entry)
+python test_api.py send project.dashboard.setWidgetTitle -p uniqueId=614 -p widgetType=7 -p "title=Pressure Spectrum"
+```
+
+**Notes:**
+- Requires ProjectFile mode with a loaded project
+- Fails with `INVALID_PARAM` when no dataset or group has the given `uniqueId`
+- All display surfaces update live; the dashboard is not rebuilt
+
+#### 🟢 `project.dashboard.getWidgetTitles`
+Get every display-title override, each annotated with its scope and the canonical title
+it shadows.
+
+**Parameters:** None
+
+**Returns:**
+```json
+{
+  "titles": [
+    { "uniqueId": 614, "title": "Chamber Pressure", "scope": "entity", "canonical": "PT-01-RAW" },
+    { "uniqueId": 614, "title": "Pressure Spectrum", "scope": "widget", "widgetType": 7, "canonical": "PT-01-RAW" }
+  ],
+  "count": 2
+}
+```
+
+`canonical` is `null` when the target dataset/group no longer exists (the entry is inert
+and harmless). `widgetType` is present only on widget-level rows.
+
+**Example:**
+```bash
+python test_api.py send project.dashboard.getWidgetTitles
+```
+
+#### 🟢 `project.dashboard.setWidgetFreezeTitle`
+Set how one widget titles itself while the dashboard is frozen (Pro freeze mode).
+
+Each widget is addressed by its `widgetType` (the `SerialStudio::DashboardWidget` enum
+value) plus the `uniqueId` of the dataset or group it displays, so a Bar and a Gauge on
+the same dataset keep independent modes. Persisted under `widgetDisplay.freezeTitle`.
+
+**Parameters:**
+- `widgetType` (int): `SerialStudio::DashboardWidget` enum value of the widget
+- `uniqueId` (int): Stable uniqueId of the dataset or group the widget displays
+- `mode` (string): `bar`, `painted`, or `hidden`
+
+**Modes:**
+- `bar`: panel-style freeze header shown (painted instrument titles are suppressed so the
+  name appears exactly once); the default for every widget except Bar, Gauge, and Meter
+- `painted`: title drawn on the instrument face, no freeze header; only valid for Bar,
+  Gauge, and Meter, and their default
+- `hidden`: no title anywhere while frozen (label-free instrument faces)
+
+Responses always carry the resolved mode, and writing a widget's own default removes its
+stored entry instead of recording it, so project files only list widgets that diverge
+from default behavior.
+
+**Returns:**
+```json
+{
+  "widgetType": 9,
+  "uniqueId": 614,
+  "mode": "hidden",
+  "previous": "painted"
+}
+```
+
+**Example:**
+```bash
+python test_api.py send project.dashboard.setWidgetFreezeTitle -p widgetType=9 -p uniqueId=614 -p mode=hidden
+```
+
+**Notes:**
+- Requires ProjectFile mode with a loaded project
+- Only affects freeze mode; normal-mode chrome and titles are unchanged
 
 ### Project Management Commands (63)
 

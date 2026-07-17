@@ -52,7 +52,7 @@ class DashboardWidget : public QQuickItem {
              NOTIFY widgetColorChanged)
   Q_PROPERTY(QString widgetTitle
              READ widgetTitle
-             NOTIFY widgetIndexChanged)
+             NOTIFY widgetTitleChanged)
   Q_PROPERTY(QString widgetQmlPath
              READ widgetQmlPath
              NOTIFY widgetIndexChanged)
@@ -68,11 +68,15 @@ class DashboardWidget : public QQuickItem {
   Q_PROPERTY(int widgetSourceId
              READ widgetSourceId
              NOTIFY widgetIndexChanged)
+  Q_PROPERTY(int widgetUniqueId
+             READ widgetUniqueId
+             NOTIFY widgetIndexChanged)
   // clang-format on
 
 signals:
   void widgetIndexChanged();
   void widgetColorChanged();
+  void widgetTitleChanged();
 
 public:
   DashboardWidget(QQuickItem* parent = 0);
@@ -85,6 +89,7 @@ public:
   [[nodiscard]] SerialStudio::DashboardWidget widgetType() const;
 
   [[nodiscard]] int widgetSourceId() const;
+  [[nodiscard]] int widgetUniqueId() const;
   [[nodiscard]] QString widgetId() const;
   [[nodiscard]] QString widgetQmlPath() const;
   [[nodiscard]] QQuickItem* widgetModel() const;

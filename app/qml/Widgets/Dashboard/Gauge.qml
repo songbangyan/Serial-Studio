@@ -41,6 +41,15 @@ Item {
   required property GaugeModel model
 
   //
+  // Freeze-mode title gate: the delegate arbitrates the per-widget mode; painted titles
+  // hide while frozen unless the effective mode is "painted" (name shown at most once)
+  //
+  readonly property bool titleFrozenOut: windowRoot && windowRoot.frozen === true
+                                         && windowRoot.effectiveFreezeTitle !== "painted"
+  readonly property string displayTitle: windowRoot && windowRoot.title ? windowRoot.title
+                                                                        : model.title
+
+  //
   // Custom properties
   //
   //
@@ -211,8 +220,8 @@ Item {
       WidgetTitleBar {
         id: gaugeTitleBar
 
-        text: root.model.title
-        active: root.height >= 110
+        text: root.displayTitle
+        active: root.height >= 110 && !root.titleFrozenOut
                 && Math.min(parent.width - 16, parent.height - 40) * 0.95 < 120
 
         anchors {
@@ -585,14 +594,14 @@ Item {
                 id: titleLabelMetrics
 
                 font.bold: true
-                text: model.title
+                text: root.displayTitle
                 font.pixelSize: fontSize * 1.05
                 font.family: Cpp_Misc_CommonFonts.widgetFontFamily
               }
 
               Text {
                 font.bold: true
-                text: model.title
+                text: root.displayTitle
                 style: Text.Raised
                 font.pixelSize: fontSize * 1.05
                 styleColor: Qt.rgba(0, 0, 0, 0.3)
@@ -600,7 +609,7 @@ Item {
                 anchors.horizontalCenter: parent.horizontalCenter
                 color: Cpp_ThemeManager.colors["widget_text"]
                 font.family: Cpp_Misc_CommonFonts.widgetFontFamily
-                visible: model.title.length > 0
+                visible: root.displayTitle.length > 0 && !root.titleFrozenOut
                          && titleLabelMetrics.width <= parent.titleClearanceWidth
               }
 
@@ -930,8 +939,8 @@ Item {
             width: Math.min(implicitWidth, digitalPage.width - 32)
             elide: Text.ElideRight
             horizontalAlignment: Text.AlignHCenter
-            text: root.model.title
-            visible: root.model.title.length > 0
+            text: root.displayTitle
+            visible: root.displayTitle.length > 0 && !root.titleFrozenOut
             font.family: Cpp_Misc_CommonFonts.monoFont.family
             font.pixelSize: bigValueText.font.pixelSize * 0.30
             color: root.model.alarmTriggered
@@ -983,9 +992,6 @@ Item {
   // Restore per-widget page from project settings, then persist on change.
   //
   Component.onCompleted: {
-    if (windowRoot && windowRoot.frozenPanel !== undefined)
-      windowRoot.frozenPanel = false
-
     root.restoringPage = true
     const s = Cpp_JSON_ProjectModel.widgetSettings(root.widgetId)
     if (s["page"] !== undefined)

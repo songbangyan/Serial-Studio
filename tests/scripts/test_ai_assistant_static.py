@@ -81,6 +81,26 @@ def test_meta_search_is_fully_wired():
     assert "searchCommands" in dispatcher
 
 
+def test_widget_display_commands_are_tiered_and_documented():
+    safety = json.loads(read_text("app/rcc/ai/command_safety.json"))
+    safe = set(safety["safe"])
+    confirm = set(safety["confirm"])
+
+    assert "project.dashboard.getWidgetTitles" in safe
+    assert "project.dashboard.setWidgetTitle" in confirm
+    assert "project.dashboard.setWidgetFreezeTitle" in confirm
+
+    handler = read_text("app/src/API/Handlers/DashboardHandler.cpp")
+    docs = read_text("doc/help/API-Reference.md")
+    for name in (
+        "project.dashboard.setWidgetTitle",
+        "project.dashboard.getWidgetTitles",
+        "project.dashboard.setWidgetFreezeTitle",
+    ):
+        assert f'QStringLiteral("{name}")' in handler
+        assert name in docs
+
+
 def test_incomplete_result_notices_are_distinct():
     conversation = read_text("app/src/AI/Conversation.cpp")
 

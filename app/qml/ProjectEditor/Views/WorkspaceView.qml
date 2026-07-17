@@ -58,6 +58,7 @@ Widgets.Pane {
     target: Cpp_JSON_ProjectModel
     function onEditorWorkspacesChanged() { Qt.callLater(root.refresh) }
     function onGroupsChanged()           { Qt.callLater(root.refresh) }
+    function onWidgetDisplayChanged()    { Qt.callLater(root.refresh) }
   }
 
   //
@@ -230,10 +231,12 @@ Widgets.Pane {
         Layout.fillWidth: true
         columns: Cpp_JSON_ProjectModel.customizeWorkspaces
                  ? [
-                     { title: qsTr("Group"),   width: 220 },
-                     { title: qsTr("Widget"),  width: -1  },
-                     { title: qsTr("Type"),    width: 100 },
-                     { title: "",              width: 40  }
+                     { title: qsTr("Group"),         width: 200 },
+                     { title: qsTr("Widget"),        width: -1  },
+                     { title: qsTr("Display Title"), width: 180 },
+                     { title: qsTr("Freeze Title"),  width: 110 },
+                     { title: qsTr("Type"),          width: 100 },
+                     { title: "",                    width: 40  }
                    ]
                  : [
                      { title: qsTr("Group"),   width: 220 },
@@ -276,7 +279,7 @@ Widgets.Pane {
             LayoutMirroring.childrenInherit: true
 
             Label {
-              Layout.preferredWidth: 220
+              Layout.preferredWidth: Cpp_JSON_ProjectModel.customizeWorkspaces ? 200 : 220
               Layout.alignment: Qt.AlignVCenter
               leftPadding: 8
               elide: Text.ElideRight
@@ -303,6 +306,66 @@ Widgets.Pane {
                     : qsTr("(group widget)")
               color: refRow.rowTextColor
               font: Cpp_Misc_CommonFonts.monoFont
+            }
+
+            Rectangle {
+              implicitWidth: 1
+              Layout.fillHeight: true
+              color: refRow.separatorColor
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+            }
+
+            Item {
+              Layout.fillHeight: true
+              Layout.preferredWidth: 180
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+
+              TextField {
+                anchors.margins: 3
+                anchors.fill: parent
+                text: modelData.displayTitle
+                enabled: modelData.uniqueId >= 0
+                font: Cpp_Misc_CommonFonts.uiFont
+                placeholderText: modelData.fallbackTitle
+                onEditingFinished: {
+                  if (text !== modelData.displayTitle)
+                    Cpp_JSON_ProjectModel.setWidgetDisplayTitle(modelData.widgetType,
+                                                                modelData.uniqueId, text)
+                }
+              }
+            }
+
+            Rectangle {
+              implicitWidth: 1
+              Layout.fillHeight: true
+              color: refRow.separatorColor
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+            }
+
+            Item {
+              Layout.fillHeight: true
+              Layout.preferredWidth: 110
+              visible: Cpp_JSON_ProjectModel.customizeWorkspaces
+
+              ComboBox {
+                readonly property bool paintsTitle:
+                  SerialStudio.dashboardWidgetPaintsTitle(modelData.widgetType)
+                readonly property var modeKeys:
+                  paintsTitle ? ["bar", "painted", "hidden"] : ["bar", "hidden"]
+
+                anchors.fill: parent
+                anchors.margins: 3
+                font: Cpp_Misc_CommonFonts.uiFont
+                enabled: modelData.uniqueId >= 0
+                model: paintsTitle
+                       ? [qsTr("Title Bar"), qsTr("Painted Title"), qsTr("Hidden")]
+                       : [qsTr("Title Bar"), qsTr("Hidden")]
+                currentIndex: Math.max(0, modeKeys.indexOf(modelData.freezeTitleMode))
+                onActivated: (index) => {
+                  Cpp_JSON_ProjectModel.setFreezeTitleMode(modelData.widgetType,
+                                                           modelData.uniqueId, modeKeys[index])
+                }
+              }
             }
 
             Rectangle {

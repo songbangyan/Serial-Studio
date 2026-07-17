@@ -114,8 +114,6 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
           &UI::Taskbar::workspaceModelChanged);
   connect(this, &UI::Taskbar::fullModelChanged, this, &UI::Taskbar::workspaceModelChanged);
   connect(this, &UI::Taskbar::fullModelChanged, this, &UI::Taskbar::searchResultsChanged);
-  connect(
-    this, &UI::Taskbar::workspaceModelChanged, this, &UI::Taskbar::refreshWorkspaceSwitcherModel);
 
   connect(this, &UI::Taskbar::workspaceModelChanged, this, [this] {
     if (m_independentWorkspace && !m_rebuildInProgress)
@@ -123,7 +121,6 @@ UI::Taskbar::Taskbar(QQuickItem* parent)
   });
 
   rebuildModel();
-  refreshWorkspaceSwitcherModel();
 
   m_uiSessionRegistry.registerTaskbar(this);
 }
@@ -142,6 +139,7 @@ UI::Taskbar::~Taskbar()
 void UI::Taskbar::connectToRegistry()
 {
   connect(&m_widgetRegistry, &WidgetRegistry::widgetCreated, this, &Taskbar::onWidgetCreated);
+  connect(&m_widgetRegistry, &WidgetRegistry::widgetUpdated, this, &Taskbar::onWidgetUpdated);
   connect(&m_widgetRegistry, &WidgetRegistry::widgetDestroyed, this, &Taskbar::onWidgetDestroyed);
   connect(&m_widgetRegistry, &WidgetRegistry::registryCleared, this, &Taskbar::onRegistryCleared);
 }
@@ -1230,6 +1228,19 @@ void UI::Taskbar::onWidgetCreated(UI::WidgetID id, const UI::WidgetInfo& info)
 }
 
 /**
+ * @brief Retitles the matching taskbar item when a widget's registry metadata changes.
+ */
+void UI::Taskbar::onWidgetUpdated(UI::WidgetID id, const UI::WidgetInfo& info)
+{
+  auto* item = findItemByWidgetId(id);
+  if (!item)
+    return;
+
+  if (item->data(TaskbarModel::WidgetNameRole).toString() != info.title)
+    item->setData(info.title, TaskbarModel::WidgetNameRole);
+}
+
+/**
  * @brief Handles widget destruction events from the registry.
  */
 void UI::Taskbar::onWidgetDestroyed(UI::WidgetID id)
@@ -1479,81 +1490,6 @@ QVariantList UI::Taskbar::workspaceTree() const
   const bool projectMode = m_appState.operationMode() == SerialStudio::ProjectFile;
   const auto& folders    = projectMode ? pm.editorWorkspaceFolders() : noFolders;
   return buildWorkspaceTreeLevel(-1, workspaces, folders);
-}
-
-/**
- * @brief Peels a lone top-level folder into its children, repeating until the level holds more
- *        than one item or a non-folder leaf, so the switcher never opens on a single redundant
- *        folder.
- */
-static QVariantList collapseSingleFolderRoots(QVariantList level)
-{
-  int guard = 0;
-  while (level.size() == 1 && guard++ < 256) {
-    const auto node = level.first().toMap();
-    if (!node.value(QStringLiteral("isFolder")).toBool())
-      break;
-
-    const auto children = node.value(QStringLiteral("children")).toList();
-    if (children.isEmpty())
-      break;
-
-    level = children;
-  }
-
-  return level;
-}
-
-/**
- * @brief Flattens the switcher tree into leaf workspaces, prefixing each label with its folder
- *        path so nested workspaces stay distinguishable without submenus.
- */
-static void flattenSwitcherNodes(const QVariantList& nodes,
-                                 const QString& prefix,
-                                 QVariantList& out)
-{
-  for (const auto& value : nodes) {
-    const auto node     = value.toMap();
-    const auto title    = node.value(QStringLiteral("text")).toString();
-    const bool isFolder = node.value(QStringLiteral("isFolder")).toBool();
-
-    if (isFolder) {
-      const auto branch = prefix.isEmpty() ? title : prefix + QStringLiteral(" / ") + title;
-      flattenSwitcherNodes(node.value(QStringLiteral("children")).toList(), branch, out);
-      continue;
-    }
-
-    QVariantMap entry;
-    entry[QStringLiteral("id")] = node.value(QStringLiteral("id"));
-    entry[QStringLiteral("text")] =
-      prefix.isEmpty() ? title : prefix + QStringLiteral(" / ") + title;
-    entry[QStringLiteral("icon")] = node.value(QStringLiteral("icon"));
-    out.append(entry);
-  }
-}
-
-/**
- * @brief Returns the cached flat switcher list: empty workspaces removed, a lone root folder
- *        collapsed, each entry labeled with its folder path.
- */
-QVariantList UI::Taskbar::workspaceSwitcherModel() const
-{
-  return m_workspaceSwitcherModel;
-}
-
-/**
- * @brief Recomputes the flat switcher list and emits only when its contents actually change, so
- *        unrelated widget-count churn cannot reassign (and thereby close) the open switcher popup.
- */
-void UI::Taskbar::refreshWorkspaceSwitcherModel()
-{
-  QVariantList updated;
-  flattenSwitcherNodes(collapseSingleFolderRoots(workspaceTree()), QString(), updated);
-  if (updated == m_workspaceSwitcherModel)
-    return;
-
-  m_workspaceSwitcherModel = updated;
-  Q_EMIT workspaceSwitcherModelChanged();
 }
 
 /**

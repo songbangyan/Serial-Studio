@@ -47,7 +47,7 @@ Item {
   //
   readonly property bool isBusy: (searchField && searchField.activeFocus)
                                  || (searchPopup && searchPopup.opened)
-                                 || (_switcher && _switcher.popup && _switcher.popup.opened)
+                                 || (_switcherMenu && _switcherMenu.opened)
                                  || (_tbContextMenu && _tbContextMenu.opened)
                                  || (startMenu && startMenu.visible)
 
@@ -651,6 +651,7 @@ Item {
             id: button
 
             text: model.widgetName
+            forceHidden: Cpp_UI_Dashboard.frozen
             icon.source: SerialStudio.dashboardWidgetIcon(model.widgetType)
             forceVisible: Cpp_UI_TaskbarSettings.showTaskbarButtons
                           || (taskBar && taskBar.hasMaximizedWindow)
@@ -723,67 +724,16 @@ Item {
     //
     // Workspace switcher
     //
-    Widgets.Combo {
+    Item {
       id: _switcher
 
-      valueRole: "id"
-      textRole: "text"
+      implicitHeight: 24
       Layout.maximumWidth: 220
       Layout.alignment: Qt.AlignVCenter
+      implicitWidth: _switcherLayout.implicitWidth
 
       //
-      // Model updates are deferred while the popup is open: reassigning a ComboBox model
-      // closes its popup, so a real list change arriving mid-browse is applied on close.
-      //
-      property bool modelDirty: false
-
-      function refreshModel() {
-        if (!taskBar)
-          return
-
-        if (popup.opened) {
-          modelDirty = true
-          return
-        }
-
-        model = taskBar.workspaceSwitcherModel
-      }
-
-      function syncCurrentIndex() {
-        if (!taskBar)
-          return
-
-        const idx = indexOfValue(taskBar.activeGroupId)
-        if (idx >= 0 && idx !== currentIndex)
-          currentIndex = idx
-      }
-
-      onModelChanged: syncCurrentIndex()
-      onActivated: {
-        if (taskBar && currentValue !== taskBar.activeGroupId)
-          taskBar.selectWorkspaceById(currentValue)
-      }
-
-      Component.onCompleted: refreshModel()
-
-      Connections {
-        target: taskBar
-        function onActiveGroupIdChanged() { _switcher.syncCurrentIndex() }
-        function onWorkspaceSwitcherModelChanged() { _switcher.refreshModel() }
-      }
-
-      Connections {
-        target: _switcher.popup
-        function onClosed() {
-          if (_switcher.modelDirty) {
-            _switcher.modelDirty = false
-            _switcher.refreshModel()
-          }
-        }
-      }
-
-      //
-      // Popup rows carry the folder path, but the compact taskbar label shows only the active
+      // Menu rows carry the folder tree, but the compact taskbar label shows only the active
       // workspace's own title, resolved from the unfiltered model by id.
       //
       readonly property string activeTitle: {
@@ -798,84 +748,86 @@ Item {
         return m.length > 0 ? m[0].text : ""
       }
 
-      popup.width: 240
-      popup.y: -popup.height - _switcher.y + 1
-      popup.x: Cpp_Misc_Translator.rtl ? 0 : _switcher.width - popup.width
+      //
+      // Rebuilds the same folder -> children tree the Start menu's Workspaces submenu shows and
+      // opens it above the taskbar; building on every open removes the need for live refreshes.
+      //
+      function openMenu() {
+        if (!taskBar)
+          return
 
-      popup.background: Rectangle {
-        border.width: 1
-        color: Cpp_ThemeManager.colors["start_menu_background"]
-        border.color: Cpp_ThemeManager.colors["start_menu_border"]
+        _switcherMenu.currentValue = taskBar.activeGroupId
+
+        var model = []
+        var roots = taskBar.workspaceTree()
+        for (var r = 0; r < roots.length; ++r)
+          model.push(_switcherMenu.folderRow(roots[r]))
+
+        var runtimeMode = (typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
+        if (!runtimeMode) {
+          model.push({"id": "__separator__", "text": "",
+                       "icon": "", "separator": true})
+          model.push({"id": "__new_workspace__", "separator": false,
+                       "text": qsTr("New Workspace…"),
+                       "icon": "qrc:/icons/project-editor/toolbar/add-group.svg"})
+        }
+
+        const pos = _switcher.mapToItem(root, 0, 0)
+        _switcherMenu.anchorLeft = pos.x
+        _switcherMenu.anchorRight = pos.x + _switcher.width
+        _switcherMenu.setRootModel(model)
+        _switcherMenu.open()
       }
 
-      popup.enter: Transition {
-        NumberAnimation {
-          duration: 150
-          from: 0; to: 1
-          property: "opacity"
-          easing.type: Easing.OutCubic
+      //
+      // Parented to the taskbar so submenu cascade logic sees the full taskbar width
+      //
+      Widgets.SubMenuCombo {
+        id: _switcherMenu
+
+        parent: root
+        alignBottom: true
+        showCheckable: true
+
+        property real anchorLeft: 0
+        property double closedAt: 0
+        property real anchorRight: 0
+
+        y: -height + 1
+        placeholderText: qsTr("No Workspaces Available")
+        x: Cpp_Misc_Translator.rtl ? anchorLeft : anchorRight - width
+
+        onClosed: closedAt = Date.now()
+        onValueSelected: (value) => {
+          if (value === "__new_workspace__")
+            root.newWorkspaceRequested()
+          else if (taskBar && value !== taskBar.activeGroupId)
+            taskBar.selectWorkspaceById(value)
         }
       }
 
-      popup.exit: Transition {
-        NumberAnimation {
-          duration: 100
-          from: 1; to: 0
-          property: "opacity"
-          easing.type: Easing.InCubic
+      //
+      // The closedAt guard keeps a click on the switcher from reopening the menu that the
+      // same press just dismissed via the close-on-press-outside policy
+      //
+      MouseArea {
+        anchors.fill: parent
+        onPressed: {
+          if (Date.now() - _switcherMenu.closedAt > 150)
+            _switcher.openMenu()
         }
       }
 
-      indicator: Item {}
+      RowLayout {
+        id: _switcherLayout
 
-      background: Rectangle {
-        border.width: 0
-        color: "transparent"
-      }
-
-      delegate: ItemDelegate {
-        width: _switcher.popup.width
-
-        contentItem: RowLayout {
-          spacing: 8
-
-          Image {
-            source: modelData["icon"] || ""
-            sourceSize: Qt.size(16, 16)
-            fillMode: Image.PreserveAspectFit
-          }
-
-          Label {
-            text: modelData["text"]
-            elide: Text.ElideRight
-            Layout.fillWidth: true
-            verticalAlignment: Text.AlignVCenter
-            LayoutMirroring.enabled: false
-            horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
-                                                         : Text.AlignLeft
-            font: index === _switcher.currentIndex
-                  ? Cpp_Misc_CommonFonts.boldUiFont
-                  : Cpp_Misc_CommonFonts.uiFont
-            color: hovered
-                   ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
-                   : Cpp_ThemeManager.colors["start_menu_text"]
-          }
-        }
-
-        background: Rectangle {
-          color: hovered
-                 ? Cpp_ThemeManager.colors["start_menu_highlight"]
-                 : "transparent"
-        }
-      }
-
-      contentItem: RowLayout {
         spacing: 4
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.fill: parent
 
         Label {
           Layout.fillWidth: true
           text: _switcher.activeTitle
+          elide: Text.ElideRight
           LayoutMirroring.enabled: false
           horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignLeft
                                                        : Text.AlignRight
@@ -1007,21 +959,6 @@ Item {
           }
         }
       }
-    }
-
-    //
-    // New workspace button (hidden in operator runtime mode)
-    //
-    Widgets.IconButton {
-      iconSize: 16
-      background: Item{}
-      Layout.preferredWidth: 24
-      Layout.preferredHeight: 24
-      Layout.alignment: Qt.AlignVCenter
-      onClicked: root.newWorkspaceRequested()
-      icon.source: "qrc:/icons/buttons/add-workspace.svg"
-      icon.color: Cpp_ThemeManager.colors["taskbar_text"]
-      visible: !(typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
     }
 
     //

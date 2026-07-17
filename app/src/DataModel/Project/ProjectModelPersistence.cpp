@@ -321,6 +321,9 @@ QJsonObject DataModel::ProjectModel::serializeToJson() const
   if (!m_widgetSettings.isEmpty())
     json.insert(Keys::WidgetSettings, m_widgetSettings);
 
+  if (!m_widgetDisplay.isEmpty())
+    json.insert(Keys::WidgetDisplay, m_widgetDisplay);
+
   if (!m_treeExpansion.isEmpty())
     json.insert(Keys::TreeExpansion, m_treeExpansion);
 

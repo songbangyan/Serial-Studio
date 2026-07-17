@@ -158,7 +158,7 @@ UI::Dashboard::Dashboard()
   , m_clockEnabled(false)
   , m_stopwatchEnabled(false)
   , m_autoHideToolbar(false)
-  , m_showAlignmentGuides(true)
+  , m_showAlignmentGuides(false)
   , m_persistSettings(true)
   , m_autoLayoutMargin(0)
   , m_autoLayoutSpacing(-1)
@@ -249,6 +249,10 @@ UI::Dashboard::Dashboard()
 
   connect(
     &projectModel, &DataModel::ProjectModel::frozenChanged, this, &UI::Dashboard::frozenChanged);
+  connect(&projectModel,
+          &DataModel::ProjectModel::widgetDisplayChanged,
+          this,
+          &UI::Dashboard::refreshDisplayTitles);
 #ifdef BUILD_COMMERCIAL
   static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
   connect(
@@ -256,10 +260,17 @@ UI::Dashboard::Dashboard()
 #endif
 
   updateStreamAvailable();
+  restorePersistedSettings();
+}
 
+/**
+ * @brief Restores the persisted view-state flags and layout preferences from QSettings.
+ */
+void UI::Dashboard::restorePersistedSettings()
+{
   m_autoHideToolbar        = m_settings.value("Dashboard/AutoHideToolbar", false).toBool();
   m_showActionPanel        = m_settings.value("Dashboard/ShowActionPanel", true).toBool();
-  m_showAlignmentGuides    = m_settings.value("Dashboard/ShowAlignmentGuides", true).toBool();
+  m_showAlignmentGuides    = m_settings.value("Dashboard/ShowAlignmentGuides", false).toBool();
   m_terminalEnabled        = m_settings.value("Dashboard/TerminalEnabled", false).toBool();
   m_notificationLogEnabled = m_settings.value("Dashboard/NotificationLogEnabled", false).toBool();
   m_clockEnabled           = m_settings.value("Dashboard/ClockEnabled", false).toBool();
@@ -1828,6 +1839,7 @@ void UI::Dashboard::reconfigureDashboard(const DataModel::Frame& frame)
 
   buildWidgetGroups(frame, pro);
 
+  applyDisplayTitles();
   registerWidgets();
 
   buildDatasetReferences();
@@ -1923,6 +1935,98 @@ void UI::Dashboard::relabelGroupAsMultiplotFallback(int groupId, const QString& 
     m_lastFrame.groups[i].widget = "multiplot";
     return;
   }
+}
+
+/**
+ * @brief Applies display-title overrides to the widget copies in m_widgetGroups and
+ *        m_widgetDatasets: widget-level entries ("type:uid") beat entity-level ones ("uid"),
+ *        canonical titles resolve from m_lastFrame so a removed override restores the
+ *        original text; m_lastFrame stays canonical (exports and dashboard.getData serialize it).
+ */
+void UI::Dashboard::applyDisplayTitles()
+{
+  static auto& appState     = AppState::instance();
+  static auto& projectModel = DataModel::ProjectModel::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile)
+    return;
+
+  Q_ASSERT(!m_lastFrame.groups.empty());
+  const auto overrides = projectModel.displayTitles();
+
+  QHash<int, QString> canonical;
+  for (const auto& group : m_lastFrame.groups) {
+    canonical.insert(group.uniqueId, group.title);
+    for (const auto& dataset : group.datasets)
+      canonical.insert(dataset.uniqueId, dataset.title);
+  }
+
+  const auto widgetOverride = [&](int type, int uniqueId) {
+    return overrides.value(QString::number(type) + QLatin1Char(':') + QString::number(uniqueId))
+      .toString();
+  };
+
+  const auto entityResolve = [&](int uniqueId, const QString& current) {
+    const auto over = overrides.value(QString::number(uniqueId)).toString();
+    if (!over.isEmpty())
+      return over;
+
+    return canonical.value(uniqueId, current);
+  };
+
+  const auto resolve = [&](int type, int uniqueId, const QString& current) {
+    const auto scoped = widgetOverride(type, uniqueId);
+    return scoped.isEmpty() ? entityResolve(uniqueId, current) : scoped;
+  };
+
+  for (auto i = m_widgetGroups.begin(); i != m_widgetGroups.end(); ++i) {
+    const int type = static_cast<int>(i.key());
+    for (auto& group : i.value()) {
+      if (group.widget != QLatin1String("led-panel")) {
+        group.title = resolve(type, group.uniqueId, group.title);
+        continue;
+      }
+
+      const auto scoped = widgetOverride(type, group.uniqueId);
+      group.title       = scoped.isEmpty()
+                          ? tr("LED Panel (%1)").arg(entityResolve(group.uniqueId, group.title))
+                          : scoped;
+    }
+  }
+
+  for (auto i = m_widgetDatasets.begin(); i != m_widgetDatasets.end(); ++i) {
+    const int type = static_cast<int>(i.key());
+    for (auto& dataset : i.value())
+      dataset.title = resolve(type, dataset.uniqueId, dataset.title);
+  }
+}
+
+/**
+ * @brief Re-applies display titles after an override edit without rebuilding the dashboard:
+ *        patches the widget copies in place, pushes the new titles into the WidgetRegistry
+ *        and notifies QML. Never emits widgetCountChanged (that would trigger a full
+ *        delegate rebuild mid-stream).
+ */
+void UI::Dashboard::refreshDisplayTitles()
+{
+  if (m_widgetCount == 0 || m_lastFrame.groups.empty() || !m_layoutValid)
+    return;
+
+  applyDisplayTitles();
+
+  static auto& registry = WidgetRegistry::instance();
+  for (auto i = m_widgetGroups.constBegin(); i != m_widgetGroups.constEnd(); ++i) {
+    const auto key = i.key();
+    for (int j = 0; j < i.value().size(); ++j)
+      registry.updateWidget(registry.widgetIdByTypeAndIndex(key, j), i.value().at(j).title);
+  }
+
+  for (auto i = m_widgetDatasets.constBegin(); i != m_widgetDatasets.constEnd(); ++i) {
+    const auto key = i.key();
+    for (int j = 0; j < i.value().size(); ++j)
+      registry.updateWidget(registry.widgetIdByTypeAndIndex(key, j), i.value().at(j).title);
+  }
+
+  Q_EMIT displayTitlesChanged();
 }
 
 /**

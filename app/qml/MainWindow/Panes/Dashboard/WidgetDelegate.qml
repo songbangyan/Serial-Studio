@@ -51,14 +51,106 @@ Widgets.MiniWindow {
   readonly property bool frozen: Cpp_UI_Dashboard.frozen
 
   //
-  // Panel-style freeze header, on by default; instrument widgets that paint their
-  // own title (Bar, Gauge, Meter) opt out via windowRoot. The border always stays.
+  // Per-widget freeze-title mode ("bar"/"painted"/"hidden"): the project model resolves
+  // the per-type default; the QML fallback only covers Quick Plot mode (no project)
   //
-  property bool frozenPanel: true
-  readonly property bool frozenHeaderVisible: root.frozen && root.frozenPanel
+  property int entityUniqueId: -1
+  property int entityWidgetType: -1
+  property string freezeTitleMode: ""
+  readonly property bool paintsOwnTitle: entityWidgetType >= 0
+                                         && SerialStudio.dashboardWidgetPaintsTitle(entityWidgetType)
+  readonly property string effectiveFreezeTitle: freezeTitleMode !== ""
+                                                 ? freezeTitleMode
+                                                 : (paintsOwnTitle ? "painted" : "bar")
+  readonly property bool frozenHeaderVisible: root.frozen
+                                              && root.effectiveFreezeTitle === "bar"
                                               && root.title.length > 0
   readonly property real frozenHeaderHeight: frozenHeaderVisible
       ? Math.max(32, frozenHeaderMetrics.height + 14) : 0
+
+  function refreshFreezeTitleMode() {
+    if (entityWidgetType >= 0 && entityUniqueId >= 0)
+      freezeTitleMode = Cpp_JSON_ProjectModel.freezeTitleMode(entityWidgetType, entityUniqueId)
+  }
+
+  onEntityUniqueIdChanged: refreshFreezeTitleMode()
+
+  Connections {
+    target: Cpp_JSON_ProjectModel
+
+    function onWidgetDisplayChanged() {
+      root.refreshFreezeTitleMode()
+    }
+  }
+
+  //
+  // Caption menu (menu button, left of the title): rename, freeze-title mode, pop-out
+  //
+  readonly property bool displayEditable: root.entityUniqueId >= 0
+                                          && Cpp_AppState.operationMode === SerialStudio.ProjectFile
+
+  onMenuClicked: {
+    taskBar.activeWindow = root
+    widgetMenu.popup(4, root.captionHeight)
+  }
+
+  Menu {
+    id: widgetMenu
+
+    MenuItem {
+      text: qsTr("Rename Widget…")
+      enabled: root.displayEditable
+      icon.source: "qrc:/icons/buttons/wrench.svg"
+      onTriggered: Cpp_JSON_ProjectModel.promptRenameWidget(root.entityWidgetType,
+                                                            root.entityUniqueId, root.title)
+    }
+
+    Menu {
+      title: qsTr("Freeze Title")
+      icon.source: "qrc:/icons/buttons/freeze.svg"
+
+      MenuItem {
+        checkable: true
+        text: qsTr("Title Bar")
+        enabled: root.displayEditable
+        checked: root.effectiveFreezeTitle === "bar"
+        icon.source: "qrc:/icons/buttons/visible.svg"
+        onTriggered: Cpp_JSON_ProjectModel.setFreezeTitleMode(root.entityWidgetType,
+                                                              root.entityUniqueId, "bar")
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("Painted Title")
+        visible: root.paintsOwnTitle
+        enabled: root.displayEditable
+        icon.source: "qrc:/icons/buttons/color.svg"
+        checked: root.effectiveFreezeTitle === "painted"
+        onTriggered: Cpp_JSON_ProjectModel.setFreezeTitleMode(root.entityWidgetType,
+                                                              root.entityUniqueId, "painted")
+      }
+
+      MenuItem {
+        checkable: true
+        text: qsTr("Hidden")
+        enabled: root.displayEditable
+        checked: root.effectiveFreezeTitle === "hidden"
+        icon.source: "qrc:/icons/buttons/invisible.svg"
+        onTriggered: Cpp_JSON_ProjectModel.setFreezeTitleMode(root.entityWidgetType,
+                                                              root.entityUniqueId, "hidden")
+      }
+    }
+
+    MenuSeparator {
+
+    }
+
+    MenuItem {
+      text: qsTr("Open in External Window")
+      icon.source: "qrc:/icons/buttons/expand.svg"
+      onTriggered: root.externalWindowClicked()
+    }
+  }
 
   TextMetrics {
     id: frozenHeaderMetrics
@@ -81,6 +173,11 @@ Widgets.MiniWindow {
   // into an external window; handled by DashboardCanvas
   //
   signal externalWidgetRequested(int windowId)
+
+  //
+  // Emitted by the caption menu's pop-out entry; handled by DashboardCanvas
+  //
+  signal externalWindowClicked()
 
   //
   // Set minimum size: manual mode allows dense instrument tiles down to 48x48,
@@ -135,8 +232,12 @@ Widgets.MiniWindow {
 
         widgetIndex: root.widgetIndex
         Component.onCompleted: {
-          windowRoot.title       = widgetTitle
+          windowRoot.title       = Qt.binding(function() { return dashboardWidget.widgetTitle })
           windowRoot.deviceIndex = widgetSourceId
+          if (windowRoot.entityUniqueId !== undefined) {
+            windowRoot.entityWidgetType = widgetType
+            windowRoot.entityUniqueId   = widgetUniqueId
+          }
           if (windowRoot.icon !== undefined)
             windowRoot.icon = SerialStudio.dashboardWidgetIcon(widgetType)
         }

@@ -63,6 +63,7 @@ Item {
   // Control flags
   //
   property bool checkable: false
+  property bool forceHidden: false
   property bool forceVisible: false
 
   //
@@ -72,10 +73,10 @@ Item {
   property real focusedOpacity: 1.0
 
   //
-  // Hide taskbar when not needed
+  // Hide taskbar when not needed; forceHidden wins over every show condition
   //
   visible: opacity > 0
-  opacity: !open || minimized || startMenu || forceVisible ? 1 : 0
+  opacity: !forceHidden && (!open || minimized || startMenu || forceVisible) ? 1 : 0
 
   //
   // Layout options

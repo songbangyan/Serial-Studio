@@ -45,13 +45,13 @@ Item {
   readonly property bool showMaximize: root.width >= 88
   readonly property bool showMinimize: root.width >= 120
   readonly property bool showTitleLabel: root.width >= 148
-  readonly property bool showExternalButton: root.width >= 200
+  readonly property bool showMenuButton: root.width >= 200
 
   //
   // Drag-region geometry consumed by the C++ window manager; hidden controls
   // must contribute zero width or the caption hit-test eats the drag strip
   //
-  readonly property int externControlWidth: externalWinBt.width
+  readonly property int menuControlWidth: menuBtMa.width
   readonly property int captionHeight: root.headerVisible ? 28 : 0
   readonly property int windowControlsWidth: root.windowControlsVisible
                                              ? (root.showMinimize ? minBtMa.width : 0)
@@ -121,11 +121,11 @@ Item {
   //
   // Caption button signals
   //
+  signal menuClicked()
   signal closeClicked()
   signal restoreClicked()
   signal minimizeClicked()
   signal maximizeClicked()
-  signal externalWindowClicked()
 
   //
   // Internal properties for saving/restoring window geometry
@@ -437,21 +437,21 @@ Item {
       }
 
       //
-      // Expand button
+      // Window menu button
       //
       Controls.ToolButton {
-        id: expandBt
+        id: menuBt
 
         flat: true
         icon.width: 18
         icon.height: 18
         background: Item {}
         icon.color: _title.color
-        visible: root.showExternalButton
-        width: root.showExternalButton ? implicitWidth : 0
+        visible: root.showMenuButton
+        width: root.showMenuButton ? implicitWidth : 0
         Layout.alignment: Qt.AlignVCenter
-        onClicked: root.externalWindowClicked()
-        icon.source: "qrc:/icons/miniwindow/external.svg"
+        onClicked: root.menuClicked()
+        icon.source: "qrc:/icons/buttons/menu.svg"
 
         anchors {
           left: parent.left
@@ -459,10 +459,10 @@ Item {
         }
 
         MouseArea {
-          id: externalWinBt
+          id: menuBtMa
 
           anchors.fill: parent
-          onClicked: root.externalWindowClicked()
+          onClicked: root.menuClicked()
         }
       }
 
@@ -472,8 +472,8 @@ Item {
       RowLayout {
         spacing: 0
         height: root.captionHeight
+        anchors.left: menuBt.right
         anchors.right: parent.right
-        anchors.left: expandBt.right
 
         Controls.Label {
           id: _title

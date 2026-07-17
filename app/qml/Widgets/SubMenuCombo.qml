@@ -49,6 +49,7 @@ Popup {
   property string valueRole: "id"
   property string iconRole: "icon"
   property string textRole: "text"
+  property bool alignBottom: false
   property bool showCheckable: false
   property string checkedRole: "checked"
   property alias placeholderText: _placeholder.text
@@ -122,6 +123,7 @@ Popup {
     childPopup.showCheckable = root.showCheckable
     childPopup.currentValue = root.currentValue
     childPopup.maximumHeight = root.maximumHeight
+    childPopup.alignBottom = root.alignBottom
     childPopup.model = root.folderModel(node)
 
     var overlayWidth = root.parent ? root.parent.width : root.x + root.width + childPopup.width
@@ -129,7 +131,13 @@ Popup {
     childPopup.x = (rightX + childPopup.width > overlayWidth)
                    ? root.x - childPopup.width + 1
                    : rightX
-    childPopup.y = root.y
+
+    // Bottom-anchored menus (e.g. taskbar) cascade submenus upward instead of downward.
+    if (root.alignBottom)
+      childPopup.y = Qt.binding(() => root.y + root.height - root.childPopup.height)
+    else
+      childPopup.y = root.y
+
     childPopup.open()
   }
 
