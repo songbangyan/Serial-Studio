@@ -24,10 +24,6 @@ import QtQuick
 Item {
   id: root
 
-  //
-  // Text to display and the condition under which the strip is active; the caller
-  // owns the vertical/mode gating, the strip owns the horizontal size limiter
-  //
   property string text: ""
   property bool active: true
 
@@ -48,7 +44,7 @@ Item {
     verticalAlignment: Text.AlignVCenter
     horizontalAlignment: Text.AlignHCenter
     color: Cpp_ThemeManager.colors["widget_text"]
-    font: Cpp_Misc_CommonFonts.customUiFont(1.15, true)
     width: Math.min(implicitWidth, root.width * 0.85)
+    font: Cpp_Misc_CommonFonts.customUiFont(1.15, true)
   }
 }

@@ -1487,6 +1487,21 @@ static QString applyDatasetTextAndToggleFields(DataModel::Dataset& d,
     rebuildTree = true;
   }
 
+  if (takeParam(params, consumed, Keys::PltLogX))
+    d.pltLogX = params.value(Keys::PltLogX).toBool();
+
+  if (takeParam(params, consumed, Keys::PltLogY))
+    d.pltLogY = params.value(Keys::PltLogY).toBool();
+
+  if (takeParam(params, consumed, Keys::FFTLogX))
+    d.fftLogX = params.value(Keys::FFTLogX).toBool();
+
+  if (takeParam(params, consumed, Keys::FFTBallistics))
+    d.fftBallistics = params.value(Keys::FFTBallistics).toBool();
+
+  if (takeParam(params, consumed, Keys::FFTBallisticsRelease))
+    d.fftBallisticsRelease = qBound(50, params.value(Keys::FFTBallisticsRelease).toInt(), 5000);
+
   return QString();
 }
 

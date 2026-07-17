@@ -379,6 +379,7 @@ set(HEADERS
   src/UI/Widgets/Plot.h
   src/UI/Widgets/PlotAreaFill.h
   src/UI/Widgets/PlotCurve.h
+  src/UI/Widgets/PlotLogScale.h
   src/UI/Widgets/DataGrid.h
   src/UI/Widgets/FFTPlot.h
   src/UI/Widgets/FFTWindow.h

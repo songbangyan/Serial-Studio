@@ -116,6 +116,8 @@ struct CliOptions {
     "mode"};
   QCommandLineOption taskbarButtonsOpt{
     "taskbar-buttons", "Comma-separated taskbar pin IDs for operator mode (Pro)", "ids"};
+  QCommandLineOption noTaskbarSearchOpt{
+    "no-taskbar-search", "Hide the taskbar search bar in operator runtime mode (Pro)"};
   QCommandLineOption themeOpt{
     "theme",
     "Override the application theme by name (e.g. \"Iconic\", \"Light\", \"System\") (Pro)",

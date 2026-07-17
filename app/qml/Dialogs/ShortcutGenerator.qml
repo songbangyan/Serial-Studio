@@ -59,6 +59,9 @@ Widgets.SmartDialog {
       if (taskbarModeCombo)
         taskbarModeCombo.currentIndex = 0
 
+      if (searchBar)
+        searchBar.checked = true
+
       if (themeCombo)
         themeCombo.currentIndex = 0
     }
@@ -125,11 +128,12 @@ Widgets.SmartDialog {
       const hasConsole = consoleExport.checked
       const mode = root.taskbarMode
       const buttons = root.selectedTaskbarButtons()
+      const hasSearch = searchBar.checked
       const theme = root.themeName
       Qt.callLater(() => Cpp_ShortcutGenerator.generate(
                      file, title, iconPath, projectPath, isFullscreen,
                      hasActions, hasFileTransmission, hasCsv, hasMdf,
-                     hasSession, hasConsole, mode, buttons, theme))
+                     hasSession, hasConsole, mode, buttons, hasSearch, theme))
     }
   }
 
@@ -519,6 +523,20 @@ Widgets.SmartDialog {
             textRole: "label"
             currentIndex: 0
             onActivated: root.taskbarMode = model[currentIndex].value
+          }
+
+          Label {
+            text: qsTr("Search Bar")
+            color: Cpp_ThemeManager.colors["text"]
+            enabled: root.taskbarMode !== "hidden"
+            opacity: enabled ? 1 : 0.5
+          } Switch {
+            id: searchBar
+            checked: true
+            enabled: root.taskbarMode !== "hidden"
+            Layout.rightMargin: -8
+            Layout.alignment: Qt.AlignRight
+            palette.highlight: Cpp_ThemeManager.colors["switch_highlight"]
           }
 
           Label {

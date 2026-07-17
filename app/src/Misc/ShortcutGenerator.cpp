@@ -138,6 +138,7 @@ QStringList Misc::ShortcutGenerator::buildArguments(const QString& projectFile,
                                                     bool consoleExport,
                                                     const QString& taskbarMode,
                                                     const QStringList& taskbarButtons,
+                                                    bool taskbarSearch,
                                                     const QString& themeName) const
 {
   QStringList args;
@@ -179,6 +180,9 @@ QStringList Misc::ShortcutGenerator::buildArguments(const QString& projectFile,
     args << taskbarButtons.join(QLatin1Char(','));
   }
 
+  if (!taskbarSearch)
+    args << QStringLiteral("--no-taskbar-search");
+
   const QString trimmedTheme = themeName.trimmed();
   if (!trimmedTheme.isEmpty())
     args << QStringLiteral("--theme") << trimmedTheme;
@@ -206,6 +210,7 @@ void Misc::ShortcutGenerator::generate(const QString& outputPath,
                                        bool consoleExport,
                                        const QString& taskbarMode,
                                        const QStringList& taskbarButtons,
+                                       bool taskbarSearch,
                                        const QString& themeName)
 {
   if (!hasProLicense()) {
@@ -239,6 +244,7 @@ void Misc::ShortcutGenerator::generate(const QString& outputPath,
                                     consoleExport,
                                     taskbarMode,
                                     taskbarButtons,
+                                    taskbarSearch,
                                     themeName);
 
   args << QStringLiteral("--shortcut-path") << resolvedPath;

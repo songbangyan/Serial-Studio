@@ -231,7 +231,8 @@ void DataModel::ProjectEditor::buildGroupDatasetsSection(const DataModel::Group&
 }
 
 /**
- * @brief Appends the multiplot X-Axis selector (Time or Samples) to the group model.
+ * @brief Appends the multiplot X-Axis selector (Time or Samples) and the log-scale
+ *        toggles to the group model.
  */
 void DataModel::ProjectEditor::buildGroupXAxisRow(const DataModel::Group& group)
 {
@@ -251,6 +252,36 @@ void DataModel::ProjectEditor::buildGroupXAxisRow(const DataModel::Group& group)
   item->setData(tr("Plot every curve against time or against the sample number"),
                 ParameterDescription);
   m_groupModel->appendRow(item);
+
+  const bool has_datasets = !group.datasets.empty();
+  const bool log_x        = has_datasets && group.datasets.front().pltLogX;
+  const bool log_y        = has_datasets && group.datasets.front().pltLogY;
+
+  auto* logXItem = new QStandardItem();
+  logXItem->setEditable(samples && has_datasets);
+  logXItem->setData(0, PlaceholderValue);
+  logXItem->setData(CheckBox, WidgetType);
+  logXItem->setData(logXItem->isEditable(), Active);
+  logXItem->setData(log_x, EditableValue);
+  logXItem->setData(kGroupView_LogX, ParameterType);
+  logXItem->setData(tr("Logarithmic X Axis"), ParameterName);
+  logXItem->setData(tr("Scale the X axis in decades; available when the X-Axis source is "
+                       "Samples (not Time)"),
+                    ParameterDescription);
+  m_groupModel->appendRow(logXItem);
+
+  auto* logYItem = new QStandardItem();
+  logYItem->setEditable(has_datasets);
+  logYItem->setData(0, PlaceholderValue);
+  logYItem->setData(CheckBox, WidgetType);
+  logYItem->setData(logYItem->isEditable(), Active);
+  logYItem->setData(log_y, EditableValue);
+  logYItem->setData(kGroupView_LogY, ParameterType);
+  logYItem->setData(tr("Logarithmic Y Axis"), ParameterName);
+  logYItem->setData(tr("Scale the shared Y axis in decades; values at or below zero are "
+                       "clamped"),
+                    ParameterDescription);
+  m_groupModel->appendRow(logYItem);
 }
 
 /**
@@ -1039,10 +1070,36 @@ void DataModel::ProjectEditor::addPlotSection(CustomModel* model, const DataMode
   xAxisItem->setData(tr("Choose Time or a dataset to drive the X-Axis in plots"),
                      ParameterDescription);
   model->appendRow(xAxisItem);
+
+  auto* logXItem = new QStandardItem();
+  logXItem->setEditable(dataset.plt && dataset.xAxisId != kXAxisTime);
+  logXItem->setData(0, PlaceholderValue);
+  logXItem->setData(CheckBox, WidgetType);
+  logXItem->setData(logXItem->isEditable(), Active);
+  logXItem->setData(dataset.pltLogX, EditableValue);
+  logXItem->setData(kDatasetView_Plt_LogX, ParameterType);
+  logXItem->setData(tr("Logarithmic X Axis"), ParameterName);
+  logXItem->setData(tr("Scale the X axis in decades; available when the X-Axis source is "
+                       "Samples or a dataset (not Time)"),
+                    ParameterDescription);
+  model->appendRow(logXItem);
+
+  auto* logYItem = new QStandardItem();
+  logYItem->setEditable(dataset.plt);
+  logYItem->setData(0, PlaceholderValue);
+  logYItem->setData(CheckBox, WidgetType);
+  logYItem->setData(logYItem->isEditable(), Active);
+  logYItem->setData(dataset.pltLogY, EditableValue);
+  logYItem->setData(kDatasetView_Plt_LogY, ParameterType);
+  logYItem->setData(tr("Logarithmic Y Axis"), ParameterName);
+  logYItem->setData(tr("Scale the Y axis in decades; values at or below zero are clamped"),
+                    ParameterDescription);
+  model->appendRow(logYItem);
 }
 
 /**
- * @brief Appends FFT/Waterfall enable rows and the optional Waterfall Y-axis selector.
+ * @brief Appends FFT/Waterfall enable rows, the ballistics display options, and the
+ *        optional Waterfall Y-axis selector.
  */
 void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
                                                    const DataModel::Dataset& dataset)
@@ -1075,6 +1132,31 @@ void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
   waterfallItem->setData(tr("Show a scrolling spectrogram of frequency content over time (Pro)"),
                          ParameterDescription);
   model->appendRow(waterfallItem);
+
+  auto* ballistics = new QStandardItem();
+  ballistics->setEditable(dataset.fft);
+  ballistics->setData(0, PlaceholderValue);
+  ballistics->setData(CheckBox, WidgetType);
+  ballistics->setData(ballistics->isEditable(), Active);
+  ballistics->setData(dataset.fftBallistics, EditableValue);
+  ballistics->setData(kDatasetView_FFT_Ballistics, ParameterType);
+  ballistics->setData(tr("Peak Ballistics"), ParameterName);
+  ballistics->setData(tr("Analyzer-style display: peaks rise instantly and decay smoothly "
+                         "over the release time"),
+                      ParameterDescription);
+  model->appendRow(ballistics);
+
+  auto* ballisticsRelease = new QStandardItem();
+  ballisticsRelease->setEditable(dataset.fft);
+  ballisticsRelease->setData(IntField, WidgetType);
+  ballisticsRelease->setData(300, PlaceholderValue);
+  ballisticsRelease->setData(ballisticsRelease->isEditable(), Active);
+  ballisticsRelease->setData(dataset.fftBallisticsRelease, EditableValue);
+  ballisticsRelease->setData(kDatasetView_FFT_BallisticsRelease, ParameterType);
+  ballisticsRelease->setData(tr("Ballistics Release (ms)"), ParameterName);
+  ballisticsRelease->setData(tr("Decay time for the ballistics display (50-5000 ms)"),
+                             ParameterDescription);
+  model->appendRow(ballisticsRelease);
 
   if (!dataset.waterfall)
     return;
@@ -1156,6 +1238,18 @@ void DataModel::ProjectEditor::buildFftRangeRows(CustomModel* model,
   fftRate->setData(tr("FFT Sampling Rate (Hz, required)"), ParameterName);
   fftRate->setData(tr("Sampling frequency used for FFT (in Hz)"), ParameterDescription);
   model->appendRow(fftRate);
+
+  auto* fftLogX = new QStandardItem();
+  fftLogX->setEditable(dataset.fft);
+  fftLogX->setData(0, PlaceholderValue);
+  fftLogX->setData(CheckBox, WidgetType);
+  fftLogX->setData(fftLogX->isEditable(), Active);
+  fftLogX->setData(dataset.fftLogX, EditableValue);
+  fftLogX->setData(kDatasetView_FFT_LogX, ParameterType);
+  fftLogX->setData(tr("Logarithmic Frequency Axis"), ParameterName);
+  fftLogX->setData(tr("Scale the FFT frequency axis in decades so low octaves stay readable"),
+                   ParameterDescription);
+  model->appendRow(fftLogX);
 
   auto* fftMin = new QStandardItem();
   fftMin->setEditable(fftSettingsEditable);

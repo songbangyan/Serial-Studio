@@ -49,6 +49,7 @@
 constexpr int kDefaultPlotPoints      = 1000;
 constexpr int kDefaultPlotBuckets     = 1024;
 constexpr int kMaxTimeRingSamples     = 262144;
+constexpr int kMaxFftRingSamples      = 262144;
 constexpr double kAssumedMaxRateHz    = 50000.0;
 constexpr double kTimeRingHeadroom    = 1.25;
 constexpr double kSmoothMaxPeriodSec  = 0.002;
@@ -2467,7 +2468,8 @@ void UI::Dashboard::configureFftSeries()
   const int fftCount = widgetCount(SerialStudio::DashboardFFT);
   for (int i = 0; i < fftCount; ++i) {
     const auto& dataset = getDatasetWidget(SerialStudio::DashboardFFT, i);
-    m_fftValues.append(DSP::AxisData(dataset.fftSamples));
+    const int capacity  = qBound(1, dataset.fftSamples, kMaxFftRingSamples);
+    m_fftValues.append(DSP::AxisData(capacity));
     m_activeFFTPlots.insert(i, true);
   }
 

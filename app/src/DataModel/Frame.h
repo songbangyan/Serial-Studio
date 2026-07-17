@@ -109,6 +109,11 @@ inline constexpr KeyView DisplayTickCount("displayTickCount");
 inline constexpr KeyView DisplayFormat("displayFormat");
 inline constexpr KeyView DecimalPoints("decimalPoints");
 inline constexpr KeyView FFTSamples("fftSamples");
+inline constexpr KeyView FFTLogX("fftLogX");
+inline constexpr KeyView FFTBallistics("fftBallistics");
+inline constexpr KeyView FFTBallisticsRelease("fftBallisticsRelease");
+inline constexpr KeyView PltLogX("plotLogX");
+inline constexpr KeyView PltLogY("plotLogY");
 inline constexpr KeyView Overview("overviewDisplay");
 inline constexpr KeyView AlarmEnabled("alarmEnabled");
 inline constexpr KeyView AlarmBands("alarmBands");
@@ -407,37 +412,42 @@ inline constexpr int kXAxisTime    = -2;
  * graphing. Fully aligned and stack-optimized.
  */
 struct alignas(8) Dataset {
-  int index             = 0;           ///< Frame offset index
-  int xAxisId           = kXAxisTime;  ///< X-axis: -2 = time (default), else dataset uniqueId
-  int waterfallYAxis    = 0;      ///< Y source for the waterfall -- 0 = Time, else dataset uniqueId
-  int groupId           = 0;      ///< Owning group ID
-  int sourceId          = 0;      ///< Source this dataset belongs to
-  int uniqueId          = -1;     ///< Persisted stable identity (-1 = unassigned, compute legacy)
-  int datasetId         = 0;      ///< Unique ID within group
-  int fftSamples        = 256;    ///< Number of samples for FFT
-  int fftSamplingRate   = 100;    ///< Sampling rate for FFT
-  int fftWindow         = 5;      ///< FFT window (SerialStudio::FFTWindow; 5 = Blackman-Harris)
-  int transformLanguage = -1;     ///< Transform script language (-1 = unset, 0 = JS, 1 = Lua)
-  bool fft              = false;  ///< Enables FFT processing
-  bool led              = false;  ///< Enables LED widget
-  bool log              = false;  ///< Enables logging
-  bool plt              = false;  ///< Enables plotting
-  bool waterfall        = false;  ///< Enables waterfall (spectrogram) widget -- Pro
-  bool overviewDisplay  = false;  ///< Show in overview
-  bool isNumeric        = false;  ///< True if value was parsed as numeric
-  bool virtual_         = false;  ///< True if dataset is generated rather than parsed directly
-  bool hideOnDashboard  = false;  ///< Suppress dataset-level dashboard tile (painter still sees it)
-  bool enabled          = true;   ///< False excludes the dataset from frame building (editor-only)
-  double fftMin         = 0;      ///< Minimum value (for FFT)
-  double fftMax         = 0;      ///< Maximum value (for FFT)
-  double pltMin         = 0;      ///< Minimum value (for plots)
-  double pltMax         = 0;      ///< Maximum value (for plots)
-  double wgtMin         = 0;      ///< Minimum value (for widgets)
-  double wgtMax         = 0;      ///< Maximum value (for widgets)
-  double ledHigh        = 80;     ///< LED activation threshold
-  double numericValue   = 0;      ///< Parsed numeric value after transforms
-  double rawNumericValue = 0;     ///< Parsed numeric value before transforms
-  int displayTickCount   = 5;     ///< Preferred major-tick count on analog widgets (0 = auto)
+  int index                = 0;           ///< Frame offset index
+  int xAxisId              = kXAxisTime;  ///< X-axis: -2 = time (default), else dataset uniqueId
+  int waterfallYAxis       = 0;   ///< Y source for the waterfall -- 0 = Time, else dataset uniqueId
+  int groupId              = 0;   ///< Owning group ID
+  int sourceId             = 0;   ///< Source this dataset belongs to
+  int uniqueId             = -1;  ///< Persisted stable identity (-1 = unassigned, compute legacy)
+  int datasetId            = 0;   ///< Unique ID within group
+  int fftSamples           = 256;    ///< Number of samples for FFT
+  int fftSamplingRate      = 100;    ///< Sampling rate for FFT
+  int fftBallisticsRelease = 300;    ///< Ballistics release time in ms (display decay)
+  int fftWindow            = 5;      ///< FFT window (SerialStudio::FFTWindow; 5 = Blackman-Harris)
+  int transformLanguage    = -1;     ///< Transform script language (-1 = unset, 0 = JS, 1 = Lua)
+  bool fft                 = false;  ///< Enables FFT processing
+  bool fftLogX             = false;  ///< Logarithmic frequency axis (FFT widget)
+  bool fftBallistics       = false;  ///< Display ballistics: instant attack, timed release
+  bool led                 = false;  ///< Enables LED widget
+  bool log                 = false;  ///< Enables logging
+  bool plt                 = false;  ///< Enables plotting
+  bool pltLogX             = false;  ///< Logarithmic X axis (plot widget, non-time X only)
+  bool pltLogY             = false;  ///< Logarithmic Y axis (plot widget)
+  bool waterfall           = false;  ///< Enables waterfall (spectrogram) widget -- Pro
+  bool overviewDisplay     = false;  ///< Show in overview
+  bool isNumeric           = false;  ///< True if value was parsed as numeric
+  bool virtual_            = false;  ///< True if dataset is generated rather than parsed directly
+  bool hideOnDashboard = false;  ///< Suppress dataset-level dashboard tile (painter still sees it)
+  bool enabled         = true;   ///< False excludes the dataset from frame building (editor-only)
+  double fftMin        = 0;      ///< Minimum value (for FFT)
+  double fftMax        = 0;      ///< Maximum value (for FFT)
+  double pltMin        = 0;      ///< Minimum value (for plots)
+  double pltMax        = 0;      ///< Maximum value (for plots)
+  double wgtMin        = 0;      ///< Minimum value (for widgets)
+  double wgtMax        = 0;      ///< Maximum value (for widgets)
+  double ledHigh       = 80;     ///< LED activation threshold
+  double numericValue  = 0;      ///< Parsed numeric value after transforms
+  double rawNumericValue = 0;    ///< Parsed numeric value before transforms
+  int displayTickCount   = 5;    ///< Preferred major-tick count on analog widgets (0 = auto)
   int decimalPoints = -1;  ///< Fixed value-display decimals; overrides displayFormat (-1 = auto)
   QString value;           ///< Raw string value after transforms
   QString rawValue;        ///< Raw string value before transforms
@@ -1102,6 +1112,20 @@ void read_io_settings(QByteArray& frameStart,
 
   if (d.waterfallYAxis != 0)
     obj.insert(Keys::WaterfallYAxis, d.waterfallYAxis);
+
+  if (d.fftLogX)
+    obj.insert(Keys::FFTLogX, true);
+
+  if (d.fftBallistics) {
+    obj.insert(Keys::FFTBallistics, true);
+    obj.insert(Keys::FFTBallisticsRelease, d.fftBallisticsRelease);
+  }
+
+  if (d.pltLogX)
+    obj.insert(Keys::PltLogX, true);
+
+  if (d.pltLogY)
+    obj.insert(Keys::PltLogY, true);
 
   obj.insert(Keys::Index, d.index);
   obj.insert(Keys::XAxis, d.xAxisId);

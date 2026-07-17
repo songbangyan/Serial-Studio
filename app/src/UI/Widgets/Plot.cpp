@@ -23,6 +23,7 @@
 
 #include "DSP.h"
 #include "UI/Dashboard.h"
+#include "UI/Widgets/PlotLogScale.h"
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & initialization
@@ -47,6 +48,9 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
   , m_visHiX(std::numeric_limits<double>::quiet_NaN())
   , m_monotonicData(true)
   , m_timeAxis(false)
+  , m_logX(false)
+  , m_logY(false)
+  , m_logXScratch(1)
   , m_interpolationMode(SerialStudio::InterpolationLinear)
   , m_sweepEnabled(false)
   , m_triggerLevel(0)
@@ -62,6 +66,8 @@ Widgets::Plot::Plot(const int index, QQuickItem* parent)
     m_maxY = qMax(yDataset.pltMin, yDataset.pltMax);
 
     resolveXAxis(yDataset);
+    m_logX = yDataset.pltLogX && !m_timeAxis;
+    m_logY = yDataset.pltLogY;
 
     m_yLabel = yDataset.title;
     if (!yDataset.units.isEmpty())
@@ -242,6 +248,22 @@ bool Widgets::Plot::timeAxis() const noexcept
 bool Widgets::Plot::xyPlot() const noexcept
 {
   return !m_timeAxis && !m_monotonicData;
+}
+
+/**
+ * @brief Returns true when the X axis renders in log10 space (never on a time axis).
+ */
+bool Widgets::Plot::logX() const noexcept
+{
+  return m_logX;
+}
+
+/**
+ * @brief Returns true when the Y axis renders in log10 space.
+ */
+bool Widgets::Plot::logY() const noexcept
+{
+  return m_logY;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -529,6 +551,7 @@ void Widgets::Plot::updateData()
     const auto& ring = m_dashboard.plotSweep(m_index).display(0);
     (void)DSP::downsampleWindowAbsolute(
       ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data, &ws);
+    applyLogYToRender();
     return;
   }
 
@@ -538,13 +561,22 @@ void Widgets::Plot::updateData()
     clampToVisibleX(xLo, xHi);
     const auto& ring = m_dashboard.plotTimeRing(m_index);
     (void)DSP::downsampleTimeWindow(ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data, &ws);
+    applyLogYToRender();
     return;
   }
 
   const auto& plotData = m_dashboard.plotData(m_index);
 
   if (m_monotonicData) {
-    (void)DSP::downsampleMonotonic(plotData, m_dataW, m_dataH, m_data, &ws);
+    if (m_logX) {
+      buildLogXScratch(*plotData.x, LogScale::kSampleFloor);
+      (void)DSP::downsampleMonotonic(m_logXScratch, *plotData.y, m_dataW, m_dataH, m_data, &ws);
+    }
+
+    else
+      (void)DSP::downsampleMonotonic(plotData, m_dataW, m_dataH, m_data, &ws);
+
+    applyLogYToRender();
     return;
   }
 
@@ -566,10 +598,56 @@ void Widgets::Plot::updateData()
   std::size_t xIdx        = X.frontIndex();
   std::size_t yIdx        = Y.frontIndex();
   for (qsizetype i = 0; i < count; ++i) {
-    out[i].setX(xData[xIdx]);
-    out[i].setY(yData[yIdx]);
+    const double x = xData[xIdx];
+    const double y = yData[yIdx];
+    out[i].setX(m_logX ? LogScale::clampedLog10(x) : x);
+    out[i].setY(m_logY ? LogScale::clampedLog10(y) : y);
     xIdx = (xIdx + 1) & xMask;
     yIdx = (yIdx + 1) & yMask;
+  }
+}
+
+/**
+ * @brief Rewrites the downsampled render points with log10 Y values when the Y axis is
+ *        logarithmic; log10 is monotonic, so the per-column min/max envelopes commute
+ *        with the transform and NaN gap markers pass through unchanged.
+ */
+void Widgets::Plot::applyLogYToRender()
+{
+  if (!m_logY)
+    return;
+
+  QPointF* points = m_data.data();
+  for (qsizetype i = 0; i < m_data.size(); ++i)
+    points[i].setY(LogScale::clampedLog10(points[i].y()));
+}
+
+/**
+ * @brief Copies a shared (immutable) X ring into the widget-owned scratch ring in log10
+ *        space so the downsampler buckets uniformly in log pixel columns. The
+ *        capacity+size early-out is valid only for the static fillRange index ring;
+ *        a per-frame X source would need a content generation key.
+ */
+void Widgets::Plot::buildLogXScratch(const DSP::AxisData& x, const double floor)
+{
+  if (m_logXScratch.capacity() == x.capacity() && m_logXScratch.size() == x.size())
+    return;
+
+  if (m_logXScratch.capacity() != x.capacity())
+    m_logXScratch.resize(x.capacity());
+
+  Q_ASSERT(x.raw() != nullptr);
+  Q_ASSERT(x.size() <= m_logXScratch.capacity());
+
+  m_logXScratch.clear();
+
+  const auto* data       = x.raw();
+  const std::size_t mask = x.storageMask();
+  std::size_t idx        = x.frontIndex();
+  const std::size_t n    = x.size();
+  for (std::size_t i = 0; i < n; ++i) {
+    m_logXScratch.push(LogScale::clampedLog10(data[idx], floor));
+    idx = (idx + 1) & mask;
   }
 }
 
@@ -623,7 +701,9 @@ void Widgets::Plot::updateInterpolatedData()
     constexpr double kNan = std::numeric_limits<double>::quiet_NaN();
 
     double base = 0.0;
-    if (!dataBipolar())
+    if (m_logY)
+      base = m_minY;
+    else if (!dataBipolar())
       base = m_dataMaxY <= 0.0 ? qMin(m_maxY, 0.0) : qMax(m_minY, 0.0);
 
     m_renderData.resize(3 * n);
@@ -661,18 +741,33 @@ void Widgets::Plot::updateRange()
   if (SerialStudio::datasetXAxisEnabled() && yD.xAxisId >= 0) {
     const auto& datasets = m_dashboard.datasets();
     auto it              = datasets.find(yD.xAxisId);
-    if (it != datasets.end()) {
-      m_minX = it->pltMin;
-      m_maxX = it->pltMax;
-    }
+    if (it != datasets.end())
+      applyDatasetXRange(*it);
   }
 
   else {
     m_minX = 0;
-    m_maxX = m_dashboard.points();
+    m_maxX = m_logX ? LogScale::clampedLog10(m_dashboard.points(), LogScale::kSampleFloor)
+                    : m_dashboard.points();
   }
 
   Q_EMIT rangeChanged();
+}
+
+/**
+ * @brief Applies the X dataset's configured range to the X axis; in log mode the bounds
+ *        map through resolveLogBounds and an unusable range (max <= 0) is left for the
+ *        data-derived auto-scale pass instead.
+ */
+void Widgets::Plot::applyDatasetXRange(const DataModel::Dataset& dx)
+{
+  double lo = qMin(dx.pltMin, dx.pltMax);
+  double hi = qMax(dx.pltMin, dx.pltMax);
+  if (m_logX && !LogScale::resolveLogBounds(lo, hi))
+    return;
+
+  m_minX = lo;
+  m_maxX = hi;
 }
 
 /**
@@ -687,18 +782,21 @@ void Widgets::Plot::calculateAutoScaleRange()
   bool yChanged = false;
 
   const auto& dy = GET_DATASET(SerialStudio::DashboardPlot, m_index);
-  yChanged  = computeMinMaxValues(m_minY, m_maxY, dy, true, [](const QPointF& p) { return p.y(); });
+  yChanged =
+    computeMinMaxValues(m_minY, m_maxY, dy, true, m_logY, [](const QPointF& p) { return p.y(); });
   yChanged |= updateDataExtremes(dy);
 
   if (!m_timeAxis && SerialStudio::datasetXAxisEnabled()
       && m_dashboard.datasets().contains(dy.xAxisId)) {
     const auto& dx = m_dashboard.datasets()[dy.xAxisId];
-    xChanged =
-      computeMinMaxValues(m_minX, m_maxX, dx, false, [](const QPointF& p) { return p.x(); });
+    xChanged       = computeMinMaxValues(
+      m_minX, m_maxX, dx, false, m_logX, [](const QPointF& p) { return p.x(); });
   }
 
   else if (!m_timeAxis) {
-    const auto points = m_dashboard.points();
+    const double points = m_logX
+                          ? LogScale::clampedLog10(m_dashboard.points(), LogScale::kSampleFloor)
+                          : m_dashboard.points();
 
     if (m_minX != 0 || m_maxX != points) {
       m_minX   = 0;
@@ -738,7 +836,7 @@ bool Widgets::Plot::updateDataExtremes(const DataModel::Dataset& dataset)
   const bool wasFlatZero    = dataFlatZero();
   const bool wasAllNegative = m_dataMaxY <= 0.0;
 
-  if (signClampedRange(dataset)) {
+  if (!m_logY && signClampedRange(dataset)) {
     m_dataMinY = qMin(dataset.pltMin, dataset.pltMax);
     m_dataMaxY = qMax(dataset.pltMin, dataset.pltMax);
     return wasBipolar != dataBipolar() || wasFlatZero != dataFlatZero()
@@ -775,6 +873,7 @@ bool Widgets::Plot::computeMinMaxValues(double& min,
                                         double& max,
                                         const DataModel::Dataset& dataset,
                                         const bool addPadding,
+                                        const bool logAxis,
                                         Extractor extractor)
 {
   bool ok             = true;
@@ -791,6 +890,8 @@ bool Widgets::Plot::computeMinMaxValues(double& min,
     if (ok) {
       min = qMin(dataset.pltMin, dataset.pltMax);
       max = qMax(dataset.pltMin, dataset.pltMax);
+      if (logAxis)
+        ok = LogScale::resolveLogBounds(min, max);
     }
   }
 

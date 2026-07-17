@@ -24,6 +24,7 @@
 #include "DSP.h"
 #include "Misc/ThemeManager.h"
 #include "UI/Dashboard.h"
+#include "UI/Widgets/PlotLogScale.h"
 
 /**
  * @brief Returns the shared simplified unit of every dataset in @p group, or
@@ -64,6 +65,9 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
   , m_visLoX(std::numeric_limits<double>::quiet_NaN())
   , m_visHiX(std::numeric_limits<double>::quiet_NaN())
   , m_timeAxis(false)
+  , m_logX(false)
+  , m_logY(false)
+  , m_logXScratch(1)
   , m_interpolationMode(SerialStudio::InterpolationLinear)
   , m_sweepEnabled(false)
   , m_triggerLevel(0)
@@ -103,6 +107,11 @@ Widgets::MultiPlot::MultiPlot(const int index, QQuickItem* parent)
 
   m_timeAxis = m_dashboard.useTimeXAxisGroup(group);
   m_xLabel   = m_timeAxis ? tr("Time (s)") : tr("Samples");
+
+  if (!group.datasets.empty()) {
+    m_logX = !m_timeAxis && group.datasets.front().pltLogX;
+    m_logY = group.datasets.front().pltLogY;
+  }
 
   m_data.resize(group.datasets.size());
 
@@ -226,6 +235,22 @@ const QString& Widgets::MultiPlot::xLabel() const noexcept
 bool Widgets::MultiPlot::timeAxis() const noexcept
 {
   return m_timeAxis;
+}
+
+/**
+ * @brief Returns true when the X axis renders in log10 space (Samples mode only).
+ */
+bool Widgets::MultiPlot::logX() const noexcept
+{
+  return m_logX;
+}
+
+/**
+ * @brief Returns true when the shared Y axis renders in log10 space.
+ */
+bool Widgets::MultiPlot::logY() const noexcept
+{
+  return m_logY;
 }
 
 /**
@@ -607,6 +632,7 @@ void Widgets::MultiPlot::updateData()
       const auto& ring = engine.display(static_cast<size_t>(i));
       (void)DSP::downsampleWindowAbsolute(
         ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data[i], &ws);
+      applyLogYToCurve(m_data[i]);
     }
 
     calculateAutoScaleRange();
@@ -630,6 +656,7 @@ void Widgets::MultiPlot::updateData()
       const auto& ring = rings[static_cast<size_t>(i)];
       (void)DSP::downsampleTimeWindow(
         ring.time, ring.value, xLo, xHi, m_dataW, m_dataH, m_data[i], &ws);
+      applyLogYToCurve(m_data[i]);
     }
 
     calculateAutoScaleRange();
@@ -648,14 +675,63 @@ void Widgets::MultiPlot::updateData()
     m_data.resize(plotCount);
   }
 
+  if (m_logX)
+    buildLogXScratch(X, LogScale::kSampleFloor);
+
   for (qsizetype i = 0; i < plotCount; ++i) {
     if (i >= m_visibleCurves.size() || !m_visibleCurves[i])
       continue;
 
-    DSP::downsampleMonotonic(X, data.y[i], m_dataW, m_dataH, m_data[i], &ws);
+    DSP::downsampleMonotonic(
+      m_logX ? m_logXScratch : X, data.y[i], m_dataW, m_dataH, m_data[i], &ws);
+    applyLogYToCurve(m_data[i]);
   }
 
   calculateAutoScaleRange();
+}
+
+/**
+ * @brief Rewrites a curve's downsampled points with log10 Y values when the shared Y
+ *        axis is logarithmic; log10 is monotonic, so per-column min/max envelopes
+ *        commute with the transform and NaN gap markers pass through unchanged.
+ */
+void Widgets::MultiPlot::applyLogYToCurve(QList<QPointF>& curve)
+{
+  if (!m_logY)
+    return;
+
+  QPointF* points = curve.data();
+  for (qsizetype i = 0; i < curve.size(); ++i)
+    points[i].setY(LogScale::clampedLog10(points[i].y()));
+}
+
+/**
+ * @brief Copies the shared (immutable) X ring into the widget-owned scratch ring in
+ *        log10 space once per update, so every curve buckets uniformly in log pixel
+ *        columns. The capacity+size early-out is valid only for the static fillRange
+ *        index ring shared by every curve.
+ */
+void Widgets::MultiPlot::buildLogXScratch(const DSP::AxisData& x, const double floor)
+{
+  if (m_logXScratch.capacity() == x.capacity() && m_logXScratch.size() == x.size())
+    return;
+
+  if (m_logXScratch.capacity() != x.capacity())
+    m_logXScratch.resize(x.capacity());
+
+  Q_ASSERT(x.raw() != nullptr);
+  Q_ASSERT(x.size() <= m_logXScratch.capacity());
+
+  m_logXScratch.clear();
+
+  const auto* data       = x.raw();
+  const std::size_t mask = x.storageMask();
+  std::size_t idx        = x.frontIndex();
+  const std::size_t n    = x.size();
+  for (std::size_t i = 0; i < n; ++i) {
+    m_logXScratch.push(LogScale::clampedLog10(data[idx], floor));
+    idx = (idx + 1) & mask;
+  }
 }
 
 /**
@@ -685,7 +761,8 @@ void Widgets::MultiPlot::updateRange()
 
   else {
     m_minX = 0;
-    m_maxX = m_dashboard.points();
+    m_maxX = m_logX ? LogScale::clampedLog10(m_dashboard.points(), LogScale::kSampleFloor)
+                    : m_dashboard.points();
   }
 
   Q_EMIT rangeChanged();
@@ -736,6 +813,9 @@ bool Widgets::MultiPlot::computeRangeFromDatasets()
     m_maxY = qMax(m_maxY, qMax(dataset.pltMin, dataset.pltMax));
     ++index;
   }
+
+  if (m_logY)
+    return LogScale::resolveLogBounds(m_minY, m_maxY);
 
   return true;
 }

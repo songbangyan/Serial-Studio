@@ -293,14 +293,19 @@ bool DataModel::read(Dataset& d, const QJsonObject& obj)
   if (obj.isEmpty())
     return false;
 
-  d.index          = ss_jsr(obj, Keys::Index, -1).toInt();
-  d.fft            = ss_jsr(obj, Keys::FFT, false).toBool();
-  d.led            = ss_jsr(obj, Keys::LED, false).toBool();
-  d.log            = ss_jsr(obj, Keys::Log, false).toBool();
-  d.plt            = ss_jsr(obj, Keys::Graph, false).toBool();
-  d.waterfall      = ss_jsr(obj, Keys::Waterfall, false).toBool();
-  d.waterfallYAxis = ss_jsr(obj, Keys::WaterfallYAxis, 0).toInt();
-  d.xAxisId        = ss_jsr(obj, Keys::XAxis, kXAxisTime).toInt();
+  d.index                = ss_jsr(obj, Keys::Index, -1).toInt();
+  d.fft                  = ss_jsr(obj, Keys::FFT, false).toBool();
+  d.led                  = ss_jsr(obj, Keys::LED, false).toBool();
+  d.log                  = ss_jsr(obj, Keys::Log, false).toBool();
+  d.plt                  = ss_jsr(obj, Keys::Graph, false).toBool();
+  d.waterfall            = ss_jsr(obj, Keys::Waterfall, false).toBool();
+  d.waterfallYAxis       = ss_jsr(obj, Keys::WaterfallYAxis, 0).toInt();
+  d.xAxisId              = ss_jsr(obj, Keys::XAxis, kXAxisTime).toInt();
+  d.fftLogX              = ss_jsr(obj, Keys::FFTLogX, false).toBool();
+  d.fftBallistics        = ss_jsr(obj, Keys::FFTBallistics, false).toBool();
+  d.fftBallisticsRelease = ss_jsr(obj, Keys::FFTBallisticsRelease, 300).toInt();
+  d.pltLogX              = ss_jsr(obj, Keys::PltLogX, false).toBool();
+  d.pltLogY              = ss_jsr(obj, Keys::PltLogY, false).toBool();
 
   d.fftMin          = SerialStudio::toDouble(ss_jsr(obj, Keys::FFTMin, 0));
   d.fftMax          = SerialStudio::toDouble(ss_jsr(obj, Keys::FFTMax, 0));

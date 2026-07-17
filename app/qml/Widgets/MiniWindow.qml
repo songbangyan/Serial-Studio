@@ -80,9 +80,7 @@ Item {
   // Colors
   //
   property color backgroundColor: Cpp_ThemeManager.colors["widget_base"]
-
   property color captionTopColor: {
-    // Touch theme so binding re-evaluates; Q_INVOKABLEs aren't tracked.
     const _t = Cpp_ThemeManager.theme
     const singleDevice = Cpp_JSON_ProjectModel.sourceCount <= 1
                          || Cpp_AppState.operationMode !== SerialStudio.ProjectFile
@@ -96,7 +94,6 @@ Item {
 
     return Qt.hsla(top.hslHue, top.hslSaturation * 0.45, top.hslLightness, 1.0)
   }
-
   property color captionBottomColor: {
     const _t = Cpp_ThemeManager.theme
     const singleDevice = Cpp_JSON_ProjectModel.sourceCount <= 1
@@ -443,8 +440,8 @@ Item {
         id: menuBt
 
         flat: true
-        icon.width: 18
-        icon.height: 18
+        icon.width: 12
+        icon.height: 12
         background: Item {}
         icon.color: _title.color
         visible: root.showMenuButton

@@ -295,6 +295,7 @@ Item {
     xMax: root.model.maxX
     yMin: root.model.minY
     yMax: root.model.maxY
+    logX: root.model.logX
     curveColors: [root.color]
     yLabel: qsTr("Magnitude (dB)")
     xLabel: qsTr("Frequency (Hz)")

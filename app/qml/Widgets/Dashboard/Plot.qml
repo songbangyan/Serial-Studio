@@ -67,6 +67,9 @@ Item {
     if (!root.model)
       return 0
 
+    if (root.model.logY)
+      return root.model.minY
+
     if (root.bipolarRange)
       return 0
 
@@ -437,13 +440,17 @@ Item {
     xMax: root.model.maxX
     yMin: root.model.minY
     yMax: root.model.maxY
+    logX: root.model.logX
+    logY: root.model.logY
     curveColors: [root.color]
     xLabel: root.model.xLabel
     yLabel: root.model.yLabel
     timeAxis: root.model.timeAxis
     sweepMode: root.model.sweepEnabled
-    triggerLevel: root.model.triggerLevel
     triggerEditing: triggerDialog.visible
+    triggerLevel: root.model.logY
+                  ? Math.log10(Math.max(root.model.triggerLevel, 1e-12))
+                  : root.model.triggerLevel
     mouseAreaEnabled: windowRoot.focused
     xAxis.tickInterval: plot.xTickInterval
     yAxis.tickInterval: plot.yTickInterval
@@ -458,7 +465,7 @@ Item {
     onHeightChanged: root.setDownsample()
     onTriggerLevelChangeRequested: (level) => {
       if (root.model)
-        root.model.triggerLevel = level
+        root.model.triggerLevel = root.model.logY ? Math.pow(10, level) : level
     }
 
     Connections {

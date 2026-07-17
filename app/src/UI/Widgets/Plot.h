@@ -26,6 +26,7 @@
 #include <QXYSeries>
 
 #include "DataModel/Frame.h"
+#include "DSP.h"
 #include "SerialStudio.h"
 
 namespace UI {
@@ -88,6 +89,12 @@ class Plot : public QQuickItem {
   Q_PROPERTY(bool xyPlot
              READ xyPlot
              CONSTANT)
+  Q_PROPERTY(bool logX
+             READ logX
+             CONSTANT)
+  Q_PROPERTY(bool logY
+             READ logY
+             CONSTANT)
   Q_PROPERTY(bool sweepEnabled
              READ sweepEnabled
              WRITE setSweepEnabled
@@ -145,6 +152,8 @@ public:
   [[nodiscard]] const QString& xLabel() const noexcept;
   [[nodiscard]] bool timeAxis() const noexcept;
   [[nodiscard]] bool xyPlot() const noexcept;
+  [[nodiscard]] bool logX() const noexcept;
+  [[nodiscard]] bool logY() const noexcept;
   [[nodiscard]] bool sweepEnabled() const noexcept;
   [[nodiscard]] double triggerLevel() const noexcept;
   [[nodiscard]] double holdoff() const noexcept;
@@ -177,6 +186,9 @@ private:
   void pushSweepConfig();
   bool updateDataExtremes(const DataModel::Dataset& dataset);
   void updateInterpolatedData();
+  void applyLogYToRender();
+  void applyDatasetXRange(const DataModel::Dataset& dx);
+  void buildLogXScratch(const DSP::AxisData& x, const double floor);
   void clampToVisibleX(double& lo, double& hi) const;
   void resolveXAxis(const DataModel::Dataset& yDataset);
 
@@ -185,6 +197,7 @@ private:
                            double& max,
                            const DataModel::Dataset& dataset,
                            const bool addPadding,
+                           const bool logAxis,
                            Extractor extractor);
 
   static void padDerivedRange(double& min, double& max, const bool addPadding);
@@ -208,6 +221,9 @@ private:
 
   bool m_monotonicData;
   bool m_timeAxis;
+  bool m_logX;
+  bool m_logY;
+  DSP::AxisData m_logXScratch;
   QList<QPointF> m_data;
   QList<QPointF> m_renderData;
   SerialStudio::InterpolationMode m_interpolationMode;

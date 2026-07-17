@@ -1554,10 +1554,30 @@ project.dashboard.getTimeRange = function() {
   return apiCall('project.dashboard.getTimeRange', p);
 };
 
+project.dashboard.getWidgetTitles = function() {
+  var p = {};
+  return apiCall('project.dashboard.getWidgetTitles', p);
+};
+
 project.dashboard.setTimeRange = function(seconds) {
   var p = {};
   p['seconds'] = seconds;
   return apiCall('project.dashboard.setTimeRange', p);
+};
+
+project.dashboard.setWidgetFreezeTitle = function(widgetType, uniqueId, mode) {
+  var p = {};
+  p['widgetType'] = widgetType;
+  p['uniqueId'] = uniqueId;
+  p['mode'] = mode;
+  return apiCall('project.dashboard.setWidgetFreezeTitle', p);
+};
+
+project.dashboard.setWidgetTitle = function(uniqueId, options) {
+  var p = {};
+  p['uniqueId'] = uniqueId;
+  if (options) for (var k in options) p[k] = options[k];
+  return apiCall('project.dashboard.setWidgetTitle', p);
 };
 
 project.dataTable.add = function(options) {
@@ -1706,13 +1726,15 @@ project.dataset.getByUniqueId = function(uniqueId) {
   return apiCall('project.dataset.getByUniqueId', p);
 };
 
-project.dataset.getExecutionOrder = function() {
+project.dataset.getExecutionOrder = function(options) {
   var p = {};
+  if (options) for (var k in options) p[k] = options[k];
   return apiCall('project.dataset.getExecutionOrder', p);
 };
 
-project.dataset.list = function() {
+project.dataset.list = function(options) {
   var p = {};
+  if (options) for (var k in options) p[k] = options[k];
   return apiCall('project.dataset.list', p);
 };
 
@@ -1893,8 +1915,15 @@ project.group.duplicate = function(groupId) {
   return apiCall('project.group.duplicate', p);
 };
 
-project.group.list = function() {
+project.group.get = function(options) {
   var p = {};
+  if (options) for (var k in options) p[k] = options[k];
+  return apiCall('project.group.get', p);
+};
+
+project.group.list = function(options) {
+  var p = {};
+  if (options) for (var k in options) p[k] = options[k];
   return apiCall('project.group.list', p);
 };
 
@@ -2029,6 +2058,13 @@ project.save = function(options) {
   var p = {};
   if (options) for (var k in options) p[k] = options[k];
   return apiCall('project.save', p);
+};
+
+project.search = function(query, options) {
+  var p = {};
+  p['query'] = query;
+  if (options) for (var k in options) p[k] = options[k];
+  return apiCall('project.search', p);
 };
 
 project.setTitle = function(title) {

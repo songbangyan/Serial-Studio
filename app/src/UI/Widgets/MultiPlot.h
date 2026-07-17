@@ -77,6 +77,12 @@ class MultiPlot : public QQuickItem {
   Q_PROPERTY(bool timeAxis
              READ timeAxis
              CONSTANT)
+  Q_PROPERTY(bool logX
+             READ logX
+             CONSTANT)
+  Q_PROPERTY(bool logY
+             READ logY
+             CONSTANT)
   Q_PROPERTY(QStringList labels
              READ labels
              CONSTANT)
@@ -151,6 +157,8 @@ public:
   [[nodiscard]] const QString& yLabel() const noexcept;
   [[nodiscard]] const QString& xLabel() const noexcept;
   [[nodiscard]] bool timeAxis() const noexcept;
+  [[nodiscard]] bool logX() const noexcept;
+  [[nodiscard]] bool logY() const noexcept;
   [[nodiscard]] const QStringList& colors() const noexcept;
   [[nodiscard]] const QStringList& labels() const noexcept;
   [[nodiscard]] const QList<bool>& visibleCurves() const noexcept;
@@ -191,6 +199,8 @@ private slots:
 private:
   void pushSweepConfig();
   void syncStringCurves();
+  void applyLogYToCurve(QList<QPointF>& curve);
+  void buildLogXScratch(const DSP::AxisData& x, const double floor);
   void clampToVisibleX(double& lo, double& hi) const;
   [[nodiscard]] bool computeRangeFromDatasets();
   void scanCurvesForRange();
@@ -208,6 +218,9 @@ private:
   double m_visLoX;
   double m_visHiX;
   bool m_timeAxis;
+  bool m_logX;
+  bool m_logY;
+  DSP::AxisData m_logXScratch;
   QString m_yLabel;
   QString m_xLabel;
   QStringList m_colors;

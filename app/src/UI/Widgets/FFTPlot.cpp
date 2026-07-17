@@ -25,6 +25,16 @@
 
 #include "UI/Dashboard.h"
 #include "UI/Widgets/FFTWindow.h"
+#include "UI/Widgets/PlotLogScale.h"
+
+//--------------------------------------------------------------------------------------------------
+// Log-axis display constants
+//--------------------------------------------------------------------------------------------------
+
+static constexpr int kMaxFftSamples     = 262144;
+static constexpr int kLogRenderPoints   = 2048;
+static constexpr float kSpectrumFloorDb = -100.0f;
+static constexpr float kSpectrumEpsSq   = 1e-24f;
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & initialization
@@ -36,9 +46,13 @@
 Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   : QQuickItem(parent)
   , m_dashboard(UI::Dashboard::instance())
+  , m_logX(false)
   , m_size(0)
   , m_index(index)
   , m_samplingRate(0)
+  , m_ballistics(false)
+  , m_releaseMs(300)
+  , m_releaseAlpha(1.0f)
   , m_dataW(0)
   , m_dataH(0)
   , m_minX(0)
@@ -53,16 +67,22 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   , m_plan(nullptr)
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index)) {
-    static constexpr int kMaxFftSamples = 65536;
-    const auto& dataset                 = GET_DATASET(SerialStudio::DashboardFFT, m_index);
-    const int clampedSamples            = qBound(8, dataset.fftSamples, kMaxFftSamples);
-    m_size                              = 1 << static_cast<int>(std::log2(clampedSamples));
-    m_samplingRate                      = qMax(1, dataset.fftSamplingRate);
-    m_windowType                        = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
-    m_minX                              = 0;
-    m_maxY                              = 0;
-    m_minY                              = -100;
-    m_maxX                              = m_samplingRate / 2;
+    const auto& dataset      = GET_DATASET(SerialStudio::DashboardFFT, m_index);
+    const int clampedSamples = qBound(8, dataset.fftSamples, kMaxFftSamples);
+    m_size                   = 1 << static_cast<int>(std::log2(clampedSamples));
+    m_samplingRate           = qMax(1, dataset.fftSamplingRate);
+    m_windowType             = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
+    m_minX                   = 0;
+    m_maxY                   = 0;
+    m_minY                   = -100;
+    m_maxX                   = m_samplingRate / 2;
+    m_logX                   = dataset.fftLogX;
+    m_ballistics             = dataset.fftBallistics;
+    m_releaseMs              = qBound(50, dataset.fftBallisticsRelease, 5000);
+    if (m_logX) {
+      rebuildLogBinTable();
+      applyLogFrequencyBounds();
+    }
 
     m_samples.resize(m_size);
     m_fftOutput.resize(m_size);
@@ -144,6 +164,14 @@ double Widgets::FFTPlot::minY() const noexcept
 double Widgets::FFTPlot::maxY() const noexcept
 {
   return m_maxY;
+}
+
+/**
+ * @brief Returns true when the frequency axis renders in log10 space.
+ */
+bool Widgets::FFTPlot::logX() const noexcept
+{
+  return m_logX;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -281,19 +309,66 @@ bool Widgets::FFTPlot::rebuildFftPlan(int newSize)
     return false;
   }
 
+  if (m_logX) {
+    rebuildLogBinTable();
+    applyLogFrequencyBounds();
+  }
+
   return true;
 }
 
 /**
- * @brief Converts the FFT output to dB, smooths the spectrum, and fills the
- *        x/y axis buffers used by the downsampler.
+ * @brief Maps the frequency axis bounds into log10 space: the lower bound sits on the
+ *        first FFT bin (the closest a log axis gets to 0 Hz, so nothing the analysis
+ *        captures is cropped), the upper bound on Nyquist.
  */
-void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
+void Widgets::FFTPlot::applyLogFrequencyBounds()
 {
-  constexpr float floorDB       = -100.0f;
-  constexpr int smoothingWindow = 3;
-  constexpr float eps_squared   = 1e-24f;
-  constexpr int halfWindow      = smoothingWindow / 2;
+  Q_ASSERT(m_size > 0);
+  Q_ASSERT(m_samplingRate > 0);
+
+  const double freqStep = static_cast<double>(m_samplingRate) / qMax(1, m_size);
+  m_minX                = LogScale::clampedLog10(freqStep);
+  m_maxX                = LogScale::clampedLog10(m_samplingRate * 0.5, freqStep);
+}
+
+/**
+ * @brief Rebuilds the cached log10 position of every FFT bin (bin 0 clamps onto bin 1's
+ *        position, the closest a log axis gets to DC) and sizes the render buffers for
+ *        the interpolated log curve -- steady state stays allocation-free.
+ */
+void Widgets::FFTPlot::rebuildLogBinTable()
+{
+  Q_ASSERT(m_size > 0);
+  Q_ASSERT(m_samplingRate > 0);
+
+  const int spectrumSize = m_size / 2;
+  const double freqStep  = static_cast<double>(m_samplingRate) / m_size;
+  m_logBinX.resize(static_cast<std::size_t>(spectrumSize));
+  m_pchipSlope.resize(static_cast<std::size_t>(spectrumSize));
+  for (int i = 0; i < spectrumSize; ++i) {
+    const double freq = i * freqStep;
+    m_logBinX[static_cast<std::size_t>(i)] =
+      static_cast<float>(LogScale::clampedLog10(freq, freqStep));
+  }
+
+  if (m_xData.size() != static_cast<std::size_t>(kLogRenderPoints)) {
+    m_xData.resize(kLogRenderPoints);
+    m_xData.clear();
+    m_yData.resize(kLogRenderPoints);
+    m_yData.clear();
+  }
+}
+
+/**
+ * @brief Converts the FFT output to smoothed display dB per bin (shared 1/N^2 power
+ *        norm, 3-bin boxcar, then the optional ballistics envelope) into m_binDb.
+ */
+void Widgets::FFTPlot::computeBinSpectrum(const int spectrumSize)
+{
+  constexpr int halfWindow = 1;
+  Q_ASSERT(spectrumSize > 0);
+  Q_ASSERT(m_fftOutput.size() >= static_cast<std::size_t>(spectrumSize));
 
   static thread_local std::vector<float> dbCache;
   if (dbCache.size() < static_cast<size_t>(spectrumSize))
@@ -304,30 +379,18 @@ void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
   for (int i = 0; i < spectrumSize; ++i) {
     const float re    = m_fftOutput[i].r;
     const float im    = m_fftOutput[i].i;
-    const float power = std::max((re * re + im * im) * invNorm, eps_squared);
-    dbCache[i]        = std::max(10.0f * std::log10(power), floorDB);
+    const float power = std::max((re * re + im * im) * invNorm, kSpectrumEpsSq);
+    dbCache[i]        = std::max(10.0f * std::log10(power), kSpectrumFloorDb);
   }
 
-  if (m_xData.size() != static_cast<size_t>(spectrumSize)) {
-    m_xData.resize(spectrumSize);
-    m_xData.clear();
-  }
+  if (m_binDb.size() != static_cast<std::size_t>(spectrumSize))
+    m_binDb.resize(static_cast<std::size_t>(spectrumSize));
 
-  if (m_yData.size() != static_cast<size_t>(spectrumSize)) {
-    m_yData.resize(spectrumSize);
-    m_yData.clear();
-  }
+  if (m_ballistics && m_displayDb.size() != static_cast<std::size_t>(spectrumSize))
+    resetBallistics(spectrumSize);
 
-  static constexpr float kInvSmoothingTaps[] = {
-    0.0f,
-    1.0f / 1.0f,
-    1.0f / 2.0f,
-    1.0f / 3.0f,
-    1.0f / 4.0f,
-    1.0f / 5.0f,
-  };
-  const float invSize  = m_size > 0 ? 1.0f / static_cast<float>(m_size) : 0.0f;
-  const float freqStep = m_samplingRate * invSize;
+  updateBallisticsAlpha();
+
   for (int i = 0; i < spectrumSize; ++i) {
     const int minIdx = std::max(0, i - halfWindow);
     const int maxIdx = std::min(spectrumSize - 1, i + halfWindow);
@@ -336,12 +399,142 @@ void Widgets::FFTPlot::computeSmoothedSpectrum(int spectrumSize)
     for (int k = minIdx; k <= maxIdx; ++k)
       sum += dbCache[k];
 
-    const float smoothedDB = sum * kInvSmoothingTaps[maxIdx - minIdx + 1];
-    const float freq       = static_cast<float>(i) * freqStep;
-
-    m_xData.push(freq);
-    m_yData.push(smoothedDB);
+    const float smoothedDB               = sum / static_cast<float>(maxIdx - minIdx + 1);
+    m_binDb[static_cast<std::size_t>(i)] = applyBallistics(static_cast<std::size_t>(i), smoothedDB);
   }
+}
+
+/**
+ * @brief Pushes the per-bin display spectrum on the linear frequency axis (the
+ *        pre-existing rendering, unchanged in shape).
+ */
+void Widgets::FFTPlot::emitLinearSpectrum(const int spectrumSize)
+{
+  Q_ASSERT(spectrumSize > 0);
+  Q_ASSERT(m_binDb.size() == static_cast<std::size_t>(spectrumSize));
+
+  if (m_xData.size() != static_cast<size_t>(spectrumSize)) {
+    m_xData.resize(spectrumSize);
+    m_xData.clear();
+    m_yData.resize(spectrumSize);
+    m_yData.clear();
+  }
+
+  const float freqStep = static_cast<float>(m_samplingRate) / static_cast<float>(qMax(1, m_size));
+  for (int i = 0; i < spectrumSize; ++i) {
+    m_xData.push(static_cast<float>(i) * freqStep);
+    m_yData.push(m_binDb[static_cast<std::size_t>(i)]);
+  }
+}
+
+/**
+ * @brief Renders the log-axis curve the Ableton way: a monotone cubic (Fritsch-Carlson
+ *        PCHIP) through the bins in log-x space, resampled on a uniform log grid, so the
+ *        sparse low decades draw as smooth hills instead of angular segments. Monotone
+ *        interpolation never overshoots, so peaks stay honest.
+ */
+void Widgets::FFTPlot::buildLogRenderCurve(const int spectrumSize)
+{
+  const int first = 1;
+  const int last  = spectrumSize - 1;
+  Q_ASSERT(spectrumSize >= 4);
+  Q_ASSERT(m_logBinX.size() == static_cast<std::size_t>(spectrumSize));
+
+  const float* xs = m_logBinX.data();
+  const float* ys = m_binDb.data();
+  float* slope    = m_pchipSlope.data();
+
+  float hPrev  = xs[first + 1] - xs[first];
+  float dPrev  = (ys[first + 1] - ys[first]) / hPrev;
+  slope[first] = dPrev;
+  for (int i = first + 1; i < last; ++i) {
+    const float h = xs[i + 1] - xs[i];
+    const float d = (ys[i + 1] - ys[i]) / h;
+    if (dPrev * d <= 0.0f)
+      slope[i] = 0.0f;
+    else {
+      const float w1 = 2.0f * h + hPrev;
+      const float w2 = h + 2.0f * hPrev;
+      slope[i]       = (w1 + w2) / (w1 / dPrev + w2 / d);
+    }
+
+    hPrev = h;
+    dPrev = d;
+  }
+  slope[last] = dPrev;
+
+  const float x0 = xs[first];
+  const float x1 = xs[last];
+  const float dx = (x1 - x0) / static_cast<float>(kLogRenderPoints - 1);
+  int seg        = first;
+  for (int j = 0; j < kLogRenderPoints; ++j) {
+    const float x = x0 + static_cast<float>(j) * dx;
+    // code-verify off
+    while (seg + 1 < last && xs[seg + 1] < x)
+      ++seg;
+    // code-verify on
+
+    const float h   = xs[seg + 1] - xs[seg];
+    const float t   = qBound(0.0f, (x - xs[seg]) / h, 1.0f);
+    const float t2  = t * t;
+    const float t3  = t2 * t;
+    const float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+    const float h10 = t3 - 2.0f * t2 + t;
+    const float h01 = -2.0f * t3 + 3.0f * t2;
+    const float h11 = t3 - t2;
+    const float y =
+      h00 * ys[seg] + h10 * h * slope[seg] + h01 * ys[seg + 1] + h11 * h * slope[seg + 1];
+
+    m_xData.push(x);
+    m_yData.push(y);
+  }
+}
+
+/**
+ * @brief Refreshes the wall-clock release coefficient once per displayed frame; the
+ *        first frame after a reset jumps straight to the fresh value (alpha = 1).
+ */
+void Widgets::FFTPlot::updateBallisticsAlpha()
+{
+  if (!m_ballistics)
+    return;
+
+  if (!m_ballisticsClock.isValid()) {
+    m_ballisticsClock.start();
+    m_releaseAlpha = 1.0f;
+    return;
+  }
+
+  const double dt  = m_ballisticsClock.nsecsElapsed() * 1e-9;
+  const double tau = m_releaseMs * 1e-3;
+  m_ballisticsClock.restart();
+  m_releaseAlpha = static_cast<float>(1.0 - std::exp(-dt / tau));
+}
+
+/**
+ * @brief Resets the per-bin display state to the dB floor and invalidates the release
+ *        clock, so the next frame attacks cleanly instead of decaying from stale bins.
+ */
+void Widgets::FFTPlot::resetBallistics(const int bins)
+{
+  Q_ASSERT(bins > 0);
+  m_displayDb.assign(static_cast<std::size_t>(bins), kSpectrumFloorDb);
+  m_ballisticsClock.invalidate();
+}
+
+/**
+ * @brief Display-only envelope per emitted bin: instant attack (peaks never
+ *        under-read), exponential wall-clock release toward lower fresh values.
+ */
+float Widgets::FFTPlot::applyBallistics(const std::size_t idx, const float freshDb)
+{
+  if (!m_ballistics)
+    return freshDb;
+
+  Q_ASSERT(idx < m_displayDb.size());
+  float& shown = m_displayDb[idx];
+  shown        = freshDb >= shown ? freshDb : shown + (freshDb - shown) * m_releaseAlpha;
+  return shown;
 }
 
 /**
@@ -391,8 +584,13 @@ void Widgets::FFTPlot::updateData()
   }
 
   kiss_fft(m_plan, m_samples.data(), m_fftOutput.data());
-  const int spectrumSize = static_cast<size_t>(m_size) / 2;
-  computeSmoothedSpectrum(spectrumSize);
+  const int spectrumSize = m_size / 2;
+  computeBinSpectrum(spectrumSize);
+  if (m_logX)
+    buildLogRenderCurve(spectrumSize);
+  else
+    emitLinearSpectrum(spectrumSize);
+
   DSP::downsampleMonotonic(m_xData, m_yData, m_dataW, m_dataH, m_data, &ws);
 }
 

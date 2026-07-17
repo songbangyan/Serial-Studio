@@ -1262,10 +1262,30 @@ function project.dashboard.getTimeRange()
   return apiCall('project.dashboard.getTimeRange', p)
 end
 
+function project.dashboard.getWidgetTitles()
+  local p = {}
+  return apiCall('project.dashboard.getWidgetTitles', p)
+end
+
 function project.dashboard.setTimeRange(seconds)
   local p = {}
   p['seconds'] = seconds
   return apiCall('project.dashboard.setTimeRange', p)
+end
+
+function project.dashboard.setWidgetFreezeTitle(widgetType, uniqueId, mode)
+  local p = {}
+  p['widgetType'] = widgetType
+  p['uniqueId'] = uniqueId
+  p['mode'] = mode
+  return apiCall('project.dashboard.setWidgetFreezeTitle', p)
+end
+
+function project.dashboard.setWidgetTitle(uniqueId, options)
+  local p = {}
+  p['uniqueId'] = uniqueId
+  if options then for k, v in pairs(options) do p[k] = v end end
+  return apiCall('project.dashboard.setWidgetTitle', p)
 end
 
 function project.dataTable.add(options)
@@ -1414,13 +1434,15 @@ function project.dataset.getByUniqueId(uniqueId)
   return apiCall('project.dataset.getByUniqueId', p)
 end
 
-function project.dataset.getExecutionOrder()
+function project.dataset.getExecutionOrder(options)
   local p = {}
+  if options then for k, v in pairs(options) do p[k] = v end end
   return apiCall('project.dataset.getExecutionOrder', p)
 end
 
-function project.dataset.list()
+function project.dataset.list(options)
   local p = {}
+  if options then for k, v in pairs(options) do p[k] = v end end
   return apiCall('project.dataset.list', p)
 end
 
@@ -1601,8 +1623,15 @@ function project.group.duplicate(groupId)
   return apiCall('project.group.duplicate', p)
 end
 
-function project.group.list()
+function project.group.get(options)
   local p = {}
+  if options then for k, v in pairs(options) do p[k] = v end end
+  return apiCall('project.group.get', p)
+end
+
+function project.group.list(options)
+  local p = {}
+  if options then for k, v in pairs(options) do p[k] = v end end
   return apiCall('project.group.list', p)
 end
 
@@ -1737,6 +1766,13 @@ function project.save(options)
   local p = {}
   if options then for k, v in pairs(options) do p[k] = v end end
   return apiCall('project.save', p)
+end
+
+function project.search(query, options)
+  local p = {}
+  p['query'] = query
+  if options then for k, v in pairs(options) do p[k] = v end end
+  return apiCall('project.search', p)
 end
 
 function project.setTitle(title)

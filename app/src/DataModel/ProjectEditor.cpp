@@ -645,8 +645,8 @@ void DataModel::ProjectEditor::displayFrameParserView(int sourceId)
 void DataModel::ProjectEditor::generateComboBoxModels()
 {
   m_fftSamples.clear();
-  m_fftSamples << "8" << "16" << "32" << "64" << "128" << "256" << "512"
-               << "1024" << "2048" << "4096" << "8192" << "16384";
+  m_fftSamples << "8" << "16" << "32" << "64" << "128" << "256" << "512" << "1024" << "2048"
+               << "4096" << "8192" << "16384" << "32768" << "65536" << "131072" << "262144";
 
   m_fftWindows.clear();
   m_fftWindowValues.clear();

@@ -678,7 +678,8 @@ Item {
             TapHandler {
               acceptedButtons: Qt.RightButton
               onTapped: {
-                if (taskBar && taskBar.activeGroupId >= 1000 && !Cpp_UI_Dashboard.frozen) {
+                if (taskBar && taskBar.activeGroupId >= 1000 && !Cpp_UI_Dashboard.frozen
+                    && !app.runtimeMode) {
                   root.tbRemoveWindowId = button.model.windowId
                   _tbContextMenu.popup()
                 }
@@ -918,7 +919,7 @@ Item {
       Layout.preferredWidth: 24
       Layout.preferredHeight: 24
       Layout.alignment: Qt.AlignVCenter
-      visible: Cpp_AppState.operationMode === SerialStudio.ProjectFile
+      visible: Cpp_AppState.operationMode === SerialStudio.ProjectFile && !app.runtimeMode
       opacity: freezeAllowed ? 1 : 0.5
       icon.source: "qrc:/icons/buttons/freeze.svg"
       icon.color: Cpp_UI_Dashboard.frozen ?
@@ -945,6 +946,7 @@ Item {
       Layout.preferredWidth: 24
       Layout.preferredHeight: 24
       opacity: enabled ? 1 : 0.5
+      visible: !app.runtimeMode
       Layout.alignment: Qt.AlignVCenter
       enabled: taskBar && taskBar.activeGroupId >= 1000
       icon.color: Cpp_ThemeManager.colors["taskbar_text"]

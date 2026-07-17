@@ -86,6 +86,17 @@ Item {
   }
 
   //
+  // Tick interval for a log10-unit axis: whole decades, relaxing to half-decade steps
+  // (the 1-3-10 ladder) when fewer than two decades are visible
+  //
+  function logInterval(range, maxLabels) {
+    if (range < 2.0)
+      return 0.5
+
+    return Math.max(1.0, Math.ceil(range / maxLabels))
+  }
+
+  //
   // Calculate tick intervals for X axis based on available width
   //
   function smartIntervalX(min, max) {
@@ -96,6 +107,9 @@ Item {
     const availableWidth = _graph.plotArea.width
     const labelWidth = _xLabelMetrics.width + 20
     const maxLabels = Math.max(2, Math.floor(availableWidth / labelWidth))
+
+    if (root.logX)
+      return logInterval(range, maxLabels)
 
     const roughInterval = range / maxLabels
     const magnitude = Math.pow(10, Math.floor(Math.log10(roughInterval)))
@@ -125,6 +139,9 @@ Item {
     const availableHeight = _graph.plotArea.height
     const labelHeight = _yLabelMetrics.height + 8
     const maxLabels = Math.max(2, Math.floor(availableHeight / labelHeight))
+
+    if (root.logY)
+      return logInterval(range, maxLabels)
 
     const roughInterval = range / maxLabels
     const magnitude = Math.pow(10, Math.floor(Math.log10(roughInterval)))
@@ -238,6 +255,44 @@ Item {
     return scaled.toFixed(scaled >= 100 ? 0 : (scaled >= 1 ? 1 : 3)) + " " + root.timeUnitName
   }
 
+  //
+  // Readout formatters: world coordinates are log10 units on a log axis, so every
+  // human-facing value converts back through pow10 before display
+  //
+  function displayValueX(worldX) {
+    if (root.timeAxis)
+      return root.timeAgoLabel(worldX)
+
+    if (root.logX)
+      return root.engineeringFormat(Math.pow(10, worldX), 0)
+
+    return worldX.toFixed(root.xPrecision)
+  }
+
+  function displayValueY(worldY) {
+    if (root.logY)
+      return root.engineeringFormat(Math.pow(10, worldY), 0)
+
+    return worldY.toFixed(root.yPrecision)
+  }
+
+  function displayDeltaX() {
+    if (root.timeAxis)
+      return root.timeAgoLabel(root.deltaX)
+
+    if (root.logX)
+      return root.engineeringFormat(Math.pow(10, root.cursorBX) - Math.pow(10, root.cursorAX), 0)
+
+    return root.deltaX.toFixed(root.xPrecision)
+  }
+
+  function displayDeltaY() {
+    if (root.logY)
+      return root.engineeringFormat(Math.pow(10, root.cursorBY) - Math.pow(10, root.cursorAY), 0)
+
+    return root.deltaY.toFixed(root.yPrecision)
+  }
+
   function isPointVisible(worldX, worldY) {
     return worldX >= xVisibleMin && worldX <= xVisibleMax &&
            worldY >= yVisibleMin && worldY <= yVisibleMax
@@ -262,6 +317,8 @@ Item {
   //
   // Custom properties
   //
+  property bool logX: false
+  property bool logY: false
   property bool timeAxis: false
   property bool xLabelVisible: true
   property bool yLabelVisible: true
@@ -610,9 +667,9 @@ Item {
       min: root.yMin
       max: root.yMax
       subTickCount: 1
-      tickAnchor: root.yMin
       visible: root.yLabelVisible
       tickInterval: root.yTickInterval
+      tickAnchor: root.logY ? Math.ceil(root.yMin) : root.yMin
 
       labelDelegate: Item {
         id: _yLabelItem
@@ -626,7 +683,9 @@ Item {
           id: _yEngLabel
 
           anchors.centerIn: parent
-          text: root.engineeringFormat(parseFloat(_yLabelItem.text), root.yTickInterval)
+          text: root.logY
+                ? root.engineeringFormat(Math.pow(10, parseFloat(_yLabelItem.text)), 0)
+                : root.engineeringFormat(parseFloat(_yLabelItem.text), root.yTickInterval)
           color: Cpp_ThemeManager.colors["widget_text"]
           font: (Cpp_Misc_CommonFonts.widgetFontRevision,
                  Cpp_Misc_CommonFonts.widgetFont(0.83))
@@ -643,9 +702,9 @@ Item {
       min: root.xMin
       max: root.xMax
       subTickCount: 1
-      tickAnchor: root.xMin
       visible: root.xLabelVisible
       tickInterval: root.xTickInterval
+      tickAnchor: root.logX ? Math.ceil(root.xMin) : root.xMin
 
       labelDelegate: Item {
         id: _xLabelItem
@@ -661,7 +720,9 @@ Item {
           anchors.centerIn: parent
           text: root.timeAxis
                 ? root.secondsAgoFormat(parseFloat(_xLabelItem.text), root.xTickInterval)
-                : root.engineeringFormat(parseFloat(_xLabelItem.text), root.xTickInterval)
+                : (root.logX
+                   ? root.engineeringFormat(Math.pow(10, parseFloat(_xLabelItem.text)), 0)
+                   : root.engineeringFormat(parseFloat(_xLabelItem.text), root.xTickInterval))
           color: Cpp_ThemeManager.colors["widget_text"]
           font: (Cpp_Misc_CommonFonts.widgetFontRevision,
                  Cpp_Misc_CommonFonts.widgetFont(0.83))
@@ -1212,9 +1273,9 @@ Item {
 
       padding: 4
       color: root.cursorATextColor
+      text: root.displayValueX(root.cursorAX)
       visible: root.cursorMode && root.cursorAVisible && root.cursorAXInRange
       font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.8))
-      text: root.timeAxis ? root.timeAgoLabel(root.cursorAX) : root.cursorAX.toFixed(root.xPrecision)
 
       background: Rectangle {
         radius: 3
@@ -1237,7 +1298,7 @@ Item {
 
       padding: 4
       color: root.cursorATextColor
-      text: root.cursorAY.toFixed(root.yPrecision)
+      text: root.displayValueY(root.cursorAY)
       visible: root.cursorMode && root.cursorAVisible && root.cursorAYInRange
       font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.8))
 
@@ -1262,9 +1323,9 @@ Item {
 
       padding: 4
       color: root.cursorBTextColor
+      text: root.displayValueX(root.cursorBX)
       visible: root.cursorMode && root.cursorBVisible && root.cursorBXInRange
       font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.8))
-      text: root.timeAxis ? root.timeAgoLabel(root.cursorBX) : root.cursorBX.toFixed(root.xPrecision)
 
       background: Rectangle {
         radius: 3
@@ -1287,7 +1348,7 @@ Item {
 
       padding: 4
       color: root.cursorBTextColor
-      text: root.cursorBY.toFixed(root.yPrecision)
+      text: root.displayValueY(root.cursorBY)
       visible: root.cursorMode && root.cursorBVisible && root.cursorBYInRange
       font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.8))
 
@@ -1410,10 +1471,8 @@ Item {
         color: Cpp_ThemeManager.colors["widget_text"]
         font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.85, false))
         text: {
-          if (root.cursorAVisible && root.cursorBVisible) {
-            const dx = root.timeAxis ? root.timeAgoLabel(root.deltaX) : root.deltaX.toFixed(root.xPrecision)
-            return qsTr("ΔX: %1  ΔY: %2 — Drag to move, right-click to clear").arg(dx).arg(root.deltaY.toFixed(root.yPrecision))
-          }
+          if (root.cursorAVisible && root.cursorBVisible)
+            return qsTr("ΔX: %1  ΔY: %2 — Drag to move, right-click to clear").arg(root.displayDeltaX()).arg(root.displayDeltaY())
           else if (!root.cursorAVisible)
             return qsTr("Click to place cursor")
           else

@@ -23,6 +23,7 @@
 
 #include <kiss_fft.h>
 
+#include <QElapsedTimer>
 #include <QQuickItem>
 #include <QVector>
 #include <QXYSeries>
@@ -69,6 +70,9 @@ class FFTPlot : public QQuickItem {
   Q_PROPERTY(double maxY
              READ maxY
              CONSTANT)
+  Q_PROPERTY(bool logX
+             READ logX
+             CONSTANT)
   // clang-format on
 
 signals:
@@ -93,6 +97,7 @@ public:
   [[nodiscard]] double maxX() const noexcept;
   [[nodiscard]] double minY() const noexcept;
   [[nodiscard]] double maxY() const noexcept;
+  [[nodiscard]] bool logX() const noexcept;
   [[nodiscard]] bool running() const noexcept;
   [[nodiscard]] SerialStudio::InterpolationMode interpolationMode() const noexcept;
 
@@ -109,13 +114,29 @@ private slots:
 
 private:
   bool rebuildFftPlan(int newSize);
-  void computeSmoothedSpectrum(int spectrumSize);
+  void applyLogFrequencyBounds();
+  void rebuildLogBinTable();
+  void computeBinSpectrum(const int spectrumSize);
+  void emitLinearSpectrum(const int spectrumSize);
+  void buildLogRenderCurve(const int spectrumSize);
+  void updateBallisticsAlpha();
+  void resetBallistics(const int bins);
+  [[nodiscard]] float applyBallistics(const std::size_t idx, const float freshDb);
 
   UI::Dashboard& m_dashboard;
 
+  bool m_logX;
   int m_size;
   int m_index;
   int m_samplingRate;
+  bool m_ballistics;
+  int m_releaseMs;
+  float m_releaseAlpha;
+  QElapsedTimer m_ballisticsClock;
+  std::vector<float> m_displayDb;
+  std::vector<float> m_binDb;
+  std::vector<float> m_logBinX;
+  std::vector<float> m_pchipSlope;
 
   int m_dataW;
   int m_dataH;

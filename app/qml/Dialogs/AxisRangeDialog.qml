@@ -41,6 +41,28 @@ Widgets.SmartDialog {
   property bool hasCustomRanges: false
 
   //
+  // Log-axis handling: the plot widget's world coordinates are log10 units on a log
+  // axis, so the dialog converts to true values for display and back on commit
+  //
+  readonly property bool logX: plotWidget !== null && plotWidget.logX === true
+  readonly property bool logY: plotWidget !== null && plotWidget.logY === true
+
+  function toDisplayValue(worldValue, log) {
+    return log ? Math.pow(10, worldValue) : worldValue
+  }
+
+  function toWorldValue(displayValue, log) {
+    return log ? Math.log10(Math.max(displayValue, 1e-12)) : displayValue
+  }
+
+  function formatValue(worldValue, log) {
+    if (log)
+      return Number(toDisplayValue(worldValue, log).toPrecision(6)).toString()
+
+    return worldValue.toFixed(4)
+  }
+
+  //
   // Window properties
   //
   staysOnTop: true
@@ -79,12 +101,12 @@ Widgets.SmartDialog {
   function updateFields() {
     if (plotWidget) {
       if (!root.timeAxis) {
-        xMinField.text = plotWidget.xMin.toFixed(4)
-        xMaxField.text = plotWidget.xMax.toFixed(4)
+        xMinField.text = formatValue(plotWidget.xMin, root.logX)
+        xMaxField.text = formatValue(plotWidget.xMax, root.logX)
       }
 
-      yMinField.text = plotWidget.yMin.toFixed(4)
-      yMaxField.text = plotWidget.yMax.toFixed(4)
+      yMinField.text = formatValue(plotWidget.yMin, root.logY)
+      yMaxField.text = formatValue(plotWidget.yMax, root.logY)
     }
   }
 
@@ -96,8 +118,8 @@ Widgets.SmartDialog {
       return
 
     if (!root.timeAxis) {
-      const newXMin = parseFloat(xMinField.text)
-      const newXMax = parseFloat(xMaxField.text)
+      const newXMin = toWorldValue(parseFloat(xMinField.text), root.logX)
+      const newXMax = toWorldValue(parseFloat(xMaxField.text), root.logX)
       if (!isNaN(newXMin) && !isNaN(newXMax) && newXMin < newXMax) {
         plotWidget.xMin = newXMin
         plotWidget.xMax = newXMax
@@ -105,13 +127,13 @@ Widgets.SmartDialog {
         customXMax = newXMax
         hasCustomRanges = true
       } else {
-        xMinField.text = plotWidget.xMin.toFixed(4)
-        xMaxField.text = plotWidget.xMax.toFixed(4)
+        xMinField.text = formatValue(plotWidget.xMin, root.logX)
+        xMaxField.text = formatValue(plotWidget.xMax, root.logX)
       }
     }
 
-    const newYMin = parseFloat(yMinField.text)
-    const newYMax = parseFloat(yMaxField.text)
+    const newYMin = toWorldValue(parseFloat(yMinField.text), root.logY)
+    const newYMax = toWorldValue(parseFloat(yMaxField.text), root.logY)
     if (!isNaN(newYMin) && !isNaN(newYMax) && newYMin < newYMax) {
       plotWidget.yMin = newYMin
       plotWidget.yMax = newYMax
@@ -119,8 +141,8 @@ Widgets.SmartDialog {
       customYMax = newYMax
       hasCustomRanges = true
     } else {
-      yMinField.text = plotWidget.yMin.toFixed(4)
-      yMaxField.text = plotWidget.yMax.toFixed(4)
+      yMinField.text = formatValue(plotWidget.yMin, root.logY)
+      yMaxField.text = formatValue(plotWidget.yMax, root.logY)
     }
   }
 

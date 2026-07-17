@@ -138,6 +138,26 @@ Non-time plots (FFT, dataset-X, samples-axis) keep `dataW = width * zoom`. Draw 
 `TimerEvents::uiTimeout` — 60 Hz default, user-configurable 1-240 (`uiRefreshRate` setting), so
 per-draw costs scale with that, not a fixed rate.
 
+## Log-Frequency FFT Rendering (specs 0016/0018) & Display Ballistics (spec 0017)
+
+The log frequency axis (`fftLogX`) uses the **Ableton recipe** (spec 0018, which
+superseded 0016's multi-resolution cascade the same day — uniform latency beat extra
+low-band resolution): one FFT at the configured window for the whole spectrum, and the
+sparse low decades rendered smooth by `FFTPlot::buildLogRenderCurve` — a Fritsch-Carlson
+monotone cubic (PCHIP) through the bins in log-x space, resampled onto a uniform
+`kLogRenderPoints` (2048) log grid. Monotone interpolation never overshoots, so peaks
+stay honest; bin 0 clamps onto bin 1's log position (DC has none) and the axis starts at
+the first bin. `rebuildLogBinTable` caches the per-bin log-x table + buffers at ctor and
+plan rebuild; per tick the pipeline is `computeBinSpectrum` (dB + 3-bin boxcar +
+optional ballistics per bin) then `emitLinearSpectrum` or `buildLogRenderCurve`.
+`configureFftSeries` clamps `fftSamples` to `[1, kMaxFftRingSamples]` — untrusted
+project input; an unclamped negative reaches the ring allocator as a wrapped size_t
+(the same latent hole still exists on the Waterfall ring, flagged, out of lane).
+Optional per-dataset **display ballistics** (`fftBallistics`/`fftBallisticsRelease`,
+spec 0017, off by default): instant attack, wall-clock exponential release (default
+300 ms) applied per FFT bin in `computeBinSpectrum`, upstream of both emit paths —
+display-only, allocation-free, analysis untouched.
+
 ## GPU Curve Rendering (`Widgets::PlotCurve`)
 
 Plot, FFT, and MultiPlot curves render through a

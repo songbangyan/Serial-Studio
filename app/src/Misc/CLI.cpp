@@ -117,6 +117,7 @@ void CLI::registerOptions()
   m_parser.addOption(m_opts.fileTransmissionOpt);
   m_parser.addOption(m_opts.taskbarModeOpt);
   m_parser.addOption(m_opts.taskbarButtonsOpt);
+  m_parser.addOption(m_opts.noTaskbarSearchOpt);
   m_parser.addOption(m_opts.themeOpt);
   m_parser.addOption(m_opts.activateOpt);
   m_parser.addOption(m_opts.deactivateOpt);
@@ -686,6 +687,8 @@ void CLI::applyOperatorTaskbarSettings()
                              ? splitTaskbarButtonIds(m_parser.value(m_opts.taskbarButtonsOpt))
                              : QStringList{};
   tbs.setPinnedButtons(pinned);
+
+  tbs.setSearchEnabled(!m_parser.isSet(m_opts.noTaskbarSearchOpt));
 }
 
 /**

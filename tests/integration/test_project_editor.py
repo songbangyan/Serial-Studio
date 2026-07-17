@@ -293,6 +293,71 @@ def test_dataset_color_round_trip(api_client, clean_state):
 
 
 @pytest.mark.project
+def test_log_axis_round_trip(api_client, clean_state):
+    """The log-axis flags survive exportJson -> loadJson; absent keys mean linear."""
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
+    g, d = _last_dataset(api_client)
+
+    fresh = api_client.command("project.exportJson")["config"]
+    fresh_ds = _exported_dataset(fresh, g, d)
+    assert "plotLogX" not in fresh_ds
+    assert "plotLogY" not in fresh_ds
+    assert "fftLogX" not in fresh_ds
+
+    api_client.update_dataset(g, d, plotLogX=True, plotLogY=True, fftLogX=True)
+
+    exported = api_client.command("project.exportJson")["config"]
+    exported_ds = _exported_dataset(exported, g, d)
+    assert exported_ds["plotLogX"] is True
+    assert exported_ds["plotLogY"] is True
+    assert exported_ds["fftLogX"] is True
+
+    api_client.create_new_project()
+    time.sleep(0.2)
+
+    api_client.command("project.loadJson", {"config": exported})
+    time.sleep(0.3)
+
+    reloaded = api_client.command("project.exportJson")["config"]
+    reloaded_ds = _exported_dataset(reloaded, g, d)
+    assert reloaded_ds["plotLogX"] is True
+    assert reloaded_ds["plotLogY"] is True
+    assert reloaded_ds["fftLogX"] is True
+
+
+@pytest.mark.project
+def test_fft_ballistics_round_trip(api_client, clean_state):
+    """The FFT ballistics fields survive exportJson -> loadJson; absent keys mean off."""
+    gid = api_client.add_group("G")
+    api_client.add_dataset(gid)
+    g, d = _last_dataset(api_client)
+
+    fresh = api_client.command("project.exportJson")["config"]
+    fresh_ds = _exported_dataset(fresh, g, d)
+    assert "fftBallistics" not in fresh_ds
+    assert "fftBallisticsRelease" not in fresh_ds
+
+    api_client.update_dataset(g, d, fftBallistics=True, fftBallisticsRelease=500)
+
+    exported = api_client.command("project.exportJson")["config"]
+    exported_ds = _exported_dataset(exported, g, d)
+    assert exported_ds["fftBallistics"] is True
+    assert exported_ds["fftBallisticsRelease"] == 500
+
+    api_client.create_new_project()
+    time.sleep(0.2)
+
+    api_client.command("project.loadJson", {"config": exported})
+    time.sleep(0.3)
+
+    reloaded = api_client.command("project.exportJson")["config"]
+    reloaded_ds = _exported_dataset(reloaded, g, d)
+    assert reloaded_ds["fftBallistics"] is True
+    assert reloaded_ds["fftBallisticsRelease"] == 500
+
+
+@pytest.mark.project
 def test_dataset_color_clear_restores_automatic(api_client, clean_state):
     """Setting color to an empty string reverts the dataset to automatic."""
     gid = api_client.add_group("G")

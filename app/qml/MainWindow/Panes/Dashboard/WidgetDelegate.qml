@@ -88,6 +88,7 @@ Widgets.MiniWindow {
   //
   readonly property bool displayEditable: root.entityUniqueId >= 0
                                           && Cpp_AppState.operationMode === SerialStudio.ProjectFile
+                                          && !app.runtimeMode
 
   onMenuClicked: {
     taskBar.activeWindow = root
@@ -97,7 +98,17 @@ Widgets.MiniWindow {
   Menu {
     id: widgetMenu
 
+    Component.onCompleted: {
+      if (app.runtimeMode) {
+        widgetMenu.removeMenu(freezeTitleMenu)
+        widgetMenu.removeItem(renameItem)
+        widgetMenu.removeItem(captionSeparator)
+      }
+    }
+
     MenuItem {
+      id: renameItem
+
       icon.width: 16
       icon.height: 16
       text: qsTr("Rename Widget…")
@@ -108,6 +119,8 @@ Widgets.MiniWindow {
     }
 
     Menu {
+      id: freezeTitleMenu
+
       icon.width: 16
       icon.height: 16
       title: qsTr("Freeze Title")
@@ -144,7 +157,7 @@ Widgets.MiniWindow {
     }
 
     MenuSeparator {
-
+      id: captionSeparator
     }
 
     MenuItem {

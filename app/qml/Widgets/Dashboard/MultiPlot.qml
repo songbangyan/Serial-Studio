@@ -442,6 +442,8 @@ Item {
       xMax: root.model.maxX
       yMin: root.model.minY
       yMax: root.model.maxY
+      logX: root.model.logX
+      logY: root.model.logY
       Layout.fillWidth: true
       Layout.fillHeight: true
       xLabel: root.model.xLabel
@@ -450,8 +452,10 @@ Item {
       curveColors: root.model.colors
       sweepMode: root.model.sweepEnabled
       mouseAreaEnabled: windowRoot.focused
-      triggerLevel: root.model.triggerLevel
       triggerEditing: triggerDialog.visible
+      triggerLevel: root.model.logY
+                    ? Math.log10(Math.max(root.model.triggerLevel, 1e-12))
+                    : root.model.triggerLevel
       xAxis.tickInterval: plot.xTickInterval
       yAxis.tickInterval: plot.yTickInterval
 
@@ -461,7 +465,7 @@ Item {
       onHeightChanged: root.setDownsample()
       onTriggerLevelChangeRequested: (level) => {
         if (root.model)
-          root.model.triggerLevel = level
+          root.model.triggerLevel = root.model.logY ? Math.pow(10, level) : level
       }
 
       //

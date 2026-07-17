@@ -72,6 +72,11 @@ typedef enum {
   kDatasetView_DecimalPoints,
   kDatasetView_Color,
   kDatasetView_Alias,
+  kDatasetView_Plt_LogX,
+  kDatasetView_Plt_LogY,
+  kDatasetView_FFT_LogX,
+  kDatasetView_FFT_Ballistics,
+  kDatasetView_FFT_BallisticsRelease,
 } DatasetItem;
 
 /**
@@ -104,7 +109,9 @@ typedef enum {
   kGroupView_ImgStart,
   kGroupView_ImgEnd,
   kGroupView_Columns,
-  kGroupView_Dataset
+  kGroupView_Dataset,
+  kGroupView_LogX,
+  kGroupView_LogY
 } GroupItem;
 
 /**

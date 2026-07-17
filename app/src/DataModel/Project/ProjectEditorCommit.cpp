@@ -281,6 +281,26 @@ void DataModel::ProjectEditor::onGroupItemChanged(QStandardItem* item)
     return;
   }
 
+  if (id == kGroupView_LogX) {
+    const bool log_x = value.toBool();
+    for (auto& dataset : m_selectedGroup.datasets)
+      dataset.pltLogX = log_x;
+
+    pm.updateGroup(groupId, m_selectedGroup);
+    Q_EMIT editableOptionsChanged();
+    return;
+  }
+
+  if (id == kGroupView_LogY) {
+    const bool log_y = value.toBool();
+    for (auto& dataset : m_selectedGroup.datasets)
+      dataset.pltLogY = log_y;
+
+    pm.updateGroup(groupId, m_selectedGroup);
+    Q_EMIT editableOptionsChanged();
+    return;
+  }
+
   if (id == kGroupView_WebUrl) {
     m_selectedGroup.webViewUrl = value.toString();
     pm.updateGroup(groupId, m_selectedGroup, false);
@@ -723,6 +743,13 @@ void DataModel::ProjectEditor::onDatasetRangeItemChanged(QStandardItem* item,
       const auto xUids = m_projectModelRef.xDataSourceUniqueIds();
       const int pos    = value.toInt();
       dataset.xAxisId  = (pos >= 0 && pos < xUids.size()) ? xUids.at(pos) : kXAxisTime;
+      if (!m_batchApplying) {
+        const int uid = dataset.uniqueId;
+        QTimer::singleShot(0, this, [this, uid] {
+          if (m_selectedDataset.uniqueId == uid)
+            buildDatasetModel(m_selectedDataset);
+        });
+      }
       break;
     }
     case kDatasetView_PltMin:
@@ -789,6 +816,9 @@ void DataModel::ProjectEditor::onDatasetFftItemChanged(QStandardItem* item,
     case kDatasetView_FFT_SamplingRate:
       dataset.fftSamplingRate = value.toInt();
       break;
+    case kDatasetView_FFT_BallisticsRelease:
+      dataset.fftBallisticsRelease = qBound(50, value.toInt(), 5000);
+      break;
     default:
       break;
   }
@@ -822,6 +852,18 @@ void DataModel::ProjectEditor::onDatasetFlagItemChanged(QStandardItem* item,
       break;
     case kDatasetView_HideOnDashboard:
       dataset.hideOnDashboard = value.toBool();
+      break;
+    case kDatasetView_Plt_LogX:
+      dataset.pltLogX = value.toBool();
+      break;
+    case kDatasetView_Plt_LogY:
+      dataset.pltLogY = value.toBool();
+      break;
+    case kDatasetView_FFT_LogX:
+      dataset.fftLogX = value.toBool();
+      break;
+    case kDatasetView_FFT_Ballistics:
+      dataset.fftBallistics = value.toBool();
       break;
     default:
       break;
