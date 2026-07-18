@@ -25,6 +25,7 @@
 
 #include <QElapsedTimer>
 #include <QQuickItem>
+#include <QVariant>
 #include <QVector>
 #include <QXYSeries>
 
@@ -73,11 +74,15 @@ class FFTPlot : public QQuickItem {
   Q_PROPERTY(bool logX
              READ logX
              CONSTANT)
+  Q_PROPERTY(QVariantList markers
+             READ markers
+             CONSTANT)
   // clang-format on
 
 signals:
   void runningChanged();
   void dataSizeChanged();
+  void markerValuesChanged();
   void interpolationModeChanged();
 
 public:
@@ -99,7 +104,11 @@ public:
   [[nodiscard]] double maxY() const noexcept;
   [[nodiscard]] bool logX() const noexcept;
   [[nodiscard]] bool running() const noexcept;
+  [[nodiscard]] QVariantList markers() const;
   [[nodiscard]] SerialStudio::InterpolationMode interpolationMode() const noexcept;
+
+  Q_INVOKABLE [[nodiscard]] double markerPeakDb(int index) const;
+  Q_INVOKABLE [[nodiscard]] int markerState(int index) const;
 
 public slots:
   void draw(QXYSeries* series);
@@ -113,7 +122,24 @@ private slots:
   void updateInterpolatedData();
 
 private:
+  /**
+   * @brief Per-marker runtime state: resolved bin window, thresholds, and live readout.
+   */
+  struct MarkerRuntime {
+    double freqLo;
+    double freqHi;
+    float warningDb;
+    float alarmDb;
+    float peakDb;
+    int state;
+    int binLo;
+    int binHi;
+  };
+
   bool rebuildFftPlan(int newSize);
+  void loadMarkers();
+  void rebuildMarkerBins();
+  void updateMarkerValues(const int spectrumSize);
   void applyLogFrequencyBounds();
   void rebuildLogBinTable();
   void computeBinSpectrum(const int spectrumSize);
@@ -162,5 +188,8 @@ private:
   kiss_fft_cfg m_plan;
   std::vector<kiss_fft_cpx> m_samples;
   std::vector<kiss_fft_cpx> m_fftOutput;
+
+  QVariantList m_markerConfig;
+  std::vector<MarkerRuntime> m_markerRt;
 };
 }  // namespace Widgets

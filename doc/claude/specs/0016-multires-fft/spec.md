@@ -1,7 +1,7 @@
 ---
 spec: 0016-multires-fft
 title: Multi-resolution FFT display for the logarithmic frequency axis
-status: shelved      # superseded by 0018-ableton-fft (2026-07-17): uniform latency beat
+status: shelved      # superseded by 0018-smooth-log-fft (2026-07-17): uniform latency beat
                      # multi-res low-band resolution; implementation removed same day
 created: 2026-07-17
 author: Alex Spataru
@@ -9,7 +9,7 @@ author: Alex Spataru
 
 # Spec 0016 — Multi-resolution FFT display for the logarithmic frequency axis
 
-> **Superseded by [spec 0018](../0018-ableton-fft/spec.md)** (2026-07-17). The
+> **Superseded by [spec 0018](../0018-smooth-log-fft/spec.md)** (2026-07-17). The
 > multi-resolution analysis shipped, worked as specified, and was then replaced the same
 > day: the low band's longer observation windows made it lag the high band (Δf = 1/T is
 > a physical trade), and field testing showed uniform latency matters more than extra
@@ -26,7 +26,7 @@ only a couple dozen bins and renders as visibly straight, blocky line segments (
 in the running app, 2026-07-17 screenshot), while the top decade collapses thousands of
 bins into a few pixels. Audio and vibration work cares most about exactly that low region.
 
-Professional audio tools (the maintainer's reference: Ableton Live's EQ Eight / Spectrum)
+Professional audio tools (the maintainer's reference: a commercial DAW's EQ / spectrum view)
 solve this with multi-resolution analysis: low frequencies are analyzed with longer time
 windows (fine spectral detail), high frequencies with shorter ones, so the rendered
 spectrum is smooth and evenly detailed across the whole log range. This must be real
@@ -35,7 +35,7 @@ peaks, which no amount of curve smoothing between sparse bins can do.
 
 ## Goals
 
-- An FFT widget with the log frequency axis enabled renders an Ableton-style spectrum:
+- An FFT widget with the log frequency axis enabled renders a studio-analyzer-style spectrum:
   detail per octave is roughly even across the axis, with no blocky segment run at the
   low end and no loss of the envelope detail the top decades already have.
 - Genuinely finer low-frequency resolution: closely spaced low-frequency components that
@@ -51,7 +51,7 @@ peaks, which no amount of curve smoothing between sparse bins can do.
 - **No Waterfall change.** The spectrogram keeps single-window rows (possible follow-up).
 - **No new configuration surface.** Window size / sampling rate / window function keep
   their existing meanings; no "resolution" knob.
-- **No exact constant-Q transform guarantee.** The goal is Ableton-like even *visual*
+- **No exact constant-Q transform guarantee.** The goal is analyzer-like even *visual*
   detail from real multi-window analysis, not a mathematically constant-Q output.
 - **No change to FFT-based alarm/export semantics** (none exist — the FFT is
   display-only today; keep it that way).
@@ -94,7 +94,7 @@ peaks, which no amount of curve smoothing between sparse bins can do.
 
 - [ ] **AC1** — Maintainer check, running app, audio source at 44.1 kHz: music or
       broadband audio shows a smooth, detailed low end (no straight-segment runs below
-      200 Hz) comparable in character to the Ableton reference screenshot.
+      200 Hz) comparable in character to the reference analyzer screenshot.
 - [ ] **AC2** — Maintainer check: a two-tone test signal (100 Hz + 126 Hz) shows two
       peaks with log axis on; toggling log off reproduces today's single-lump rendering
       (proving the linear path is untouched).

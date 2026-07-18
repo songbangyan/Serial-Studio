@@ -97,6 +97,33 @@ Widgets.Pane {
       }
     }
 
+    //
+    // Lazy-loaded frequency-marker editor dialog. Activated via Cpp_JSON_ProjectEditor signal.
+    //
+    Loader {
+      id: frequencyMarkersDialog
+
+      active: false
+      asynchronous: false
+      source: "qrc:/serial-studio.com/gui/qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml"
+
+      onLoaded: frequencyMarkersDialog.item.closing.connect(
+                  () => frequencyMarkersDialog.active = false)
+
+      function show(gId, dId, nyquist, markers) {
+        frequencyMarkersDialog.active = true
+        if (frequencyMarkersDialog.item)
+          frequencyMarkersDialog.item.showDialog(gId, dId, nyquist, markers)
+      }
+    }
+
+    Connections {
+      target: Cpp_JSON_ProjectEditor
+      function onOpenFrequencyMarkersEditor(groupId, datasetId, nyquist, markers) {
+        frequencyMarkersDialog.show(groupId, datasetId, nyquist, markers)
+      }
+    }
+
     ColumnLayout {
       spacing: 0
       anchors.fill: parent
@@ -306,6 +333,19 @@ Widgets.Pane {
               onClicked: Cpp_JSON_ProjectEditor.openAlarmBandsEditorForSelection()
               icon.source: "qrc:/icons/project-editor/actions/alarm-bands.svg"
               ToolTip.text: qsTr("Define colored value ranges with severity tiers for this dataset's gauge or LED.")
+            }
+
+            Widgets.ToolbarButton {
+              iconSize: 24
+              toolbarButton: false
+              text: qsTr("Freq. Markers")
+              Layout.alignment: Qt.AlignVCenter
+              enabled: Cpp_JSON_ProjectEditor.currentDatasetIsEditable
+                       && (Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetFFT
+                           || Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetWaterfall)
+              onClicked: Cpp_JSON_ProjectEditor.openFrequencyMarkersEditorForSelection()
+              icon.source: "qrc:/icons/project-editor/actions/fft.svg"
+              ToolTip.text: qsTr("Pin labeled frequencies or bands on the FFT plot and waterfall, with optional warning and alarm levels.")
             }
 
             Widgets.ToolbarButton {

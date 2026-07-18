@@ -7,7 +7,7 @@ updated: 2026-07-17
 
 # Plan 0016 — Multi-resolution FFT display for the logarithmic frequency axis
 
-> **Superseded by [spec 0018](../0018-ableton-fft/spec.md)** — the design below shipped,
+> **Superseded by [spec 0018](../0018-smooth-log-fft/spec.md)** — the design below shipped,
 > then was replaced by the single-window approach the same day (uniform latency beat
 > extra low-band resolution). Kept as a reference for the decimate-and-stitch technique:
 > the stage math, crossover margins, and calibration analysis remain valid if the
@@ -147,7 +147,7 @@ unchanged; the smoother low end comes purely from denser, finer bins in the carr
   read-back + `code-verify.py`.
 - **Maintainer observations (running app, audio source)**:
   - Broadband audio: smooth detailed low end, no straight-segment runs below 200 Hz
-    **(AC1)**; compare against the Ableton reference character.
+    **(AC1)**; compare against the reference analyzer character.
   - Two-tone 100 Hz + 126 Hz: two peaks with log on; one lump with log off **(AC2, R2,
     R5)**.
   - White noise: no visible seam/step across the axis **(AC3, R3)**.

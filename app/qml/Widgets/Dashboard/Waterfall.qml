@@ -87,6 +87,9 @@ Item {
 
     if (s["colorbarVisible"] !== undefined)
       model.colorbarVisible = s["colorbarVisible"]
+
+    if (s["showFrequencyMarkers"] !== undefined)
+      model.markersVisible = s["showFrequencyMarkers"]
   }
 
   //
@@ -263,6 +266,27 @@ Item {
         root.model.cursorEnabled = !root.model.cursorEnabled
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "cursorEnabled", root.model.cursorEnabled)
       }
+    }
+
+    DashboardToolButton {
+      ToolTip.text: qsTr("Show Frequency Markers")
+      checked: root.model && root.model.markersVisible
+      icon.source: "qrc:/icons/dashboard-buttons/labels.svg"
+      onClicked: {
+        if (!root.model)
+          return
+
+        root.model.markersVisible = !root.model.markersVisible
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "showFrequencyMarkers",
+                                                root.model.markersVisible)
+      }
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
     }
 
     DashboardToolButton {

@@ -140,7 +140,7 @@ per-draw costs scale with that, not a fixed rate.
 
 ## Log-Frequency FFT Rendering (specs 0016/0018) & Display Ballistics (spec 0017)
 
-The log frequency axis (`fftLogX`) uses the **Ableton recipe** (spec 0018, which
+The log frequency axis (`fftLogX`) uses the **studio-analyzer recipe** (spec 0018, which
 superseded 0016's multi-resolution cascade the same day — uniform latency beat extra
 low-band resolution): one FFT at the configured window for the whole spectrum, and the
 sparse low decades rendered smooth by `FFTPlot::buildLogRenderCurve` — a Fritsch-Carlson
@@ -157,6 +157,41 @@ Optional per-dataset **display ballistics** (`fftBallistics`/`fftBallisticsRelea
 spec 0017, off by default): instant attack, wall-clock exponential release (default
 300 ms) applied per FFT bin in `computeBinSpectrum`, upstream of both emit paths —
 display-only, allocation-free, analysis untouched.
+
+## FFT Frequency Markers (spec 0019)
+
+Per-dataset spectral watchlist: `Dataset::fftMarkers` (`Keys::FFTMarkers`, additive — array
+omitted when empty) holds `FrequencyMarker` entries (`freq`, optional `endFreq` band, label,
+color, optional `warningDb`/`alarmDb` display-dB thresholds; NaN = unset, never serialized).
+Edited via `FrequencyMarkersEditor.qml` (AlarmBandsEditor grammar: launcher signal →
+lazy Loader in DatasetView, commit via `ProjectEditor::commitFrequencyMarkers`); API =
+`project.dataset.get/setFFTMarkers` + the `fftMarkers` update key. **Monitoring is
+widget-local and display-dB** (post-ballistics `m_binDb` in `FFTPlot::updateMarkerValues`,
+`m_smoothed` row in `Waterfall::updateMarkerStates`) — WYSIWYG by design, no AlarmMonitor
+integration, nothing runs when the widget is hidden. FFTPlot resolves per-marker bin windows
+(point = +/- 2 bins) at ctor and in `rebuildFftPlan` (bin width follows FFT size — a missed
+re-resolve silently mis-aims markers), evaluates peaks per tick allocation-free, and exposes
+config via the `markers` QVariantList plus live values via `markerPeakDb(i)`/`markerState(i)`
+polled on `markerValuesChanged` (no per-tick containers). QML renders bands/lines in
+`plot.curveLayer` at `z: -1` (under the curve stroke); label chips live in a separate layer
+parented directly to the PlotWidget over the plot area — ABOVE its internal mouse overlay,
+because chips are clickable (click = transient spotlight via `root.selectedMarker`, dims the
+other markers; chip MouseArea passes wheel through so zoom still works). Both layers map Hz
+through the same `xVisibleMin/xVisibleRange` transform as PlotCurve (`log10` world coords on
+the log axis). Waterfall paints markers per-paint after the cached axis layer (escalation
+tint changes per row — do NOT move them into `m_axisLayer`); its Hz→x mapping is
+single-sourced in `visibleFreqWindow()`, shared with `drawXAxis`, the hover cursor, and the
+markers — and it works in **world units**: linear Hz, or log10-Hz when the dataset's
+`fftLogX` is on (the Waterfall honors it since 2026-07-18). Log mode resamples each spectrum
+row onto a log-spaced column grid via a LUT rebuilt in `allocateFftPlan`
+(`rebuildLogColumnTable`; domain = first bin → Nyquist, the FFTPlot convention; degenerate
+sizes fall back to linear via `m_logActive`); zoom/pan transfer unchanged because
+`computeSourceRect` and `visibleFreqWindow` are proportionally identical mappings. Marker
+*monitoring* stays in linear bin space — the display axis must never change what is
+measured. Waterfall chips are click-to-spotlight like the FFT's: `drawMarkerChip` captures
+per-paint hit rects (`m_chipHitRects`, mutable), `mousePressEvent` hit-tests them BEFORE
+starting drag-to-pan, hover shows a pointing-hand over chips. Toolbar toggles persist as
+widgetSettings `showFrequencyMarkers` on both widgets.
 
 ## GPU Curve Rendering (`Widgets::PlotCurve`)
 

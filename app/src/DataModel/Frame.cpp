@@ -235,6 +235,61 @@ bool DataModel::read(AlarmBand& b, const QJsonObject& obj)
 }
 
 /**
+ * @brief Deserializes a FrequencyMarker from a QJsonObject; rejects non-positive or absurd
+ *        frequencies (ceiling = max possible Nyquist for an int sampling rate), demotes an
+ *        inverted band to a point marker, and swaps reversed warn/alarm levels.
+ */
+bool DataModel::read(FrequencyMarker& m, const QJsonObject& obj)
+{
+  constexpr double nan        = std::numeric_limits<double>::quiet_NaN();
+  constexpr double max_freqHz = 2147483648.0;
+  if (obj.isEmpty())
+    return false;
+
+  m.frequency    = SerialStudio::toDouble(ss_jsr(obj, Keys::Frequency, 0));
+  m.endFrequency = SerialStudio::toDouble(ss_jsr(obj, Keys::EndFrequency, 0));
+  m.warningDb =
+    obj.contains(Keys::WarningDb) ? SerialStudio::toDouble(obj.value(Keys::WarningDb)) : nan;
+  m.alarmDb = obj.contains(Keys::AlarmDb) ? SerialStudio::toDouble(obj.value(Keys::AlarmDb)) : nan;
+  m.color   = ss_jsr(obj, Keys::Color, "").toString().simplified();
+  m.label   = ss_jsr(obj, Keys::Label, "").toString().simplified();
+
+  if (!std::isfinite(m.frequency) || m.frequency <= 0.0 || m.frequency > max_freqHz)
+    return false;
+
+  if (!std::isfinite(m.endFrequency) || m.endFrequency <= m.frequency)
+    m.endFrequency = 0.0;
+  else
+    m.endFrequency = qMin(m.endFrequency, max_freqHz);
+
+  if (std::isfinite(m.warningDb) && std::isfinite(m.alarmDb) && m.warningDb > m.alarmDb)
+    std::swap(m.warningDb, m.alarmDb);
+
+  if (!m.color.isEmpty() && !QColor::fromString(m.color).isValid())
+    m.color.clear();
+
+  return true;
+}
+
+/**
+ * @brief Populates @p d.fftMarkers from @p obj, dropping invalid entries.
+ */
+void DataModel::readDatasetFrequencyMarkers(Dataset& d, const QJsonObject& obj)
+{
+  d.fftMarkers.clear();
+  if (!obj.contains(Keys::FFTMarkers))
+    return;
+
+  const auto arr = obj.value(Keys::FFTMarkers).toArray();
+  d.fftMarkers.reserve(arr.size());
+  for (const auto& v : arr) {
+    FrequencyMarker m;
+    if (read(m, v.toObject()))
+      d.fftMarkers.push_back(std::move(m));
+  }
+}
+
+/**
  * @brief Populates @p d.alarmBands from @p obj, accepting both canonical and v3.3 legacy fields.
  */
 void DataModel::readDatasetAlarmBands(Dataset& d, const QJsonObject& obj)
@@ -362,6 +417,7 @@ bool DataModel::read(Dataset& d, const QJsonObject& obj)
   }
 
   readDatasetAlarmBands(d, obj);
+  readDatasetFrequencyMarkers(d, obj);
   normalizeDatasetRanges(d);
   return true;
 }

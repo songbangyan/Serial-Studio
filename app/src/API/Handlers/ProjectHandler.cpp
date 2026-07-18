@@ -298,6 +298,7 @@ void API::Handlers::ProjectHandler::registerDatasetCommands()
   registerDatasetCrudCommands();
   registerDatasetFieldCommands();
   registerDatasetAlarmCommands();
+  registerDatasetMarkerCommands();
 }
 
 /**
@@ -604,6 +605,81 @@ void API::Handlers::ProjectHandler::registerDatasetAlarmCommands()
       )
   }),
     &datasetSetAlarmBands);
+}
+
+/**
+ * @brief Register dataset FFT frequency-marker getter / setter commands.
+ */
+void API::Handlers::ProjectHandler::registerDatasetMarkerCommands()
+{
+  static auto& registry = CommandRegistry::instance();
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.getFFTMarkers"),
+    QStringLiteral("Returns the dataset's FFT frequency markers as a JSON array. Each entry: "
+                   "{freq (Hz), endFreq (optional; present only for band markers), label, "
+                   "color (\"#rrggbb\" override or empty for the theme accent), warningDb, "
+                   "alarmDb (optional display-dB thresholds; omitted when unset)}. Also "
+                   "returns nyquist (fftSamplingRate / 2) so callers can validate frequencies "
+                   "before writing back. An empty array means no markers configured."),
+    makeSchema({
+      {  QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Owning group id")                  },
+      {QString(Keys::DatasetId),
+       QStringLiteral("integer"),
+       QStringLiteral("Dataset id within the group")}
+  }),
+    &datasetGetFFTMarkers);
+
+  registry.registerCommand(
+    QStringLiteral("project.dataset.setFFTMarkers"),
+    QStringLiteral("Atomically replaces the dataset's fftMarkers array (FFT plot + waterfall "
+                   "frequency markers). Each entry must provide a finite freq > 0 in Hz; "
+                   "invalid entries are silently dropped and counted in result.droppedInvalid. "
+                   "endFreq is optional (> freq turns the marker into a band; otherwise it is "
+                   "a point marker). label and color (\"#rrggbb\") are optional. warningDb and "
+                   "alarmDb are optional display-dB thresholds evaluated against the rendered "
+                   "spectrum; when both are present and reversed they are swapped. Pass an "
+                   "empty array to clear all markers."),
+    makeSchema({
+      {                     QString(Keys::GroupId),QStringLiteral("integer"),QStringLiteral("Owning group id")                                     },
+      {                          QString(Keys::DatasetId),
+       QStringLiteral("integer"),
+       QStringLiteral("Dataset id within the group")                   },
+      arrayProp(
+        QString(Keys::FFTMarkers),
+        QStringLiteral("Full replacement marker list (empty = no markers)."),
+        QJsonObject{
+       {QStringLiteral("type"), QStringLiteral("object")},
+       {QStringLiteral("properties"),
+       QJsonObject{{QStringLiteral("freq"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("number")},
+       {QStringLiteral("description"),
+       QStringLiteral("Marker frequency in Hz (> 0)")}}},
+       {QStringLiteral("endFreq"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("number")},
+       {QStringLiteral("description"),
+       QStringLiteral("Optional band end in Hz (> freq)")}}},
+       {QStringLiteral("label"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("string")},
+       {QStringLiteral("description"),
+       QStringLiteral("Optional marker name shown on the chip")}}},
+       {QStringLiteral("color"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("string")},
+       {QStringLiteral("description"),
+       QStringLiteral("Optional \"#rrggbb\" override; empty = "
+       "theme accent")}}},
+       {QStringLiteral("warningDb"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("number")},
+       {QStringLiteral("description"),
+       QStringLiteral("Optional warning level in display dB")}}},
+       {QStringLiteral("alarmDb"),
+       QJsonObject{{QStringLiteral("type"), QStringLiteral("number")},
+       {QStringLiteral("description"),
+       QStringLiteral("Optional alarm level in display dB")}}}}},
+       {QStringLiteral("required"), QJsonArray{QStringLiteral("freq")}}}
+      )
+  }),
+    &datasetSetFFTMarkers);
 }
 
 /**
@@ -1297,6 +1373,8 @@ void API::Handlers::ProjectHandler::registerEntityUpdateCommands()
                    "alarmBands (array of {min,max,severity,color,label,blink} objects, "
                    "severity=0..3 for Info/Ok/Warning/Critical), "
                    "or legacy alarmLow/alarmHigh/alarmEnabled for 2-band simple mode, "
+                   "fftMarkers (array of {freq,endFreq,label,color,warningDb,alarmDb} "
+                   "objects; see project.dataset.setFFTMarkers for field semantics), "
                    "displayTickCount, displayFormat, decimalPoints, "
                    "transformCode, transformLanguage, virtual). The boolean fields "
                    "graph/fft/led/waterfall toggle the same flags as "

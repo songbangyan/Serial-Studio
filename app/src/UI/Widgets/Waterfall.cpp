@@ -55,6 +55,8 @@ static constexpr int kAxisTickCount    = 6;
 static constexpr int kMinAxisWidth     = 200;
 static constexpr int kMinAxisHeight    = 160;
 static constexpr double kMaxZoom       = 32.0;
+static constexpr int kMarkerChipRows   = 3;
+static constexpr double kLn10          = 2.302585092994046;
 
 //--------------------------------------------------------------------------------------------------
 // Static helpers
@@ -193,6 +195,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
   , m_topRow(0)
   , m_filledOnce(false)
   , m_axisVisible(true)
+  , m_markersVisible(true)
   , m_colorbarVisible(true)
   , m_minDb(-100.0)
   , m_maxDb(0.0)
@@ -211,6 +214,11 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
   , m_yDatasetUniqueId(0)
   , m_yMin(0.0)
   , m_yMax(1.0)
+  , m_logX(false)
+  , m_logActive(false)
+  , m_logMin(0.0)
+  , m_logMax(1.0)
+  , m_selectedMarker(-1)
   , m_plan(nullptr)
   , m_dashboard(UI::Dashboard::instance())
   , m_themeManager(Misc::ThemeManager::instance())
@@ -225,6 +233,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
     m_size              = floorPow2Bounded(dataset.fftSamples);
     m_samplingRate      = qMax(1, dataset.fftSamplingRate);
     m_windowType        = static_cast<SerialStudio::FFTWindow>(dataset.fftWindow);
+    m_logX              = dataset.fftLogX;
 
     double minVal = dataset.fftMin;
     double maxVal = dataset.fftMax;
@@ -254,6 +263,7 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
 
     allocateFftPlan(m_size);
     rebuildHistoryImage();
+    loadMarkers();
   }
 
   onThemeChanged();
@@ -481,6 +491,74 @@ void Widgets::Waterfall::setMaxDb(const double value)
 }
 
 /**
+ * @brief Copies the dataset's frequency markers into runtime state (spec 0019); runs once at
+ *        construction so the per-row path never touches the project model.
+ */
+void Widgets::Waterfall::loadMarkers()
+{
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardWaterfall, m_index))
+    return;
+
+  const auto& dataset = GET_DATASET(SerialStudio::DashboardWaterfall, m_index);
+  m_markers.clear();
+  m_markers.reserve(dataset.fftMarkers.size());
+  for (const auto& m : dataset.fftMarkers) {
+    MarkerData d;
+    d.freqLo      = m.frequency;
+    d.freqHi      = m.endFrequency;
+    d.warningDb   = static_cast<float>(m.warningDb);
+    d.alarmDb     = static_cast<float>(m.alarmDb);
+    d.peakDb      = kFloorDb;
+    d.state       = 0;
+    d.customColor = m.color.isEmpty() ? QColor() : QColor::fromString(m.color);
+    d.label       = m.label;
+    m_markers.push_back(std::move(d));
+  }
+}
+
+/**
+ * @brief Refreshes each marker's peak and normal/warning/alarm state from the freshly
+ *        smoothed spectrum row; point markers use a +/- 2 bin neighborhood. Bin math clamps
+ *        in the double domain BEFORE the int cast: casting an unrepresentable double is UB.
+ */
+void Widgets::Waterfall::updateMarkerStates(const int spectrumSize)
+{
+  constexpr double pointHalfWindow = 2.0;
+  Q_ASSERT(spectrumSize > 0);
+  Q_ASSERT(m_smoothed.size() >= static_cast<std::size_t>(spectrumSize));
+
+  const double freqStep = static_cast<double>(m_samplingRate) / qMax(1, m_size);
+  const double lastBin  = qMax(0, spectrumSize - 1);
+  for (auto& m : m_markers) {
+    double loF = 0.0;
+    double hiF = 0.0;
+    if (m.freqHi > m.freqLo) {
+      loF = std::floor(m.freqLo / freqStep);
+      hiF = std::ceil(m.freqHi / freqStep);
+    } else {
+      const double center = std::round(m.freqLo / freqStep);
+      loF                 = center - pointHalfWindow;
+      hiF                 = center + pointHalfWindow;
+    }
+
+    const int lo = static_cast<int>(qBound(0.0, loF, lastBin));
+    const int hi = static_cast<int>(qBound(static_cast<double>(lo), hiF, lastBin));
+
+    float peak = kFloorDb;
+    for (int i = lo; i <= hi; ++i)
+      peak = std::max(peak, m_smoothed[i]);
+
+    m.peakDb = peak;
+    if (std::isfinite(m.alarmDb) && peak >= m.alarmDb)
+      m.state = 2;
+    else if (std::isfinite(m.warningDb) && peak >= m.warningDb)
+      m.state = 1;
+    else
+      m.state = 0;
+  }
+}
+
+/**
  * @brief Resets the time history to the floor color.
  */
 void Widgets::Waterfall::clearHistory()
@@ -518,6 +596,87 @@ void Widgets::Waterfall::allocateFftPlan(int size)
   m_plan = kiss_fft_alloc(m_size, 0, nullptr, nullptr);
   if (!m_plan)
     qWarning() << "Waterfall FFT plan allocation failed for size:" << m_size;
+
+  rebuildLogColumnTable();
+}
+
+/**
+ * @brief Derives the log10 frequency domain (first bin to Nyquist, the FFTPlot convention)
+ *        and the column-to-bin resample LUT; a degenerate domain falls back to linear.
+ */
+void Widgets::Waterfall::rebuildLogColumnTable()
+{
+  const int width       = qMax(1, m_size / 2);
+  const double freqStep = static_cast<double>(m_samplingRate) / qMax(1, m_size);
+  const double nyquist  = m_samplingRate * 0.5;
+
+  m_logActive = m_logX && width >= 4 && nyquist > freqStep;
+  markAxisDirty();
+  if (!m_logActive)
+    return;
+
+  m_logMin = std::log10(freqStep);
+  m_logMax = std::log10(nyquist);
+
+  m_logRow.resize(static_cast<std::size_t>(width));
+  m_logColBin.resize(static_cast<std::size_t>(width));
+  m_logColFrac.resize(static_cast<std::size_t>(width));
+
+  const double logRange = m_logMax - m_logMin;
+  const int lastPair    = width - 2;
+  for (int x = 0; x < width; ++x) {
+    const double t   = (x + 0.5) / width;
+    const double f   = std::exp((m_logMin + t * logRange) * kLn10);
+    const double pos = qBound(1.0, f / freqStep, static_cast<double>(width - 1));
+    const int idx    = qBound(1, static_cast<int>(pos), lastPair);
+    m_logColBin[static_cast<std::size_t>(x)]  = idx;
+    m_logColFrac[static_cast<std::size_t>(x)] = static_cast<float>(qBound(0.0, pos - idx, 1.0));
+  }
+}
+
+/**
+ * @brief Returns the row to blit for the current axis mode: the raw linear-bin spectrum, or
+ *        the same data resampled onto the log-spaced column grid through the cached LUT.
+ */
+const float* Widgets::Waterfall::imageRow(const float* dbValues, int bins)
+{
+  Q_ASSERT(dbValues);
+  if (!m_logActive || m_logColBin.size() != static_cast<std::size_t>(bins)
+      || m_logRow.size() != static_cast<std::size_t>(bins))
+    return dbValues;
+
+  for (int x = 0; x < bins; ++x) {
+    const int idx                         = m_logColBin[static_cast<std::size_t>(x)];
+    const float fr                        = m_logColFrac[static_cast<std::size_t>(x)];
+    const float lo                        = dbValues[idx];
+    const float hi                        = dbValues[idx + 1];
+    m_logRow[static_cast<std::size_t>(x)] = lo + (hi - lo) * fr;
+  }
+
+  return m_logRow.data();
+}
+
+/**
+ * @brief Maps a frequency in Hz to the axis world domain (Hz linear, log10-Hz log).
+ */
+double Widgets::Waterfall::worldFromFreq(double hz) const
+{
+  if (!m_logActive)
+    return hz;
+
+  const double freqStep = static_cast<double>(m_samplingRate) / qMax(1, m_size);
+  return std::log10(qMax(hz, freqStep));
+}
+
+/**
+ * @brief Maps an axis world coordinate back to a frequency in Hz.
+ */
+double Widgets::Waterfall::freqFromWorld(double w) const
+{
+  if (!m_logActive)
+    return w;
+
+  return std::exp(w * kLn10);
 }
 
 /**
@@ -628,6 +787,47 @@ void Widgets::Waterfall::writeRowAt(int row, const float* dbValues, int bins)
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Converts the FFT output to smoothed display dB per bin (shared 1/N^2 power norm,
+ *        3-bin boxcar) into m_smoothed.
+ */
+void Widgets::Waterfall::computeSmoothedRow(const int spectrumSize)
+{
+  Q_ASSERT(spectrumSize > 0);
+  Q_ASSERT(m_fftOutput.size() >= static_cast<std::size_t>(spectrumSize));
+
+  const float normFactor = static_cast<float>(m_size) * static_cast<float>(m_size);
+  const float invNorm    = 1.0f / normFactor;
+  for (int i = 0; i < spectrumSize; ++i) {
+    const float re    = m_fftOutput[i].r;
+    const float im    = m_fftOutput[i].i;
+    const float power = std::max((re * re + im * im) * invNorm, kEpsSquared);
+    m_dbCache[i]      = std::max(10.0f * std::log10(power), kFloorDb);
+  }
+
+  if (m_smoothed.size() < static_cast<size_t>(spectrumSize))
+    m_smoothed.resize(spectrumSize);
+
+  static constexpr float kInvSmoothingTaps[] = {
+    0.0f,
+    1.0f / 1.0f,
+    1.0f / 2.0f,
+    1.0f / 3.0f,
+    1.0f / 4.0f,
+    1.0f / 5.0f,
+  };
+  for (int i = 0; i < spectrumSize; ++i) {
+    const int lo = std::max(0, i - kHalfSmoothWindow);
+    const int hi = std::min(spectrumSize - 1, i + kHalfSmoothWindow);
+    float sum    = 0.0f;
+    for (int k = lo; k <= hi; ++k)
+      sum += m_dbCache[k];
+
+    const int taps = hi - lo + 1;
+    m_smoothed[i]  = sum * kInvSmoothingTaps[taps];
+  }
+}
+
+/**
  * @brief Pulls the latest time-domain samples, runs FFT, pushes a new row. The plan and history
  *        image are sized from the ring's capacity, never its fill level, so a filling ring cannot
  *        thrash the plan or wipe the spectrogram; the unfilled tail is zero-padded instead.
@@ -681,36 +881,12 @@ void Widgets::Waterfall::updateData()
   kiss_fft(m_plan, m_samples.data(), m_fftOutput.data());
 
   const int spectrumSize = m_size / 2;
-  const float normFactor = static_cast<float>(m_size) * static_cast<float>(m_size);
-  const float invNorm    = 1.0f / normFactor;
-  for (int i = 0; i < spectrumSize; ++i) {
-    const float re    = m_fftOutput[i].r;
-    const float im    = m_fftOutput[i].i;
-    const float power = std::max((re * re + im * im) * invNorm, kEpsSquared);
-    m_dbCache[i]      = std::max(10.0f * std::log10(power), kFloorDb);
-  }
+  computeSmoothedRow(spectrumSize);
 
-  if (m_smoothed.size() < static_cast<size_t>(spectrumSize))
-    m_smoothed.resize(spectrumSize);
+  if (!m_markers.empty() && spectrumSize > 0)
+    updateMarkerStates(spectrumSize);
 
-  static constexpr float kInvSmoothingTaps[] = {
-    0.0f,
-    1.0f / 1.0f,
-    1.0f / 2.0f,
-    1.0f / 3.0f,
-    1.0f / 4.0f,
-    1.0f / 5.0f,
-  };
-  for (int i = 0; i < spectrumSize; ++i) {
-    const int lo = std::max(0, i - kHalfSmoothWindow);
-    const int hi = std::min(spectrumSize - 1, i + kHalfSmoothWindow);
-    float sum    = 0.0f;
-    for (int k = lo; k <= hi; ++k)
-      sum += m_dbCache[k];
-
-    const int taps = hi - lo + 1;
-    m_smoothed[i]  = sum * kInvSmoothingTaps[taps];
-  }
+  const float* row_data = imageRow(m_smoothed.data(), spectrumSize);
 
   if (m_campbellMode && m_image.height() > 0) {
     const auto& datasets = m_dashboard.datasets();
@@ -723,11 +899,11 @@ void Widgets::Waterfall::updateData()
         const double t        = qBound(0.0, (v - m_yMin) * invRange, 1.0);
         const int row =
           qBound(0, static_cast<int>((1.0 - t) * (m_image.height() - 1)), m_image.height() - 1);
-        writeRowAt(row, m_smoothed.data(), spectrumSize);
+        writeRowAt(row, row_data, spectrumSize);
       }
     }
   } else {
-    writeRow(m_smoothed.data(), spectrumSize);
+    writeRow(row_data, spectrumSize);
   }
 
   update();
@@ -770,6 +946,9 @@ void Widgets::Waterfall::paint(QPainter* painter)
 
   if (!m_axisLayer.isNull())
     painter->drawImage(outerRect, m_axisLayer, QRectF(m_axisLayer.rect()));
+
+  if (m_markersVisible && !m_markers.empty())
+    drawMarkers(painter, plotRect);
 
   if (m_cursorEnabled && m_cursorHovering)
     drawCursor(painter, plotRect);
@@ -925,35 +1104,102 @@ QRectF Widgets::Waterfall::computeSourceRect() const
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Draws the frequency axis (X) -- grid, tick marks, labels.
+ * @brief Computes the visible frequency window [wMin, wMax] in axis WORLD units (Hz linear,
+ *        log10-Hz log) from the zoom/pan view state; single source of truth for the axis,
+ *        hover cursor, and marker Hz-to-pixel mapping.
+ */
+void Widgets::Waterfall::visibleFreqWindow(double& wMin, double& wMax) const
+{
+  const double w0     = m_logActive ? m_logMin : 0.0;
+  const double w1     = m_logActive ? m_logMax : m_samplingRate * 0.5;
+  const double range  = w1 - w0;
+  const double srcW   = range / m_xZoom;
+  const double maxPan = qMax(0.0, (range - srcW) * 0.5);
+  const double center = (w0 + w1) * 0.5 + qBound(-maxPan, m_xPan * range, maxPan);
+  wMin                = center - srcW * 0.5;
+  wMax                = center + srcW * 0.5;
+}
+
+/**
+ * @brief Collects the tick frequencies (Hz) for the visible window: the {1,2,5} ladder on
+ *        the linear axis, or per-decade {1,2,5} candidates thinned to decades on the log
+ *        axis when they would crowd.
+ */
+std::vector<double> Widgets::Waterfall::collectFreqTicks(double wMin, double wMax) const
+{
+  std::vector<double> out;
+  if (!m_logActive) {
+    const AxisTicks ticks = computeFreqTicks(wMax - wMin, kAxisTickCount);
+    const double step     = ticks.step;
+    const double first    = std::ceil(wMin / step - 1e-9) * step;
+    for (double v = first; v <= wMax + 1e-6; v += step)
+      out.push_back(v);
+
+    return out;
+  }
+
+  constexpr double mants[] = {1.0, 2.0, 5.0};
+  const int dLo            = static_cast<int>(std::floor(wMin)) - 1;
+  const int dHi            = static_cast<int>(std::ceil(wMax)) + 1;
+  for (int d = dLo; d <= dHi; ++d) {
+    for (const double m : mants) {
+      const double w = d + std::log10(m);
+      if (w >= wMin - 1e-9 && w <= wMax + 1e-9)
+        out.push_back(m * fastPow10(d));
+    }
+  }
+
+  if (static_cast<int>(out.size()) > kAxisTickCount + 2) {
+    std::vector<double> decades;
+    decades.reserve(out.size());
+    for (const double v : out) {
+      const double lg = std::log10(v);
+      if (std::abs(lg - std::round(lg)) < 1e-9)
+        decades.push_back(v);
+    }
+
+    if (!decades.empty())
+      out = std::move(decades);
+  }
+
+  if (static_cast<int>(out.size()) < 2) {
+    out.clear();
+    const double fLo      = freqFromWorld(wMin);
+    const double fHi      = freqFromWorld(wMax);
+    const AxisTicks ticks = computeFreqTicks(fHi - fLo, kAxisTickCount);
+    const double first    = std::ceil(fLo / ticks.step - 1e-9) * ticks.step;
+    for (double v = first; v <= fHi + 1e-6; v += ticks.step)
+      out.push_back(v);
+  }
+
+  return out;
+}
+
+/**
+ * @brief Draws the frequency axis (X) -- grid, tick marks, labels -- in world space, so the
+ *        same loop renders both the linear and the log-frequency layout.
  */
 void Widgets::Waterfall::drawXAxis(QPainter* painter, const QRectF& plotRect) const
 {
   if (m_samplingRate <= 0)
     return;
 
-  const double nyquist = m_samplingRate * 0.5;
-  const double srcW    = nyquist / m_xZoom;
-  const double maxPan  = qMax(0.0, (nyquist - srcW) * 0.5);
-  const double center  = nyquist * 0.5 + qBound(-maxPan, m_xPan * nyquist, maxPan);
-  const double xMinHz  = center - srcW * 0.5;
-  const double xMaxHz  = center + srcW * 0.5;
-
-  const AxisTicks ticks = computeFreqTicks(srcW, kAxisTickCount);
+  double wMin = 0.0;
+  double wMax = 0.0;
+  visibleFreqWindow(wMin, wMax);
+  const double wRange = wMax - wMin;
+  if (wRange <= 0.0)
+    return;
 
   const QFontMetrics fm(painter->font());
-  const double tickTopY = plotRect.bottom();
-  const double tickBotY = plotRect.bottom() + kAxisTickPx;
-  const double labelY   = tickBotY + kAxisLabelPad;
+  const double tickTopY  = plotRect.bottom();
+  const double tickBotY  = plotRect.bottom() + kAxisTickPx;
+  const double labelY    = tickBotY + kAxisLabelPad;
+  const double invWRange = 1.0 / wRange;
+  const auto tickFreqs   = collectFreqTicks(wMin, wMax);
 
-  const double step      = ticks.step;
-  const double invStep   = 1.0 / step;
-  const double first     = std::ceil(xMinHz * invStep - 1e-9) * step;
-  const double xRange    = xMaxHz - xMinHz;
-  const double invXRange = xRange > 0.0 ? 1.0 / xRange : 0.0;
-
-  for (double v = first; v <= xMaxHz + 1e-6; v += step) {
-    const double t = (v - xMinHz) * invXRange;
+  for (const double v : tickFreqs) {
+    const double t = (worldFromFreq(v) - wMin) * invWRange;
     if (t < 0.0 || t > 1.0)
       continue;
 
@@ -1053,6 +1299,139 @@ void Widgets::Waterfall::drawYAxis(QPainter* painter, const QRectF& plotRect) co
 }
 
 /**
+ * @brief Draws the frequency markers over the spectrogram: translucent band regions, point
+ *        lines, and label chips with the live peak readout (spec 0019).
+ */
+void Widgets::Waterfall::drawMarkers(QPainter* painter, const QRectF& plotRect) const
+{
+  Q_ASSERT(painter);
+  Q_ASSERT(!m_markers.empty());
+  m_chipHitRects.clear();
+  if (plotRect.isEmpty() || m_samplingRate <= 0)
+    return;
+
+  double wMin = 0.0;
+  double wMax = 0.0;
+  visibleFreqWindow(wMin, wMax);
+  const double range = wMax - wMin;
+  if (range <= 0.0)
+    return;
+
+  painter->save();
+  painter->setClipRect(plotRect);
+  painter->setFont(m_commonFonts.widgetFont(0.8, false));
+
+  const QFontMetrics fm(painter->font());
+  double rowEnd[kMarkerChipRows] = {-1e18, -1e18, -1e18};
+  const double invRange          = 1.0 / range;
+  for (std::size_t i = 0; i < m_markers.size(); ++i) {
+    const auto& m      = m_markers[i];
+    const int idx      = static_cast<int>(i);
+    const bool band    = m.freqHi > m.freqLo;
+    const bool spotlit = m_selectedMarker == idx;
+    const bool dimmed  = m_selectedMarker >= 0 && !spotlit;
+    const double xLo =
+      plotRect.left() + (worldFromFreq(m.freqLo) - wMin) * invRange * plotRect.width();
+    const double xHi =
+      band ? plotRect.left() + (worldFromFreq(m.freqHi) - wMin) * invRange * plotRect.width() : xLo;
+    if (xHi < plotRect.left() || xLo > plotRect.right())
+      continue;
+
+    QColor base = m.customColor.isValid() ? m.customColor : m_accentColor;
+    if (m.state == 2)
+      base = m_alarmColor;
+    else if (m.state == 1)
+      base = m_warningColor;
+
+    painter->setOpacity(dimmed ? 0.22 : 1.0);
+
+    if (band) {
+      QColor fill = base;
+      fill.setAlpha(spotlit ? 78 : (m.state > 0 ? 64 : 40));
+      painter->fillRect(QRectF(xLo, plotRect.top(), xHi - xLo, plotRect.height()), fill);
+
+      QColor edge = base;
+      edge.setAlpha(spotlit ? 200 : 120);
+      const double ew = spotlit ? 2.0 : 1.0;
+      painter->fillRect(QRectF(xLo, plotRect.top(), ew, plotRect.height()), edge);
+      painter->fillRect(QRectF(xHi - ew, plotRect.top(), ew, plotRect.height()), edge);
+    } else {
+      QColor line = base;
+      line.setAlpha(spotlit ? 255 : (m.state > 0 ? 240 : 170));
+      const double lw = spotlit ? 3.0 : 2.0;
+      painter->fillRect(QRectF(xLo - lw * 0.5, plotRect.top(), lw, plotRect.height()), line);
+    }
+
+    const QString name = m.label.isEmpty() ? formatFreqTick(m.freqLo) : m.label;
+    const QString text = QObject::tr("%1  %2 dB").arg(name, QString::number(m.peakDb, 'f', 1));
+    drawMarkerChip(painter, plotRect, fm, rowEnd, idx, spotlit, (xLo + xHi) * 0.5, text, base);
+  }
+
+  painter->setOpacity(1.0);
+  painter->restore();
+}
+
+/**
+ * @brief Draws one marker's label chip near the top of the plot, dropping down a row when it
+ *        would overlap a chip already placed on the current row; captures the chip rect for
+ *        the click-to-spotlight hit test.
+ */
+void Widgets::Waterfall::drawMarkerChip(QPainter* painter,
+                                        const QRectF& plotRect,
+                                        const QFontMetrics& fm,
+                                        double* rowEnd,
+                                        const int markerIndex,
+                                        const bool spotlit,
+                                        double cx,
+                                        const QString& text,
+                                        const QColor& color) const
+{
+  Q_ASSERT(painter);
+  Q_ASSERT(rowEnd);
+
+  const double w = fm.horizontalAdvance(text) + 8;
+  const double h = fm.height() + 4;
+  const double x =
+    qBound(plotRect.left() + 2, cx - w * 0.5, qMax(plotRect.left() + 2, plotRect.right() - w - 2));
+
+  int row = 0;
+  while (row < kMarkerChipRows - 1 && rowEnd[row] > x - 4)
+    ++row;
+
+  rowEnd[row]    = qMax(rowEnd[row], x + w);
+  const double y = plotRect.top() + 4 + row * (h + 2);
+  const QRectF chipRect(x, y, w, h);
+  m_chipHitRects.emplace_back(markerIndex, chipRect);
+
+  QColor bg = color;
+  bg.setAlpha(spotlit ? 255 : 230);
+  painter->setPen(Qt::NoPen);
+  painter->setBrush(bg);
+  painter->drawRoundedRect(chipRect, 3, 3);
+
+  if (spotlit) {
+    painter->setPen(QPen(m_textColor, 1.5));
+    painter->setBrush(Qt::NoBrush);
+    painter->drawRoundedRect(chipRect, 3, 3);
+  }
+
+  painter->setPen(m_innerBg);
+  painter->drawText(QPointF(x + 4, y + 2 + fm.ascent()), text);
+}
+
+/**
+ * @brief Returns the marker index whose chip contains @a pos, or -1 (topmost chip wins).
+ */
+int Widgets::Waterfall::markerChipAt(const QPointF& pos) const
+{
+  for (auto it = m_chipHitRects.rbegin(); it != m_chipHitRects.rend(); ++it)
+    if (it->second.contains(pos))
+      return it->first;
+
+  return -1;
+}
+
+/**
  * @brief Draws the live hover cursor -- vertical & horizontal crosshair lines clipped to the plot
  * rect, plus a small tooltip with the freq + time readings under the pointer (zoom/pan-aware).
  */
@@ -1110,12 +1489,10 @@ void Widgets::Waterfall::drawCursor(QPainter* painter, const QRectF& plotRect) c
 void Widgets::Waterfall::cursorReadoutValues(
   const QRectF& plotRect, double cx, double cy, double& freqHz, double& yVal) const
 {
-  const double nyquist = m_samplingRate * 0.5;
-  const double srcWHz  = nyquist / m_xZoom;
-  const double maxPanX = qMax(0.0, (nyquist - srcWHz) * 0.5);
-  const double centerH = nyquist * 0.5 + qBound(-maxPanX, m_xPan * nyquist, maxPanX);
-  const double xMinHz  = centerH - srcWHz * 0.5;
-  freqHz               = xMinHz + (cx - plotRect.left()) / plotRect.width() * srcWHz;
+  double wMinX = 0.0;
+  double wMaxX = 0.0;
+  visibleFreqWindow(wMinX, wMaxX);
+  freqHz = freqFromWorld(wMinX + (cx - plotRect.left()) / plotRect.width() * (wMaxX - wMinX));
 
   double yMinAxis = 0.0;
   double yMaxAxis = 1.0;
@@ -1340,6 +1717,33 @@ void Widgets::Waterfall::setCursorEnabled(const bool enabled)
 }
 
 /**
+ * @brief Returns whether the frequency-marker overlay is visible.
+ */
+bool Widgets::Waterfall::markersVisible() const noexcept
+{
+  return m_markersVisible;
+}
+
+/**
+ * @brief Toggles the frequency-marker overlay on/off; hiding also clears the spotlight and
+ *        the stale chip hit rects.
+ */
+void Widgets::Waterfall::setMarkersVisible(const bool enabled)
+{
+  if (m_markersVisible == enabled)
+    return;
+
+  m_markersVisible = enabled;
+  if (!enabled) {
+    m_selectedMarker = -1;
+    m_chipHitRects.clear();
+  }
+
+  Q_EMIT markersVisibleChanged();
+  update();
+}
+
+/**
  * @brief Returns whether the side colorbar legend is visible.
  */
 bool Widgets::Waterfall::colorbarVisible() const noexcept
@@ -1453,13 +1857,24 @@ void Widgets::Waterfall::wheelEvent(QWheelEvent* event)
 }
 
 /**
- * @brief Mouse-press starts a drag-to-pan interaction.
+ * @brief Mouse-press toggles the marker spotlight when it lands on a chip; anywhere else it
+ *        starts the drag-to-pan interaction.
  */
 void Widgets::Waterfall::mousePressEvent(QMouseEvent* event)
 {
   if (event->button() != Qt::LeftButton) {
     event->ignore();
     return;
+  }
+
+  if (m_markersVisible && !m_markers.empty()) {
+    const int hit = markerChipAt(event->position());
+    if (hit >= 0) {
+      m_selectedMarker = (m_selectedMarker == hit) ? -1 : hit;
+      update();
+      event->accept();
+      return;
+    }
   }
 
   m_dragging     = true;
@@ -1528,12 +1943,21 @@ void Widgets::Waterfall::hoverEnterEvent(QHoverEvent* event)
 }
 
 /**
- * @brief Tracks the pointer; only schedules a repaint when the cursor is on.
+ * @brief Tracks the pointer, hints chip clickability with a pointing-hand cursor, and only
+ *        schedules a repaint when the readout cursor is on.
  */
 void Widgets::Waterfall::hoverMoveEvent(QHoverEvent* event)
 {
   m_cursorHovering = true;
   m_cursorPos      = event->position();
+
+  if (!m_dragging) {
+    if (m_markersVisible && markerChipAt(m_cursorPos) >= 0)
+      setCursor(Qt::PointingHandCursor);
+    else
+      unsetCursor();
+  }
+
   if (m_cursorEnabled)
     update();
 
@@ -1561,11 +1985,14 @@ void Widgets::Waterfall::hoverLeaveEvent(QHoverEvent* event)
  */
 void Widgets::Waterfall::onThemeChanged()
 {
-  m_outerBg     = m_themeManager.getColor(QStringLiteral("widget_window"));
-  m_innerBg     = m_themeManager.getColor(QStringLiteral("widget_base"));
-  m_borderColor = m_themeManager.getColor(QStringLiteral("widget_border"));
-  m_textColor   = m_themeManager.getColor(QStringLiteral("widget_text"));
-  m_gridColor   = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
+  m_outerBg      = m_themeManager.getColor(QStringLiteral("widget_window"));
+  m_innerBg      = m_themeManager.getColor(QStringLiteral("widget_base"));
+  m_borderColor  = m_themeManager.getColor(QStringLiteral("widget_border"));
+  m_textColor    = m_themeManager.getColor(QStringLiteral("widget_text"));
+  m_gridColor    = QColor(m_borderColor.red(), m_borderColor.green(), m_borderColor.blue(), 80);
+  m_accentColor  = m_themeManager.getColor(QStringLiteral("highlight"));
+  m_warningColor = m_themeManager.alarmColorForSeverity(2);
+  m_alarmColor   = m_themeManager.alarmColorForSeverity(3);
 
   markAxisDirty();
 }

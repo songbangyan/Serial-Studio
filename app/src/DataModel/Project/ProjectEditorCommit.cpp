@@ -903,6 +903,52 @@ void DataModel::ProjectEditor::commitAlarmBands(const QVariantList& bands)
 }
 
 /**
+ * @brief Commits the FrequencyMarkersEditor result into the currently-selected dataset; entries
+ *        are validated with the same rules as the JSON reader (positive finite frequency wins).
+ */
+void DataModel::ProjectEditor::commitFrequencyMarkers(const QVariantList& markers)
+{
+  constexpr double nan        = std::numeric_limits<double>::quiet_NaN();
+  constexpr double max_freqHz = 2147483648.0;
+
+  m_selectedDataset.fftMarkers.clear();
+  m_selectedDataset.fftMarkers.reserve(markers.size());
+  for (const auto& v : markers) {
+    const auto m = v.toMap();
+    DataModel::FrequencyMarker marker;
+    marker.frequency    = SerialStudio::toDouble(m.value(QStringLiteral("freq")));
+    marker.endFrequency = SerialStudio::toDouble(m.value(QStringLiteral("endFreq")));
+    marker.label        = m.value(QStringLiteral("label")).toString().simplified();
+    marker.color        = m.value(QStringLiteral("color")).toString().simplified();
+
+    const auto warning = m.value(QStringLiteral("warningDb"));
+    const auto alarm   = m.value(QStringLiteral("alarmDb"));
+    marker.warningDb   = warning.isValid() ? SerialStudio::toDouble(warning) : nan;
+    marker.alarmDb     = alarm.isValid() ? SerialStudio::toDouble(alarm) : nan;
+
+    if (!std::isfinite(marker.frequency) || marker.frequency <= 0.0
+        || marker.frequency > max_freqHz)
+      continue;
+
+    if (!std::isfinite(marker.endFrequency) || marker.endFrequency <= marker.frequency)
+      marker.endFrequency = 0.0;
+    else
+      marker.endFrequency = qMin(marker.endFrequency, max_freqHz);
+
+    if (std::isfinite(marker.warningDb) && std::isfinite(marker.alarmDb)
+        && marker.warningDb > marker.alarmDb)
+      std::swap(marker.warningDb, marker.alarmDb);
+
+    m_selectedDataset.fftMarkers.push_back(std::move(marker));
+  }
+
+  auto& pm = m_projectModelRef;
+  pm.updateDataset(
+    m_selectedDataset.groupId, m_selectedDataset.datasetId, m_selectedDataset, false);
+  buildDatasetModel(m_selectedDataset);
+}
+
+/**
  * @brief Dispatches dataset form edits to ProjectModel, rebuilding only on tree-visible changes.
  */
 void DataModel::ProjectEditor::onDatasetItemChanged(QStandardItem* item)

@@ -189,6 +189,10 @@ signals:
   void treeRebuildFinished(const QModelIndex& revealIndex);
   void openAlarmBandsEditor(
     int groupId, int datasetId, double rangeMin, double rangeMax, QVariantList currentBands);
+  void openFrequencyMarkersEditor(int groupId,
+                                  int datasetId,
+                                  double nyquist,
+                                  QVariantList currentMarkers);
 
 private:
   explicit ProjectEditor();
@@ -416,6 +420,8 @@ public slots:
   void setSuppressViewChange(bool suppress) noexcept;
   void openAlarmBandsEditorForSelection();
   void commitAlarmBands(const QVariantList& bands);
+  void openFrequencyMarkersEditorForSelection();
+  void commitFrequencyMarkers(const QVariantList& markers);
   void changeDatasetOptionForSelection(int option, bool checked);
 
   Q_INVOKABLE [[nodiscard]] bool moveCurrentGroup(int direction);

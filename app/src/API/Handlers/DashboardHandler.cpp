@@ -841,7 +841,8 @@ API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& 
 
 /**
  * @brief Re-runs all dataset transforms from the last raw values and republishes the frames
- *        to the dashboard; published:false is a state (no frame structure yet), not an error.
+ *        to the dashboard; published:false is a state (no frame structure yet, or no dataset
+ *        value changed), not an error.
  */
 API::CommandResponse API::Handlers::DashboardHandler::reprocess(const QString& id,
                                                                 const QJsonObject& params)
@@ -854,15 +855,17 @@ API::CommandResponse API::Handlers::DashboardHandler::reprocess(const QString& i
   QJsonObject result;
   result[QStringLiteral("published")] = published;
   if (!published)
-    result[QStringLiteral("_summary")] =
-      QStringLiteral("Nothing to republish: requires ProjectFile mode and a loaded project.");
+    result[QStringLiteral("_summary")] = QStringLiteral(
+      "Nothing to republish: requires ProjectFile mode and a loaded project, and at least one "
+      "dataset value must have changed since the last publish.");
 
   return CommandResponse::makeSuccess(id, result);
 }
 
 /**
  * @brief Forces a dashboard render from the current state, seeding the frame structure if no
- *        device frame has arrived; published:false means ProjectFile mode / a project is missing.
+ *        device frame has arrived; published:false means ProjectFile mode / a project is
+ *        missing, or no dataset value changed since the last tick.
  */
 API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
                                                            const QJsonObject& params)
@@ -875,8 +878,9 @@ API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
   QJsonObject result;
   result[QStringLiteral("published")] = published;
   if (!published)
-    result[QStringLiteral("_summary")] =
-      QStringLiteral("Nothing to render: requires ProjectFile mode and a loaded project.");
+    result[QStringLiteral("_summary")] = QStringLiteral(
+      "Nothing to render: requires ProjectFile mode and a loaded project, and at least one "
+      "dataset value must have changed since the last tick.");
 
   return CommandResponse::makeSuccess(id, result);
 }

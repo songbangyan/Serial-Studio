@@ -942,6 +942,14 @@ int Console::Handler::currentDeviceId() const noexcept
 }
 
 /**
+ * @brief Returns the combobox index of the current device, or -1 when none is selected.
+ */
+int Console::Handler::currentDeviceIndex() const noexcept
+{
+  return static_cast<int>(m_deviceSourceIds.indexOf(m_currentDeviceId));
+}
+
+/**
  * @brief Returns true when more than one device is connected.
  */
 bool Console::Handler::multiDeviceMode() const noexcept
@@ -1013,8 +1021,12 @@ void Console::Handler::onDevicesChanged()
     }
   }
 
-  if (names == m_deviceNames && ids == m_deviceSourceIds)
+  if (names == m_deviceNames && ids == m_deviceSourceIds) {
+    if (m_connectionManager->isConnected() && !ids.isEmpty() && !ids.contains(m_currentDeviceId))
+      setCurrentDeviceId(ids.first());
+
     return;
+  }
 
   m_deviceNames     = names;
   m_deviceSourceIds = ids;
@@ -1041,7 +1053,8 @@ void Console::Handler::onDevicesChanged()
 
 /**
  * @brief Appends a string to the per-device buffer and returns the processed (timestamp-prefixed)
- * form.
+ *        form. Only the current device reaches the visible console (the no-selection fallback
+ *        applies solely outside multi-device mode), so device streams never interleave.
  */
 QString Console::Handler::appendToDevice(int deviceId, const QString& str, bool addTimestamp)
 {
@@ -1108,7 +1121,7 @@ QString Console::Handler::appendToDevice(int deviceId, const QString& str, bool 
     state.buffer.remove(0, excess);
   }
 
-  if (deviceId == m_currentDeviceId || m_currentDeviceId < 0) {
+  if (deviceId == m_currentDeviceId || (m_currentDeviceId < 0 && m_deviceSourceIds.isEmpty())) {
     m_textBuffer.append(processedString.toUtf8());
     m_pendingDisplay.append(processedString);
   }

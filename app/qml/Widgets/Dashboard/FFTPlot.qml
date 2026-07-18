@@ -49,7 +49,14 @@ Item {
   // Custom properties
   //
   property bool showAreaUnderPlot: true
+  property bool showFrequencyMarkers: true
   property int interpolationMode: SerialStudio.InterpolationLinear
+
+  //
+  // Transient marker spotlight: click a marker chip to emphasize it and dim the rest
+  //
+  property int selectedMarker: -1
+  onShowFrequencyMarkersChanged: root.selectedMarker = -1
 
   //
   // User-controlled visibility preferences (persisted, ANDed with size thresholds)
@@ -93,6 +100,9 @@ Item {
 
     if (s["userShowYLabel"] !== undefined)
       root.userShowYLabel = s["userShowYLabel"]
+
+    if (s["showFrequencyMarkers"] !== undefined)
+      root.showFrequencyMarkers = s["showFrequencyMarkers"]
   }
 
   //
@@ -241,12 +251,22 @@ Item {
     }
 
     DashboardToolButton {
-      checked: !model.running
-      ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
-      icon.source: model.running?
-                     "qrc:/icons/dashboard-buttons/pause.svg" :
-                     "qrc:/icons/dashboard-buttons/resume.svg"
-      onClicked: model.running = !model.running
+      checked: root.showFrequencyMarkers
+      ToolTip.text: qsTr("Show Frequency Markers")
+      visible: root.model && root.model.markers.length > 0
+      icon.source: "qrc:/icons/dashboard-buttons/labels.svg"
+      onClicked: {
+        root.showFrequencyMarkers = !root.showFrequencyMarkers
+        Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
+                                                "showFrequencyMarkers",
+                                                root.showFrequencyMarkers)
+      }
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
     }
 
     DashboardToolButton {
@@ -270,6 +290,21 @@ Item {
       ToolTip.text: qsTr("Axis Range Settings")
       icon.source: "qrc:/icons/toolbar/settings.svg"
       onClicked: axisRangeDialog.openDialog(plot, root.model)
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    DashboardToolButton {
+      checked: !model.running
+      ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
+      icon.source: model.running?
+                     "qrc:/icons/dashboard-buttons/pause.svg" :
+                     "qrc:/icons/dashboard-buttons/resume.svg"
+      onClicked: model.running = !model.running
     }
 
     Item {
@@ -347,6 +382,319 @@ Item {
       yMax: plot.yVisibleMax
       parent: plot.curveLayer
       visible: root.interpolationMode !== SerialStudio.InterpolationNone
+    }
+
+    //
+    // Frequency marker bands and lines, drawn under the spectrum curve (spec 0019).
+    // Hz map to pixels through the same visible-window transform as PlotCurve.
+    //
+    Item {
+      id: markerBandLayer
+
+      z: -1
+      anchors.fill: parent
+      parent: plot.curveLayer
+      visible: root.showFrequencyMarkers
+
+      function xAt(freq) {
+        const w = plot.logX ? Math.log10(Math.max(freq, 1e-12)) : freq
+        return (w - plot.xVisibleMin) / plot.xVisibleRange * width
+      }
+
+      Repeater {
+        model: root.model ? root.model.markers : []
+
+        delegate: Item {
+          id: markerShape
+
+          required property int index
+          required property var modelData
+
+          property int markerState: 0
+
+          readonly property bool isBand: modelData.endFreq > modelData.freq
+          readonly property real xLo: markerBandLayer.xAt(modelData.freq)
+          readonly property real xHi: isBand ? markerBandLayer.xAt(modelData.endFreq) : xLo
+          readonly property bool spotlit: root.selectedMarker === index
+          readonly property bool dimmed: root.selectedMarker >= 0 && !spotlit
+          readonly property color baseColor: modelData.color !== "" ? modelData.color : root.color
+          readonly property color liveColor: markerState === 2
+                                             ? Cpp_ThemeManager.alarmColorForSeverity(3)
+                                             : (markerState === 1
+                                                ? Cpp_ThemeManager.alarmColorForSeverity(2)
+                                                : baseColor)
+
+          anchors.fill: parent
+          opacity: dimmed ? 0.18 : 1
+          visible: xHi >= 0 && xLo <= markerBandLayer.width
+
+          Behavior on opacity {
+            NumberAnimation {
+              duration: 150
+              easing.type: Easing.InOutQuad
+            }
+          }
+
+          Connections {
+            target: root.model
+            enabled: markerShape.modelData.hasThresholds === true
+            function onMarkerValuesChanged() {
+              markerShape.markerState = root.model.markerState(markerShape.index)
+            }
+          }
+
+          //
+          // Band region: soft DAW-EQ style horizontal gradient bloom
+          //
+          Rectangle {
+            y: 0
+            x: markerShape.xLo
+            height: parent.height
+            visible: markerShape.isBand
+            opacity: markerShape.markerState > 0 ? 1 : 0.85
+            width: Math.max(1, markerShape.xHi - markerShape.xLo)
+
+            gradient: Gradient {
+              orientation: Gradient.Horizontal
+
+              GradientStop {
+                position: 0.0
+                color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.09 : 0.04)
+              }
+
+              GradientStop {
+                position: 0.5
+                color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.34 : 0.20)
+              }
+
+              GradientStop {
+                position: 1.0
+                color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.09 : 0.04)
+              }
+            }
+          }
+
+          //
+          // Band edge strokes
+          //
+          Rectangle {
+            y: 0
+            x: markerShape.xLo
+            height: parent.height
+            visible: markerShape.isBand
+            width: markerShape.spotlit ? 2 : 1
+            color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.8 : 0.45)
+          }
+
+          Rectangle {
+            y: 0
+            height: parent.height
+            visible: markerShape.isBand
+            width: markerShape.spotlit ? 2 : 1
+            x: markerShape.xHi - (markerShape.spotlit ? 2 : 1)
+            color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.8 : 0.45)
+          }
+
+          //
+          // Point marker: soft glow behind a 2 px line
+          //
+          Rectangle {
+            y: 0
+            width: 9
+            height: parent.height
+            x: markerShape.xLo - 4
+            visible: !markerShape.isBand
+
+            gradient: Gradient {
+              orientation: Gradient.Horizontal
+
+              GradientStop {
+                position: 0.0
+                color: "transparent"
+              }
+
+              GradientStop {
+                position: 0.5
+                color: Qt.alpha(markerShape.liveColor, markerShape.spotlit ? 0.32 : 0.18)
+              }
+
+              GradientStop {
+                position: 1.0
+                color: "transparent"
+              }
+            }
+          }
+
+          Rectangle {
+            y: 0
+            height: parent.height
+            visible: !markerShape.isBand
+            width: markerShape.spotlit ? 3 : 2
+            x: markerShape.xLo - (markerShape.spotlit ? 1.5 : 1)
+            color: Qt.alpha(markerShape.liveColor,
+                            markerShape.spotlit
+                            ? 1.0
+                            : (markerShape.markerState > 0 ? 0.95 : 0.65))
+          }
+        }
+      }
+    }
+
+    //
+    // Clickable marker chips over the plot area: a click spotlights the marker, and chips
+    // greedily drop one row when they would overlap horizontally
+    //
+    Item {
+      id: markerChipLayer
+
+      clip: true
+      width: plot.plotArea.width
+      height: plot.plotArea.height
+      x: plot.graph.x + plot.plotArea.x
+      y: plot.graph.y + plot.plotArea.y
+      visible: root.showFrequencyMarkers
+
+      function relayout() {
+        const rows = []
+        const items = []
+        for (let i = 0; i < chipRepeater.count; ++i) {
+          const it = chipRepeater.itemAt(i)
+          if (it && it.visible)
+            items.push(it)
+        }
+
+        items.sort((a, b) => a.x - b.x)
+        for (let i = 0; i < items.length; ++i) {
+          const it = items[i]
+          let row = 0
+          while (row < rows.length && rows[row] > it.x - 4)
+            ++row
+
+          rows[row] = it.x + it.width
+          it.y = 4 + row * (it.height + 2)
+        }
+      }
+
+      function scheduleRelayout() {
+        Qt.callLater(markerChipLayer.relayout)
+      }
+
+      Repeater {
+        id: chipRepeater
+
+        model: root.model ? root.model.markers : []
+        onItemAdded: markerChipLayer.scheduleRelayout()
+        onItemRemoved: markerChipLayer.scheduleRelayout()
+
+        delegate: Label {
+          id: chip
+
+          required property int index
+          required property var modelData
+
+          property int markerState: 0
+          property real blinkFactor: 1
+          property real peakDb: Number.NaN
+
+          readonly property bool isBand: modelData.endFreq > modelData.freq
+          readonly property real xCenter: isBand
+                                          ? (markerBandLayer.xAt(modelData.freq)
+                                             + markerBandLayer.xAt(modelData.endFreq)) / 2
+                                          : markerBandLayer.xAt(modelData.freq)
+          readonly property bool spotlit: root.selectedMarker === index
+          readonly property bool dimmed: root.selectedMarker >= 0 && !spotlit
+          readonly property color baseColor: modelData.color !== "" ? modelData.color : root.color
+          readonly property color liveColor: markerState === 2
+                                             ? Cpp_ThemeManager.alarmColorForSeverity(3)
+                                             : (markerState === 1
+                                                ? Cpp_ThemeManager.alarmColorForSeverity(2)
+                                                : baseColor)
+
+          padding: 4
+          scale: spotlit ? 1.08 : 1
+          opacity: (dimmed ? 0.35 : 1) * blinkFactor
+          color: Cpp_ThemeManager.colors["widget_base"]
+          font: (Cpp_Misc_CommonFonts.widgetFontRevision, Cpp_Misc_CommonFonts.widgetFont(0.8))
+          visible: xCenter >= 0 && xCenter <= markerChipLayer.width
+          x: Math.max(2, Math.min(markerChipLayer.width - width - 2, xCenter - width / 2))
+          text: {
+            const name = modelData.label !== ""
+                         ? modelData.label
+                         : qsTr("%1 Hz").arg(plot.engineeringFormat(modelData.freq, 0))
+            if (isNaN(chip.peakDb))
+              return name
+
+            return qsTr("%1  %2 dB").arg(name).arg(chip.peakDb.toFixed(1))
+          }
+
+          onXChanged: markerChipLayer.scheduleRelayout()
+          onWidthChanged: markerChipLayer.scheduleRelayout()
+          onVisibleChanged: markerChipLayer.scheduleRelayout()
+          onMarkerStateChanged: {
+            if (markerState !== 2)
+              blinkFactor = 1
+          }
+
+          Behavior on scale {
+            NumberAnimation {
+              duration: 120
+              easing.type: Easing.OutQuad
+            }
+          }
+
+          background: Rectangle {
+            radius: 3
+            color: chip.liveColor
+            opacity: chip.spotlit ? 1 : 0.9
+            border.width: chip.spotlit ? 1.5 : 0
+            border.color: Cpp_ThemeManager.colors["widget_text"]
+          }
+
+          MouseArea {
+            id: chipMouse
+
+            hoverEnabled: true
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton
+            cursorShape: Qt.PointingHandCursor
+
+            ToolTip.delay: 700
+            ToolTip.visible: containsMouse
+            ToolTip.text: chip.spotlit
+                          ? qsTr("Click to clear the spotlight.")
+                          : qsTr("Click to spotlight this marker.")
+
+            onClicked: root.selectedMarker = chip.spotlit ? -1 : chip.index
+            onWheel: (wheel) => wheel.accepted = false
+          }
+
+          Connections {
+            target: root.model
+            function onMarkerValuesChanged() {
+              chip.peakDb = root.model.markerPeakDb(chip.index)
+              if (chip.modelData.hasThresholds === true)
+                chip.markerState = root.model.markerState(chip.index)
+            }
+          }
+
+          SequentialAnimation on blinkFactor {
+            loops: Animation.Infinite
+            running: chip.markerState === 2
+
+            NumberAnimation {
+              to: 0.35
+              duration: 350
+              easing.type: Easing.InOutQuad
+            }
+
+            NumberAnimation {
+              to: 1.0
+              duration: 350
+              easing.type: Easing.InOutQuad
+            }
+          }
+        }
+      }
     }
   }
 }

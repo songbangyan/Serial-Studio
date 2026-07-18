@@ -15,8 +15,8 @@ author: Alex Spataru
 
 Without ballistics the FFT display draws the raw spectrum of the moment: the high band
 flickers at full rate while the low band steps between analysis frames, and the two
-regions visibly update at different rhythms. Professional analyzers (FabFilter, Ableton,
-Voxengo) never draw raw frames — every displayed bin has instant attack and a slow
+regions visibly update at different rhythms. Professional audio analyzers never draw raw
+frames — every displayed bin has instant attack and a slow
 exponential release, which unifies the perceived motion of the whole spectrum and is a
 large part of why those analyzers feel realtime.
 

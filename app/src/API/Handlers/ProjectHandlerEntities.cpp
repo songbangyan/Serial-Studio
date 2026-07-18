@@ -1114,6 +1114,117 @@ API::CommandResponse API::Handlers::ProjectHandler::datasetSetAlarmBands(const Q
 }
 
 /**
+ * @brief Returns the dataset's FFT frequency markers as a JSON array.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetGetFFTMarkers(const QString& id,
+                                                                         const QJsonObject& params)
+{
+  const QStringList required{QString(Keys::GroupId), QString(Keys::DatasetId)};
+  for (const auto& key : required)
+    if (!params.contains(key))
+      return CommandResponse::makeError(
+        id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: %1").arg(key));
+
+  const int groupId   = params.value(Keys::GroupId).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+
+  static auto& pm    = DataModel::ProjectModel::instance();
+  const auto& groups = pm.groups();
+  const auto git     = std::find_if(
+    groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
+
+  if (git == groups.end())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const auto& datasets = git->datasets;
+  const auto dit       = std::find_if(datasets.begin(), datasets.end(), [datasetId](const auto& d) {
+    return d.datasetId == datasetId;
+  });
+
+  if (dit == datasets.end())
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found in group: %1/%2")
+                                        .arg(QString::number(groupId), QString::number(datasetId)));
+
+  QJsonArray markers;
+  for (const auto& m : dit->fftMarkers)
+    markers.append(DataModel::serialize(m));
+
+  QJsonObject result;
+  result[Keys::GroupId]             = groupId;
+  result[Keys::DatasetId]           = datasetId;
+  result[Keys::FFTMarkers]          = markers;
+  result[QStringLiteral("count")]   = markers.size();
+  result[QStringLiteral("nyquist")] = qMax(1, dit->fftSamplingRate) * 0.5;
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
+ * @brief Atomic write of the full fftMarkers array onto a dataset.
+ */
+API::CommandResponse API::Handlers::ProjectHandler::datasetSetFFTMarkers(const QString& id,
+                                                                         const QJsonObject& params)
+{
+  const QStringList required{
+    QString(Keys::GroupId), QString(Keys::DatasetId), QString(Keys::FFTMarkers)};
+  for (const auto& key : required)
+    if (!params.contains(key))
+      return CommandResponse::makeError(
+        id, ErrorCode::MissingParam, QStringLiteral("Missing required parameter: %1").arg(key));
+
+  const int groupId   = params.value(Keys::GroupId).toInt();
+  const int datasetId = params.value(Keys::DatasetId).toInt();
+  const auto arr      = params.value(Keys::FFTMarkers).toArray();
+
+  static auto& pm    = DataModel::ProjectModel::instance();
+  const auto& groups = pm.groups();
+  const auto git     = std::find_if(
+    groups.begin(), groups.end(), [groupId](const auto& g) { return g.groupId == groupId; });
+
+  if (git == groups.end())
+    return CommandResponse::makeError(
+      id, ErrorCode::InvalidParam, QStringLiteral("Group id not found: %1").arg(groupId));
+
+  const auto& datasets = git->datasets;
+  const auto dit       = std::find_if(datasets.begin(), datasets.end(), [datasetId](const auto& d) {
+    return d.datasetId == datasetId;
+  });
+
+  if (dit == datasets.end())
+    return CommandResponse::makeError(id,
+                                      ErrorCode::InvalidParam,
+                                      QStringLiteral("Dataset id not found in group: %1/%2")
+                                        .arg(QString::number(groupId), QString::number(datasetId)));
+
+  DataModel::Dataset updated = *dit;
+  updated.fftMarkers.clear();
+  updated.fftMarkers.reserve(arr.size());
+
+  int dropped = 0;
+  for (const auto& v : arr) {
+    DataModel::FrequencyMarker m;
+    if (DataModel::read(m, v.toObject()))
+      updated.fftMarkers.push_back(std::move(m));
+    else
+      ++dropped;
+  }
+
+  pm.updateDataset(groupId, datasetId, updated, true);
+
+  QJsonObject result;
+  result[Keys::GroupId]             = groupId;
+  result[Keys::DatasetId]           = datasetId;
+  result[QStringLiteral("count")]   = static_cast<int>(updated.fftMarkers.size());
+  result[QStringLiteral("updated")] = true;
+  if (dropped > 0)
+    result[QStringLiteral("droppedInvalid")] = dropped;
+
+  return CommandResponse::makeSuccess(id, result);
+}
+
+/**
  * @brief Add action
  */
 API::CommandResponse API::Handlers::ProjectHandler::actionAdd(const QString& id,
@@ -1506,6 +1617,26 @@ static QString applyDatasetTextAndToggleFields(DataModel::Dataset& d,
 }
 
 /**
+ * @brief Replaces @a d.fftMarkers from the optional fftMarkers array param (invalid dropped).
+ */
+static void applyDatasetFrequencyMarkerField(DataModel::Dataset& d,
+                                             const QJsonObject& params,
+                                             QSet<QString>& consumed)
+{
+  if (!takeParam(params, consumed, Keys::FFTMarkers))
+    return;
+
+  d.fftMarkers.clear();
+  const auto arr = params.value(Keys::FFTMarkers).toArray();
+  d.fftMarkers.reserve(arr.size());
+  for (const auto& v : arr) {
+    DataModel::FrequencyMarker m;
+    if (DataModel::read(m, v.toObject()))
+      d.fftMarkers.push_back(std::move(m));
+  }
+}
+
+/**
  * @brief Applies index/sourceId/numeric range fields; returns error string on bad index or
  *        fftWindow.
  */
@@ -1564,6 +1695,8 @@ static QString applyDatasetNumericFields(DataModel::Dataset& d,
 
   if (takeParam(params, consumed, QStringLiteral("wgtMax")))
     d.wgtMax = SerialStudio::toDouble(params.value(QStringLiteral("wgtMax")));
+
+  applyDatasetFrequencyMarkerField(d, params, consumed);
 
   const bool hasAlarmBands = takeParam(params, consumed, Keys::AlarmBands);
   const bool hasAlarmLow   = takeParam(params, consumed, QStringLiteral("alarmLow"));

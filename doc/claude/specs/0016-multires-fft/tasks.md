@@ -7,7 +7,7 @@ updated: 2026-07-17
 
 # Tasks 0016 — Multi-resolution FFT display for the logarithmic frequency axis
 
-> **Superseded by [spec 0018](../0018-ableton-fft/spec.md).** All tasks below were
+> **Superseded by [spec 0018](../0018-smooth-log-fft/spec.md).** All tasks below were
 > completed and the feature worked as specified; the implementation was then removed the
 > same day in favor of the single-window approach (see the 0018 spec for the rationale).
 > The checklist is kept as the record of what was built and reviewed.

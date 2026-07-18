@@ -22,6 +22,7 @@
 #include "UI/Widgets/FFTPlot.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "UI/Dashboard.h"
 #include "UI/Widgets/FFTWindow.h"
@@ -88,6 +89,9 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
     m_fftOutput.resize(m_size);
     m_window.resize(m_size);
     Widgets::fillFftWindow(m_windowType, m_window.data(), static_cast<unsigned int>(m_size));
+
+    loadMarkers();
+    rebuildMarkerBins();
 
     m_plan = kiss_fft_alloc(m_size, 0, nullptr, nullptr);
     if (!m_plan) {
@@ -192,6 +196,134 @@ bool Widgets::FFTPlot::running() const noexcept
 SerialStudio::InterpolationMode Widgets::FFTPlot::interpolationMode() const noexcept
 {
   return m_interpolationMode;
+}
+
+//--------------------------------------------------------------------------------------------------
+// Frequency markers (spec 0019)
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Returns the static marker configuration list (built once at construction).
+ */
+QVariantList Widgets::FFTPlot::markers() const
+{
+  return m_markerConfig;
+}
+
+/**
+ * @brief Returns the latest peak display dB measured inside the marker's bin window.
+ */
+double Widgets::FFTPlot::markerPeakDb(int index) const
+{
+  if (index < 0 || index >= static_cast<int>(m_markerRt.size()))
+    return kSpectrumFloorDb;
+
+  return m_markerRt[static_cast<std::size_t>(index)].peakDb;
+}
+
+/**
+ * @brief Returns the marker's escalation state: 0 = normal, 1 = warning, 2 = alarm.
+ */
+int Widgets::FFTPlot::markerState(int index) const
+{
+  if (index < 0 || index >= static_cast<int>(m_markerRt.size()))
+    return 0;
+
+  return m_markerRt[static_cast<std::size_t>(index)].state;
+}
+
+/**
+ * @brief Copies the dataset's frequency markers into runtime state and the QML config list;
+ *        runs once at construction so the per-tick path never touches the project model.
+ */
+void Widgets::FFTPlot::loadMarkers()
+{
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index))
+    return;
+
+  const auto& dataset = GET_DATASET(SerialStudio::DashboardFFT, m_index);
+  m_markerRt.clear();
+  m_markerConfig.clear();
+  m_markerRt.reserve(dataset.fftMarkers.size());
+  m_markerConfig.reserve(static_cast<int>(dataset.fftMarkers.size()));
+  for (const auto& m : dataset.fftMarkers) {
+    MarkerRuntime rt;
+    rt.freqLo    = m.frequency;
+    rt.freqHi    = m.endFrequency;
+    rt.warningDb = static_cast<float>(m.warningDb);
+    rt.alarmDb   = static_cast<float>(m.alarmDb);
+    rt.peakDb    = kSpectrumFloorDb;
+    rt.state     = 0;
+    rt.binLo     = 0;
+    rt.binHi     = 0;
+    m_markerRt.push_back(rt);
+
+    QVariantMap entry;
+    entry.insert(QStringLiteral("freq"), m.frequency);
+    entry.insert(QStringLiteral("endFreq"), m.endFrequency);
+    entry.insert(QStringLiteral("label"), m.label);
+    entry.insert(QStringLiteral("color"), m.color);
+    entry.insert(QStringLiteral("hasThresholds"),
+                 std::isfinite(m.warningDb) || std::isfinite(m.alarmDb));
+    m_markerConfig.append(entry);
+  }
+}
+
+/**
+ * @brief Resolves each marker's frequency span to a clamped FFT bin window; point markers get
+ *        a +/- 2 bin neighborhood so slightly detuned lines still register. Re-run on every
+ *        plan rebuild because the bin width follows the FFT size. Bin math clamps in the
+ *        double domain BEFORE the int cast: casting an unrepresentable double is UB.
+ */
+void Widgets::FFTPlot::rebuildMarkerBins()
+{
+  constexpr double pointHalfWindow = 2.0;
+  Q_ASSERT(m_size > 0);
+  Q_ASSERT(m_samplingRate > 0);
+
+  const int spectrumSize = m_size / 2;
+  const double freqStep  = static_cast<double>(m_samplingRate) / qMax(1, m_size);
+  const double lastBin   = qMax(0, spectrumSize - 1);
+  for (auto& rt : m_markerRt) {
+    double lo = 0.0;
+    double hi = 0.0;
+    if (rt.freqHi > rt.freqLo) {
+      lo = std::floor(rt.freqLo / freqStep);
+      hi = std::ceil(rt.freqHi / freqStep);
+    } else {
+      const double center = std::round(rt.freqLo / freqStep);
+      lo                  = center - pointHalfWindow;
+      hi                  = center + pointHalfWindow;
+    }
+
+    rt.binLo = static_cast<int>(qBound(0.0, lo, lastBin));
+    rt.binHi = static_cast<int>(qBound(static_cast<double>(rt.binLo), hi, lastBin));
+  }
+}
+
+/**
+ * @brief Refreshes each marker's live peak (from the ballistics-processed display spectrum,
+ *        so what is judged matches what is drawn) and its normal/warning/alarm state.
+ */
+void Widgets::FFTPlot::updateMarkerValues(const int spectrumSize)
+{
+  Q_ASSERT(spectrumSize > 0);
+  Q_ASSERT(m_binDb.size() >= static_cast<std::size_t>(spectrumSize));
+
+  for (auto& rt : m_markerRt) {
+    const int hi = qMin(rt.binHi, spectrumSize - 1);
+    float peak   = kSpectrumFloorDb;
+    for (int i = qMin(rt.binLo, hi); i <= hi; ++i)
+      peak = std::max(peak, m_binDb[static_cast<std::size_t>(i)]);
+
+    rt.peakDb = peak;
+    if (std::isfinite(rt.alarmDb) && peak >= rt.alarmDb)
+      rt.state = 2;
+    else if (std::isfinite(rt.warningDb) && peak >= rt.warningDb)
+      rt.state = 1;
+    else
+      rt.state = 0;
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -314,6 +446,7 @@ bool Widgets::FFTPlot::rebuildFftPlan(int newSize)
     applyLogFrequencyBounds();
   }
 
+  rebuildMarkerBins();
   return true;
 }
 
@@ -428,7 +561,7 @@ void Widgets::FFTPlot::emitLinearSpectrum(const int spectrumSize)
 }
 
 /**
- * @brief Renders the log-axis curve the Ableton way: a monotone cubic (Fritsch-Carlson
+ * @brief Renders the log-axis curve the studio-analyzer way: a monotone cubic (Fritsch-Carlson
  *        PCHIP) through the bins in log-x space, resampled on a uniform log grid, so the
  *        sparse low decades draw as smooth hills instead of angular segments. Monotone
  *        interpolation never overshoots, so peaks stay honest.
@@ -590,6 +723,11 @@ void Widgets::FFTPlot::updateData()
     buildLogRenderCurve(spectrumSize);
   else
     emitLinearSpectrum(spectrumSize);
+
+  if (!m_markerRt.empty() && spectrumSize > 0) {
+    updateMarkerValues(spectrumSize);
+    Q_EMIT markerValuesChanged();
+  }
 
   DSP::downsampleMonotonic(m_xData, m_yData, m_dataW, m_dataH, m_data, &ws);
 }

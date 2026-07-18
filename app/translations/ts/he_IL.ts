@@ -2402,7 +2402,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>ללא סיכום ביקורת</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="1010"/>
+        <location filename="../../src/Console/Handler.cpp" line="1018"/>
         <source>Device %1</source>
         <translation>התקן %1</translation>
     </message>
@@ -3480,12 +3480,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1473"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1487"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>תקציב ההמרה של JavaScript חרג מהמותר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1474"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1488"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>המרת ערכת נתונים ארכה יותר מ-%1 מילישניות; ערכות הנתונים הנותרות ב-Frame חזרו לערכים גולמיים עד ל-Frame הבא. בצע פרופיל או פשט את קוד ההמרה.</translation>
     </message>
@@ -3500,34 +3500,34 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>צרכן במורד הזרם (Dashboard, ייצוא CSV/MDF4, מסד נתוני Session, או מנוי API) לא מרוקן Frames מספיק מהר. Serial Studio עובר להקצאות לפי Frame עד שהצטברות תתפנה. השבת צרכן כבד או הפחת את קצב הנתונים.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1714"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1738"/>
         <source>Device A</source>
         <translation>התקן A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1754"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1869"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1778"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1893"/>
         <source>Channel %1</source>
         <translation>ערוץ %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1763"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1885"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1787"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1909"/>
         <source>Quick Plot</source>
         <translation>תרשים מהיר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1794"/>
         <source>Quick Plot Data</source>
         <translation>נתוני תרשים מהיר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1782"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1806"/>
         <source>Multiple Plots</source>
         <translation>תרשימים מרובים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1880"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1904"/>
         <source>Audio Input</source>
         <translation>קלט שמע</translation>
     </message>
@@ -4599,7 +4599,7 @@ Add %4 dataset(s) using the template's defaults?</source>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="606"/>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="876"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1525"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1553"/>
         <source>General Information</source>
         <translation>מידע כללי</translation>
     </message>
@@ -4686,7 +4686,7 @@ Add %4 dataset(s) using the template's defaults?</source>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="717"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1584"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1612"/>
         <source>Text Encoding</source>
         <translation>קידוד טקסט</translation>
     </message>
@@ -4889,12 +4889,12 @@ Add %4 dataset(s) using the template's defaults?</source>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1143"/>
         <source>Peak Ballistics</source>
-        <translation type="unfinished">בליסטיקת שיא</translation>
+        <translation>בליסטיקת שיא</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1144"/>
         <source>Analyzer-style display: peaks rise instantly and decay smoothly over the release time</source>
-        <translation type="unfinished">תצוגה בסגנון מנתח: שיאים עולים באופן מיידי ודועכים בצורה חלקה לאורך זמן השחרור</translation>
+        <translation>תצוגה בסגנון מנתח: שיאים עולים באופן מיידי ודועכים בצורה חלקה לאורך זמן השחרור</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1156"/>
@@ -4922,12 +4922,11 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>ציר תדר לוגריתמי</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1250"/>
         <source>Scale the FFT frequency axis in decades so low octaves stay readable</source>
-        <translation>קנה מידה של ציר התדר FFT בעשוריות כך שאוקטבות נמוכות יישארו קריאות</translation>
+        <translation type="vanished">קנה מידה של ציר התדר FFT בעשוריות כך שאוקטבות נמוכות יישארו קריאות</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1420"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1421"/>
         <source>Fixed decimal places for the value display; overrides the format (-1 = auto)</source>
         <translation>מספר מקומות עשרוניים קבוע לתצוגת הערך; דורס את הפורמט (1- = אוטומטי)</translation>
     </message>
@@ -5029,17 +5028,17 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">גבול עליון לנורמליזציה של נתונים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1300"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1301"/>
         <source>Widget Settings</source>
         <translation>הגדרות Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1323"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1324"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1324"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1325"/>
         <source>Select the visual widget used to display this dataset</source>
         <translation>בחירת ה-widget החזותי המשמש להצגת מערך נתונים זה</translation>
     </message>
@@ -5061,28 +5060,28 @@ Add %4 dataset(s) using the template's defaults?</source>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectEditor.cpp" line="716"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1380"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1415"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1381"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1416"/>
         <source>Auto</source>
         <translation>אוטומטי</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1381"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1382"/>
         <source>Tick Count</source>
         <translation>מספר סימונים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1385"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1386"/>
         <source>Major-tick count on the dial scale (0 = auto-fit to widget size)</source>
         <translation>מספר הסימונים הראשיים על סולם החוגה (0 = התאמה אוטומטית לגודל הווידג'ט)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1404"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1405"/>
         <source>Label Format</source>
         <translation>עיצוב תווית</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1405"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1406"/>
         <source>Decimal places or notation used on tick labels and the value display</source>
         <translation>מספר המקומות העשרוניים או הסימון המשמש בתוויות הסימונים ובתצוגת הערך</translation>
     </message>
@@ -5123,22 +5122,22 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">מפעיל התראה חזותית כאשר הערך עולה על סף זה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1480"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1508"/>
         <source>LED Display Settings</source>
         <translation>הגדרות תצוגת LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1491"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1519"/>
         <source>Show in LED Panel</source>
         <translation>הצג בלוח LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1492"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1520"/>
         <source>Enable visual status monitoring using an LED display</source>
         <translation>הפעלת ניטור מצב חזותי באמצעות תצוגת LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1506"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1534"/>
         <source>LED On Threshold (required)</source>
         <translation>סף הדלקת LED (נדרש)</translation>
     </message>
@@ -5463,48 +5462,48 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>מעורב</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1535"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1563"/>
         <source>Label</source>
         <translation>תווית</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1536"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1564"/>
         <source>Display label</source>
         <translation>הצג תווית</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1546"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1574"/>
         <source>Button Icon</source>
         <translation>סמל כפתור</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1555"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1583"/>
         <source>Colorize Icon</source>
         <translation>צבע סמל</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1556"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1584"/>
         <source>Tint the icon with the button color</source>
         <translation>צביעת הסמל בצבע הכפתור</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1573"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1601"/>
         <source>Initial Value</source>
         <translation>ערך התחלתי</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1585"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1613"/>
         <source>Character encoding used when transmit() returns a string value</source>
         <translation>קידוד תווים המשמש כאשר transmit() מחזירה ערך מחרוזת</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1603"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1631"/>
         <source>Value Range</source>
         <translation>טווח ערכים</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="998"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1613"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1641"/>
         <source>Minimum Value</source>
         <translation>ערך מינימלי</translation>
     </message>
@@ -5523,7 +5522,7 @@ Add %4 dataset(s) using the template's defaults?</source>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1011"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1622"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1650"/>
         <source>Maximum Value</source>
         <translation>ערך מקסימלי</translation>
     </message>
@@ -5533,39 +5532,44 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>בחר זמן או מערך נתונים להנעת ציר ה-X בגרפים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1261"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1350"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1250"/>
+        <source>Scale the frequency axis in decades so low octaves stay readable; applies to both the FFT plot and the waterfall</source>
+        <translation>קנה מידה של ציר התדר בעשוריות כך שאוקטבות נמוכות יישארו קריאות; חל גם על עלילת FFT וגם על המפל</translation>
+    </message>
+    <message>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1262"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1351"/>
         <source>Minimum Value (optional)</source>
         <translation>ערך מינימלי (אופציונלי)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1262"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1263"/>
         <source>Lower bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>גבול תחתון לנורמליזציה של נתונים; ברירת מחדל לטווח הערכים של מערך הנתונים כאשר לא מוגדר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1274"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1363"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1275"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1364"/>
         <source>Maximum Value (optional)</source>
         <translation>ערך מקסימלי (אופציונלי)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1275"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1276"/>
         <source>Upper bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>גבול עליון לנורמליזציה של נתונים; ברירת מחדל לטווח הערכים של מערך הנתונים כאשר לא מוגדר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1351"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1352"/>
         <source>Lower bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>גבול תחתון של טווח המחוון או העמודה; ברירת מחדל לטווח הערכים של מערך הנתונים כאשר לא מוגדר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1364"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1365"/>
         <source>Upper bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>גבול עליון של טווח המחוון או העמודה; ברירת מחדל לטווח הערכים של מערך הנתונים כאשר לא מוגדר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1416"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1417"/>
         <source>Decimal Points</source>
         <translation>נקודות עשרוניות</translation>
     </message>
@@ -5574,17 +5578,17 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">מספר המקומות העשרוניים המוצגים בעמודת הערכים ברשת הנתונים (1- = אוטומטי)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1463"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1464"/>
         <source>On</source>
         <translation>דולק</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1507"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1535"/>
         <source>LED lights up when value meets or exceeds this threshold; define alarm bands for multi-state colors</source>
         <translation>נורית LED נדלקת כאשר הערך מגיע לסף זה או עולה עליו; הגדרת טווחי אזעקה עבור צבעים מרובי מצבים</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1631"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1659"/>
         <source>Step Size</source>
         <translation>גודל צעד</translation>
     </message>
@@ -5820,15 +5824,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>שמירת פרויקט Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>קבצי פרויקט Serial Studio (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>פרויקט ללא שם</translation>
     </message>
@@ -5899,25 +5903,25 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>הפרויקט שלך השתמש בפונקציית מנתח מסגרות מדור קודם עם ארגומנט 'separator'. היא הומרה אוטומטית לפורמט החדש.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="298"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="299"/>
         <source>Do you want to delete group "%1"?</source>
         <translation>למחוק את הקבוצה "%1"?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="299"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="344"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="376"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1119"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="300"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="345"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="377"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1120"/>
         <source>This action cannot be undone. Do you wish to proceed?</source>
         <translation>לא ניתן לבטל פעולה זו. להמשיך?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="343"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="344"/>
         <source>Do you want to delete action "%1"?</source>
         <translation>למחוק את הפעולה "%1"?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="375"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="376"/>
         <source>Do you want to delete dataset "%1"?</source>
         <translation>למחוק את מערך הנתונים "%1"?</translation>
     </message>
@@ -5926,78 +5930,78 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">%1 (עותק)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1031"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1067"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1032"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1068"/>
         <source>Output Controls</source>
         <translation>בקרות פלט</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1079"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1080"/>
         <source>New Button</source>
         <translation>כפתור חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1082"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1083"/>
         <source>New Slider</source>
         <translation>מחוון חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1085"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1086"/>
         <source>New Toggle</source>
         <translation>מתג חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1088"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1089"/>
         <source>New Text Field</source>
         <translation>שדה טקסט חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1091"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1092"/>
         <source>New Knob</source>
         <translation>כפתור סיבוב חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1118"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1119"/>
         <source>Do you want to delete output widget "%1"?</source>
         <translation>למחוק את וידג'ט הפלט "%1"?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1297"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1298"/>
         <source>Group</source>
         <translation>קבוצה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1315"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1317"/>
         <source>New Dataset</source>
         <translation>מערך נתונים חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1318"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1320"/>
         <source>New Plot</source>
         <translation>גרף חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1322"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1324"/>
         <source>New FFT Plot</source>
         <translation>תרשים FFT חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1326"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1328"/>
         <source>New Level Indicator</source>
         <translation>מחוון רמה חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1330"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1332"/>
         <source>New Gauge</source>
         <translation>מד חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1334"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1336"/>
         <source>New Compass</source>
         <translation>מצפן חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1340"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1342"/>
         <source>New Meter</source>
         <translation>מד חדש</translation>
     </message>
@@ -6006,86 +6010,86 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">מדחום חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1344"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1346"/>
         <source>New LED Indicator</source>
         <translation>מחוון LED חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1348"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1350"/>
         <source>New Waterfall</source>
         <translation>תרשים מפל חדש</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1416"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1419"/>
         <source>Channel %1</source>
         <translation>ערוץ %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1487"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1490"/>
         <source>New Action</source>
         <translation>פעולה חדשה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1628"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1631"/>
         <source>Are you sure you want to change the group-level widget?</source>
         <translation>האם לשנות את הווידג'ט ברמת הקבוצה?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1630"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1633"/>
         <source>Existing datasets for this group are deleted</source>
         <translation>מערכי הנתונים הקיימים של קבוצה זו יימחקו</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1698"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1699"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1700"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1701"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1702"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1703"/>
         <source>Accelerometer %1</source>
         <translation>מד תאוצה %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
         <source>Gyro %1</source>
         <translation>ג'ירוסקופ %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Latitude</source>
         <translation>קו רוחב</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Longitude</source>
         <translation>קו אורך</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Altitude</source>
         <translation>גובה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>Z</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>סביבת עבודה</translation>
     </message>
@@ -6112,6 +6116,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6124,8 +6130,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>שם:</translation>
     </message>
@@ -6165,10 +6169,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>שינוי שם רגיסטר</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2284"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>לא ניתן לבטל פעולה זו.</translation>
     </message>
@@ -6178,9 +6182,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>פעולה זו תסיר %1 רגיסטר(ים) יחד עם הטבלה. לא ניתן לבטל פעולה זו.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>למחוק את "%1"?</translation>
     </message>
@@ -6211,8 +6215,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>ייבא טבלה</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>סביבת עבודה חדשה</translation>
     </message>
@@ -6349,12 +6353,12 @@ Reload it?</source>
         <translation>שגיאת שמירת קובץ</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2283"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2286"/>
         <source>Delete %1 selected items?</source>
         <translation>למחוק %1 פריטים נבחרים?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2286"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2289"/>
         <source>Delete Items</source>
         <translation>מחק פריטים</translation>
     </message>
@@ -6731,99 +6735,109 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>DatasetView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="112"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="139"/>
         <source>Pro features detected in this project.</source>
         <translation>זוהו תכונות Pro בפרויקט זה.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="114"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="141"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>משתמש בווידג'טים חלופיים. רכוש רישיון לפתיחת הפונקציונליות המלאה.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="142"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="169"/>
         <source>Plots</source>
         <translation>גרפים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="174"/>
         <source>Plot</source>
         <translation>גרף</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="178"/>
         <source>Toggle 2D plot visualization for this dataset</source>
         <translation>הפעל/כבה תצוגת גרף דו-ממדי עבור מערך נתונים זה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="163"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="190"/>
         <source>FFT Plot</source>
         <translation>גרף FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="166"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="193"/>
         <source>Toggle FFT plot to visualize frequency content</source>
         <translation>הפעל/כבה גרף FFT להצגת תוכן תדרים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="178"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="205"/>
         <source>Waterfall</source>
         <translation>מפל</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="182"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="209"/>
         <source>Toggle waterfall (spectrogram) plot — uses the FFT settings</source>
         <translation>הפעל/כבה גרף מפל (ספקטרוגרמה) — משתמש בהגדרות FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="199"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="226"/>
         <source>Widgets</source>
         <translation>ווידג'טים</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="232"/>
         <source>Bar/Level</source>
         <translation>עמודה/רמה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="236"/>
         <source>Toggle bar/level indicator for this dataset</source>
         <translation>החלף אינדיקטור עמודה/רמה עבור מערך נתונים זה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="220"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="247"/>
         <source>Gauge</source>
         <translation>מד</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="225"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="252"/>
         <source>Toggle gauge widget for analog-style display</source>
         <translation>החלף ווידג'ט מד לתצוגה בסגנון אנלוגי</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="237"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="264"/>
         <source>Compass</source>
         <translation>מצפן</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="268"/>
         <source>Toggle compass widget for directional data</source>
         <translation>החלף ווידג'ט מצפן עבור נתוני כיוון</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="252"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="279"/>
         <source>Meter</source>
         <translation>מד</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="257"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="284"/>
         <source>Toggle analog meter (half-arc) widget</source>
         <translation>החלף ווידג'ט מד אנלוגי (חצי קשת)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="308"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="335"/>
         <source>Define colored value ranges with severity tiers for this dataset's gauge or LED.</source>
         <translation>הגדרת טווחי ערכים צבעוניים עם דרגות חומרה עבור מד או LED של מערך נתונים זה.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="341"/>
+        <source>Freq. Markers</source>
+        <translation>סמני תדר</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="348"/>
+        <source>Pin labeled frequencies or bands on the FFT plot and waterfall, with optional warning and alarm levels.</source>
+        <translation>הצמד תדרים או פסים מסומנים על עלילת FFT ומפל, עם רמות אזהרה ואזעקה אופציונליות.</translation>
     </message>
     <message>
         <source>Thermometer</source>
@@ -6834,22 +6848,22 @@ Valid format: 01 A2 FF 3C</source>
         <translation type="vanished">החלף ווידג'ט מדחום עבור נתוני טמפרטורה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="268"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="295"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="273"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="300"/>
         <source>Toggle LED indicator for binary or thresholded values</source>
         <translation>החלף אינדיקטור LED עבור ערכים בינאריים או סף</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="293"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="320"/>
         <source>Behavior</source>
         <translation>התנהגות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="325"/>
         <source>Alarm Bands</source>
         <translation>תחומי אזעקה</translation>
     </message>
@@ -6858,32 +6872,32 @@ Valid format: 01 A2 FF 3C</source>
         <translation type="vanished">הגדרת טווחי ערכים צבעוניים עם דרגות חומרה עבור מד מערך נתונים זה.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="314"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="354"/>
         <source>Transform</source>
         <translation>טרנספורמציה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="318"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="358"/>
         <source>Edit a value transform expression for calibration, filtering, or unit conversion</source>
         <translation>ערוך ביטוי טרנספורמציה של ערך עבור כיול, סינון או המרת יחידות</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="331"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="371"/>
         <source>Duplicate</source>
         <translation>שכפל</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="336"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="376"/>
         <source>Duplicate this dataset with the same configuration</source>
         <translation>שכפל מערך נתונים זה עם אותה תצורה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="341"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="381"/>
         <source>Delete</source>
         <translation>מחק</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="344"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="384"/>
         <source>Delete this dataset from the group</source>
         <translation>מחק מערך נתונים זה מהקבוצה</translation>
     </message>
@@ -7386,59 +7400,84 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="162"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="172"/>
         <source>Interpolation: %1</source>
         <translation>אינטרפולציה: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="190"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
         <source>Show Area Under Plot</source>
         <translation>הצג שטח מתחת לגרף</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="208"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
         <source>Show X Axis Label</source>
         <translation>הצג תווית ציר X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
         <source>Show Y Axis Label</source>
         <translation>הצג תווית ציר Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
         <source>Show Crosshair</source>
         <translation>הצג כוונת</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <source>Show Frequency Markers</source>
+        <translation>הצג סמני תדר</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
         <source>Pause</source>
         <translation>השהה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
         <source>Resume</source>
         <translation>המשך</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="264"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <source>Click to clear the spotlight.</source>
+        <translation>לחץ לניקוי הזרקור.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <source>Click to spotlight this marker.</source>
+        <translation>לחץ להדגשת סמן זה בזרקור.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Reset View</source>
         <translation>אפס תצוגה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
         <source>Axis Range Settings</source>
         <translation>הגדרות טווח צירים</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="300"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
         <source>Magnitude (dB)</source>
         <translation>עוצמה (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
         <source>Frequency (Hz)</source>
         <translation>תדר (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <source>%1 Hz</source>
+        <translation>%1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <source>%1  %2 dB</source>
+        <translation>%1  %2 dB</translation>
     </message>
 </context>
 <context>
@@ -8105,6 +8144,258 @@ Valid format: 01 A2 FF 3C</source>
     <message>
         <source>Evaluate</source>
         <translation type="vanished">הערך</translation>
+    </message>
+</context>
+<context>
+    <name>FrequencyMarkersEditor</name>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="35"/>
+        <source>Frequency Markers</source>
+        <translation>סמני תדר</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="71"/>
+        <source>Mains Hum (50 Hz + harmonics)</source>
+        <translation>זמזום רשת חשמל (50 Hz + הרמוניות)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="73"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="81"/>
+        <source>Mains</source>
+        <translation>רשת חשמל</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="74"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="82"/>
+        <source>Mains 2x</source>
+        <translation>רשת חשמל 2x</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="75"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="83"/>
+        <source>Mains 3x</source>
+        <translation>רשת חשמל 3x</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="79"/>
+        <source>Mains Hum (60 Hz + harmonics)</source>
+        <translation>זמזום רשת חשמל (60 Hz + הרמוניות)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="87"/>
+        <source>Octave Bands (31.5 Hz - 16 kHz)</source>
+        <translation>תחומי אוקטבה (31.5 Hz - 16 kHz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="89"/>
+        <source>31.5 Hz</source>
+        <translation>31.5 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="90"/>
+        <source>63 Hz</source>
+        <translation>63 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="91"/>
+        <source>125 Hz</source>
+        <translation>125 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="92"/>
+        <source>250 Hz</source>
+        <translation>250 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="93"/>
+        <source>500 Hz</source>
+        <translation>500 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="94"/>
+        <source>1 kHz</source>
+        <translation>1 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="95"/>
+        <source>2 kHz</source>
+        <translation>2 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="96"/>
+        <source>4 kHz</source>
+        <translation>4 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="97"/>
+        <source>8 kHz</source>
+        <translation>8 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="98"/>
+        <source>16 kHz</source>
+        <translation>16 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="238"/>
+        <source>Choose Marker Color</source>
+        <translation>בחר צבע סמן</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="265"/>
+        <source>Presets</source>
+        <translation>ערכות מוגדרות</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="288"/>
+        <source>Preset</source>
+        <translation>ערכה מוגדרת</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="303"/>
+        <source>Choose preset…</source>
+        <translation>בחר הגדרה קבועה מראש…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="314"/>
+        <source>Frequency range</source>
+        <translation>טווח תדרים</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="320"/>
+        <source>0 - %1 Hz</source>
+        <translation>0 - %1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="342"/>
+        <source>Markers</source>
+        <translation>סמנים</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="353"/>
+        <source>Add Marker</source>
+        <translation>הוסף סמן</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="357"/>
+        <source>Add a new point marker; set an end frequency to turn it into a band.</source>
+        <translation>הוסף סמן נקודה חדש; הגדר תדר סיום כדי להפוך אותו לפס.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="388"/>
+        <source>Start (Hz)</source>
+        <translation>התחלה (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="394"/>
+        <source>End (Hz)</source>
+        <translation>סוף (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="400"/>
+        <source>Warn (dB)</source>
+        <translation>אזהרה (dB)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="406"/>
+        <source>Alarm (dB)</source>
+        <translation>אזעקה (dB)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="412"/>
+        <source>Color</source>
+        <translation>צבע</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="419"/>
+        <source>Label</source>
+        <translation>תווית</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="491"/>
+        <source>(point)</source>
+        <translation>(נקודה)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="508"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="522"/>
+        <source>(off)</source>
+        <translation>כבוי</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="556"/>
+        <source>Reset to automatic color</source>
+        <translation>איפוס לצבע אוטומטי</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="570"/>
+        <source>Click to choose a color. Right-click to reset to automatic.</source>
+        <translation>לחץ כדי לבחור צבע. לחיצה ימנית לאיפוס לצבע אוטומטי.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="571"/>
+        <source>Click to choose a custom color.</source>
+        <translation>לחץ כדי לבחור צבע מותאם אישית.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="592"/>
+        <source>(optional)</source>
+        <translation>(אופציונלי)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="609"/>
+        <source>Move up.</source>
+        <translation>העבר למעלה.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="628"/>
+        <source>Move down.</source>
+        <translation>העבר למטה.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="641"/>
+        <source>Remove this marker.</source>
+        <translation>הסר סמן זה.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="655"/>
+        <source>No markers defined. Pick a preset above or add a marker to get started.</source>
+        <translation>לא הוגדרו סמנים. בחר ערכה מוגדרת מראש למעלה או הוסף סמן כדי להתחיל.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="672"/>
+        <source>Preview</source>
+        <translation>תצוגה מקדימה</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="748"/>
+        <source>0 Hz</source>
+        <translation>0 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="754"/>
+        <source>%1 Hz</source>
+        <translation>%1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="776"/>
+        <source>Cancel</source>
+        <translation>ביטול</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="778"/>
+        <source>Discard changes.</source>
+        <translation>ביטול השינויים.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="787"/>
+        <source>Apply</source>
+        <translation>החל</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="790"/>
+        <source>Apply changes to the dataset.</source>
+        <translation>החל שינויים על מערך הנתונים.</translation>
     </message>
 </context>
 <context>
@@ -12392,8 +12683,8 @@ Would you like to open the download page?</source>
         <translation>לא ניתן ליצור את מבנה התיקיות של bundle מסוג .app.</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>כותב קיצורי דרך של Windows אינו זמין בפלטפורמה זו.</translation>
     </message>
@@ -12424,8 +12715,8 @@ Would you like to open the download page?</source>
         <translation>שמירת קובץ .lnk נכשלה (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>כותב קיצורי דרך של macOS אינו זמין בפלטפורמה זו.</translation>
     </message>
@@ -15066,17 +15357,22 @@ Click Refresh to update the list.</source>
         <translation>יציאה</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1041"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1287"/>
         <source>Time (s)</source>
         <translation>זמן (שניות)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1099"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1366"/>
+        <source>%1  %2 dB</source>
+        <translation>%1  %2 dB</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1478"/>
         <source>Freq: %1</source>
         <translation>תדר: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1102"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1481"/>
         <source>Time: −%1</source>
         <translation>זמן: −%1</translation>
     </message>
@@ -15173,18 +15469,18 @@ Click Refresh to update the list.</source>
         <translation>תגובת השרת חסרה שדות נדרשים.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1191"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1205"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>מנתח המסגרות משתמש ביותר מ-%1% מזמן המעבד.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1193"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1207"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio משמיט מסגרות כדי לשמור על היענות האפליקציה. יש לפשט או לייעל את סקריפט מנתח המסגרות כדי להפחית את עומס העבודה שלו.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>מנתח מסגרות מושבת</translation>
     </message>
@@ -15226,8 +15522,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>פונקציית Parse חסרה</translation>
     </message>
@@ -15243,8 +15539,8 @@ function parse(frame) ... end</source>
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>שגיאת זמן ריצה בפונקציית Parse</translation>
     </message>
@@ -18581,7 +18877,7 @@ function parse(%1) { ... }
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="829"/>
         <source>Hex</source>
         <translation>הקס</translation>
     </message>
@@ -18596,12 +18892,12 @@ function parse(%1) { ... }
         <translation>שורות גלילה אחורה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="722"/>
         <source>Send Data to Device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="879"/>
         <source>Send data to the device</source>
         <translation>שלח נתונים למכשיר</translation>
     </message>
@@ -19687,27 +19983,32 @@ function parse(%1) { ... }
 <context>
     <name>Waterfall</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="233"/>
         <source>Show Colorbar</source>
         <translation>הצג סרגל צבעים</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="246"/>
         <source>Show Axes &amp; Grid</source>
         <translation>הצג צירים ורשת</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="256"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
         <source>Show Crosshair</source>
         <translation>הצג כוונת</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <source>Show Frequency Markers</source>
+        <translation>הצג סמני תדר</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
         <source>Pause</source>
         <translation>השהה</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
         <source>Resume</source>
         <translation>המשך</translation>
     </message>
@@ -20234,47 +20535,47 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="378"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="380"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="382"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="384"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="386"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="396"/>
         <source>Turbo</source>
         <translation>טורבו</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="398"/>
         <source>Jet</source>
         <translation>ג'ט</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="400"/>
         <source>Hot</source>
         <translation>חם</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="402"/>
         <source>Grayscale</source>
         <translation>גווני אפור</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="404"/>
         <source>Unknown</source>
         <translation>לא ידוע</translation>
     </message>
@@ -20482,7 +20783,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="288"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="402"/>
         <source>(unknown)</source>
         <translation>(לא ידוע)</translation>
     </message>
@@ -20492,29 +20793,29 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation>(widget קבוצה)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="362"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
         <source>Title Bar</source>
         <translation>סרגל כותרת</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
         <source>Painted Title</source>
         <translation>כותרת מצוירת</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="362"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
         <source>Hidden</source>
         <translation>מוסתר</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="432"/>
         <source>Remove widget from workspace</source>
         <translation>הסר widget ממרחב העבודה</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="436"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="452"/>
         <source>No widgets in this workspace.</source>
         <translation>אין widgets במרחב עבודה זה.</translation>
     </message>

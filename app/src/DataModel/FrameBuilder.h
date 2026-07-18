@@ -35,6 +35,7 @@
 #include <QJSValue>
 #include <QMap>
 #include <QObject>
+#include <QSet>
 #include <QTimer>
 #include <QVariant>
 #include <unordered_map>
@@ -207,6 +208,7 @@ private:
   DataModel::Frame m_quickPlotFrame;
   DataModel::DataTableStore m_tableStore;
 
+  QSet<int> m_republishedSourceIds;
   QMap<int, DataModel::Frame> m_sourceFrames;
   std::map<int, quint64> m_sourceFrameCounters;
   std::map<EngineKey, TransformEngine> m_transformEngines;
@@ -289,7 +291,7 @@ private:
                              QList<QStringList>& outChannels);
   bool beginDatasetPass(const TransformFrameInfo& info);
   void endDatasetPass(bool armedJsWatchdog);
-  void reprocessDatasetValues(DataModel::Frame& frame);
+  [[nodiscard]] bool reprocessDatasetValues(DataModel::Frame& frame);
   void applyDatasetValues(DataModel::Frame& frame,
                           const QStringList& channels,
                           const TransformFrameInfo& info);

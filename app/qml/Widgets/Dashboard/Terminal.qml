@@ -685,10 +685,28 @@ Item {
       Widgets.Combo {
         id: deviceCombo
 
+        Layout.maximumWidth: 144
         Layout.alignment: Qt.AlignVCenter
         model: Cpp_Console_Handler.deviceNames
         visible: Cpp_Console_Handler.multiDeviceMode
         onActivated: (index) => Cpp_Console_Handler.setCurrentDeviceIndex(index)
+
+        //
+        // Mirror the C++ device selection (restored on connect) into the combobox
+        //
+        function syncIndex() {
+          const idx = Cpp_Console_Handler.currentDeviceIndex
+          if (idx >= 0 && idx < deviceCombo.count)
+            deviceCombo.currentIndex = idx
+        }
+
+        Component.onCompleted: syncIndex()
+
+        Connections {
+          target: Cpp_Console_Handler
+          function onCurrentDeviceIdChanged() { deviceCombo.syncIndex() }
+          function onDeviceNamesChanged() { deviceCombo.syncIndex() }
+        }
       }
 
       Widgets.LineField {

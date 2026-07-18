@@ -592,6 +592,7 @@ void DataModel::FrameBuilder::syncFromProjectModel()
   clear_frame(m_frame);
   m_sourceFrames.clear();
   m_sourceFrameCounters.clear();
+  m_republishedSourceIds.clear();
 
   m_externalTableApiUsers = false;
   m_captureFlagsDirty     = true;
@@ -766,6 +767,7 @@ void DataModel::FrameBuilder::onOperationModeChanged()
   m_quickPlotChannels = -1;
   m_sourceFrames.clear();
   m_sourceFrameCounters.clear();
+  m_republishedSourceIds.clear();
   m_latestFrames.clear();
   m_latestFrameSourceId = -1;
   invalidateFramePool();
@@ -790,28 +792,36 @@ void DataModel::FrameBuilder::publishSourceTemplateFrame(const DataModel::Source
     return;
 
   m_sourceFrames.insert(src.sourceId, srcFrame);
+  m_republishedSourceIds.insert(src.sourceId);
   hotpathTxFrame(acquireFrame(srcFrame));
 }
 
 /**
- * @brief Re-runs every dataset transform from the last raw values (virtual datasets re-read the
- *        data tables) and republishes the live frames. With @p feedExports false the frames go to
- *        the dashboard only; with it true they also fan out through hotpathTxFrame() to the export
- *        sinks. Returns false when no frame structure is available to publish.
+ * @brief Re-runs every dataset transform from the last raw values and republishes the live
+ *        frames: dashboard only with @p feedExports false, hotpathTxFrame() fan-out with it
+ *        true. A frame republishes only on a changed dataset value or its first publish, so a
+ *        synthetic tick never touches the plot clock of a source whose data did not change.
  */
 bool DataModel::FrameBuilder::republishFrames(bool feedExports)
 {
   if (m_operationMode != SerialStudio::ProjectFile)
     return false;
 
-  static auto& dashboard = UI::Dashboard::instance();
+  static auto& dashboard           = UI::Dashboard::instance();
+  constexpr int combined_frame_key = -1;
 
-  bool published = false;
+  bool published  = false;
+  bool any_source = false;
   for (auto& frame : m_sourceFrames) {
     if (frame.groups.empty() || frame.title.isEmpty())
       continue;
 
-    reprocessDatasetValues(frame);
+    any_source         = true;
+    const bool changed = reprocessDatasetValues(frame);
+    if (!changed && m_republishedSourceIds.contains(frame.sourceId))
+      continue;
+
+    m_republishedSourceIds.insert(frame.sourceId);
     if (feedExports)
       hotpathTxFrame(acquireFrame(frame));
     else
@@ -820,14 +830,17 @@ bool DataModel::FrameBuilder::republishFrames(bool feedExports)
     published = true;
   }
 
-  if (!published && !m_frame.groups.empty() && !m_frame.title.isEmpty()) {
-    reprocessDatasetValues(m_frame);
-    if (feedExports)
-      hotpathTxFrame(acquireFrame(m_frame));
-    else
-      dashboard.hotpathRxFrame(acquireFrame(m_frame));
+  if (!any_source && !m_frame.groups.empty() && !m_frame.title.isEmpty()) {
+    const bool changed = reprocessDatasetValues(m_frame);
+    if (changed || !m_republishedSourceIds.contains(combined_frame_key)) {
+      m_republishedSourceIds.insert(combined_frame_key);
+      if (feedExports)
+        hotpathTxFrame(acquireFrame(m_frame));
+      else
+        dashboard.hotpathRxFrame(acquireFrame(m_frame));
 
-    published = true;
+      published = true;
+    }
   }
 
   return published;
@@ -891,6 +904,7 @@ void DataModel::FrameBuilder::onConnectedChanged()
   if (!nowConnected) {
     m_sourceFrames.clear();
     m_sourceFrameCounters.clear();
+    m_republishedSourceIds.clear();
     m_latestFrames.clear();
     m_latestFrameSourceId = -1;
     destroyTransformEngines();
@@ -1502,9 +1516,10 @@ void DataModel::FrameBuilder::refreshDatasetCaptureFlag()
 /**
  * @brief Transform-only dataset pass for reprocessFrames(): re-applies every transform from
  *        the dataset's retained raw value instead of fresh channels, so table-driven (virtual)
- *        datasets pick up the current store contents without a device frame.
+ *        datasets pick up the current store contents without a device frame. Returns true when
+ *        any dataset value changed, so republishFrames() can skip sources with nothing new.
  */
-void DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
+bool DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
 {
   Q_ASSERT(m_operationMode == SerialStudio::ProjectFile);
   Q_ASSERT(!frame.groups.empty());
@@ -1519,6 +1534,7 @@ void DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
 
   const bool armedWatchdog = beginDatasetPass(info);
 
+  bool changed = false;
   for (auto& group : frame.groups) {
     for (auto& dataset : group.datasets) {
       if (dataset.transformCode.isEmpty())
@@ -1530,6 +1546,10 @@ void DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
         const double raw = SerialStudio::toDouble(dataset.rawValue, &numeric);
         input            = numeric ? QVariant(raw) : QVariant(dataset.rawValue);
       }
+
+      const double prev_numeric  = dataset.numericValue;
+      const bool prev_is_numeric = dataset.isNumeric;
+      const QString prev_value   = dataset.value;
 
       const auto result = applyTransform(dataset.transformLanguage, dataset.uniqueId, input, info);
       if (result.typeId() == QMetaType::Double) {
@@ -1544,6 +1564,9 @@ void DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
       if (!dataset.isNumeric)
         dataset.numericValue = (dataset.wgtMax > dataset.wgtMin) ? dataset.wgtMin : 0.0;
 
+      changed = changed || dataset.isNumeric != prev_is_numeric
+             || dataset.numericValue != prev_numeric || dataset.value != prev_value;
+
       if (m_captureDatasetValues)
         m_tableStore.setDatasetFinal(
           dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
@@ -1551,6 +1574,7 @@ void DataModel::FrameBuilder::reprocessDatasetValues(DataModel::Frame& frame)
   }
 
   endDatasetPass(armedWatchdog);
+  return changed;
 }
 
 /**

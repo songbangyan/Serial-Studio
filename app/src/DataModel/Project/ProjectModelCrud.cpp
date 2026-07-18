@@ -95,6 +95,7 @@ static void populateThreeAxisDatasets(DataModel::Group& grp,
   for (int i = 0; i < 3; ++i) {
     axes[i].datasetId = i;
     axes[i].groupId   = grp.groupId;
+    axes[i].sourceId  = grp.sourceId;
     axes[i].index     = baseIndex + i;
     axes[i].units     = layout.units[i];
     axes[i].widget    = QString::fromUtf8(layout.axisWidgets[i]);
@@ -1307,7 +1308,8 @@ void DataModel::ProjectModel::addDataset(const SerialStudio::DatasetOption optio
 
   const auto groupId = m_selectedGroup.groupId;
   DataModel::Dataset dataset;
-  dataset.groupId = groupId;
+  dataset.groupId  = groupId;
+  dataset.sourceId = m_groups[groupId].sourceId;
 
   QString title;
   switch (option) {
@@ -1410,6 +1412,7 @@ void DataModel::ProjectModel::ensurePainterDatasets(int groupId, const QVariantL
     const auto map = specs.at(i).toMap();
     DataModel::Dataset ds;
     ds.groupId   = groupId;
+    ds.sourceId  = grp.sourceId;
     ds.datasetId = static_cast<int>(grp.datasets.size());
     ds.index     = nextDatasetIndex();
     ds.uniqueId  = allocateUniqueId();

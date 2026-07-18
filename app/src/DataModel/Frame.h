@@ -124,6 +124,11 @@ inline constexpr KeyView Blink("blink");
 inline constexpr KeyView Severity("severity");
 inline constexpr KeyView FFTSamplingRate("fftSamplingRate");
 inline constexpr KeyView FFTWindow("fftWindow");
+inline constexpr KeyView FFTMarkers("fftMarkers");
+inline constexpr KeyView Frequency("freq");
+inline constexpr KeyView EndFrequency("endFreq");
+inline constexpr KeyView WarningDb("warningDb");
+inline constexpr KeyView AlarmDb("alarmDb");
 inline constexpr KeyView TransformCode("transformCode");
 inline constexpr KeyView TransformLanguage("transformLanguage");
 inline constexpr KeyView DatasetId("datasetId");
@@ -404,6 +409,21 @@ struct alignas(8) AlarmBand {
 
 static_assert(sizeof(AlarmBand) % alignof(AlarmBand) == 0, "Unaligned AlarmBand struct");
 
+/**
+ * @brief Labeled frequency marker (point or band) attached to an FFT-enabled Dataset.
+ */
+struct alignas(8) FrequencyMarker {
+  double frequency    = 0;  ///< Marker frequency in Hz (band start when endFrequency is set)
+  double endFrequency = 0;  ///< Band end in Hz; <= frequency means a point marker
+  double warningDb    = std::numeric_limits<double>::quiet_NaN();  ///< Warning level (NaN = unset)
+  double alarmDb      = std::numeric_limits<double>::quiet_NaN();  ///< Alarm level (NaN = unset)
+  QString color;  ///< Optional hex override; empty -> automatic (theme palette)
+  QString label;  ///< Optional human label shown on the marker chip
+};
+
+static_assert(sizeof(FrequencyMarker) % alignof(FrequencyMarker) == 0,
+              "Unaligned FrequencyMarker struct");
+
 inline constexpr int kXAxisSamples = -1;
 inline constexpr int kXAxisTime    = -2;
 
@@ -459,7 +479,8 @@ struct alignas(8) Dataset {
   QString transformCode;   ///< Optional per-dataset transform script
   QString displayFormat =
     QStringLiteral("0d");  ///< Tick/value label format on analog widgets ("0d" = integer)
-  std::vector<AlarmBand> alarmBands;  ///< Colour-banded alarm zones (empty = no alarms)
+  std::vector<AlarmBand> alarmBands;        ///< Colour-banded alarm zones (empty = no alarms)
+  std::vector<FrequencyMarker> fftMarkers;  ///< Labeled FFT frequency markers (empty = none)
 };
 
 static_assert(sizeof(Dataset) % alignof(Dataset) == 0, "Unaligned Dataset struct");
@@ -1098,6 +1119,31 @@ void read_io_settings(QByteArray& frameStart,
 }
 
 /**
+ * @brief Serializes a FrequencyMarker to a QJsonObject; unset optional fields are omitted.
+ */
+[[nodiscard]] inline QJsonObject serialize(const FrequencyMarker& m)
+{
+  QJsonObject obj;
+  obj.insert(Keys::Frequency, m.frequency);
+  if (m.endFrequency > m.frequency)
+    obj.insert(Keys::EndFrequency, m.endFrequency);
+
+  if (!std::isnan(m.warningDb))
+    obj.insert(Keys::WarningDb, m.warningDb);
+
+  if (!std::isnan(m.alarmDb))
+    obj.insert(Keys::AlarmDb, m.alarmDb);
+
+  if (!m.color.isEmpty())
+    obj.insert(Keys::Color, m.color);
+
+  if (!m.label.isEmpty())
+    obj.insert(Keys::Label, m.label);
+
+  return obj;
+}
+
+/**
  * @brief Serializes a Dataset to a QJsonObject.
  */
 [[nodiscard]] inline QJsonObject serialize(const Dataset& d)
@@ -1150,6 +1196,14 @@ void read_io_settings(QByteArray& frameStart,
       bands.append(serialize(band));
 
     obj.insert(Keys::AlarmBands, bands);
+  }
+
+  if (!d.fftMarkers.empty()) {
+    QJsonArray markers;
+    for (const auto& marker : d.fftMarkers)
+      markers.append(serialize(marker));
+
+    obj.insert(Keys::FFTMarkers, markers);
   }
 
   if (d.displayTickCount > 0)
@@ -1355,6 +1409,16 @@ void read_io_settings(QByteArray& frameStart,
  * @brief Populates @p d.alarmBands from @p obj, accepting both canonical and v3.3 legacy fields.
  */
 void readDatasetAlarmBands(Dataset& d, const QJsonObject& obj);
+
+/**
+ * @brief Deserializes a FrequencyMarker from a QJsonObject (Frame.cpp: SerialStudio::toDouble).
+ */
+[[nodiscard]] bool read(FrequencyMarker& m, const QJsonObject& obj);
+
+/**
+ * @brief Populates @p d.fftMarkers from @p obj, dropping invalid entries.
+ */
+void readDatasetFrequencyMarkers(Dataset& d, const QJsonObject& obj);
 
 /**
  * @brief Swaps inverted (min > max) FFT / plot / widget range pairs from legacy projects.

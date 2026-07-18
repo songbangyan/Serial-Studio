@@ -2414,7 +2414,7 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
         <translation>Aucune Somme de Contrôle</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="1010"/>
+        <location filename="../../src/Console/Handler.cpp" line="1018"/>
         <source>Device %1</source>
         <translation>Périphérique %1</translation>
     </message>
@@ -3556,29 +3556,29 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1754"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1869"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1778"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1893"/>
         <source>Channel %1</source>
         <translation>Canal %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1880"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1904"/>
         <source>Audio Input</source>
         <translation>Entrée Audio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1763"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1885"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1787"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1909"/>
         <source>Quick Plot</source>
         <translation>Tracé Rapide</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1473"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1487"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>Transformation JavaScript hors budget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1474"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1488"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>Une transformation de jeu de données a pris plus de %1 ms ; les jeux de données restants dans la trame sont revenus aux valeurs brutes jusqu’à la prochaine trame. Analysez ou simplifiez le code de transformation.</translation>
     </message>
@@ -3593,17 +3593,17 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
         <translation>Un consommateur en aval (tableau de bord, export CSV/MDF4, base de données de session ou abonné API) ne vide pas les trames assez rapidement. Serial Studio utilise des allocations par trame jusqu’à ce que le retard soit résorbé. Désactivez un consommateur lourd ou réduisez le débit de données.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1714"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1738"/>
         <source>Device A</source>
         <translation>Appareil A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1794"/>
         <source>Quick Plot Data</source>
         <translation>Données de Tracé Rapide</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1782"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1806"/>
         <source>Multiple Plots</source>
         <translation>Graphiques Multiples</translation>
     </message>
@@ -4278,7 +4278,12 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Les jeux de données virtuels calculent leur valeur à partir de transformations et de tables de données, ils ne nécessitent pas d'index de trame</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1420"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1250"/>
+        <source>Scale the frequency axis in decades so low octaves stay readable; applies to both the FFT plot and the waterfall</source>
+        <translation>Mettre à l'échelle l'axe de fréquence en décades pour que les octaves basses restent lisibles ; s'applique à la fois au tracé FFT et au spectrogramme</translation>
+    </message>
+    <message>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1421"/>
         <source>Fixed decimal places for the value display; overrides the format (-1 = auto)</source>
         <translation>Nombre de décimales fixes pour l'affichage de la valeur ; remplace le format (-1 = auto)</translation>
     </message>
@@ -4712,7 +4717,7 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="606"/>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="876"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1525"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1553"/>
         <source>General Information</source>
         <translation>Informations Générales</translation>
     </message>
@@ -4799,7 +4804,7 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="717"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1584"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1612"/>
         <source>Text Encoding</source>
         <translation>Encodage de Texte</translation>
     </message>
@@ -5000,44 +5005,43 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Axe de Fréquence Logarithmique</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1250"/>
         <source>Scale the FFT frequency axis in decades so low octaves stay readable</source>
-        <translation>Mettre à l'échelle l'axe de fréquence FFT en décades pour que les octaves basses restent lisibles</translation>
+        <translation type="vanished">Mettre à l'échelle l'axe de fréquence FFT en décades pour que les octaves basses restent lisibles</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1261"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1350"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1262"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1351"/>
         <source>Minimum Value (optional)</source>
         <translation>Valeur Maximale (optionnel)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1262"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1263"/>
         <source>Lower bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>Limite inférieure pour la normalisation des données ; utilise la plage de valeurs du jeu de données si non définie</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1274"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1363"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1275"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1364"/>
         <source>Maximum Value (optional)</source>
         <translation>Valeur Maximale (optionnel)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1275"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1276"/>
         <source>Upper bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>Limite supérieure pour la normalisation des données ; utilise la plage de valeurs du jeu de données si non définie</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1351"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1352"/>
         <source>Lower bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>Limite inférieure de la plage de la jauge ou de la barre ; utilise la plage de valeurs du jeu de données si non définie</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1364"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1365"/>
         <source>Upper bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>Limite supérieure de la plage de la jauge ou de la barre ; utilise la plage de valeurs du jeu de données si non définie</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1416"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1417"/>
         <source>Decimal Points</source>
         <translation>Points Décimaux</translation>
     </message>
@@ -5046,12 +5050,12 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation type="vanished">Nombre de décimales affichées dans la colonne de valeur de la grille de données (-1 = auto)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1463"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1464"/>
         <source>On</source>
         <translation>Activé</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1507"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1535"/>
         <source>LED lights up when value meets or exceeds this threshold; define alarm bands for multi-state colors</source>
         <translation>La LED s'allume lorsque la valeur atteint ou dépasse ce seuil ; définir des plages d'alarme pour les couleurs multi-états</translation>
     </message>
@@ -5244,17 +5248,17 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation type="vanished">Limite supérieure pour la normalisation des données</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1300"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1301"/>
         <source>Widget Settings</source>
         <translation>Paramètres du Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1323"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1324"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1324"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1325"/>
         <source>Select the visual widget used to display this dataset</source>
         <translation>Sélectionner le widget visuel utilisé pour afficher ce jeu de données</translation>
     </message>
@@ -5276,28 +5280,28 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectEditor.cpp" line="716"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1380"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1415"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1381"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1416"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1381"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1382"/>
         <source>Tick Count</source>
         <translation>Nombre de Graduations</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1385"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1386"/>
         <source>Major-tick count on the dial scale (0 = auto-fit to widget size)</source>
         <translation>Nombre de graduations principales sur l'échelle du cadran (0 = ajustement automatique à la taille du widget)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1404"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1405"/>
         <source>Label Format</source>
         <translation>Format D'étiquette</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1405"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1406"/>
         <source>Decimal places or notation used on tick labels and the value display</source>
         <translation>Nombre de décimales ou notation utilisée sur les étiquettes de graduation et l'affichage de la valeur</translation>
     </message>
@@ -5338,22 +5342,22 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation type="vanished">Déclenche une alarme visuelle lorsque la valeur dépasse ce seuil</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1480"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1508"/>
         <source>LED Display Settings</source>
         <translation>Paramètres D'affichage LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1491"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1519"/>
         <source>Show in LED Panel</source>
         <translation>Afficher dans le Panneau LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1492"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1520"/>
         <source>Enable visual status monitoring using an LED display</source>
         <translation>Active la surveillance d'état visuelle à l'aide d'un affichage LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1506"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1534"/>
         <source>LED On Threshold (required)</source>
         <translation>Seuil d'Activation LED (requis)</translation>
     </message>
@@ -5658,59 +5662,59 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Mixte</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1535"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1563"/>
         <source>Label</source>
         <translation>Étiquette</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1536"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1564"/>
         <source>Display label</source>
         <translation>Afficher l'étiquette</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1546"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1574"/>
         <source>Button Icon</source>
         <translation>Icône du Bouton</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1555"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1583"/>
         <source>Colorize Icon</source>
         <translation>Coloriser L'icône</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1556"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1584"/>
         <source>Tint the icon with the button color</source>
         <translation>Teinter l'icône avec la couleur du bouton</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1573"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1601"/>
         <source>Initial Value</source>
         <translation>Valeur Initiale</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1585"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1613"/>
         <source>Character encoding used when transmit() returns a string value</source>
         <translation>Encodage de caractères utilisé lorsque transmit() retourne une valeur de type chaîne</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1603"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1631"/>
         <source>Value Range</source>
         <translation>Plage de Valeurs</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="998"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1613"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1641"/>
         <source>Minimum Value</source>
         <translation>Valeur Minimale</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1011"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1622"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1650"/>
         <source>Maximum Value</source>
         <translation>Valeur Maximale</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1631"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1659"/>
         <source>Step Size</source>
         <translation>Pas D'incrémentation</translation>
     </message>
@@ -5916,15 +5920,15 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Enregistrer le Projet Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Fichiers de Projet Serial Studio (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>Projet sans Titre</translation>
     </message>
@@ -5995,25 +5999,25 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Votre projet utilisait une fonction d'analyse de trame héritée avec un argument 'separator'. Elle a été automatiquement migrée vers le nouveau format.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="298"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="299"/>
         <source>Do you want to delete group "%1"?</source>
         <translation>Voulez-vous supprimer le groupe "%1" ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="299"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="344"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="376"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1119"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="300"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="345"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="377"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1120"/>
         <source>This action cannot be undone. Do you wish to proceed?</source>
         <translation>Cette action ne peut pas être annulée. Souhaitez-vous continuer ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="343"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="344"/>
         <source>Do you want to delete action "%1"?</source>
         <translation>Voulez-vous supprimer l'action "%1" ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="375"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="376"/>
         <source>Do you want to delete dataset "%1"?</source>
         <translation>Voulez-vous supprimer le jeu de données "%1" ?</translation>
     </message>
@@ -6022,78 +6026,78 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation type="vanished">%1 (Copie)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1031"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1067"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1032"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1068"/>
         <source>Output Controls</source>
         <translation>Contrôles de Sortie</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1079"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1080"/>
         <source>New Button</source>
         <translation>Nouveau Bouton</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1082"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1083"/>
         <source>New Slider</source>
         <translation>Nouveau Curseur</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1085"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1086"/>
         <source>New Toggle</source>
         <translation>Nouveau Commutateur</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1088"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1089"/>
         <source>New Text Field</source>
         <translation>Nouveau Champ de Texte</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1091"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1092"/>
         <source>New Knob</source>
         <translation>Nouveau Bouton Rotatif</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1118"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1119"/>
         <source>Do you want to delete output widget "%1"?</source>
         <translation>Voulez-vous supprimer le widget de sortie « %1 » ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1297"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1298"/>
         <source>Group</source>
         <translation>Groupe</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1315"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1317"/>
         <source>New Dataset</source>
         <translation>Nouveau Jeu de Données</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1318"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1320"/>
         <source>New Plot</source>
         <translation>Nouveau Graphique</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1322"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1324"/>
         <source>New FFT Plot</source>
         <translation>Nouveau Graphique FFT</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1326"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1328"/>
         <source>New Level Indicator</source>
         <translation>Nouvel Indicateur de Niveau</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1330"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1332"/>
         <source>New Gauge</source>
         <translation>Nouvelle Jauge</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1334"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1336"/>
         <source>New Compass</source>
         <translation>Nouveau Compas</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1340"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1342"/>
         <source>New Meter</source>
         <translation>Nouveau Compteur</translation>
     </message>
@@ -6102,86 +6106,86 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation type="vanished">Nouveau Thermomètre</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1344"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1346"/>
         <source>New LED Indicator</source>
         <translation>Nouvel Indicateur LED</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1348"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1350"/>
         <source>New Waterfall</source>
         <translation>Nouvelle Cascade</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1416"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1419"/>
         <source>Channel %1</source>
         <translation>Canal %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1487"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1490"/>
         <source>New Action</source>
         <translation>Nouvelle Action</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1628"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1631"/>
         <source>Are you sure you want to change the group-level widget?</source>
         <translation>Voulez-vous vraiment changer le widget de niveau groupe ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1630"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1633"/>
         <source>Existing datasets for this group are deleted</source>
         <translation>Les jeux de données existants pour ce groupe sont supprimés</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1698"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1699"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1700"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1701"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1702"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1703"/>
         <source>Accelerometer %1</source>
         <translation>Accéléromètre %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1715"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1718"/>
         <source>Gyro %1</source>
         <translation>Gyroscope %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Latitude</source>
         <translation>Latitude</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Longitude</source>
         <translation>Longitude</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1730"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1733"/>
         <source>Altitude</source>
         <translation>Altitude</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>X</source>
         <translation>X</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>Y</source>
         <translation>Y</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1745"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1759"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1748"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="1762"/>
         <source>Z</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Espace de Travail</translation>
     </message>
@@ -6208,6 +6212,8 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6220,8 +6226,6 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Nom :</translation>
     </message>
@@ -6261,10 +6265,10 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Renommer le Registre</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2284"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>Cette action ne peut pas être annulée.</translation>
     </message>
@@ -6274,9 +6278,9 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Cela supprime %1 registre(s) ainsi que la table. Cette action ne peut pas être annulée.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>Supprimer « %1 » ?</translation>
     </message>
@@ -6307,8 +6311,8 @@ Ajouter %4 jeu(x) de données en utilisant les valeurs par défaut du modèle ?<
         <translation>Importer la Table</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>Nouvel Espace de Travail</translation>
     </message>
@@ -6445,12 +6449,12 @@ Le recharger ?</translation>
         <translation>Erreur d'enregistrement de fichier</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2283"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2286"/>
         <source>Delete %1 selected items?</source>
         <translation>Supprimer %1 éléments sélectionnés ?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2286"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2289"/>
         <source>Delete Items</source>
         <translation>Supprimer les Éléments</translation>
     </message>
@@ -6827,99 +6831,109 @@ Format valide : 01 A2 FF 3C</translation>
 <context>
     <name>DatasetView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="112"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="139"/>
         <source>Pro features detected in this project.</source>
         <translation>Fonctionnalités Pro détectées dans ce projet.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="114"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="141"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Utilisation de widgets de repli. Achetez une licence pour débloquer toutes les fonctionnalités.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="142"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="169"/>
         <source>Plots</source>
         <translation>Graphiques</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="174"/>
         <source>Plot</source>
         <translation>Graphique</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="178"/>
         <source>Toggle 2D plot visualization for this dataset</source>
         <translation>Activer/désactiver la visualisation graphique 2D pour ce jeu de données</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="163"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="190"/>
         <source>FFT Plot</source>
         <translation>Graphique FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="166"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="193"/>
         <source>Toggle FFT plot to visualize frequency content</source>
         <translation>Activer le graphique FFT pour visualiser le contenu fréquentiel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="178"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="205"/>
         <source>Waterfall</source>
         <translation>Cascade</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="182"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="209"/>
         <source>Toggle waterfall (spectrogram) plot — uses the FFT settings</source>
         <translation>Activer le tracé en cascade (spectrogramme) — utilise les paramètres FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="199"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="226"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="232"/>
         <source>Bar/Level</source>
         <translation>Barre/niveau</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="236"/>
         <source>Toggle bar/level indicator for this dataset</source>
         <translation>Activer l'indicateur de barre/niveau pour ce jeu de données</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="220"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="247"/>
         <source>Gauge</source>
         <translation>Jauge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="225"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="252"/>
         <source>Toggle gauge widget for analog-style display</source>
         <translation>Activer le widget de jauge pour un affichage de style analogique</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="237"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="264"/>
         <source>Compass</source>
         <translation>Boussole</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="268"/>
         <source>Toggle compass widget for directional data</source>
         <translation>Activer le widget de boussole pour les données directionnelles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="252"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="279"/>
         <source>Meter</source>
         <translation>Compteur</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="257"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="284"/>
         <source>Toggle analog meter (half-arc) widget</source>
         <translation>Activer le widget de compteur analogique (demi-arc)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="308"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="335"/>
         <source>Define colored value ranges with severity tiers for this dataset's gauge or LED.</source>
         <translation>Définir des plages de valeurs colorées avec niveaux de gravité pour la jauge ou la LED de ce jeu de données.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="341"/>
+        <source>Freq. Markers</source>
+        <translation>Marqueurs de Fréq.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="348"/>
+        <source>Pin labeled frequencies or bands on the FFT plot and waterfall, with optional warning and alarm levels.</source>
+        <translation>Épingler des fréquences ou bandes étiquetées sur le tracé FFT et le spectrogramme, avec niveaux d'avertissement et d'alarme optionnels.</translation>
     </message>
     <message>
         <source>Thermometer</source>
@@ -6930,22 +6944,22 @@ Format valide : 01 A2 FF 3C</translation>
         <translation type="vanished">Activer le widget de thermomètre pour les données de température</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="268"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="295"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="273"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="300"/>
         <source>Toggle LED indicator for binary or thresholded values</source>
         <translation>Activer l'indicateur LED pour les valeurs binaires ou à seuil</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="293"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="320"/>
         <source>Behavior</source>
         <translation>Comportement</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="298"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="325"/>
         <source>Alarm Bands</source>
         <translation>Bandes D'alarme</translation>
     </message>
@@ -6954,32 +6968,32 @@ Format valide : 01 A2 FF 3C</translation>
         <translation type="vanished">Définir des plages de valeurs colorées avec niveaux de gravité pour la jauge de ce jeu de données.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="314"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="354"/>
         <source>Transform</source>
         <translation>Transformation</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="318"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="358"/>
         <source>Edit a value transform expression for calibration, filtering, or unit conversion</source>
         <translation>Modifier une expression de transformation de valeur pour l'étalonnage, le filtrage ou la conversion d'unités</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="331"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="371"/>
         <source>Duplicate</source>
         <translation>Dupliquer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="336"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="376"/>
         <source>Duplicate this dataset with the same configuration</source>
         <translation>Dupliquer ce jeu de données avec la même configuration</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="341"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="381"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="344"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="384"/>
         <source>Delete this dataset from the group</source>
         <translation>Supprimer ce jeu de données du groupe</translation>
     </message>
@@ -7482,59 +7496,84 @@ Format valide : 01 A2 FF 3C</translation>
 <context>
     <name>FFTPlot</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="162"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="172"/>
         <source>Interpolation: %1</source>
         <translation>Interpolation : %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="190"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
         <source>Show Area Under Plot</source>
         <translation>Afficher L'aire sous le Tracé</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="208"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
         <source>Show X Axis Label</source>
         <translation>Afficher L'étiquette de L'axe X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="220"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
         <source>Show Y Axis Label</source>
         <translation>Afficher L'étiquette de L'axe Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="238"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
         <source>Show Crosshair</source>
         <translation>Afficher le Réticule</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <source>Show Frequency Markers</source>
+        <translation>Afficher les Marqueurs de Fréquence</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="245"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
         <source>Resume</source>
         <translation>Reprendre</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="264"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <source>Click to clear the spotlight.</source>
+        <translation>Cliquer pour effacer le projecteur.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <source>Click to spotlight this marker.</source>
+        <translation>Cliquer pour mettre en évidence ce marqueur.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Reset View</source>
         <translation>Réinitialiser la Vue</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
         <source>Axis Range Settings</source>
         <translation>Paramètres de Plage D'axe</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="300"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
         <source>Magnitude (dB)</source>
         <translation>Magnitude (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
         <source>Frequency (Hz)</source>
         <translation>Fréquence (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <source>%1 Hz</source>
+        <translation>%1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <source>%1  %2 dB</source>
+        <translation>%1  %2 dB</translation>
     </message>
 </context>
 <context>
@@ -8205,6 +8244,258 @@ Format valide : 01 A2 FF 3C</translation>
     <message>
         <source>Help</source>
         <translation type="vanished">Aide</translation>
+    </message>
+</context>
+<context>
+    <name>FrequencyMarkersEditor</name>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="35"/>
+        <source>Frequency Markers</source>
+        <translation>Marqueurs de Fréquence</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="71"/>
+        <source>Mains Hum (50 Hz + harmonics)</source>
+        <translation>Ronflement Secteur (50 Hz + harmoniques)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="73"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="81"/>
+        <source>Mains</source>
+        <translation>Secteur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="74"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="82"/>
+        <source>Mains 2x</source>
+        <translation>Secteur 2×</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="75"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="83"/>
+        <source>Mains 3x</source>
+        <translation>Secteur 3×</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="79"/>
+        <source>Mains Hum (60 Hz + harmonics)</source>
+        <translation>Ronflement Secteur (60 Hz + harmoniques)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="87"/>
+        <source>Octave Bands (31.5 Hz - 16 kHz)</source>
+        <translation>Bandes d'Octave (31,5 Hz - 16 kHz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="89"/>
+        <source>31.5 Hz</source>
+        <translation>31,5 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="90"/>
+        <source>63 Hz</source>
+        <translation>63 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="91"/>
+        <source>125 Hz</source>
+        <translation>125 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="92"/>
+        <source>250 Hz</source>
+        <translation>250 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="93"/>
+        <source>500 Hz</source>
+        <translation>500 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="94"/>
+        <source>1 kHz</source>
+        <translation>1 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="95"/>
+        <source>2 kHz</source>
+        <translation>2 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="96"/>
+        <source>4 kHz</source>
+        <translation>4 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="97"/>
+        <source>8 kHz</source>
+        <translation>8 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="98"/>
+        <source>16 kHz</source>
+        <translation>16 kHz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="238"/>
+        <source>Choose Marker Color</source>
+        <translation>Choisir la Couleur du Marqueur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="265"/>
+        <source>Presets</source>
+        <translation>Préréglages</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="288"/>
+        <source>Preset</source>
+        <translation>Préréglage</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="303"/>
+        <source>Choose preset…</source>
+        <translation>Choisir un préréglage…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="314"/>
+        <source>Frequency range</source>
+        <translation>Plage de fréquence</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="320"/>
+        <source>0 - %1 Hz</source>
+        <translation>0 - %1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="342"/>
+        <source>Markers</source>
+        <translation>Marqueurs</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="353"/>
+        <source>Add Marker</source>
+        <translation>Ajouter un Marqueur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="357"/>
+        <source>Add a new point marker; set an end frequency to turn it into a band.</source>
+        <translation>Ajouter un nouveau marqueur de point ; définir une fréquence de fin pour le transformer en bande.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="388"/>
+        <source>Start (Hz)</source>
+        <translation>Début (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="394"/>
+        <source>End (Hz)</source>
+        <translation>Fin (Hz)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="400"/>
+        <source>Warn (dB)</source>
+        <translation>Avertissement (dB)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="406"/>
+        <source>Alarm (dB)</source>
+        <translation>Alarme (dB)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="412"/>
+        <source>Color</source>
+        <translation>Couleur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="419"/>
+        <source>Label</source>
+        <translation>Étiquette</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="491"/>
+        <source>(point)</source>
+        <translation>(point)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="508"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="522"/>
+        <source>(off)</source>
+        <translation>(désactivé)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="556"/>
+        <source>Reset to automatic color</source>
+        <translation>Réinitialiser à la couleur automatique</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="570"/>
+        <source>Click to choose a color. Right-click to reset to automatic.</source>
+        <translation>Cliquer pour choisir une couleur. Clic droit pour réinitialiser en automatique.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="571"/>
+        <source>Click to choose a custom color.</source>
+        <translation>Cliquer pour choisir une couleur personnalisée.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="592"/>
+        <source>(optional)</source>
+        <translation>(facultatif)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="609"/>
+        <source>Move up.</source>
+        <translation>Monter.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="628"/>
+        <source>Move down.</source>
+        <translation>Descendre.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="641"/>
+        <source>Remove this marker.</source>
+        <translation>Supprimer ce marqueur.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="655"/>
+        <source>No markers defined. Pick a preset above or add a marker to get started.</source>
+        <translation>Aucun marqueur défini. Choisir un préréglage ci-dessus ou ajouter un marqueur pour commencer.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="672"/>
+        <source>Preview</source>
+        <translation>Aperçu</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="748"/>
+        <source>0 Hz</source>
+        <translation>0 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="754"/>
+        <source>%1 Hz</source>
+        <translation>%1 Hz</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="776"/>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="778"/>
+        <source>Discard changes.</source>
+        <translation>Abandonner les modifications.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="787"/>
+        <source>Apply</source>
+        <translation>Appliquer</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml" line="790"/>
+        <source>Apply changes to the dataset.</source>
+        <translation>Appliquer les modifications au jeu de données.</translation>
     </message>
 </context>
 <context>
@@ -12890,8 +13181,8 @@ Souhaitez-vous ouvrir la page de téléchargement ?</translation>
         <translation>Impossible d'écrire Info.plist : %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Le générateur de raccourcis Windows n'est pas disponible sur cette plateforme.</translation>
     </message>
@@ -12922,8 +13213,8 @@ Souhaitez-vous ouvrir la page de téléchargement ?</translation>
         <translation>L'enregistrement du fichier .lnk a échoué (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>Le générateur de raccourcis macOS n'est pas disponible sur cette plateforme.</translation>
     </message>
@@ -15615,8 +15906,8 @@ Cliquez sur Actualiser pour mettre à jour la liste.</translation>
         <translation>Erreur d'E/S générale</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>Analyseur de Trames Désactivé</translation>
     </message>
@@ -15658,8 +15949,8 @@ Cause la plus probable : une boucle infinie ou une opération extrêmement lente
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Fonction Parse Manquante</translation>
     </message>
@@ -15675,8 +15966,8 @@ Assurez-vous que votre code inclut :
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Erreur D'exécution de la Fonction D'analyse</translation>
     </message>
@@ -15876,17 +16167,22 @@ Le paramètre de séparateur n'est plus nécessaire.</translation>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1041"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1287"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1099"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1366"/>
+        <source>%1  %2 dB</source>
+        <translation>%1  %2 dB</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1478"/>
         <source>Freq: %1</source>
         <translation>Fréq : %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1102"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1481"/>
         <source>Time: −%1</source>
         <translation>Temps : −%1</translation>
     </message>
@@ -15931,12 +16227,12 @@ Le paramètre de séparateur n'est plus nécessaire.</translation>
         <translation>Aucune clé API Groq définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1191"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1205"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>L'analyseur de trames utilise plus de %1% du temps CPU.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1193"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1207"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio abandonne des trames pour maintenir l'application réactive. Veuillez simplifier ou optimiser le script d'analyse de trames pour réduire sa charge de travail.</translation>
     </message>
@@ -19233,7 +19529,7 @@ Activer Intégrer le Projet pour incorporer le projet dans le raccourci, afin qu
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="811"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="829"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
@@ -19248,12 +19544,12 @@ Activer Intégrer le Projet pour incorporer le projet dans le raccourci, afin qu
         <translation>Lignes de Défilement</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="704"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="722"/>
         <source>Send Data to Device</source>
         <translation>Envoyer des Données vers l'Appareil</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="861"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="879"/>
         <source>Send data to the device</source>
         <translation>Envoyer des données vers l'appareil</translation>
     </message>
@@ -20363,27 +20659,32 @@ Activer Intégrer le Projet pour incorporer le projet dans le raccourci, afin qu
 <context>
     <name>Waterfall</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="233"/>
         <source>Show Colorbar</source>
         <translation>Afficher la Barre de Couleurs</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="243"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="246"/>
         <source>Show Axes &amp; Grid</source>
         <translation>Afficher les Axes et la Grille</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="256"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
         <source>Show Crosshair</source>
         <translation>Afficher le Réticule</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <source>Show Frequency Markers</source>
+        <translation>Afficher les Marqueurs de Fréquence</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="270"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
         <source>Resume</source>
         <translation>Reprendre</translation>
     </message>
@@ -20922,47 +21223,47 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="378"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="380"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="382"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="384"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="386"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="396"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="398"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="400"/>
         <source>Hot</source>
         <translation>Chaud</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="402"/>
         <source>Grayscale</source>
         <translation>Niveaux de Gris</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="404"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>
@@ -21170,7 +21471,7 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="288"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="402"/>
         <source>(unknown)</source>
         <translation>(inconnu)</translation>
     </message>
@@ -21180,24 +21481,24 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
         <translation>(widget de groupe)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="362"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
         <source>Title Bar</source>
         <translation>Barre de Titre</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
         <source>Painted Title</source>
         <translation>Titre Peint</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="361"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="362"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
         <source>Hidden</source>
         <translation>Masqué</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="432"/>
         <source>Remove widget from workspace</source>
         <translation>Retirer le widget de l'espace de travail</translation>
     </message>
@@ -21206,7 +21507,7 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
         <translation type="vanished">Retirer de l'espace de travail</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="436"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="452"/>
         <source>No widgets in this workspace.</source>
         <translation>Aucun widget dans cet espace de travail.</translation>
     </message>

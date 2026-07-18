@@ -332,6 +332,8 @@ Widgets.Pane {
                     Cpp_JSON_ProjectModel.setWidgetDisplayTitle(modelData.widgetType,
                                                                 modelData.uniqueId, text)
                 }
+
+                background: Item {}
               }
             }
 
@@ -348,11 +350,14 @@ Widgets.Pane {
               visible: Cpp_JSON_ProjectModel.customizeWorkspaces
 
               ComboBox {
+                id: _freezeCombo
+
                 readonly property bool paintsTitle:
                   SerialStudio.dashboardWidgetPaintsTitle(modelData.widgetType)
                 readonly property var modeKeys:
                   paintsTitle ? ["bar", "painted", "hidden"] : ["bar", "hidden"]
 
+                flat: true
                 anchors.fill: parent
                 anchors.margins: 3
                 font: Cpp_Misc_CommonFonts.uiFont
@@ -364,6 +369,17 @@ Widgets.Pane {
                 onActivated: (index) => {
                   Cpp_JSON_ProjectModel.setFreezeTitleMode(modelData.widgetType,
                                                            modelData.uniqueId, modeKeys[index])
+                }
+
+                contentItem: Text {
+                  elide: Text.ElideRight
+                  font: _freezeCombo.font
+                  color: refRow.textColor
+                  text: _freezeCombo.displayText
+                  horizontalAlignment: Text.AlignLeft
+                  verticalAlignment: Text.AlignVCenter
+                  leftPadding: root.rtl ? _freezeCombo.indicator.width : 6
+                  rightPadding: root.rtl ? 6 : _freezeCombo.indicator.width
                 }
               }
             }

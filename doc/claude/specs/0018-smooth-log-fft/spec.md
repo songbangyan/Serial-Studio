@@ -1,12 +1,12 @@
 ---
-spec: 0018-ableton-fft
-title: Ableton-style log FFT — single window + smooth interpolated rendering
+spec: 0018-smooth-log-fft
+title: Smooth log FFT — single window + smooth interpolated rendering
 status: done         # approved 2026-07-17; supersedes 0016
 created: 2026-07-17
 author: Alex Spataru
 ---
 
-# Spec 0018 — Ableton-style log FFT rendering
+# Spec 0018 — Smooth interpolated log FFT rendering
 
 > Compact combined spec/plan/tasks: records the decision that superseded
 > [spec 0016](../0016-multires-fft/spec.md) and the implementation that replaced it.
@@ -17,7 +17,7 @@ Spec 0016's multi-resolution analysis delivered real low-frequency resolution, b
 low band inherently lagged the high band (Δf = 1/T — longer observation is the price of
 finer bins), and neither the 0.4 s time budget nor the 0017 ballistics could remove the
 *attack* latency differential, which field testing kept surfacing. Investigating the
-reference tools settled it: Ableton EQ Eight (and FabFilter, etc.) do **not** do
+reference tools settled it: professional DAW spectrum analyzers do **not** do
 multi-resolution — they run one moderate FFT (uniform latency everywhere) and render
 the sparse low bins as a smooth interpolated curve in log space, plus ballistics.
 Decision (2026-07-17): follow that recipe — accept single-FFT low-frequency resolution,
@@ -48,7 +48,7 @@ make it *draw* smooth, keep the feel uniform and realtime.
 ## Acceptance Criteria
 
 - [ ] **AC1** — Maintainer: log-axis FFT feels uniformly realtime — no low/high update
-      differential; low decades render as smooth Ableton-style hills, no angular
+      differential; low decades render as smooth interpolated hills, no angular
       segments.
 - [ ] **AC2** — Maintainer: peaks read the same dB as before (monotone interpolation,
       no overshoot); linear-axis FFT unchanged.

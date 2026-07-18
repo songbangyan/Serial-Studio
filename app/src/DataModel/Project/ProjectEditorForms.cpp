@@ -1240,14 +1240,15 @@ void DataModel::ProjectEditor::buildFftRangeRows(CustomModel* model,
   model->appendRow(fftRate);
 
   auto* fftLogX = new QStandardItem();
-  fftLogX->setEditable(dataset.fft);
+  fftLogX->setEditable(fftSettingsEditable);
   fftLogX->setData(0, PlaceholderValue);
   fftLogX->setData(CheckBox, WidgetType);
   fftLogX->setData(fftLogX->isEditable(), Active);
   fftLogX->setData(dataset.fftLogX, EditableValue);
   fftLogX->setData(kDatasetView_FFT_LogX, ParameterType);
   fftLogX->setData(tr("Logarithmic Frequency Axis"), ParameterName);
-  fftLogX->setData(tr("Scale the FFT frequency axis in decades so low octaves stay readable"),
+  fftLogX->setData(tr("Scale the frequency axis in decades so low octaves stay readable; "
+                      "applies to both the FFT plot and the waterfall"),
                    ParameterDescription);
   model->appendRow(fftLogX);
 
@@ -1467,6 +1468,33 @@ void DataModel::ProjectEditor::openAlarmBandsEditorForSelection()
 
   Q_EMIT openAlarmBandsEditor(
     m_selectedDataset.groupId, m_selectedDataset.datasetId, range_min, range_max, bands);
+}
+
+/**
+ * @brief Emits openFrequencyMarkersEditor for the currently-selected dataset; the editable
+ *        frequency range is 0 to Nyquist from the dataset's configured FFT sampling rate.
+ */
+void DataModel::ProjectEditor::openFrequencyMarkersEditorForSelection()
+{
+  const double nyquist = qMax(1, m_selectedDataset.fftSamplingRate) * 0.5;
+
+  QVariantList markers;
+  markers.reserve(static_cast<int>(m_selectedDataset.fftMarkers.size()));
+  for (const auto& m : m_selectedDataset.fftMarkers) {
+    QVariantMap entry;
+    entry.insert(QStringLiteral("freq"), m.frequency);
+    entry.insert(QStringLiteral("endFreq"), m.endFrequency);
+    entry.insert(QStringLiteral("label"), m.label);
+    entry.insert(QStringLiteral("color"), m.color);
+    entry.insert(QStringLiteral("warningDb"),
+                 std::isfinite(m.warningDb) ? QVariant(m.warningDb) : QVariant());
+    entry.insert(QStringLiteral("alarmDb"),
+                 std::isfinite(m.alarmDb) ? QVariant(m.alarmDb) : QVariant());
+    markers.append(entry);
+  }
+
+  Q_EMIT openFrequencyMarkersEditor(
+    m_selectedDataset.groupId, m_selectedDataset.datasetId, nyquist, markers);
 }
 
 /**

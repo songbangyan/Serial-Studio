@@ -153,6 +153,9 @@ class Handler : public QObject {
              READ currentDeviceId
              WRITE setCurrentDeviceId
              NOTIFY currentDeviceIdChanged)
+  Q_PROPERTY(int currentDeviceIndex
+             READ currentDeviceIndex
+             NOTIFY currentDeviceIdChanged)
   Q_PROPERTY(QStringList deviceNames
              READ deviceNames
              NOTIFY deviceNamesChanged)
@@ -252,6 +255,7 @@ public:
   [[nodiscard]] qsizetype bufferLength() const;
 
   [[nodiscard]] int currentDeviceId() const noexcept;
+  [[nodiscard]] int currentDeviceIndex() const noexcept;
   [[nodiscard]] bool multiDeviceMode() const noexcept;
   [[nodiscard]] const QStringList& deviceNames() const noexcept;
 

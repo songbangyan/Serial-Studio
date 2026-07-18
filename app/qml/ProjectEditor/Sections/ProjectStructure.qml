@@ -932,6 +932,8 @@ Widgets.Pane {
 
             Layout.fillWidth: true
             elide: Label.ElideRight
+            maximumLineCount: 1
+            wrapMode: Text.NoWrap
             text: model.treeViewText ?? ""
             Layout.alignment: Qt.AlignVCenter
             LayoutMirroring.enabled: false

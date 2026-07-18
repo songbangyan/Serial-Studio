@@ -24,9 +24,11 @@
 
 #include <kiss_fft.h>
 
+#include <QFontMetrics>
 #include <QImage>
 #include <QQuickPaintedItem>
 #include <QVector>
+#include <utility>
 
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
@@ -104,6 +106,10 @@ class Waterfall : public QQuickPaintedItem {
              READ cursorEnabled
              WRITE setCursorEnabled
              NOTIFY cursorEnabledChanged)
+  Q_PROPERTY(bool markersVisible
+             READ markersVisible
+             WRITE setMarkersVisible
+             NOTIFY markersVisibleChanged)
   // clang-format on
 
 signals:
@@ -114,6 +120,7 @@ signals:
   void axisVisibleChanged();
   void cursorEnabledChanged();
   void dynamicRangeChanged();
+  void markersVisibleChanged();
   void colorbarVisibleChanged();
 
 public:
@@ -153,6 +160,7 @@ public:
   [[nodiscard]] double yPan() const noexcept;
   [[nodiscard]] bool atDefaultView() const noexcept;
   [[nodiscard]] bool cursorEnabled() const noexcept;
+  [[nodiscard]] bool markersVisible() const noexcept;
   [[nodiscard]] bool colorbarVisible() const noexcept;
 
   Q_INVOKABLE [[nodiscard]] QString colorMapName(int index) const;
@@ -181,6 +189,7 @@ public slots:
   void setMaxDb(const double value);
   void setAxisVisible(const bool enabled);
   void setCursorEnabled(const bool enabled);
+  void setMarkersVisible(const bool enabled);
   void setColorbarVisible(const bool enabled);
   void clearHistory();
 
@@ -200,6 +209,40 @@ private:
     double displayMax;
   };
 
+  /**
+   * @brief Per-marker runtime state: configured span, thresholds, and live readout.
+   */
+  struct MarkerData {
+    double freqLo;
+    double freqHi;
+    float warningDb;
+    float alarmDb;
+    float peakDb;
+    int state;
+    QColor customColor;
+    QString label;
+  };
+
+  void loadMarkers();
+  void computeSmoothedRow(const int spectrumSize);
+  void updateMarkerStates(const int spectrumSize);
+  void rebuildLogColumnTable();
+  [[nodiscard]] const float* imageRow(const float* dbValues, int bins);
+  [[nodiscard]] double worldFromFreq(double hz) const;
+  [[nodiscard]] double freqFromWorld(double w) const;
+  [[nodiscard]] std::vector<double> collectFreqTicks(double wMin, double wMax) const;
+  [[nodiscard]] int markerChipAt(const QPointF& pos) const;
+  void drawMarkers(QPainter* painter, const QRectF& plotRect) const;
+  void drawMarkerChip(QPainter* painter,
+                      const QRectF& plotRect,
+                      const QFontMetrics& fm,
+                      double* rowEnd,
+                      const int markerIndex,
+                      const bool spotlit,
+                      double cx,
+                      const QString& text,
+                      const QColor& color) const;
+  void visibleFreqWindow(double& xMinHz, double& xMaxHz) const;
   void allocateFftPlan(int size);
   void releaseFftPlan();
   void rebuildHistoryImage();
@@ -238,6 +281,7 @@ private:
   int m_topRow;
   bool m_filledOnce;
   bool m_axisVisible;
+  bool m_markersVisible;
   bool m_colorbarVisible;
 
   double m_minDb;
@@ -270,12 +314,30 @@ private:
   QColor m_borderColor;
   QColor m_textColor;
   QColor m_gridColor;
+  QColor m_accentColor;
+  QColor m_warningColor;
+  QColor m_alarmColor;
+
+  std::vector<MarkerData> m_markers;
 
   bool m_campbellMode;
   int m_yDatasetUniqueId;
   QString m_yAxisTitle;
   double m_yMin;
   double m_yMax;
+
+  // Log-frequency display (dataset fftLogX): active flag, log10 domain, column LUT
+  bool m_logX;
+  bool m_logActive;
+  double m_logMin;
+  double m_logMax;
+  std::vector<int> m_logColBin;
+  std::vector<float> m_logColFrac;
+  std::vector<float> m_logRow;
+
+  // Transient marker spotlight: chip hit rects captured per paint, -1 = none selected
+  int m_selectedMarker;
+  mutable std::vector<std::pair<int, QRectF>> m_chipHitRects;
 
   QImage m_image;
   std::vector<float> m_window;

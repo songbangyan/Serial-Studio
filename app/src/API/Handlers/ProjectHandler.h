@@ -51,6 +51,7 @@ private:
   static void registerDatasetOptionCommands();
   static void registerDatasetFieldCommands();
   static void registerDatasetAlarmCommands();
+  static void registerDatasetMarkerCommands();
   static void registerActionCommands();
   static void registerOutputWidgetCommands();
   static void registerParserCommands();
@@ -155,6 +156,9 @@ private:
 
   static CommandResponse datasetGetAlarmBands(const QString& id, const QJsonObject& params);
   static CommandResponse datasetSetAlarmBands(const QString& id, const QJsonObject& params);
+
+  static CommandResponse datasetGetFFTMarkers(const QString& id, const QJsonObject& params);
+  static CommandResponse datasetSetFFTMarkers(const QString& id, const QJsonObject& params);
 
   static CommandResponse projectBatch(const QString& id, const QJsonObject& params);
 
