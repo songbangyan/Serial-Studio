@@ -850,11 +850,17 @@ API::CommandResponse API::Handlers::DashboardHandler::reprocess(const QString& i
   Q_UNUSED(params)
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
-  const bool published      = frameBuilder.reprocessFrames();
+  static auto& dashboard    = UI::Dashboard::instance();
+  const bool produced       = frameBuilder.reprocessFrames();
+  const bool published      = produced && dashboard.streamAvailable();
 
   QJsonObject result;
   result[QStringLiteral("published")] = published;
-  if (!published)
+  if (produced && !published)
+    result[QStringLiteral("_summary")] = QStringLiteral(
+      "Frame produced but not rendered: the dashboard drops frames while no stream is open "
+      "(device connection or CSV/MDF4/session player).");
+  else if (!published)
     result[QStringLiteral("_summary")] = QStringLiteral(
       "Nothing to republish: requires ProjectFile mode and a loaded project, and at least one "
       "dataset value must have changed since the last publish.");
@@ -873,11 +879,18 @@ API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
   Q_UNUSED(params)
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
-  const bool published      = frameBuilder.dashboardTick();
+  static auto& dashboard    = UI::Dashboard::instance();
+  const bool produced       = frameBuilder.dashboardTick();
+  const bool published      = produced && dashboard.streamAvailable();
 
   QJsonObject result;
   result[QStringLiteral("published")] = published;
-  if (!published)
+  if (produced && !published)
+    result[QStringLiteral("_summary")] = QStringLiteral(
+      "Frame produced but not rendered: the dashboard drops frames while no stream is open "
+      "(device connection or CSV/MDF4/session player). Export sinks, if enabled, still "
+      "received the frame.");
+  else if (!published)
     result[QStringLiteral("_summary")] = QStringLiteral(
       "Nothing to render: requires ProjectFile mode and a loaded project, and at least one "
       "dataset value must have changed since the last tick.");

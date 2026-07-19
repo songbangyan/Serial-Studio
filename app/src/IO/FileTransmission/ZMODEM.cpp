@@ -23,6 +23,7 @@
 
 #include <QFileInfo>
 
+#include "DSPSimd.h"
 #include "IO/FileTransmission/CRC.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -764,37 +765,22 @@ QByteArray IO::Protocols::ZMODEM::zdleEncode(const QByteArray& data)
   QByteArray encoded;
   encoded.reserve(data.size() + data.size() / 4);
 
-  for (const char byte : data) {
-    quint8 ch = static_cast<quint8>(byte);
-    if (needsEscape(ch)) {
+  static constexpr quint8 kEscaped[] = {kZDLE, kXON, kXOFF, 0x10, 0x90, 0x91, 0x93};
+
+  qsizetype pos = 0;
+  for (; pos < data.size();) {
+    const qsizetype run =
+      DSP::simdFindAnyByte(data.constData() + pos, data.size() - pos, kEscaped, 7);
+    encoded.append(data.constData() + pos, run);
+    pos += run;
+    if (pos < data.size()) {
       encoded.append(static_cast<char>(kZDLE));
-      encoded.append(static_cast<char>(ch ^ 0x40));
-    } else {
-      encoded.append(static_cast<char>(ch));
+      encoded.append(static_cast<char>(static_cast<quint8>(data.at(pos)) ^ 0x40));
+      ++pos;
     }
   }
 
   return encoded;
-}
-
-/**
- * @brief Returns whether a byte needs ZDLE escaping.
- */
-bool IO::Protocols::ZMODEM::needsEscape(quint8 ch)
-{
-  switch (ch) {
-    case kZDLE:
-    case kXON:
-    case kXOFF:
-    case 0x10:
-    case 0x90:
-    case 0x91:
-    case 0x93:
-      return true;
-
-    default:
-      return false;
-  }
 }
 
 //--------------------------------------------------------------------------------------------------

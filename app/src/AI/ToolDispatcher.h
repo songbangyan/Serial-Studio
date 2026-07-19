@@ -38,15 +38,9 @@ public:
   [[nodiscard]] QJsonObject listCategories() const;
   [[nodiscard]] QString canonicalToolName(const QString& name) const;
   [[nodiscard]] QJsonObject describeCommand(const QString& name) const;
-  [[nodiscard]] QJsonObject executeCommand(const QString& name,
-                                           const QJsonObject& args,
-                                           bool autoConfirmSafe);
+  [[nodiscard]] QJsonObject executeCommand(const QString& name, const QJsonObject& args);
   [[nodiscard]] QJsonObject getProjectState() const;
   [[nodiscard]] QJsonObject getSnapshot() const;
-  [[nodiscard]] QJsonObject getScriptingDocs(const QString& kind) const;
-
-signals:
-  void confirmationRequested(const QString& name, const QJsonObject& args);
 };
 
 }  // namespace AI

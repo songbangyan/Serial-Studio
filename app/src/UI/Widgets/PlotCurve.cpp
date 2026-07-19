@@ -26,6 +26,8 @@
 #include <QSGGeometryNode>
 #include <QSGVertexColorMaterial>
 
+#include "DSPSimd.h"
+
 // Edge feather in logical pixels, straddling the stroke edge so perceived width stays lineWidth
 constexpr double kFeatherPx = 1.0;
 
@@ -439,10 +441,7 @@ bool Widgets::PlotCurve::runVisible(const QPointF* pts,
 
   double lo = pts[start].x();
   double hi = pts[start].x();
-  for (qsizetype i = start + 1; i < start + len; ++i) {
-    lo = std::min(lo, pts[i].x());
-    hi = std::max(hi, pts[i].x());
-  }
+  DSP::simdFiniteMinMaxPointF<0>(pts + start, len, lo, hi);
 
   return hi >= m_xMin && lo <= m_xMax;
 }

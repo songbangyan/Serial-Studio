@@ -138,33 +138,3 @@ void AI::CommandRegistry::setDeviceControlAllowed(bool allowed)
 {
   m_deviceControlAllowed = allowed;
 }
-
-/**
- * @brief Returns the names of all explicitly Safe commands.
- */
-QStringList AI::CommandRegistry::safeNames() const
-{
-  QStringList result;
-  for (auto it = m_tags.constBegin(); it != m_tags.constEnd(); ++it)
-    if (it.value() == Safety::Safe)
-      result.append(it.key());
-
-  return result;
-}
-
-/**
- * @brief Returns the names of all currently Blocked commands.
- */
-QStringList AI::CommandRegistry::blockedNames() const
-{
-  QStringList result;
-  for (auto it = m_tags.constBegin(); it != m_tags.constEnd(); ++it)
-    if (it.value() == Safety::Blocked)
-      result.append(it.key());
-
-  if (!m_deviceControlAllowed)
-    for (const auto& name : m_deviceGated)
-      result.append(name);
-
-  return result;
-}

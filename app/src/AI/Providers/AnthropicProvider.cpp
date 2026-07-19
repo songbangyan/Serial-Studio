@@ -12,44 +12,11 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QTimer>
 
 #include "AI/ContextBuilder.h"
 #include "AI/Logging.h"
 #include "AI/Providers/AnthropicReply.h"
-
-namespace AI::detail {
-
-/**
- * @brief Reply that fires errorOccurred on the next event-loop tick.
- *
- * Used when sendMessage cannot reach the network at all (e.g. no key).
- * Keeps the caller's signal-handling code uniform.
- */
-class ImmediateErrorReply : public AI::Reply {
-public:
-  /**
-   * @brief Schedules an error+finished pair via QTimer::singleShot(0, ...).
-   */
-  ImmediateErrorReply(const QString& message, QObject* parent = nullptr)
-    : AI::Reply(parent), m_message(message)
-  {
-    QTimer::singleShot(0, this, [this]() {
-      Q_EMIT errorOccurred(m_message);
-      Q_EMIT finished();
-    });
-  }
-
-  /**
-   * @brief No-op: the timer-driven completion cannot be cancelled.
-   */
-  void abort() override {}
-
-private:
-  QString m_message;
-};
-
-}  // namespace AI::detail
+#include "AI/Providers/ImmediateErrorReply.h"
 
 /**
  * @brief Anthropic enforces tool names ^[a-zA-Z0-9_-]+; encode dots/colons.
@@ -236,7 +203,7 @@ AI::Reply* AI::AnthropicProvider::sendMessage(const QJsonArray& history,
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();
   if (key.isEmpty())
-    return new AI::detail::ImmediateErrorReply(
+    return new AI::ImmediateErrorReply(
       QObject::tr("No Anthropic API key set. Open Manage Keys to add one."));
 
   const auto model = currentModel();

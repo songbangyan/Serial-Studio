@@ -264,7 +264,7 @@ API::CommandResponse API::Handlers::ProjectHandler::fileSave(const QString& id,
   projectModel.setSuppressMessageBoxes(true);
   bool success = false;
   if (!explicit_path.isEmpty()) {
-    if (!API::isPathAllowed(explicit_path)) {
+    if (!API::isPathAllowed(explicit_path, true)) {
       projectModel.setSuppressMessageBoxes(false);
       return CommandResponse::makeError(
         id, ErrorCode::InvalidParam, QStringLiteral("filePath is not allowed"));

@@ -220,6 +220,12 @@ cached flags, benchmark mechanics) in
   plus 0.5x floors on the Lua exporter/dashboard reference rows so a consumer-path collapse
   can't ship silently (full tier table in the `ss-hotpath` skill); `ci.yml` (the only
   workflow) runs it per push/PR as a hard gate on the PGO-optimized binary. Don't regress it.
+- **Portable SIMD kernels live in `app/src/DSPSimd.h`** (`namespace DSP`, `SS_SIMD_X86` /
+  `SS_SIMD_NEON` detection, spec 0021): every kernel ships an x86-64-v2 (SSE2..SSE4.2) lane, an
+  aarch64 NEON lane, and a reference scalar fallback, and must stay per-lane bit-exact versus its
+  scalar loop (byte/int ops, IEEE min/max compares, per-lane converts only — no reassociation, no
+  approximate transcendentals). New bulk loops (delimiter scans, min/max sweeps, ring gathers)
+  reuse these instead of inlining intrinsics at call sites.
 - **Hotpath optimization macros live in `app/src/DataModel/HotpathOptimization.h`** (`SS_FORCE_INLINE`,
   `SS_FLATTEN`, `SS_HOT`/`SS_COLD`, `SS_RESTRICT`, `SS_ASSUME`, `SS_NO_UNROLL`, ...): cross-toolchain
   spellings with a `__clang__`-first cascade (clang-cl/IntelLLVM take the GNU branch). Annotate the

@@ -116,6 +116,18 @@ refresh lags a full event-loop turn behind frames already flowing.
   FrameReader pool probe skips pinned slots) plus the channel tokens — keep it gated and
   allocation-free.
 
+## Replay Ingestion (spec 0020)
+
+ProjectFile replay does not travel the byte pipeline: players call
+`FrameBuilder::replayChannels(sourceId, channels, recordedTs)` with already-split cells, and
+`publishReplayFrame` fans out to the dashboard (pooled slot) plus API/gRPC observers only —
+**recording sinks never see replayed frames**. While a player is open, transform engines are
+destroyed and `m_captureDatasetValues` is forced off (`refreshDatasetCaptureFlag` gates on
+`!m_playerOpen`); the player `openChanged` lambdas set `m_captureFlagsDirty` on both edges and
+recompile transforms on close. Scrubbing bulk-fills plot rings via
+`Dashboard::bulkLoadPlotWindow` (rings only, plot clocks reset, times normalized to end at 0);
+a debounced settle pass replays the exact trailing window through `replayChannels`.
+
 ## Hotpath Benchmark — The 256 kHz CI Gate
 
 256 kHz is a CI gate, not a slogan. `--benchmark-hotpath` (`Benchmark::HotpathBenchmark`) drives the

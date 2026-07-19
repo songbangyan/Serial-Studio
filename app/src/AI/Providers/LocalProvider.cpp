@@ -22,41 +22,12 @@
 #include "AI/ContextBuilder.h"
 #include "AI/KeyVault.h"
 #include "AI/Logging.h"
+#include "AI/Providers/ImmediateErrorReply.h"
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/Providers/OpenAIReply.h"
 #include "Misc/JsonValidator.h"
 
 static constexpr int kLocalTransferTimeoutMs = 5 * 60 * 1000;
-
-namespace detail {
-
-/**
- * @brief Reply that fires errorOccurred on the next event-loop tick.
- */
-class ImmediateErrorReplyLP : public AI::Reply {
-public:
-  /**
-   * @brief Schedules errorOccurred + finished on the next event-loop tick.
-   */
-  ImmediateErrorReplyLP(const QString& message, QObject* parent = nullptr)
-    : AI::Reply(parent), m_message(message)
-  {
-    QTimer::singleShot(0, this, [this]() {
-      Q_EMIT errorOccurred(m_message);
-      Q_EMIT finished();
-    });
-  }
-
-  /**
-   * @brief No-op since the error fires immediately.
-   */
-  void abort() override {}
-
-private:
-  QString m_message;
-};
-
-}  // namespace detail
 
 //--------------------------------------------------------------------------------------------------
 // Static fallbacks
@@ -349,8 +320,8 @@ AI::Reply* AI::LocalProvider::sendMessage(const QJsonArray& history,
                                           bool forbidToolUse)
 {
   if (m_baseUrl.isEmpty())
-    return new detail::ImmediateErrorReplyLP(QObject::tr("No local model server URL configured. "
-                                                         "Open Manage Keys to set one."));
+    return new AI::ImmediateErrorReply(QObject::tr("No local model server URL configured. "
+                                                   "Open Manage Keys to set one."));
 
   const auto systemBlocks = ContextBuilder::buildSystemArray(false);
   QString systemText;

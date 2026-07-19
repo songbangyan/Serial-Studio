@@ -75,6 +75,7 @@ private:
   void routeContentChunk(const QString& chunk);
   void processThinkCarry(bool atEnd);
   void emitPendingToolCalls();
+  [[nodiscard]] bool streamBudgetBreached(qsizetype bytes);
   void finishOk();
   void finishWithError(const QString& message);
 

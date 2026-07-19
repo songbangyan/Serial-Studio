@@ -32,6 +32,7 @@
 #include <QtMath>
 #include <QWheelEvent>
 
+#include "DSPSimd.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
@@ -860,18 +861,21 @@ void Widgets::Waterfall::updateData()
   const int avail = static_cast<int>(std::min(data.size(), static_cast<std::size_t>(m_size)));
 
   const double* in       = data.raw();
-  std::size_t idx        = data.frontIndex();
   const std::size_t mask = data.storageMask();
   const double offset    = m_scaleIsValid ? -m_center : 0.0;
   const double scale     = m_scaleIsValid ? (1.0 / m_halfRange) : 1.0;
 
-  for (int i = 0; i < avail; ++i) {
-    const double raw = in[idx];
-    const float v    = std::isfinite(raw) ? static_cast<float>((raw + offset) * scale) : 0.0f;
-    m_samples[i].r   = v * m_window[i];
-    m_samples[i].i   = 0.0f;
-    idx              = (idx + 1) & mask;
-  }
+  static_assert(sizeof(kiss_fft_cpx) == 2 * sizeof(float));
+
+  if (avail > 0)
+    DSP::simdWindowedComplexFill(in,
+                                 data.frontIndex(),
+                                 mask,
+                                 static_cast<std::size_t>(avail),
+                                 offset,
+                                 scale,
+                                 m_window.data(),
+                                 &m_samples[0].r);
 
   for (int i = avail; i < m_size; ++i) {
     m_samples[i].r = 0.0f;

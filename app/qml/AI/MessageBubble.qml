@@ -24,6 +24,7 @@ Item {
   property bool streaming: false
   property var toolCalls: []
   property real maxWidth: 600
+  property var expansionStore: null
 
   readonly property bool isUser: role === "user"
   readonly property bool hasText: text.length > 0
@@ -278,6 +279,7 @@ Item {
           argsJson: modelData.args
           resultJson: modelData.result
           statusValue: modelData.status
+          expansionStore: root.expansionStore
           Layout.topMargin: showSectionLabel ? 0 : 4
           verification: modelData.verification !== undefined ? modelData.verification : null
         }

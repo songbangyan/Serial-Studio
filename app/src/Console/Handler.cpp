@@ -21,6 +21,7 @@
 
 #include "Console/Handler.h"
 
+#include <array>
 #include <QApplication>
 #include <QDateTime>
 #include <QFile>
@@ -30,6 +31,7 @@
 
 #include "AppState.h"
 #include "DataModel/ProjectModel.h"
+#include "DSPSimd.h"
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/CommonFonts.h"
@@ -1259,56 +1261,92 @@ QString Console::Handler::plainTextStr(QByteArrayView data)
 }
 
 /**
- * @brief Converts @a data into a HEX dump string with direct nibble writes into a
- *        pre-reserved buffer; the per-byte QString::arg() it replaces dominated GUI time at
- *        MB/s rates with the hex view enabled.
+ * @brief Writes one hex-dump row's 16-char ASCII column at @p out: the SIMD kernel maps
+ *        full rows, a scalar tail blank-pads and dot-maps the final partial row.
+ */
+static void hexDumpAsciiColumn(QByteArrayView data, int i, char16_t* out)
+{
+  Q_ASSERT(out != nullptr);
+  Q_ASSERT(i >= 0 && i < data.length());
+
+  if (i + 16 <= data.length()) {
+    DSP::simdAsciiDots16(reinterpret_cast<const quint8*>(data.data() + i), out);
+    return;
+  }
+
+  for (int j = 0; j < 16; ++j) {
+    if (i + j >= data.length()) {
+      out[j] = u' ';
+      continue;
+    }
+
+    const auto b = static_cast<unsigned char>(data[i + j]);
+    out[j]       = (b >= 0x20 && b <= 0x7E) ? static_cast<char16_t>(b) : u'.';
+  }
+}
+
+/**
+ * @brief Converts @a data into a HEX dump string: each row is built in a fixed char16_t
+ *        scratch buffer (scalar nibble writes + the shared DSP::simdAsciiDots16 ASCII
+ *        column) and appended with one QString::append call, replacing the per-character
+ *        appends that dominated GUI time at MB/s rates with the hex view enabled.
  */
 QString Console::Handler::hexadecimalStr(QByteArrayView data)
 {
+  static_assert(sizeof(QChar) == sizeof(char16_t), "QChar must be UTF-16 code-unit sized");
+
   static constexpr char kHexDigits[] = "0123456789abcdef";
   constexpr auto rowSize             = 16;
   constexpr auto rowChars            = 80;
+  constexpr auto fullRowLen          = 79;
+  static_assert(fullRowLen <= rowChars, "hex-dump row must fit the scratch buffer");
 
   QString out;
   const auto rows = (data.length() + rowSize - 1) / rowSize;
   out.reserve(rows * rowChars + 2);
 
-  for (int i = 0; i < data.length(); i += rowSize) {
-    for (int shift = 20; shift >= 0; shift -= 4)
-      out += QLatin1Char(kHexDigits[(i >> shift) & 0xF]);
+  std::array<char16_t, rowChars> scratch;
 
-    out += QLatin1String(" | ");
+  for (int i = 0; i < data.length(); i += rowSize) {
+    int rowLen = 0;
+
+    for (int shift = 20; shift >= 0; shift -= 4)
+      scratch[rowLen++] = static_cast<char16_t>(kHexDigits[(i >> shift) & 0xF]);
+
+    scratch[rowLen++] = u' ';
+    scratch[rowLen++] = u'|';
+    scratch[rowLen++] = u' ';
 
     for (int j = 0; j < rowSize; ++j) {
       if (i + j < data.length()) {
-        const auto b  = static_cast<unsigned char>(data[i + j]);
-        out          += QLatin1Char(kHexDigits[b >> 4]);
-        out          += QLatin1Char(kHexDigits[b & 0xF]);
-        out          += QLatin1Char(' ');
+        const auto b      = static_cast<unsigned char>(data[i + j]);
+        scratch[rowLen++] = static_cast<char16_t>(kHexDigits[b >> 4]);
+        scratch[rowLen++] = static_cast<char16_t>(kHexDigits[b & 0xF]);
+        scratch[rowLen++] = u' ';
       }
 
-      else
-        out += QLatin1String("   ");
+      else {
+        scratch[rowLen++] = u' ';
+        scratch[rowLen++] = u' ';
+        scratch[rowLen++] = u' ';
+      }
 
       if ((j + 1) == 8)
-        out += QLatin1Char(' ');
+        scratch[rowLen++] = u' ';
     }
 
-    out += QLatin1String("| ");
-    for (int j = 0; j < rowSize; ++j) {
-      if (i + j >= data.length()) {
-        out += QLatin1Char(' ');
-        continue;
-      }
+    scratch[rowLen++] = u'|';
+    scratch[rowLen++] = u' ';
 
-      const char c = data[i + j];
-      if (std::isprint(static_cast<unsigned char>(c)))
-        out += QLatin1Char(c);
-      else
-        out += QLatin1Char('.');
-    }
+    hexDumpAsciiColumn(data, i, scratch.data() + rowLen);
+    rowLen += rowSize;
 
-    out += QLatin1String(" |\n");
+    scratch[rowLen++] = u' ';
+    scratch[rowLen++] = u'|';
+    scratch[rowLen++] = u'\n';
+
+    Q_ASSERT(rowLen == fullRowLen);
+    out.append(reinterpret_cast<const QChar*>(scratch.data()), rowLen);
   }
 
   out += QLatin1Char('\n');

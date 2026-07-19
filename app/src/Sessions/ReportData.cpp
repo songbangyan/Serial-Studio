@@ -352,18 +352,40 @@ static void appendBucketSamples(const DSP::AxisData& y,
 {
   Q_ASSERT(begin < end);
   Q_ASSERT(target > 0);
+  Q_ASSERT(end <= y.size());
 
   const std::size_t bucketSize = end - begin;
   const std::size_t goal = std::min<std::size_t>(bucketSize, static_cast<std::size_t>(target));
 
   std::size_t minIndex = begin;
   std::size_t maxIndex = begin;
-  for (std::size_t i = begin + 1; i < end; ++i) {
-    if (y[i] < y[minIndex])
-      minIndex = i;
+  if (y.frontIndex() == 0) {
+    const double* base = y.raw();
+    double lo;
+    double hi;
+    DSP::simdMinMaxF64(base + begin, end - begin, lo, hi);
 
-    if (y[i] > y[maxIndex])
-      maxIndex = i;
+    for (std::size_t i = begin; i < end; ++i) {
+      if (base[i] == lo) {
+        minIndex = i;
+        break;
+      }
+    }
+
+    for (std::size_t i = begin; i < end; ++i) {
+      if (base[i] == hi) {
+        maxIndex = i;
+        break;
+      }
+    }
+  } else {
+    for (std::size_t i = begin + 1; i < end; ++i) {
+      if (y[i] < y[minIndex])
+        minIndex = i;
+
+      if (y[i] > y[maxIndex])
+        maxIndex = i;
+    }
   }
 
   std::vector<std::size_t> local;

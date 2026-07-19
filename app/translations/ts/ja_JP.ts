@@ -4,34 +4,39 @@
 <context>
     <name>AI::AnthropicReply</name>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="165"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="122"/>
         <source>Anthropic error</source>
         <translation>Anthropicエラー</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="311"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="272"/>
         <source>Stream parse error: %1</source>
         <translation>ストリーム解析エラー: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="360"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="321"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="363"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="324"/>
         <source>Invalid API key (%1)</source>
         <translation>無効なAPIキー (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="365"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="326"/>
         <source>Rate limited: %1</source>
         <translation>レート制限: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="367"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="328"/>
         <source>Anthropic %1: %2</source>
         <translation>Anthropic %1: %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="362"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>応答が %1 MB のストリーム制限を超えました</translation>
     </message>
 </context>
 <context>
@@ -51,22 +56,22 @@ Every device action still requires your explicit per-call approval in the chat, 
 自動承認が有効な場合でも、すべてのデバイス操作はチャット内で個別の承認が必要です。ハードウェアアクセスを信頼できる AI プロバイダーを使用する場合のみ有効にしてください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="630"/>
+        <location filename="../../src/AI/Assistant.cpp" line="639"/>
         <source>Switch AI provider?</source>
         <translation>AIプロバイダーを切り替えますか?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="631"/>
+        <location filename="../../src/AI/Assistant.cpp" line="640"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>別のプロバイダーに切り替えると、現在の会話がクリアされます。続行しますか?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="634"/>
+        <location filename="../../src/AI/Assistant.cpp" line="643"/>
         <source>Assistant</source>
         <translation>アシスタント</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="671"/>
+        <location filename="../../src/AI/Assistant.cpp" line="680"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI アシスタントはこのビルドでは利用できません</translation>
     </message>
@@ -75,7 +80,7 @@ Every device action still requires your explicit per-call approval in the chat, 
         <translation type="vanished">AIアシスタントにはProライセンスが必要です</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="676"/>
+        <location filename="../../src/AI/Assistant.cpp" line="685"/>
         <source>Set an API key first</source>
         <translation>最初にAPIキーを設定してください</translation>
     </message>
@@ -87,62 +92,63 @@ Every device action still requires your explicit per-call approval in the chat, 
         <translation type="vanished">AIアシスタントにはProライセンスが必要です</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="171"/>
+        <location filename="../../src/AI/Conversation.cpp" line="173"/>
         <source>AI Assistant is not available in this build</source>
         <translation>AI アシスタントはこのビルドでは利用できません</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="177"/>
+        <location filename="../../src/AI/Conversation.cpp" line="179"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1298"/>
         <source>AI subsystem not initialized</source>
         <translation>AIサブシステムが初期化されていません</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="183"/>
+        <location filename="../../src/AI/Conversation.cpp" line="185"/>
         <source>Already busy with a previous request</source>
         <translation>前のリクエストを処理中です</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="647"/>
+        <location filename="../../src/AI/Conversation.cpp" line="666"/>
         <source>Tool-call budget reached for this turn; no further tools will run.</source>
         <translation>このターンのツール呼び出し予算に達しました。これ以上ツールは実行されません。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1283"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1313"/>
         <source>Waiting for %1 to respond. Loading the model and processing the prompt can take a while on local hardware...</source>
         <translation>%1の応答を待機中。ローカルハードウェアではモデルの読み込みとプロンプトの処理に時間がかかる場合があります...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2130"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2227"/>
         <source>%1 operation(s) failed</source>
         <translation>%1 件の操作が失敗しました</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2184"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2281"/>
         <source>Source list read-back failed</source>
         <translation>ソースリストの読み戻しに失敗しました</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2205"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2302"/>
         <source>Source %1 not found after update</source>
         <translation>更新後にソース %1 が見つかりません</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2223"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2320"/>
         <source>Fields did not round-trip: %1</source>
         <translation>フィールドがラウンドトリップしませんでした: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2344"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2441"/>
         <source>You have reached the tool-call budget for this turn. Do not request more tools. Summarize what you found so far, and if the task is incomplete, say which steps remain so the user can tell you to continue.</source>
         <translation>このターンのツール呼び出し予算に達しました。これ以上ツールをリクエストしないでください。これまでに見つかった内容を要約し、タスクが未完了の場合は残りの手順を示してください。ユーザーが続行を指示できます。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="3104"/>
+        <location filename="../../src/AI/Conversation.cpp" line="3213"/>
         <source>The model stopped reproducing its context-integrity line. Long conversations degrade silently; recent replies may be less reliable.</source>
         <translation>モデルがコンテキスト整合性ラインの再現を停止しました。長時間の会話では静かに劣化が進み、最近の応答の信頼性が低下する可能性があります。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="3107"/>
+        <location filename="../../src/AI/Conversation.cpp" line="3216"/>
         <source>The model altered its context-integrity line (drifted segment: %1). Long conversations degrade silently; recent replies may be less reliable.</source>
         <translation>モデルがコンテキスト整合性ラインを変更しました（ドリフトセグメント: %1）。長時間の会話では静かに劣化が進み、最近の応答の信頼性が低下する可能性があります。</translation>
     </message>
@@ -151,17 +157,17 @@ Every device action still requires your explicit per-call approval in the chat, 
         <translation type="vanished">ツール呼び出しの上限を超えました</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1124"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1143"/>
         <source>(The model returned an empty response. Try rephrasing, switching to a different model, or checking that the request is allowed by the provider's safety filters.)</source>
         <translation>(モデルが空の応答を返しました。言い換えるか、別のモデルに切り替えるか、プロバイダーの安全フィルターでリクエストが許可されているか確認してください。)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1287"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1317"/>
         <source>Sending request to %1...</source>
         <translation>%1にリクエストを送信中...</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1305"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1335"/>
         <source>Provider returned no reply</source>
         <translation>プロバイダーから応答がありませんでした</translation>
     </message>
@@ -169,62 +175,82 @@ Every device action still requires your explicit per-call approval in the chat, 
 <context>
     <name>AI::GeminiReply</name>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="146"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="130"/>
+        <source>Stream parse error: %1</source>
+        <translation>ストリーム解析エラー: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="152"/>
         <source>Prompt blocked by Gemini safety filter: %1</source>
         <translation>Gemini安全フィルターによってプロンプトがブロックされました: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="200"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="209"/>
         <source>Gemini stopped without producing a response: %1</source>
         <translation>Geminiが応答を生成せずに停止しました: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="262"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="271"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="265"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="274"/>
         <source>Invalid API key (%1)</source>
         <translation>無効なAPIキー (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="267"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="276"/>
         <source>Rate limited: %1</source>
         <translation>レート制限: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="269"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="278"/>
         <source>Invalid API key</source>
         <translation>無効なAPIキー</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="271"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="280"/>
         <source>Gemini %1: %2</source>
         <translation>Gemini %1: %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="297"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>応答が %1 MB のストリーム制限を超えました</translation>
     </message>
 </context>
 <context>
     <name>AI::OpenAIReply</name>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="426"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="159"/>
+        <source>Stream parse error: %1</source>
+        <translation>ストリーム解析エラー: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="396"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="429"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="399"/>
         <source>Invalid API key (%1)</source>
         <translation>無効なAPIキー (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="431"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="401"/>
         <source>Rate limited: %1</source>
         <translation>レート制限: %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="433"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="403"/>
         <source>%1 %2: %3</source>
         <translation>%1 %2: %3</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="437"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>応答が %1 MB のストリーム制限を超えました</translation>
     </message>
     <message>
         <source>OpenAI %1: %2</source>
@@ -2187,103 +2213,103 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>CSV::Player</name>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="207"/>
+        <location filename="../../src/CSV/Player.cpp" line="223"/>
         <source>Select CSV file</source>
         <translation>CSVファイルを選択</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="209"/>
+        <location filename="../../src/CSV/Player.cpp" line="225"/>
         <source>CSV files (*.csv)</source>
         <translation>CSVファイル (*.CSV)</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="371"/>
+        <location filename="../../src/CSV/Player.cpp" line="391"/>
         <source>Device Connection Active</source>
         <translation>デバイス接続がアクティブです</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="372"/>
+        <location filename="../../src/CSV/Player.cpp" line="392"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>この機能を使用するには、デバイスから切断する必要があります。続行しますか?</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="386"/>
+        <location filename="../../src/CSV/Player.cpp" line="406"/>
         <source>Check file permissions and location</source>
         <translation>ファイルのアクセス許可と場所を確認</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="416"/>
+        <location filename="../../src/CSV/Player.cpp" line="438"/>
         <source>Insufficient Data in CSV File</source>
         <translation>CSVファイルのデータが不十分です</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="386"/>
+        <location filename="../../src/CSV/Player.cpp" line="406"/>
         <source>Cannot read CSV file</source>
         <translation>CSVファイルを読み取れません</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="417"/>
+        <location filename="../../src/CSV/Player.cpp" line="439"/>
         <source>The CSV file must contain at least one data row to proceed. Check the file and try again.</source>
         <translation>CSVファイルには処理を続行するために少なくとも1つのデータ行が必要です。ファイルを確認して再試行してください。</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="652"/>
+        <location filename="../../src/CSV/Player.cpp" line="817"/>
         <source>Invalid CSV</source>
         <translation>無効なCSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="653"/>
+        <location filename="../../src/CSV/Player.cpp" line="818"/>
         <source>The CSV file does not contain any data or headers.</source>
         <translation>CSVファイルにデータまたはヘッダーが含まれていません。</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="662"/>
+        <location filename="../../src/CSV/Player.cpp" line="827"/>
         <source>Select a date/time column</source>
         <translation>日時列を選択</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="662"/>
-        <location filename="../../src/CSV/Player.cpp" line="674"/>
+        <location filename="../../src/CSV/Player.cpp" line="827"/>
+        <location filename="../../src/CSV/Player.cpp" line="839"/>
         <source>Set interval manually</source>
         <translation>間隔を手動で設定</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="664"/>
+        <location filename="../../src/CSV/Player.cpp" line="829"/>
         <source>CSV Date/Time Selection</source>
         <translation>CSV日時選択</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="665"/>
+        <location filename="../../src/CSV/Player.cpp" line="830"/>
         <source>Choose how to handle the date/time data:</source>
         <translation>日時データの処理方法を選択:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="677"/>
+        <location filename="../../src/CSV/Player.cpp" line="842"/>
         <source>Set Interval</source>
         <translation>間隔を設定</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="678"/>
+        <location filename="../../src/CSV/Player.cpp" line="843"/>
         <source>Please enter the interval between rows in milliseconds:</source>
         <translation>行間の間隔をミリ秒単位で入力してください:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="694"/>
+        <location filename="../../src/CSV/Player.cpp" line="859"/>
         <source>Select Date/Time Column</source>
         <translation>日付/時刻列を選択</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="695"/>
+        <location filename="../../src/CSV/Player.cpp" line="860"/>
         <source>Please select the column that contains the date/time data:</source>
         <translation>日付/時刻データを含む列を選択してください:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="705"/>
+        <location filename="../../src/CSV/Player.cpp" line="870"/>
         <source>Invalid Selection</source>
         <translation>無効な選択</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="705"/>
+        <location filename="../../src/CSV/Player.cpp" line="870"/>
         <source>The selected column is not valid.</source>
         <translation>選択された列は無効です。</translation>
     </message>
@@ -2361,42 +2387,42 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>Console::Handler</name>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="273"/>
+        <location filename="../../src/Console/Handler.cpp" line="275"/>
         <source>ASCII</source>
         <translation>ASCII</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="274"/>
+        <location filename="../../src/Console/Handler.cpp" line="276"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="284"/>
+        <location filename="../../src/Console/Handler.cpp" line="286"/>
         <source>No Line Ending</source>
         <translation>行末なし</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="285"/>
+        <location filename="../../src/Console/Handler.cpp" line="287"/>
         <source>New Line</source>
         <translation>改行</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="286"/>
+        <location filename="../../src/Console/Handler.cpp" line="288"/>
         <source>Carriage Return</source>
         <translation>キャリッジリターン</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="287"/>
+        <location filename="../../src/Console/Handler.cpp" line="289"/>
         <source>CR + NL</source>
         <translation>CR + NL</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="297"/>
+        <location filename="../../src/Console/Handler.cpp" line="299"/>
         <source>Text</source>
         <translation>テキスト</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="298"/>
+        <location filename="../../src/Console/Handler.cpp" line="300"/>
         <source>Hex</source>
         <translation>16進</translation>
     </message>
@@ -2409,12 +2435,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">16進数</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="320"/>
+        <location filename="../../src/Console/Handler.cpp" line="322"/>
         <source>No Checksum</source>
         <translation>チェックサムなし</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="1018"/>
+        <location filename="../../src/Console/Handler.cpp" line="1020"/>
         <source>Device %1</source>
         <translation>デバイス %1</translation>
     </message>
@@ -3556,29 +3582,29 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1778"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1893"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1810"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1925"/>
         <source>Channel %1</source>
         <translation>チャンネル %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1904"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1936"/>
         <source>Audio Input</source>
         <translation>オーディオ入力</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1787"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1909"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1819"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1941"/>
         <source>Quick Plot</source>
         <translation>クイックプロット</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1487"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1517"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>JavaScript変換の上限を超えました</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1488"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1518"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>データセット変換が%1ミリ秒以上かかりました。フレーム内の残りのデータセットは次のフレームまで生データにフォールバックしました。変換コードのプロファイルまたは簡素化を検討してください。</translation>
     </message>
@@ -3593,17 +3619,17 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>下流のコンシューマー（ダッシュボード、CSV/MDF4エクスポート、セッションDB、API購読者）がフレームを十分な速度で処理していません。Serial Studioはバックログが解消されるまでフレームごとの割り当てにフォールバックします。負荷の高いコンシューマーを無効化するか、データレートを下げてください。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1738"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
         <source>Device A</source>
         <translation>デバイス A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1794"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1826"/>
         <source>Quick Plot Data</source>
         <translation>クイックプロットデータ</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1806"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1838"/>
         <source>Multiple Plots</source>
         <translation>マルチプロット</translation>
     </message>
@@ -10970,128 +10996,128 @@ The device may not expose data endpoints in its active configuration, or it may 
 <context>
     <name>IO::Protocols::ZMODEM</name>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="86"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="87"/>
         <source>Cannot open file: %1</source>
         <translation>ファイルを開けません: %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="103"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="104"/>
         <source>File is too large for ZMODEM (%1 bytes, limit 4 GiB).</source>
         <translation>ファイルがZMODEMには大きすぎます (%1バイト、上限4 GiB)</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="128"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="129"/>
         <source>Transfer cancelled</source>
         <translation>転送がキャンセルされました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="129"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="130"/>
         <source>Transfer cancelled by user</source>
         <translation>ユーザーによって転送がキャンセルされました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="269"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="270"/>
         <source>Hex header CRC mismatch, dropping frame</source>
         <translation>16進数ヘッダーのCRCが不一致のため、フレームを破棄します</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="444"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="445"/>
         <source>Sending file info: %1 (%2 bytes)</source>
         <translation>ファイル情報を送信中: %1 (%2バイト)</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="459"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="460"/>
         <source>Failed to seek to offset %1</source>
         <translation>オフセット%1へのシークに失敗しました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="486"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="487"/>
         <source>File read error: %1</source>
         <translation>ファイル読み取りエラー：%1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="491"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="492"/>
         <source>File read returned more data than requested</source>
         <translation>ファイル読み込みが要求以上のデータを返しました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="574"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="575"/>
         <source>Receiver requests data from offset %1</source>
         <translation>受信側がオフセット%1からのデータを要求しています</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="582"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="583"/>
         <source>Receiver skipped the file</source>
         <translation>受信側がファイルをスキップしました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="594"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="595"/>
         <source>Too many errors, transfer aborted</source>
         <translation>エラーが多すぎるため、転送を中止しました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="595"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="596"/>
         <source>Maximum retries exceeded</source>
         <translation>最大再試行回数を超えました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="420"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="421"/>
         <source>Sending ZRQINIT, waiting for receiver…</source>
         <translation>ZRQINITを送信中、受信側を待機しています…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="517"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="518"/>
         <source>File data sent, waiting for confirmation…</source>
         <translation>ファイルデータを送信完了、確認を待機しています…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="528"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="529"/>
         <source>Sending ZFIN…</source>
         <translation>ZFINを送信中…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="564"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="565"/>
         <source>Receiver ready, sending file info…</source>
         <translation>受信側準備完了、ファイル情報を送信中…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="599"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="600"/>
         <source>NAK received, retrying (%1/%2)…</source>
         <translation>NAKを受信、再試行中 (%1/%2)…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="620"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="621"/>
         <source>Transfer complete</source>
         <translation>転送完了</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="630"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="631"/>
         <source>Transfer cancelled by receiver</source>
         <translation>受信側により転送がキャンセルされました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="631"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="632"/>
         <source>Receiver cancelled the transfer</source>
         <translation>受信側が転送をキャンセルしました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="639"/>
         <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="640"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="641"/>
         <source>Receiver reported a file error</source>
         <translation>受信側がファイルエラーを報告しました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="838"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="824"/>
         <source>Transfer timed out</source>
         <translation>転送がタイムアウトしました</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="839"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="825"/>
         <source>Timeout: no response from receiver</source>
         <translation>タイムアウト: 受信側からの応答がありません</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="843"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="829"/>
         <source>Timeout, retrying (%1/%2)…</source>
         <translation>タイムアウト、再試行中 (%1/%2)…</translation>
     </message>
@@ -11693,62 +11719,62 @@ To reuse this seat on another device, email alex@serial-studio.com with your dev
 <context>
     <name>MDF4::Player</name>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="404"/>
+        <location filename="../../src/MDF4/Player.cpp" line="421"/>
         <source>Select MDF4 file</source>
         <translation>MDF4ファイルを選択</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="406"/>
+        <location filename="../../src/MDF4/Player.cpp" line="423"/>
         <source>MDF4 files (*.mf4 *.dat)</source>
         <translation>MDF4ファイル (*.mf4 *.dat)</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="436"/>
+        <location filename="../../src/MDF4/Player.cpp" line="453"/>
         <source>MDF4 Playback is a Pro feature.</source>
         <translation>MDF4再生はPro機能です。</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="437"/>
+        <location filename="../../src/MDF4/Player.cpp" line="454"/>
         <source>This feature requires a license. Please purchase one to enable MDF4 playback.</source>
         <translation>この機能にはライセンスが必要です。MDF4再生を有効にするには、ライセンスを購入してください。</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="444"/>
+        <location filename="../../src/MDF4/Player.cpp" line="461"/>
         <source>Disconnect from device?</source>
         <translation>デバイスから切断しますか？</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="445"/>
+        <location filename="../../src/MDF4/Player.cpp" line="462"/>
         <source>You must disconnect from the current device before opening a MDF4 file.</source>
         <translation>MDF4ファイルを開く前に、現在のデバイスから切断する必要があります。</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="461"/>
+        <location filename="../../src/MDF4/Player.cpp" line="478"/>
         <source>Cannot open MDF4 file</source>
         <translation>MDF4ファイルを開けません</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="462"/>
+        <location filename="../../src/MDF4/Player.cpp" line="479"/>
         <source>The file may be corrupted or in an unsupported format.</source>
         <translation>ファイルが破損しているか、サポートされていない形式です。</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="469"/>
+        <location filename="../../src/MDF4/Player.cpp" line="486"/>
         <source>Invalid MDF4 file</source>
         <translation>無効なMDF4ファイル</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="470"/>
+        <location filename="../../src/MDF4/Player.cpp" line="487"/>
         <source>Failed to read file structure. The file may be corrupted.</source>
         <translation>ファイル構造の読み取りに失敗しました。ファイルが破損している可能性があります。</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="485"/>
+        <location filename="../../src/MDF4/Player.cpp" line="502"/>
         <source>No data in file</source>
         <translation>ファイルにデータがありません</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="486"/>
+        <location filename="../../src/MDF4/Player.cpp" line="503"/>
         <source>The MDF4 file contains no measurement data.</source>
         <translation>MDF4ファイルに測定データが含まれていません。</translation>
     </message>
@@ -12705,92 +12731,92 @@ Please provide the necessary credentials.</source>
 <context>
     <name>MessageBubble</name>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="97"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="99"/>
         <source>You</source>
         <translation>あなた</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="99"/>
         <source>Assistant</source>
         <translation>アシスタント</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="208"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="209"/>
         <source>Discovery</source>
         <translation>検出</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="209"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="210"/>
         <source>Execution</source>
         <translation>実行</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="239"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="240"/>
         <source>Approve %1 actions in %2?</source>
         <translation>%2内の%1個のアクションを承認しますか?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="249"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="250"/>
         <source>These calls will run together. Expand each card below to inspect arguments.</source>
         <translation>これらの呼び出しは一括実行されます。各カードを展開して引数を確認してください。</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="260"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="261"/>
         <source>Approve all</source>
         <translation>すべて承認</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="266"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="267"/>
         <source>Deny all</source>
         <translation>すべて拒否</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="333"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="408"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="460"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="335"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="410"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="462"/>
         <source>Copy</source>
         <translation>コピー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="338"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="413"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="465"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="340"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="415"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="467"/>
         <source>Copy All</source>
         <translation>すべてコピー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="346"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="421"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="348"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="423"/>
         <source>Select All</source>
         <translation>すべて選択</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="353"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="355"/>
         <source>Remember this…</source>
         <translation>これを記憶…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="356"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="358"/>
         <source>As a preference about me</source>
         <translation>私についての設定として</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="360"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="362"/>
         <source>As a correction / lesson</source>
         <translation>訂正/学習として</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="364"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="366"/>
         <source>As a fact about this project</source>
         <translation>このプロジェクトに関する事実として</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="368"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="370"/>
         <source>As a reference</source>
         <translation>参考として</translation>
     </message>
@@ -13926,7 +13952,7 @@ Add groups above to poll multiple register types.</source>
     <message>
         <location filename="../../src/DataModel/Scripting/NativeTemplates/BinaryTemplates.cpp" line="1096"/>
         <location filename="../../src/DataModel/Scripting/NativeTemplates/BinaryTemplates.cpp" line="1300"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1245"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1222"/>
         <source>Validate checksum</source>
         <translation>チェックサムを検証</translation>
     </message>
@@ -14051,117 +14077,117 @@ Add groups above to poll multiple register types.</source>
         <translation>カンマ区切りのレコードフィールド。各フィールドの位置がチャンネルインデックスを設定します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="605"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="582"/>
         <source>Column widths</source>
         <translation>列幅</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="606"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="583"/>
         <source>Comma-separated character counts per field. Leave empty to split on whitespace.</source>
         <translation>各フィールドの文字数をカンマ区切りで指定します。空欄の場合は空白文字で分割します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="614"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="591"/>
         <source>Trim whitespace</source>
         <translation>空白文字をトリム</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="615"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="592"/>
         <source>Removes padding around every sliced field.</source>
         <translation>分割された各フィールドの前後の空白を削除します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="744"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="893"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1360"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1787"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="721"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="870"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1337"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1764"/>
         <source>Keys (in channel order)</source>
         <translation>キー（チャンネル順）</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="745"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="894"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1788"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="722"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="871"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1765"/>
         <source>Comma-separated key names. The position of each key sets its channel index.</source>
         <translation>キー名をカンマ区切りで指定します。各キーの位置がチャンネルインデックスを決定します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="753"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="730"/>
         <source>Pair separator</source>
         <translation>ペア区切り文字</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="754"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="731"/>
         <source>Character between key=value pairs.</source>
         <translation>key=valueペア間の文字。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="760"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="737"/>
         <source>Key-value separator</source>
         <translation>キー値区切り文字</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="761"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="738"/>
         <source>Character between a key and its value.</source>
         <translation>キーと値の間の文字。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="767"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="744"/>
         <source>Numeric values only</source>
         <translation>数値のみ</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="768"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="745"/>
         <source>Ignores pairs whose value is not a number.</source>
         <translation>値が数値でないペアを無視します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1010"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="987"/>
         <source>Command routing table</source>
         <translation>コマンドルーティングテーブル</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1011"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="988"/>
         <source>Semicolon-separated entries of NAME:index list, e.g. CSQ:0,1;CREG:2,3;CGATT:4.</source>
         <translation>セミコロン区切りのNAME:インデックスリストエントリ（例: CSQ:0,1;CREG:2,3;CGATT:4）。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1236"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1213"/>
         <source>Talker prefix</source>
         <translation>トーカープレフィックス</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1237"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1214"/>
         <source>Two-letter talker id, e.g. GP for GPS or GN for multi-constellation receivers.</source>
         <translation>2文字のトーカーID、例: GPSの場合はGP、マルチコンステレーション受信機の場合はGN。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1246"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1223"/>
         <source>Rejects sentences whose *hh checksum does not match.</source>
         <translation>*hhチェックサムが一致しないセンテンスを拒否します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1361"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1338"/>
         <source>Comma-separated parameter names. The position of each key sets its channel index.</source>
         <translation>カンマ区切りのパラメータ名。各キーの位置がチャンネルインデックスを設定します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1500"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1477"/>
         <source>Fields (in channel order)</source>
         <translation>フィールド(チャンネル順)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1501"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1478"/>
         <source>Comma-separated field names. The position of each field sets its channel index.</source>
         <translation>カンマ区切りのフィールド名。各フィールドの位置がチャンネルインデックスを設定します。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1620"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1597"/>
         <source>Tags (in channel order)</source>
         <translation>タグ（チャンネル順）</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1621"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1598"/>
         <source>Comma-separated tag names. The position of each tag sets its channel index.</source>
         <translation>カンマ区切りのタグ名。各タグの位置がチャンネルインデックスを設定します。</translation>
     </message>
@@ -16167,72 +16193,72 @@ function parse(%1) { ... }
         <translation>終了</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1287"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1366"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1478"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
         <source>Freq: %1</source>
         <translation>周波数: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1481"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
         <source>Time: −%1</source>
         <translation>時間: −%1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIProvider.cpp" line="362"/>
+        <location filename="../../src/AI/Providers/OpenAIProvider.cpp" line="332"/>
         <source>No OpenAI API key set. Open Manage Keys to add one.</source>
         <translation>OpenAI APIキーが設定されていません。キー管理を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicProvider.cpp" line="240"/>
+        <location filename="../../src/AI/Providers/AnthropicProvider.cpp" line="207"/>
         <source>No Anthropic API key set. Open Manage Keys to add one.</source>
         <translation>Anthropic APIキーが設定されていません。キー管理を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiProvider.cpp" line="285"/>
+        <location filename="../../src/AI/Providers/GeminiProvider.cpp" line="255"/>
         <source>No Gemini API key set. Open Manage Keys to add one.</source>
         <translation>Gemini APIキーが設定されていません。キー管理を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="352"/>
+        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="323"/>
         <source>No local model server URL configured. Open Manage Keys to set one.</source>
         <translation>ローカルモデルサーバーのURLが設定されていません。「キーの管理」を開いて設定してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="146"/>
+        <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="116"/>
         <source>No DeepSeek API key set. Open Manage Keys to add one.</source>
         <translation>DeepSeek APIキーが設定されていません。「キーの管理」を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="168"/>
+        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="138"/>
         <source>No Mistral API key set. Open Manage Keys to add one.</source>
         <translation>Mistral APIキーが設定されていません。「キーの管理」を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="181"/>
+        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="151"/>
         <source>No OpenRouter API key set. Open Manage Keys to add one.</source>
         <translation>OpenRouter APIキーが設定されていません。「キーの管理」を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="152"/>
+        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="122"/>
         <source>No Groq API key set. Open Manage Keys to add one.</source>
         <translation>Groq APIキーが設定されていません。「キーの管理」を開いて追加してください。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1205"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1235"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>フレームパーサーが CPU 時間の %1% 以上を使用しています。</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1207"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1237"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio はアプリケーションの応答性を維持するためにフレームをドロップしています。フレームパーサースクリプトを簡素化または最適化して、処理負荷を軽減してください。</translation>
     </message>
@@ -17671,48 +17697,48 @@ function parse(%1) { ... }
 <context>
     <name>Sessions::Player</name>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="270"/>
+        <location filename="../../src/Sessions/Player.cpp" line="291"/>
         <source>Open Session File</source>
         <translation>セッションファイルを開く</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="272"/>
+        <location filename="../../src/Sessions/Player.cpp" line="293"/>
         <source>Session files (*.db)</source>
         <translation>セッションファイル (*.db)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="345"/>
+        <location filename="../../src/Sessions/Player.cpp" line="368"/>
         <source>Device Connection Active</source>
         <translation>デバイス接続がアクティブです</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="346"/>
+        <location filename="../../src/Sessions/Player.cpp" line="369"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>この機能を使用するには、デバイスから切断する必要があります。続行しますか?</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="394"/>
-        <location filename="../../src/Sessions/Player.cpp" line="475"/>
+        <location filename="../../src/Sessions/Player.cpp" line="417"/>
+        <location filename="../../src/Sessions/Player.cpp" line="498"/>
         <source>Cannot open session file</source>
         <translation>セッションファイルを開けません</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="395"/>
+        <location filename="../../src/Sessions/Player.cpp" line="418"/>
         <source>Unknown error</source>
         <translation>不明なエラー</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="411"/>
+        <location filename="../../src/Sessions/Player.cpp" line="434"/>
         <source>No project data</source>
         <translation>プロジェクトデータがありません</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="412"/>
+        <location filename="../../src/Sessions/Player.cpp" line="435"/>
         <source>This session does not contain an embedded project file — the dashboard falls back to a quick-plot layout.</source>
         <translation>このセッションには埋め込みプロジェクトファイルが含まれていません — ダッシュボードはクイックプロットレイアウトにフォールバックします。</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="476"/>
+        <location filename="../../src/Sessions/Player.cpp" line="499"/>
         <source>Check file permissions and try again.</source>
         <translation>ファイルのアクセス許可を確認して、再試行してください。</translation>
     </message>
@@ -19669,95 +19695,95 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>ToolCallCard</name>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="53"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="67"/>
         <source>Awaiting approval</source>
         <translation>承認待ち</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="54"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="68"/>
         <source>Done</source>
         <translation>完了</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="55"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="69"/>
         <source>Error</source>
         <translation>エラー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="56"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="70"/>
         <source>Denied</source>
         <translation>拒否</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="57"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="71"/>
         <source>Blocked</source>
         <translation>ブロック済み</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="58"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="72"/>
         <source>Running</source>
         <translation>実行中</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="160"/>
         <source>Verified</source>
         <translation>検証済み</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="160"/>
         <source>Verify failed</source>
         <translation>検証失敗</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="186"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="200"/>
         <source>Verification failed: %1</source>
         <translation>検証に失敗しました: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="187"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="201"/>
         <source>The applied change failed its verification check.</source>
         <translation>適用された変更が検証チェックに失敗しました。</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="196"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="210"/>
         <source>Restore checkpoint…</source>
         <translation>チェックポイントを復元…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="215"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="229"/>
         <source>Approve</source>
         <translation>承認</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="221"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="235"/>
         <source>Deny</source>
         <translation>拒否</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="238"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="252"/>
         <source>Arguments</source>
         <translation>引数</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="275"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="335"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="289"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="349"/>
         <source>Copy</source>
         <translation>コピー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="280"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="340"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="294"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="354"/>
         <source>Copy All</source>
         <translation>すべてコピー</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="288"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="348"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="302"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="362"/>
         <source>Select All</source>
         <translation>すべて選択</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="296"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="310"/>
         <source>Result</source>
         <translation>結果</translation>
     </message>
@@ -20302,34 +20328,34 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1813"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
         <source>Console</source>
         <translation>コンソール</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1821"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1829"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
         <source>Clock</source>
         <translation>時計</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
         <source>Stopwatch</source>
         <translation>ストップウォッチ</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1898"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (フォールバック)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1920"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1992"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
         <source>LED Panel (%1)</source>
         <translation>LEDパネル (%1)</translation>
     </message>
@@ -21176,12 +21202,12 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::MultiPlot</name>
     <message>
-        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="109"/>
+        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="110"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="109"/>
+        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="110"/>
         <source>Samples</source>
         <translation>サンプル</translation>
     </message>
@@ -21202,12 +21228,12 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Plot</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="92"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="93"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="110"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="111"/>
         <source>Samples</source>
         <translation>サンプル</translation>
     </message>
@@ -21215,7 +21241,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Plot3D</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot3D.cpp" line="1113"/>
+        <location filename="../../src/UI/Widgets/Plot3D.cpp" line="1116"/>
         <source>Grid Interval: %1 unit(s)</source>
         <translation>グリッド間隔: %1単位</translation>
     </message>
@@ -21223,47 +21249,47 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="396"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="398"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="400"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
         <source>Hot</source>
         <translation>Hot</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="402"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
         <source>Grayscale</source>
         <translation>グレースケール</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="404"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>

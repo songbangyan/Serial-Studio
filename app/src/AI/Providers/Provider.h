@@ -47,7 +47,11 @@ class Reply : public QObject {
   Q_OBJECT
 
 public:
-  explicit Reply(QObject* parent = nullptr) : QObject(parent), m_transientError(false) {}
+  static constexpr qint64 kMaxStreamedReplyBytes = 8 * 1024 * 1024;
+
+  explicit Reply(QObject* parent = nullptr)
+    : QObject(parent), m_transientError(false), m_streamedBytes(0)
+  {}
 
   ~Reply() override = default;
 
@@ -70,8 +74,20 @@ signals:
 protected:
   void setTransientError(bool transient) noexcept { m_transientError = transient; }
 
+  /**
+   * @brief Charges streamed bytes against the per-reply budget; a true return means the
+   *        cumulative cap is breached and the reply must abort with an error. Transfer
+   *        timeouts are inactivity-based, so a runaway server needs this hard cap.
+   */
+  [[nodiscard]] bool chargeStreamBudget(qsizetype bytes) noexcept
+  {
+    m_streamedBytes += static_cast<qint64>(bytes);
+    return m_streamedBytes > kMaxStreamedReplyBytes;
+  }
+
 private:
   bool m_transientError;
+  qint64 m_streamedBytes;
 };
 
 /**

@@ -74,7 +74,8 @@ bool AI::MemoryStore::isEmpty() const noexcept
 }
 
 /**
- * @brief Returns fact rows for the QML memory manager, newest-used first.
+ * @brief Returns fact rows for the QML memory manager in insertion order (newest-created
+ *        first); updates do not reorder facts.
  */
 QVariantList AI::MemoryStore::list() const
 {
@@ -93,7 +94,8 @@ QVariantList AI::MemoryStore::list() const
 
 /**
  * @brief Returns the capped plain-text index of applicable facts (installation-wide plus
- *        those scoped to the given project), newest-used first; empty when nothing applies.
+ *        those scoped to the given project) in insertion order, newest-created first;
+ *        empty when nothing applies.
  */
 QString AI::MemoryStore::indexBlock(const QString& projectPath) const
 {
@@ -213,7 +215,8 @@ void AI::MemoryStore::removeFact(const QString& id)
 }
 
 /**
- * @brief Evicts least-recently-used facts once the hard cap is exceeded.
+ * @brief Evicts the facts with the oldest lastUsedAt once the hard cap is exceeded. Only
+ *        updateFact refreshes lastUsedAt, so never-updated facts evict oldest-created first.
  */
 void AI::MemoryStore::evictOverflow()
 {

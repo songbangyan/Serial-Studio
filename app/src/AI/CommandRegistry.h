@@ -14,7 +14,6 @@
 #include <QHash>
 #include <QSet>
 #include <QString>
-#include <QStringList>
 
 namespace AI {
 
@@ -36,8 +35,6 @@ public:
   [[nodiscard]] static CommandRegistry& instance();
 
   [[nodiscard]] Safety safetyOf(const QString& commandName) const;
-  [[nodiscard]] QStringList safeNames() const;
-  [[nodiscard]] QStringList blockedNames() const;
   [[nodiscard]] bool deviceControlAllowed() const;
   [[nodiscard]] bool isDeviceGated(const QString& commandName) const;
 

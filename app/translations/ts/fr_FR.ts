@@ -4,34 +4,39 @@
 <context>
     <name>AI::AnthropicReply</name>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="165"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="122"/>
         <source>Anthropic error</source>
         <translation>Erreur Anthropic</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="311"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="272"/>
         <source>Stream parse error: %1</source>
         <translation>Erreur d'analyse du flux : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="360"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="321"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="363"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="324"/>
         <source>Invalid API key (%1)</source>
         <translation>Clé API invalide (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="365"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="326"/>
         <source>Rate limited: %1</source>
         <translation>Limite de débit atteinte : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="367"/>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="328"/>
         <source>Anthropic %1: %2</source>
         <translation>Anthropic %1 : %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/AnthropicReply.cpp" line="362"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>La réponse a dépassé la limite de flux de %1 Mo</translation>
     </message>
 </context>
 <context>
@@ -51,22 +56,22 @@ Every device action still requires your explicit per-call approval in the chat, 
 Chaque action sur le périphérique nécessite toujours votre approbation explicite par appel dans le chat, même lorsque l'approbation automatique est activée. N'activez ceci que si vous faites confiance au fournisseur d'IA configuré pour l'accès au matériel.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="630"/>
+        <location filename="../../src/AI/Assistant.cpp" line="639"/>
         <source>Switch AI provider?</source>
         <translation>Changer de Fournisseur IA ?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="631"/>
+        <location filename="../../src/AI/Assistant.cpp" line="640"/>
         <source>Switching to a different provider clears the current conversation. Do you want to continue?</source>
         <translation>Le changement de fournisseur efface la conversation actuelle. Voulez-vous continuer ?</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="634"/>
+        <location filename="../../src/AI/Assistant.cpp" line="643"/>
         <source>Assistant</source>
         <translation>Assistant</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="671"/>
+        <location filename="../../src/AI/Assistant.cpp" line="680"/>
         <source>AI Assistant is not available in this build</source>
         <translation>L'Assistant IA n'est pas disponible dans cette version</translation>
     </message>
@@ -75,7 +80,7 @@ Chaque action sur le périphérique nécessite toujours votre approbation explic
         <translation type="vanished">L'Assistant IA Nécessite une Licence Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Assistant.cpp" line="676"/>
+        <location filename="../../src/AI/Assistant.cpp" line="685"/>
         <source>Set an API key first</source>
         <translation>Définir d'abord une clé API</translation>
     </message>
@@ -87,62 +92,63 @@ Chaque action sur le périphérique nécessite toujours votre approbation explic
         <translation type="vanished">L'assistant IA nécessite une licence Pro</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="171"/>
+        <location filename="../../src/AI/Conversation.cpp" line="173"/>
         <source>AI Assistant is not available in this build</source>
         <translation>L'Assistant IA n'est pas disponible dans cette version</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="177"/>
+        <location filename="../../src/AI/Conversation.cpp" line="179"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1298"/>
         <source>AI subsystem not initialized</source>
         <translation>Sous-système IA non initialisé</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="183"/>
+        <location filename="../../src/AI/Conversation.cpp" line="185"/>
         <source>Already busy with a previous request</source>
         <translation>Déjà occupé par une requête précédente</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="647"/>
+        <location filename="../../src/AI/Conversation.cpp" line="666"/>
         <source>Tool-call budget reached for this turn; no further tools will run.</source>
         <translation>Budget d'appels d'outils atteint pour ce tour ; aucun autre outil ne sera exécuté.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1283"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1313"/>
         <source>Waiting for %1 to respond. Loading the model and processing the prompt can take a while on local hardware...</source>
         <translation>En attente de réponse de %1. Le chargement du modèle et le traitement de l'invite peuvent prendre du temps sur du matériel local…</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2130"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2227"/>
         <source>%1 operation(s) failed</source>
         <translation>%1 opération(s) en échec</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2184"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2281"/>
         <source>Source list read-back failed</source>
         <translation>Échec de la lecture de la liste source</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2205"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2302"/>
         <source>Source %1 not found after update</source>
         <translation>Source %1 introuvable après mise à jour</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2223"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2320"/>
         <source>Fields did not round-trip: %1</source>
         <translation>Les champs n'ont pas effectué l'aller-retour : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="2344"/>
+        <location filename="../../src/AI/Conversation.cpp" line="2441"/>
         <source>You have reached the tool-call budget for this turn. Do not request more tools. Summarize what you found so far, and if the task is incomplete, say which steps remain so the user can tell you to continue.</source>
         <translation>Vous avez atteint le budget d'appels d'outils pour ce tour. Ne demandez plus d'outils. Résumez ce que vous avez trouvé jusqu'à présent, et si la tâche est incomplète, indiquez les étapes restantes afin que l'utilisateur puisse vous demander de continuer.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="3104"/>
+        <location filename="../../src/AI/Conversation.cpp" line="3213"/>
         <source>The model stopped reproducing its context-integrity line. Long conversations degrade silently; recent replies may be less reliable.</source>
         <translation>Le modèle a cessé de reproduire sa ligne d'intégrité de contexte. Les conversations longues se dégradent silencieusement ; les réponses récentes peuvent être moins fiables.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="3107"/>
+        <location filename="../../src/AI/Conversation.cpp" line="3216"/>
         <source>The model altered its context-integrity line (drifted segment: %1). Long conversations degrade silently; recent replies may be less reliable.</source>
         <translation>Le modèle a modifié sa ligne d'intégrité de contexte (segment dérivé : %1). Les conversations longues se dégradent silencieusement ; les réponses récentes peuvent être moins fiables.</translation>
     </message>
@@ -151,17 +157,17 @@ Chaque action sur le périphérique nécessite toujours votre approbation explic
         <translation type="vanished">Budget d'appels d'outils dépassé</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1124"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1143"/>
         <source>(The model returned an empty response. Try rephrasing, switching to a different model, or checking that the request is allowed by the provider's safety filters.)</source>
         <translation>(Le modèle a retourné une réponse vide. Essayez de reformuler, de changer de modèle ou de vérifier que la requête est autorisée par les filtres de sécurité du fournisseur.)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1287"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1317"/>
         <source>Sending request to %1...</source>
         <translation>Envoi de la requête à %1…</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Conversation.cpp" line="1305"/>
+        <location filename="../../src/AI/Conversation.cpp" line="1335"/>
         <source>Provider returned no reply</source>
         <translation>Le fournisseur n'a retourné aucune réponse</translation>
     </message>
@@ -169,62 +175,82 @@ Chaque action sur le périphérique nécessite toujours votre approbation explic
 <context>
     <name>AI::GeminiReply</name>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="146"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="130"/>
+        <source>Stream parse error: %1</source>
+        <translation>Erreur d'analyse du flux : %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="152"/>
         <source>Prompt blocked by Gemini safety filter: %1</source>
         <translation>Invite bloquée par le filtre de sécurité Gemini : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="200"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="209"/>
         <source>Gemini stopped without producing a response: %1</source>
         <translation>Gemini s'est arrêté sans produire de réponse : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="262"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="271"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="265"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="274"/>
         <source>Invalid API key (%1)</source>
         <translation>Clé API invalide (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="267"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="276"/>
         <source>Rate limited: %1</source>
         <translation>Limite de débit atteinte : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="269"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="278"/>
         <source>Invalid API key</source>
         <translation>Clé API invalide</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="271"/>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="280"/>
         <source>Gemini %1: %2</source>
         <translation>Gemini %1 : %2</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/GeminiReply.cpp" line="297"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>La réponse a dépassé la limite de flux de %1 Mo</translation>
     </message>
 </context>
 <context>
     <name>AI::OpenAIReply</name>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="426"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="159"/>
+        <source>Stream parse error: %1</source>
+        <translation>Erreur d'analyse du flux : %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="396"/>
         <source>HTTP %1</source>
         <translation>HTTP %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="429"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="399"/>
         <source>Invalid API key (%1)</source>
         <translation>Clé API invalide (%1)</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="431"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="401"/>
         <source>Rate limited: %1</source>
         <translation>Limite de débit atteinte : %1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="433"/>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="403"/>
         <source>%1 %2: %3</source>
         <translation>%1 %2 : %3</translation>
+    </message>
+    <message>
+        <location filename="../../src/AI/Providers/OpenAIReply.cpp" line="437"/>
+        <source>Reply exceeded the %1 MB stream limit</source>
+        <translation>La réponse a dépassé la limite de flux de %1 Mo</translation>
     </message>
     <message>
         <source>OpenAI %1: %2</source>
@@ -2187,103 +2213,103 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
 <context>
     <name>CSV::Player</name>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="207"/>
+        <location filename="../../src/CSV/Player.cpp" line="223"/>
         <source>Select CSV file</source>
         <translation>Sélectionner un fichier CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="209"/>
+        <location filename="../../src/CSV/Player.cpp" line="225"/>
         <source>CSV files (*.csv)</source>
         <translation>Fichiers CSV (*.CSV)</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="371"/>
+        <location filename="../../src/CSV/Player.cpp" line="391"/>
         <source>Device Connection Active</source>
         <translation>Connexion au Périphérique Active</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="372"/>
+        <location filename="../../src/CSV/Player.cpp" line="392"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>Pour utiliser cette fonctionnalité, la connexion au périphérique doit être interrompue. Continuer ?</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="386"/>
+        <location filename="../../src/CSV/Player.cpp" line="406"/>
         <source>Check file permissions and location</source>
         <translation>Vérifier les permissions et l'emplacement du fichier</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="416"/>
+        <location filename="../../src/CSV/Player.cpp" line="438"/>
         <source>Insufficient Data in CSV File</source>
         <translation>Données Insuffisantes dans le Fichier CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="386"/>
+        <location filename="../../src/CSV/Player.cpp" line="406"/>
         <source>Cannot read CSV file</source>
         <translation>Impossible de lire le fichier CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="417"/>
+        <location filename="../../src/CSV/Player.cpp" line="439"/>
         <source>The CSV file must contain at least one data row to proceed. Check the file and try again.</source>
         <translation>Le fichier CSV doit contenir au moins une ligne de données pour continuer. Vérifiez le fichier et réessayez.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="652"/>
+        <location filename="../../src/CSV/Player.cpp" line="817"/>
         <source>Invalid CSV</source>
         <translation>CSV Invalide</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="653"/>
+        <location filename="../../src/CSV/Player.cpp" line="818"/>
         <source>The CSV file does not contain any data or headers.</source>
         <translation>Le fichier CSV ne contient aucune donnée ni en-tête.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="662"/>
+        <location filename="../../src/CSV/Player.cpp" line="827"/>
         <source>Select a date/time column</source>
         <translation>Sélectionner une Colonne de Date/Heure</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="662"/>
-        <location filename="../../src/CSV/Player.cpp" line="674"/>
+        <location filename="../../src/CSV/Player.cpp" line="827"/>
+        <location filename="../../src/CSV/Player.cpp" line="839"/>
         <source>Set interval manually</source>
         <translation>Définir l'Intervalle Manuellement</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="664"/>
+        <location filename="../../src/CSV/Player.cpp" line="829"/>
         <source>CSV Date/Time Selection</source>
         <translation>Sélection de Date/heure CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="665"/>
+        <location filename="../../src/CSV/Player.cpp" line="830"/>
         <source>Choose how to handle the date/time data:</source>
         <translation>Choisir comment traiter les données de date/heure :</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="677"/>
+        <location filename="../../src/CSV/Player.cpp" line="842"/>
         <source>Set Interval</source>
         <translation>Définir L'intervalle</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="678"/>
+        <location filename="../../src/CSV/Player.cpp" line="843"/>
         <source>Please enter the interval between rows in milliseconds:</source>
         <translation>Entrer l'intervalle entre les lignes en millisecondes :</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="694"/>
+        <location filename="../../src/CSV/Player.cpp" line="859"/>
         <source>Select Date/Time Column</source>
         <translation>Sélectionner la Colonne Date/heure</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="695"/>
+        <location filename="../../src/CSV/Player.cpp" line="860"/>
         <source>Please select the column that contains the date/time data:</source>
         <translation>Veuillez sélectionner la colonne qui contient les données de date/heure :</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="705"/>
+        <location filename="../../src/CSV/Player.cpp" line="870"/>
         <source>Invalid Selection</source>
         <translation>Sélection Invalide</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="705"/>
+        <location filename="../../src/CSV/Player.cpp" line="870"/>
         <source>The selected column is not valid.</source>
         <translation>La colonne sélectionnée n'est pas valide.</translation>
     </message>
@@ -2361,42 +2387,42 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
 <context>
     <name>Console::Handler</name>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="273"/>
+        <location filename="../../src/Console/Handler.cpp" line="275"/>
         <source>ASCII</source>
         <translation>ASCII</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="274"/>
+        <location filename="../../src/Console/Handler.cpp" line="276"/>
         <source>HEX</source>
         <translation>HEX</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="284"/>
+        <location filename="../../src/Console/Handler.cpp" line="286"/>
         <source>No Line Ending</source>
         <translation>Aucune Fin de Ligne</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="285"/>
+        <location filename="../../src/Console/Handler.cpp" line="287"/>
         <source>New Line</source>
         <translation>Nouvelle Ligne</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="286"/>
+        <location filename="../../src/Console/Handler.cpp" line="288"/>
         <source>Carriage Return</source>
         <translation>Retour Chariot</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="287"/>
+        <location filename="../../src/Console/Handler.cpp" line="289"/>
         <source>CR + NL</source>
         <translation>RC + NL</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="297"/>
+        <location filename="../../src/Console/Handler.cpp" line="299"/>
         <source>Text</source>
         <translation>Texte</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="298"/>
+        <location filename="../../src/Console/Handler.cpp" line="300"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
@@ -2409,12 +2435,12 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
         <translation type="vanished">Hexadécimal</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="320"/>
+        <location filename="../../src/Console/Handler.cpp" line="322"/>
         <source>No Checksum</source>
         <translation>Aucune Somme de Contrôle</translation>
     </message>
     <message>
-        <location filename="../../src/Console/Handler.cpp" line="1018"/>
+        <location filename="../../src/Console/Handler.cpp" line="1020"/>
         <source>Device %1</source>
         <translation>Périphérique %1</translation>
     </message>
@@ -3556,29 +3582,29 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1778"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1893"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1810"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1925"/>
         <source>Channel %1</source>
         <translation>Canal %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1904"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1936"/>
         <source>Audio Input</source>
         <translation>Entrée Audio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1787"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1909"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1819"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1941"/>
         <source>Quick Plot</source>
         <translation>Tracé Rapide</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1487"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1517"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>Transformation JavaScript hors budget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1488"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1518"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>Une transformation de jeu de données a pris plus de %1 ms ; les jeux de données restants dans la trame sont revenus aux valeurs brutes jusqu’à la prochaine trame. Analysez ou simplifiez le code de transformation.</translation>
     </message>
@@ -3593,17 +3619,17 @@ Activez cette option uniquement sur des réseaux de confiance. Des clients non f
         <translation>Un consommateur en aval (tableau de bord, export CSV/MDF4, base de données de session ou abonné API) ne vide pas les trames assez rapidement. Serial Studio utilise des allocations par trame jusqu’à ce que le retard soit résorbé. Désactivez un consommateur lourd ou réduisez le débit de données.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1738"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
         <source>Device A</source>
         <translation>Appareil A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1794"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1826"/>
         <source>Quick Plot Data</source>
         <translation>Données de Tracé Rapide</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1806"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1838"/>
         <source>Multiple Plots</source>
         <translation>Graphiques Multiples</translation>
     </message>
@@ -10970,128 +10996,128 @@ Le périphérique peut ne pas exposer de points de terminaison de données dans 
 <context>
     <name>IO::Protocols::ZMODEM</name>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="86"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="87"/>
         <source>Cannot open file: %1</source>
         <translation>Impossible d'ouvrir le fichier : %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="103"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="104"/>
         <source>File is too large for ZMODEM (%1 bytes, limit 4 GiB).</source>
         <translation>Le fichier est trop volumineux pour ZMODEM (%1 octets, limite 4 Gio).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="128"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="129"/>
         <source>Transfer cancelled</source>
         <translation>Transfert annulé</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="129"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="130"/>
         <source>Transfer cancelled by user</source>
         <translation>Transfert annulé par l'utilisateur</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="269"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="270"/>
         <source>Hex header CRC mismatch, dropping frame</source>
         <translation>Incohérence CRC de l'en-tête hexadécimal, trame abandonnée</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="444"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="445"/>
         <source>Sending file info: %1 (%2 bytes)</source>
         <translation>Envoi des informations du fichier : %1 (%2 octets)</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="459"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="460"/>
         <source>Failed to seek to offset %1</source>
         <translation>Échec du positionnement à l'offset %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="486"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="487"/>
         <source>File read error: %1</source>
         <translation>Erreur de lecture du fichier : %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="491"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="492"/>
         <source>File read returned more data than requested</source>
         <translation>La lecture du fichier a retourné plus de données que demandé</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="574"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="575"/>
         <source>Receiver requests data from offset %1</source>
         <translation>Le récepteur demande les données à partir de l'offset %1</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="582"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="583"/>
         <source>Receiver skipped the file</source>
         <translation>Le récepteur a ignoré le fichier</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="594"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="595"/>
         <source>Too many errors, transfer aborted</source>
         <translation>Trop d'erreurs, transfert interrompu</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="595"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="596"/>
         <source>Maximum retries exceeded</source>
         <translation>Nombre maximal de tentatives dépassé</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="420"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="421"/>
         <source>Sending ZRQINIT, waiting for receiver…</source>
         <translation>Envoi de ZRQINIT, attente du récepteur…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="517"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="518"/>
         <source>File data sent, waiting for confirmation…</source>
         <translation>Données du fichier envoyées, attente de confirmation…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="528"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="529"/>
         <source>Sending ZFIN…</source>
         <translation>Envoi de ZFIN…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="564"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="565"/>
         <source>Receiver ready, sending file info…</source>
         <translation>Récepteur prêt, envoi des informations du fichier…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="599"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="600"/>
         <source>NAK received, retrying (%1/%2)…</source>
         <translation>NAK reçu, nouvelle tentative (%1/%2)…</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="620"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="621"/>
         <source>Transfer complete</source>
         <translation>Transfert terminé</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="630"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="631"/>
         <source>Transfer cancelled by receiver</source>
         <translation>Transfert annulé par le récepteur</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="631"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="632"/>
         <source>Receiver cancelled the transfer</source>
         <translation>Le récepteur a annulé le transfert</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="639"/>
         <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="640"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="641"/>
         <source>Receiver reported a file error</source>
         <translation>Le récepteur a signalé une erreur de fichier</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="838"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="824"/>
         <source>Transfer timed out</source>
         <translation>Délai d'attente du transfert dépassé</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="839"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="825"/>
         <source>Timeout: no response from receiver</source>
         <translation>Délai d'attente dépassé : aucune réponse du récepteur</translation>
     </message>
     <message>
-        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="843"/>
+        <location filename="../../src/IO/FileTransmission/ZMODEM.cpp" line="829"/>
         <source>Timeout, retrying (%1/%2)…</source>
         <translation>Délai d'attente dépassé, nouvelle tentative (%1/%2)…</translation>
     </message>
@@ -11693,62 +11719,62 @@ Pour réutiliser ce siège sur un autre appareil, envoyez un e-mail à alex@seri
 <context>
     <name>MDF4::Player</name>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="404"/>
+        <location filename="../../src/MDF4/Player.cpp" line="421"/>
         <source>Select MDF4 file</source>
         <translation>Sélectionner un fichier MDF4</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="406"/>
+        <location filename="../../src/MDF4/Player.cpp" line="423"/>
         <source>MDF4 files (*.mf4 *.dat)</source>
         <translation>Fichiers MDF4 (*.mf4 *.dat)</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="436"/>
+        <location filename="../../src/MDF4/Player.cpp" line="453"/>
         <source>MDF4 Playback is a Pro feature.</source>
         <translation>La Lecture MDF4 est une fonctionnalité Pro.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="437"/>
+        <location filename="../../src/MDF4/Player.cpp" line="454"/>
         <source>This feature requires a license. Please purchase one to enable MDF4 playback.</source>
         <translation>Cette fonctionnalité nécessite une licence. Veuillez en acheter une pour activer la lecture MDF4.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="444"/>
+        <location filename="../../src/MDF4/Player.cpp" line="461"/>
         <source>Disconnect from device?</source>
         <translation>Se déconnecter de l'appareil ?</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="445"/>
+        <location filename="../../src/MDF4/Player.cpp" line="462"/>
         <source>You must disconnect from the current device before opening a MDF4 file.</source>
         <translation>Vous devez vous déconnecter de l'appareil actuel avant d'ouvrir un fichier MDF4.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="461"/>
+        <location filename="../../src/MDF4/Player.cpp" line="478"/>
         <source>Cannot open MDF4 file</source>
         <translation>Impossible d'ouvrir le fichier MDF4</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="462"/>
+        <location filename="../../src/MDF4/Player.cpp" line="479"/>
         <source>The file may be corrupted or in an unsupported format.</source>
         <translation>Le fichier peut être corrompu ou dans un format non pris en charge.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="469"/>
+        <location filename="../../src/MDF4/Player.cpp" line="486"/>
         <source>Invalid MDF4 file</source>
         <translation>Fichier MDF4 Invalide</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="470"/>
+        <location filename="../../src/MDF4/Player.cpp" line="487"/>
         <source>Failed to read file structure. The file may be corrupted.</source>
         <translation>Échec de lecture de la structure du fichier. Le fichier peut être corrompu.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="485"/>
+        <location filename="../../src/MDF4/Player.cpp" line="502"/>
         <source>No data in file</source>
         <translation>Aucune donnée dans le fichier</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="486"/>
+        <location filename="../../src/MDF4/Player.cpp" line="503"/>
         <source>The MDF4 file contains no measurement data.</source>
         <translation>Le fichier MDF4 ne contient aucune donnée de mesure.</translation>
     </message>
@@ -12705,92 +12731,92 @@ Veuillez fournir les identifiants nécessaires.</translation>
 <context>
     <name>MessageBubble</name>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="97"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="99"/>
         <source>You</source>
         <translation>Vous</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="98"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="99"/>
         <source>Assistant</source>
         <translation>Assistant</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="208"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="209"/>
         <source>Discovery</source>
         <translation>Découverte</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="209"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="210"/>
         <source>Execution</source>
         <translation>Exécution</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="239"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="240"/>
         <source>Approve %1 actions in %2?</source>
         <translation>Approuver %1 actions dans %2 ?</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="249"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="250"/>
         <source>These calls will run together. Expand each card below to inspect arguments.</source>
         <translation>Ces appels s'exécuteront ensemble. Développez chaque carte ci-dessous pour inspecter les arguments.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="260"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="261"/>
         <source>Approve all</source>
         <translation>Tout Approuver</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="266"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="267"/>
         <source>Deny all</source>
         <translation>Tout Refuser</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="333"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="408"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="460"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="335"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="410"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="462"/>
         <source>Copy</source>
         <translation>Copier</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="338"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="413"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="465"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="340"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="415"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="467"/>
         <source>Copy All</source>
         <translation>Tout Copier</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="346"/>
-        <location filename="../../qml/AI/MessageBubble.qml" line="421"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="348"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="423"/>
         <source>Select All</source>
         <translation>Tout Sélectionner</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="353"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="355"/>
         <source>Remember this…</source>
         <translation>Retenir ceci…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="356"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="358"/>
         <source>As a preference about me</source>
         <translation>Comme une préférence à mon sujet</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="360"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="362"/>
         <source>As a correction / lesson</source>
         <translation>Comme une correction / leçon</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="364"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="366"/>
         <source>As a fact about this project</source>
         <translation>En tant que fait concernant ce projet</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/MessageBubble.qml" line="368"/>
+        <location filename="../../qml/AI/MessageBubble.qml" line="370"/>
         <source>As a reference</source>
         <translation>En tant que référence</translation>
     </message>
@@ -13926,7 +13952,7 @@ Ajoutez des groupes ci-dessus pour interroger plusieurs types de registres.</tra
     <message>
         <location filename="../../src/DataModel/Scripting/NativeTemplates/BinaryTemplates.cpp" line="1096"/>
         <location filename="../../src/DataModel/Scripting/NativeTemplates/BinaryTemplates.cpp" line="1300"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1245"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1222"/>
         <source>Validate checksum</source>
         <translation>Valider la somme de contrôle</translation>
     </message>
@@ -14051,117 +14077,117 @@ Ajoutez des groupes ci-dessus pour interroger plusieurs types de registres.</tra
         <translation>Champs d'enregistrement séparés par des virgules. La position de chaque champ définit son index de canal.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="605"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="582"/>
         <source>Column widths</source>
         <translation>Largeurs de Colonnes</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="606"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="583"/>
         <source>Comma-separated character counts per field. Leave empty to split on whitespace.</source>
         <translation>Nombre de caractères par champ, séparés par des virgules. Laisser vide pour diviser sur les espaces.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="614"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="591"/>
         <source>Trim whitespace</source>
         <translation>Supprimer les Espaces</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="615"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="592"/>
         <source>Removes padding around every sliced field.</source>
         <translation>Supprime les espaces autour de chaque champ découpé.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="744"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="893"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1360"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1787"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="721"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="870"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1337"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1764"/>
         <source>Keys (in channel order)</source>
         <translation>Clés (dans l'Ordre des Canaux)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="745"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="894"/>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1788"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="722"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="871"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1765"/>
         <source>Comma-separated key names. The position of each key sets its channel index.</source>
         <translation>Noms de clés séparés par des virgules. La position de chaque clé définit son index de canal.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="753"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="730"/>
         <source>Pair separator</source>
         <translation>Séparateur de Paires</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="754"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="731"/>
         <source>Character between key=value pairs.</source>
         <translation>Caractère entre les paires clé=valeur.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="760"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="737"/>
         <source>Key-value separator</source>
         <translation>Séparateur Clé-Valeur</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="761"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="738"/>
         <source>Character between a key and its value.</source>
         <translation>Caractère entre une clé et sa valeur.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="767"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="744"/>
         <source>Numeric values only</source>
         <translation>Valeurs numériques uniquement</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="768"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="745"/>
         <source>Ignores pairs whose value is not a number.</source>
         <translation>Ignore les paires dont la valeur n'est pas un nombre.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1010"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="987"/>
         <source>Command routing table</source>
         <translation>Table de routage des commandes</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1011"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="988"/>
         <source>Semicolon-separated entries of NAME:index list, e.g. CSQ:0,1;CREG:2,3;CGATT:4.</source>
         <translation>Entrées séparées par des points-virgules sous forme de liste NOM:index, par ex. CSQ:0,1;CREG:2,3;CGATT:4.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1236"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1213"/>
         <source>Talker prefix</source>
         <translation>Préfixe du locuteur</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1237"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1214"/>
         <source>Two-letter talker id, e.g. GP for GPS or GN for multi-constellation receivers.</source>
         <translation>Identifiant de locuteur à deux lettres, par ex. GP pour GPS ou GN pour les récepteurs multi-constellations.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1246"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1223"/>
         <source>Rejects sentences whose *hh checksum does not match.</source>
         <translation>Rejette les phrases dont la somme de contrôle *hh ne correspond pas.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1361"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1338"/>
         <source>Comma-separated parameter names. The position of each key sets its channel index.</source>
         <translation>Noms de paramètres séparés par des virgules. La position de chaque clé définit son index de canal.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1500"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1477"/>
         <source>Fields (in channel order)</source>
         <translation>Champs (dans l'ordre des canaux)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1501"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1478"/>
         <source>Comma-separated field names. The position of each field sets its channel index.</source>
         <translation>Noms de champs séparés par des virgules. La position de chaque champ définit son index de canal.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1620"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1597"/>
         <source>Tags (in channel order)</source>
         <translation>Balises (dans l'ordre des canaux)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1621"/>
+        <location filename="../../src/DataModel/Scripting/NativeTemplates/TextTemplates.cpp" line="1598"/>
         <source>Comma-separated tag names. The position of each tag sets its channel index.</source>
         <translation>Noms de balises séparés par des virgules. La position de chaque balise définit son index de canal.</translation>
     </message>
@@ -16167,72 +16193,72 @@ Le paramètre de séparateur n'est plus nécessaire.</translation>
         <translation>Quitter</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1287"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1366"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1478"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
         <source>Freq: %1</source>
         <translation>Fréq : %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1481"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
         <source>Time: −%1</source>
         <translation>Temps : −%1</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenAIProvider.cpp" line="362"/>
+        <location filename="../../src/AI/Providers/OpenAIProvider.cpp" line="332"/>
         <source>No OpenAI API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API OpenAI définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/AnthropicProvider.cpp" line="240"/>
+        <location filename="../../src/AI/Providers/AnthropicProvider.cpp" line="207"/>
         <source>No Anthropic API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API Anthropic définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GeminiProvider.cpp" line="285"/>
+        <location filename="../../src/AI/Providers/GeminiProvider.cpp" line="255"/>
         <source>No Gemini API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API Gemini définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="352"/>
+        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="323"/>
         <source>No local model server URL configured. Open Manage Keys to set one.</source>
         <translation>Aucune URL de serveur de modèle local configurée. Ouvrez Gérer les Clés pour en définir une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="146"/>
+        <location filename="../../src/AI/Providers/DeepSeekProvider.cpp" line="116"/>
         <source>No DeepSeek API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API DeepSeek définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="168"/>
+        <location filename="../../src/AI/Providers/MistralProvider.cpp" line="138"/>
         <source>No Mistral API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API Mistral définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="181"/>
+        <location filename="../../src/AI/Providers/OpenRouterProvider.cpp" line="151"/>
         <source>No OpenRouter API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API OpenRouter définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="152"/>
+        <location filename="../../src/AI/Providers/GroqProvider.cpp" line="122"/>
         <source>No Groq API key set. Open Manage Keys to add one.</source>
         <translation>Aucune clé API Groq définie. Ouvrez Gérer les Clés pour en ajouter une.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1205"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1235"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>L'analyseur de trames utilise plus de %1% du temps CPU.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1207"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1237"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio abandonne des trames pour maintenir l'application réactive. Veuillez simplifier ou optimiser le script d'analyse de trames pour réduire sa charge de travail.</translation>
     </message>
@@ -17671,48 +17697,48 @@ Le paramètre de séparateur n'est plus nécessaire.</translation>
 <context>
     <name>Sessions::Player</name>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="270"/>
+        <location filename="../../src/Sessions/Player.cpp" line="291"/>
         <source>Open Session File</source>
         <translation>Ouvrir un Fichier de Session</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="272"/>
+        <location filename="../../src/Sessions/Player.cpp" line="293"/>
         <source>Session files (*.db)</source>
         <translation>Fichiers de session (*.db)</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="345"/>
+        <location filename="../../src/Sessions/Player.cpp" line="368"/>
         <source>Device Connection Active</source>
         <translation>Connexion au Périphérique Active</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="346"/>
+        <location filename="../../src/Sessions/Player.cpp" line="369"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>Pour utiliser cette fonctionnalité, la connexion au périphérique doit être interrompue. Continuer ?</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="394"/>
-        <location filename="../../src/Sessions/Player.cpp" line="475"/>
+        <location filename="../../src/Sessions/Player.cpp" line="417"/>
+        <location filename="../../src/Sessions/Player.cpp" line="498"/>
         <source>Cannot open session file</source>
         <translation>Impossible d'ouvrir le fichier de session</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="395"/>
+        <location filename="../../src/Sessions/Player.cpp" line="418"/>
         <source>Unknown error</source>
         <translation>Erreur inconnue</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="411"/>
+        <location filename="../../src/Sessions/Player.cpp" line="434"/>
         <source>No project data</source>
         <translation>Aucune donnée de projet</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="412"/>
+        <location filename="../../src/Sessions/Player.cpp" line="435"/>
         <source>This session does not contain an embedded project file — the dashboard falls back to a quick-plot layout.</source>
         <translation>Cette session ne contient pas de fichier projet intégré — le tableau de bord utilise une disposition de tracé rapide par défaut.</translation>
     </message>
     <message>
-        <location filename="../../src/Sessions/Player.cpp" line="476"/>
+        <location filename="../../src/Sessions/Player.cpp" line="499"/>
         <source>Check file permissions and try again.</source>
         <translation>Vérifier les permissions du fichier et réessayer.</translation>
     </message>
@@ -19669,95 +19695,95 @@ Activer Intégrer le Projet pour incorporer le projet dans le raccourci, afin qu
 <context>
     <name>ToolCallCard</name>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="53"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="67"/>
         <source>Awaiting approval</source>
         <translation>En Attente d'Approbation</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="54"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="68"/>
         <source>Done</source>
         <translation>Terminé</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="55"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="69"/>
         <source>Error</source>
         <translation>Erreur</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="56"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="70"/>
         <source>Denied</source>
         <translation>Refusé</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="57"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="71"/>
         <source>Blocked</source>
         <translation>Bloqué</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="58"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="72"/>
         <source>Running</source>
         <translation>En Cours D'exécution</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="160"/>
         <source>Verified</source>
         <translation>Vérifié</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="146"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="160"/>
         <source>Verify failed</source>
         <translation>Échec de la Vérification</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="186"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="200"/>
         <source>Verification failed: %1</source>
         <translation>Échec de la vérification : %1</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="187"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="201"/>
         <source>The applied change failed its verification check.</source>
         <translation>La modification appliquée a échoué lors de la vérification.</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="196"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="210"/>
         <source>Restore checkpoint…</source>
         <translation>Restaurer le point de contrôle…</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="215"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="229"/>
         <source>Approve</source>
         <translation>Approuver</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="221"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="235"/>
         <source>Deny</source>
         <translation>Refuser</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="238"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="252"/>
         <source>Arguments</source>
         <translation>Arguments</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="275"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="335"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="289"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="349"/>
         <source>Copy</source>
         <translation>Copier</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="280"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="340"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="294"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="354"/>
         <source>Copy All</source>
         <translation>Tout Copier</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="288"/>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="348"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="302"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="362"/>
         <source>Select All</source>
         <translation>Tout Sélectionner</translation>
     </message>
     <message>
-        <location filename="../../qml/AI/ToolCallCard.qml" line="296"/>
+        <location filename="../../qml/AI/ToolCallCard.qml" line="310"/>
         <source>Result</source>
         <translation>Résultat</translation>
     </message>
@@ -20302,34 +20328,34 @@ Activer Intégrer le Projet pour incorporer le projet dans le raccourci, afin qu
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1813"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1821"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1829"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
         <source>Clock</source>
         <translation>Horloge</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1836"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
         <source>Stopwatch</source>
         <translation>Chronomètre</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1883"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1898"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Repli)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="1920"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="1992"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
         <source>LED Panel (%1)</source>
         <translation>Panneau LED (%1)</translation>
     </message>
@@ -21176,12 +21202,12 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
 <context>
     <name>Widgets::MultiPlot</name>
     <message>
-        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="109"/>
+        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="110"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="109"/>
+        <location filename="../../src/UI/Widgets/MultiPlot.cpp" line="110"/>
         <source>Samples</source>
         <translation>Échantillons</translation>
     </message>
@@ -21202,12 +21228,12 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
 <context>
     <name>Widgets::Plot</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="92"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="93"/>
         <source>Time (s)</source>
         <translation>Temps (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Plot.cpp" line="110"/>
+        <location filename="../../src/UI/Widgets/Plot.cpp" line="111"/>
         <source>Samples</source>
         <translation>Échantillons</translation>
     </message>
@@ -21215,7 +21241,7 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
 <context>
     <name>Widgets::Plot3D</name>
     <message>
-        <location filename="../../src/UI/Widgets/Plot3D.cpp" line="1113"/>
+        <location filename="../../src/UI/Widgets/Plot3D.cpp" line="1116"/>
         <source>Grid Interval: %1 unit(s)</source>
         <translation>Intervalle de Grille : %1 unité(s)</translation>
     </message>
@@ -21223,47 +21249,47 @@ Je comprends qu'à son expiration, je devrai acheter une licence ou compiler la 
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="388"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="390"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="392"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="394"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="396"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="398"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="400"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
         <source>Hot</source>
         <translation>Chaud</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="402"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
         <source>Grayscale</source>
         <translation>Niveaux de Gris</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="404"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
         <source>Unknown</source>
         <translation>Inconnu</translation>
     </message>

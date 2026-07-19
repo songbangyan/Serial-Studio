@@ -28,12 +28,16 @@ public:
   static constexpr int kMaxPayloadBytes = 1 * 1024 * 1024;
   static constexpr int kMaxBufferBytes  = 4 * 1024 * 1024;
 
+  static constexpr const char* kErrBufferOverflow  = "buffer_overflow";
+  static constexpr const char* kErrPayloadTooLarge = "payload_too_large";
+
   explicit SseEventReader(QObject* parent = nullptr);
 
   void feed(const QByteArray& chunk);
   void reset();
 
   [[nodiscard]] qsizetype bufferedBytes() const noexcept;
+  [[nodiscard]] static bool fatalReason(const QString& reason);
 
 signals:
   void frameReceived(const QString& name, const QJsonObject& data);
@@ -42,9 +46,11 @@ signals:
 private:
   void drainFrames();
   void emitFrame(const QString& name, const QByteArray& data);
+  [[nodiscard]] QByteArray normalizeNewlines(const QByteArray& chunk);
   static void parseFrameLines(const QByteArray& frame, QString& eventName, QByteArray& dataPayload);
 
   QByteArray m_buffer;
+  bool m_pendingCr;
 };
 
 }  // namespace AI

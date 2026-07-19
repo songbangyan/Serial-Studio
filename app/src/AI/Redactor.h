@@ -23,8 +23,8 @@ namespace AI {
 class Redactor {
 public:
   static bool scrub(QString& text);
-  static QJsonObject scrubObject(const QJsonObject& obj);
-  static QJsonArray scrubArray(const QJsonArray& arr);
+  [[nodiscard]] static QJsonObject scrubObject(const QJsonObject& obj, int depth = 0);
+  [[nodiscard]] static QJsonArray scrubArray(const QJsonArray& arr, int depth = 0);
 };
 
 }  // namespace AI

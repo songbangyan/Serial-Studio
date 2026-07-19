@@ -33,7 +33,21 @@ Rectangle {
   //
   property bool groupedConfirm: false
 
-  property bool expanded: false
+  //
+  // Expansion state lives in expansionStore (keyed by callId) so it survives model resets
+  //
+  property var expansionStore: null
+  property bool localExpanded: false
+  readonly property bool expanded: expansionStore
+                                   ? expansionStore.isCardExpanded(callId, localExpanded)
+                                   : localExpanded
+
+  function toggleExpanded() {
+    if (expansionStore)
+      expansionStore.setCardExpanded(callId, !expanded)
+    else
+      localExpanded = !localExpanded
+  }
 
   //
   // Status enum (matches Conversation::CallStatus)
@@ -109,7 +123,7 @@ Rectangle {
         MouseArea {
           anchors.fill: parent
           cursorShape: Qt.PointingHandCursor
-          onClicked: root.expanded = !root.expanded
+          onClicked: root.toggleExpanded()
         }
       }
 
@@ -122,7 +136,7 @@ Rectangle {
 
         MouseArea {
           anchors.fill: parent
-          onClicked: root.expanded = !root.expanded
+          onClicked: root.toggleExpanded()
         }
       }
 

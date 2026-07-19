@@ -15,8 +15,12 @@
 
 #  include "Sessions/Player.h"
 
+#  include <algorithm>
+#  include <cmath>
+#  include <limits>
 #  include <QApplication>
 #  include <QDateTime>
+#  include <QDeadlineTimer>
 #  include <QFileDialog>
 #  include <QFileInfo>
 #  include <QJsonDocument>
@@ -37,6 +41,8 @@
 #  include "Misc/WorkspaceManager.h"
 #  include "UI/Dashboard.h"
 
+static constexpr int kMaxSeekWindowRows = 262144;
+
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
 //--------------------------------------------------------------------------------------------------
@@ -48,6 +54,7 @@ Sessions::Player::Player()
   : m_workerThread(nullptr)
   , m_worker(nullptr)
   , m_frameQueryPrepared(false)
+  , m_seekQueryPrepared(false)
   , m_hasFinalValues(false)
   , m_sessionId(-1)
   , m_pendingSessionId(-1)
@@ -57,6 +64,7 @@ Sessions::Player::Player()
   , m_multiSource(false)
   , m_timestamp("--.--")
   , m_startTimestampSeconds(0.0)
+  , m_steadyBaseRowSeconds(0.0)
   , m_preSessionCaptured(false)
   , m_preSessionOperationMode(SerialStudio::QuickPlot)
 {
@@ -64,6 +72,15 @@ Sessions::Player::Player()
 
   qApp->installEventFilter(this);
   connect(this, &Sessions::Player::playerStateChanged, this, &Sessions::Player::updateData);
+
+  constexpr int kSeekTickMs   = 33;
+  constexpr int kSeekSettleMs = 250;
+  m_seekTimer.setSingleShot(true);
+  m_seekTimer.setInterval(kSeekTickMs);
+  m_settleTimer.setSingleShot(true);
+  m_settleTimer.setInterval(kSeekSettleMs);
+  connect(&m_seekTimer, &QTimer::timeout, this, &Sessions::Player::performSeekTick);
+  connect(&m_settleTimer, &QTimer::timeout, this, &Sessions::Player::performSeekSettle);
 
   initWorker();
 }
@@ -229,6 +246,10 @@ void Sessions::Player::play()
   m_elapsedTimer.start();
   m_startTimestampSeconds = m_timestampsNs[static_cast<size_t>(m_framePos)] / 1e9;
 
+  m_seekTimer.stop();
+  m_settleTimer.stop();
+
+  anchorSteadyBase(m_framePos);
   m_playing = true;
   Q_EMIT playerStateChanged();
 }
@@ -297,6 +318,8 @@ void Sessions::Player::closeFile()
   m_playing  = false;
   m_framePos = 0;
   m_loading  = false;
+  m_seekTimer.stop();
+  m_settleTimer.stop();
 
   teardownLocalDb();
   clearLocalState();
@@ -521,8 +544,13 @@ void Sessions::Player::teardownLocalDb()
   if (m_frameQuery)
     m_frameQuery->clear();
 
+  if (m_seekQuery)
+    m_seekQuery->clear();
+
   m_frameQuery.reset();
+  m_seekQuery.reset();
   m_frameQueryPrepared = false;
+  m_seekQueryPrepared  = false;
 
   if (m_db && m_db->isOpen())
     m_db->close();
@@ -628,7 +656,9 @@ bool Sessions::Player::restoreProjectFromJson(const QString& json)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Seeks to a normalized position and rebuilds plot history around it.
+ * @brief Seeks to a normalized position (tape scrub, spec 0020): the position and timestamp
+ *        update immediately, a coalescing timer live-fills the plots at ~30 Hz, and the settle
+ *        timer runs the exact full-window rebuild once the slider rests.
  */
 void Sessions::Player::setProgress(const double progress)
 {
@@ -644,15 +674,216 @@ void Sessions::Player::setProgress(const double progress)
     return;
 
   m_framePos = newPos;
+  updateTimestampDisplay();
+
+  if (!m_seekTimer.isActive())
+    m_seekTimer.start();
+
+  m_settleTimer.start();
+}
+
+/**
+ * @brief First row of the scrub window ending at @p target: walks back until the plot time
+ *        range is covered (never fewer than points() rows), capped at kMaxSeekWindowRows so
+ *        dense recordings bound the per-tick cost.
+ */
+int Sessions::Player::seekWindowStartRow(int target) const
+{
+  Q_ASSERT(target >= 0);
+  Q_ASSERT(target < static_cast<int>(m_timestampsNs.size()));
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const double range     = dashboard.plotTimeRange();
+  const double targetSec = m_timestampsNs[static_cast<size_t>(target)] / 1e9;
+
+  const int minStart = qMax(0, target - qMax(1, dashboard.points()) + 1);
+  const int capStart = qMax(0, target - kMaxSeekWindowRows + 1);
+
+  int start = minStart;
+  for (int i = 0; i < kMaxSeekWindowRows && start > capStart; ++i) {
+    const double sec = m_timestampsNs[static_cast<size_t>(start - 1)] / 1e9;
+    if (targetSec - sec > range)
+      break;
+
+    --start;
+  }
+
+  return start;
+}
+
+/**
+ * @brief One coalesced scrub tick: bulk-fills the plot rings from the trailing window ending
+ *        at the cursor and injects the cursor row so scalar widgets track it. Outside
+ *        ProjectFile mode the settle rebuild runs instead -- a bulk fill with an empty
+ *        series map would wipe the rings and blank the plots for the whole drag.
+ */
+void Sessions::Player::performSeekTick()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile || m_uidToColumn.isEmpty()) {
+    performSeekSettle();
+    return;
+  }
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const int target       = m_framePos;
+  const int start        = seekWindowStartRow(target);
+
+  QVector<double> times;
+  QHash<qint64, QVector<double>> series;
+  buildSeekWindow(start, target, times, series);
+  dashboard.bulkLoadPlotWindow(times, series);
+
+  anchorSteadyBase(target);
+  injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(target)]),
+              m_timestampsNs[static_cast<size_t>(target)]);
+}
+
+/**
+ * @brief At-rest settle pass: exact trailing-window replay through the fast lane (FFT and the
+ *        other frame-fed widgets), then a full-time-window bulk fill so the plots keep the
+ *        complete tape view instead of collapsing to the pipeline batch.
+ */
+void Sessions::Player::performSeekSettle()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
 
   static auto& dashboard = UI::Dashboard::instance();
   dashboard.clearPlotData();
 
-  const int toLoad   = dashboard.points();
-  const int startIdx = std::max(0, m_framePos - toLoad);
-  processFrameBatch(startIdx, m_framePos);
+  const int window = qMin(dashboard.points(), m_framePos + 1);
+  const int start  = qMax(0, m_framePos - window + 1);
+  processFrameBatch(start, m_framePos);
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() == SerialStudio::ProjectFile && !m_uidToColumn.isEmpty()) {
+    QVector<double> times;
+    QHash<qint64, QVector<double>> series;
+    const int fillStart = seekWindowStartRow(m_framePos);
+    buildSeekWindow(fillStart, m_framePos, times, series);
+    dashboard.bulkLoadPlotWindow(times, series);
+  }
 
   updateData();
+}
+
+/**
+ * @brief Forward-fills NaN gaps and backfills the leading run from the first stored value.
+ */
+static void fillSeekGaps(QVector<double>& values)
+{
+  int firstSet = -1;
+  const int n  = values.size();
+  for (int k = 0; k < n; ++k)
+    if (std::isnan(values[k]))
+      values[k] = (k > 0) ? values[k - 1] : values[k];
+    else if (firstSet < 0)
+      firstSet = k;
+
+  const double seed = (firstSet >= 0) ? values[firstSet] : 0.0;
+  for (int k = 0; k < n && std::isnan(values[k]); ++k)
+    values[k] = seed;
+}
+
+/**
+ * @brief Fills the seek-window times and per-(source, uid) numeric series with one windowed
+ *        range query over readings (covering index; ties broken by reading_id). Sparse
+ *        readings forward-fill, and leading gaps backfill from the first stored value.
+ */
+void Sessions::Player::buildSeekWindow(int startRow,
+                                       int endRow,
+                                       QVector<double>& times,
+                                       QHash<qint64, QVector<double>>& series)
+{
+  Q_ASSERT(startRow >= 0);
+  Q_ASSERT(startRow <= endRow);
+  Q_ASSERT(endRow < frameCount());
+
+  const int n = endRow - startRow + 1;
+  times.resize(n);
+  for (int k = 0; k < n; ++k)
+    times[k] = m_timestampsNs[static_cast<size_t>(startRow + k)] / 1e9;
+
+  if (!m_db) [[unlikely]]
+    return;
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const auto pairs       = dashboard.replaySeekSeries();
+  QHash<int, qint64> keyByUid;
+  for (const auto& pair : pairs) {
+    const auto colIt = m_uidToColumn.constFind(pair.second);
+    if (colIt == m_uidToColumn.constEnd())
+      continue;
+
+    const qint64 key = UI::Dashboard::replaySeekKey(pair.first, pair.second);
+    keyByUid.insert(pair.second, key);
+    series.insert(key, QVector<double>(n, std::numeric_limits<double>::quiet_NaN()));
+  }
+
+  if (keyByUid.isEmpty())
+    return;
+
+  if (!m_seekQueryPrepared) {
+    m_seekQuery.emplace(*m_db);
+    m_seekQuery->setForwardOnly(true);
+    const bool prepared = m_seekQuery->prepare(
+      m_hasFinalValues ? QStringLiteral("SELECT unique_id, final_numeric_value, timestamp_ns "
+                                        "FROM readings WHERE session_id = ? AND timestamp_ns "
+                                        "BETWEEN ? AND ? ORDER BY timestamp_ns, reading_id")
+                       : QStringLiteral("SELECT unique_id, raw_numeric_value, timestamp_ns "
+                                        "FROM readings WHERE session_id = ? AND timestamp_ns "
+                                        "BETWEEN ? AND ? ORDER BY timestamp_ns, reading_id"));
+    if (!prepared) [[unlikely]] {
+      qWarning() << "[Sessions::Player] seek query prepare failed:"
+                 << m_seekQuery->lastError().text();
+      m_seekQuery.reset();
+      series.clear();
+      return;
+    }
+
+    m_seekQueryPrepared = true;
+  }
+
+  m_seekQuery->bindValue(0, m_sessionId);
+  m_seekQuery->bindValue(1, m_timestampsNs[static_cast<size_t>(startRow)]);
+  m_seekQuery->bindValue(2, m_timestampsNs[static_cast<size_t>(endRow)]);
+
+  if (!m_seekQuery->exec()) [[unlikely]] {
+    qWarning() << "[Sessions::Player] seek window query failed:" << m_seekQuery->lastError().text();
+    series.clear();
+    return;
+  }
+
+  const auto begin = m_timestampsNs.cbegin() + startRow;
+  const auto end   = m_timestampsNs.cbegin() + endRow + 1;
+  while (m_seekQuery->next()) {
+    const auto keyIt = keyByUid.constFind(m_seekQuery->value(0).toInt());
+    if (keyIt == keyByUid.constEnd())
+      continue;
+
+    const qint64 tsNs = m_seekQuery->value(2).toLongLong();
+    const auto pos    = std::lower_bound(begin, end, tsNs);
+    if (pos == end || *pos != tsNs)
+      continue;
+
+    const int idx              = static_cast<int>(pos - begin);
+    series[keyIt.value()][idx] = SerialStudio::toDouble(m_seekQuery->value(1));
+  }
+
+  m_seekQuery->finish();
+
+  for (auto it = series.begin(); it != series.end(); ++it)
+    fillSeekGaps(it.value());
 }
 
 /**
@@ -704,7 +935,8 @@ void Sessions::Player::updateData()
   if (!isPlaying())
     return;
 
-  injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(m_framePos)]));
+  injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(m_framePos)]),
+              m_timestampsNs[static_cast<size_t>(m_framePos)]);
 
   if (m_framePos >= frameCount() - 1) {
     pause();
@@ -719,13 +951,17 @@ void Sessions::Player::updateData()
   qint64 msUntilNext      = qMax(0LL, static_cast<qint64>((nextSec - targetSec) * 1000.0));
 
   if (msUntilNext <= 0) {
-    constexpr int kMaxBatchSize = 100;
-    int processed               = 0;
+    constexpr qint64 kCatchUpBudgetMs = 20;
+    constexpr int kCatchUpMaxFrames   = 4096;
+    const QDeadlineTimer budget(kCatchUpBudgetMs);
 
-    while (m_framePos < frameCount() - 1 && processed < kMaxBatchSize && msUntilNext <= 0) {
+    int processed = 0;
+    while (m_framePos < frameCount() - 1 && msUntilNext <= 0 && !budget.hasExpired()
+           && processed < kCatchUpMaxFrames) {
       ++m_framePos;
-      injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(m_framePos)]));
       ++processed;
+      injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(m_framePos)]),
+                  m_timestampsNs[static_cast<size_t>(m_framePos)]);
 
       if (m_framePos + 1 < frameCount()) {
         const double next   = m_timestampsNs[static_cast<size_t>(m_framePos + 1)] * kInvNs;
@@ -774,8 +1010,10 @@ void Sessions::Player::processFrameBatch(int startFrame, int endFrame)
   Q_ASSERT(startFrame >= 0);
   Q_ASSERT(endFrame < frameCount());
 
+  anchorSteadyBase(startFrame);
   for (int i = startFrame; i <= endFrame; ++i)
-    injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(i)]));
+    injectFrame(buildFrameAt(m_timestampsNs[static_cast<size_t>(i)]),
+                m_timestampsNs[static_cast<size_t>(i)]);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -939,10 +1177,34 @@ QHash<int, QString> Sessions::Player::buildFrameAt(qint64 timestampNs)
 }
 
 /**
- * @brief Assembles per-source replay payloads in stored column order and injects them. In
- *        QuickPlot mode every column is emitted as one row (no source mapping exists).
+ * @brief Anchors the steady-clock base used to stamp replayed rows with recorded deltas.
  */
-void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
+void Sessions::Player::anchorSteadyBase(int frameIndex)
+{
+  Q_ASSERT(frameIndex >= 0);
+
+  m_steadyBase = std::chrono::steady_clock::now();
+  m_steadyBaseRowSeconds =
+    (frameIndex < frameCount()) ? m_timestampsNs[static_cast<size_t>(frameIndex)] / 1e9 : 0.0;
+}
+
+/**
+ * @brief Steady timestamp for @p timestampNs: the anchored base advanced by the recorded
+ *        delta, so the recording -- not the wall clock -- owns replay time.
+ */
+std::chrono::steady_clock::time_point Sessions::Player::rowSteadyTimestamp(qint64 timestampNs) const
+{
+  const auto delta = std::chrono::duration<double>(timestampNs / 1e9 - m_steadyBaseRowSeconds);
+  return m_steadyBase + std::chrono::duration_cast<std::chrono::steady_clock::duration>(delta);
+}
+
+/**
+ * @brief Feeds per-source cell lists in stored column order through the FrameBuilder replay
+ *        fast lane (spec 0020) with the recorded timestamp; the single-source map is rekeyed
+ *        to source 0, matching buildMultiSourceMapping. QuickPlot mode keeps the byte path
+ *        (its parser consumes raw payloads).
+ */
+void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues, qint64 timestampNs)
 {
   if (uidValues.isEmpty())
     return;
@@ -964,7 +1226,9 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
   if (m_sourcesAtCurrentTs.isEmpty())
     return;
 
-  QMap<int, QByteArray> sourcePayloads;
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto timestamp      = rowSteadyTimestamp(timestampNs);
+
   for (int srcId : std::as_const(m_sourcesAtCurrentTs)) {
     const auto colsIt = m_sourceColumns.constFind(srcId);
     if (colsIt == m_sourceColumns.constEnd() || colsIt.value().empty())
@@ -975,30 +1239,8 @@ void Sessions::Player::injectFrame(const QHash<int, QString>& uidValues)
     for (int uid : colsIt.value())
       cells.append(uidValues.value(uid));
 
-    QByteArray payload = DataModel::joinReplayRow(cells);
-    payload.append('\n');
-    sourcePayloads.insert(srcId, std::move(payload));
+    frameBuilder.replayChannels(m_multiSource ? srcId : 0, cells, timestamp);
   }
-
-  if (sourcePayloads.isEmpty())
-    return;
-
-  static auto& connectionManager = IO::ConnectionManager::instance();
-  if (!m_multiSource) {
-    connectionManager.processPayload(sourcePayloads.first());
-    return;
-  }
-
-  QByteArray combined;
-  for (auto it = sourcePayloads.constBegin(); it != sourcePayloads.constEnd(); ++it) {
-    if (!combined.isEmpty())
-      combined.append(' ');
-
-    combined.append(it.value().chopped(1));
-  }
-
-  combined.append('\n');
-  connectionManager.processMultiSourcePayload(combined, sourcePayloads);
 }
 
 //--------------------------------------------------------------------------------------------------

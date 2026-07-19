@@ -66,13 +66,12 @@ static QString neutralizeUntrustedDelimiter(const QString& payload)
 // Single string-literal return; line count is content, not control flow
 // code-verify off
 /**
- * @brief Returns the role description used as the first cached system block.
+ * @brief Assembles the role text for one flag combination. The hardware-writes guidance must
+ *        track the 'Allow device control' gate, or the model keeps refusing the unblocked
+ *        tools (or proposing tools that are blocked).
  */
-QString AI::ContextBuilder::roleBlock()
+static QString buildRoleBlock(bool device_control, bool memory_on, bool probe_on)
 {
-  // The hardware-writes guidance must track the 'Allow device control' gate, or the
-  // model keeps refusing the unblocked tools (or proposing tools that are blocked).
-  const bool device_control = AI::CommandRegistry::instance().deviceControlAllowed();
   const QString hardware_note =
     device_control
       ? QStringLiteral("  Hardware writes    -> Gated. See \"Hardware writes\" below.\n")
@@ -377,17 +376,36 @@ QString AI::ContextBuilder::roleBlock()
                         "\n"
                         "Concise. No filler. Match the user's register. When unsure, list/"
                         "describe/load skill before acting.\n")
-       + (assistantRef().memoryEnabled()
+       + (memory_on
             ? QStringLiteral("\n"
                              "When the user states a durable preference, project convention, or "
                              "corrects you, call assistant.memory.propose{category, text} so "
                              "they can choose to keep it for future chats. It never stores "
                              "anything by itself.\n")
             : QString())
-       + (assistantRef().contextProbeEnabled() ? SentinelProbe::instructionBlock() : QString());
+       + (probe_on ? AI::SentinelProbe::instructionBlock() : QString());
 }
 
 // code-verify on
+
+/**
+ * @brief Returns the role description used as the first cached system block, memoized per
+ *        flag combination so repeat requests reuse the byte-identical assembled text.
+ */
+QString AI::ContextBuilder::roleBlock()
+{
+  static auto& aiReg        = AI::CommandRegistry::instance();
+  const bool device_control = aiReg.deviceControlAllowed();
+  const bool memory_on      = assistantRef().memoryEnabled();
+  const bool probe_on       = assistantRef().contextProbeEnabled();
+  const int slot            = (device_control ? 1 : 0) | (memory_on ? 2 : 0) | (probe_on ? 4 : 0);
+
+  static QString s_cache[8];
+  if (s_cache[slot].isEmpty())
+    s_cache[slot] = buildRoleBlock(device_control, memory_on, probe_on);
+
+  return s_cache[slot];
+}
 
 /**
  * @brief Returns the list of canned how-to task ids meta.howTo accepts.
@@ -779,33 +797,37 @@ QString AI::ContextBuilder::skillBody(const QString& id)
 }
 
 /**
- * @brief Returns the concatenation of all scripting reference docs.
+ * @brief Returns the concatenation of all scripting reference docs, assembled once -- the
+ *        docs are compiled-in Qt resources, so the block cannot change at runtime.
  */
 QString AI::ContextBuilder::scriptingDocsBlock()
 {
-  static const QStringList kKinds = {
-    QStringLiteral("frame_parser_js"),
-    QStringLiteral("frame_parser_lua"),
-    QStringLiteral("transform_js"),
-    QStringLiteral("transform_lua"),
-    QStringLiteral("output_widget_js"),
-    QStringLiteral("painter_js"),
-  };
+  static const QString kBlock = []() {
+    const QStringList kinds = {
+      QStringLiteral("frame_parser_js"),
+      QStringLiteral("frame_parser_lua"),
+      QStringLiteral("transform_js"),
+      QStringLiteral("transform_lua"),
+      QStringLiteral("output_widget_js"),
+      QStringLiteral("painter_js"),
+    };
 
-  QString out;
-  out.reserve(48 * 1024);
-  out += QStringLiteral("# Scripting reference\n\n");
-  for (const auto& kind : kKinds) {
-    const auto path = QStringLiteral(":/ai/docs/%1.md").arg(kind);
-    const auto body = readResource(path);
-    if (body.isEmpty())
-      continue;
+    QString out;
+    out.reserve(48 * 1024);
+    out += QStringLiteral("# Scripting reference\n\n");
+    for (const auto& kind : kinds) {
+      const auto path = QStringLiteral(":/ai/docs/%1.md").arg(kind);
+      const auto body = readResource(path);
+      if (body.isEmpty())
+        continue;
 
-    out += QStringLiteral("\n---\n");
-    out += body;
-    out += QStringLiteral("\n");
-  }
-  return out;
+      out += QStringLiteral("\n---\n");
+      out += body;
+      out += QStringLiteral("\n");
+    }
+    return out;
+  }();
+  return kBlock;
 }
 
 /**

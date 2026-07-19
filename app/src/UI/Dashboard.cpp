@@ -38,6 +38,7 @@
 #  include "Sessions/Player.h"
 #endif
 
+#include <algorithm>
 #include <limits>
 #include <QSet>
 #include <QTimer>
@@ -182,7 +183,7 @@ UI::Dashboard::Dashboard()
   connect(&csvPlayer, &CSV::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
   connect(&mdf4Player, &MDF4::Player::openChanged, this, [=, this] { resetData(true); }, Qt::QueuedConnection);
   connect(&ioManager, &IO::ConnectionManager::connectedChanged, this, [=, this] {
-    if (!ioManager.isConnected())
+    if (!ioManager.isConnected() && !streamAvailable())
       resetData(true);
   }, Qt::QueuedConnection);
   connect(&appState, &AppState::projectFileChanged, this, [=, this] { resetData(); }, Qt::QueuedConnection);
@@ -1145,6 +1146,198 @@ void UI::Dashboard::clearPlotData()
   for (auto& plot3d : m_plotData3D)
     plot3d.clear();
 #endif
+}
+
+//--------------------------------------------------------------------------------------------------
+// Replay seek bulk fill (spec 0020)
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Packs a (sourceId, uniqueId) pair into one hash key; uniqueIds alone are not unique
+ *        across sources.
+ */
+qint64 UI::Dashboard::replaySeekKey(int sourceId, int uniqueId) noexcept
+{
+  return (static_cast<qint64>(sourceId) << 32) | static_cast<quint32>(uniqueId);
+}
+
+/**
+ * @brief Lists every (sourceId, uniqueId) pair the plot widgets consume, including dataset-X
+ *        axis sources and multiplot curves, so a replay player knows which columns to sample
+ *        for bulkLoadPlotWindow().
+ */
+QList<std::pair<int, int>> UI::Dashboard::replaySeekSeries() const
+{
+  QList<std::pair<int, int>> out;
+  QSet<qint64> seen;
+
+  auto add = [&](int sourceId, int uniqueId) {
+    const qint64 key = replaySeekKey(sourceId, uniqueId);
+    if (seen.contains(key))
+      return;
+
+    seen.insert(key);
+    out.append({sourceId, uniqueId});
+  };
+
+  const int plotCount = widgetCount(SerialStudio::DashboardPlot);
+  for (int i = 0; i < plotCount; ++i) {
+    const auto& ds = getDatasetWidget(SerialStudio::DashboardPlot, i);
+    add(ds.sourceId, ds.uniqueId);
+
+    if (useTimeXAxis(ds) || !SerialStudio::datasetXAxisEnabled())
+      continue;
+
+    const auto xIt = m_datasets.constFind(ds.xAxisId);
+    if (xIt != m_datasets.constEnd())
+      add(xIt.value().sourceId, ds.xAxisId);
+  }
+
+  const int multiCount = widgetCount(SerialStudio::DashboardMultiPlot);
+  for (int i = 0; i < multiCount; ++i) {
+    const auto& group = getGroupWidget(SerialStudio::DashboardMultiPlot, i);
+    for (const auto& ds : group.datasets)
+      add(group.sourceId, ds.uniqueId);
+  }
+
+  return out;
+}
+
+/**
+ * @brief Fills one single-plot widget's ring from the seek window: decimating TimeRing for
+ *        time plots, y/x sample rings otherwise. @p filled dedups shared sample rings.
+ */
+void UI::Dashboard::fillSeekPlotSingle(int index,
+                                       const QVector<double>& timesSec,
+                                       const QHash<qint64, QVector<double>>& series,
+                                       double timeOffset,
+                                       QSet<const DSP::AxisData*>& filled)
+{
+  Q_ASSERT(index >= 0);
+  Q_ASSERT(index < widgetCount(SerialStudio::DashboardPlot));
+
+  const auto& ds     = getDatasetWidget(SerialStudio::DashboardPlot, index);
+  const auto& values = series.value(replaySeekKey(ds.sourceId, ds.uniqueId));
+  const int count    = qMin(timesSec.size(), values.size());
+
+  if (useTimeXAxis(ds)) {
+    const auto rIt = m_plotTimeRings.find(index);
+    if (rIt == m_plotTimeRings.end()) [[unlikely]]
+      return;
+
+    rIt.value().clear();
+    for (int k = 0; k < count; ++k)
+      rIt.value().appendDecimated(timesSec[k] + timeOffset, values[k]);
+
+    return;
+  }
+
+  const auto yIt = m_yAxisData.find(ds.uniqueId);
+  if (yIt != m_yAxisData.end() && !filled.contains(&yIt.value())) {
+    filled.insert(&yIt.value());
+    yIt.value().clear();
+    for (int k = 0; k < count; ++k)
+      yIt.value().push(values[k]);
+  }
+
+  if (!SerialStudio::datasetXAxisEnabled())
+    return;
+
+  const auto xDsIt = m_datasets.constFind(ds.xAxisId);
+  if (xDsIt == m_datasets.constEnd())
+    return;
+
+  const auto xIt = m_xAxisData.find(ds.xAxisId);
+  if (xIt == m_xAxisData.end() || filled.contains(&xIt.value()))
+    return;
+
+  const auto& xValues = series.value(replaySeekKey(xDsIt.value().sourceId, ds.xAxisId));
+  const int xCount    = qMin(timesSec.size(), xValues.size());
+  filled.insert(&xIt.value());
+  xIt.value().clear();
+  for (int k = 0; k < xCount; ++k)
+    xIt.value().push(xValues[k]);
+}
+
+/**
+ * @brief Fills one multiplot widget's curves from the seek window: per-curve TimeRings for
+ *        time-mode groups, per-curve y sample rings otherwise.
+ */
+void UI::Dashboard::fillSeekPlotMulti(int index,
+                                      const QVector<double>& timesSec,
+                                      const QHash<qint64, QVector<double>>& series,
+                                      double timeOffset)
+{
+  Q_ASSERT(index >= 0);
+  Q_ASSERT(index < widgetCount(SerialStudio::DashboardMultiPlot));
+
+  const auto& group = getGroupWidget(SerialStudio::DashboardMultiPlot, index);
+
+  const auto rIt = m_multiplotTimeRings.find(index);
+  if (rIt != m_multiplotTimeRings.end()) {
+    auto& rings        = rIt.value();
+    const size_t count = std::min(group.datasets.size(), rings.size());
+    for (size_t j = 0; j < count; ++j) {
+      const auto& ds     = group.datasets[j];
+      const auto& values = series.value(replaySeekKey(group.sourceId, ds.uniqueId));
+      const int n        = qMin(timesSec.size(), values.size());
+      rings[j].clear();
+      for (int k = 0; k < n; ++k)
+        rings[j].appendDecimated(timesSec[k] + timeOffset, values[k]);
+    }
+
+    return;
+  }
+
+  if (index >= m_multipltValues.size()) [[unlikely]]
+    return;
+
+  auto& multiSeries  = m_multipltValues[index];
+  const size_t count = std::min(group.datasets.size(), multiSeries.y.size());
+  for (size_t j = 0; j < count; ++j) {
+    const auto& ds     = group.datasets[j];
+    const auto& values = series.value(replaySeekKey(group.sourceId, ds.uniqueId));
+    const int n        = qMin(timesSec.size(), values.size());
+    multiSeries.y[j].clear();
+    for (int k = 0; k < n; ++k)
+      multiSeries.y[j].push(values[k]);
+  }
+}
+
+/**
+ * @brief Rebuilds every plot ring from a replay seek window (spec 0020): ascending recorded
+ *        seconds + series keyed by replaySeekKey, normalized to end at 0 so the decimation
+ *        grid and later live appends stay monotonic. Writes rings only and resets the plot
+ *        clocks so play-after-scrub re-anchors; FFT/GPS/3D/waterfall settle at rest.
+ */
+void UI::Dashboard::bulkLoadPlotWindow(const QVector<double>& timesSec,
+                                       const QHash<qint64, QVector<double>>& series)
+{
+  Q_ASSERT(std::is_sorted(timesSec.cbegin(), timesSec.cend()));
+
+  if (!m_layoutValid || timesSec.isEmpty()) [[unlikely]]
+    return;
+
+  const double timeOffset = -timesSec.last();
+
+  QSet<const DSP::AxisData*> filled;
+  const int plotCount = widgetCount(SerialStudio::DashboardPlot);
+  for (int i = 0; i < plotCount; ++i)
+    fillSeekPlotSingle(i, timesSec, series, timeOffset, filled);
+
+  const int multiCount = widgetCount(SerialStudio::DashboardMultiPlot);
+  for (int i = 0; i < multiCount; ++i)
+    fillSeekPlotMulti(i, timesSec, series, timeOffset);
+
+  for (auto it = m_plotSweep.begin(); it != m_plotSweep.end(); ++it)
+    it.value().resetState();
+
+  for (auto it = m_multiplotSweep.begin(); it != m_multiplotSweep.end(); ++it)
+    it.value().resetState();
+
+  m_plotClocks.clear();
+  m_plotDisplayTimeSec = 0.0;
+  m_updateRequired     = true;
 }
 
 /**

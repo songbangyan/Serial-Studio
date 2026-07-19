@@ -22,6 +22,7 @@
 #include "UI/Widgets/Plot.h"
 
 #include "DSP.h"
+#include "DSPSimd.h"
 #include "UI/Dashboard.h"
 #include "UI/Widgets/PlotLogScale.h"
 
@@ -595,15 +596,20 @@ void Widgets::Plot::updateData()
   const auto* yData       = Y.raw();
   const std::size_t xMask = X.storageMask();
   const std::size_t yMask = Y.storageMask();
-  std::size_t xIdx        = X.frontIndex();
-  std::size_t yIdx        = Y.frontIndex();
-  for (qsizetype i = 0; i < count; ++i) {
-    const double x = xData[xIdx];
-    const double y = yData[yIdx];
-    out[i].setX(m_logX ? LogScale::clampedLog10(x) : x);
-    out[i].setY(m_logY ? LogScale::clampedLog10(y) : y);
-    xIdx = (xIdx + 1) & xMask;
-    yIdx = (yIdx + 1) & yMask;
+
+  if (!m_logX && !m_logY)
+    DSP::simdRingsToPoints(xData, X.frontIndex(), xMask, yData, Y.frontIndex(), yMask, count, out);
+  else {
+    std::size_t xIdx = X.frontIndex();
+    std::size_t yIdx = Y.frontIndex();
+    for (qsizetype i = 0; i < count; ++i) {
+      const double x = xData[xIdx];
+      const double y = yData[yIdx];
+      out[i].setX(m_logX ? LogScale::clampedLog10(x) : x);
+      out[i].setY(m_logY ? LogScale::clampedLog10(y) : y);
+      xIdx = (xIdx + 1) & xMask;
+      yIdx = (yIdx + 1) & yMask;
+    }
   }
 }
 
@@ -781,16 +787,14 @@ void Widgets::Plot::calculateAutoScaleRange()
   bool xChanged = false;
   bool yChanged = false;
 
-  const auto& dy = GET_DATASET(SerialStudio::DashboardPlot, m_index);
-  yChanged =
-    computeMinMaxValues(m_minY, m_maxY, dy, true, m_logY, [](const QPointF& p) { return p.y(); });
-  yChanged |= updateDataExtremes(dy);
+  const auto& dy  = GET_DATASET(SerialStudio::DashboardPlot, m_index);
+  yChanged        = computeMinMaxValues<1>(m_minY, m_maxY, dy, true, m_logY);
+  yChanged       |= updateDataExtremes(dy);
 
   if (!m_timeAxis && SerialStudio::datasetXAxisEnabled()
       && m_dashboard.datasets().contains(dy.xAxisId)) {
     const auto& dx = m_dashboard.datasets()[dy.xAxisId];
-    xChanged       = computeMinMaxValues(
-      m_minX, m_maxX, dx, false, m_logX, [](const QPointF& p) { return p.x(); });
+    xChanged       = computeMinMaxValues<0>(m_minX, m_maxX, dx, false, m_logX);
   }
 
   else if (!m_timeAxis) {
@@ -845,13 +849,7 @@ bool Widgets::Plot::updateDataExtremes(const DataModel::Dataset& dataset)
 
   double dataMin = std::numeric_limits<double>::max();
   double dataMax = std::numeric_limits<double>::lowest();
-  for (auto i = 0; i < m_data.size(); ++i) {
-    const double value = m_data[i].y();
-    if (std::isfinite(value)) {
-      dataMin = qMin(dataMin, value);
-      dataMax = qMax(dataMax, value);
-    }
-  }
+  DSP::simdFiniteMinMaxPointF<1>(m_data.constData(), m_data.size(), dataMin, dataMax);
 
   if (dataMin > dataMax) {
     m_dataMinY = 0.0;
@@ -866,15 +864,15 @@ bool Widgets::Plot::updateDataExtremes(const DataModel::Dataset& dataset)
 }
 
 /**
- * @brief Computes the minimum and maximum values for a given axis of the plot.
+ * @brief Computes the minimum and maximum values for a given axis of the plot (kLane 0 = x,
+ *        1 = y).
  */
-template<typename Extractor>
+template<int kLane>
 bool Widgets::Plot::computeMinMaxValues(double& min,
                                         double& max,
                                         const DataModel::Dataset& dataset,
                                         const bool addPadding,
-                                        const bool logAxis,
-                                        Extractor extractor)
+                                        const bool logAxis)
 {
   bool ok             = true;
   const auto prevMinY = min;
@@ -898,14 +896,7 @@ bool Widgets::Plot::computeMinMaxValues(double& min,
   if (!ok) {
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-
-    for (auto i = 0; i < m_data.size(); ++i) {
-      const double value = extractor(m_data[i]);
-      if (std::isfinite(value)) {
-        min = qMin(min, value);
-        max = qMax(max, value);
-      }
-    }
+    DSP::simdFiniteMinMaxPointF<kLane>(m_data.constData(), m_data.size(), min, max);
 
     padDerivedRange(min, max, addPadding);
   }

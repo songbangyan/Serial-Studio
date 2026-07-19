@@ -143,7 +143,7 @@ void AI::DocSearch::load()
 /**
  * @brief Returns up to k highest-BM25-scoring chunks.
  */
-QList<AI::DocSearch::Hit> AI::DocSearch::search(const QString& query, int k)
+QList<AI::DocSearch::Hit> AI::DocSearch::search(const QString& query, int k) const
 {
   if (!m_loaded || m_docs.isEmpty())
     return {};
@@ -181,8 +181,12 @@ QList<AI::DocSearch::Hit> AI::DocSearch::search(const QString& query, int k)
       scored.append({i, s});
   }
 
-  std::sort(
-    scored.begin(), scored.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
+  std::sort(scored.begin(), scored.end(), [](const auto& a, const auto& b) {
+    if (a.second != b.second)
+      return a.second > b.second;
+
+    return a.first < b.first;
+  });
 
   const int kMax = std::min<int>(k > 0 ? k : 5, scored.size());
   QList<Hit> out;

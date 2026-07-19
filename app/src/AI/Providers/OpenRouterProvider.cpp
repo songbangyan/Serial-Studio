@@ -13,10 +13,10 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QTimer>
 
 #include "AI/ContextBuilder.h"
 #include "AI/Logging.h"
+#include "AI/Providers/ImmediateErrorReply.h"
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/Providers/OpenAIReply.h"
 
@@ -25,36 +25,6 @@
 //--------------------------------------------------------------------------------------------------
 
 static const char* const kOpenRouterEndpoint = "https://openrouter.ai/api/v1/chat/completions";
-
-namespace detail {
-
-/**
- * @brief Reply that fires errorOccurred on the next event-loop tick.
- */
-class ImmediateErrorReplyOR : public AI::Reply {
-public:
-  /**
-   * @brief Schedules errorOccurred + finished on the next event-loop tick.
-   */
-  ImmediateErrorReplyOR(const QString& message, QObject* parent = nullptr)
-    : AI::Reply(parent), m_message(message)
-  {
-    QTimer::singleShot(0, this, [this]() {
-      Q_EMIT errorOccurred(m_message);
-      Q_EMIT finished();
-    });
-  }
-
-  /**
-   * @brief No-op since the error fires immediately.
-   */
-  void abort() override {}
-
-private:
-  QString m_message;
-};
-
-}  // namespace detail
 
 //--------------------------------------------------------------------------------------------------
 // Construction and provider metadata
@@ -177,7 +147,7 @@ AI::Reply* AI::OpenRouterProvider::sendMessage(const QJsonArray& history,
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();
   if (key.isEmpty())
-    return new detail::ImmediateErrorReplyOR(
+    return new AI::ImmediateErrorReply(
       QObject::tr("No OpenRouter API key set. Open Manage Keys to add one."));
 
   const auto systemBlocks = ContextBuilder::buildSystemArray(false);

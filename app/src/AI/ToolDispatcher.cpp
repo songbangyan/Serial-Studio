@@ -9,7 +9,6 @@
 #include "AI/ToolDispatcher.h"
 
 #include <algorithm>
-#include <QFile>
 #include <QHash>
 #include <QSet>
 #include <QStringList>
@@ -398,73 +397,77 @@ static QJsonObject memoryProposeInputSchema()
 }
 
 /**
- * @brief Returns the snapshot/dataset/workspace tool schemas exposed under the assistant.* prefix.
+ * @brief Returns the snapshot/dataset/workspace tool schemas exposed under the assistant.* prefix;
+ *        built once (nothing runtime-variable feeds the defs) and served from a static cache.
  */
-static QVector<detail::AssistantToolDef> assistantToolDefs()
+static const QVector<detail::AssistantToolDef>& assistantToolDefs()
 {
-  const auto scriptProps = scriptPropsBag();
-  return {
-    {QStringLiteral("assistant.snapshot"),
-     QStringLiteral("Assistant-oriented project snapshot with resolved project structure, "
-                    "workspaces, and a compact identity guide. Prefer this over chaining "
-                    "project.snapshot + list calls."),
-     snapshotInputSchema()},
-    {QStringLiteral("assistant.dataset.resolve"),
-     QStringLiteral("Resolve a dataset from human input. Accepts path, title, or uniqueId and "
-                    "returns the canonical dataset object plus identity hints."),
-     datasetInputSchema()},
-    {QStringLiteral("assistant.workspace.resolve"),
-     QStringLiteral("Resolve a workspace by title or id and return the canonical workspace row."),
-     workspaceInputSchema()},
-    {QStringLiteral("assistant.workspace.plan"),
-     QStringLiteral("Read the current project and suggest workspace tile additions using "
-                    "compatible widget slugs. This is read-only planning."),
-     planInputSchema()},
-    {QStringLiteral("assistant.workspace.addTile"),
-     QStringLiteral("High-level workspace mutation: resolves workspace/group/dataset, enables "
-                    "the matching dataset option when needed, patches optional ranges, turns "
-                    "customize mode on, adds the widget, then verifies the workspace."),
-     tileInputSchema()},
-    {QStringLiteral("assistant.script.dryRun"),
-     QStringLiteral("Validate script code on the right Serial Studio surface. Routes frame "
-                    "parsers, transforms, painters, and end-to-end parser+transform checks to "
-                    "the matching dry-run endpoint and returns actionable reference hints."),
-     makeObjectSchema(scriptProps, QJsonArray{QStringLiteral("kind")})},
-    {QStringLiteral("assistant.script.apply"),
-     QStringLiteral("Dry-run script code first, then apply it to the correct project target. "
-                    "Use for frame parsers, dataset transforms, and painter widgets. For "
-                    "frame parsers, any frameDetection / frameStart / frameEnd / "
-                    "decoderMethod / hexadecimalDelimiters / checksumAlgorithm args are also "
-                    "persisted to the source configuration on success (reply carries the "
-                    "outcome under frameConfig)."),
-     makeObjectSchema(scriptProps, QJsonArray{QStringLiteral("kind"), QStringLiteral("code")})},
-    {QStringLiteral("assistant.project.bulkApply"),
-     QStringLiteral("Validate and execute a project.batch mutation, rejecting nested batches and "
-                    "summarizing per-op failures so models do not loop individual edits."),
-     bulkInputSchema()},
-    {QStringLiteral("assistant.checkpoint"),
-     QStringLiteral("Force an immediate project snapshot to disk and return its absolute path. "
-                    "Call BEFORE any multi-step risky edit so you can roll back atomically with "
-                    "assistant.restore if any subsequent step fails."),
-     checkpointInputSchema()},
-    {QStringLiteral("assistant.restore"),
-     QStringLiteral("Restore a previously taken checkpoint, replacing the current project state. "
-                    "Provide one of: path (absolute path), timestamp (ISO string from "
-                    "assistant.listCheckpoints), or label. Returns reverseSnapshotPath so the "
-                    "restore itself is reversible."),
-     restoreInputSchema()},
-    {QStringLiteral("assistant.listCheckpoints"),
-     QStringLiteral("List the rolling backup snapshots for the currently loaded project, newest "
-                    "first. Returns {checkpoints:[{path,timestamp,sizeBytes,label}],count,"
-                    "directory}."),
-     listCheckpointsInputSchema()},
-    {QStringLiteral("assistant.memory.propose"),
-     QStringLiteral("Propose remembering a small durable fact for future chats (a stated "
-                    "preference, a correction you were given, a project convention). The user "
-                    "sees a confirmation chip and decides; this call NEVER stores anything by "
-                    "itself."),
-     memoryProposeInputSchema()},
-  };
+  static const QVector<detail::AssistantToolDef> kDefs = []() -> QVector<detail::AssistantToolDef> {
+    const auto scriptProps = scriptPropsBag();
+    return {
+      {QStringLiteral("assistant.snapshot"),
+       QStringLiteral("Assistant-oriented project snapshot with resolved project structure, "
+                      "workspaces, and a compact identity guide. Prefer this over chaining "
+                      "project.snapshot + list calls."),
+       snapshotInputSchema()},
+      {QStringLiteral("assistant.dataset.resolve"),
+       QStringLiteral("Resolve a dataset from human input. Accepts path, title, or uniqueId and "
+                      "returns the canonical dataset object plus identity hints."),
+       datasetInputSchema()},
+      {QStringLiteral("assistant.workspace.resolve"),
+       QStringLiteral("Resolve a workspace by title or id and return the canonical workspace row."),
+       workspaceInputSchema()},
+      {QStringLiteral("assistant.workspace.plan"),
+       QStringLiteral("Read the current project and suggest workspace tile additions using "
+                      "compatible widget slugs. This is read-only planning."),
+       planInputSchema()},
+      {QStringLiteral("assistant.workspace.addTile"),
+       QStringLiteral("High-level workspace mutation: resolves workspace/group/dataset, enables "
+                      "the matching dataset option when needed, patches optional ranges, turns "
+                      "customize mode on, adds the widget, then verifies the workspace."),
+       tileInputSchema()},
+      {QStringLiteral("assistant.script.dryRun"),
+       QStringLiteral("Validate script code on the right Serial Studio surface. Routes frame "
+                      "parsers, transforms, painters, and end-to-end parser+transform checks to "
+                      "the matching dry-run endpoint and returns actionable reference hints."),
+       makeObjectSchema(scriptProps, QJsonArray{QStringLiteral("kind")})},
+      {QStringLiteral("assistant.script.apply"),
+       QStringLiteral("Dry-run script code first, then apply it to the correct project target. "
+                      "Use for frame parsers, dataset transforms, and painter widgets. For "
+                      "frame parsers, any frameDetection / frameStart / frameEnd / "
+                      "decoderMethod / hexadecimalDelimiters / checksumAlgorithm args are also "
+                      "persisted to the source configuration on success (reply carries the "
+                      "outcome under frameConfig)."),
+       makeObjectSchema(scriptProps, QJsonArray{QStringLiteral("kind"), QStringLiteral("code")})},
+      {QStringLiteral("assistant.project.bulkApply"),
+       QStringLiteral("Validate and execute a project.batch mutation, rejecting nested batches and "
+                      "summarizing per-op failures so models do not loop individual edits."),
+       bulkInputSchema()},
+      {QStringLiteral("assistant.checkpoint"),
+       QStringLiteral("Force an immediate project snapshot to disk and return its absolute path. "
+                      "Call BEFORE any multi-step risky edit so you can roll back atomically with "
+                      "assistant.restore if any subsequent step fails."),
+       checkpointInputSchema()},
+      {QStringLiteral("assistant.restore"),
+       QStringLiteral("Restore a previously taken checkpoint, replacing the current project state. "
+                      "Provide one of: path (absolute path), timestamp (ISO string from "
+                      "assistant.listCheckpoints), or label. Returns reverseSnapshotPath so the "
+                      "restore itself is reversible."),
+       restoreInputSchema()},
+      {QStringLiteral("assistant.listCheckpoints"),
+       QStringLiteral("List the rolling backup snapshots for the currently loaded project, newest "
+                      "first. Returns {checkpoints:[{path,timestamp,sizeBytes,label}],count,"
+                      "directory}."),
+       listCheckpointsInputSchema()},
+      {QStringLiteral("assistant.memory.propose"),
+       QStringLiteral("Propose remembering a small durable fact for future chats (a stated "
+                      "preference, a correction you were given, a project convention). The user "
+                      "sees a confirmation chip and decides; this call NEVER stores anything by "
+                      "itself."),
+       memoryProposeInputSchema()},
+    };
+  }();
+  return kDefs;
 }
 
 /**
@@ -558,11 +561,12 @@ static QJsonObject fsDeleteInputSchema()
 }
 
 /**
- * @brief Returns the fs.* virtual-tool catalog exposed to assistant providers.
+ * @brief Returns the fs.* virtual-tool catalog exposed to assistant providers; built once
+ *        (nothing runtime-variable feeds the defs) and served from a static cache.
  */
-static QVector<detail::AssistantToolDef> fsToolDefs()
+static const QVector<detail::AssistantToolDef>& fsToolDefs()
 {
-  return {
+  static const QVector<detail::AssistantToolDef> kDefs = {
     {  QStringLiteral("fs.list"),
      QStringLiteral("List files and folders in the Serial Studio workspace folder (or a "
      "dragged-in directory). Read-only."),
@@ -590,6 +594,7 @@ static QVector<detail::AssistantToolDef> fsToolDefs()
      "Always asks the user first."),
      fsDeleteInputSchema()},
   };
+  return kDefs;
 }
 
 /**
@@ -2407,8 +2412,7 @@ static QJsonObject withDefaultListLimit(const QString& name, const QJsonObject& 
  * @brief Validates args and forwards to API::CommandRegistry honoring AI safety tags.
  */
 QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
-                                               const QJsonObject& args,
-                                               bool autoConfirmSafe)
+                                               const QJsonObject& args)
 {
   const QString name = canonicalToolName(requestedName);
   Misc::JsonValidator::Limits limits;
@@ -2429,28 +2433,9 @@ QJsonObject AI::ToolDispatcher::executeCommand(const QString& requestedName,
     return reply;
   }
 
-  static auto& aiReg       = AI::CommandRegistry::instance();
-  const auto safety        = aiReg.safetyOf(name);
-  const bool isDryRunQuery = args.value(QStringLiteral("dryRun")).toBool(false);
-  if (safety == Safety::Blocked)
+  static auto& aiReg = AI::CommandRegistry::instance();
+  if (aiReg.safetyOf(name) == Safety::Blocked)
     return makeBlockedReply(name);
-
-  if ((safety == Safety::Confirm || safety == Safety::AlwaysConfirm) && !autoConfirmSafe
-      && !isDryRunQuery) {
-    Q_EMIT confirmationRequested(name, args);
-    QJsonObject reply;
-    reply[QStringLiteral("ok")]    = false;
-    reply[QStringLiteral("error")] = QStringLiteral("awaiting_confirmation");
-    reply[QStringLiteral("message")] =
-      QStringLiteral("User approval pending. The chat UI is showing an approval card for this "
-                     "tool call. Do not retry, do not invoke with confirm/force/token params -- "
-                     "the result will arrive automatically once the user clicks Approve or Deny.");
-    reply[QStringLiteral("hint")] =
-      QStringLiteral("If you intend many similar destructive operations, queue them all and let "
-                     "the user use the Approve-all group action in the chat. Retrying this call "
-                     "will only queue another pending approval -- it cannot bypass the gate.");
-    return reply;
-  }
 
   if (isAssistantTool(name))
     return executeAssistantTool(name, args);
@@ -2566,43 +2551,4 @@ QJsonObject AI::ToolDispatcher::getProjectState() const
   }
 
   return state;
-}
-
-/**
- * @brief Returns the markdown reference body for the given scripting kind.
- */
-QJsonObject AI::ToolDispatcher::getScriptingDocs(const QString& kind) const
-{
-  static const QStringList kAllowed = {
-    QStringLiteral("frame_parser_js"),
-    QStringLiteral("frame_parser_lua"),
-    QStringLiteral("transform_js"),
-    QStringLiteral("transform_lua"),
-    QStringLiteral("output_widget_js"),
-    QStringLiteral("painter_js"),
-    QStringLiteral("control_script_js"),
-  };
-
-  QJsonObject reply;
-  if (!kAllowed.contains(kind)) {
-    reply[QStringLiteral("ok")]    = false;
-    reply[QStringLiteral("error")] = QStringLiteral("unknown_kind");
-    reply[QStringLiteral("known")] = QJsonArray::fromStringList(kAllowed);
-    return reply;
-  }
-
-  QFile file(QStringLiteral(":/ai/docs/%1.md").arg(kind));
-  if (!file.open(QIODevice::ReadOnly)) {
-    reply[QStringLiteral("ok")]    = false;
-    reply[QStringLiteral("error")] = QStringLiteral("doc_not_found");
-    return reply;
-  }
-
-  const auto body = QString::fromUtf8(file.readAll());
-  file.close();
-
-  reply[QStringLiteral("ok")]   = true;
-  reply[QStringLiteral("kind")] = kind;
-  reply[QStringLiteral("body")] = body;
-  return reply;
 }

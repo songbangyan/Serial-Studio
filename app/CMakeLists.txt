@@ -486,6 +486,7 @@ set(HEADERS
   src/ThirdParty/readerwritercircularbuffer.h
   src/AppInfo.h
   src/DSP.h
+  src/DSPSimd.h
   src/AppState.h
   src/Concepts.h
   src/SerialStudio.h
@@ -711,6 +712,7 @@ if(BUILD_COMMERCIAL)
     src/AI/MemoryStore.h
     src/AI/SkillRouter.h
     src/AI/Providers/Provider.h
+    src/AI/Providers/ImmediateErrorReply.h
     src/AI/Providers/AnthropicProvider.h
     src/AI/Providers/AnthropicReply.h
     src/AI/Providers/OpenAIProvider.h

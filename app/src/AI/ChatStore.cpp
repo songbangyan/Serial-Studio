@@ -16,6 +16,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QSaveFile>
 #include <QStandardPaths>
 #include <QUuid>
 #include <QVariantMap>
@@ -191,14 +192,22 @@ void AI::ChatStore::saveChat(const QString& id,
   }
 
   QDir().mkpath(chatsDir());
-  QFile f(chatPath(id));
-  if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  QSaveFile f(chatPath(id));
+  if (!f.open(QIODevice::WriteOnly)) {
     qCWarning(serialStudioAI) << "ChatStore: cannot write chat" << id << f.errorString();
     return;
   }
 
-  f.write(QJsonDocument(snapshot).toJson(QJsonDocument::Compact));
-  f.close();
+  const auto bytes = QJsonDocument(snapshot).toJson(QJsonDocument::Compact);
+  if (f.write(bytes) != bytes.size()) {
+    qCWarning(serialStudioAI) << "ChatStore: short write for chat" << id << f.errorString();
+    return;
+  }
+
+  if (!f.commit()) {
+    qCWarning(serialStudioAI) << "ChatStore: cannot commit chat" << id << f.errorString();
+    return;
+  }
 
   m_chats[idx].updatedAt = QDateTime::currentMSecsSinceEpoch();
   m_chats[idx].count     = count;
@@ -281,7 +290,8 @@ void AI::ChatStore::readIndex()
 }
 
 /**
- * @brief Writes m_chats / m_lastActive back to the index file; best effort.
+ * @brief Atomically writes m_chats / m_lastActive back to the index file; on any write
+ *        failure the previous index is left intact.
  */
 void AI::ChatStore::writeIndex() const
 {
@@ -302,12 +312,18 @@ void AI::ChatStore::writeIndex() const
   root[QStringLiteral("chats")]      = arr;
 
   QDir().mkpath(chatsDir());
-  QFile f(indexPath());
-  if (!f.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+  QSaveFile f(indexPath());
+  if (!f.open(QIODevice::WriteOnly)) {
     qCWarning(serialStudioAI) << "ChatStore: cannot write index" << f.errorString();
     return;
   }
 
-  f.write(QJsonDocument(root).toJson(QJsonDocument::Compact));
-  f.close();
+  const auto bytes = QJsonDocument(root).toJson(QJsonDocument::Compact);
+  if (f.write(bytes) != bytes.size()) {
+    qCWarning(serialStudioAI) << "ChatStore: short write for index" << f.errorString();
+    return;
+  }
+
+  if (!f.commit())
+    qCWarning(serialStudioAI) << "ChatStore: cannot commit index" << f.errorString();
 }

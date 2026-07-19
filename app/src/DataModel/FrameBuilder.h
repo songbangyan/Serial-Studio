@@ -102,6 +102,9 @@ public:
   void injectTableApiJS(QJSEngine* js);
   void refreshTableStoreFromProjectModel();
   void setReplayColumnMap(std::unordered_map<int, std::unordered_map<int, int>> map);
+  void replayChannels(int sourceId,
+                      const QStringList& channels,
+                      const DataModel::TimestampedFrame::SteadyTimePoint& timestamp);
 
   [[nodiscard]] bool reprocessFrames();
   [[nodiscard]] bool dashboardTick();
@@ -273,6 +276,7 @@ private:
   void buildQuickPlotFrame(const QStringList& channels);
   void buildQuickPlotAudioFrame(const QStringList& channels);
   void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
+  void publishReplayFrame(const DataModel::TimestampedFramePtr& frame);
   void publishSourceTemplateFrame(const DataModel::Source& src);
   [[nodiscard]] bool republishFrames(bool feedExports);
   void refreshAnyAsyncSink();
@@ -308,7 +312,8 @@ private:
                          const QString* channelData,
                          int channelCount,
                          const TransformFrameInfo& info,
-                         const std::unordered_map<int, int>* replayColumns);
+                         const std::unordered_map<int, int>* replayColumns,
+                         bool finalValueReplay);
   SS_HOT void applyDatasetValueSpan(Dataset& dataset,
                                     const QByteArrayView* spans,
                                     qsizetype count,

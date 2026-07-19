@@ -45,6 +45,7 @@ signals:
   void closeClicked();
   void minimizeClicked();
   void maximizeClicked();
+  void systemMenuRequested();
   void windowActiveChanged();
   void backgroundColorChanged();
 

@@ -95,7 +95,9 @@ QString AI::KeyVault::key(ProviderId provider) const
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Encrypts and writes the given plaintext key to QSettings.
+ * @brief Encrypts and writes the given plaintext key to QSettings. A failed or empty
+ *        encryption (SimpleCrypt without a key) is refused so a stored key is never
+ *        overwritten with an unusable ciphertext.
  */
 void AI::KeyVault::setKey(ProviderId provider, const QString& plaintext)
 {
@@ -108,6 +110,12 @@ void AI::KeyVault::setKey(ProviderId provider, const QString& plaintext)
   }
 
   const auto cipher = m_simpleCrypt.encryptToString(trimmed);
+  if (cipher.isEmpty() || m_simpleCrypt.lastError() != Licensing::SimpleCrypt::ErrorNoError) {
+    qCWarning(serialStudioAI) << "Key encrypt failed for" << settingsKey(provider)
+                              << "- keeping previously stored key";
+    return;
+  }
+
   m_settings.beginGroup(QStringLiteral("ai/keys"));
   m_settings.setValue(settingsKey(provider), cipher);
   m_settings.endGroup();

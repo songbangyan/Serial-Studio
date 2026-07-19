@@ -36,8 +36,6 @@ public:
 
   void abort() override;
 
-  [[nodiscard]] QString stopReason() const noexcept;
-
 private:
   /**
    * @brief Per-content-block state captured between start and stop events.
@@ -64,6 +62,7 @@ private:
   void handleContentBlockStop(const QJsonObject& data);
   void emitToolUseFromBlock(const BlockState& bs);
 
+  [[nodiscard]] bool streamBudgetBreached(qsizetype bytes);
   void finishOk();
   void finishWithError(const QString& message);
 
@@ -74,7 +73,6 @@ private:
   QNetworkReply* m_reply;
   SseEventReader* m_sse;
   QHash<int, BlockState> m_blocks;
-  QString m_stopReason;
   bool m_finished;
 };
 

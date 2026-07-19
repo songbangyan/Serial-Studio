@@ -48,7 +48,7 @@ class Assistant : public QObject {
              NOTIFY currentProviderChanged)
   Q_PROPERTY(bool isProAvailable
              READ isProAvailable
-             NOTIFY proAvailabilityChanged)
+             CONSTANT)
   Q_PROPERTY(QStringList providerNames
              READ providerNames
              CONSTANT)
@@ -112,9 +112,7 @@ class Assistant : public QObject {
 signals:
   void keysChanged();
   void currentProviderChanged();
-  void proAvailabilityChanged();
   void requestKeyManager();
-  void messageReceived(const QString& chunk);
   void errorOccurred(const QString& message);
   void busyChanged();
   void cacheStatsChanged();

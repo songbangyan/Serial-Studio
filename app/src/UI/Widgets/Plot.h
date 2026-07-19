@@ -192,13 +192,12 @@ private:
   void clampToVisibleX(double& lo, double& hi) const;
   void resolveXAxis(const DataModel::Dataset& yDataset);
 
-  template<typename Extractor>
+  template<int kLane>
   bool computeMinMaxValues(double& min,
                            double& max,
                            const DataModel::Dataset& dataset,
                            const bool addPadding,
-                           const bool logAxis,
-                           Extractor extractor);
+                           const bool logAxis);
 
   static void padDerivedRange(double& min, double& max, const bool addPadding);
   static void applyAxisPadding(double& min, double& max, const bool addPadding);

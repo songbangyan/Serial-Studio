@@ -22,6 +22,7 @@
 #include "Player.h"
 
 #include <QApplication>
+#include <QDeadlineTimer>
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QSet>
@@ -39,7 +40,8 @@
 #include "Misc/WorkspaceManager.h"
 #include "UI/Dashboard.h"
 
-static constexpr double kInvMs = 1.0 / 1000.0;
+static constexpr double kInvMs          = 1.0 / 1000.0;
+static constexpr int kMaxSeekWindowRows = 262144;
 
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
@@ -55,9 +57,19 @@ CSV::Player::Player()
   , m_timestamp("")
   , m_startTimestampSeconds(0.0)
   , m_useHighPrecisionTimestamps(false)
+  , m_steadyBaseRowSeconds(0.0)
 {
   qApp->installEventFilter(this);
   connect(this, &CSV::Player::playerStateChanged, this, &CSV::Player::updateData);
+
+  constexpr int kSeekTickMs   = 33;
+  constexpr int kSeekSettleMs = 250;
+  m_seekTimer.setSingleShot(true);
+  m_seekTimer.setInterval(kSeekTickMs);
+  m_settleTimer.setSingleShot(true);
+  m_settleTimer.setInterval(kSeekSettleMs);
+  connect(&m_seekTimer, &QTimer::timeout, this, &CSV::Player::performSeekTick);
+  connect(&m_settleTimer, &QTimer::timeout, this, &CSV::Player::performSeekSettle);
 }
 
 /**
@@ -166,6 +178,10 @@ void CSV::Player::play()
   if (m_useHighPrecisionTimestamps && m_framePos < m_timestampCache.size())
     m_startTimestampSeconds = m_timestampCache[m_framePos];
 
+  m_seekTimer.stop();
+  m_settleTimer.stop();
+
+  anchorSteadyBase(m_framePos);
   m_playing = true;
   Q_EMIT playerStateChanged();
 }
@@ -231,14 +247,18 @@ void CSV::Player::closeFile()
 
   m_playing  = false;
   m_framePos = 0;
+  m_seekTimer.stop();
+  m_settleTimer.stop();
   m_csvFile.close();
   m_csvData.clear();
   m_csvData.squeeze();
   m_timestamp = "--.--";
   m_timestampCache.clear();
+  m_dateTimeSecondsCache.clear();
   m_useHighPrecisionTimestamps = false;
   m_startTimestampSeconds      = 0.0;
   m_multiSource                = false;
+  m_seekColumnByKey.clear();
   m_sourceColumnsByIndex.clear();
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
@@ -409,6 +429,8 @@ void CSV::Player::openFile(const QString& filePath)
       m_startTimestampSeconds = m_timestampCache[0];
   }
 
+  buildDateTimeSecondsCache();
+
   if (m_csvData.count() >= 1) {
     updateData();
     Q_EMIT openChanged();
@@ -426,7 +448,9 @@ void CSV::Player::openFile(const QString& filePath)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Seeks playback to a normalized position between 0.0 and 1.0.
+ * @brief Seeks playback to a normalized position (tape scrub, spec 0020): the position and
+ *        timestamp update immediately, a coalescing timer live-fills the plots at ~30 Hz, and
+ *        the settle timer runs the exact full-window rebuild once the slider rests.
  */
 void CSV::Player::setProgress(const double progress)
 {
@@ -441,21 +465,148 @@ void CSV::Player::setProgress(const double progress)
   if (frameCount() <= 0)
     return;
 
-  int newFramePos = qMin(frameCount() - 1, qCeil(frameCount() * validProgress));
+  const int newFramePos = qMin(frameCount() - 1, qCeil(frameCount() * validProgress));
+  if (newFramePos == m_framePos)
+    return;
 
-  if (newFramePos != m_framePos) {
-    m_framePos = newFramePos;
+  m_framePos = newFramePos;
+  updateTimestampDisplay();
 
-    static auto& dashboard = UI::Dashboard::instance();
-    dashboard.clearPlotData();
+  if (!m_seekTimer.isActive())
+    m_seekTimer.start();
 
-    int framesToLoad = dashboard.points();
-    int startFrame   = std::max(1, m_framePos - framesToLoad);
-    int endFrame     = std::min(frameCount() - 1, m_framePos);
+  m_settleTimer.start();
+}
 
-    processFrameBatch(startFrame, endFrame);
+/**
+ * @brief First row of the scrub window ending at @p target: walks back until the plot time
+ *        range is covered (never fewer than points() rows), capped at kMaxSeekWindowRows so
+ *        dense recordings bound the per-tick cost.
+ */
+int CSV::Player::seekWindowStartRow(int target)
+{
+  Q_ASSERT(target >= 0);
+  Q_ASSERT(target < frameCount());
 
-    updateData();
+  static auto& dashboard = UI::Dashboard::instance();
+  const double range     = dashboard.plotTimeRange();
+  const double targetSec = rowSecondsSinceStart(target);
+
+  const int minStart = qMax(0, target - qMax(1, dashboard.points()) + 1);
+  const int capStart = qMax(0, target - kMaxSeekWindowRows + 1);
+
+  int start = minStart;
+  for (int i = 0; i < kMaxSeekWindowRows && targetSec >= 0.0 && start > capStart; ++i) {
+    const double sec = rowSecondsSinceStart(start - 1);
+    if (sec < 0.0 || targetSec - sec > range)
+      break;
+
+    --start;
+  }
+
+  return start;
+}
+
+/**
+ * @brief One coalesced scrub tick: bulk-fills the plot rings from the trailing window ending
+ *        at the cursor and injects the cursor row so scalar widgets track it. Without a seek
+ *        column map the settle rebuild runs instead -- a bulk fill with an empty series map
+ *        would wipe the rings and blank the plots for the whole drag.
+ */
+void CSV::Player::performSeekTick()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
+
+  if (m_seekColumnByKey.isEmpty()) {
+    performSeekSettle();
+    return;
+  }
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const int target       = m_framePos;
+  const int start        = seekWindowStartRow(target);
+
+  QVector<double> times;
+  QHash<qint64, QVector<double>> series;
+  buildSeekWindow(start, target, times, series);
+  dashboard.bulkLoadPlotWindow(times, series);
+
+  anchorSteadyBase(target);
+  injectRow(target);
+}
+
+/**
+ * @brief At-rest settle pass: exact trailing-window replay through the fast lane (FFT and the
+ *        other frame-fed widgets), then a full-time-window bulk fill so the plots keep the
+ *        complete tape view instead of collapsing to the pipeline batch.
+ */
+void CSV::Player::performSeekSettle()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
+
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.clearPlotData();
+
+  const int window = qMin(dashboard.points(), m_framePos + 1);
+  const int start  = qMax(0, m_framePos - window + 1);
+  processFrameBatch(start, m_framePos);
+
+  if (!m_seekColumnByKey.isEmpty()) {
+    QVector<double> times;
+    QHash<qint64, QVector<double>> series;
+    const int fillStart = seekWindowStartRow(m_framePos);
+    buildSeekWindow(fillStart, m_framePos, times, series);
+    dashboard.bulkLoadPlotWindow(times, series);
+  }
+
+  updateData();
+}
+
+/**
+ * @brief Fills the seek-window times and per-(source, uid) numeric series from the stored
+ *        rows; times are forced non-decreasing so the bulk fill's grid stays monotonic.
+ */
+void CSV::Player::buildSeekWindow(int startRow,
+                                  int endRow,
+                                  QVector<double>& times,
+                                  QHash<qint64, QVector<double>>& series)
+{
+  Q_ASSERT(startRow >= 0);
+  Q_ASSERT(startRow <= endRow);
+  Q_ASSERT(endRow < m_csvData.count());
+
+  const int n = endRow - startRow + 1;
+  times.resize(n);
+  for (int k = 0; k < n; ++k) {
+    const double t = rowSecondsSinceStart(startRow + k);
+    times[k]       = (t >= 0.0) ? t : ((k > 0) ? times[k - 1] : 0.0);
+    if (k > 0)
+      times[k] = qMax(times[k], times[k - 1]);
+  }
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const auto pairs       = dashboard.replaySeekSeries();
+  for (const auto& pair : pairs) {
+    const qint64 key = UI::Dashboard::replaySeekKey(pair.first, pair.second);
+    const int column = m_seekColumnByKey.value(key, -1);
+    if (column < 0)
+      continue;
+
+    auto& values = series[key];
+    values.resize(n);
+    for (int k = 0; k < n; ++k) {
+      const auto& list   = m_csvData[startRow + k];
+      const int fieldIdx = column + 1;
+      values[k]          = (fieldIdx < list.size()) ? SerialStudio::toDouble(list[fieldIdx]) : 0.0;
+    }
   }
 }
 
@@ -534,7 +685,7 @@ void CSV::Player::updateData()
   if (!isPlaying())
     return;
 
-  injectFrame(getFrame(framePosition()));
+  injectRow(framePosition());
 
   if (framePosition() >= frameCount() - 1) {
     pause();
@@ -567,12 +718,15 @@ void CSV::Player::updateData()
   }
 
   if (msUntilNext <= 0) {
-    constexpr int kMaxBatchSize = 100;
-    int processed               = 0;
-    while (m_framePos < frameCount() - 1 && processed < kMaxBatchSize && msUntilNext <= 0) {
+    constexpr qint64 kCatchUpBudgetMs = 20;
+    constexpr int kCatchUpMaxFrames   = 4096;
+    const QDeadlineTimer budget(kCatchUpBudgetMs);
+    int processed = 0;
+    while (m_framePos < frameCount() - 1 && msUntilNext <= 0 && !budget.hasExpired()
+           && processed < kCatchUpMaxFrames) {
       ++m_framePos;
-      injectFrame(getFrame(m_framePos));
       ++processed;
+      injectRow(m_framePos);
       if (!recomputeMsUntilNext(msUntilNext))
         return;
     }
@@ -612,8 +766,9 @@ void CSV::Player::processFrameBatch(int startFrame, int endFrame)
   if (!isOpen())
     return;
 
+  anchorSteadyBase(startFrame);
   for (int i = startFrame; i <= endFrame; ++i)
-    injectFrame(getFrame(i));
+    injectRow(i);
 }
 
 /**
@@ -638,6 +793,16 @@ void CSV::Player::sendHeaderFrame()
   QStringList headers;
   for (int i = 1; i < headerRow.size(); ++i)
     headers.append(headerRow[i]);
+
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    m_seekColumnByKey.clear();
+    for (int i = 0; i < headers.size(); ++i) {
+      m_seekColumnByKey.insert(
+        UI::Dashboard::replaySeekKey(0, DataModel::dataset_unique_id(0, 0, i)), i);
+      m_seekColumnByKey.insert(
+        UI::Dashboard::replaySeekKey(0, DataModel::dataset_unique_id(0, 1, i)), i);
+    }
+  }
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
   frameBuilder.registerQuickPlotHeaders(headers);
@@ -900,6 +1065,7 @@ const QString CSV::Player::getCellValue(const int row, const int column, bool& e
  */
 void CSV::Player::buildReplayLayout()
 {
+  m_seekColumnByKey.clear();
   m_sourceColumnsByIndex.clear();
 
   DataModel::Frame frame;
@@ -910,8 +1076,11 @@ void CSV::Player::buildReplayLayout()
   const int colCount        = static_cast<int>(schema.columns.size());
 
   QSet<int> sources;
-  for (const auto& col : schema.columns)
+  for (int i = 0; i < colCount; ++i) {
+    const auto& col = schema.columns[static_cast<size_t>(i)];
     sources.insert(col.sourceId);
+    m_seekColumnByKey.insert(UI::Dashboard::replaySeekKey(col.sourceId, col.uniqueId), i);
+  }
 
   m_multiSource = sources.size() > 1;
 
@@ -933,6 +1102,126 @@ void CSV::Player::buildReplayLayout()
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
   frameBuilder.setReplayColumnMap(std::move(replay));
+}
+
+/**
+ * @brief Precomputes per-row seconds for date/time recordings, anchored at the first data
+ *        row, so scrub/settle/playback read O(1) instead of re-parsing QDateTime per row
+ *        (numeric-timestamp recordings already have m_timestampCache).
+ */
+void CSV::Player::buildDateTimeSecondsCache()
+{
+  m_dateTimeSecondsCache.clear();
+  if (m_useHighPrecisionTimestamps || m_csvData.isEmpty())
+    return;
+
+  const QDateTime anchor = getDateTime(0);
+  if (!anchor.isValid())
+    return;
+
+  m_dateTimeSecondsCache.reserve(m_csvData.count());
+  for (int i = 0; i < m_csvData.count(); ++i) {
+    const auto dateTime = getDateTime(i);
+    m_dateTimeSecondsCache.append(dateTime.isValid() ? anchor.msecsTo(dateTime) * kInvMs : -1.0);
+  }
+}
+
+/**
+ * @brief Seconds-since-recording-start for @p row: cached seconds for both timestamp styles
+ *        (numeric or date/time), a per-row parse only as the fallback, -1 when the row
+ *        carries no usable time. Only ever consumed as deltas, so the anchor is arbitrary.
+ */
+double CSV::Player::rowSecondsSinceStart(int row)
+{
+  Q_ASSERT(row >= 0);
+
+  const double seconds = getTimestampSeconds(row);
+  if (seconds >= 0.0)
+    return seconds;
+
+  if (row < m_dateTimeSecondsCache.size())
+    return m_dateTimeSecondsCache[row];
+
+  const auto dateTime = getDateTime(row);
+  if (dateTime.isValid() && m_startTimestamp.isValid())
+    return m_startTimestamp.msecsTo(dateTime) * kInvMs;
+
+  return -1.0;
+}
+
+/**
+ * @brief Anchors the steady-clock base used to stamp replayed rows with recorded deltas.
+ */
+void CSV::Player::anchorSteadyBase(int row)
+{
+  Q_ASSERT(row >= 0);
+
+  m_steadyBase           = std::chrono::steady_clock::now();
+  const double seconds   = rowSecondsSinceStart(row);
+  m_steadyBaseRowSeconds = (seconds >= 0.0) ? seconds : 0.0;
+}
+
+/**
+ * @brief Steady timestamp for @p row: the anchored base advanced by the recorded delta, so the
+ *        recording -- not the wall clock -- owns replay time. Rows without a usable time fall
+ *        back to now().
+ */
+std::chrono::steady_clock::time_point CSV::Player::rowSteadyTimestamp(int row)
+{
+  Q_ASSERT(row >= 0);
+
+  const double seconds = rowSecondsSinceStart(row);
+  if (seconds < 0.0) [[unlikely]]
+    return std::chrono::steady_clock::now();
+
+  const auto delta = std::chrono::duration<double>(seconds - m_steadyBaseRowSeconds);
+  return m_steadyBase + std::chrono::duration_cast<std::chrono::steady_clock::duration>(delta);
+}
+
+/**
+ * @brief Replays one stored row through the FrameBuilder replay fast lane (spec 0020): the
+ *        already-split cells go straight in with the recorded timestamp, no byte round-trip.
+ *        QuickPlot mode keeps the byte path (its parser consumes raw payloads).
+ */
+void CSV::Player::injectRow(int row)
+{
+  Q_ASSERT(row >= 0);
+  Q_ASSERT(row < m_csvData.count());
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    injectFrame(getFrame(row));
+    return;
+  }
+
+  const auto& list = m_csvData[row];
+  if (list.count() <= 1) [[unlikely]]
+    return;
+
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto timestamp      = rowSteadyTimestamp(row);
+
+  if (!m_multiSource) {
+    frameBuilder.replayChannels(0, list.mid(1), timestamp);
+    return;
+  }
+
+  for (auto it = m_sourceColumnsByIndex.constBegin(); it != m_sourceColumnsByIndex.constEnd();
+       ++it) {
+    const auto& orderedCols = it.value();
+    QStringList cells;
+    cells.reserve(orderedCols.size());
+    bool present = false;
+    for (int col : orderedCols) {
+      const int fieldIdx = col + 1;
+      const QString cell = (fieldIdx >= 1 && fieldIdx < list.size()) ? list[fieldIdx] : QString();
+      present            = present || !cell.isEmpty();
+      cells.append(cell);
+    }
+
+    if (present)
+      frameBuilder.replayChannels(it.key(), cells, timestamp);
+  }
 }
 
 /**

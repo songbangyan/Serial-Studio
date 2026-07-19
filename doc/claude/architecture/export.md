@@ -18,11 +18,25 @@
     final-value players** (`SerialStudio::isFinalValuePlayerOpen`), so per-dataset transforms
     never re-run during playback — they read live inputs (data tables) that don't exist then.
     Raw columns are only a fallback for pre-final-column session files.
-  - **Replay payload rows are RFC-4180 quoted**: players synthesize rows with
+  - **ProjectFile replay bypasses the byte round-trip (spec 0020)**: all three players hand
+    their already-split cells to `FrameBuilder::replayChannels(sourceId, channels, recordedTs)`
+    — no `joinReplayRow` → bytes → re-split. It publishes via the slot pool through
+    `publishReplayFrame`: dashboard + read-only observers (API/gRPC, only with a client
+    connected) and **never a recording sink** (CSV/MDF4/Sessions export, MQTT) — replay
+    cannot re-record itself. Recorded timestamps ride the frame (players anchor a steady base
+    per `anchorSteadyBase` and stamp rows with recorded deltas).
+  - **QuickPlot replay keeps the RFC-4180 byte rows**: players synthesize rows with
     `DataModel::joinReplayRow` and FrameBuilder splits them with `splitReplayChannels` /
-    `splitReplayRow` (`FrameParserPipeline.h`), so string values containing commas/quotes
-    survive replay. The live QuickPlot split (`splitQuickPlotChannels`) is untouched — the
-    quote-aware splitter only runs when `m_playerOpen` is set.
+    `splitReplayRow` (`FrameParserPipeline.h`). The live QuickPlot split
+    (`splitQuickPlotChannels`) is untouched — the quote-aware splitter only runs when
+    `m_playerOpen` is set.
+  - **Tape scrub (spec 0020)**: `setProgress` in all three players coalesces slider ticks to
+    ~30 Hz; each tick calls `Dashboard::bulkLoadPlotWindow` (rings rebuilt directly from the
+    player's row storage via `replaySeekSeries`/`replaySeekKey`; Sessions uses a windowed
+    `readings` range query with forward-fill) plus one cursor-row inject for scalar widgets;
+    a 250 ms settle timer then replays the exact trailing window through `replayChannels`
+    (FFT/waterfall/GPS/3D correct at rest). Playback catch-up is wall-clock budgeted
+    (~20 ms/pass) instead of a fixed 100-row batch — lossless, stretches when underpowered.
   - **`table_snapshots` capture**: `Sessions::Export::captureTableSnapshots` (main thread,
     `TimerEvents::timeout1Hz`) diffs `FrameBuilder::tableStore().snapshot()` (skipping the
     `__datasets__` system table) against the last tick and enqueues changed registers to the

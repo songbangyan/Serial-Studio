@@ -39,6 +39,7 @@
 #include <vector>
 
 #include "Concepts.h"
+#include "DSPSimd.h"
 #include "Platform/AppPlatform.h"
 
 namespace DSP {
@@ -923,9 +924,10 @@ template<typename XAt, typename YAt>
 }
 
 /**
- * @brief Extracts the global Y bounds from the filled workspace columns (O(columns),
- *        replacing a second full pass over the samples). Returns false when no column
- *        received a finite sample.
+ * @brief Extracts the global Y bounds from the filled workspace columns; returns false
+ *        when no column received a finite sample. Empty columns hold the +/-inf
+ *        identities reset() installed, so the branch-free SIMD reduction matches the old
+ *        cnt-guarded loop and "no finite sample" becomes ymin > ymax.
  */
 [[nodiscard]] inline bool dsColumnYBounds(const DownsampleWorkspace* ws,
                                           std::size_t C,
@@ -933,21 +935,13 @@ template<typename XAt, typename YAt>
                                           ssfp_t& ymax)
 {
   Q_ASSERT(ws != nullptr);
-  Q_ASSERT(ws->cnt.size() >= C);
+  Q_ASSERT(C > 0);
+  Q_ASSERT(ws->minY.size() >= C);
+  Q_ASSERT(ws->maxY.size() >= C);
 
-  bool any = false;
-  ymin     = std::numeric_limits<ssfp_t>::infinity();
-  ymax     = -std::numeric_limits<ssfp_t>::infinity();
-  for (std::size_t c = 0; c < C; ++c) {
-    if (ws->cnt[c] == 0)
-      continue;
-
-    any  = true;
-    ymin = std::min(ymin, ws->minY[c]);
-    ymax = std::max(ymax, ws->maxY[c]);
-  }
-
-  return any;
+  ymin = simdMinF64(ws->minY.data(), C);
+  ymax = simdMaxF64(ws->maxY.data(), C);
+  return ymin <= ymax;
 }
 
 /**

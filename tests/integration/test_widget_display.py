@@ -280,7 +280,9 @@ class TestWidgetTitleOverrides:
         time.sleep(0.5)
         assert api_client.get_project_status()["title"] == "Widget display fixture"
 
-    def test_canonical_titles_unaffected(self, api_client, clean_state):
+    def test_canonical_titles_unaffected(
+        self, api_client, clean_state, device_simulator
+    ):
         """AC3: exports and project responses never see the override."""
         _load_fixture(api_client)
 
@@ -298,10 +300,16 @@ class TestWidgetTitleOverrides:
         assert engine["title"] == "Engine"
         assert engine["datasets"][0]["title"] == "RPM"
 
-        api_client.command("dashboard.tick", {})
-        time.sleep(0.5)
+        # The dashboard drops frames while no stream is open, so feed one
+        # real frame through the TCP loopback before reading it back.
+        api_client.configure_network(host="127.0.0.1", port=9000, socket_type="tcp")
+        api_client.connect_device()
+        assert device_simulator.wait_for_connection(timeout=5.0)
+        device_simulator.send_frames([b"10,20,30\n"], interval_seconds=0.1)
+        time.sleep(1.0)
 
         frame = api_client.command("dashboard.getData", {})["frame"]
+        api_client.disconnect_device()
         group_titles = {g["title"] for g in frame.get("groups", [])}
         assert "Engine" in group_titles
         assert "Powertrain" not in group_titles

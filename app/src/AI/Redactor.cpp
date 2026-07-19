@@ -24,6 +24,11 @@ struct Pattern {
 }  // namespace detail
 
 /**
+ * @brief Defensive bound on JSON recursion depth; deeper values pass through unmodified.
+ */
+static constexpr int kMaxScrubDepth = 128;
+
+/**
  * @brief Returns the static pattern list. Built lazily on first use and intentionally
  *        never destroyed: scrub() runs inside ~Assistant during static finalization
  *        (snapshot -> handoff digest), and a stack-destroyed list crashed on quit there
@@ -80,11 +85,12 @@ bool AI::Redactor::scrub(QString& text)
 
   bool changed = false;
   for (const auto& p : patterns()) {
+    if (!p.re.match(text).hasMatch())
+      continue;
+
     const auto replacement = QStringLiteral("[REDACTED:") + p.reason + QStringLiteral("]");
-    const auto before      = text.size();
     text.replace(p.re, replacement);
-    if (text.size() != before)
-      changed = true;
+    changed = true;
   }
   return changed;
 }
@@ -92,7 +98,7 @@ bool AI::Redactor::scrub(QString& text)
 /**
  * @brief Recursively scrubs a single JSON leaf, returning the redacted value.
  */
-static QJsonValue scrubValue(const QJsonValue& v)
+static QJsonValue scrubValue(const QJsonValue& v, int depth)
 {
   if (v.isString()) {
     auto s = v.toString();
@@ -101,34 +107,42 @@ static QJsonValue scrubValue(const QJsonValue& v)
   }
 
   if (v.isObject())
-    return AI::Redactor::scrubObject(v.toObject());
+    return AI::Redactor::scrubObject(v.toObject(), depth + 1);
 
   if (v.isArray())
-    return AI::Redactor::scrubArray(v.toArray());
+    return AI::Redactor::scrubArray(v.toArray(), depth + 1);
 
   return v;
 }
 
 /**
- * @brief Walks every string leaf inside a QJsonObject and scrubs it.
+ * @brief Walks every string leaf inside a QJsonObject and scrubs it; objects nested
+ *        beyond kMaxScrubDepth are returned unmodified.
  */
-QJsonObject AI::Redactor::scrubObject(const QJsonObject& obj)
+QJsonObject AI::Redactor::scrubObject(const QJsonObject& obj, int depth)
 {
+  if (depth >= kMaxScrubDepth)
+    return obj;
+
   QJsonObject out;
   for (auto it = obj.constBegin(); it != obj.constEnd(); ++it)
-    out.insert(it.key(), scrubValue(it.value()));
+    out.insert(it.key(), scrubValue(it.value(), depth));
 
   return out;
 }
 
 /**
- * @brief Walks every string leaf inside a QJsonArray and scrubs it.
+ * @brief Walks every string leaf inside a QJsonArray and scrubs it; arrays nested
+ *        beyond kMaxScrubDepth are returned unmodified.
  */
-QJsonArray AI::Redactor::scrubArray(const QJsonArray& arr)
+QJsonArray AI::Redactor::scrubArray(const QJsonArray& arr, int depth)
 {
+  if (depth >= kMaxScrubDepth)
+    return arr;
+
   QJsonArray out;
   for (const auto& v : arr)
-    out.append(scrubValue(v));
+    out.append(scrubValue(v, depth));
 
   return out;
 }

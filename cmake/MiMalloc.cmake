@@ -60,7 +60,7 @@ if(SS_MIMALLOC_PLATFORM)
   FetchContent_Declare(
     mimalloc
     GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
-    GIT_TAG        v2.1.9
+    GIT_TAG        v3.4.1
     GIT_SHALLOW    TRUE
   )
   FetchContent_MakeAvailable(mimalloc)

@@ -59,7 +59,7 @@ Widgets.SmartDialog {
   //
   readonly property bool conversationEmpty:
     !Cpp_AI_Assistant.conversation
-    || Cpp_AI_Assistant.conversation.messages.length === 0
+    || Cpp_AI_Assistant.conversation.messageCount === 0
 
   //
   // Controls visibility of the left chat-list sidebar
@@ -1036,7 +1036,7 @@ Widgets.SmartDialog {
               ToolTip.delay: 400
               enabled: !Cpp_AI_Assistant.busy
                        && Cpp_AI_Assistant.conversation
-                       && Cpp_AI_Assistant.conversation.messages.length > 0
+                       && Cpp_AI_Assistant.conversation.messageCount > 0
               opacity: enabled ? 0.85 : 0.35
               icon.width: 16
               icon.height: 16

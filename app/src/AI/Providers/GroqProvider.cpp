@@ -13,10 +13,10 @@
 #include <QJsonObject>
 #include <QNetworkAccessManager>
 #include <QObject>
-#include <QTimer>
 
 #include "AI/ContextBuilder.h"
 #include "AI/Logging.h"
+#include "AI/Providers/ImmediateErrorReply.h"
 #include "AI/Providers/OpenAIProvider.h"
 #include "AI/Providers/OpenAIReply.h"
 
@@ -25,36 +25,6 @@
 //--------------------------------------------------------------------------------------------------
 
 static const char* const kGroqEndpoint = "https://api.groq.com/openai/v1/chat/completions";
-
-namespace detail {
-
-/**
- * @brief Reply that fires errorOccurred on the next event-loop tick.
- */
-class ImmediateErrorReplyGQ : public AI::Reply {
-public:
-  /**
-   * @brief Schedules errorOccurred + finished on the next event-loop tick.
-   */
-  ImmediateErrorReplyGQ(const QString& message, QObject* parent = nullptr)
-    : AI::Reply(parent), m_message(message)
-  {
-    QTimer::singleShot(0, this, [this]() {
-      Q_EMIT errorOccurred(m_message);
-      Q_EMIT finished();
-    });
-  }
-
-  /**
-   * @brief No-op since the error fires immediately.
-   */
-  void abort() override {}
-
-private:
-  QString m_message;
-};
-
-}  // namespace detail
 
 //--------------------------------------------------------------------------------------------------
 // Construction and provider metadata
@@ -148,7 +118,7 @@ AI::Reply* AI::GroqProvider::sendMessage(const QJsonArray& history,
 {
   const auto key = m_keyGetter ? m_keyGetter() : QString();
   if (key.isEmpty())
-    return new detail::ImmediateErrorReplyGQ(
+    return new AI::ImmediateErrorReply(
       QObject::tr("No Groq API key set. Open Manage Keys to add one."));
 
   const auto systemBlocks = ContextBuilder::buildSystemArray(false);

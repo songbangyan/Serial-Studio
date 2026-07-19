@@ -20,7 +20,7 @@
 /**
  * @brief Constructs an empty SSE reader with no parent ownership transfer.
  */
-AI::SseEventReader::SseEventReader(QObject* parent) : QObject(parent) {}
+AI::SseEventReader::SseEventReader(QObject* parent) : QObject(parent), m_pendingCr(false) {}
 
 //--------------------------------------------------------------------------------------------------
 // Public API
@@ -36,15 +36,21 @@ void AI::SseEventReader::feed(const QByteArray& chunk)
     return;
   }
 
-  if (m_buffer.size() + chunk.size() > kMaxBufferBytes) {
+  const auto normalized = normalizeNewlines(chunk);
+  if (normalized.isEmpty()) {
+    drainFrames();
+    return;
+  }
+
+  if (m_buffer.size() + normalized.size() > kMaxBufferBytes) {
     qCWarning(serialStudioAI) << "SSE buffer would exceed" << kMaxBufferBytes
                               << "bytes; dropping connection state";
-    Q_EMIT parseError(QStringLiteral("buffer_overflow"));
+    Q_EMIT parseError(QLatin1String(kErrBufferOverflow));
     reset();
     return;
   }
 
-  m_buffer.append(chunk);
+  m_buffer.append(normalized);
   drainFrames();
 }
 
@@ -54,6 +60,7 @@ void AI::SseEventReader::feed(const QByteArray& chunk)
 void AI::SseEventReader::reset()
 {
   m_buffer.clear();
+  m_pendingCr = false;
 }
 
 /**
@@ -62,6 +69,40 @@ void AI::SseEventReader::reset()
 qsizetype AI::SseEventReader::bufferedBytes() const noexcept
 {
   return m_buffer.size();
+}
+
+/**
+ * @brief True when a parseError reason implies unrecoverable stream-state loss, so replies
+ *        must end the turn instead of skipping the frame.
+ */
+bool AI::SseEventReader::fatalReason(const QString& reason)
+{
+  return reason == QLatin1String(kErrBufferOverflow)
+      || reason == QLatin1String(kErrPayloadTooLarge);
+}
+
+/**
+ * @brief Rewrites CRLF/CR line endings to LF, holding back a chunk-final CR so a CRLF pair
+ *        split across network chunks cannot become a spurious blank line.
+ */
+QByteArray AI::SseEventReader::normalizeNewlines(const QByteArray& chunk)
+{
+  QByteArray input;
+  input.reserve(chunk.size() + 1);
+  if (m_pendingCr) {
+    input.append('\r');
+    m_pendingCr = false;
+  }
+
+  input.append(chunk);
+  if (input.endsWith('\r')) {
+    m_pendingCr = true;
+    input.chop(1);
+  }
+
+  input.replace("\r\n", "\n");
+  input.replace('\r', '\n');
+  return input;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -137,6 +178,9 @@ void AI::SseEventReader::emitFrame(const QString& name, const QByteArray& data)
   if (name == QStringLiteral("ping"))
     return;
 
+  if (data.trimmed() == "[DONE]")
+    return;
+
   if (data.isEmpty()) {
     Q_EMIT frameReceived(name, QJsonObject());
     return;
@@ -144,7 +188,7 @@ void AI::SseEventReader::emitFrame(const QString& name, const QByteArray& data)
 
   if (data.size() > kMaxPayloadBytes) {
     qCWarning(serialStudioAI) << "SSE frame" << name << "exceeds payload limit";
-    Q_EMIT parseError(QStringLiteral("payload_too_large"));
+    Q_EMIT parseError(QLatin1String(kErrPayloadTooLarge));
     return;
   }
 

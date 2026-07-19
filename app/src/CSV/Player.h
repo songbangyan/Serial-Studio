@@ -21,12 +21,15 @@
 
 #pragma once
 
+#include <chrono>
 #include <QDateTime>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QHash>
 #include <QKeyEvent>
 #include <QMap>
 #include <QObject>
+#include <QTimer>
 #include <QVector>
 
 namespace CSV {
@@ -93,6 +96,8 @@ public slots:
 
 private slots:
   void updateData();
+  void performSeekTick();
+  void performSeekSettle();
 
 private:
   void sendHeaderFrame();
@@ -124,6 +129,16 @@ protected:
 private:
   void buildReplayLayout();
   void injectFrame(const QByteArray& frame);
+  void injectRow(int row);
+  void anchorSteadyBase(int row);
+  void buildSeekWindow(int startRow,
+                       int endRow,
+                       QVector<double>& times,
+                       QHash<qint64, QVector<double>>& series);
+  void buildDateTimeSecondsCache();
+  [[nodiscard]] int seekWindowStartRow(int target);
+  [[nodiscard]] double rowSecondsSinceStart(int row);
+  [[nodiscard]] std::chrono::steady_clock::time_point rowSteadyTimestamp(int row);
 
 private:
   int m_framePos;
@@ -138,6 +153,14 @@ private:
   double m_startTimestampSeconds;
   bool m_useHighPrecisionTimestamps;
   QVector<double> m_timestampCache;
+  QVector<double> m_dateTimeSecondsCache;
+
+  double m_steadyBaseRowSeconds;
+  std::chrono::steady_clock::time_point m_steadyBase;
+
+  QTimer m_seekTimer;
+  QTimer m_settleTimer;
+  QHash<qint64, int> m_seekColumnByKey;
 
   QMap<int, QVector<int>> m_sourceColumnsByIndex;
 };

@@ -18,39 +18,10 @@
 #include "AI/KeyVault.h"
 #include "AI/Logging.h"
 #include "AI/SseEventReader.h"
-#include "API/CommandRegistry.h"
 #include "Misc/JsonValidator.h"
 
 static constexpr int kInitialResponseTimeoutMs = 120 * 1000;
 static const char* kEndpoint                   = "https://api.anthropic.com/v1/messages";
-
-/**
- * @brief Resolves an Anthropic-sanitized tool name back to its dotted form.
- */
-static QString resolveCanonicalToolName(const QString& sanitized)
-{
-  static auto& commandRegistry = API::CommandRegistry::instance();
-  const auto& commands         = commandRegistry.commands();
-
-  if (commands.contains(sanitized))
-    return sanitized;
-
-  for (auto it = commands.constBegin(); it != commands.constEnd(); ++it) {
-    QString candidate = it.key();
-    candidate.replace(QChar('.'), QChar('_'));
-    candidate.replace(QChar(':'), QChar('_'));
-    if (candidate == sanitized)
-      return it.key();
-  }
-
-  if (sanitized.startsWith(QStringLiteral("meta_"))) {
-    QString restored = sanitized;
-    restored.replace(0, 5, QStringLiteral("meta."));
-    return restored;
-  }
-
-  return sanitized;
-}
 
 //--------------------------------------------------------------------------------------------------
 // Construction
@@ -105,14 +76,6 @@ void AI::AnthropicReply::abort()
     m_reply->abort();
 }
 
-/**
- * @brief Returns the Anthropic stop_reason from message_delta if seen.
- */
-QString AI::AnthropicReply::stopReason() const noexcept
-{
-  return m_stopReason;
-}
-
 //--------------------------------------------------------------------------------------------------
 // SSE event handler
 //--------------------------------------------------------------------------------------------------
@@ -145,14 +108,8 @@ void AI::AnthropicReply::onSseEvent(const QString& name, const QJsonObject& data
     return;
   }
 
-  if (name == QStringLiteral("message_delta")) {
-    const auto delta = data.value(QStringLiteral("delta")).toObject();
-    const auto sr    = delta.value(QStringLiteral("stop_reason")).toString();
-    if (!sr.isEmpty())
-      m_stopReason = sr;
-
+  if (name == QStringLiteral("message_delta"))
     return;
-  }
 
   if (name == QStringLiteral("message_stop")) {
     finishOk();
@@ -196,6 +153,9 @@ void AI::AnthropicReply::handleContentBlockStart(const QJsonObject& data)
   if (bs.type == QStringLiteral("redacted_thinking"))
     bs.redactedData = block.value(QStringLiteral("data")).toString();
 
+  if (streamBudgetBreached(bs.redactedData.size()))
+    return;
+
   if (idx >= 0)
     m_blocks.insert(idx, bs);
 }
@@ -211,7 +171,7 @@ void AI::AnthropicReply::handleContentBlockDelta(const QJsonObject& data)
 
   if (deltaType == QStringLiteral("text_delta")) {
     const auto chunk = delta.value(QStringLiteral("text")).toString();
-    if (!chunk.isEmpty())
+    if (!chunk.isEmpty() && !streamBudgetBreached(chunk.size()))
       Q_EMIT partialText(chunk);
 
     return;
@@ -219,7 +179,7 @@ void AI::AnthropicReply::handleContentBlockDelta(const QJsonObject& data)
 
   if (deltaType == QStringLiteral("thinking_delta")) {
     const auto chunk = delta.value(QStringLiteral("thinking")).toString();
-    if (!chunk.isEmpty()) {
+    if (!chunk.isEmpty() && !streamBudgetBreached(chunk.size())) {
       auto it = m_blocks.find(idx);
       if (it != m_blocks.end())
         it->thinkingText.append(chunk);
@@ -231,17 +191,19 @@ void AI::AnthropicReply::handleContentBlockDelta(const QJsonObject& data)
   }
 
   if (deltaType == QStringLiteral("signature_delta")) {
-    auto it = m_blocks.find(idx);
-    if (it != m_blocks.end())
-      it->thinkingSignature.append(delta.value(QStringLiteral("signature")).toString());
+    const auto sig = delta.value(QStringLiteral("signature")).toString();
+    auto it        = m_blocks.find(idx);
+    if (it != m_blocks.end() && !streamBudgetBreached(sig.size()))
+      it->thinkingSignature.append(sig);
 
     return;
   }
 
   if (deltaType == QStringLiteral("input_json_delta")) {
-    auto it = m_blocks.find(idx);
-    if (it != m_blocks.end())
-      it->toolInputJson.append(delta.value(QStringLiteral("partial_json")).toString().toUtf8());
+    const auto json = delta.value(QStringLiteral("partial_json")).toString().toUtf8();
+    auto it         = m_blocks.find(idx);
+    if (it != m_blocks.end() && !streamBudgetBreached(json.size()))
+      it->toolInputJson.append(json);
   }
 }
 
@@ -298,8 +260,7 @@ void AI::AnthropicReply::emitToolUseFromBlock(const BlockState& bs)
     return;
   }
 
-  Q_EMIT toolCallRequested(
-    bs.toolUseId, resolveCanonicalToolName(bs.toolUseName), result.document.object());
+  Q_EMIT toolCallRequested(bs.toolUseId, bs.toolUseName, result.document.object());
 }
 
 /**
@@ -387,6 +348,21 @@ void AI::AnthropicReply::onReplyError()
 //--------------------------------------------------------------------------------------------------
 // Finalization
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Charges bytes against the shared per-reply budget; on breach, ends the turn with a
+ *        visible error and aborts the transport so Qt stops buffering the runaway stream.
+ */
+bool AI::AnthropicReply::streamBudgetBreached(qsizetype bytes)
+{
+  if (!chargeStreamBudget(bytes))
+    return false;
+
+  finishWithError(
+    tr("Reply exceeded the %1 MB stream limit").arg(kMaxStreamedReplyBytes / (1024 * 1024)));
+  abort();
+  return true;
+}
 
 /**
  * @brief Marks the stream finished, emits @ref finished.

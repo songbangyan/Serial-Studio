@@ -586,16 +586,25 @@ void AI::Assistant::reportCacheStats(int readTokens, int createdTokens)
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Selects the active provider by index, persisting the choice.
+ * @brief Selects the active provider by index, persisting the choice. Out-of-range indices
+ *        are rejected because providerAt() would hand the conversation a null provider.
+ *        Cache stats are zeroed so the QML indicator cannot keep showing another
+ *        provider's numbers.
  */
 void AI::Assistant::setCurrentProvider(int providerIdx)
 {
+  if (providerIdx < 0 || providerIdx >= kProviderCount) {
+    qCWarning(serialStudioAI) << "Rejected out-of-range provider index" << providerIdx;
+    return;
+  }
+
   if (m_currentProvider == providerIdx)
     return;
 
   m_currentProvider = providerIdx;
   m_settings.setValue(QStringLiteral("ai/currentProvider"), providerIdx);
   rewireConversationProvider();
+  reportCacheStats(0, 0);
   Q_EMIT currentProviderChanged();
 }
 

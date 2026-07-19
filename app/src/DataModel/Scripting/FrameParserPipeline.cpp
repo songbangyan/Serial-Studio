@@ -232,6 +232,23 @@ QByteArray DataModel::joinReplayRow(const QStringList& cells)
 }
 
 /**
+ * @brief Undoes the CSV export's formula-injection guard: a leading apostrophe before a
+ *        dangerous first char is a sanitizer artifact, not data. Restores recordings written
+ *        before numeric fields were exempted from the guard ("'-0.5" -> "-0.5").
+ */
+static void stripCsvInjectionGuard(QString& cell)
+{
+  if (cell.size() < 2 || cell.at(0) != QChar('\''))
+    return;
+
+  const QChar c     = cell.at(1);
+  const bool danger = c == QChar('=') || c == QChar('+') || c == QChar('-') || c == QChar('@')
+                   || c == QChar('\t') || c == QChar('\r');
+  if (danger)
+    cell.remove(0, 1);
+}
+
+/**
  * @brief Quote-aware comma split of one synthesized replay row (RFC-4180 double-quote escape).
  */
 QStringList DataModel::splitReplayRow(QStringView row)
@@ -263,7 +280,9 @@ QStringList DataModel::splitReplayRow(QStringView row)
     }
 
     if (c == QChar(',')) {
-      cells.append(was_quoted ? cell : cell.trimmed());
+      QString value = was_quoted ? cell : cell.trimmed();
+      stripCsvInjectionGuard(value);
+      cells.append(std::move(value));
       cell.clear();
       was_quoted = false;
       continue;
@@ -279,7 +298,9 @@ QStringList DataModel::splitReplayRow(QStringView row)
     cell.append(c);
   }
 
-  cells.append(was_quoted ? cell : cell.trimmed());
+  QString last = was_quoted ? cell : cell.trimmed();
+  stripCsvInjectionGuard(last);
+  cells.append(std::move(last));
   return cells;
 }
 

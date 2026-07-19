@@ -22,6 +22,7 @@
 #include "UI/Widgets/MultiPlot.h"
 
 #include "DSP.h"
+#include "DSPSimd.h"
 #include "Misc/ThemeManager.h"
 #include "UI/Dashboard.h"
 #include "UI/Widgets/PlotLogScale.h"
@@ -828,21 +829,10 @@ void Widgets::MultiPlot::scanCurvesForRange()
   m_minY = std::numeric_limits<double>::max();
   m_maxY = std::numeric_limits<double>::lowest();
 
-  auto accumulate = [this](const QList<QPointF>& curve) {
-    for (auto i = 0; i < curve.count(); ++i) {
-      const double value = curve[i].y();
-      if (!std::isfinite(value))
-        continue;
-
-      m_minY = qMin(m_minY, value);
-      m_maxY = qMax(m_maxY, value);
-    }
-  };
-
   int index = 0;
   for (const auto& curve : std::as_const(m_data)) {
     if (index < m_visibleCurves.size() && m_visibleCurves[index])
-      accumulate(curve);
+      DSP::simdFiniteMinMaxPointF<1>(curve.constData(), curve.count(), m_minY, m_maxY);
 
     ++index;
   }

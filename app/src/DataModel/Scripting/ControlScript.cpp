@@ -184,7 +184,9 @@ bool DataModel::ControlScript::running() const
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Updates the control-script source; restarts the worker if connected.
+ * @brief Updates the control-script source through the same state transition the lifecycle
+ *        edges use: the old worker always stops (stale code must never keep running), and
+ *        m_shouldRun stays in sync so the next edge can never silently skip a correction.
  */
 void DataModel::ControlScript::setCode(const QString& code)
 {
@@ -194,10 +196,10 @@ void DataModel::ControlScript::setCode(const QString& code)
   m_code = code;
   Q_EMIT codeChanged();
 
-  if (shouldRun()) {
-    stopWorker();
+  m_shouldRun = shouldRun();
+  stopWorker();
+  if (m_shouldRun)
     startWorker();
-  }
 }
 
 /**
@@ -258,13 +260,21 @@ bool DataModel::ControlScript::shouldRun() const
 }
 
 /**
- * @brief Starts or stops the control script in step with the connection and operation mode.
- *        Every rising edge force-restarts the worker so each connection gets a fresh engine
- *        (setup() re-runs, top-level script state resets) even if a stale worker survived.
+ * @brief Starts/stops the control script in step with connection, mode, and players. Rising
+ *        edges force-restart (fresh engine); a worker caught running while shouldRun() is
+ *        false is force-stopped on ANY edge, so a desynced worker cannot loop through a
+ *        replay. The stopped-after-error state stays stopped on purpose.
  */
 void DataModel::ControlScript::onConnectedChanged()
 {
   const bool run = shouldRun();
+
+  if (!run && m_running) {
+    m_shouldRun = false;
+    stopWorker();
+    return;
+  }
+
   if (run == m_shouldRun)
     return;
 

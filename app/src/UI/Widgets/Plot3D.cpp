@@ -27,6 +27,7 @@
 #include <QQuickWindow>
 #include <QtNumeric>
 
+#include "DataModel/HotpathOptimization.h"
 #include "DSP.h"
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
@@ -191,9 +192,11 @@ void Widgets::Plot3D::paint(QPainter* painter)
     const int h = m_anaglyphImg[0].height();
     const int w = m_anaglyphImg[0].width();
     for (int y = 0; y < h; ++y) {
-      const auto* lLine = reinterpret_cast<const QRgb*>(m_anaglyphImg[0].constScanLine(y));
-      const auto* rLine = reinterpret_cast<const QRgb*>(m_anaglyphImg[1].constScanLine(y));
-      auto* oLine       = reinterpret_cast<QRgb*>(m_anaglyphMerged.scanLine(y));
+      const QRgb* SS_RESTRICT lLine =
+        reinterpret_cast<const QRgb*>(m_anaglyphImg[0].constScanLine(y));
+      const QRgb* SS_RESTRICT rLine =
+        reinterpret_cast<const QRgb*>(m_anaglyphImg[1].constScanLine(y));
+      QRgb* SS_RESTRICT oLine = reinterpret_cast<QRgb*>(m_anaglyphMerged.scanLine(y));
 
       for (int x = 0; x < w; ++x)
         oLine[x] = qRgb(qRed(lLine[x]), qGreen(rLine[x]), qBlue(rLine[x]));

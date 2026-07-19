@@ -30,6 +30,7 @@
 #include <mdf/mdffile.h>
 #include <mdf/mdfreader.h>
 #include <QApplication>
+#include <QDeadlineTimer>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
@@ -49,6 +50,8 @@
 #ifdef BUILD_COMMERCIAL
 #  include "Licensing/CommercialToken.h"
 #endif
+
+static constexpr int kMaxSeekWindowRows = 262144;
 
 //--------------------------------------------------------------------------------------------------
 // Helper observer classes
@@ -259,11 +262,21 @@ MDF4::Player::Player()
   , m_isSerialStudioFile(false)
   , m_timestamp("")
   , m_startTimestamp(0.0)
+  , m_steadyBaseRowSeconds(0.0)
   , m_masterTimeChannel(nullptr)
   , m_reader(nullptr)
 {
   qApp->installEventFilter(this);
   connect(this, &MDF4::Player::playerStateChanged, this, &MDF4::Player::updateData);
+
+  constexpr int kSeekTickMs   = 33;
+  constexpr int kSeekSettleMs = 250;
+  m_seekTimer.setSingleShot(true);
+  m_seekTimer.setInterval(kSeekTickMs);
+  m_settleTimer.setSingleShot(true);
+  m_settleTimer.setInterval(kSeekSettleMs);
+  connect(&m_seekTimer, &QTimer::timeout, this, &MDF4::Player::performSeekTick);
+  connect(&m_settleTimer, &QTimer::timeout, this, &MDF4::Player::performSeekSettle);
 }
 
 /**
@@ -366,6 +379,10 @@ void MDF4::Player::play()
   m_startTimestamp = m_frameIndex[m_framePos].timestamp;
   m_elapsedTimer.start();
 
+  m_seekTimer.stop();
+  m_settleTimer.stop();
+
+  anchorSteadyBase(m_framePos);
   m_playing = true;
   Q_EMIT playerStateChanged();
 }
@@ -507,6 +524,8 @@ void MDF4::Player::closeFile()
     return;
 
   m_framePos = 0;
+  m_seekTimer.stop();
+  m_settleTimer.stop();
   m_reader.reset();
   m_filePath.clear();
   m_channels.clear();
@@ -520,6 +539,7 @@ void MDF4::Player::closeFile()
   m_multiSource        = false;
   m_isSerialStudioFile = false;
   m_masterTimeChannel  = nullptr;
+  m_seekColumnByKey.clear();
   m_sourceChannelsByIndex.clear();
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
@@ -587,7 +607,9 @@ void MDF4::Player::previousFrame()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Seeks to a specific position in the file
+ * @brief Seeks to a normalized position (tape scrub, spec 0020): the position and timestamp
+ *        update immediately, a coalescing timer live-fills the plots at ~30 Hz, and the settle
+ *        timer runs the exact full-window rebuild once the slider rests.
  */
 void MDF4::Player::setProgress(const double progress)
 {
@@ -597,21 +619,152 @@ void MDF4::Player::setProgress(const double progress)
   if (isPlaying())
     pause();
 
-  int newFramePos = qBound(0, static_cast<int>(progress * frameCount()), frameCount() - 1);
+  const int newFramePos = qBound(0, static_cast<int>(progress * frameCount()), frameCount() - 1);
+  if (newFramePos == m_framePos)
+    return;
 
-  if (newFramePos != m_framePos) {
-    m_framePos = newFramePos;
+  m_framePos = newFramePos;
+  if (m_framePos < static_cast<int>(m_frameIndex.size())) {
+    m_timestamp = formatTimestamp(m_frameIndex[m_framePos].timestamp);
+    Q_EMIT timestampChanged();
+  }
 
-    static auto& dashboard = UI::Dashboard::instance();
-    dashboard.clearPlotData();
+  if (!m_seekTimer.isActive())
+    m_seekTimer.start();
 
-    int framesToLoad = dashboard.points();
-    int startFrame   = std::max(0, m_framePos - framesToLoad);
-    int endFrame     = std::min(frameCount() - 1, m_framePos);
+  m_settleTimer.start();
+}
 
-    processFrameBatch(startFrame, endFrame);
+/**
+ * @brief First row of the scrub window ending at @p target: walks back until the plot time
+ *        range is covered (never fewer than points() rows), capped at kMaxSeekWindowRows so
+ *        dense recordings bound the per-tick cost.
+ */
+int MDF4::Player::seekWindowStartRow(int target) const
+{
+  Q_ASSERT(target >= 0);
+  Q_ASSERT(target < static_cast<int>(m_frameIndex.size()));
 
-    updateData();
+  static auto& dashboard = UI::Dashboard::instance();
+  const double range     = dashboard.plotTimeRange();
+  const double targetSec = m_frameIndex[static_cast<size_t>(target)].timestamp;
+
+  const int minStart = qMax(0, target - qMax(1, dashboard.points()) + 1);
+  const int capStart = qMax(0, target - kMaxSeekWindowRows + 1);
+
+  int start = minStart;
+  for (int i = 0; i < kMaxSeekWindowRows && start > capStart; ++i) {
+    const double sec = m_frameIndex[static_cast<size_t>(start - 1)].timestamp;
+    if (targetSec - sec > range)
+      break;
+
+    --start;
+  }
+
+  return start;
+}
+
+/**
+ * @brief One coalesced scrub tick: bulk-fills the plot rings from the trailing window ending
+ *        at the cursor and injects the cursor row so scalar widgets track it. Without a seek
+ *        column map the settle rebuild runs instead -- a bulk fill with an empty series map
+ *        would wipe the rings and blank the plots for the whole drag.
+ */
+void MDF4::Player::performSeekTick()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
+
+  if (m_seekColumnByKey.isEmpty()) {
+    performSeekSettle();
+    return;
+  }
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const int target       = m_framePos;
+  const int start        = seekWindowStartRow(target);
+
+  QVector<double> times;
+  QHash<qint64, QVector<double>> series;
+  buildSeekWindow(start, target, times, series);
+  dashboard.bulkLoadPlotWindow(times, series);
+
+  anchorSteadyBase(target);
+  injectRow(target);
+}
+
+/**
+ * @brief At-rest settle pass: exact trailing-window replay through the fast lane (FFT and the
+ *        other frame-fed widgets), then a full-time-window bulk fill so the plots keep the
+ *        complete tape view instead of collapsing to the pipeline batch.
+ */
+void MDF4::Player::performSeekSettle()
+{
+  if (!isOpen() || isPlaying())
+    return;
+
+  Q_ASSERT(m_framePos >= 0);
+  Q_ASSERT(m_framePos < frameCount());
+
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.clearPlotData();
+
+  const int window = qMin(dashboard.points(), m_framePos + 1);
+  const int start  = qMax(0, m_framePos - window + 1);
+  processFrameBatch(start, m_framePos);
+
+  if (!m_seekColumnByKey.isEmpty()) {
+    QVector<double> times;
+    QHash<qint64, QVector<double>> series;
+    const int fillStart = seekWindowStartRow(m_framePos);
+    buildSeekWindow(fillStart, m_framePos, times, series);
+    dashboard.bulkLoadPlotWindow(times, series);
+  }
+
+  updateData();
+}
+
+/**
+ * @brief Fills the seek-window times and per-(source, uid) numeric series straight from the
+ *        sample cache (already doubles, no text parse).
+ */
+void MDF4::Player::buildSeekWindow(int startRow,
+                                   int endRow,
+                                   QVector<double>& times,
+                                   QHash<qint64, QVector<double>>& series)
+{
+  Q_ASSERT(startRow >= 0);
+  Q_ASSERT(startRow <= endRow);
+  Q_ASSERT(endRow < frameCount());
+
+  const int n = endRow - startRow + 1;
+  times.resize(n);
+  for (int k = 0; k < n; ++k) {
+    times[k] = m_frameIndex[static_cast<size_t>(startRow + k)].timestamp;
+    if (k > 0)
+      times[k] = qMax(times[k], times[k - 1]);
+  }
+
+  static auto& dashboard = UI::Dashboard::instance();
+  const auto pairs       = dashboard.replaySeekSeries();
+  for (const auto& pair : pairs) {
+    const qint64 key = UI::Dashboard::replaySeekKey(pair.first, pair.second);
+    const int column = m_seekColumnByKey.value(key, -1);
+    if (column < 0)
+      continue;
+
+    auto& values = series[key];
+    values.resize(n);
+    for (int k = 0; k < n; ++k) {
+      const auto& frameIdx = m_frameIndex[static_cast<size_t>(startRow + k)];
+      const auto it        = m_sampleCache.find(frameIdx.recordIndex);
+      const bool inRange =
+        it != m_sampleCache.end() && column < static_cast<int>(it->second.size());
+      values[k] = inRange ? it->second[static_cast<size_t>(column)] : 0.0;
+    }
   }
 }
 
@@ -626,16 +779,18 @@ void MDF4::Player::setProgress(const double progress)
  */
 void MDF4::Player::catchUpToTarget(double targetTime)
 {
-  constexpr int kMaxBatchSize = 100;
-  int processed               = 0;
+  constexpr qint64 kCatchUpBudgetMs = 20;
+  constexpr int kCatchUpMaxFrames   = 4096;
+  const QDeadlineTimer budget(kCatchUpBudgetMs);
 
-  while (m_framePos < frameCount() - 1 && processed < kMaxBatchSize) {
+  int processed = 0;
+  while (m_framePos < frameCount() - 1 && !budget.hasExpired() && processed < kCatchUpMaxFrames) {
     if (!isOpen() || !isPlaying())
       break;
 
     ++m_framePos;
-    sendFrame(m_framePos);
     ++processed;
+    sendFrame(m_framePos);
 
     if (m_framePos >= frameCount() - 1)
       break;
@@ -992,6 +1147,7 @@ void MDF4::Player::buildFrameIndexFromCache()
  */
 void MDF4::Player::processFrameBatch(int startFrame, int endFrame)
 {
+  anchorSteadyBase(std::max(0, startFrame));
   for (int i = startFrame; i <= endFrame; ++i)
     if (i >= 0 && i < frameCount())
       sendFrame(i);
@@ -1005,7 +1161,7 @@ void MDF4::Player::sendFrame(int frameIndex)
   if (!isOpen() || frameIndex < 0 || frameIndex >= frameCount())
     return;
 
-  injectFrame(getFrame(frameIndex), frameIndex);
+  injectRow(frameIndex);
 }
 
 /**
@@ -1038,6 +1194,16 @@ void MDF4::Player::sendHeaderFrame()
       headers.append(QString("Channel_%1").arg(i + 1));
   }
 
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    m_seekColumnByKey.clear();
+    for (int i = 0; i < headers.size(); ++i) {
+      m_seekColumnByKey.insert(
+        UI::Dashboard::replaySeekKey(0, DataModel::dataset_unique_id(0, 0, i)), i);
+      m_seekColumnByKey.insert(
+        UI::Dashboard::replaySeekKey(0, DataModel::dataset_unique_id(0, 1, i)), i);
+    }
+  }
+
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
   frameBuilder.registerQuickPlotHeaders(headers);
 }
@@ -1064,42 +1230,129 @@ QString MDF4::Player::formatTimestamp(double timestamp) const
 }
 
 /**
- * @brief Extracts a frame of data at the specified index. String-typed channels replay their
- *        cached text verbatim; numeric channels format the cached double.
+ * @brief Fills @p cells with the row at @p index. String-typed channels replay their cached
+ *        text verbatim; numeric channels format the cached double. Returns false out of range.
  */
-QByteArray MDF4::Player::getFrame(const int index)
+bool MDF4::Player::buildRowCells(int index, QStringList& cells) const
 {
   if (!isOpen() || index < 0 || index >= frameCount())
-    return QByteArray();
+    return false;
 
   const auto& frameIdx = m_frameIndex[index];
 
-  QStringList cells;
+  cells.clear();
   cells.reserve(static_cast<int>(m_channels.size()));
 
   auto it = m_sampleCache.find(frameIdx.recordIndex);
   if (it == m_sampleCache.end()) {
     for (size_t i = 0; i < m_channels.size(); ++i)
       cells.append(QStringLiteral("0"));
+
+    return true;
   }
 
-  else {
-    const auto sit                      = m_stringCache.find(frameIdx.recordIndex);
-    const std::vector<QString>* strings = (sit != m_stringCache.end()) ? &sit->second : nullptr;
+  const auto sit                      = m_stringCache.find(frameIdx.recordIndex);
+  const std::vector<QString>* strings = (sit != m_stringCache.end()) ? &sit->second : nullptr;
 
-    const auto& values = it->second;
-    for (size_t i = 0; i < values.size(); ++i) {
-      const bool is_string = i < m_channelIsString.size() && m_channelIsString[i];
-      if (is_string && strings && i < strings->size())
-        cells.append((*strings)[i]);
-      else
-        cells.append(QString::number(values[i], 'g', 10));
-    }
+  const auto& values = it->second;
+  for (size_t i = 0; i < values.size(); ++i) {
+    const bool is_string = i < m_channelIsString.size() && m_channelIsString[i];
+    if (is_string && strings && i < strings->size())
+      cells.append((*strings)[i]);
+    else
+      cells.append(QString::number(values[i], 'g', 10));
   }
+
+  return true;
+}
+
+/**
+ * @brief Extracts a frame of data at the specified index as a joined replay row.
+ */
+QByteArray MDF4::Player::getFrame(const int index)
+{
+  QStringList cells;
+  if (!buildRowCells(index, cells))
+    return QByteArray();
 
   QByteArray frame = DataModel::joinReplayRow(cells);
   frame.append('\n');
   return frame;
+}
+
+/**
+ * @brief Anchors the steady-clock base used to stamp replayed rows with recorded deltas.
+ */
+void MDF4::Player::anchorSteadyBase(int frameIndex)
+{
+  Q_ASSERT(frameIndex >= 0);
+
+  m_steadyBase           = std::chrono::steady_clock::now();
+  m_steadyBaseRowSeconds = (frameIndex < frameCount()) ? m_frameIndex[frameIndex].timestamp : 0.0;
+}
+
+/**
+ * @brief Steady timestamp for @p frameIndex: the anchored base advanced by the recorded delta,
+ *        so the recording -- not the wall clock -- owns replay time.
+ */
+std::chrono::steady_clock::time_point MDF4::Player::rowSteadyTimestamp(int frameIndex) const
+{
+  Q_ASSERT(frameIndex >= 0);
+  Q_ASSERT(frameIndex < static_cast<int>(m_frameIndex.size()));
+
+  const auto delta =
+    std::chrono::duration<double>(m_frameIndex[frameIndex].timestamp - m_steadyBaseRowSeconds);
+  return m_steadyBase + std::chrono::duration_cast<std::chrono::steady_clock::duration>(delta);
+}
+
+/**
+ * @brief Replays one indexed row through the FrameBuilder replay fast lane (spec 0020): cached
+ *        cells go straight in with the recorded timestamp, no join/split round trip. QuickPlot
+ *        mode keeps the byte path (its parser consumes raw payloads).
+ */
+void MDF4::Player::injectRow(int frameIndex)
+{
+  Q_ASSERT(frameIndex >= 0);
+  Q_ASSERT(frameIndex < frameCount());
+
+  static auto& appState = AppState::instance();
+  if (appState.operationMode() != SerialStudio::ProjectFile) {
+    injectFrame(getFrame(frameIndex), frameIndex);
+    return;
+  }
+
+  QStringList cells;
+  if (!buildRowCells(frameIndex, cells) || cells.isEmpty())
+    return;
+
+  static auto& frameBuilder = DataModel::FrameBuilder::instance();
+  const auto timestamp      = rowSteadyTimestamp(frameIndex);
+
+  if (!m_multiSource) {
+    frameBuilder.replayChannels(0, cells, timestamp);
+    return;
+  }
+
+  const std::vector<bool>* active = nullptr;
+  const auto ait                  = m_activeChannels.find(m_frameIndex[frameIndex].recordIndex);
+  if (ait != m_activeChannels.end())
+    active = &ait->second;
+
+  for (auto it = m_sourceChannelsByIndex.constBegin(); it != m_sourceChannelsByIndex.constEnd();
+       ++it) {
+    const auto& orderedChs = it.value();
+    QStringList sourceCells;
+    sourceCells.reserve(orderedChs.size());
+    bool anyActive = !active;
+    for (int ch : orderedChs) {
+      sourceCells.append((ch >= 0 && ch < cells.size()) ? cells[ch] : QString());
+      if (active && ch >= 0 && ch < static_cast<int>(active->size()) && (*active)[ch])
+        anyActive = true;
+    }
+
+    if (anyActive)
+      frameBuilder.replayChannels(it.key(), sourceCells, timestamp);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1111,6 +1364,7 @@ QByteArray MDF4::Player::getFrame(const int index)
  */
 void MDF4::Player::buildReplayLayout()
 {
+  m_seekColumnByKey.clear();
   m_sourceChannelsByIndex.clear();
 
   struct ChMeta {
@@ -1131,6 +1385,9 @@ void MDF4::Player::buildReplayLayout()
   std::unordered_map<int, int> localCounter;
   for (const auto& m : chs)
     localCounter[m.sourceId];
+
+  for (int ch = 0; ch < chs.size(); ++ch)
+    m_seekColumnByKey.insert(UI::Dashboard::replaySeekKey(chs[ch].sourceId, chs[ch].uid), ch);
 
   m_multiSource = localCounter.size() > 1;
 

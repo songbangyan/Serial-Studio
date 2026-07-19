@@ -27,6 +27,7 @@
 #include <QObject>
 #include <QSet>
 #include <QSettings>
+#include <utility>
 
 #include "DSP.h"
 #include "SerialStudio.h"
@@ -198,6 +199,11 @@ public:
   [[nodiscard]] const DSP::AxisData& waterfallData(const int index) const;
 #endif
 
+  [[nodiscard]] static qint64 replaySeekKey(int sourceId, int uniqueId) noexcept;
+  [[nodiscard]] QList<std::pair<int, int>> replaySeekSeries() const;
+  void bulkLoadPlotWindow(const QVector<double>& timesSec,
+                          const QHash<qint64, QVector<double>>& series);
+
   [[nodiscard]] bool plotRunning(const int index);
   [[nodiscard]] bool fftPlotRunning(const int index);
   [[nodiscard]] bool multiplotRunning(const int index);
@@ -291,6 +297,15 @@ private:
   void configureWaterfallSeries();
 #endif
 
+  void fillSeekPlotSingle(int index,
+                          const QVector<double>& timesSec,
+                          const QHash<qint64, QVector<double>>& series,
+                          double timeOffset,
+                          QSet<const DSP::AxisData*>& filled);
+  void fillSeekPlotMulti(int index,
+                         const QVector<double>& timesSec,
+                         const QHash<qint64, QVector<double>>& series,
+                         double timeOffset);
   void buildWidgetGroups(const DataModel::Frame& frame, bool pro);
   void applyDisplayTitles();
   void registerWidgets();

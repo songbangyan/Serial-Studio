@@ -123,7 +123,6 @@ private:
   [[nodiscard]] QByteArray buildSubpacket(const QByteArray& data, quint8 frameEnd);
 
   [[nodiscard]] QByteArray zdleEncode(const QByteArray& data);
-  [[nodiscard]] static bool needsEscape(quint8 ch);
 
   void parseReceivedHeader(quint8 type, quint32 arg);
   void startHeaderForZdleByte(quint8 ch);

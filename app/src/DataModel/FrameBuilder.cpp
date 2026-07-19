@@ -475,21 +475,21 @@ void DataModel::FrameBuilder::setupExternalConnections()
           &DataModel::FrameBuilder::collectTransformEngineGarbage);
 
   connect(&CSV::Player::instance(), &CSV::Player::openChanged, this, [this] {
-    m_playerOpen = SerialStudio::isAnyPlayerOpen();
-    if (CSV::Player::instance().isOpen())
-      rebuildTransformsForPlayback();
+    m_playerOpen        = SerialStudio::isAnyPlayerOpen();
+    m_captureFlagsDirty = true;
+    rebuildTransformsForPlayback();
   });
   connect(&MDF4::Player::instance(), &MDF4::Player::openChanged, this, [this] {
-    m_playerOpen = SerialStudio::isAnyPlayerOpen();
-    if (MDF4::Player::instance().isOpen())
-      rebuildTransformsForPlayback();
+    m_playerOpen        = SerialStudio::isAnyPlayerOpen();
+    m_captureFlagsDirty = true;
+    rebuildTransformsForPlayback();
   });
 
 #ifdef BUILD_COMMERCIAL
   connect(&Sessions::Player::instance(), &Sessions::Player::openChanged, this, [this] {
-    m_playerOpen = SerialStudio::isAnyPlayerOpen();
-    if (Sessions::Player::instance().isOpen())
-      rebuildTransformsForPlayback();
+    m_playerOpen        = SerialStudio::isAnyPlayerOpen();
+    m_captureFlagsDirty = true;
+    rebuildTransformsForPlayback();
   });
 #endif
 
@@ -1064,6 +1064,36 @@ void DataModel::FrameBuilder::parseProjectFrame(int sourceId, const IO::Captured
 }
 
 /**
+ * @brief Replay ingestion fast lane (spec 0020): applies an already-split channel row from a
+ *        file player -- no byte round-trip -- and publishes it stamped with the recorded
+ *        timestamp. Dashboard and read-only API observers only; recording sinks never see
+ *        replayed frames, so a replay can never re-record itself.
+ */
+void DataModel::FrameBuilder::replayChannels(
+  int sourceId,
+  const QStringList& channels,
+  const DataModel::TimestampedFrame::SteadyTimePoint& timestamp)
+{
+  Q_ASSERT(sourceId >= 0);
+  Q_ASSERT(m_playerOpen);
+  Q_ASSERT(m_operationMode == SerialStudio::ProjectFile);
+
+  if (channels.isEmpty() || m_frame.groups.empty()) [[unlikely]]
+    return;
+
+  DataModel::Frame& srcFrame = ensureSourceFrame(sourceId);
+  if (srcFrame.groups.empty() || srcFrame.title.isEmpty()) [[unlikely]]
+    return;
+
+  TransformFrameInfo info;
+  info.sourceId = sourceId;
+
+  applyDatasetValues(srcFrame, channels, info);
+  publishReplayFrame(acquireFrame(srcFrame, timestamp));
+  ++m_parsedFrameCount;
+}
+
+/**
  * @brief Native span fast lane: parses byte views directly into the claimed pool slot; @p frame
  *        stays a structural template. Returns frames published, or -1 to use the QList path.
  */
@@ -1289,11 +1319,11 @@ void DataModel::FrameBuilder::applyDatasetValue(Dataset& dataset,
                                                 const QString* channelData,
                                                 int channelCount,
                                                 const TransformFrameInfo& info,
-                                                const std::unordered_map<int, int>* replayColumns)
+                                                const std::unordered_map<int, int>* replayColumns,
+                                                bool finalValueReplay)
 {
   DatasetDeps* dep = nullptr;
-  if (m_changeDriven && dataset.virtual_ && !dataset.transformCode.isEmpty()
-      && !SerialStudio::isFinalValuePlayerOpen()) {
+  if (m_changeDriven && dataset.virtual_ && !dataset.transformCode.isEmpty() && !finalValueReplay) {
     dep = &m_datasetDeps[dataset.uniqueId];
     if (!dep->readSlots.empty() && !m_tableStore.changedSince(dep->readSlots, dep->lastRunClock))
       return;
@@ -1330,7 +1360,7 @@ void DataModel::FrameBuilder::applyDatasetValue(Dataset& dataset,
     m_tableStore.setDatasetRaw(
       dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
 
-  if (!dataset.transformCode.isEmpty() && !SerialStudio::isFinalValuePlayerOpen()) [[unlikely]] {
+  if (!dataset.transformCode.isEmpty() && !finalValueReplay) [[unlikely]] {
     const auto input = dataset.isNumeric ? QVariant(dataset.numericValue) : QVariant(dataset.value);
     if (dep)
       m_tableStore.setReadCaptureTarget(&dep->readSlots);
@@ -1499,13 +1529,14 @@ void DataModel::FrameBuilder::endDatasetPass(bool armedJsWatchdog)
 
 /**
  * @brief Recomputes whether per-dataset values must be mirrored into the table store: only
- *        scripts (transforms, Lua parsers, externally-injected engines) can read them back.
+ *        scripts (transforms, Lua parsers, externally-injected engines) can read them back,
+ *        and none of them run while a final-value player replays -- capture stays off then.
  */
 void DataModel::FrameBuilder::refreshDatasetCaptureFlag()
 {
   static auto& parser = DataModel::FrameParser::instance();
   m_captureDatasetValues =
-    m_tableStore.isInitialized()
+    !m_playerOpen && m_tableStore.isInitialized()
     && (!m_transformEngines.empty() || m_externalTableApiUsers || parser.hasTableApiEngines());
   static auto& projectModel = DataModel::ProjectModel::instance();
   m_changeDriven            = projectModel.changeDrivenTransforms();
@@ -1587,8 +1618,9 @@ void DataModel::FrameBuilder::applyDatasetValues(DataModel::Frame& frame,
   const auto* channelData = channels.data();
   const int channelCount  = channels.size();
 
+  const bool finalValueReplay                       = SerialStudio::isFinalValuePlayerOpen();
   const std::unordered_map<int, int>* replayColumns = nullptr;
-  if (SerialStudio::isFinalValuePlayerOpen()) [[unlikely]] {
+  if (finalValueReplay) [[unlikely]] {
     const auto it = m_replayColumnMap.find(info.sourceId);
     if (it != m_replayColumnMap.end())
       replayColumns = &it->second;
@@ -1599,7 +1631,7 @@ void DataModel::FrameBuilder::applyDatasetValues(DataModel::Frame& frame,
   for (auto& group : frame.groups) {
     SS_NO_UNROLL
     for (auto& dataset : group.datasets)
-      applyDatasetValue(dataset, channelData, channelCount, info, replayColumns);
+      applyDatasetValue(dataset, channelData, channelCount, info, replayColumns, finalValueReplay);
   }
 
   endDatasetPass(armedWatchdog);
@@ -1962,6 +1994,39 @@ void DataModel::FrameBuilder::hotpathTxFrame(const DataModel::TimestampedFramePt
 #endif
 }
 
+/**
+ * @brief Replay twin of hotpathTxFrame: the dashboard draws the pooled slot, and one detached
+ *        copy goes to the read-only observers (API/gRPC, only with a client connected). The
+ *        recording sinks are deliberately absent -- replay must never feed an exporter.
+ */
+void DataModel::FrameBuilder::publishReplayFrame(const DataModel::TimestampedFramePtr& frame)
+{
+  Q_ASSERT(frame);
+  Q_ASSERT(m_playerOpen);
+  Q_ASSERT(!frame->data.groups.empty());
+
+  static auto& dashboard = UI::Dashboard::instance();
+  dashboard.hotpathRxFrame(frame);
+
+  static auto& pluginsServer = API::Server::instance();
+  bool observers             = pluginsServer.enabled() && pluginsServer.clientCount() > 0;
+#ifdef ENABLE_GRPC
+  static auto& grpcServer = API::GRPC::GRPCServer::instance();
+  observers               = observers || (grpcServer.enabled() && grpcServer.clientCount() > 0);
+#endif
+  if (!observers)
+    return;
+
+  const auto detached =
+    std::make_shared<DataModel::TimestampedFrame>(frame->data, frame->timestamp);
+  if (pluginsServer.enabled() && pluginsServer.clientCount() > 0)
+    pluginsServer.hotpathTxFrame(detached);
+#ifdef ENABLE_GRPC
+  if (grpcServer.enabled() && grpcServer.clientCount() > 0)
+    grpcServer.hotpathTxFrame(detached);
+#endif
+}
+
 //--------------------------------------------------------------------------------------------------
 // Per-dataset value transforms
 //--------------------------------------------------------------------------------------------------
@@ -2020,13 +2085,21 @@ void DataModel::FrameBuilder::transformLuaWatchdogHook(lua_State* L, lua_Debug* 
 }
 
 /**
- * @brief Recompiles transforms + table store for a file player that bypasses ConnectionManager.
+ * @brief Reconciles transform engines with playback state: compileTransforms() keeps engines
+ *        down while a player is open (replay never runs a transform, and a live engine arms
+ *        the watchdog + dataset mirroring per frame), and the pass guard defers teardown
+ *        when a script opens a player synchronously via apiCall mid-pass.
  */
 void DataModel::FrameBuilder::rebuildTransformsForPlayback()
 {
   static auto& appState = AppState::instance();
   if (appState.operationMode() != SerialStudio::ProjectFile || m_frame.title.isEmpty())
     return;
+
+  if (m_compileGuard > 0) [[unlikely]] {
+    m_compilePending = true;
+    return;
+  }
 
   initializeTableStore();
   compileTransforms();
@@ -2055,6 +2128,9 @@ void DataModel::FrameBuilder::compileTransforms()
 
   destroyTransformEngines();
   Q_ASSERT(m_transformEngines.empty());
+
+  if (m_playerOpen)
+    return;
 
   std::map<EngineKey, std::vector<TransformEntry>> byKey;
   for (const auto& group : m_frame.groups) {

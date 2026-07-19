@@ -19,19 +19,14 @@
  * SPDX-License-Identifier: GPL-3.0-only OR LicenseRef-SerialStudio-Commercial
  */
 
-#include <bit>
 #include <cstring>
 #include <QCoreApplication>
 #include <QHash>
 #include <QJsonDocument>
 #include <QRegularExpression>
 
-#if defined(__SSE2__) || defined(_M_X64) || defined(_M_AMD64)
-#  define SS_TEXT_SPLIT_SSE2 1
-#  include <emmintrin.h>
-#endif
-
 #include "DataModel/Scripting/NativeTemplates/NativeTemplate.h"
+#include "DSPSimd.h"
 #include "SerialStudio.h"
 
 using DataModel::INativeParser;
@@ -154,8 +149,9 @@ public:
 
 private:
   /**
-   * @brief One-pass single-byte split: SIMD compare + bit scan on x86-64 (SSE2 is inside the
-   *        x86-64-v2 baseline), scalar elsewhere. Returns the span count or -1 on overflow.
+   * @brief One-pass single-byte split through the shared DSP::simdForEachByteMatch kernel
+   *        (x86 SSE2..SSE4.2 + aarch64 NEON, scalar elsewhere). Returns the span count or -1
+   *        on overflow.
    */
   [[nodiscard]] qsizetype splitSpansSingleByte(const char* data,
                                                qsizetype len,
@@ -168,35 +164,16 @@ private:
 
     qsizetype count = 0;
     qsizetype start = 0;
-    qsizetype i     = 0;
+    const bool ok   = DSP::simdForEachByteMatch(data, len, sep, [&](qsizetype pos) noexcept {
+      if (count >= maxSpans)
+        return false;
 
-#ifdef SS_TEXT_SPLIT_SSE2
-    const __m128i needle = _mm_set1_epi8(sep);
-    for (; i + 16 <= len; i += 16) {
-      const __m128i block = _mm_loadu_si128(reinterpret_cast<const __m128i*>(data + i));
-      unsigned mask       = static_cast<unsigned>(_mm_movemask_epi8(_mm_cmpeq_epi8(block, needle)));
-
-      for (int b = 0; b < 16 && mask != 0; ++b) {
-        const qsizetype pos = i + std::countr_zero(mask);
-        if (count >= maxSpans)
-          return -1;
-
-        out[count++]  = fieldSpan(data + start, pos - start);
-        start         = pos + 1;
-        mask         &= mask - 1;
-      }
-    }
-#endif
-
-    for (; i < len; ++i) {
-      if (data[i] == sep) {
-        if (count >= maxSpans)
-          return -1;
-
-        out[count++] = fieldSpan(data + start, i - start);
-        start        = i + 1;
-      }
-    }
+      out[count++] = fieldSpan(data + start, pos - start);
+      start        = pos + 1;
+      return true;
+    });
+    if (!ok)
+      return -1;
 
     if (count >= maxSpans)
       return -1;

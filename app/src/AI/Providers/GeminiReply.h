@@ -44,6 +44,7 @@ private:
   void onReplyFinished();
 
   void processChunk(const QJsonObject& chunk);
+  [[nodiscard]] bool streamBudgetBreached(qsizetype bytes);
   void finishOk();
   void finishWithError(const QString& message);
   void handleHttpError(int status);

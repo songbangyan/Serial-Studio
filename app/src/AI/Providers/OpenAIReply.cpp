@@ -21,46 +21,11 @@
 #include "AI/KeyVault.h"
 #include "AI/Logging.h"
 #include "AI/SseEventReader.h"
-#include "AI/ToolDispatcher.h"
-#include "API/CommandRegistry.h"
 #include "Misc/JsonValidator.h"
 
 static constexpr int kInitialResponseTimeoutMs = 120 * 1000;
 static const char* const kOpenAIEndpoint       = "https://api.openai.com/v1/chat/completions";
 static const char* const kOpenAIAuthHeader     = "Authorization";
-
-/**
- * @brief Inverts provider name sanitization across the full advertised tool surface.
- */
-static QString resolveCanonicalToolName(const QString& sanitized)
-{
-  static const auto buildReverseMap = []() {
-    QHash<QString, QString> map;
-    AI::ToolDispatcher dispatcher;
-    const auto tools = dispatcher.availableTools();
-    for (const auto& value : tools) {
-      const auto canonical = value.toObject().value(QStringLiteral("name")).toString();
-      QString key          = canonical;
-      key.replace(QChar('.'), QChar('_'));
-      key.replace(QChar(':'), QChar('_'));
-      map.insert(key, canonical);
-    }
-    return map;
-  };
-  static const QHash<QString, QString> kReverse = buildReverseMap();
-
-  const auto it = kReverse.constFind(sanitized);
-  if (it != kReverse.constEnd())
-    return it.value();
-
-  if (sanitized.startsWith(QStringLiteral("meta_"))) {
-    QString restored = sanitized;
-    restored.replace(0, 5, QStringLiteral("meta."));
-    return restored;
-  }
-
-  return sanitized;
-}
 
 //--------------------------------------------------------------------------------------------------
 // Construction
@@ -182,11 +147,17 @@ void AI::OpenAIReply::onSseEvent(const QString& name, const QJsonObject& data)
 }
 
 /**
- * @brief Logs but does not abort on transient SSE parse errors.
+ * @brief Skips malformed frames but ends the turn on unrecoverable stream-state loss, so a
+ *        buffer reset cannot ship a silently truncated reply as success.
  */
 void AI::OpenAIReply::onSseError(const QString& reason)
 {
   qCWarning(serialStudioAI) << m_providerLabel << "SSE parse error:" << reason;
+  if (!SseEventReader::fatalReason(reason))
+    return;
+
+  finishWithError(tr("Stream parse error: %1").arg(reason));
+  abort();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -208,16 +179,22 @@ void AI::OpenAIReply::processChoiceDelta(const QJsonObject& choice)
 
   if (reasoningValue.isString()) {
     const auto chunk = reasoningValue.toString();
-    if (!chunk.isEmpty())
+    if (!chunk.isEmpty() && !streamBudgetBreached(chunk.size()))
       Q_EMIT partialThinking(chunk);
   }
+
+  if (m_finished)
+    return;
 
   const auto contentValue = delta.value(QStringLiteral("content"));
   if (contentValue.isString()) {
     const auto chunk = contentValue.toString();
-    if (!chunk.isEmpty())
+    if (!chunk.isEmpty() && !streamBudgetBreached(chunk.size()))
       routeContentChunk(chunk);
   }
+
+  if (m_finished)
+    return;
 
   const auto toolCallsValue = delta.value(QStringLiteral("tool_calls"));
   if (!toolCallsValue.isArray())
@@ -241,8 +218,13 @@ void AI::OpenAIReply::processChoiceDelta(const QJsonObject& choice)
       state.name = nameValue.toString();
 
     const auto argsValue = fn.value(QStringLiteral("arguments"));
-    if (argsValue.isString())
-      state.arguments.append(argsValue.toString().toUtf8());
+    if (argsValue.isString()) {
+      const auto args = argsValue.toString().toUtf8();
+      if (streamBudgetBreached(args.size()))
+        return;
+
+      state.arguments.append(args);
+    }
   }
 }
 
@@ -359,8 +341,7 @@ void AI::OpenAIReply::emitPendingToolCalls()
       continue;
     }
 
-    Q_EMIT toolCallRequested(
-      state.id, resolveCanonicalToolName(state.name), result.document.object());
+    Q_EMIT toolCallRequested(state.id, state.name, result.document.object());
     state.emitted = true;
   }
 }
@@ -370,7 +351,8 @@ void AI::OpenAIReply::emitPendingToolCalls()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Forwards every chunk into the SSE reader, stripping [DONE] sentinel.
+ * @brief Forwards every chunk into the SSE reader; [DONE] frames are dropped there so the
+ *        sentinel can never corrupt a frame it merely appears inside of.
  */
 void AI::OpenAIReply::onReplyReadyRead()
 {
@@ -381,19 +363,7 @@ void AI::OpenAIReply::onReplyReadyRead()
   if (status >= 400)
     return;
 
-  auto chunk = m_reply->readAll();
-
-  const QByteArray sentinel = "data: [DONE]";
-  const int idx             = chunk.indexOf(sentinel);
-  if (idx >= 0) {
-    int end = chunk.indexOf("\n\n", idx);
-    if (end < 0)
-      chunk.truncate(idx);
-    else
-      chunk.remove(idx, (end + 2) - idx);
-  }
-
-  m_sse->feed(chunk);
+  m_sse->feed(m_reply->readAll());
 }
 
 /**
@@ -453,6 +423,21 @@ void AI::OpenAIReply::onReplyFinished()
 //--------------------------------------------------------------------------------------------------
 // Finalization
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Charges bytes against the shared per-reply budget; on breach, ends the turn with a
+ *        visible error and aborts the transport so Qt stops buffering the runaway stream.
+ */
+bool AI::OpenAIReply::streamBudgetBreached(qsizetype bytes)
+{
+  if (!chargeStreamBudget(bytes))
+    return false;
+
+  finishWithError(
+    tr("Reply exceeded the %1 MB stream limit").arg(kMaxStreamedReplyBytes / (1024 * 1024)));
+  abort();
+  return true;
+}
 
 /**
  * @brief Marks the stream finished, emits @ref finished.

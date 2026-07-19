@@ -42,6 +42,9 @@ class Conversation : public QObject {
   Q_PROPERTY(QVariantList messages
              READ messages
              NOTIFY messagesChanged)
+  Q_PROPERTY(int messageCount
+             READ messageCount
+             NOTIFY messageCountChanged)
   Q_PROPERTY(bool busy
              READ busy
              NOTIFY busyChanged)
@@ -54,12 +57,19 @@ class Conversation : public QObject {
   // clang-format on
 
 public:
-  static constexpr int kMaxToolCalls        = 25;
-  static constexpr int kMaxDigestChars      = 600;
-  static constexpr int kMaxHistoryItems     = 400;
-  static constexpr int kMaxUiMessageRows    = 600;
-  static constexpr int kMaxTransientRetries = 2;
-  static constexpr int kSystemReserveTokens = 28000;
+  static constexpr int kMaxToolCalls          = 25;
+  static constexpr int kMaxDigestChars        = 600;
+  static constexpr int kMaxHistoryItems       = 400;
+  static constexpr int kMaxUiMessageRows      = 600;
+  static constexpr int kMaxTransientRetries   = 2;
+  static constexpr int kSystemReserveTokens   = 28000;
+  static constexpr int kStreamFlushMs         = 33;
+  static constexpr int kAutoSaveDebounceMs    = 800;
+  static constexpr int kRetryBaseMs           = 1500;
+  static constexpr int kHelpFetchTimeoutMs    = 15 * 1000;
+  static constexpr int kMaxHelpFetchBytes     = 32 * 1024;
+  static constexpr int kMaxHelpIndexBytes     = 64 * 1024;
+  static constexpr int kMaxHelpTransportBytes = 1 * 1024 * 1024;
 
   /**
    * @brief Status pill rendered by QML for each tool-call card.
@@ -98,6 +108,7 @@ public:
 
 signals:
   void messagesChanged();
+  void messageCountChanged();
   void busyChanged();
   void awaitingConfirmationChanged();
   void lastErrorChanged();
@@ -149,10 +160,7 @@ private:
                           CallStatus status,
                           const QJsonObject& result       = {},
                           const QJsonObject& verification = {});
-  void runToolCall(const QString& callId,
-                   const QString& name,
-                   const QJsonObject& arguments,
-                   bool autoConfirmSafe);
+  void runToolCall(const QString& callId, const QString& name, const QJsonObject& arguments);
   [[nodiscard]] QJsonObject runAutoVerify(const QString& name,
                                           const QJsonObject& arguments,
                                           const QJsonObject& reply);
@@ -190,6 +198,7 @@ private:
   void setAwaitingConfirmation(bool flag);
   void setLastError(const QString& message);
   void flushPendingStreamUpdate();
+  void scheduleUiFlush();
   [[nodiscard]] QJsonArray dispatcherTools() const;
   [[nodiscard]] QJsonArray budgetedHistory(const QJsonArray& tools) const;
   [[nodiscard]] static int estimateTokens(const QJsonArray& blocks);
@@ -220,11 +229,11 @@ private:
   int m_outstandingToolResults;
   int m_toolCallCount;
   int m_retryCount;
+  quint64 m_turnGeneration;
   bool m_cancelled;
   bool m_summaryForced;
   bool m_busy;
   QString m_lastError;
-  QString m_currentStopReason;
 
   QHash<QString, PendingCall> m_awaitingConfirm;
   bool m_lastAwaitingFlag;
@@ -233,6 +242,7 @@ private:
 
   QTimer* m_streamFlushTimer;
   bool m_streamDirty;
+  bool m_uiDirty;
 
   QTimer* m_autoSaveTimer;
 

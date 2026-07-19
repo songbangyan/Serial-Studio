@@ -35,7 +35,7 @@ public:
   };
 
   [[nodiscard]] static DocSearch& instance();
-  [[nodiscard]] QList<Hit> search(const QString& query, int k = 5);
+  [[nodiscard]] QList<Hit> search(const QString& query, int k = 5) const;
   [[nodiscard]] int corpusSize() const noexcept;
 
 private:

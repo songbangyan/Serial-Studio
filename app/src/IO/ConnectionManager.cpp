@@ -1316,7 +1316,9 @@ void IO::ConnectionManager::rebuildDevices()
 
   Q_EMIT configurationChanged();
   Q_EMIT driverChanged();
-  Q_EMIT connectedChanged();
+  if (wasConnected != isConnected())
+    Q_EMIT connectedChanged();
+
   Q_EMIT contextsRebuilt();
 
   if (didChangeBusType)

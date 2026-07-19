@@ -34,6 +34,10 @@
 #include <QTimer>
 #include <QtMath>
 
+#if defined(Q_OS_WIN)
+#  include <windows.h>
+#endif
+
 #include "Misc/CommonFonts.h"
 #include "Misc/ThemeManager.h"
 
@@ -83,6 +87,57 @@ static bool isFixedSizeWindow(const QWindow* window)
 }
 
 //--------------------------------------------------------------------------------------------------
+// Native system menu (Windows)
+//--------------------------------------------------------------------------------------------------
+
+#if defined(Q_OS_WIN)
+/**
+ * @brief Shows the native Win32 system menu for @a window at the cursor and posts the picked
+ *        command, restoring the SSD titlebar right-click behavior that frameless windows lose.
+ */
+static void showNativeSystemMenu(QWindow* window)
+{
+  Q_ASSERT(window != nullptr);
+  if (!window)
+    return;
+
+  auto* hwnd = reinterpret_cast<HWND>(window->winId());
+  Q_ASSERT(hwnd != nullptr);
+  if (!hwnd)
+    return;
+
+  HMENU menu = GetSystemMenu(hwnd, FALSE);
+  if (!menu)
+    return;
+
+  const auto flags       = window->flags();
+  const bool custom      = flags & Qt::CustomizeWindowHint;
+  const bool maximized   = IsZoomed(hwnd);
+  const bool resizable   = !isFixedSizeWindow(window);
+  const bool canMinimize = !custom || (flags & Qt::WindowMinimizeButtonHint);
+
+  const UINT on  = MF_BYCOMMAND | MF_ENABLED;
+  const UINT off = MF_BYCOMMAND | MF_GRAYED;
+  (void)EnableMenuItem(menu, SC_RESTORE, maximized ? on : off);
+  (void)EnableMenuItem(menu, SC_MOVE, maximized ? off : on);
+  (void)EnableMenuItem(menu, SC_SIZE, (resizable && !maximized) ? on : off);
+  (void)EnableMenuItem(menu, SC_MINIMIZE, canMinimize ? on : off);
+  (void)EnableMenuItem(menu, SC_MAXIMIZE, (resizable && !maximized) ? on : off);
+  (void)EnableMenuItem(menu, SC_CLOSE, on);
+  (void)SetMenuDefaultItem(menu, SC_CLOSE, FALSE);
+
+  POINT cursor{};
+  if (!GetCursorPos(&cursor))
+    return;
+
+  const UINT trackFlags = TPM_RETURNCMD | TPM_RIGHTBUTTON;
+  const auto command    = TrackPopupMenu(menu, trackFlags, cursor.x, cursor.y, 0, hwnd, nullptr);
+  if (command != 0)
+    (void)PostMessage(hwnd, WM_SYSCOMMAND, static_cast<WPARAM>(command), 0);
+}
+#endif
+
+//--------------------------------------------------------------------------------------------------
 // Titlebar
 //--------------------------------------------------------------------------------------------------
 
@@ -101,7 +156,7 @@ Titlebar::Titlebar(QQuickItem* parent)
   setOpaquePainting(false);
   setAcceptHoverEvents(true);
   setFillColor(Qt::transparent);
-  setAcceptedMouseButtons(Qt::LeftButton);
+  setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton);
 
   const auto& icon = QGuiApplication::windowIcon();
   if (!icon.isNull()) {
@@ -532,6 +587,11 @@ void Titlebar::mouseUngrabEvent()
  */
 void Titlebar::mousePressEvent(QMouseEvent* event)
 {
+  if (event->button() != Qt::LeftButton) {
+    event->accept();
+    return;
+  }
+
   m_pressedButton = buttonAt(event->position());
 
   if (m_pressedButton != Button::None) {
@@ -545,11 +605,20 @@ void Titlebar::mousePressEvent(QMouseEvent* event)
 }
 
 /**
- * @brief Handles mouse release events.
+ * @brief Handles mouse release events; a right-click outside the control buttons requests the
+ *        native system menu.
  */
 void Titlebar::mouseReleaseEvent(QMouseEvent* event)
 {
   const Button releasedOn = buttonAt(event->position());
+
+  if (event->button() == Qt::RightButton) {
+    if (releasedOn == Button::None)
+      Q_EMIT systemMenuRequested();
+
+    event->accept();
+    return;
+  }
 
   if (m_pressedButton != Button::None && m_pressedButton == releasedOn) {
     switch (m_pressedButton) {
@@ -605,6 +674,11 @@ void Titlebar::mouseMoveEvent(QMouseEvent* event)
  */
 void Titlebar::mouseDoubleClickEvent(QMouseEvent* event)
 {
+  if (event->button() != Qt::LeftButton) {
+    event->accept();
+    return;
+  }
+
   if (buttonAt(event->position()) == Button::None && window()) {
     m_dragging      = false;
     m_pressedButton = Button::None;
@@ -868,6 +942,13 @@ void Window::setupTitleBar()
     else
       m_window->showMaximized();
   });
+
+#if defined(Q_OS_WIN)
+  connect(m_titleBar, &Titlebar::systemMenuRequested, this, [this]() {
+    if (m_window)
+      showNativeSystemMenu(m_window.data());
+  });
+#endif
 
   connect(m_window, &QWindow::activeChanged, this, [this]() {
     if (m_window && m_titleBar)

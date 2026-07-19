@@ -58,19 +58,21 @@ AI::Conversation::Conversation(QObject* parent)
   , m_outstandingToolResults(0)
   , m_toolCallCount(0)
   , m_retryCount(0)
+  , m_turnGeneration(0)
   , m_cancelled(false)
   , m_summaryForced(false)
   , m_busy(false)
   , m_lastAwaitingFlag(false)
   , m_streamFlushTimer(new QTimer(this))
   , m_streamDirty(false)
+  , m_uiDirty(false)
   , m_autoSaveTimer(new QTimer(this))
 {
-  m_streamFlushTimer->setInterval(33);
+  m_streamFlushTimer->setInterval(kStreamFlushMs);
   m_streamFlushTimer->setSingleShot(false);
   connect(m_streamFlushTimer, &QTimer::timeout, this, &Conversation::flushPendingStreamUpdate);
 
-  m_autoSaveTimer->setInterval(800);
+  m_autoSaveTimer->setInterval(kAutoSaveDebounceMs);
   m_autoSaveTimer->setSingleShot(true);
   connect(m_autoSaveTimer, &QTimer::timeout, this, [] {
     static auto& project = DataModel::ProjectModel::instance();
@@ -185,11 +187,11 @@ void AI::Conversation::start(const QString& userText)
     return;
   }
 
+  ++m_turnGeneration;
   m_cancelled     = false;
   m_summaryForced = false;
   m_toolCallCount = 0;
   m_retryCount    = 0;
-  m_currentStopReason.clear();
   setLastError(QString());
 
   m_pendingThinkingBlocks   = QJsonArray();
@@ -348,9 +350,11 @@ void AI::Conversation::maybeProposeMemory(const QString& userText)
  */
 void AI::Conversation::cancel()
 {
+  ++m_turnGeneration;
   m_cancelled = true;
   m_streamFlushTimer->stop();
   m_streamDirty = false;
+  m_uiDirty     = false;
   if (m_reply)
     m_reply->abort();
 
@@ -383,7 +387,7 @@ void AI::Conversation::approveToolCall(const QString& callId)
   m_awaitingConfirm.erase(it);
   setAwaitingConfirmation(!m_awaitingConfirm.isEmpty());
 
-  runToolCall(callId, pending.name, pending.arguments, true);
+  runToolCall(callId, pending.name, pending.arguments);
 
   if (m_outstandingToolResults == 0 && !m_awaitingConfirm.isEmpty())
     return;
@@ -476,6 +480,7 @@ void AI::Conversation::clear()
   setLastError(QString());
 
   Q_EMIT messagesChanged();
+  Q_EMIT messageCountChanged();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -579,27 +584,41 @@ QString AI::Conversation::rewriteHelpLinks(const QString& text)
 }
 
 /**
- * @brief Pushes accumulated text/thinking into the live row. Coalesced.
+ * @brief Pushes accumulated text/thinking into the live row and emits one coalesced
+ *        messagesChanged for any dirty tool-card updates riding the same tick.
  */
 void AI::Conversation::flushPendingStreamUpdate()
 {
-  if (!m_streamDirty) {
+  if (!m_streamDirty && !m_uiDirty) {
     m_streamFlushTimer->stop();
     return;
   }
 
-  m_streamDirty = false;
+  const bool had_stream = m_streamDirty;
+  m_streamDirty         = false;
+  m_uiDirty             = false;
 
-  if (m_assistantIndex < 0 || m_assistantIndex >= m_uiMessages.size())
-    return;
+  if (had_stream && m_assistantIndex >= 0 && m_assistantIndex < m_uiMessages.size()) {
+    auto map = m_uiMessages.at(m_assistantIndex).toMap();
+    map.insert(QStringLiteral("text"),
+               SentinelProbe::stripForDisplay(rewriteHelpLinks(m_assistantText)));
+    map.insert(QStringLiteral("thinking"), m_assistantThinking);
+    map.insert(QStringLiteral("streaming"), true);
+    m_uiMessages[m_assistantIndex] = map;
+  }
 
-  auto map = m_uiMessages.at(m_assistantIndex).toMap();
-  map.insert(QStringLiteral("text"),
-             SentinelProbe::stripForDisplay(rewriteHelpLinks(m_assistantText)));
-  map.insert(QStringLiteral("thinking"), m_assistantThinking);
-  map.insert(QStringLiteral("streaming"), true);
-  m_uiMessages[m_assistantIndex] = map;
   Q_EMIT messagesChanged();
+}
+
+/**
+ * @brief Marks the UI rows dirty and arms the coalescing timer, so tool-card bursts share
+ *        one messagesChanged per tick instead of forcing a full model rebind each.
+ */
+void AI::Conversation::scheduleUiFlush()
+{
+  m_uiDirty = true;
+  if (!m_streamFlushTimer->isActive())
+    m_streamFlushTimer->start();
 }
 
 /**
@@ -1056,7 +1075,7 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
 
     if (autoApprove) {
       appendToolCallCard(callId, name, arguments, CallStatus::Running);
-      runToolCall(callId, name, arguments, true);
+      runToolCall(callId, name, arguments);
       return;
     }
 
@@ -1070,7 +1089,7 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
   }
 
   appendToolCallCard(callId, name, arguments, CallStatus::Running);
-  runToolCall(callId, name, arguments, true);
+  runToolCall(callId, name, arguments);
 }
 
 /**
@@ -1079,7 +1098,7 @@ void AI::Conversation::dispatchByCallSafety(const QString& callId,
 void AI::Conversation::onReplyFinished()
 {
   m_streamFlushTimer->stop();
-  if (m_streamDirty)
+  if (m_streamDirty || m_uiDirty)
     flushPendingStreamUpdate();
 
   if (m_cancelled) {
@@ -1178,7 +1197,7 @@ void AI::Conversation::onReplyError(const QString& message)
   Q_EMIT errorOccurred(message);
 
   m_streamFlushTimer->stop();
-  if (m_streamDirty)
+  if (m_streamDirty || m_uiDirty)
     flushPendingStreamUpdate();
 
   if (m_assistantIndex >= 0 && m_assistantIndex < m_uiMessages.size()) {
@@ -1193,6 +1212,7 @@ void AI::Conversation::onReplyError(const QString& message)
   errorRow[QStringLiteral("toolCalls")] = QVariantList();
   m_uiMessages.append(errorRow);
   Q_EMIT messagesChanged();
+  Q_EMIT messageCountChanged();
 
   if (!m_awaitingConfirm.isEmpty()) {
     for (auto it = m_awaitingConfirm.constBegin(); it != m_awaitingConfirm.constEnd(); ++it)
@@ -1231,7 +1251,9 @@ bool AI::Conversation::shouldRetryAfterError() const
 
 /**
  * @brief Drops the empty streaming placeholder row and re-issues the request after an
- *        exponential backoff (1.5s, 3s).
+ *        exponential backoff (1.5s, 3s). The retry callback is generation-guarded so a
+ *        timer armed for a cancelled turn can never fire into a newer one (it would
+ *        double-issue and interleave two live replies).
  */
 void AI::Conversation::scheduleTransientRetry(const QString& message)
 {
@@ -1247,14 +1269,16 @@ void AI::Conversation::scheduleTransientRetry(const QString& message)
     m_uiMessages.removeAt(m_assistantIndex);
     m_assistantIndex = -1;
     Q_EMIT messagesChanged();
+    Q_EMIT messageCountChanged();
   }
 
   m_assistantText.clear();
   m_assistantThinking.clear();
 
-  const int delayMs = 1500 * (1 << (m_retryCount - 1));
-  QTimer::singleShot(delayMs, this, [this]() {
-    if (!m_cancelled && m_busy)
+  const int delayMs        = kRetryBaseMs * (1 << (m_retryCount - 1));
+  const quint64 generation = m_turnGeneration;
+  QTimer::singleShot(delayMs, this, [this, generation]() {
+    if (generation == m_turnGeneration && !m_cancelled && m_busy)
       issueRequest();
   });
 }
@@ -1270,6 +1294,12 @@ void AI::Conversation::issueRequest()
 {
   Q_ASSERT(m_provider);
   Q_ASSERT(m_dispatcher);
+  if (!m_provider || !m_dispatcher) {
+    setLastError(tr("AI subsystem not initialized"));
+    Q_EMIT errorOccurred(m_lastError);
+    setBusy(false);
+    return;
+  }
 
   pruneHistory();
 
@@ -1513,6 +1543,7 @@ bool AI::Conversation::reconcileHistoryToolPairsAt(int& i)
   static const QString kRoleAssistant = QStringLiteral("assistant");
   static const QString kRoleUser      = QStringLiteral("user");
 
+  Q_ASSERT(i >= 0 && i < m_history.size());
   const auto msg = m_history.at(i).toObject();
   if (msg.value(kKeyRole).toString() != kRoleAssistant)
     return false;
@@ -1560,6 +1591,7 @@ bool AI::Conversation::reconcileHistoryToolPairsAt(int& i)
     userMsg[kKeyContent] = newContent;
     m_history.insert(nextIdx, userMsg);
     ++i;
+    Q_ASSERT(i < m_history.size());
     return true;
   }
   return false;
@@ -1594,6 +1626,7 @@ static QJsonObject elideAgedToolResult(QJsonObject block)
 void AI::Conversation::ageHistoryToolResults()
 {
   constexpr int kKeepRecentUserTurns = 2;
+  constexpr int kElideMinChars       = 64;
 
   int recentToolResultTurns = 0;
   for (int i = m_history.size() - 1; i >= 0; --i) {
@@ -1638,7 +1671,7 @@ void AI::Conversation::ageHistoryToolResults()
         || toolName == QStringLiteral("project.group.get");
       if (!isFsContent && !isDiscovery
           && block.value(QStringLiteral("type")).toString() == QStringLiteral("tool_result")
-          && block.value(QStringLiteral("content")).toString().size() > 64) {
+          && block.value(QStringLiteral("content")).toString().size() > kElideMinChars) {
         block   = elideAgedToolResult(block);
         mutated = true;
       }
@@ -1699,8 +1732,55 @@ void AI::Conversation::pruneHistory()
     if (m_assistantIndex >= 0)
       m_assistantIndex -= drop;
 
+    Q_ASSERT(m_uiMessages.size() == kMaxUiMessageRows);
+    Q_ASSERT(m_assistantIndex < m_uiMessages.size());
     Q_EMIT messagesChanged();
+    Q_EMIT messageCountChanged();
   }
+}
+
+/**
+ * @brief True when the URL is https on an exactly-anchored allowlisted host. An unanchored
+ *        endsWith would let attacker domains like "evilgithub.com" through, and the model
+ *        controls the URL, so this check is the exfiltration gate.
+ */
+static bool helpUrlAllowed(const QUrl& url)
+{
+  if (!url.isValid() || url.scheme() != QStringLiteral("https") || !url.userInfo().isEmpty())
+    return false;
+
+  static const QStringList kHosts = {
+    QStringLiteral("githubusercontent.com"),
+    QStringLiteral("github.com"),
+    QStringLiteral("serial-studio.com"),
+  };
+
+  const auto host = url.host().toLower();
+  for (const auto& allowed : kHosts)
+    if (host == allowed || host.endsWith(QLatin1Char('.') + allowed))
+      return true;
+
+  return false;
+}
+
+/**
+ * @brief Applies the shared transport hardening to a help-fetch request/reply pair:
+ *        re-validates every redirect target against the allowlist and aborts the transfer
+ *        once the buffered body exceeds the hard cap.
+ */
+static void hardenHelpReply(QNetworkReply* reply, qint64 maxBytes)
+{
+  QObject::connect(reply, &QNetworkReply::redirected, reply, [reply](const QUrl& target) {
+    if (helpUrlAllowed(target))
+      Q_EMIT reply->redirectAllowed();
+    else
+      reply->abort();
+  });
+
+  QObject::connect(reply, &QNetworkReply::readyRead, reply, [reply, maxBytes]() {
+    if (reply->bytesAvailable() > maxBytes)
+      reply->abort();
+  });
 }
 
 /**
@@ -1729,23 +1809,19 @@ void AI::Conversation::fetchHelpPage(const QString& callId, const QString& path)
     url = QUrl(kHelpBase + page);
   }
 
-  const auto host    = url.host();
-  const bool allowed = host.endsWith(QStringLiteral("githubusercontent.com"))
-                    || host.endsWith(QStringLiteral("github.com"))
-                    || host.endsWith(QStringLiteral("serial-studio.com"));
-
-  if (!url.isValid() || !allowed) {
+  if (!helpUrlAllowed(url)) {
     QJsonObject err;
     err[QStringLiteral("ok")]    = false;
-    err[QStringLiteral("error")] = QStringLiteral("Only github.com / raw.githubusercontent.com / "
-                                                  "serial-studio.com URLs are allowed");
+    err[QStringLiteral("error")] = QStringLiteral("Only https URLs on github.com / "
+                                                  "raw.githubusercontent.com / serial-studio.com "
+                                                  "are allowed");
     err[QStringLiteral("url")]   = url.toString();
     recordToolResult(callId, QStringLiteral("meta.fetchHelp"), err);
     updateToolCallCard(callId, CallStatus::Error, err);
     releaseOutstandingToolResult();
-    if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty()
-        && (!m_reply || m_reply == nullptr))
+    if (m_outstandingToolResults == 0 && m_awaitingConfirm.isEmpty() && !m_reply)
       resumeAfterToolBatch();
+
     return;
   }
 
@@ -1754,10 +1830,19 @@ void AI::Conversation::fetchHelpPage(const QString& callId, const QString& path)
   QNetworkRequest req(url);
   req.setRawHeader("User-Agent", "SerialStudio-AIAssistant");
   req.setRawHeader("Accept", "text/markdown,text/plain;q=0.9,text/html;q=0.5");
-  req.setTransferTimeout(15 * 1000);
+  req.setTransferTimeout(kHelpFetchTimeoutMs);
+  req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                   QNetworkRequest::UserVerifiedRedirectPolicy);
   auto* reply = m_helpFetchNam.get(req);
+  hardenHelpReply(reply, kMaxHelpTransportBytes);
 
-  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, url]() {
+  const quint64 generation = m_turnGeneration;
+  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, url, generation]() {
+    if (generation != m_turnGeneration) {
+      reply->deleteLater();
+      return;
+    }
+
     completeHelpFetch(callId, url, reply);
   });
 }
@@ -1802,9 +1887,8 @@ void AI::Conversation::completeHelpFetch(const QString& callId,
       text = doc.toPlainText();
     }
 
-    constexpr int kMaxBytes = 32 * 1024;
-    if (text.size() > kMaxBytes)
-      text = text.left(kMaxBytes) + QStringLiteral("\n... [truncated]");
+    if (text.size() > kMaxHelpFetchBytes)
+      text = text.left(kMaxHelpFetchBytes) + QStringLiteral("\n... [truncated]");
 
     result[QStringLiteral("ok")]      = true;
     result[QStringLiteral("content")] = text;
@@ -1837,10 +1921,19 @@ void AI::Conversation::fetchHelpIndex(const QString& callId, const QUrl& missedU
   QNetworkRequest req(kIndexUrl);
   req.setRawHeader("User-Agent", "SerialStudio-AIAssistant");
   req.setRawHeader("Accept", "application/json");
-  req.setTransferTimeout(15 * 1000);
+  req.setTransferTimeout(kHelpFetchTimeoutMs);
+  req.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+                   QNetworkRequest::UserVerifiedRedirectPolicy);
   auto* reply = m_helpFetchNam.get(req);
+  hardenHelpReply(reply, kMaxHelpTransportBytes);
 
-  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, missedUrl]() {
+  const quint64 generation = m_turnGeneration;
+  connect(reply, &QNetworkReply::finished, this, [this, callId, reply, missedUrl, generation]() {
+    if (generation != m_turnGeneration) {
+      reply->deleteLater();
+      return;
+    }
+
     QJsonObject result;
     result[QStringLiteral("url")]        = missedUrl.toString();
     result[QStringLiteral("redirected")] = true;
@@ -1851,7 +1944,10 @@ void AI::Conversation::fetchHelpIndex(const QString& callId, const QUrl& missedU
         QStringLiteral("404 on '%1', and the help index also failed: %2")
           .arg(missedUrl.toString(), reply->errorString());
     } else {
-      const auto bytes             = reply->readAll();
+      auto bytes = reply->readAll();
+      if (bytes.size() > kMaxHelpIndexBytes)
+        bytes.truncate(kMaxHelpIndexBytes);
+
       result[QStringLiteral("ok")] = true;
       result[QStringLiteral("note")] =
         QStringLiteral("The page '%1' does not exist. Below is the full "
@@ -1899,6 +1995,7 @@ void AI::Conversation::appendUserMessage(const QString& text)
   row[QStringLiteral("toolCalls")] = QVariantList();
   m_uiMessages.append(row);
   Q_EMIT messagesChanged();
+  Q_EMIT messageCountChanged();
 }
 
 /**
@@ -1917,6 +2014,7 @@ void AI::Conversation::beginAssistantMessage()
   m_uiMessages.append(row);
   m_assistantIndex = m_uiMessages.size() - 1;
   Q_EMIT messagesChanged();
+  Q_EMIT messageCountChanged();
 }
 
 /**
@@ -1965,7 +2063,7 @@ void AI::Conversation::appendToolCallCard(const QString& callId,
   calls.append(card);
   map.insert(QStringLiteral("toolCalls"), calls);
   m_uiMessages[m_assistantIndex] = map;
-  Q_EMIT messagesChanged();
+  scheduleUiFlush();
 }
 
 /**
@@ -2000,7 +2098,7 @@ void AI::Conversation::updateToolCallCard(const QString& callId,
     if (changed) {
       map.insert(QStringLiteral("toolCalls"), calls);
       m_uiMessages[i] = map;
-      Q_EMIT messagesChanged();
+      scheduleUiFlush();
       return;
     }
   }
@@ -2011,8 +2109,7 @@ void AI::Conversation::updateToolCallCard(const QString& callId,
  */
 void AI::Conversation::runToolCall(const QString& callId,
                                    const QString& name,
-                                   const QJsonObject& arguments,
-                                   bool autoConfirmSafe)
+                                   const QJsonObject& arguments)
 {
   bool found = false;
   for (int i = m_uiMessages.size() - 1; i >= 0 && !found; --i) {
@@ -2029,7 +2126,7 @@ void AI::Conversation::runToolCall(const QString& callId,
   else
     updateToolCallCard(callId, CallStatus::Running);
 
-  const auto reply = m_dispatcher->executeCommand(name, arguments, autoConfirmSafe);
+  const auto reply = m_dispatcher->executeCommand(name, arguments);
   const bool ok    = reply.value(QStringLiteral("ok")).toBool();
   qCDebug(serialStudioAI) << "Tool" << name << "result_ok=" << ok;
 
@@ -2150,7 +2247,7 @@ QJsonObject AI::Conversation::runAutoVerify(const QString& name,
     return {};
   }
 
-  const auto check = m_dispatcher->executeCommand(cmd, args, true);
+  const auto check = m_dispatcher->executeCommand(cmd, args);
   bool check_ok    = check.value(QStringLiteral("ok")).toBool();
   const auto inner = check.value(QStringLiteral("result")).toObject();
   if (check_ok && inner.contains(QStringLiteral("ok")))
@@ -2178,7 +2275,7 @@ QJsonObject AI::Conversation::verifySourceUpdate(const QJsonObject& arguments)
   v[QStringLiteral("method")] = QStringLiteral("project.source.list");
 
   const auto check =
-    m_dispatcher->executeCommand(QStringLiteral("project.source.list"), QJsonObject(), true);
+    m_dispatcher->executeCommand(QStringLiteral("project.source.list"), QJsonObject());
   if (!check.value(QStringLiteral("ok")).toBool()) {
     v[QStringLiteral("ok")]     = false;
     v[QStringLiteral("detail")] = tr("Source list read-back failed");
@@ -2830,16 +2927,26 @@ static QStringList essentialToolNames()
 }
 
 /**
- * @brief Returns the AI tool surface: 3 meta tools + a small curated set.
+ * @brief Returns the AI tool surface: 3 meta tools + a small curated set. Cached per
+ *        (small-surface, memory) flag pair, which is valid because the dispatcher catalog
+ *        and the API registry are fixed after startup.
  */
 QJsonArray AI::Conversation::dispatcherTools() const
 {
   if (!m_dispatcher)
     return {};
 
-  QJsonArray remapped;
-  const auto caps = m_provider ? m_provider->capabilities() : ProviderCapabilities{};
+  const auto caps        = m_provider ? m_provider->capabilities() : ProviderCapabilities{};
+  static auto& assistant = Assistant::instance();
+  const bool memory_on   = assistant.memoryEnabled();
+  const int cache_key    = (caps.needsSmallToolSurface ? 1 : 0) | (memory_on ? 2 : 0);
 
+  static QHash<int, QJsonArray> s_cache;
+  const auto cached = s_cache.constFind(cache_key);
+  if (cached != s_cache.constEnd())
+    return cached.value();
+
+  QJsonArray remapped;
   appendCoreMetaTools(remapped);
   appendDocMetaTools(remapped);
 
@@ -2851,11 +2958,15 @@ QJsonArray AI::Conversation::dispatcherTools() const
     essentials.removeAll(QStringLiteral("project.dataset.setOptions"));
   }
 
-  static auto& assistant = Assistant::instance();
-  if (assistant.memoryEnabled())
+  if (memory_on)
     essentials.append(QStringLiteral("assistant.memory.propose"));
 
+  QHash<QString, QJsonObject> by_name;
   const auto raw = m_dispatcher->availableTools();
+  for (const auto& v : raw) {
+    const auto obj = v.toObject();
+    by_name.insert(obj.value(QStringLiteral("name")).toString(), obj);
+  }
 
   auto append = [&remapped](const QJsonObject& obj) {
     auto schema = obj.value(QStringLiteral("inputSchema")).toObject();
@@ -2873,15 +2984,12 @@ QJsonArray AI::Conversation::dispatcherTools() const
   };
 
   for (const auto& essentialName : essentials) {
-    for (const auto& v : raw) {
-      const auto obj = v.toObject();
-      if (obj.value(QStringLiteral("name")).toString() == essentialName) {
-        append(obj);
-        break;
-      }
-    }
+    const auto it = by_name.constFind(essentialName);
+    if (it != by_name.constEnd())
+      append(it.value());
   }
 
+  s_cache.insert(cache_key, remapped);
   return remapped;
 }
 
@@ -2981,6 +3089,7 @@ void AI::Conversation::loadSnapshot(const QJsonObject& doc)
   pruneHistory();
 
   Q_EMIT messagesChanged();
+  Q_EMIT messageCountChanged();
 }
 
 /**
@@ -3125,6 +3234,8 @@ int AI::Conversation::estimateTokens(const QJsonArray& blocks)
 /**
  * @brief Returns the longest recent suffix of history that fits the provider context window,
  *        cut only at fresh user-turn boundaries so tool_use/tool_result pairs stay intact.
+ *        Suffix sizes come from one per-item serialization pass plus suffix sums, so the
+ *        boundary scan costs arithmetic instead of re-serializing the history per boundary.
  */
 QJsonArray AI::Conversation::budgetedHistory(const QJsonArray& tools) const
 {
@@ -3135,7 +3246,21 @@ QJsonArray AI::Conversation::budgetedHistory(const QJsonArray& tools) const
   const auto caps = m_provider->capabilities();
   const int budget =
     caps.contextWindowTokens - caps.maxOutputTokens - kSystemReserveTokens - estimateTokens(tools);
-  if (budget <= 0 || estimateTokens(m_history) <= budget)
+  if (budget <= 0)
+    return m_history;
+
+  const auto n = m_history.size();
+  QList<qint64> suffix_bytes(n + 1, 0);
+  for (auto i = n - 1; i >= 0; --i) {
+    const auto bytes = QJsonDocument(QJsonArray{m_history.at(i)}).toJson(QJsonDocument::Compact);
+    suffix_bytes[i]  = suffix_bytes[i + 1] + bytes.size();
+  }
+
+  const auto suffixTokens = [&suffix_bytes](int from) {
+    return static_cast<int>(suffix_bytes.at(from) / 4);
+  };
+
+  if (suffixTokens(0) <= budget)
     return m_history;
 
   auto suffixFrom = [this](int from) {
@@ -3152,7 +3277,7 @@ QJsonArray AI::Conversation::budgetedHistory(const QJsonArray& tools) const
 
   int chosen = boundaries.isEmpty() ? 0 : boundaries.constLast();
   for (const int b : boundaries)
-    if (estimateTokens(suffixFrom(b)) <= budget) {
+    if (suffixTokens(b) <= budget) {
       chosen = b;
       break;
     }

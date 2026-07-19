@@ -30,9 +30,12 @@
 #include "IO/ConnectionManager.h"
 #include "MDF4/Player.h"
 #include "Misc/WorkspaceManager.h"
+#include "SerialStudio.h"
 
 /**
  * @brief Escapes a CSV field per RFC 4180 and neutralizes leading formula-injection chars.
+ *        Numeric fields are exempt: a plain number is inert in every spreadsheet, and
+ *        prefixing negatives ("-0.5" -> "'-0.5") silently corrupts recordings on replay.
  */
 static QString escapeCsvField(const QString& s)
 {
@@ -41,8 +44,12 @@ static QString escapeCsvField(const QString& s)
     const QChar c     = out.at(0);
     const bool danger = c == QChar('=') || c == QChar('+') || c == QChar('-') || c == QChar('@')
                      || c == QChar('\t') || c == QChar('\r');
-    if (danger)
-      out.prepend(QChar('\''));
+    if (danger) {
+      bool numeric = false;
+      (void)SerialStudio::toDouble(out, &numeric);
+      if (!numeric)
+        out.prepend(QChar('\''));
+    }
   }
 
   const bool needs = out.contains(QChar(',')) || out.contains(QChar('"'))

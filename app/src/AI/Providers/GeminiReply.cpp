@@ -118,11 +118,17 @@ void AI::GeminiReply::onSseEvent(const QString& name, const QJsonObject& data)
 }
 
 /**
- * @brief Logs but does not abort on transient SSE parse errors.
+ * @brief Skips malformed frames but ends the turn on unrecoverable stream-state loss, so a
+ *        buffer reset cannot ship a silently truncated reply as success.
  */
 void AI::GeminiReply::onSseError(const QString& reason)
 {
   qCWarning(serialStudioAI) << "Gemini SSE parse error:" << reason;
+  if (!SseEventReader::fatalReason(reason))
+    return;
+
+  finishWithError(tr("Stream parse error: %1").arg(reason));
+  abort();
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -164,6 +170,9 @@ void AI::GeminiReply::processChunk(const QJsonObject& chunk)
       const auto chunkText = textValue.toString();
       if (chunkText.isEmpty())
         continue;
+
+      if (streamBudgetBreached(chunkText.size()))
+        return;
 
       if (isThought)
         Q_EMIT partialThinking(chunkText);
@@ -274,6 +283,21 @@ void AI::GeminiReply::handleHttpError(int status)
 //--------------------------------------------------------------------------------------------------
 // Finalization
 //--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Charges bytes against the shared per-reply budget; on breach, ends the turn with a
+ *        visible error and aborts the transport so Qt stops buffering the runaway stream.
+ */
+bool AI::GeminiReply::streamBudgetBreached(qsizetype bytes)
+{
+  if (!chargeStreamBudget(bytes))
+    return false;
+
+  finishWithError(
+    tr("Reply exceeded the %1 MB stream limit").arg(kMaxStreamedReplyBytes / (1024 * 1024)));
+  abort();
+  return true;
+}
 
 /**
  * @brief Marks the stream finished, emits @ref finished.
