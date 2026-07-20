@@ -582,18 +582,18 @@ void Widgets::FFTPlot::buildLogRenderCurve(const int spectrumSize)
   float dPrev  = (ys[first + 1] - ys[first]) / hPrev;
   slope[first] = dPrev;
   for (int i = first + 1; i < last; ++i) {
-    const float h = xs[i + 1] - xs[i];
-    const float d = (ys[i + 1] - ys[i]) / h;
-    if (dPrev * d <= 0.0f)
+    const float h    = xs[i + 1] - xs[i];
+    const float dCur = (ys[i + 1] - ys[i]) / h;
+    if (dPrev * dCur <= 0.0f)
       slope[i] = 0.0f;
     else {
       const float w1 = 2.0f * h + hPrev;
       const float w2 = h + 2.0f * hPrev;
-      slope[i]       = (w1 + w2) / (w1 / dPrev + w2 / d);
+      slope[i]       = (w1 + w2) / (w1 / dPrev + w2 / dCur);
     }
 
     hPrev = h;
-    dPrev = d;
+    dPrev = dCur;
   }
   slope[last] = dPrev;
 
