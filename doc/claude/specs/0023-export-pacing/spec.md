@@ -11,6 +11,12 @@ author: Claude (with Alex Spataru)
 > **Phase 1 of 4 — the WHAT and the WHY.** Gate: approved by the maintainer in chat on
 > 2026-07-20 (design direction selected interactively; spec and plan reviewed together).
 
+> **Post-implementation note (2026-07-20):** R1/R2 (deferred + coalesced `dashboardTick()`,
+> `scheduled` response) were **reverted** after landing. Coalescing to one republish per
+> UI-timer window decimated smooth per-frame control-script curves (a Lorenz attractor
+> rendered jagged). `dashboardTick()` is synchronous again and reports `published`. The CSV
+> interval-snapshot logging (R3-R5) stays as the export-rate bound.
+
 ## Problem / Motivation
 
 The BADAQ test-cell project (two sources: a 500 kbit/s CAN bus feeding ~582 table-driven

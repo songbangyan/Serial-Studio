@@ -138,7 +138,6 @@ public slots:
 
 private slots:
   void onSourceRemoved();
-  void drainPendingTick();
   void onConnectedChanged();
   void onOperationModeChanged();
 
@@ -213,7 +212,6 @@ private:
   bool m_externalTableApiUsers;
   bool m_captureLatestFrame;
   bool m_changeDriven;
-  bool m_tickPending;
   bool m_shuttingDown;
   int m_seenEngineEpoch;
   SerialStudio::OperationMode m_operationMode;

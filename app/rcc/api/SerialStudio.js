@@ -242,16 +242,14 @@ if (typeof __ss_bridge !== 'undefined') {
     return __ss_bridge.call('dashboard.reprocess', {});
   };
 
-  // dashboardTick() schedules a render from the current table/dataset state, synthesizing
-  // the project frame structure when no device frame has arrived yet. Call it after
-  // tableSet() writes so table-driven (virtual) datasets render from the first loop(),
-  // even while the device is silent. The republish runs in the next UI-timer window and
-  // coalesces with any other pending ticks, so per-frame calls are safe at any rate.
-  // Unlike refreshDashboard() (synchronous, dashboard only, and a no-op until a real
-  // frame exists), the coalesced republish also fans out to the enabled export sinks
-  // (CSV/MDF4/session/MQTT/API), so a control-script simulation can be recorded. The
-  // result reports scheduled, not published; use refreshDashboard() when the next
-  // statement must read back updated dashboard state.
+  // dashboardTick() forces a render from the current table/dataset state, synthesizing the
+  // project frame structure when no device frame has arrived yet. Call it after tableSet()
+  // writes so table-driven (virtual) datasets render from the first loop(), even while the
+  // device is silent. Unlike refreshDashboard() (dashboard only, and a no-op until a real
+  // frame exists), the synthesized frame also fans out to the enabled export sinks
+  // (CSV/MDF4/session/MQTT/API), so a control-script simulation can be recorded. The result
+  // reports published: false when nothing was rendered (no open stream, or no dataset value
+  // changed since the last tick).
   dashboardTick = function() {
     return __ss_bridge.call('dashboard.tick', {});
   };

@@ -173,16 +173,15 @@ populated, else `m_frame`) and sharing the private `republishFrames(bool feedExp
 false) runs **synchronously** and publishes to `Dashboard::hotpathRxFrame` directly, skipping
 the `hotpathTxFrame` export fan-out so a synthetic refresh never re-records frames already
 exported on arrival; `dashboardTick()` (`dashboard.tick` → `FrameBuilder::dashboardTick`,
-`feedExports` true) is **deferred and coalesced** (spec 0023): the call only seeds the source
-frames (from the project template when none has arrived yet, so it works from the very first
-`loop()`) and sets `m_tickPending`; the `TimerEvents::uiTimeout` slot `drainPendingTick()`
-runs one `republishFrames(true)` per UI window no matter how many ticks landed, publishing
-*through* `hotpathTxFrame` so a table-driven control-script simulation both renders and feeds
-the CSV/MDF4/session/MQTT/API exports (still gated on `m_anyAsyncSink`). The deferral is why a
-script that must read back updated dashboard state on the next statement uses the synchronous
-`refreshDashboard()`, not `dashboardTick()`; the `dashboard.tick` response reports `scheduled`,
-not `published`. `m_tickPending` is cleared on disconnect and operation-mode change so a stale
-tick can never publish a template frame after teardown.
+`feedExports` true) runs **synchronously**: the call seeds the source frames (from the project
+template when none has arrived yet, so it works from the very first `loop()`) and runs one
+`republishFrames(true)` immediately, publishing *through* `hotpathTxFrame` so a table-driven
+control-script simulation both renders and feeds the CSV/MDF4/session/MQTT/API exports (still
+gated on `m_anyAsyncSink`). Every tick renders its own frame, so a per-frame control-script
+curve (a Lorenz attractor, for example) is not decimated. The `dashboard.tick` response
+reports `published`. (Spec 0023 briefly deferred and coalesced this into the UI-timer window;
+that was reverted because it jagged per-frame curves. CSV interval-snapshot mode remains the
+export-rate bound.)
 
 ## Control Script — Per-Connection Lifecycle
 
