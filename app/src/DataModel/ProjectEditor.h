@@ -448,7 +448,12 @@ private:
   bool tryMultiSelection();
   void buildMultiSelectionModel();
   void buildMultiDatasetModel();
+  void buildMultiOutputWidgetModel();
+  void fanOutputWidgetSelectionEdit(QStandardItem* item);
+  void openAlarmBandsEditorForMultiSelection();
+  void commitAlarmBandsForSelection(const std::vector<DataModel::AlarmBand>& bands);
   [[nodiscard]] QHash<int, QVariant> datasetEditValues(const DataModel::Dataset& dataset);
+  [[nodiscard]] QHash<int, QVariant> outputWidgetEditValues(const DataModel::OutputWidget& widget);
 
   void addGeneralSection(CustomModel* model, const DataModel::Dataset& dataset);
   void addDatasetAliasRow(CustomModel* model, const DataModel::Dataset& dataset);
@@ -559,6 +564,7 @@ private:
   void buildOutputWidgetCommonRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetValueRows(const DataModel::OutputWidget& widget);
   void buildOutputWidgetTransmitRow(const DataModel::OutputWidget& widget);
+  void applyOutputWidgetField(QStandardItem* item, DataModel::OutputWidget& widget);
 
 private:
   DataModel::ProjectModel& m_projectModelRef;

@@ -246,11 +246,8 @@ Widgets.SmartDialog {
     const lo    = bandsModel.count > 0
                   ? Number(bandsModel.get(bandsModel.count - 1).bandMax)
                   : root.rangeMin
-    if (lo >= root.rangeMax)
-      return
-
     const top   = Math.min(root.rangeMax, lo + step)
-    const hi    = top > lo ? top : Math.min(root.rangeMax, lo + step)
+    const hi    = top > lo ? top : lo + step
     bandsModel.append({
       bandMin: lo,
       bandMax: hi,

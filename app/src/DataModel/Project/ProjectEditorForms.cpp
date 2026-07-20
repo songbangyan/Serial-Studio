@@ -46,6 +46,44 @@
 #include "ProjectEditorShared.h"
 
 /**
+ * @brief Serializes alarm bands into the QVariantList shape the AlarmBandsEditor dialog consumes.
+ */
+[[nodiscard]] static QVariantList bandsToVariantList(const std::vector<DataModel::AlarmBand>& bands)
+{
+  QVariantList out;
+  out.reserve(static_cast<int>(bands.size()));
+  for (const auto& b : bands) {
+    QVariantMap entry;
+    entry.insert(QStringLiteral("min"), qMin(b.min, b.max));
+    entry.insert(QStringLiteral("max"), qMax(b.min, b.max));
+    entry.insert(QStringLiteral("severity"), static_cast<int>(b.severity));
+    entry.insert(QStringLiteral("color"), b.color);
+    entry.insert(QStringLiteral("label"), b.label);
+    entry.insert(QStringLiteral("blink"), b.blink);
+    out.append(entry);
+  }
+
+  return out;
+}
+
+/**
+ * @brief Field-wise equality of two alarm-band lists, used to detect a shared multi-selection set.
+ */
+[[nodiscard]] static bool alarmBandsEqual(const std::vector<DataModel::AlarmBand>& a,
+                                          const std::vector<DataModel::AlarmBand>& b)
+{
+  if (a.size() != b.size())
+    return false;
+
+  for (size_t i = 0; i < a.size(); ++i)
+    if (a[i].min != b[i].min || a[i].max != b[i].max || a[i].severity != b[i].severity
+        || a[i].blink != b[i].blink || a[i].color != b[i].color || a[i].label != b[i].label)
+      return false;
+
+  return true;
+}
+
+/**
  * @brief Rebuilds the project-level settings form model.
  */
 void DataModel::ProjectEditor::buildProjectModel()
@@ -1430,6 +1468,11 @@ void DataModel::ProjectEditor::buildWidgetFormatRows(CustomModel* model,
  */
 void DataModel::ProjectEditor::openAlarmBandsEditorForSelection()
 {
+  if (m_currentView == MultiSelectionView && m_batchKind == KindDataset) {
+    openAlarmBandsEditorForMultiSelection();
+    return;
+  }
+
   double range_min = qMin(m_selectedDataset.wgtMin, m_selectedDataset.wgtMax);
   double range_max = qMax(m_selectedDataset.wgtMin, m_selectedDataset.wgtMax);
   if (range_max <= range_min) {
@@ -1442,19 +1485,7 @@ void DataModel::ProjectEditor::openAlarmBandsEditorForSelection()
     range_max = 100;
   }
 
-  QVariantList bands;
-  bands.reserve(static_cast<int>(m_selectedDataset.alarmBands.size()));
-  for (const auto& b : m_selectedDataset.alarmBands) {
-    QVariantMap entry;
-    entry.insert(QStringLiteral("min"), qMin(b.min, b.max));
-    entry.insert(QStringLiteral("max"), qMax(b.min, b.max));
-    entry.insert(QStringLiteral("severity"), static_cast<int>(b.severity));
-    entry.insert(QStringLiteral("color"), b.color);
-    entry.insert(QStringLiteral("label"), b.label);
-    entry.insert(QStringLiteral("blink"), b.blink);
-    bands.append(entry);
-  }
-
+  QVariantList bands = bandsToVariantList(m_selectedDataset.alarmBands);
   if (bands.isEmpty() && m_selectedDataset.led && m_selectedDataset.ledHigh < range_max) {
     QVariantMap entry;
     entry.insert(QStringLiteral("min"), qMax(range_min, m_selectedDataset.ledHigh));
@@ -1468,6 +1499,66 @@ void DataModel::ProjectEditor::openAlarmBandsEditorForSelection()
 
   Q_EMIT openAlarmBandsEditor(
     m_selectedDataset.groupId, m_selectedDataset.datasetId, range_min, range_max, bands);
+}
+
+/**
+ * @brief Emits openAlarmBandsEditor for a dataset multi-selection: the scale is the union of each
+ *        member's effective range, and bands are prefilled only when every dataset already agrees
+ *        (otherwise the editor starts empty and Apply writes one common set to all).
+ */
+void DataModel::ProjectEditor::openAlarmBandsEditorForMultiSelection()
+{
+  auto& pm = m_projectModelRef;
+
+  QVector<DataModel::Dataset> sel;
+  {
+    const auto& groups = pm.groups();
+    for (const auto& pr : m_batchItems) {
+      const int gid = pr.first, dsid = pr.second;
+      if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+        continue;
+
+      for (const auto& d : groups[gid].datasets)
+        if (d.datasetId == dsid) {
+          sel.append(d);
+          break;
+        }
+    }
+  }
+
+  if (sel.isEmpty())
+    return;
+
+  bool haveRange   = false;
+  double range_min = 0, range_max = 100;
+  for (const auto& d : sel) {
+    double lo = qMin(d.wgtMin, d.wgtMax);
+    double hi = qMax(d.wgtMin, d.wgtMax);
+    if (hi <= lo) {
+      lo = qMin(d.pltMin, d.pltMax);
+      hi = qMax(d.pltMin, d.pltMax);
+    }
+
+    if (hi <= lo)
+      continue;
+
+    range_min = haveRange ? qMin(range_min, lo) : lo;
+    range_max = haveRange ? qMax(range_max, hi) : hi;
+    haveRange = true;
+  }
+
+  if (!haveRange) {
+    range_min = 0;
+    range_max = 100;
+  }
+
+  bool shared            = true;
+  const auto& firstBands = sel.first().alarmBands;
+  for (int i = 1; i < sel.size() && shared; ++i)
+    shared = alarmBandsEqual(sel[i].alarmBands, firstBands);
+
+  const QVariantList bands = shared ? bandsToVariantList(firstBands) : QVariantList();
+  Q_EMIT openAlarmBandsEditor(-1, -1, range_min, range_max, bands);
 }
 
 /**

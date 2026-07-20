@@ -83,9 +83,15 @@ Widgets.SmartWindow {
 
   //
   // Wraps any QML disconnect entry point so device-initiated drops can be told apart.
+  // Runtime mode quits directly; else a multi-source teardown clears the flag and pops the dialog.
   //
   function userDisconnect() {
     root.userInitiatedDisconnect = true
+    if (app.runtimeMode) {
+      app.quitApplication()
+      return
+    }
+
     Cpp_IO_Manager.disconnectDevice()
   }
 

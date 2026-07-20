@@ -47,6 +47,34 @@
 #include "ProjectEditorShared.h"
 
 /**
+ * @brief Parses the AlarmBandsEditor dialog's QVariantList payload into validated alarm bands,
+ *        dropping degenerate (max <= min) entries.
+ */
+[[nodiscard]] static std::vector<DataModel::AlarmBand>
+parseAlarmBandList(const QVariantList& bands)
+{
+  std::vector<DataModel::AlarmBand> out;
+  out.reserve(bands.size());
+  for (const auto& v : bands) {
+    const auto m = v.toMap();
+    DataModel::AlarmBand band;
+    band.min   = SerialStudio::toDouble(m.value(QStringLiteral("min")));
+    band.max   = SerialStudio::toDouble(m.value(QStringLiteral("max")));
+    band.blink = m.value(QStringLiteral("blink"), false).toBool();
+    band.color = m.value(QStringLiteral("color")).toString().simplified();
+    band.label = m.value(QStringLiteral("label")).toString().simplified();
+    const int sev =
+      m.value(QStringLiteral("severity"), static_cast<int>(DataModel::AlarmSeverity::Warning))
+        .toInt();
+    band.severity = static_cast<DataModel::AlarmSeverity>(qBound(0, sev, 3));
+    if (band.max > band.min)
+      out.push_back(std::move(band));
+  }
+
+  return out;
+}
+
+/**
  * @brief Applies a source-title edit and syncs the tree-item cache.
  */
 void DataModel::ProjectEditor::handleSourceTitleChange(QStandardItem* item)
@@ -878,28 +906,56 @@ void DataModel::ProjectEditor::onDatasetFlagItemChanged(QStandardItem* item,
  */
 void DataModel::ProjectEditor::commitAlarmBands(const QVariantList& bands)
 {
-  m_selectedDataset.alarmBands.clear();
-  m_selectedDataset.alarmBands.reserve(bands.size());
-  for (const auto& v : bands) {
-    const auto m = v.toMap();
-    DataModel::AlarmBand band;
-    band.min   = SerialStudio::toDouble(m.value(QStringLiteral("min")));
-    band.max   = SerialStudio::toDouble(m.value(QStringLiteral("max")));
-    band.blink = m.value(QStringLiteral("blink"), false).toBool();
-    band.color = m.value(QStringLiteral("color")).toString().simplified();
-    band.label = m.value(QStringLiteral("label")).toString().simplified();
-    const int sev =
-      m.value(QStringLiteral("severity"), static_cast<int>(DataModel::AlarmSeverity::Warning))
-        .toInt();
-    band.severity = static_cast<DataModel::AlarmSeverity>(qBound(0, sev, 3));
-    if (band.max > band.min)
-      m_selectedDataset.alarmBands.push_back(std::move(band));
+  const auto parsed = parseAlarmBandList(bands);
+  if (m_currentView == MultiSelectionView && m_batchKind == KindDataset) {
+    commitAlarmBandsForSelection(parsed);
+    return;
   }
 
-  auto& pm = m_projectModelRef;
+  auto& pm                     = m_projectModelRef;
+  m_selectedDataset.alarmBands = parsed;
   pm.updateDataset(
     m_selectedDataset.groupId, m_selectedDataset.datasetId, m_selectedDataset, false);
   buildDatasetModel(m_selectedDataset);
+}
+
+/**
+ * @brief Writes @p bands onto every dataset in the current multi-selection, as one modified state
+ *        and one autosave, then rebuilds the aggregate model.
+ */
+void DataModel::ProjectEditor::commitAlarmBandsForSelection(
+  const std::vector<DataModel::AlarmBand>& bands)
+{
+  auto& pm = m_projectModelRef;
+
+  QVector<DataModel::Dataset> sel;
+  QVector<QPair<int, int>> ids;
+  {
+    const auto& groups = pm.groups();
+    for (const auto& pr : m_batchItems) {
+      const int gid = pr.first, dsid = pr.second;
+      if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+        continue;
+
+      for (const auto& d : groups[gid].datasets)
+        if (d.datasetId == dsid) {
+          sel.append(d);
+          ids.append(pr);
+          break;
+        }
+    }
+  }
+
+  pm.setAutoSaveSuspended(true);
+  for (int i = 0; i < sel.size(); ++i) {
+    DataModel::Dataset ds = sel[i];
+    ds.alarmBands         = bands;
+    pm.updateDataset(ids[i].first, ids[i].second, ds, false);
+  }
+  pm.setAutoSaveSuspended(false);
+
+  buildMultiDatasetModel();
+  pm.flushAutoSave();
 }
 
 /**
@@ -1037,6 +1093,50 @@ void DataModel::ProjectEditor::syncDatasetItemCache(int groupId, int datasetId)
 }
 
 /**
+ * @brief Applies one output-widget form field from @p item onto @p widget; pure field mutation with
+ *        no side effects, shared by the single-selection and multi-selection edit paths.
+ */
+void DataModel::ProjectEditor::applyOutputWidgetField(QStandardItem* item,
+                                                      DataModel::OutputWidget& widget)
+{
+  const auto id    = item->data(ParameterType);
+  const auto value = item->data(EditableValue);
+
+  switch (static_cast<OutputWidgetItem>(id.toInt())) {
+    case kOutputWidget_Title:
+      widget.title = value.toString();
+      break;
+    case kOutputWidget_Icon:
+      widget.icon = value.toString();
+      break;
+    case kOutputWidget_MonoIcon:
+      widget.monoIcon = value.toBool();
+      break;
+    case kOutputWidget_Type:
+      widget.type = static_cast<DataModel::OutputWidgetType>(value.toInt());
+      break;
+    case kOutputWidget_MinValue:
+      widget.minValue = SerialStudio::toDouble(value);
+      break;
+    case kOutputWidget_MaxValue:
+      widget.maxValue = SerialStudio::toDouble(value);
+      break;
+    case kOutputWidget_StepSize:
+      widget.stepSize = SerialStudio::toDouble(value);
+      break;
+    case kOutputWidget_InitialValue:
+      widget.initialValue = SerialStudio::toDouble(value);
+      break;
+    case kOutputWidget_TransmitFunction:
+      widget.transmitFunction = value.toString();
+      break;
+    case kOutputWidget_TxEncoding:
+      widget.txEncoding = value.toInt();
+      break;
+  }
+}
+
+/**
  * @brief Handles changes to output widget form fields.
  */
 void DataModel::ProjectEditor::onOutputWidgetItemChanged(QStandardItem* item)
@@ -1046,46 +1146,19 @@ void DataModel::ProjectEditor::onOutputWidgetItemChanged(QStandardItem* item)
 
   const auto id    = item->data(ParameterType);
   const auto value = item->data(EditableValue);
+  const auto param = static_cast<OutputWidgetItem>(id.toInt());
 
-  switch (static_cast<OutputWidgetItem>(id.toInt())) {
-    case kOutputWidget_Title:
-      m_selectedOutputWidget.title = value.toString();
-      break;
-    case kOutputWidget_Icon:
-      m_selectedOutputWidget.icon = value.toString();
-      break;
-    case kOutputWidget_MonoIcon:
-      m_selectedOutputWidget.monoIcon = value.toBool();
-      break;
-    case kOutputWidget_Type: {
-      const auto newType = static_cast<DataModel::OutputWidgetType>(value.toInt());
-      if (m_selectedOutputWidget.type != newType) {
-        m_selectedOutputWidget.type = newType;
-        buildOutputWidgetModel(m_selectedOutputWidget);
-      }
-      break;
+  if (param == kOutputWidget_Type) {
+    const auto newType = static_cast<DataModel::OutputWidgetType>(value.toInt());
+    if (m_selectedOutputWidget.type != newType) {
+      m_selectedOutputWidget.type = newType;
+      buildOutputWidgetModel(m_selectedOutputWidget);
     }
-    case kOutputWidget_MinValue:
-      m_selectedOutputWidget.minValue = SerialStudio::toDouble(value);
-      break;
-    case kOutputWidget_MaxValue:
-      m_selectedOutputWidget.maxValue = SerialStudio::toDouble(value);
-      break;
-    case kOutputWidget_StepSize:
-      m_selectedOutputWidget.stepSize = SerialStudio::toDouble(value);
-      break;
-    case kOutputWidget_InitialValue:
-      m_selectedOutputWidget.initialValue = SerialStudio::toDouble(value);
-      break;
-    case kOutputWidget_TransmitFunction:
-      m_selectedOutputWidget.transmitFunction = value.toString();
-      break;
-    case kOutputWidget_TxEncoding:
-      m_selectedOutputWidget.txEncoding = value.toInt();
-      break;
+  } else {
+    applyOutputWidgetField(item, m_selectedOutputWidget);
   }
 
-  if (static_cast<OutputWidgetItem>(id.toInt()) == kOutputWidget_Title) {
+  if (param == kOutputWidget_Title) {
     const auto newTitle = value.toString();
     for (auto it = m_outputWidgetItems.begin(); it != m_outputWidgetItems.end(); ++it) {
       if (it.value().groupId == m_selectedOutputWidget.groupId

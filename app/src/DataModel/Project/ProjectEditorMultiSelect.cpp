@@ -74,7 +74,7 @@ bool DataModel::ProjectEditor::tryMultiSelection()
     seen.insert(key);
 
     const int k = m_treeModel->data(idx, TreeItemKind).toInt();
-    if (k != KindDataset)
+    if (k != KindDataset && k != KindOutputWidget)
       return false;
 
     if (kind == KindNone)
@@ -109,6 +109,8 @@ void DataModel::ProjectEditor::buildMultiSelectionModel()
 {
   if (m_batchKind == KindDataset)
     buildMultiDatasetModel();
+  else if (m_batchKind == KindOutputWidget)
+    buildMultiOutputWidgetModel();
 }
 
 /**
@@ -232,12 +234,128 @@ void DataModel::ProjectEditor::buildMultiDatasetModel()
 }
 
 /**
+ * @brief Maps an OutputWidget's editable fields to a ParameterType -> value hash, used to decide
+ *        which aggregate rows agree across the selection.
+ */
+QHash<int, QVariant>
+DataModel::ProjectEditor::outputWidgetEditValues(const DataModel::OutputWidget& widget)
+{
+  QHash<int, QVariant> out;
+  out.insert(kOutputWidget_Title, widget.title);
+  out.insert(kOutputWidget_Icon, widget.icon);
+  out.insert(kOutputWidget_MonoIcon, widget.monoIcon);
+  out.insert(kOutputWidget_MinValue, widget.minValue);
+  out.insert(kOutputWidget_MaxValue, widget.maxValue);
+  out.insert(kOutputWidget_StepSize, widget.stepSize);
+  out.insert(kOutputWidget_InitialValue, widget.initialValue);
+  out.insert(kOutputWidget_TxEncoding, widget.txEncoding);
+  return out;
+}
+
+/**
+ * @brief Builds the output-widget aggregate form: rows from the first selection member, the per-item
+ *        title greyed, shared fields marked "Mixed" when the selection disagrees. Fans edits out on
+ *        change via onMultiSelectionItemChanged.
+ */
+void DataModel::ProjectEditor::buildMultiOutputWidgetModel()
+{
+  auto& pm           = m_projectModelRef;
+  const auto& groups = pm.groups();
+
+  QVector<DataModel::OutputWidget> sel;
+  sel.reserve(static_cast<qsizetype>(m_batchItems.size()));
+  for (const auto& pr : m_batchItems) {
+    const int gid = pr.first, wid = pr.second;
+    if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+      continue;
+
+    for (const auto& w : groups[gid].outputWidgets)
+      if (w.widgetId == wid) {
+        sel.append(w);
+        break;
+      }
+  }
+
+  if (sel.isEmpty())
+    return;
+
+  QVector<QHash<int, QVariant>> maps;
+  maps.reserve(sel.size());
+  for (const auto& w : sel)
+    maps.append(outputWidgetEditValues(w));
+
+  if (m_outputWidgetModel) {
+    m_outputWidgetModel->disconnect(this);
+    m_outputWidgetModel->deleteLater();
+  }
+
+  m_selectedOutputWidget = sel.first();
+  m_outputWidgetModel    = new CustomModel(this);
+
+  buildOutputWidgetCommonRows(m_selectedOutputWidget);
+  buildOutputWidgetTransmitRow(m_selectedOutputWidget);
+  buildOutputWidgetValueRows(m_selectedOutputWidget);
+
+  const int rows = m_outputWidgetModel->rowCount();
+  for (int r = 0; r < rows; ++r) {
+    auto* it = m_outputWidgetModel->item(r);
+    if (!it)
+      continue;
+
+    const auto ptVar = it->data(ParameterType);
+    if (!ptVar.isValid())
+      continue;
+
+    const int wt         = it->data(WidgetType).toInt();
+    const bool intWidget = (wt == ComboBox || wt == CheckBox);
+    const QVariant blank = intWidget ? QVariant(-1) : QVariant(QString());
+
+    const int pt = ptVar.toInt();
+    if (pt == kOutputWidget_Title) {
+      it->setEditable(false);
+      it->setData(false, Active);
+      it->setData(blank, EditableValue);
+      it->setData(tr("(multiple)"), PlaceholderValue);
+      continue;
+    }
+
+    const QVariant first = maps.first().value(pt);
+    bool mixed           = false;
+    for (int i = 1; i < maps.size(); ++i)
+      if (maps[i].contains(pt) && maps[i].value(pt) != first) {
+        mixed = true;
+        break;
+      }
+
+    if (mixed) {
+      it->setData(blank, EditableValue);
+      it->setData(tr("Mixed"), PlaceholderValue);
+    }
+  }
+
+  connect(m_outputWidgetModel,
+          &CustomModel::itemChanged,
+          this,
+          &DataModel::ProjectEditor::onMultiSelectionItemChanged);
+
+  Q_EMIT outputWidgetModelChanged();
+}
+
+/**
  * @brief Fans a single aggregate-form field edit out across every selected item, as one modified
  *        state and one autosave, then rebuilds the aggregate model to refresh common/mixed.
  */
 void DataModel::ProjectEditor::onMultiSelectionItemChanged(QStandardItem* item)
 {
-  if (!item || m_batchApplying || m_batchKind != KindDataset)
+  if (!item || m_batchApplying)
+    return;
+
+  if (m_batchKind == KindOutputWidget) {
+    fanOutputWidgetSelectionEdit(item);
+    return;
+  }
+
+  if (m_batchKind != KindDataset)
     return;
 
   const auto idInt = static_cast<DatasetItem>(item->data(ParameterType).toInt());
@@ -291,6 +409,47 @@ void DataModel::ProjectEditor::onMultiSelectionItemChanged(QStandardItem* item)
   pm.setAutoSaveSuspended(false);
 
   buildMultiDatasetModel();
+  pm.flushAutoSave();
+}
+
+/**
+ * @brief Fans one aggregate-form field edit out across every selected output widget, as one modified
+ *        state and one autosave, then rebuilds the aggregate model to refresh common/mixed.
+ */
+void DataModel::ProjectEditor::fanOutputWidgetSelectionEdit(QStandardItem* item)
+{
+  auto& pm = m_projectModelRef;
+
+  QVector<DataModel::OutputWidget> sel;
+  QVector<QPair<int, int>> ids;
+  {
+    const auto& groups = pm.groups();
+    for (const auto& pr : m_batchItems) {
+      const int gid = pr.first, wid = pr.second;
+      if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+        continue;
+
+      for (const auto& w : groups[gid].outputWidgets)
+        if (w.widgetId == wid) {
+          sel.append(w);
+          ids.append(pr);
+          break;
+        }
+    }
+  }
+
+  pm.setAutoSaveSuspended(true);
+  m_batchApplying = true;
+  for (int i = 0; i < sel.size(); ++i) {
+    DataModel::OutputWidget widget = sel[i];
+    applyOutputWidgetField(item, widget);
+    pm.updateOutputWidget(ids[i].first, ids[i].second, widget, false);
+  }
+
+  m_batchApplying = false;
+  pm.setAutoSaveSuspended(false);
+
+  buildMultiOutputWidgetModel();
   pm.flushAutoSave();
 }
 

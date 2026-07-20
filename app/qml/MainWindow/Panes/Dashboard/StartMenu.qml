@@ -100,7 +100,7 @@ Popup {
       {
         name: qsTr("Auto Layout"),
         icon: "qrc:/icons/start/auto-layout.svg",
-        visible: true,
+        visible: !(app.runtimeMode && Cpp_UI_Dashboard.frozen),
         run: function() {
           taskBar.windowManager.autoLayoutEnabled = !taskBar.windowManager.autoLayoutEnabled
         }
@@ -554,6 +554,7 @@ Popup {
       enabled: !Cpp_UI_Dashboard.frozen
       icon.source: "qrc:/icons/start/auto-layout.svg"
       checked: taskBar.windowManager.autoLayoutEnabled
+      visible: !(app.runtimeMode && Cpp_UI_Dashboard.frozen)
       onCheckedChanged: {
         if (checked !== taskBar.windowManager.autoLayoutEnabled)
           taskBar.windowManager.autoLayoutEnabled = checked
@@ -609,6 +610,7 @@ Popup {
       implicitHeight: 1
       Layout.fillWidth: true
       color: Cpp_ThemeManager.colors["start_menu_text"]
+      visible: _autoLayoutBt.visible || _freezeBt.visible
     }
 
     Widgets.MenuButton {

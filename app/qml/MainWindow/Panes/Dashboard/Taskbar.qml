@@ -894,6 +894,7 @@ Item {
       opacity: enabled ? 1 : 0.5
       Layout.alignment: Qt.AlignVCenter
       enabled: !Cpp_UI_Dashboard.frozen
+      visible: !(app.runtimeMode && Cpp_UI_Dashboard.frozen)
       icon.source: "qrc:/icons/buttons/auto-layout.svg"
       icon.color: taskBar.windowManager.autoLayoutEnabled ?
                     Cpp_ThemeManager.colors["taskbar_highlight"] :
