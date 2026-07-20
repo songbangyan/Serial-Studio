@@ -69,25 +69,53 @@ def test_io_manager_bounds_written_byte_count():
 
 
 def test_csv_player_catchup_uses_next_frame_timestamps():
+    """Playback pacing must derive from the NEXT indexed row's recorded time, never from a
+    re-stamped wall clock. Spec 0022 replaced the in-memory while-loop with the streamed
+    recomputeMsUntilNext + catchUpTargetRow pair; this pins the same invariant in that shape.
+    """
     text = _read("app/src/CSV/Player.cpp")
 
-    assert re.search(
-        r"while \(m_framePos < frameCount\(\) - 1.*?recomputeMsUntilNext\(msUntilNext\)",
+    body = re.search(
+        r"bool CSV::Player::recomputeMsUntilNext\(qint64& msUntilNext\)[\s\S]*?\n\}",
         text,
-        re.DOTALL,
     )
-    assert "m_timestampCache[m_framePos + 1]" in text
-    assert "getDateTime(m_framePos + 1)" in text
+    assert body is not None, "recomputeMsUntilNext must exist (spec 0022 pacing)"
+    assert "const int next = m_framePos + 1;" in body.group(0)
+    assert "rowSecondsSinceStart(next)" in body.group(0)
+
+    catchup = re.search(
+        r"int CSV::Player::catchUpTargetRow\(double target\) const[\s\S]*?\n\}",
+        text,
+    )
+    assert catchup is not None, "catchUpTargetRow must exist (spec 0022 catch-up)"
+    assert "rowSecondsSinceStart(row + 1)" in catchup.group(0)
+
+    # The catch-up branch strides toward the row due at the elapsed target, then
+    # reschedules from the next row's recorded time (no double-inject, no wall-clock).
+    assert "catchUpTargetRow(target)" in text
+    assert text.count("recomputeMsUntilNext(msUntilNext)") >= 2
 
 
 def test_mdf4_player_catchup_uses_next_frame_timestamp():
+    """Same invariant for the MDF4 player: the playback delay and the catch-up scan read
+    m_timestamps[pos + 1] (the recording's next-frame time), never a re-stamped clock.
+    """
     text = _read("app/src/MDF4/Player.cpp")
 
-    assert re.search(
-        r"while \(m_framePos < frameCount\(\) - 1.*?nextFrameTime = m_frameIndex\[m_framePos \+ 1\]\.timestamp",
+    update = re.search(r"void MDF4::Player::updateData\(\)[\s\S]*?\n\}", text)
+    assert update is not None
+    assert "m_timestamps[static_cast<size_t>(framePosition() + 1)]" in update.group(0)
+
+    catchup = re.search(
+        r"void MDF4::Player::catchUpToTarget\(double targetTime\)[\s\S]*?\n\}",
         text,
-        re.DOTALL,
     )
+    assert catchup is not None, "catchUpToTarget must exist (spec 0022 catch-up)"
+    assert (
+        "m_timestamps[static_cast<size_t>(targetRow + 1)] > targetTime"
+        in catchup.group(0)
+    )
+    assert "m_timestamps[static_cast<size_t>(m_framePos + 1)]" in catchup.group(0)
 
 
 def test_api_server_enabled_state_tracks_listen_failure():
@@ -1599,9 +1627,12 @@ def test_control_script_agent_surface():
     assert ":/api/SerialStudio.js" in handler
     assert "JsWatchdog" in handler
 
-    # The control_script_js doc kind is registered everywhere it must be.
+    # The control_script_js doc kind is registered everywhere it must be: the
+    # ContextBuilder doc roster (scriptingDocFor) and the meta.fetchScriptingDocs
+    # surface, which moved from ToolDispatcher into Conversation.cpp (2026-07 AI
+    # hardening refactor).
     assert "control_script_js" in _read("app/src/AI/ContextBuilder.cpp")
-    assert "control_script_js" in _read("app/src/AI/ToolDispatcher.cpp")
+    assert "control_script_js" in _read("app/src/AI/Conversation.cpp")
     assert "ai/docs/control_script_js.md" in _read("app/rcc/rcc.qrc")
     doc = _read("app/rcc/ai/docs/control_script_js.md")
     assert "controlScript.dryRun" in doc and "ageMs" in doc

@@ -772,7 +772,9 @@ static void insertTailFrameFilterUid(const QJsonValue& selector, QSet<int>& out)
 }
 
 /**
- * @brief Returns the last N samples of every plot-enabled dataset.
+ * @brief Returns the last N samples of every plot-enabled dataset. Time-axis plots (the
+ *        default X axis) sample from the decimating time ring; plotData()'s Y for them
+ *        aliases the shared always-empty null buffer, so reading it alone yields nothing.
  */
 API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& id,
                                                                  const QJsonObject& params)
@@ -800,12 +802,14 @@ API::CommandResponse API::Handlers::DashboardHandler::tailFrames(const QString& 
     if (filterActive && !filterUids.contains(ds.uniqueId))
       continue;
 
-    const auto& series = dashboard.plotData(i);
-    if (!series.x || !series.y)
+    const auto& series  = dashboard.plotData(i);
+    const auto& ring    = dashboard.plotTimeRing(i);
+    const bool timeAxis = ring.value.size() > 0;
+    if (!timeAxis && (!series.x || !series.y))
       continue;
 
-    const auto& xq = *series.x;
-    const auto& yq = *series.y;
+    const auto& xq = timeAxis ? ring.time : *series.x;
+    const auto& yq = timeAxis ? ring.value : *series.y;
     const auto n   = std::min<std::size_t>(xq.size(), yq.size());
     if (n == 0)
       continue;
