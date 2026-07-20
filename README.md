@@ -295,7 +295,7 @@ Before contributing:
 
 - Check existing [issues](https://github.com/Serial-Studio/Serial-Studio/issues) and [pull requests](https://github.com/Serial-Studio/Serial-Studio/pulls).
 - Review [CLAUDE.md](CLAUDE.md) for code style.
-- Focus on GPL-licensed code, and leave the commercial modules alone.
+- Contributions to both GPL-licensed code and the commercial (Pro) modules are welcome. Pro contributions are accepted under the Contributor License Agreement in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Code style:
 
