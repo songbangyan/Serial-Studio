@@ -33,7 +33,7 @@ Pro features are proprietary. They're not open source. See the [License Agreemen
 ### What platforms does Serial Studio support?
 
 - **Windows:** Windows 10/11 (x64).
-- **macOS:** macOS 13+ (universal binary: Intel and Apple Silicon).
+- **macOS:** macOS 14+ (universal binary: Intel and Apple Silicon).
 - **Linux:** x64 via AppImage or Flatpak.
 - **Raspberry Pi:** ARM64 (Ubuntu 24.04+ or equivalent).
 

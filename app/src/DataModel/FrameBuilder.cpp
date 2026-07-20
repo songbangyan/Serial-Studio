@@ -28,6 +28,13 @@
 #include <algorithm>
 #include <charconv>
 #include <cmath>
+#include <cstdio>
+
+#if defined(__APPLE__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__) \
+  && __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 130300
+#  define SS_APPLE_NO_FLOAT_TO_CHARS 1
+#  include <xlocale.h>
+#endif
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -1103,15 +1110,22 @@ void DataModel::FrameBuilder::replayChannels(
 
 /**
  * @brief Formats a double exactly like QString::number(v, 'g', 10) but locale-independent and
- *        in place (std::to_chars, C-locale %g semantics): the typed replay lane's display
- *        string. The debug parity assert is temporary scaffolding for spec 0022's corner A/B.
+ *        in place (C-locale %g semantics): the typed replay lane's display string. Apple ships
+ *        float std::to_chars only from macOS 13.3, so older targets use snprintf_l with the
+ *        NULL (C) locale. The debug parity assert is temporary scaffolding for spec 0022.
  */
 static void assignFormattedDouble(QString& dst, double value)
 {
   char buf[32];
+#ifdef SS_APPLE_NO_FLOAT_TO_CHARS
+  const int len = snprintf_l(buf, sizeof(buf), nullptr, "%.10g", value);
+  Q_ASSERT(len > 0 && static_cast<size_t>(len) < sizeof(buf));
+  DataModel::assign_utf8_in_place(dst, QByteArrayView(buf, static_cast<qsizetype>(len)));
+#else
   const auto res = std::to_chars(buf, buf + sizeof(buf), value, std::chars_format::general, 10);
   Q_ASSERT(res.ec == std::errc());
   DataModel::assign_utf8_in_place(dst, QByteArrayView(buf, static_cast<qsizetype>(res.ptr - buf)));
+#endif
   Q_ASSERT(dst == QString::number(value, 'g', 10));
 }
 

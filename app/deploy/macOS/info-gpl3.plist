@@ -31,7 +31,7 @@
 	<key>LSHasLocalizedDisplayName</key>
 	<true/>
 	<key>LSMinimumSystemVersion</key>
-	<string>13.0</string>
+	<string>14.0</string>
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>Serial Studio uses Bluetooth Low Energy to communicate with nearby devices.</string>
 	<key>NSHighResolutionCapable</key>

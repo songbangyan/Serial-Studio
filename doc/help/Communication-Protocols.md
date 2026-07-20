@@ -124,7 +124,7 @@ The BLE driver talks to Bluetooth Low Energy peripherals via GATT. It auto-disco
 **Platform considerations:**
 
 - **Windows:** Needs Windows 10 version 1803 or later with a Bluetooth 4.0+ adapter.
-- **macOS:** Needs macOS 13+ and Bluetooth entitlement. The system may prompt for Bluetooth permission.
+- **macOS:** Needs macOS 14+ and Bluetooth entitlement. The system may prompt for Bluetooth permission.
 - **Linux:** Needs BlueZ 5.44+ and a Bluetooth 4.0+ adapter. The user may need to be in the `bluetooth` group. Some distros require `bluetoothd` to be running.
 - **All platforms:** The BLE device must be advertising and not already connected to another host. Move it closer if it doesn't show up in the scan.
 

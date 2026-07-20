@@ -92,7 +92,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 | | Project Templates | ✅ | ✅ |
 | **Platform Support** | | | |
 | | Windows 10/11 (x64) | ✅ | ✅ |
-| | macOS 13+ (Universal) | ✅ | ✅ |
+| | macOS 14+ (Universal) | ✅ | ✅ |
 | | Linux (x64, AppImage/Flatpak) | ✅ | ✅ |
 | **Licensing** | | | |
 | | Personal/Educational Use | ✅ | ✅ |
