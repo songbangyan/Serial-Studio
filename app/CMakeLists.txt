@@ -506,6 +506,7 @@ set(QML_SOURCES
   qml/Dialogs/TriggerDialog.qml
   qml/Dialogs/BackupRecovery.qml
   qml/Dialogs/CrashRecovery.qml
+  qml/Dialogs/PlayerDialog.qml
   qml/Dialogs/CsvPlayer.qml
   qml/Dialogs/Mdf4Player.qml
   qml/Dialogs/SqlitePlayer.qml

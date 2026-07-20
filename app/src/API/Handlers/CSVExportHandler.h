@@ -34,6 +34,7 @@ public:
 
 private:
   static CommandResponse setEnabled(const QString& id, const QJsonObject& params);
+  static CommandResponse setInterval(const QString& id, const QJsonObject& params);
   static CommandResponse close(const QString& id, const QJsonObject& params);
 
   static CommandResponse getStatus(const QString& id, const QJsonObject& params);

@@ -2892,7 +2892,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>CsvPlayer</name>
     <message>
-        <location filename="../../qml/Dialogs/CsvPlayer.qml" line="35"/>
+        <location filename="../../qml/Dialogs/CsvPlayer.qml" line="26"/>
         <source>CSV Player</source>
         <translation>CSV Player</translation>
     </message>
@@ -3598,54 +3598,54 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2040"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2155"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2078"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2193"/>
         <source>Channel %1</source>
         <translation>Channel %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2166"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2204"/>
         <source>Audio Input</source>
         <translation>Audio Input</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2049"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2171"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2087"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2209"/>
         <source>Quick Plot</source>
         <translation>Quick Plot</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1747"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1785"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>JavaScript transform exceeded budget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1748"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1786"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="269"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="277"/>
         <source>Frame pool exhausted</source>
         <translation>Frame pool exhausted</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="271"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="279"/>
         <source>A downstream consumer (dashboard, CSV/MDF4 export, session DB, or API subscriber) is not draining frames fast enough. Serial Studio is falling back to per-frame allocations until the backlog clears. Disable a heavy consumer or reduce the data rate.</source>
         <translation>A downstream consumer (dashboard, CSV/MDF4 export, session DB, or API subscriber) is not draining frames fast enough. Serial Studio is falling back to per-frame allocations until the backlog clears. Disable a heavy consumer or reduce the data rate.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2000"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2038"/>
         <source>Device A</source>
         <translation>Device A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2056"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2094"/>
         <source>Quick Plot Data</source>
         <translation>Quick Plot Data</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2068"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2106"/>
         <source>Multiple Plots</source>
         <translation>Multiple Plots</translation>
     </message>
@@ -5962,15 +5962,15 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <translation>Save Serial Studio Project</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio Project Files (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <source>Untitled Project</source>
         <translation>Untitled Project</translation>
     </message>
@@ -6225,9 +6225,9 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <translation>Z</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Workspace</translation>
     </message>
@@ -6254,8 +6254,6 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6268,6 +6266,8 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Name:</translation>
     </message>
@@ -6307,10 +6307,10 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <translation>Rename Register</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <source>This action cannot be undone.</source>
         <translation>This action cannot be undone.</translation>
     </message>
@@ -6320,9 +6320,9 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <translation>This removes %1 register(s) along with the table. This action cannot be undone.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>Delete "%1"?</translation>
     </message>
@@ -6353,8 +6353,8 @@ Add %4 dataset(s) using the template's defaults?</translation>
         <translation>Import Table</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
         <source>New Workspace</source>
         <translation>New Workspace</translation>
     </message>
@@ -7728,39 +7728,39 @@ Valid format: 01 A2 FF 3C</translation>
 <context>
     <name>FlowDiagram</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="448"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="452"/>
         <source>Frame Parser</source>
         <translation>Frame Parser</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="455"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="459"/>
         <source>Device %1</source>
         <translation>Device %1</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="575"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1862"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="536"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1897"/>
         <source>Output Panel</source>
         <translation>Output Panel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="619"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="572"/>
         <source>Control</source>
         <translation>Control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="694"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="728"/>
         <source>Table</source>
         <translation>Table</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="708"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="742"/>
         <source>%1 regs</source>
         <translation>%1 regs</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="406"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="708"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="408"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="742"/>
         <source>empty</source>
         <translation>empty</translation>
     </message>
@@ -7769,111 +7769,111 @@ Valid format: 01 A2 FF 3C</translation>
         <translation type="vanished">Control Script</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="843"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="877"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1251"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1286"/>
         <source>Open the transform code editor for this dataset.</source>
         <translation>Open the transform code editor for this dataset.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1632"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1635"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1667"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1670"/>
         <source>Dataset Container</source>
         <translation>Dataset Container</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1644"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1679"/>
         <source>Multi-Plot</source>
         <translation>Multi-Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1647"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1682"/>
         <source>Multiple Plot</source>
         <translation>Multiple Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1656"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1659"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1691"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1694"/>
         <source>Accelerometer</source>
         <translation>Accelerometer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1668"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1671"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1703"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1706"/>
         <source>Gyroscope</source>
         <translation>Gyroscope</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1680"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1683"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1715"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1718"/>
         <source>GPS Map</source>
         <translation>GPS Map</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1691"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1694"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1726"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1729"/>
         <source>3D Plot</source>
         <translation>3D Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1702"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1705"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1737"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1740"/>
         <source>Image View</source>
         <translation>Image View</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1714"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1717"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1749"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1752"/>
         <source>Painter Widget</source>
         <translation>Painter Widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1726"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1729"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1761"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1764"/>
         <source>Web View</source>
         <translation>Web View</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1738"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1741"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1773"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1776"/>
         <source>Data Grid</source>
         <translation>Data Grid</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1754"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1789"/>
         <source>Generic</source>
         <translation>Generic</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1767"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1802"/>
         <source>Plot</source>
         <translation>Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1780"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1815"/>
         <source>FFT Plot</source>
         <translation>FFT Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1793"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1828"/>
         <source>Gauge</source>
         <translation>Gauge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1806"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1841"/>
         <source>Level Indicator</source>
         <translation>Level Indicator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1819"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1854"/>
         <source>Compass</source>
         <translation>Compass</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1832"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1867"/>
         <source>Meter</source>
         <translation>Meter</translation>
     </message>
@@ -7886,170 +7886,175 @@ Valid format: 01 A2 FF 3C</translation>
         <translation type="vanished">Thermometer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="406"/>
         <source>Control Loop</source>
         <translation>Control Loop</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="799"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="605"/>
+        <source>Outputs</source>
+        <translation>Outputs</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="833"/>
         <source>Shared Memory</source>
         <translation>Shared Memory</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1845"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1880"/>
         <source>LED Indicator</source>
         <translation>LED Indicator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1874"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1909"/>
         <source>Slider</source>
         <translation>Slider</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1887"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1922"/>
         <source>Toggle</source>
         <translation>Toggle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1900"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1935"/>
         <source>Knob</source>
         <translation>Knob</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1913"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1948"/>
         <source>Text Field</source>
         <translation>Text Field</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1926"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1961"/>
         <source>Button</source>
         <translation>Button</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1950"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2026"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2114"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1985"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2061"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2149"/>
         <source>Add Group</source>
         <translation>Add Group</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1966"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2042"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2130"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2175"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2001"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2077"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2165"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2210"/>
         <source>Add Dataset</source>
         <translation>Add Dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1980"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2056"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2144"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2189"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2396"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2015"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2091"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2179"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2224"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2431"/>
         <source>Add Output</source>
         <translation>Add Output</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1996"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2069"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2031"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2104"/>
         <source>Add Action</source>
         <translation>Add Action</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2005"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2040"/>
         <source>Add Data Source</source>
         <translation>Add Data Source</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2012"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2047"/>
         <source>Add Data Table</source>
         <translation>Add Data Table</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2080"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2216"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2283"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2411"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2445"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2501"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2115"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2251"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2318"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2446"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2480"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2536"/>
         <source>Rename…</source>
         <translation>Rename…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2088"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2246"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2316"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2368"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2419"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2475"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2123"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2281"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2351"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2403"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2454"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2510"/>
         <source>Duplicate</source>
         <translation>Duplicate</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2099"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2257"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2328"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2380"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2430"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2486"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2512"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2134"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2292"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2363"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2415"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2465"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2521"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2547"/>
         <source>Delete…</source>
         <translation>Delete…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2160"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2195"/>
         <source>Edit Frame Parser…</source>
         <translation>Edit Frame Parser…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2202"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2237"/>
         <source>Edit Painter Code…</source>
         <translation>Edit Painter Code…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2224"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2292"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2344"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2453"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2259"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2327"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2379"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2488"/>
         <source>Move Up</source>
         <translation>Move Up</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2235"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2304"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2356"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2464"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2270"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2339"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2391"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2499"/>
         <source>Move Down</source>
         <translation>Move Down</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2272"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2307"/>
         <source>Edit Transform Code…</source>
         <translation>Edit Transform Code…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2527"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2562"/>
         <source>Edit Code…</source>
         <translation>Edit Code…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2542"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2577"/>
         <source>Edit Control Loop…</source>
         <translation>Edit Control Loop…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="245"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="247"/>
         <source>Group</source>
         <translation>Group</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="372"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="756"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="374"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="790"/>
         <source>Folder</source>
         <translation>Folder</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="517"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="643"/>
         <source>Action</source>
         <translation>Action</translation>
     </message>
@@ -12641,17 +12646,17 @@ Please provide the necessary credentials.</translation>
         <translation>Empty Project</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="700"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="730"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="708"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="738"/>
         <source>Waiting for data…</source>
         <translation>Waiting for data…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="709"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="739"/>
         <source>Connecting to device…</source>
         <translation>Connecting to device…</translation>
     </message>
@@ -12692,7 +12697,7 @@ Please provide the necessary credentials.</translation>
 <context>
     <name>Mdf4Player</name>
     <message>
-        <location filename="../../qml/Dialogs/Mdf4Player.qml" line="23"/>
+        <location filename="../../qml/Dialogs/Mdf4Player.qml" line="14"/>
         <source>MDF4 Player</source>
         <translation>MDF4 Player</translation>
     </message>
@@ -13229,8 +13234,8 @@ Would you like to open the download page?</translation>
         <translation>Could not write Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
+        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windows shortcut writer is not available on this platform.</translation>
     </message>
@@ -13261,8 +13266,8 @@ Would you like to open the download page?</translation>
         <translation>Saving the .lnk file failed (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>macOS shortcut writer is not available on this platform.</translation>
     </message>
@@ -14899,22 +14904,22 @@ Add groups above to poll multiple register types.</translation>
 <context>
     <name>PlotWidget</name>
     <message>
-        <location filename="../../qml/Widgets/PlotWidget.qml" line="1453"/>
+        <location filename="../../qml/Widgets/PlotWidget.qml" line="1480"/>
         <source>Time</source>
         <translation>Time</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/PlotWidget.qml" line="1475"/>
+        <location filename="../../qml/Widgets/PlotWidget.qml" line="1502"/>
         <source>ΔX: %1  ΔY: %2 — Drag to move, right-click to clear</source>
         <translation>ΔX: %1  ΔY: %2 — Drag to move, right-click to clear</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/PlotWidget.qml" line="1477"/>
+        <location filename="../../qml/Widgets/PlotWidget.qml" line="1504"/>
         <source>Click to place cursor</source>
         <translation>Click to place cursor</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/PlotWidget.qml" line="1479"/>
+        <location filename="../../qml/Widgets/PlotWidget.qml" line="1506"/>
         <source>Click to place second cursor — Drag to move</source>
         <translation>Click to place second cursor — Drag to move</translation>
     </message>
@@ -15954,8 +15959,8 @@ Click Refresh to update the list.</translation>
         <translation>General I/O error</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
         <source>Frame Parser Disabled</source>
         <translation>Frame Parser Disabled</translation>
     </message>
@@ -15997,8 +16002,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
         <source>Missing Parse Function</source>
         <translation>Missing Parse Function</translation>
     </message>
@@ -16014,8 +16019,8 @@ Please ensure your code includes:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
         <source>Parse Function Runtime Error</source>
         <translation>Parse Function Runtime Error</translation>
     </message>
@@ -16275,12 +16280,12 @@ The separator parameter is no longer needed.</translation>
         <translation>No Groq API key set. Open Manage Keys to add one.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1465"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1503"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>The frame parser is using more than %1% of CPU time.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1467"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1505"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</translation>
     </message>
@@ -17852,27 +17857,32 @@ The separator parameter is no longer needed.</translation>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="166"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="91"/>
+        <source>Export</source>
+        <translation>Export</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Settings.qml" line="173"/>
         <source>Language</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="182"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="189"/>
         <source>Theme</source>
         <translation>Theme</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="276"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="283"/>
         <source>Workspace Folder</source>
         <translation>Workspace Folder</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="323"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="330"/>
         <source>Enable API Server (Port 7777)</source>
         <translation>Enable API Server (Port 7777)</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="671"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="678"/>
         <source>Automatically Check for Updates</source>
         <translation>Automatically Check for Updates</translation>
     </message>
@@ -17882,38 +17892,38 @@ The separator parameter is no longer needed.</translation>
         <translation>Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="730"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="737"/>
         <source>Data Plotting</source>
         <translation>Data Plotting</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="797"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="804"/>
         <source>Point Count</source>
         <translation>Point Count</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="822"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="829"/>
         <source>UI Refresh Rate (Hz)</source>
         <translation>UI Refresh Rate (Hz)</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1024"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1031"/>
         <source>Show Actions Panel</source>
         <translation>Show Actions Panel</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1183"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1190"/>
         <source>Always Show Taskbar Buttons</source>
         <translation>Always Show Taskbar Buttons</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="85"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1331"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1338"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="151"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="158"/>
         <source>Appearance</source>
         <translation>Appearance</translation>
     </message>
@@ -17926,47 +17936,47 @@ The separator parameter is no longer needed.</translation>
         <translation type="vanished">Advanced</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="348"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="355"/>
         <source>Allow External API Connections</source>
         <translation>Allow External API Connections</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1040"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1047"/>
         <source>Auto-Hide Toolbar</source>
         <translation>Auto-Hide Toolbar</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="405"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="412"/>
         <source>Export…</source>
         <translation>Export…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="898"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="905"/>
         <source>Small</source>
         <translation>Small</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="898"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="905"/>
         <source>Normal</source>
         <translation>Normal</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="898"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="905"/>
         <source>Large</source>
         <translation>Large</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="898"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="905"/>
         <source>Extra Large</source>
         <translation>Extra Large</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="898"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="905"/>
         <source>Custom</source>
         <translation>Custom</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="959"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="966"/>
         <source>Layout</source>
         <translation>Layout</translation>
     </message>
@@ -17979,18 +17989,18 @@ The separator parameter is no longer needed.</translation>
         <translation type="vanished">Save Images by Default</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1466"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1473"/>
         <source>Display</source>
         <translation>Display</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1481"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1488"/>
         <source>Display Mode</source>
         <translation>Display Mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="866"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1503"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="873"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1510"/>
         <source>Font Family</source>
         <translation>Font Family</translation>
     </message>
@@ -18000,18 +18010,18 @@ The separator parameter is no longer needed.</translation>
         <translation>Taskbar</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="92"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1332"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="98"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1339"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="473"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="480"/>
         <source>Rendering Backend</source>
         <translation>Rendering Backend</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="373"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="380"/>
         <source>API Access Token</source>
         <translation>API Access Token</translation>
     </message>
@@ -18021,12 +18031,12 @@ The separator parameter is no longer needed.</translation>
         <translation>Startup</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="209"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="216"/>
         <source>Window</source>
         <translation>Window</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="228"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="235"/>
         <source>Custom Window Decorations</source>
         <translation>Custom Window Decorations</translation>
     </message>
@@ -18035,62 +18045,62 @@ The separator parameter is no longer needed.</translation>
         <translation type="vanished">Window Shadow</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="251"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="258"/>
         <source>Window decoration changes apply after restarting %1.</source>
         <translation>Window decoration changes apply after restarting %1.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="260"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="267"/>
         <source>Files</source>
         <translation>Files</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="307"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="314"/>
         <source>API &amp; Plugins</source>
         <translation>API &amp; Plugins</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="403"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="410"/>
         <source>Export Protobuf File</source>
         <translation>Export Protobuf File</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="455"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="462"/>
         <source>Graphics</source>
         <translation>Graphics</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="506"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="513"/>
         <source>Display Scaling</source>
         <translation>Display Scaling</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="539"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="546"/>
         <source>Custom Scale (%)</source>
         <translation>Custom Scale (%)</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="576"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="583"/>
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="592"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="599"/>
         <source>Apply Performance Hints</source>
         <translation>Apply Performance Hints</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="615"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="622"/>
         <source>Keep Display Awake</source>
         <translation>Keep Display Awake</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="644"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="651"/>
         <source>Performance hints raise process priority and opt out of OS power throttling. Changes take effect the next time Serial Studio starts.</source>
         <translation>Performance hints raise process priority and opt out of OS power throttling. Changes take effect the next time Serial Studio starts.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="655"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="662"/>
         <source>Updates &amp; News</source>
         <translation>Updates &amp; News</translation>
     </message>
@@ -18099,203 +18109,218 @@ The separator parameter is no longer needed.</translation>
         <translation type="vanished">Show What's New on Startup</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="745"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="752"/>
         <source>Time Range</source>
         <translation>Time Range</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="851"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="858"/>
         <source>Dashboard Font</source>
         <translation>Dashboard Font</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="888"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1525"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="895"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1532"/>
         <source>Font Size</source>
         <translation>Font Size</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="974"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="981"/>
         <source>Auto-Layout Margin</source>
         <translation>Auto-Layout Margin</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="999"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1006"/>
         <source>Auto-Layout Spacing</source>
         <translation>Auto-Layout Spacing</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1063"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1070"/>
         <source>Show Alignment Guides</source>
         <translation>Show Alignment Guides</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1093"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1100"/>
         <source>Video Export</source>
         <translation>Video Export</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1111"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1118"/>
         <source>Save Videos by Default</source>
         <translation>Save Videos by Default</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1162"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1169"/>
         <source>Behavior</source>
         <translation>Behavior</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1207"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1214"/>
         <source>Show Search Field</source>
         <translation>Show Search Field</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1231"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1238"/>
         <source>Auto-hide Taskbar</source>
         <translation>Auto-hide Taskbar</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1258"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1265"/>
         <source>Hide Delay (ms)</source>
         <translation>Hide Delay (ms)</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1291"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1298"/>
         <source>Pinned Buttons</source>
         <translation>Pinned Buttons</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1309"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1316"/>
         <source>Drag a pinned button on the taskbar to reorder it.</source>
         <translation>Drag a pinned button on the taskbar to reorder it.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1330"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1337"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1333"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1340"/>
         <source>Clock</source>
         <translation>Clock</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1334"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1341"/>
         <source>Stopwatch</source>
         <translation>Stopwatch</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1335"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1342"/>
         <source>Pause / Resume</source>
         <translation>Pause / Resume</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1336"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1343"/>
         <source>File Transmission</source>
         <translation>File Transmission</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1337"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1344"/>
         <source>AI Assistant</source>
         <translation>AI Assistant</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1549"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1556"/>
         <source>Scrollback Lines</source>
         <translation>Scrollback Lines</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1574"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1581"/>
         <source>Show Timestamps</source>
         <translation>Show Timestamps</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1602"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1609"/>
         <source>Data Transmission</source>
         <translation>Data Transmission</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1617"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1624"/>
         <source>Line Ending</source>
         <translation>Line Ending</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1639"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1646"/>
         <source>Input Mode</source>
         <translation>Input Mode</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1661"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1668"/>
         <source>Text Encoding</source>
         <translation>Text Encoding</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1683"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1690"/>
         <source>Checksum</source>
         <translation>Checksum</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1705"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1712"/>
         <source>Echo Sent Data</source>
         <translation>Echo Sent Data</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1733"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1740"/>
         <source>Escape Codes</source>
         <translation>Escape Codes</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1748"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1755"/>
         <source>VT100 Emulation</source>
         <translation>VT100 Emulation</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1774"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1781"/>
         <source>ANSI Colors</source>
         <translation>ANSI Colors</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1841"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1845"/>
+        <source>CSV Export</source>
+        <translation>CSV Export</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1860"/>
+        <source>Row Interval (ms)</source>
+        <translation>Row Interval (ms)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1922"/>
+        <source>0 writes one row per received frame. A positive value logs one snapshot row of every channel at that interval, which keeps file size bounded for multi-source or high-rate projects.</source>
+        <translation>0 writes one row per received frame. A positive value logs one snapshot row of every channel at that interval, which keeps file size bounded for multi-source or high-rate projects.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1968"/>
         <source>Delivery</source>
         <translation>Delivery</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1856"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1983"/>
         <source>System Notifications</source>
         <translation>System Notifications</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1877"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2004"/>
         <source>Show Warning/Critical events as OS desktop notifications when Serial Studio is not the foreground window.</source>
         <translation>Show Warning/Critical events as OS desktop notifications when Serial Studio is not the foreground window.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1887"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2014"/>
         <source>Application Logs</source>
         <translation>Application Logs</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1902"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2029"/>
         <source>Route Warnings to Notifications</source>
         <translation>Route Warnings to Notifications</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1923"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2050"/>
         <source>Off by default — Qt and QML emit warnings frequently and enabling this can drown out real alarms. Critical messages are always routed regardless of this setting.</source>
         <translation>Off by default — Qt and QML emit warnings frequently and enabling this can drown out real alarms. Critical messages are always routed regardless of this setting.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1942"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2069"/>
         <source>Reset</source>
         <translation>Reset</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1999"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2126"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2007"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2134"/>
         <source>Apply</source>
         <translation>Apply</translation>
     </message>
@@ -18871,12 +18896,12 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>SqlitePlayer</name>
     <message>
-        <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="24"/>
+        <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="19"/>
         <source>Session Player</source>
         <translation>Session Player</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="91"/>
+        <location filename="../../qml/Dialogs/SqlitePlayer.qml" line="21"/>
         <source>Loading session…</source>
         <translation>Loading session…</translation>
     </message>
@@ -19597,7 +19622,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="362"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="828"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="830"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
@@ -19612,12 +19637,12 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>Scrollback Lines</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="721"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="723"/>
         <source>Send Data to Device</source>
         <translation>Send Data to Device</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="878"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="881"/>
         <source>Send data to the device</source>
         <translation>Send data to the device</translation>
     </message>

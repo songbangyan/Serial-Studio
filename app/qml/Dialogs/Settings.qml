@@ -88,6 +88,12 @@ Widgets.SmartDialog {
       }
 
       TabButton {
+        text: qsTr("Export")
+        height: _tab.height + 3
+        width: implicitWidth + 2 * 8
+      }
+
+      TabButton {
         height: _tab.height + 3
         text: qsTr("Notifications")
         visible: Cpp_CommercialBuild
@@ -112,6 +118,7 @@ Widgets.SmartDialog {
                         dashboardTab.implicitHeight,
                         taskbarTab.implicitHeight,
                         consoleTab.implicitHeight,
+                        exportTab.implicitHeight,
                         Cpp_CommercialBuild ? notificationsTab.implicitHeight : 0
                         )
 
@@ -1795,6 +1802,126 @@ Widgets.SmartDialog {
                 _ansiColors.checked = Cpp_Console_Handler.ansiColors
               }
             }
+          }
+
+          Item { Layout.fillHeight: true }
+          Item { Layout.fillHeight: true }
+        }
+      }
+
+      //
+      // Export tab
+      //
+      Item {
+        id: exportTab
+
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+        implicitHeight: exportLayout.implicitHeight + 16
+
+        Rectangle {
+          radius: 2
+          border.width: 1
+          anchors.fill: parent
+          border.color: Cpp_ThemeManager.colors["groupbox_border"]
+          color: Cpp_ThemeManager.colors["groupbox_background"]
+        }
+
+        GridLayout {
+          id: exportLayout
+
+          columns: 2
+          rowSpacing: 4
+          columnSpacing: 8
+          anchors.margins: 8
+          anchors.fill: parent
+
+          Item {
+            implicitHeight: 2
+            Layout.columnSpan: 2
+          } Label {
+            Layout.columnSpan: 2
+            Layout.topMargin: 2
+            text: qsTr("CSV Export")
+            font: Cpp_Misc_CommonFonts.customUiFont(0.75, true)
+            color: Cpp_ThemeManager.colors["pane_section_label"]
+            Component.onCompleted: font.capitalization = Font.AllUppercase
+          } Rectangle {
+            implicitHeight: 1
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            color: Cpp_ThemeManager.colors["groupbox_border"]
+          } Item {
+            implicitHeight: 2
+            Layout.columnSpan: 2
+          }
+
+          Label {
+            text: qsTr("Row Interval (ms)")
+            color: Cpp_ThemeManager.colors["text"]
+          } ComboBox {
+            id: _csvIntervalCombo
+
+            editable: true
+            Layout.fillWidth: true
+
+            property bool initializing: true
+
+            validator: IntValidator { bottom: 0 }
+
+            model: ["0", "10", "100", "1000"]
+
+            function syncFromBackend() {
+              const current = String(Cpp_CSV_Export.exportInterval)
+              const idx = model.indexOf(current)
+              if (idx !== -1)
+                _csvIntervalCombo.currentIndex = idx
+              else {
+                _csvIntervalCombo.currentIndex = -1
+                _csvIntervalCombo.editText = current
+              }
+            }
+
+            function commit(text) {
+              if (initializing)
+                return
+
+              const value = parseInt(text)
+              if (!isNaN(value) && value >= 0
+                  && Cpp_CSV_Export.exportInterval !== value)
+                Cpp_CSV_Export.exportInterval = value
+            }
+
+            Component.onCompleted: {
+              Qt.callLater(() => {
+                syncFromBackend()
+                initializing = false
+              })
+            }
+
+            Connections {
+              target: Cpp_CSV_Export
+              function onIntervalChanged() {
+                if (!_csvIntervalCombo.initializing)
+                  _csvIntervalCombo.syncFromBackend()
+              }
+            }
+
+            onAccepted: commit(editText)
+            onActivated: (index) => commit(model[index])
+          }
+
+          Label {
+            Layout.columnSpan: 2
+            Layout.fillWidth: true
+            Layout.topMargin: -2
+            opacity: 0.7
+            wrapMode: Text.WordWrap
+            color: Cpp_ThemeManager.colors["text"]
+            font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
+            text: qsTr("0 writes one row per received frame. A positive value logs one "
+                       + "snapshot row of every channel at that interval, which keeps file "
+                       + "size bounded for multi-source or high-rate projects.")
           }
 
           Item { Layout.fillHeight: true }

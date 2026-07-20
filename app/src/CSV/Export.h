@@ -26,6 +26,7 @@
 #include <QSet>
 #include <QSettings>
 #include <QTextStream>
+#include <QTimer>
 #include <QVector>
 
 #include "DataModel/ExportSchema.h"
@@ -42,12 +43,16 @@ class ExportWorker : public DataModel::FrameConsumerWorker<DataModel::Timestampe
   Q_OBJECT
 
 public:
-  using DataModel::FrameConsumerWorker<DataModel::TimestampedFramePtr>::FrameConsumerWorker;
+  ExportWorker(moodycamel::ReaderWriterQueue<DataModel::TimestampedFramePtr>* queue,
+               std::atomic<bool>* enabled,
+               std::atomic<size_t>* queueSize);
 
   void closeResources() override;
   [[nodiscard]] bool isResourceOpen() const override;
 
 public slots:
+  void writeSnapshotRow();
+  void setSnapshotIntervalMs(int interval);
   void setTemplateFrame(const DataModel::Frame& frame);
 
 protected:
@@ -55,8 +60,12 @@ protected:
 
 private:
   void createCsvFile(const DataModel::Frame& frame);
+  void writeRow(const DataModel::TimestampedFrame::SteadyTimePoint& timestamp);
 
 private:
+  int m_snapshotIntervalMs;
+  QTimer* m_snapshotTimer;
+
   DataModel::Frame m_templateFrame;
   QFile m_csvFile;
   QTextStream m_textStream;
@@ -79,11 +88,16 @@ class Export : public DataModel::FrameConsumer<DataModel::TimestampedFramePtr> {
              READ exportEnabled
              WRITE setExportEnabled
              NOTIFY enabledChanged)
+  Q_PROPERTY(int exportInterval
+             READ exportInterval
+             WRITE setExportInterval
+             NOTIFY intervalChanged)
   // clang-format on
 
 signals:
   void openChanged();
   void enabledChanged();
+  void intervalChanged();
 
 private:
   explicit Export();
@@ -99,11 +113,13 @@ public:
 
   [[nodiscard]] bool isOpen() const;
   [[nodiscard]] bool exportEnabled() const;
+  [[nodiscard]] int exportInterval() const;
 
 public slots:
   void closeFile();
   void setupExternalConnections();
   void setExportEnabled(const bool enabled);
+  void setExportInterval(const int interval);
   void setSettingsPersistent(const bool persistent);
 
   void hotpathTxFrame(const DataModel::TimestampedFramePtr& frame);
@@ -118,5 +134,6 @@ private:
   QSettings m_settings;
   std::atomic<bool> m_isOpen;
   bool m_persistSettings;
+  int m_exportInterval;
 };
 }  // namespace CSV

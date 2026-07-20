@@ -136,6 +136,7 @@ DataModel::FrameBuilder::FrameBuilder()
   , m_externalTableApiUsers(false)
   , m_captureLatestFrame(false)
   , m_changeDriven(false)
+  , m_tickPending(false)
   , m_shuttingDown(false)
   , m_seenEngineEpoch(-1)
   , m_operationMode(SerialStudio::ProjectFile)
@@ -486,6 +487,11 @@ void DataModel::FrameBuilder::setupExternalConnections()
           this,
           &DataModel::FrameBuilder::collectTransformEngineGarbage);
 
+  connect(&Misc::TimerEvents::instance(),
+          &Misc::TimerEvents::uiTimeout,
+          this,
+          &DataModel::FrameBuilder::drainPendingTick);
+
   connect(&CSV::Player::instance(), &CSV::Player::openChanged, this, [this] {
     m_playerOpen        = SerialStudio::isAnyPlayerOpen();
     m_captureFlagsDirty = true;
@@ -606,6 +612,7 @@ void DataModel::FrameBuilder::syncFromProjectModel()
   m_sourceFrameCounters.clear();
   m_republishedSourceIds.clear();
 
+  m_tickPending           = false;
   m_externalTableApiUsers = false;
   m_captureFlagsDirty     = true;
 
@@ -777,6 +784,7 @@ void DataModel::FrameBuilder::onOperationModeChanged()
 
   m_operationMode     = appState.operationMode();
   m_quickPlotChannels = -1;
+  m_tickPending       = false;
   m_sourceFrames.clear();
   m_sourceFrameCounters.clear();
   m_republishedSourceIds.clear();
@@ -869,10 +877,10 @@ bool DataModel::FrameBuilder::reprocessFrames()
 }
 
 /**
- * @brief Forces a render from the current table/dataset state even when the device is silent:
- *        seeds each source frame from the template if missing, runs the transform-only pass, and
- *        publishes through hotpathTxFrame so table-driven datasets both render and feed the
- *        CSV/MDF4/session/MQTT/API exports. Works from the first loop().
+ * @brief Arms a coalesced render even when the device is silent: seeds missing source frames and
+ *        sets m_tickPending, which drainPendingTick() turns into one republishFrames(true) pass per
+ *        UI-timer window. Deferred (not inline) because control scripts call it per frame.
+ *        Returns true when accepted (ProjectFile, loaded project).
  */
 bool DataModel::FrameBuilder::dashboardTick()
 {
@@ -886,7 +894,22 @@ bool DataModel::FrameBuilder::dashboardTick()
     for (const auto& g : m_frame.groups)
       (void)ensureSourceFrame(g.sourceId);
 
-  return republishFrames(true);
+  m_tickPending = true;
+  return true;
+}
+
+/**
+ * @brief Drains a pending dashboard tick on the UI-timer window: one republishFrames(true) pass
+ *        with export fan-out, no matter how many dashboardTick() calls landed since the last
+ *        window. The flag is cleared first so a transform that ticks again re-arms cleanly.
+ */
+void DataModel::FrameBuilder::drainPendingTick()
+{
+  if (!m_tickPending)
+    return;
+
+  m_tickPending = false;
+  (void)republishFrames(true);
 }
 
 /**
@@ -917,6 +940,7 @@ void DataModel::FrameBuilder::onConnectedChanged()
   parseBudgetReset();
 
   if (!nowConnected) {
+    m_tickPending = false;
     m_sourceFrames.clear();
     m_sourceFrameCounters.clear();
     m_republishedSourceIds.clear();

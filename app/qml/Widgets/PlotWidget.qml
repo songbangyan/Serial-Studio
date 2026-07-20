@@ -86,14 +86,28 @@ Item {
   }
 
   //
-  // Tick interval for a log10-unit axis: whole decades, relaxing to half-decade steps
-  // (the 1-3-10 ladder) when fewer than two decades are visible
+  // Log10-axis tick interval: whole decades when >= 2 decades are visible, otherwise a
+  // {1,2,5}*10^n decade fraction (capped at 0.5; every step divides a decade evenly)
   //
   function logInterval(range, maxLabels) {
-    if (range < 2.0)
-      return 0.5
+    if (range >= 2.0)
+      return Math.max(1.0, Math.ceil(range / maxLabels))
 
-    return Math.max(1.0, Math.ceil(range / maxLabels))
+    const rough = Math.max(range / maxLabels, 1e-9)
+    const magnitude = Math.pow(10, Math.floor(Math.log10(rough)))
+    const normalized = rough / magnitude
+
+    let niceInterval
+    if (normalized <= 1.0)
+      niceInterval = 1.0
+    else if (normalized <= 2.0)
+      niceInterval = 2.0
+    else if (normalized <= 5.0)
+      niceInterval = 5.0
+    else
+      niceInterval = 10.0
+
+    return Math.min(0.5, niceInterval * magnitude)
   }
 
   //
@@ -216,6 +230,19 @@ Item {
     }
 
     return (value / scaleFactor).toFixed(decimals) + suffix
+  }
+
+  //
+  // Log-axis tick label formatter: pow10 back to true units, precision derived from the
+  // local tick spacing so sub-decade zoom steps stay distinguishable (20.0K vs 20.5K)
+  //
+  function logTickFormat(logValue, logStep) {
+    if (!isFinite(logValue))
+      return ""
+
+    const value = Math.pow(10, logValue)
+    const spacing = logStep > 0 ? value * (Math.pow(10, logStep) - 1) : 0
+    return engineeringFormat(value, spacing)
   }
 
   //
@@ -684,7 +711,7 @@ Item {
 
           anchors.centerIn: parent
           text: root.logY
-                ? root.engineeringFormat(Math.pow(10, parseFloat(_yLabelItem.text)), 0)
+                ? root.logTickFormat(parseFloat(_yLabelItem.text), root.yTickInterval)
                 : root.engineeringFormat(parseFloat(_yLabelItem.text), root.yTickInterval)
           color: Cpp_ThemeManager.colors["widget_text"]
           font: (Cpp_Misc_CommonFonts.widgetFontRevision,
@@ -721,7 +748,7 @@ Item {
           text: root.timeAxis
                 ? root.secondsAgoFormat(parseFloat(_xLabelItem.text), root.xTickInterval)
                 : (root.logX
-                   ? root.engineeringFormat(Math.pow(10, parseFloat(_xLabelItem.text)), 0)
+                   ? root.logTickFormat(parseFloat(_xLabelItem.text), root.xTickInterval)
                    : root.engineeringFormat(parseFloat(_xLabelItem.text), root.xTickInterval))
           color: Cpp_ThemeManager.colors["widget_text"]
           font: (Cpp_Misc_CommonFonts.widgetFontRevision,

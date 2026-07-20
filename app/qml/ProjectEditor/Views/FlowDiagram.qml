@@ -101,7 +101,7 @@ Item {
   }
 
   //
-  // Columns L->R: Device | Frame Parser/Actions | Groups | Dataset pills.
+  // Column layout L->R: Device | Frame Parser/Actions/Outputs | Folders | Groups & Datasets.
   //
   function layoutDiagram(sources, groups, actions, tables) {
     const newNodes  = []
@@ -406,6 +406,8 @@ Item {
       badge:     Cpp_JSON_ProjectModel.controlScriptCode.length > 0 ? "" : qsTr("empty")
     })
 
+    const allOutputGroups = groups.filter(g => g.groupType === SerialStudio.GroupOutput)
+
     for (const src of srcList) {
       const sid          = src.sourceId
       const srcCollapsed = isCollapsed("src:" + sid)
@@ -488,6 +490,128 @@ Item {
           })
       }
 
+      //
+      // Outputs category (TX direction): a collapsible card feeding this source's output
+      // panels and their control pills, so the next source starts below its outputs.
+      //
+      const srcOutGroups = allOutputGroups.filter(g => (g.sourceId || 0) === sid)
+      if (!srcCollapsed && srcOutGroups.length > 0) {
+        const outCollapsed = isCollapsed("outputs:" + sid)
+        cursorY += vGap * 2
+
+        let catCenter
+        if (outCollapsed) {
+          catCenter = cursorY + nodeH / 2
+          cursorY += nodeH + vGap
+        } else {
+          const panelCenters = []
+
+          for (const grp of srcOutGroups) {
+            const panelCollapsed = isCollapsed("grp:" + grp.groupId)
+            const owList         = grp.outputWidgets || []
+            const wCount         = panelCollapsed ? 0 : owList.length
+            const wsh            = slotH(wCount)
+            const panelY         = cursorY + (wsh - nodeH) / 2
+
+            //
+            // Panel card (the parent group), mirroring the group column
+            //
+            newNodes.push({
+              type:         "output-panel",
+              sourceId:     sid,
+              groupId:      grp.groupId,
+              datasetId:    -1,
+              widgetId:     -1,
+              actionId:     -1,
+              widget:       grp.widget || "",
+              collapsed:    panelCollapsed,
+              collapseKey:  owList.length > 0 ? ("grp:" + grp.groupId) : undefined,
+              siblingCount: allOutputGroups.length,
+              x:            colGrp,
+              y:            panelY,
+              w:            nodeW,
+              h:            nodeH,
+              label:        grp.title || qsTr("Output Panel"),
+              icon:         "qrc:/icons/project-editor/treeview/output-panel.svg",
+              badge:        ""
+            })
+
+            panelCenters.push(panelY + nodeH / 2)
+
+            //
+            // Control pills stacked at colChip, one per widget, mirroring the
+            // group -> dataset layout. Each gets a single panel -> widget arrow.
+            //
+            if (wCount > 0) {
+              const blockH   = wCount * chipH + (wCount - 1) * vGap
+              const blockTop = cursorY + (wsh - blockH) / 2
+
+              for (let oi = 0; oi < wCount; ++oi) {
+                const ow    = owList[oi]
+                const chipY = blockTop + oi * (chipH + vGap)
+
+                newArrows.push({
+                  x1: colGrp + nodeW, y1: panelY + nodeH / 2,
+                  x2: colChip,        y2: chipY + chipH / 2
+                })
+
+                newNodes.push({
+                  type:         "output",
+                  sourceId:     sid,
+                  groupId:      grp.groupId,
+                  datasetId:    -1,
+                  widgetId:     oi,
+                  actionId:     -1,
+                  siblingCount: wCount,
+                  x:            colChip,
+                  y:            chipY,
+                  w:            chipW,
+                  h:            chipH,
+                  label:        ow.title || qsTr("Control"),
+                  icon:         outputWidgetIcon(ow.outputType),
+                  badge:        ""
+                })
+              }
+            }
+
+            cursorY += wsh + vGap
+          }
+
+          catCenter = (panelCenters[0] + panelCenters[panelCenters.length - 1]) / 2
+          for (const pc of panelCenters)
+            newArrows.push({
+              x1: colFP + nodeW, y1: catCenter,
+              x2: colGrp,        y2: pc
+            })
+        }
+
+        //
+        // Category card, with an arrow up into the bottom-center of its device.
+        //
+        newNodes.push({
+          type:        "outputsfolder",
+          collapsed:   outCollapsed,
+          collapseKey: "outputs:" + sid,
+          sourceId:    sid,
+          groupId:     -1,
+          datasetId:   -1,
+          actionId:    -1,
+          x:           colFP,
+          y:           catCenter - nodeH / 2,
+          w:           nodeW,
+          h:           nodeH,
+          label:       qsTr("Outputs"),
+          icon:        "qrc:/icons/project-editor/treeview/output-panel.svg"
+        })
+
+        const devTopY = fpNodeY[sid] !== undefined ? fpNodeY[sid] : pad
+        newArrows.push({
+          x1: colFP,              y1: catCenter,
+          x2: colDev + nodeW / 2, y2: devTopY + nodeH,
+          verticalEnd: true
+        })
+      }
+
       cursorY += vGap * 3
     }
 
@@ -535,98 +659,6 @@ Item {
 
       if (placedActions > 0)
         blockCursor = actY
-    }
-
-    //
-    // Output panels (TX direction): mirror image of the RX flow
-    //
-    const allOutputGroups = groups.filter(g => g.groupType === SerialStudio.GroupOutput)
-    const outputGroups = allOutputGroups.filter(g => !isCollapsed("src:" + (g.sourceId || 0)))
-
-    if (outputGroups.length > 0) {
-      let outCursor = blockCursor + vGap * 2
-
-      for (const grp of outputGroups) {
-        const sid            = grp.sourceId || 0
-        const panelCollapsed = isCollapsed("grp:" + grp.groupId)
-        const owList         = grp.outputWidgets || []
-        const wCount         = panelCollapsed ? 0 : owList.length
-        const wsh            = slotH(wCount)
-        const panelY         = outCursor + (wsh - nodeH) / 2
-
-        //
-        // Panel card (the parent group) in colFP
-        //
-        newNodes.push({
-          type:         "output-panel",
-          sourceId:     sid,
-          groupId:      grp.groupId,
-          datasetId:    -1,
-          widgetId:     -1,
-          actionId:     -1,
-          widget:       grp.widget || "",
-          collapsed:    panelCollapsed,
-          collapseKey:  owList.length > 0 ? ("grp:" + grp.groupId) : undefined,
-          siblingCount: allOutputGroups.length,
-          x:            colFP,
-          y:            panelY,
-          w:            nodeW,
-          h:            nodeH,
-          label:        grp.title || qsTr("Output Panel"),
-          icon:         "qrc:/icons/project-editor/treeview/output-panel.svg",
-          badge:        ""
-        })
-
-        //
-        // Arrow from panel up into the bottom-center of its target device.
-        //
-        const devTopY = fpNodeY[sid] !== undefined ? fpNodeY[sid] : pad
-        newArrows.push({
-          x1: colFP,             y1: panelY + nodeH / 2,
-          x2: colDev + nodeW / 2, y2: devTopY + nodeH,
-          verticalEnd: true
-        })
-
-        //
-        // Control pills stacked at colChip, one per widget, mirroring the
-        // group -> dataset layout. Each gets a single panel -> widget arrow.
-        //
-        if (wCount > 0) {
-          const blockH   = wCount * chipH + (wCount - 1) * vGap
-          const blockTop = outCursor + (wsh - blockH) / 2
-
-          for (let oi = 0; oi < wCount; ++oi) {
-            const ow    = owList[oi]
-            const chipY = blockTop + oi * (chipH + vGap)
-
-            newArrows.push({
-              x1: colFP + nodeW, y1: panelY + nodeH / 2,
-              x2: colChip,       y2: chipY + chipH / 2
-            })
-
-            newNodes.push({
-              type:         "output",
-              sourceId:     sid,
-              groupId:      grp.groupId,
-              datasetId:    -1,
-              widgetId:     oi,
-              actionId:     -1,
-              siblingCount: wCount,
-              x:            colChip,
-              y:            chipY,
-              w:            chipW,
-              h:            chipH,
-              label:        ow.title || qsTr("Control"),
-              icon:         outputWidgetIcon(ow.outputType),
-              badge:        ""
-            })
-          }
-        }
-
-        outCursor += wsh + vGap
-      }
-
-      blockCursor = outCursor
     }
 
     //
@@ -1165,13 +1197,14 @@ Item {
           property bool isSource:      modelData.type === "source"
           property bool isDataset:     modelData.type === "dataset"
           property bool isTransform:   modelData.type === "transform"
-          property bool isFolder:      isGroupFolder || isTableFolder
           property bool isFP:          modelData.type === "frameparser"
           property bool isGroupFolder: modelData.type === "groupfolder"
           property bool isTableFolder: modelData.type === "tablefolder"
           property bool isOutputPanel: modelData.type === "output-panel"
+          property bool isOutputsFolder: modelData.type === "outputsfolder"
           property bool isControlScript: modelData.type === "controlscript"
           property bool collapsibleCard: !isFolder && !!modelData.collapseKey
+          property bool isFolder: isGroupFolder || isTableFolder || isOutputsFolder
 
           readonly property string nodeKey: menuController.keyOf(modelData)
           readonly property bool isPinned: menuController.pinnedKey === nodeKey
@@ -1255,7 +1288,7 @@ Item {
           // -- Card (source / group / frame-parser / action / table) ----
           //
           Rectangle {
-            visible: !nd.isPill && !nd.isTransform && !nd.isGroupFolder
+            visible: !nd.isPill && !nd.isTransform && !nd.isGroupFolder && !nd.isOutputsFolder
             anchors.fill: parent
             radius: 6 * root.zoom
             color: nd.active

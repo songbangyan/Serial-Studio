@@ -170,13 +170,19 @@ don't render until the next frame. Two SDK calls close that gap, both running th
 transform-only pass (`reprocessDatasetValues`) over the live frames (per-source frames when
 populated, else `m_frame`) and sharing the private `republishFrames(bool feedExports)` helper:
 `refreshDashboard()` (`dashboard.reprocess` → `FrameBuilder::reprocessFrames`, `feedExports`
-false) publishes to `Dashboard::hotpathRxFrame` directly, skipping the `hotpathTxFrame` export
-fan-out so a synthetic refresh never re-records frames already exported on arrival;
-`dashboardTick()` (`dashboard.tick` → `FrameBuilder::dashboardTick`, `feedExports` true)
-publishes *through* `hotpathTxFrame`, so a control-script simulation that owns its values via
-data tables both renders and feeds the CSV/MDF4/session/MQTT/API exports (still gated on
-`m_anyAsyncSink`). `dashboardTick` also seeds each source frame from the project template when
-none has arrived yet, so it works from the very first `loop()`.
+false) runs **synchronously** and publishes to `Dashboard::hotpathRxFrame` directly, skipping
+the `hotpathTxFrame` export fan-out so a synthetic refresh never re-records frames already
+exported on arrival; `dashboardTick()` (`dashboard.tick` → `FrameBuilder::dashboardTick`,
+`feedExports` true) is **deferred and coalesced** (spec 0023): the call only seeds the source
+frames (from the project template when none has arrived yet, so it works from the very first
+`loop()`) and sets `m_tickPending`; the `TimerEvents::uiTimeout` slot `drainPendingTick()`
+runs one `republishFrames(true)` per UI window no matter how many ticks landed, publishing
+*through* `hotpathTxFrame` so a table-driven control-script simulation both renders and feeds
+the CSV/MDF4/session/MQTT/API exports (still gated on `m_anyAsyncSink`). The deferral is why a
+script that must read back updated dashboard state on the next statement uses the synchronous
+`refreshDashboard()`, not `dashboardTick()`; the `dashboard.tick` response reports `scheduled`,
+not `published`. `m_tickPending` is cleared on disconnect and operation-mode change so a stale
+tick can never publish a template frame after teardown.
 
 ## Control Script — Per-Connection Lifecycle
 

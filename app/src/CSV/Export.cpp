@@ -67,11 +67,64 @@ static QString escapeCsvField(const QString& s)
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Constructs the CSV worker with its snapshot timer. The timer is a child so it migrates
+ *        with the worker to its thread; it stays stopped until a non-zero interval arrives.
+ */
+CSV::ExportWorker::ExportWorker(
+  moodycamel::ReaderWriterQueue<DataModel::TimestampedFramePtr>* queue,
+  std::atomic<bool>* enabled,
+  std::atomic<size_t>* queueSize)
+  : DataModel::FrameConsumerWorker<DataModel::TimestampedFramePtr>(queue, enabled, queueSize)
+  , m_snapshotIntervalMs(0)
+  , m_snapshotTimer(new QTimer(this))
+{
+  m_snapshotTimer->setTimerType(Qt::PreciseTimer);
+  connect(m_snapshotTimer, &QTimer::timeout, this, &ExportWorker::writeSnapshotRow);
+}
+
+/**
  * @brief Returns whether the CSV file is currently open.
  */
 bool CSV::ExportWorker::isResourceOpen() const
 {
   return m_csvFile.isOpen();
+}
+
+/**
+ * @brief Applies the snapshot interval on the worker thread: 0 restores per-frame rows and stops
+ *        the timer; a positive value switches row writing to the fixed cadence (spec 0023).
+ */
+void CSV::ExportWorker::setSnapshotIntervalMs(int interval)
+{
+  m_snapshotIntervalMs = qMax(0, interval);
+
+  if (m_snapshotIntervalMs > 0) {
+    m_snapshotTimer->setInterval(m_snapshotIntervalMs);
+    m_snapshotTimer->start();
+  }
+
+  else
+    m_snapshotTimer->stop();
+}
+
+/**
+ * @brief Writes one interval-mode snapshot row from the forward-fill map. Drains the pending queue
+ *        first so cell staleness is bounded by the snapshot interval rather than the 1000 ms batch
+ *        timer at low frame rates, and writes nothing before the session's first frame: the file
+ *        only exists once processItems() has seen data (spec 0023).
+ */
+void CSV::ExportWorker::writeSnapshotRow()
+{
+  if (!consumerEnabled() || m_snapshotIntervalMs <= 0)
+    return;
+
+  processData();
+
+  if (!m_csvFile.isOpen() || m_schema.columns.empty())
+    return;
+
+  writeRow(DataModel::TimestampedFrame::SteadyClock::now());
+  m_textStream.flush();
 }
 
 /**
@@ -99,7 +152,9 @@ void CSV::ExportWorker::setTemplateFrame(const DataModel::Frame& frame)
 }
 
 /**
- * @brief Processes a batch of CSV frames, creating the file if needed.
+ * @brief Processes a batch of CSV frames, creating the file if needed. Per-frame mode (interval
+ *        0) writes one row per frame; interval mode only refreshes the forward-fill map and
+ *        leaves row writing to the snapshot timer.
  */
 void CSV::ExportWorker::processItems(const std::vector<DataModel::TimestampedFramePtr>& items)
 {
@@ -119,26 +174,36 @@ void CSV::ExportWorker::processItems(const std::vector<DataModel::TimestampedFra
     resetMonotonicClock();
   }
 
-  const int colCount = static_cast<int>(m_schema.columns.size());
-
   for (const auto& i : items) {
-    const qint64 nanoseconds = monotonicFrameNs(i->timestamp, m_referenceTimestamp);
-    const double seconds     = static_cast<double>(nanoseconds) / 1'000'000'000.0;
-    m_textStream << QString::number(seconds, 'f', 9);
-
     for (const auto& g : i->data.groups)
       for (const auto& d : g.datasets)
         m_lastFinalValues[d.uniqueId] = d.value.simplified();
 
-    for (int j = 0; j < colCount; ++j) {
-      const int uid = m_schema.columns[static_cast<size_t>(j)].uniqueId;
-      m_textStream << ',' << escapeCsvField(m_lastFinalValues.value(uid, QString()));
-    }
-
-    m_textStream << '\n';
+    if (m_snapshotIntervalMs == 0)
+      writeRow(i->timestamp);
   }
 
-  m_textStream.flush();
+  if (m_snapshotIntervalMs == 0)
+    m_textStream.flush();
+}
+
+/**
+ * @brief Writes one timestamped row across the full schema from the forward-fill map; shared by
+ *        the per-frame path (frame timestamps) and the snapshot path (now() at the tick).
+ */
+void CSV::ExportWorker::writeRow(const DataModel::TimestampedFrame::SteadyTimePoint& timestamp)
+{
+  const qint64 nanoseconds = monotonicFrameNs(timestamp, m_referenceTimestamp);
+  const double seconds     = static_cast<double>(nanoseconds) / 1'000'000'000.0;
+  m_textStream << QString::number(seconds, 'f', 9);
+
+  const int colCount = static_cast<int>(m_schema.columns.size());
+  for (int j = 0; j < colCount; ++j) {
+    const int uid = m_schema.columns[static_cast<size_t>(j)].uniqueId;
+    m_textStream << ',' << escapeCsvField(m_lastFinalValues.value(uid, QString()));
+  }
+
+  m_textStream << '\n';
 }
 
 /**
@@ -226,6 +291,7 @@ CSV::Export::Export()
       {.queueCapacity = 8192, .flushThreshold = 1024, .timerIntervalMs = 1000})
   , m_isOpen(false)
   , m_persistSettings(true)
+  , m_exportInterval(0)
 {
   initializeWorker();
   connect(m_worker,
@@ -235,6 +301,7 @@ CSV::Export::Export()
           Qt::QueuedConnection);
 
   setExportEnabled(m_settings.value("CSVExport", false).toBool());
+  setExportInterval(m_settings.value("CSVExportInterval", 0).toInt());
 }
 
 /**
@@ -277,6 +344,14 @@ bool CSV::Export::isOpen() const
 bool CSV::Export::exportEnabled() const
 {
   return consumerEnabled();
+}
+
+/**
+ * @brief Returns the snapshot interval in milliseconds (0 = one row per frame).
+ */
+int CSV::Export::exportInterval() const
+{
+  return m_exportInterval;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -342,6 +417,25 @@ void CSV::Export::setupExternalConnections()
 void CSV::Export::setSettingsPersistent(const bool persistent)
 {
   m_persistSettings = persistent;
+}
+
+/**
+ * @brief Sets the snapshot interval in milliseconds (0 = one row per frame) and forwards it to
+ *        the worker thread; applies live to an open recording (spec 0023).
+ */
+void CSV::Export::setExportInterval(const int interval)
+{
+  const int clamped = qMax(0, interval);
+  m_exportInterval  = clamped;
+
+  auto* worker = static_cast<ExportWorker*>(m_worker);
+  QMetaObject::invokeMethod(
+    worker, [worker, clamped] { worker->setSnapshotIntervalMs(clamped); }, Qt::QueuedConnection);
+
+  if (m_persistSettings)
+    m_settings.setValue("CSVExportInterval", clamped);
+
+  Q_EMIT intervalChanged();
 }
 
 /**

@@ -504,7 +504,7 @@ Item {
       Layout.fillWidth: true
       Layout.fillHeight: true
       ansiColors: Cpp_Console_Handler.ansiColors
-      Layout.topMargin: consoleToolbar.visible ? 0 : 8
+      Layout.topMargin: consoleToolbar.visible ? 4 : 8
       vt100emulation: Cpp_Console_Handler.vt100Emulation
       Layout.minimumHeight: root.minimal ? 0 : Cpp_Console_Handler.defaultCharHeight * root.minimumRows
       Layout.minimumWidth: root.minimal ? 0 : Cpp_Console_Handler.defaultCharWidth * root.minimumColumns
@@ -685,6 +685,7 @@ Item {
         id: deviceCombo
 
         Layout.maximumWidth: 144
+        Layout.preferredWidth: 144
         Layout.alignment: Qt.AlignVCenter
         model: Cpp_Console_Handler.deviceNames
         visible: Cpp_Console_Handler.multiDeviceMode
@@ -711,9 +712,10 @@ Item {
       Widgets.LineField {
         id: send
 
-        implicitWidth: 128
+        implicitWidth: 64
         implicitHeight: 24
         Layout.fillWidth: true
+        Layout.minimumWidth: 96
         opacity: enabled ? 1 : 0.5
         enabled: Cpp_IO_Manager.readWrite
         Layout.alignment: Qt.AlignVCenter
@@ -840,30 +842,33 @@ Item {
       Widgets.Combo {
         id: lineEndingCombo
 
-        onActivated: (index) => {
-                       if (Cpp_Console_Handler.lineEnding !== index)
-                       Cpp_Console_Handler.lineEnding = index
-                     }
+        Layout.minimumWidth: 96
         opacity: enabled ? 1 : 0.5
         enabled: Cpp_IO_Manager.readWrite
         Layout.alignment: Qt.AlignVCenter
         model: Cpp_Console_Handler.lineEndings
         currentIndex: Cpp_Console_Handler.lineEnding
+
+        onActivated: (index) => {
+                       if (Cpp_Console_Handler.lineEnding !== index)
+                       Cpp_Console_Handler.lineEnding = index
+                     }
       }
 
       Widgets.Combo {
         id: checkumCombo
 
-        onActivated: (index) => {
-                       if (Cpp_Console_Handler.checksumMethod !== index)
-                       Cpp_Console_Handler.checksumMethod = index
-                     }
-        Layout.minimumWidth: 128
+        Layout.minimumWidth: 96
         opacity: enabled ? 1 : 0.5
         enabled: Cpp_IO_Manager.readWrite
         Layout.alignment: Qt.AlignVCenter
         model: Cpp_Console_Handler.checksumMethods
         currentIndex: Cpp_Console_Handler.checksumMethod
+
+        onActivated: (index) => {
+                       if (Cpp_Console_Handler.checksumMethod !== index)
+                       Cpp_Console_Handler.checksumMethod = index
+                     }
       }
 
       Widgets.IconButton {
@@ -880,5 +885,14 @@ Item {
       }
     }
 
+    //
+    // Placeholder that preserves the send-row footprint when the controls are
+    // hidden (too narrow), keeping the terminal border spacing constant.
+    //
+    Item {
+      Layout.fillWidth: true
+      Layout.preferredHeight: 4
+      visible: !sendCtrl.visible
+    }
   }
 }

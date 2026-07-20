@@ -7,6 +7,19 @@
 
 - `DataModel::ExportSchema` (`ExportSchema.h`): shared column layout. `buildExportSchema(frame)`
   produces sorted columns + `uniqueIdToColumnIndex` map. CSV and MDF4 export raw + transformed.
+- **CSV logging cadence (`CSVExportInterval` setting, spec 0023)**: `CSV::Export` holds an
+  `exportInterval` (ms; QSettings, default 0) forwarded to the worker via queued invoke
+  (`setSnapshotIntervalMs`). At **0** the worker writes one row per received frame — the
+  historical behavior — via `writeRow(frameTs)` inside `processItems`. At **>0** `processItems`
+  only forward-fills `m_lastFinalValues` and a worker-owned `Qt::PreciseTimer`
+  (`writeSnapshotRow`) writes one full-schema row every N ms, using `now()` against the session
+  reference timestamp; it drains the queue first so cell staleness is bounded by the interval,
+  and never writes before the session's first frame (lazy file creation). This turns CSV into a
+  bounded-size trend log for multi-source / high-rate projects (the CSV schema is the union of
+  **all** sources' datasets, so at per-frame cadence a 48 kHz audio source emits ~48 k wide,
+  mostly-forward-filled rows/s; MDF4/Sessions stay full-rate and sparse and are the right home
+  for sample-rate data). Applies live to an open recording. The `csvExport.setInterval` API and
+  the Preferences → Export tab both drive `exportInterval`.
 - **Session DB lives in `app/src/Sessions/`** (NOT `app/src/SQLite/`):
   - `Sessions::DatabaseManager` — singleton owning the open `.db`; backs `app/qml/DatabaseExplorer/`.
   - `Sessions::Export` (`Sessions/Export.h/.cpp`): `FrameConsumer`-based; tables

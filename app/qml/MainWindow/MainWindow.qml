@@ -266,6 +266,34 @@ Widgets.SmartWindow {
   }
 
   //
+  // Grow the window to honor the minimum size after a layout-affecting change.
+  //
+  function enforceMinimumSize() {
+    if (!root.visible || app.runtimeMode)
+      return
+
+    if (root.visibility === Window.Maximized
+        || root.visibility === Window.FullScreen)
+      return
+
+    if (root.width < root.minimumWidth)
+      root.width = root.minimumWidth
+
+    if (root.height < root.minimumHeight)
+      root.height = root.minimumHeight
+  }
+
+  //
+  // Re-check the minimum after the operation mode or project changes; deferred so
+  // the layout re-flow (and thus layout.implicitWidth/Height) settles first.
+  //
+  Connections {
+    target: Cpp_AppState
+    function onOperationModeChanged() { Qt.callLater(root.enforceMinimumSize) }
+    function onProjectFileChanged()   { Qt.callLater(root.enforceMinimumSize) }
+  }
+
+  //
   // Show console tab on serial disconnect (runtime mode quits instead).
   //
   Connections {

@@ -319,13 +319,17 @@ void API::Handlers::DashboardHandler::registerQueryCommands()
 
   registry.registerCommand(
     QStringLiteral("dashboard.tick"),
-    QStringLiteral("Force a dashboard render from the current table/dataset state, synthesizing "
-                   "the project frame structure if no device frame has arrived yet. Unlike "
-                   "dashboard.reprocess (which no-ops until a real frame exists and never feeds "
-                   "exporters), this lets a control script that only writes tables (tableSet()) "
-                   "render table-driven virtual datasets from the very first loop(), and it also "
-                   "fans the synthesized frame out to the enabled export sinks "
-                   "(CSV/MDF4/session/MQTT/API). SDK: dashboardTick()."),
+    QStringLiteral("Schedule a dashboard render from the current table/dataset state, "
+                   "synthesizing the project frame structure if no device frame has arrived yet. "
+                   "The republish runs in the next UI-timer window and coalesces with any other "
+                   "pending ticks, so calling this per received frame is safe at any rate. Unlike "
+                   "dashboard.reprocess (synchronous, no-op until a real frame exists, never "
+                   "feeds exporters), this lets a control script that only writes tables "
+                   "(tableSet()) render table-driven virtual datasets from the very first "
+                   "loop(), and the coalesced republish also fans out to the enabled export "
+                   "sinks (CSV/MDF4/session/MQTT/API). Returns scheduled, not published: read "
+                   "results after the next window or use dashboard.reprocess for synchronous "
+                   "read-back. SDK: dashboardTick()."),
     emptySchema,
     &tick);
 }
@@ -873,9 +877,9 @@ API::CommandResponse API::Handlers::DashboardHandler::reprocess(const QString& i
 }
 
 /**
- * @brief Forces a dashboard render from the current state, seeding the frame structure if no
- *        device frame has arrived; published:false means ProjectFile mode / a project is
- *        missing, or no dataset value changed since the last tick.
+ * @brief Schedules a coalesced dashboard tick, seeding the frame structure if no device frame
+ *        has arrived; scheduled:false means ProjectFile mode / a loaded project is missing. The
+ *        republish itself runs on the next UI-timer window (spec 0023).
  */
 API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
                                                            const QJsonObject& params)
@@ -883,21 +887,19 @@ API::CommandResponse API::Handlers::DashboardHandler::tick(const QString& id,
   Q_UNUSED(params)
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
-  static auto& dashboard    = UI::Dashboard::instance();
-  const bool produced       = frameBuilder.dashboardTick();
-  const bool published      = produced && dashboard.streamAvailable();
+  const bool scheduled      = frameBuilder.dashboardTick();
 
   QJsonObject result;
-  result[QStringLiteral("published")] = published;
-  if (produced && !published)
+  result[QStringLiteral("scheduled")] = scheduled;
+  if (scheduled)
     result[QStringLiteral("_summary")] = QStringLiteral(
-      "Frame produced but not rendered: the dashboard drops frames while no stream is open "
-      "(device connection or CSV/MDF4/session player). Export sinks, if enabled, still "
-      "received the frame.");
-  else if (!published)
-    result[QStringLiteral("_summary")] = QStringLiteral(
-      "Nothing to render: requires ProjectFile mode and a loaded project, and at least one "
-      "dataset value must have changed since the last tick.");
+      "Tick scheduled: the republish runs in the next UI-timer window, coalesced with any "
+      "other pending ticks, and feeds the dashboard plus the enabled export sinks. Sources "
+      "whose values did not change since their last publish are skipped. Use "
+      "dashboard.reprocess for a synchronous, dashboard-only refresh.");
+  else
+    result[QStringLiteral("_summary")] =
+      QStringLiteral("Nothing scheduled: requires ProjectFile mode and a loaded project.");
 
   return CommandResponse::makeSuccess(id, result);
 }
