@@ -2213,103 +2213,119 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>CSV::Player</name>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="223"/>
+        <location filename="../../src/CSV/Player.cpp" line="382"/>
         <source>Select CSV file</source>
         <translation>CSV dosyası seç</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="225"/>
+        <location filename="../../src/CSV/Player.cpp" line="384"/>
         <source>CSV files (*.csv)</source>
         <translation>CSV dosyaları (*.CSV)</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="391"/>
+        <location filename="../../src/CSV/Player.cpp" line="507"/>
         <source>Device Connection Active</source>
         <translation>Cihaz Bağlantısı Etkin</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="392"/>
+        <location filename="../../src/CSV/Player.cpp" line="508"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>Bu özelliği kullanmak için cihaz bağlantısını kesmelisiniz. Devam etmek istiyor musunuz?</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="406"/>
+        <location filename="../../src/CSV/Player.cpp" line="522"/>
+        <location filename="../../src/CSV/Player.cpp" line="540"/>
         <source>Check file permissions and location</source>
         <translation>Dosya izinlerini ve konumunu kontrol edin</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="438"/>
+        <location filename="../../src/CSV/Player.cpp" line="529"/>
+        <location filename="../../src/CSV/Player.cpp" line="611"/>
+        <location filename="../../src/CSV/Player.cpp" line="786"/>
         <source>Insufficient Data in CSV File</source>
         <translation>CSV Dosyasında Yetersiz Veri</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="406"/>
+        <location filename="../../src/CSV/Player.cpp" line="522"/>
+        <location filename="../../src/CSV/Player.cpp" line="540"/>
         <source>Cannot read CSV file</source>
         <translation>CSV dosyası okunamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="439"/>
+        <location filename="../../src/CSV/Player.cpp" line="530"/>
+        <location filename="../../src/CSV/Player.cpp" line="612"/>
+        <location filename="../../src/CSV/Player.cpp" line="787"/>
         <source>The CSV file must contain at least one data row to proceed. Check the file and try again.</source>
         <translation>CSV dosyası devam etmek için en az bir veri satırı içermelidir. Dosyayı kontrol edin ve tekrar deneyin.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="817"/>
+        <location filename="../../src/CSV/Player.cpp" line="780"/>
+        <source>CSV Row Limit Reached</source>
+        <translation>CSV Satır Sınırına Ulaşıldı</translation>
+    </message>
+    <message>
+        <location filename="../../src/CSV/Player.cpp" line="781"/>
+        <source>Playback is limited to %L1 rows; the rest of the file was not indexed.</source>
+        <translation>Oynatma %L1 satırla sınırlıdır; dosyanın geri kalanı dizinlenmedi.</translation>
+    </message>
+    <message>
+        <location filename="../../src/CSV/Player.cpp" line="1228"/>
         <source>Invalid CSV</source>
         <translation>Geçersiz CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="818"/>
+        <location filename="../../src/CSV/Player.cpp" line="1229"/>
         <source>The CSV file does not contain any data or headers.</source>
         <translation>CSV dosyası herhangi bir veri veya başlık içermiyor.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="827"/>
+        <location filename="../../src/CSV/Player.cpp" line="1236"/>
         <source>Select a date/time column</source>
         <translation>Tarih/saat sütunu seçin</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="827"/>
-        <location filename="../../src/CSV/Player.cpp" line="839"/>
+        <location filename="../../src/CSV/Player.cpp" line="1236"/>
+        <location filename="../../src/CSV/Player.cpp" line="1248"/>
         <source>Set interval manually</source>
         <translation>Aralığı manuel olarak ayarla</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="829"/>
+        <location filename="../../src/CSV/Player.cpp" line="1238"/>
         <source>CSV Date/Time Selection</source>
         <translation>CSV Tarih/saat Seçimi</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="830"/>
+        <location filename="../../src/CSV/Player.cpp" line="1239"/>
         <source>Choose how to handle the date/time data:</source>
         <translation>Tarih/saat verisinin nasıl işleneceğini seçin:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="842"/>
+        <location filename="../../src/CSV/Player.cpp" line="1251"/>
         <source>Set Interval</source>
         <translation>Aralığı Ayarla</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="843"/>
+        <location filename="../../src/CSV/Player.cpp" line="1252"/>
         <source>Please enter the interval between rows in milliseconds:</source>
         <translation>Lütfen satırlar arasındaki aralığı milisaniye cinsinden girin:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="859"/>
+        <location filename="../../src/CSV/Player.cpp" line="1269"/>
         <source>Select Date/Time Column</source>
         <translation>Tarih/saat Sütunu Seç</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="860"/>
+        <location filename="../../src/CSV/Player.cpp" line="1270"/>
         <source>Please select the column that contains the date/time data:</source>
         <translation>Lütfen tarih/saat verilerini içeren sütunu seçin:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="870"/>
+        <location filename="../../src/CSV/Player.cpp" line="1280"/>
         <source>Invalid Selection</source>
         <translation>Geçersiz Seçim</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="870"/>
+        <location filename="../../src/CSV/Player.cpp" line="1280"/>
         <source>The selected column is not valid.</source>
         <translation>Seçilen sütun geçerli değil.</translation>
     </message>
@@ -3582,54 +3598,54 @@ Bunu yalnızca güvenilir ağlarda etkinleştirin. Güvenilmeyen istemciler canl
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1810"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1925"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2040"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2155"/>
         <source>Channel %1</source>
         <translation>Kanal %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1936"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2166"/>
         <source>Audio Input</source>
         <translation>Ses Girişi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1819"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1941"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2049"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2171"/>
         <source>Quick Plot</source>
         <translation>Hızlı Grafik</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1517"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1747"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>JavaScript dönüşümü bütçeyi aştı</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1518"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1748"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>Bir veri kümesi dönüşümü %1 ms'den uzun sürdü; çerçevedeki kalan veri kümeleri bir sonraki çerçeveye kadar ham değerlere döndü. Dönüşüm kodunu profilleyin veya basitleştirin.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="264"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="269"/>
         <source>Frame pool exhausted</source>
         <translation>Çerçeve havuzu tükendi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="266"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="271"/>
         <source>A downstream consumer (dashboard, CSV/MDF4 export, session DB, or API subscriber) is not draining frames fast enough. Serial Studio is falling back to per-frame allocations until the backlog clears. Disable a heavy consumer or reduce the data rate.</source>
         <translation>Bir alt tüketici (gösterge paneli, CSV/MDF4 dışa aktarımı, oturum veritabanı veya API abonesi) çerçeveleri yeterince hızlı boşaltmıyor. Serial Studio, birikmiş işleri temizleyene kadar çerçeve başına tahsise geri dönüyor. Yoğun bir tüketiciyi devre dışı bırakın veya veri hızını azaltın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2000"/>
         <source>Device A</source>
         <translation>Cihaz A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1826"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2056"/>
         <source>Quick Plot Data</source>
         <translation>Hızlı Grafik Verisi</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1838"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2068"/>
         <source>Multiple Plots</source>
         <translation>Çoklu Grafikler</translation>
     </message>
@@ -11719,62 +11735,68 @@ Bu koltuğu başka bir cihazda yeniden kullanmak için cihaz kimliğinizi veya .
 <context>
     <name>MDF4::Player</name>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="421"/>
+        <location filename="../../src/MDF4/Player.cpp" line="245"/>
         <source>Select MDF4 file</source>
         <translation>MDF4 dosyası seç</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="423"/>
+        <location filename="../../src/MDF4/Player.cpp" line="247"/>
         <source>MDF4 files (*.mf4 *.dat)</source>
         <translation>MDF4 dosyaları (*.mf4 *.dat)</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="453"/>
+        <location filename="../../src/MDF4/Player.cpp" line="279"/>
         <source>MDF4 Playback is a Pro feature.</source>
         <translation>MDF4 Oynatma bir Pro özelliğidir.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="454"/>
+        <location filename="../../src/MDF4/Player.cpp" line="280"/>
         <source>This feature requires a license. Please purchase one to enable MDF4 playback.</source>
         <translation>Bu özellik lisans gerektirir. MDF4 oynatmayı etkinleştirmek için lütfen bir lisans satın alın.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="461"/>
+        <location filename="../../src/MDF4/Player.cpp" line="287"/>
         <source>Disconnect from device?</source>
         <translation>Cihaz bağlantısı kesilsin mi?</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="462"/>
+        <location filename="../../src/MDF4/Player.cpp" line="288"/>
         <source>You must disconnect from the current device before opening a MDF4 file.</source>
         <translation>Bir MDF4 dosyası açmadan önce mevcut cihazla bağlantıyı kesmelisiniz.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="478"/>
+        <location filename="../../src/MDF4/Player.cpp" line="483"/>
+        <source>MDF4 data may be incomplete</source>
+        <translation>MDF4 verileri eksik olabilir</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/Player.cpp" line="484"/>
+        <source>Part of the file's data section could not be read; the recording may be truncated.</source>
+        <translation>Dosyanın veri bölümünün bir kısmı okunamadı; kayıt kesik olabilir.</translation>
+    </message>
+    <message>
         <source>Cannot open MDF4 file</source>
-        <translation>MDF4 dosyası açılamıyor</translation>
+        <translation type="vanished">MDF4 dosyası açılamıyor</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="479"/>
         <source>The file may be corrupted or in an unsupported format.</source>
-        <translation>Dosya bozuk veya desteklenmeyen bir biçimde olabilir.</translation>
+        <translation type="vanished">Dosya bozuk veya desteklenmeyen bir biçimde olabilir.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="486"/>
         <source>Invalid MDF4 file</source>
-        <translation>Geçersiz MDF4 dosyası</translation>
+        <translation type="vanished">Geçersiz MDF4 dosyası</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="487"/>
         <source>Failed to read file structure. The file may be corrupted.</source>
-        <translation>Dosya yapısı okunamadı. Dosya bozuk olabilir.</translation>
+        <translation type="vanished">Dosya yapısı okunamadı. Dosya bozuk olabilir.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="502"/>
+        <location filename="../../src/MDF4/Player.cpp" line="457"/>
         <source>No data in file</source>
         <translation>Dosyada veri yok</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="503"/>
+        <location filename="../../src/MDF4/Player.cpp" line="458"/>
         <source>The MDF4 file contains no measurement data.</source>
         <translation>MDF4 dosyası ölçüm verisi içermiyor.</translation>
     </message>
@@ -16253,12 +16275,12 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <translation>Groq API anahtarı ayarlanmamış. Bir tane eklemek için Anahtarları Yönet'i açın.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1235"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1465"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>Frame ayrıştırıcı CPU zamanının %1%'sinden fazlasını kullanıyor.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1237"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1467"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>Serial Studio uygulamanın yanıt vermesini sağlamak için kareleri atıyor. İş yükünü azaltmak için lütfen frame ayrıştırıcı betiğini basitleştirin veya optimize edin.</translation>
     </message>
@@ -16467,6 +16489,26 @@ Ayırıcı parametresine artık gerek yok.</translation>
         <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>Özel…</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="500"/>
+        <source>Cannot open MDF4 file</source>
+        <translation>MDF4 dosyası açılamıyor</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="501"/>
+        <source>The file may be corrupted or in an unsupported format.</source>
+        <translation>Dosya bozuk veya desteklenmeyen bir biçimde olabilir.</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="506"/>
+        <source>Invalid MDF4 file</source>
+        <translation>Geçersiz MDF4 dosyası</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="507"/>
+        <source>Failed to read file structure. The file may be corrupted.</source>
+        <translation>Dosya yapısı okunamadı. Dosya bozuk olabilir.</translation>
     </message>
 </context>
 <context>
@@ -19431,17 +19473,17 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="241"/>
         <source>Clear</source>
         <translation>Temizle</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Find</source>
         <translation>Bul</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="284"/>
         <source>Collapse</source>
         <translation>Daralt</translation>
     </message>
@@ -19454,148 +19496,148 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">Konsol çıktısını bir dosyaya kaydet</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="387"/>
         <source>Settings</source>
         <translation>Ayarlar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="390"/>
         <source>Console settings</source>
         <translation>Konsol ayarları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="563"/>
         <source>Find in console</source>
         <translation>Konsolda Bul</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
         <source>%1 of %2</source>
         <translation>%2 içinde %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>No results</source>
         <translation>Sonuç bulunamadı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="613"/>
         <source>Match case</source>
         <translation>Büyük/küçük harf duyarlı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="628"/>
         <source>Previous match</source>
         <translation>Önceki eşleşme</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Next match</source>
         <translation>Sonraki eşleşme</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="649"/>
         <source>Close search</source>
         <translation>Aramayı kapat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="681"/>
         <source>Send a file to the connected device</source>
         <translation>Bağlı cihaza dosya gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="261"/>
         <source>Search console output</source>
         <translation>Konsol çıktısında ara</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="230"/>
         <source>Utilities</source>
         <translation>Yardımcı Araçlar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="289"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Tekrarlanan satırları tek girdi olarak daralt</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="314"/>
         <source>Resume</source>
         <translation>Devam Et</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="314"/>
         <source>Pause</source>
         <translation>Duraklat</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="319"/>
         <source>Resume console updates</source>
         <translation>Konsol güncellemelerini devam ettir</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>Konsol görüntüsünü dondur (veri kaydı devam eder)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="339"/>
         <source>Format</source>
         <translation>Biçimlendir</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="347"/>
         <source>Text</source>
         <translation>Metin</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="351"/>
         <source>Plain text display mode</source>
         <translation>Düz metin görüntüleme modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="829"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="362"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="828"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="366"/>
         <source>Hex display mode</source>
         <translation>Hex görüntüleme modu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="466"/>
         <source>Scrollback Lines</source>
         <translation>Kaydırma Satırları</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="722"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="721"/>
         <source>Send Data to Device</source>
         <translation>Cihaza Veri Gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="879"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="878"/>
         <source>Send data to the device</source>
         <translation>Cihaza veri gönder</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="421"/>
         <source>Show Timestamp</source>
         <translation>Zaman Damgasını Göster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="428"/>
         <source>Echo</source>
         <translation>Yankı</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="444"/>
         <source>Emulate VT-100</source>
         <translation>VT-100 Emülasyonu</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="456"/>
         <source>ANSI Colors</source>
         <translation>ANSI Renkleri</translation>
     </message>
@@ -19604,7 +19646,7 @@ Orijinal dosya taşınsa veya silinse bile kısayolun çalışmaya devam etmesi 
         <translation type="vanished">Görüntüleme: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="245"/>
         <source>Clear console output</source>
         <translation>Konsol çıktısını temizle</translation>
     </message>

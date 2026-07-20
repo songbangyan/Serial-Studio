@@ -22,24 +22,17 @@
 #include "Player.h"
 
 #include <algorithm>
-#include <map>
-#include <mdf/ichannel.h>
-#include <mdf/ichannelgroup.h>
-#include <mdf/idatagroup.h>
-#include <mdf/isampleobserver.h>
-#include <mdf/mdffile.h>
-#include <mdf/mdfreader.h>
+#include <cmath>
+#include <limits>
 #include <QApplication>
 #include <QDeadlineTimer>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QTimer>
-#include <QtMath>
 #include <unordered_map>
 
 #include "AppState.h"
-#include "DataModel/FrameBuilder.h"
 #include "DataModel/ProjectModel.h"
 #include "DataModel/Scripting/FrameParserPipeline.h"
 #include "IO/ConnectionManager.h"
@@ -54,201 +47,6 @@
 static constexpr int kMaxSeekWindowRows = 262144;
 
 //--------------------------------------------------------------------------------------------------
-// Helper observer classes
-//--------------------------------------------------------------------------------------------------
-
-/**
- * @brief Returns true when the channel stores text samples (string-typed MDF4 channel).
- */
-static bool isStringChannel(const mdf::IChannel* channel)
-{
-  if (!channel)
-    return false;
-
-  const auto type = channel->DataType();
-  return type == mdf::ChannelDataType::StringAscii || type == mdf::ChannelDataType::StringUTF8
-      || type == mdf::ChannelDataType::StringUTF16Le || type == mdf::ChannelDataType::StringUTF16Be;
-}
-
-/**
- * @brief Observer class that caches channel values during MDF4 data reading
- */
-class SampleCacheObserver : public mdf::ISampleObserver {
-public:
-  /**
-   * @brief Constructs the observer and indexes per-group channels for fast lookup.
-   */
-  SampleCacheObserver(const mdf::IDataGroup& dataGroup,
-                      std::map<uint64_t, std::vector<double>>& cache,
-                      std::map<uint64_t, std::vector<QString>>& stringCache,
-                      std::map<uint64_t, double>& timestampCache,
-                      std::map<uint64_t, std::vector<bool>>& activeChannels,
-                      const std::vector<mdf::IChannel*>& allChannels,
-                      const std::vector<mdf::IChannel*>& groupChannels,
-                      mdf::IChannel* groupTimeChannel,
-                      uint64_t recordId)
-    : mdf::ISampleObserver(dataGroup)
-    , m_cache(cache)
-    , m_stringCache(stringCache)
-    , m_timestampCache(timestampCache)
-    , m_activeChannels(activeChannels)
-    , m_allChannels(allChannels)
-    , m_groupChannels(groupChannels)
-    , m_groupTimeChannel(groupTimeChannel)
-    , m_recordId(recordId)
-    , m_hasStringChannels(false)
-  {
-    for (size_t i = 0; i < m_allChannels.size(); ++i) {
-      for (auto* ch : m_groupChannels) {
-        if (m_allChannels[i] == ch) {
-          m_channelIndexMap[ch] = i;
-          break;
-        }
-      }
-    }
-
-    for (auto* ch : m_groupChannels)
-      m_hasStringChannels = m_hasStringChannels || isStringChannel(ch);
-  }
-
-  /**
-   * @brief Caches per-channel sample values keyed by timestamp (or sample index as fallback).
-   */
-  bool OnSample(uint64_t sample, uint64_t record_id, const std::vector<uint8_t>& record) override
-  {
-    if (record_id != m_recordId)
-      return true;
-
-    uint64_t cacheKey = sample;
-    if (m_groupTimeChannel) {
-      double ts          = 0.0;
-      const bool success = GetEngValue(*m_groupTimeChannel, record_id, record, ts);
-      if (!success)
-        GetChannelValue(*m_groupTimeChannel, record_id, record, ts);
-
-      cacheKey                   = static_cast<uint64_t>(ts * 1'000'000'000.0);
-      m_timestampCache[cacheKey] = ts;
-    }
-
-    auto cacheIt = m_cache.find(cacheKey);
-    if (cacheIt == m_cache.end())
-      cacheIt = m_cache.emplace(cacheKey, std::vector<double>(m_allChannels.size(), 0.0)).first;
-
-    auto activeIt = m_activeChannels.find(cacheKey);
-    if (activeIt == m_activeChannels.end())
-      activeIt =
-        m_activeChannels.emplace(cacheKey, std::vector<bool>(m_allChannels.size(), false)).first;
-
-    auto& values = cacheIt->second;
-    auto& active = activeIt->second;
-
-    std::vector<QString>* strings = nullptr;
-    if (m_hasStringChannels) {
-      auto strIt = m_stringCache.find(cacheKey);
-      if (strIt == m_stringCache.end())
-        strIt = m_stringCache.emplace(cacheKey, std::vector<QString>(m_allChannels.size())).first;
-
-      strings = &strIt->second;
-    }
-
-    for (auto* channel : m_groupChannels) {
-      if (!channel)
-        continue;
-
-      auto it = m_channelIndexMap.find(channel);
-      if (it == m_channelIndexMap.end())
-        continue;
-
-      if (strings && isStringChannel(channel)) {
-        std::string text;
-        const bool success = GetEngValue(*channel, record_id, record, text);
-        if (!success)
-          (void)GetChannelValue(*channel, record_id, record, text);
-
-        (*strings)[it->second] = QString::fromStdString(text);
-        active[it->second]     = true;
-        continue;
-      }
-
-      double value       = 0.0;
-      const bool success = GetEngValue(*channel, record_id, record, value);
-
-      if (!success) {
-        const bool channelSuccess = GetChannelValue(*channel, record_id, record, value);
-        if (!channelSuccess)
-          value = 0.0;
-      }
-
-      values[it->second] = value;
-      active[it->second] = true;
-    }
-
-    return true;
-  }
-
-private:
-  std::map<uint64_t, std::vector<double>>& m_cache;
-  std::map<uint64_t, std::vector<QString>>& m_stringCache;
-  std::map<uint64_t, double>& m_timestampCache;
-  std::map<uint64_t, std::vector<bool>>& m_activeChannels;
-  const std::vector<mdf::IChannel*>& m_allChannels;
-  const std::vector<mdf::IChannel*>& m_groupChannels;
-  mdf::IChannel* m_groupTimeChannel;
-  uint64_t m_recordId;
-  std::map<mdf::IChannel*, size_t> m_channelIndexMap;
-  bool m_hasStringChannels;
-};
-
-/**
- * @brief Reads timestamp values from a single master time channel
- */
-class LegacyTimestampObserver : public mdf::ISampleObserver {
-public:
-  /**
-   * @brief Constructs the observer bound to a master time channel and record ID.
-   */
-  LegacyTimestampObserver(const mdf::IDataGroup& dataGroup,
-                          std::map<uint64_t, double>& timestampCache,
-                          mdf::IChannel* masterTimeChannel,
-                          uint64_t recordId)
-    : mdf::ISampleObserver(dataGroup)
-    , m_timestampCache(timestampCache)
-    , m_masterTimeChannel(masterTimeChannel)
-    , m_recordId(recordId)
-  {}
-
-  /**
-   * @brief Records the master-channel timestamp for the given sample index.
-   */
-  bool OnSample(uint64_t sample, uint64_t record_id, const std::vector<uint8_t>& record) override
-  {
-    if (record_id != m_recordId)
-      return true;
-
-    if (!m_masterTimeChannel || m_timestampCache.find(sample) != m_timestampCache.end())
-      return true;
-
-    double timestamp   = 0.0;
-    const bool success = GetEngValue(*m_masterTimeChannel, record_id, record, timestamp);
-
-    if (!success) {
-      const bool channelSuccess =
-        GetChannelValue(*m_masterTimeChannel, record_id, record, timestamp);
-      if (!channelSuccess)
-        timestamp = 0.0;
-    }
-
-    m_timestampCache[sample] = timestamp;
-    return true;
-  }
-
-private:
-  std::map<uint64_t, double>& m_timestampCache;
-  mdf::IChannel* m_masterTimeChannel;
-  uint64_t m_recordId;
-};
-
-//--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
 //--------------------------------------------------------------------------------------------------
 
@@ -258,15 +56,20 @@ private:
 MDF4::Player::Player()
   : m_framePos(0)
   , m_playing(false)
+  , m_open(false)
+  , m_decoding(false)
   , m_multiSource(false)
-  , m_isSerialStudioFile(false)
+  , m_decodeProgress(0.0)
   , m_timestamp("")
   , m_startTimestamp(0.0)
   , m_steadyBaseRowSeconds(0.0)
-  , m_masterTimeChannel(nullptr)
-  , m_reader(nullptr)
+  , m_playbackEpoch(0)
+  , m_decodeGeneration(0)
+  , m_loaderThread(nullptr)
+  , m_loader(nullptr)
 {
   qApp->installEventFilter(this);
+  qRegisterMetaType<MDF4::PlayerDecodePayloadPtr>();
   connect(this, &MDF4::Player::playerStateChanged, this, &MDF4::Player::updateData);
 
   constexpr int kSeekTickMs   = 33;
@@ -280,9 +83,12 @@ MDF4::Player::Player()
 }
 
 /**
- * @brief Destructor - Cleans up resources
+ * @brief Destructor - joins any in-flight decode so the worker never outlives the player.
  */
-MDF4::Player::~Player() {}
+MDF4::Player::~Player()
+{
+  stopDecoding();
+}
 
 /**
  * @brief Returns the singleton instance of the MDF4 player
@@ -298,11 +104,11 @@ MDF4::Player& MDF4::Player::instance()
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Checks if an MDF4 file is currently open
+ * @brief Checks if an MDF4 file is currently open (decoded payload adopted).
  */
 bool MDF4::Player::isOpen() const
 {
-  return m_reader != nullptr && m_reader->IsOk();
+  return m_open;
 }
 
 /**
@@ -314,11 +120,27 @@ bool MDF4::Player::isPlaying() const
 }
 
 /**
+ * @brief Returns whether the background decode is still running.
+ */
+bool MDF4::Player::indexing() const
+{
+  return m_decoding;
+}
+
+/**
+ * @brief Returns background-decode progress in the range 0.0 to 1.0.
+ */
+double MDF4::Player::indexProgress() const
+{
+  return std::clamp(m_decodeProgress, 0.0, 1.0);
+}
+
+/**
  * @brief Returns the total number of frames in the file
  */
 int MDF4::Player::frameCount() const
 {
-  return static_cast<int>(m_frameIndex.size());
+  return static_cast<int>(m_timestamps.size());
 }
 
 /**
@@ -376,7 +198,8 @@ void MDF4::Player::play()
   if (m_framePos >= frameCount() - 1)
     m_framePos = 0;
 
-  m_startTimestamp = m_frameIndex[m_framePos].timestamp;
+  ++m_playbackEpoch;
+  m_startTimestamp = m_timestamps[m_framePos];
   m_elapsedTimer.start();
 
   m_seekTimer.stop();
@@ -392,6 +215,7 @@ void MDF4::Player::play()
  */
 void MDF4::Player::pause()
 {
+  ++m_playbackEpoch;
   m_playing = false;
   Q_EMIT playerStateChanged();
 }
@@ -436,7 +260,9 @@ void MDF4::Player::openFile()
 }
 
 /**
- * @brief Opens an MDF4 file from the specified path
+ * @brief Opens an MDF4 file from the specified path: after the license and connection gates,
+ *        the whole decode runs on the background worker (spec 0022) and the player becomes
+ *        open when the columnar payload lands.
  */
 void MDF4::Player::openFile(const QString& filePath)
 {
@@ -471,74 +297,39 @@ void MDF4::Player::openFile(const QString& filePath)
   }
 
   closeFile();
-
-  m_reader = std::make_unique<mdf::MdfReader>(filePath.toStdString());
-
-  if (!m_reader->IsOk()) {
-    Misc::Utilities::showMessageBox(tr("Cannot open MDF4 file"),
-                                    tr("The file may be corrupted or in an unsupported format."),
-                                    QMessageBox::Critical);
-    closeFile();
-    return;
-  }
-
-  if (!m_reader->ReadEverythingButData()) {
-    Misc::Utilities::showMessageBox(tr("Invalid MDF4 file"),
-                                    tr("Failed to read file structure. The file may be corrupted."),
-                                    QMessageBox::Critical);
-    closeFile();
-    return;
-  }
-
-  auto* header = m_reader->GetHeader();
-  if (header) {
-    QString author       = QString::fromStdString(header->Author());
-    m_isSerialStudioFile = (author == "Serial Studio");
-  }
-
-  buildFrameIndex();
-
-  if (m_frameIndex.empty()) {
-    Misc::Utilities::showMessageBox(tr("No data in file"),
-                                    tr("The MDF4 file contains no measurement data."),
-                                    QMessageBox::Critical);
-    closeFile();
-    return;
-  }
-
-  m_filePath = filePath;
-  m_framePos = 0;
-
-  sendHeaderFrame();
-
-  Q_EMIT openChanged();
-  Q_EMIT playerStateChanged();
+  startDecoding(filePath);
 }
 
 /**
- * @brief Closes the currently open file and releases resources
+ * @brief Closes the currently open file (or cancels an in-flight decode) and releases
+ *        resources.
  */
 void MDF4::Player::closeFile()
 {
-  if (!isOpen())
+  const bool was_open     = m_open;
+  const bool was_decoding = (m_loaderThread != nullptr);
+  if (!was_open && !was_decoding)
     return;
 
+  m_playing  = false;
   m_framePos = 0;
   m_seekTimer.stop();
   m_settleTimer.stop();
-  m_reader.reset();
+
+  ++m_decodeGeneration;
+  stopDecoding();
+
+  m_open = false;
   m_filePath.clear();
-  m_channels.clear();
   m_timestamp.clear();
-  m_frameIndex.clear();
-  m_sampleCache.clear();
-  m_stringCache.clear();
-  m_timestampCache.clear();
-  m_activeChannels.clear();
+  m_channelNames.clear();
   m_channelIsString.clear();
-  m_multiSource        = false;
-  m_isSerialStudioFile = false;
-  m_masterTimeChannel  = nullptr;
+  m_timestamps.clear();
+  m_numeric.clear();
+  m_text.clear();
+  m_active.clear();
+  m_multiSource    = false;
+  m_decodeProgress = 0.0;
   m_seekColumnByKey.clear();
   m_sourceChannelsByIndex.clear();
 
@@ -546,8 +337,152 @@ void MDF4::Player::closeFile()
   frameBuilder.registerQuickPlotHeaders(QStringList());
   frameBuilder.setReplayColumnMap({});
 
+  if (was_open) {
+    Q_EMIT openChanged();
+    Q_EMIT playerStateChanged();
+  }
+
+  Q_EMIT indexingChanged();
+}
+
+/**
+ * @brief Starts the background decode of @p filePath on a fresh worker thread.
+ */
+void MDF4::Player::startDecoding(const QString& filePath)
+{
+  Q_ASSERT(!filePath.isEmpty());
+  Q_ASSERT(m_loaderThread == nullptr);
+
+  ++m_decodeGeneration;
+  m_loaderThread = new QThread(this);
+  m_loaderThread->setObjectName(QStringLiteral("MDF4::PlayerLoader"));
+  m_loader = new PlayerLoaderWorker();
+  m_loader->moveToThread(m_loaderThread);
+
+  connect(m_loader,
+          &PlayerLoaderWorker::progressUpdate,
+          this,
+          &MDF4::Player::onDecodeProgress,
+          Qt::QueuedConnection);
+  connect(m_loader,
+          &PlayerLoaderWorker::finished,
+          this,
+          &MDF4::Player::onDecodeFinished,
+          Qt::QueuedConnection);
+
+  m_loaderThread->start();
+
+  m_decoding       = true;
+  m_decodeProgress = 0.0;
+
+  auto* loader             = m_loader;
+  const quint64 generation = m_decodeGeneration;
+  QMetaObject::invokeMethod(
+    loader,
+    [loader, filePath, generation]() { loader->decodeFile(filePath, generation); },
+    Qt::QueuedConnection);
+
+  Q_EMIT indexingChanged();
+}
+
+/**
+ * @brief Cancels and joins the decode thread; leaks it on a join timeout rather than
+ *        destroying a running thread.
+ */
+void MDF4::Player::stopDecoding()
+{
+  if (!m_loaderThread)
+    return;
+
+  constexpr int kJoinTimeoutMs = 5000;
+
+  if (m_loader)
+    m_loader->requestCancel();
+
+  m_loaderThread->quit();
+  if (m_loaderThread->wait(kJoinTimeoutMs)) {
+    delete m_loader;
+    delete m_loaderThread;
+  } else {
+    qWarning() << "[MDF4::Player] Decode thread did not stop in time; detaching it.";
+    disconnect(m_loader, nullptr, this, nullptr);
+    m_loaderThread->setParent(nullptr);
+    connect(m_loaderThread, &QThread::finished, m_loader, &QObject::deleteLater);
+    connect(m_loaderThread, &QThread::finished, m_loaderThread, &QObject::deleteLater);
+  }
+
+  m_loader       = nullptr;
+  m_loaderThread = nullptr;
+  m_decoding     = false;
+}
+
+/**
+ * @brief Refreshes the decode-progress property from a worker update.
+ */
+void MDF4::Player::onDecodeProgress(double fraction, quint64 generation)
+{
+  if (generation != m_decodeGeneration)
+    return;
+
+  m_decodeProgress = fraction;
+  Q_EMIT indexingChanged();
+}
+
+/**
+ * @brief Adopts a finished decode payload: on success the player opens with the columnar
+ *        data; errors surface the worker's message; stale/cancelled payloads are dropped.
+ */
+void MDF4::Player::onDecodeFinished(const MDF4::PlayerDecodePayloadPtr& payload)
+{
+  Q_ASSERT(payload != nullptr);
+
+  if (payload->generation != m_decodeGeneration)
+    return;
+
+  stopDecoding();
+  m_decodeProgress = 1.0;
+
+  if (payload->cancelled) {
+    Q_EMIT indexingChanged();
+    return;
+  }
+
+  if (!payload->ok) {
+    Misc::Utilities::showMessageBox(payload->errorTitle, payload->errorBody, QMessageBox::Critical);
+    Q_EMIT indexingChanged();
+    return;
+  }
+
+  if (payload->timestamps.empty() || payload->channelNames.isEmpty()) {
+    Misc::Utilities::showMessageBox(tr("No data in file"),
+                                    tr("The MDF4 file contains no measurement data."),
+                                    QMessageBox::Critical);
+    Q_EMIT indexingChanged();
+    return;
+  }
+
+  m_filePath        = payload->filePath;
+  m_channelNames    = std::move(payload->channelNames);
+  m_channelIsString = std::move(payload->channelIsString);
+  m_timestamps      = std::move(payload->timestamps);
+  m_numeric         = std::move(payload->numeric);
+  m_text            = std::move(payload->text);
+  m_active          = std::move(payload->active);
+
+  m_open     = true;
+  m_framePos = 0;
+
+  sendHeaderFrame();
+
   Q_EMIT openChanged();
   Q_EMIT playerStateChanged();
+  Q_EMIT indexingChanged();
+
+  if (payload->partialData) [[unlikely]]
+    Misc::Utilities::showMessageBox(
+      tr("MDF4 data may be incomplete"),
+      tr("Part of the file's data section could not be read; the recording may be truncated."),
+      QMessageBox::Warning);
 }
 
 /**
@@ -624,8 +559,8 @@ void MDF4::Player::setProgress(const double progress)
     return;
 
   m_framePos = newFramePos;
-  if (m_framePos < static_cast<int>(m_frameIndex.size())) {
-    m_timestamp = formatTimestamp(m_frameIndex[m_framePos].timestamp);
+  if (m_framePos < frameCount()) {
+    m_timestamp = formatTimestamp(m_timestamps[m_framePos]);
     Q_EMIT timestampChanged();
   }
 
@@ -643,18 +578,18 @@ void MDF4::Player::setProgress(const double progress)
 int MDF4::Player::seekWindowStartRow(int target) const
 {
   Q_ASSERT(target >= 0);
-  Q_ASSERT(target < static_cast<int>(m_frameIndex.size()));
+  Q_ASSERT(target < frameCount());
 
   static auto& dashboard = UI::Dashboard::instance();
   const double range     = dashboard.plotTimeRange();
-  const double targetSec = m_frameIndex[static_cast<size_t>(target)].timestamp;
+  const double targetSec = m_timestamps[static_cast<size_t>(target)];
 
   const int minStart = qMax(0, target - qMax(1, dashboard.points()) + 1);
   const int capStart = qMax(0, target - kMaxSeekWindowRows + 1);
 
   int start = minStart;
   for (int i = 0; i < kMaxSeekWindowRows && start > capStart; ++i) {
-    const double sec = m_frameIndex[static_cast<size_t>(start - 1)].timestamp;
+    const double sec = m_timestamps[static_cast<size_t>(start - 1)];
     if (targetSec - sec > range)
       break;
 
@@ -728,8 +663,29 @@ void MDF4::Player::performSeekSettle()
 }
 
 /**
+ * @brief Forward-fills NaN gaps in a seek series and backfills the leading run from the
+ *        first stored value (sparse channel groups leave frames inactive; mirrors the
+ *        Sessions player's fillSeekGaps so absent samples hold instead of dropping to 0).
+ */
+static void fillSeekGaps(QVector<double>& values)
+{
+  int firstSet = -1;
+  const int n  = values.size();
+  for (int k = 0; k < n; ++k)
+    if (std::isnan(values[k]))
+      values[k] = (k > 0) ? values[k - 1] : values[k];
+    else if (firstSet < 0)
+      firstSet = k;
+
+  const double seed = (firstSet >= 0) ? values[firstSet] : 0.0;
+  for (int k = 0; k < n && std::isnan(values[k]); ++k)
+    values[k] = seed;
+}
+
+/**
  * @brief Fills the seek-window times and per-(source, uid) numeric series straight from the
- *        sample cache (already doubles, no text parse).
+ *        columnar channel vectors (already doubles, no text parse); inactive frames become
+ *        NaN gaps that forward-fill, matching sample-and-hold replay semantics.
  */
 void MDF4::Player::buildSeekWindow(int startRow,
                                    int endRow,
@@ -743,7 +699,7 @@ void MDF4::Player::buildSeekWindow(int startRow,
   const int n = endRow - startRow + 1;
   times.resize(n);
   for (int k = 0; k < n; ++k) {
-    times[k] = m_frameIndex[static_cast<size_t>(startRow + k)].timestamp;
+    times[k] = m_timestamps[static_cast<size_t>(startRow + k)];
     if (k > 0)
       times[k] = qMax(times[k], times[k - 1]);
   }
@@ -756,15 +712,21 @@ void MDF4::Player::buildSeekWindow(int startRow,
     if (column < 0)
       continue;
 
+    const bool numeric_col = column < static_cast<int>(m_numeric.size())
+                          && column < static_cast<int>(m_channelIsString.size())
+                          && !m_channelIsString[static_cast<size_t>(column)];
+
     auto& values = series[key];
     values.resize(n);
     for (int k = 0; k < n; ++k) {
-      const auto& frameIdx = m_frameIndex[static_cast<size_t>(startRow + k)];
-      const auto it        = m_sampleCache.find(frameIdx.recordIndex);
-      const bool inRange =
-        it != m_sampleCache.end() && column < static_cast<int>(it->second.size());
-      values[k] = inRange ? it->second[static_cast<size_t>(column)] : 0.0;
+      const auto row = static_cast<size_t>(startRow + k);
+      const bool ok  = numeric_col && row < m_numeric[static_cast<size_t>(column)].size()
+                   && channelActive(column, startRow + k);
+      values[k] =
+        ok ? m_numeric[static_cast<size_t>(column)][row] : std::numeric_limits<double>::quiet_NaN();
     }
+
+    fillSeekGaps(values);
   }
 }
 
@@ -773,35 +735,51 @@ void MDF4::Player::buildSeekWindow(int startRow,
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Plays back as many frames as needed to catch up with the target timestamp, then
- *        schedules the NEXT frame with its real delay -- re-entering updateData() at the
- *        current position would inject the last caught-up frame a second time.
+ * @brief Plays back toward the target timestamp, striding over intermediate frames when the
+ *        backlog exceeds the per-pass inject budget so playback tracks real time instead of
+ *        stretching (spec 0022 catch-up decimation); then schedules the NEXT frame with its
+ *        real delay so the last caught-up frame is never injected twice.
  */
 void MDF4::Player::catchUpToTarget(double targetTime)
 {
   constexpr qint64 kCatchUpBudgetMs = 20;
-  constexpr int kCatchUpMaxFrames   = 4096;
+  constexpr int kCatchUpMaxInjects  = 512;
+  constexpr int kCatchUpScanMax     = 262144;
   const QDeadlineTimer budget(kCatchUpBudgetMs);
 
-  int processed = 0;
-  while (m_framePos < frameCount() - 1 && !budget.hasExpired() && processed < kCatchUpMaxFrames) {
+  int targetRow  = m_framePos;
+  const int last = frameCount() - 1;
+  for (int i = 0; i < kCatchUpScanMax && targetRow < last; ++i) {
+    if (m_timestamps[static_cast<size_t>(targetRow + 1)] > targetTime)
+      break;
+
+    ++targetRow;
+  }
+
+  const int stride = qMax(1, (targetRow - m_framePos) / kCatchUpMaxInjects);
+  for (int processed = 0;
+       processed < kCatchUpMaxInjects && m_framePos < targetRow && !budget.hasExpired();
+       ++processed) {
     if (!isOpen() || !isPlaying())
       break;
 
-    ++m_framePos;
-    ++processed;
+    m_framePos = qMin(targetRow, m_framePos + stride);
     sendFrame(m_framePos);
-
-    if (m_framePos >= frameCount() - 1)
-      break;
-
-    const double nextFrameTime = m_frameIndex[m_framePos + 1].timestamp;
-    if (nextFrameTime > targetTime)
-      break;
   }
 
-  if (isOpen() && static_cast<size_t>(m_framePos) < m_frameIndex.size()) {
-    m_timestamp = formatTimestamp(m_frameIndex[m_framePos].timestamp);
+  constexpr qint64 kCatchUpFillMs = 250;
+  if (stride > 2 && !m_seekColumnByKey.isEmpty()
+      && (!m_catchUpFillTimer.isValid() || m_catchUpFillTimer.elapsed() >= kCatchUpFillMs)) {
+    static auto& dashboard = UI::Dashboard::instance();
+    QVector<double> times;
+    QHash<qint64, QVector<double>> series;
+    buildSeekWindow(seekWindowStartRow(m_framePos), m_framePos, times, series);
+    dashboard.bulkLoadPlotWindow(times, series);
+    m_catchUpFillTimer.restart();
+  }
+
+  if (isOpen() && m_framePos < frameCount()) {
+    m_timestamp = formatTimestamp(m_timestamps[static_cast<size_t>(m_framePos)]);
     Q_EMIT timestampChanged();
   }
 
@@ -813,13 +791,17 @@ void MDF4::Player::catchUpToTarget(double targetTime)
     return;
   }
 
-  constexpr double kInvMs = 1.0 / 1000.0;
-  const qint64 elapsedMs  = m_elapsedTimer.elapsed();
-  const double nowTarget  = m_startTimestamp + (elapsedMs * kInvMs);
-  const double nextTime   = m_frameIndex[m_framePos + 1].timestamp;
-  const qint64 delayMs    = qMax(0LL, static_cast<qint64>((nextTime - nowTarget) * 1000.0));
-  QTimer::singleShot(delayMs, Qt::PreciseTimer, this, [this]() {
-    if (isOpen() && isPlaying()) {
+  constexpr double kInvMs      = 1.0 / 1000.0;
+  constexpr double kMaxDelayMs = 86'400'000.0;
+  const qint64 elapsedMs       = m_elapsedTimer.elapsed();
+  const double nowTarget       = m_startTimestamp + (elapsedMs * kInvMs);
+  const double nextTime        = m_timestamps[static_cast<size_t>(m_framePos + 1)];
+  const double deltaMs         = (nextTime - nowTarget) * 1000.0;
+  const qint64 delayMs =
+    std::isfinite(deltaMs) ? static_cast<qint64>(std::clamp(deltaMs, 0.0, kMaxDelayMs)) : 0;
+  const quint64 epoch = m_playbackEpoch;
+  QTimer::singleShot(delayMs, Qt::PreciseTimer, this, [this, epoch]() {
+    if (isOpen() && isPlaying() && epoch == m_playbackEpoch) {
       ++m_framePos;
       updateData();
     }
@@ -835,7 +817,7 @@ void MDF4::Player::updateData()
     return;
 
   if (m_framePos >= 0 && m_framePos < frameCount()) {
-    m_timestamp = formatTimestamp(m_frameIndex[m_framePos].timestamp);
+    m_timestamp = formatTimestamp(m_timestamps[static_cast<size_t>(m_framePos)]);
     Q_EMIT timestampChanged();
   }
 
@@ -849,292 +831,26 @@ void MDF4::Player::updateData()
 
   sendFrame(m_framePos);
 
-  constexpr double kInvMs = 1.0 / 1000.0;
-  const qint64 elapsedMs  = m_elapsedTimer.elapsed();
-  const double targetTime = m_startTimestamp + (elapsedMs * kInvMs);
-  const double nextTime   = m_frameIndex[framePosition() + 1].timestamp;
+  constexpr double kInvMs      = 1.0 / 1000.0;
+  constexpr double kMaxDelayMs = 86'400'000.0;
+  const qint64 elapsedMs       = m_elapsedTimer.elapsed();
+  const double targetTime      = m_startTimestamp + (elapsedMs * kInvMs);
+  const double nextTime        = m_timestamps[static_cast<size_t>(framePosition() + 1)];
 
   if (nextTime <= targetTime) {
     catchUpToTarget(targetTime);
     return;
   }
 
-  const qint64 delayMs = qMax(0LL, static_cast<qint64>((nextTime - targetTime) * 1000.0));
-  QTimer::singleShot(delayMs, Qt::PreciseTimer, this, [this]() {
-    if (isOpen() && isPlaying()) {
+  const double deltaMs = (nextTime - targetTime) * 1000.0;
+  const qint64 delayMs =
+    std::isfinite(deltaMs) ? static_cast<qint64>(std::clamp(deltaMs, 0.0, kMaxDelayMs)) : 0;
+  const quint64 epoch = m_playbackEpoch;
+  QTimer::singleShot(delayMs, Qt::PreciseTimer, this, [this, epoch]() {
+    if (isOpen() && isPlaying() && epoch == m_playbackEpoch) {
       ++m_framePos;
       updateData();
     }
-  });
-}
-
-//--------------------------------------------------------------------------------------------------
-// Frame building
-//--------------------------------------------------------------------------------------------------
-
-/**
- * @brief Returns true when the channel name ends with the " (raw)" suffix.
- */
-static bool hasRawSuffix(const std::string& chName)
-{
-  static constexpr const char* kRawSuffix = " (raw)";
-  return chName.size() >= 6 && chName.compare(chName.size() - 6, 6, kRawSuffix) == 0;
-}
-
-/**
- * @brief Per-CG state assembled before observers are attached for a data group.
- */
-struct CgInfo {
-  mdf::IChannelGroup* cg;
-  mdf::IChannel* timeCh;
-  std::vector<mdf::IChannel*> dataChs;
-};
-
-/**
- * @brief Scans a single channel group, collecting its master and non-raw data channels.
- */
-void MDF4::Player::scanChannelGroup(
-  mdf::IChannelGroup* cg,
-  std::vector<mdf::IChannel*>& allChannels,
-  std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels,
-  int& masterChannelCount)
-{
-  mdf::IChannel* groupMaster = nullptr;
-  for (auto* ch : cg->Channels()) {
-    if (!ch)
-      continue;
-
-    if (m_isSerialStudioFile && ch->Type() == mdf::ChannelType::Master) {
-      groupMaster = ch;
-      ++masterChannelCount;
-      continue;
-    }
-
-    if (hasRawSuffix(ch->Name())) [[unlikely]]
-      continue;
-
-    if (std::find(allChannels.begin(), allChannels.end(), ch) == allChannels.end())
-      allChannels.push_back(ch);
-  }
-
-  if (groupMaster)
-    groupTimeChannels[cg] = groupMaster;
-}
-
-/**
- * @brief Walks all data groups and channel groups, collecting all data + master channels.
- */
-void MDF4::Player::collectAllChannels(
-  const std::vector<mdf::IDataGroup*>& dataGroups,
-  std::vector<mdf::IChannel*>& allChannels,
-  std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels,
-  int& masterChannelCount)
-{
-  for (auto* dg : dataGroups) {
-    if (!dg)
-      continue;
-
-    for (auto* cg : dg->ChannelGroups()) {
-      if (!cg)
-        continue;
-
-      scanChannelGroup(cg, allChannels, groupTimeChannels, masterChannelCount);
-    }
-  }
-}
-
-/**
- * @brief Builds per-CG data-channel + time-channel descriptors for a single data group.
- */
-static std::vector<CgInfo> buildCgInfos(
-  mdf::IDataGroup* dg,
-  bool perGroupTime,
-  const std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels)
-{
-  std::vector<CgInfo> cgInfos;
-  for (auto* cg : dg->ChannelGroups()) {
-    if (!cg)
-      continue;
-
-    auto cgChannels      = cg->Channels();
-    uint64_t recordCount = cg->NofSamples();
-    if (cgChannels.empty() || recordCount == 0)
-      continue;
-
-    CgInfo ci;
-    ci.cg     = cg;
-    ci.timeCh = nullptr;
-
-    if (perGroupTime) {
-      auto tit = groupTimeChannels.find(cg);
-      if (tit != groupTimeChannels.end())
-        ci.timeCh = tit->second;
-    }
-
-    for (auto* ch : cgChannels) {
-      if (!ch || ch->Type() == mdf::ChannelType::Master)
-        continue;
-
-      if (hasRawSuffix(ch->Name())) [[unlikely]]
-        continue;
-
-      ci.dataChs.push_back(ch);
-    }
-
-    cgInfos.push_back(std::move(ci));
-  }
-
-  return cgInfos;
-}
-
-/**
- * @brief Reads sample data from one DG, attaching one SampleCacheObserver per CG.
- */
-void MDF4::Player::readDataGroupWithObservers(
-  mdf::IDataGroup* dg,
-  bool perGroupTime,
-  const std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels)
-{
-  auto channelGroups = dg->ChannelGroups();
-  if (channelGroups.empty())
-    return;
-
-  auto cgInfos = buildCgInfos(dg, perGroupTime, groupTimeChannels);
-
-  std::vector<std::unique_ptr<SampleCacheObserver>> observers;
-  observers.reserve(cgInfos.size());
-  for (auto& ci : cgInfos) {
-    auto obs = std::make_unique<SampleCacheObserver>(*dg,
-                                                     m_sampleCache,
-                                                     m_stringCache,
-                                                     m_timestampCache,
-                                                     m_activeChannels,
-                                                     m_channels,
-                                                     ci.dataChs,
-                                                     ci.timeCh,
-                                                     ci.cg->RecordId());
-    obs->AttachObserver();
-    observers.push_back(std::move(obs));
-  }
-
-  m_reader->ReadData(*dg);
-
-  for (auto& obs : observers)
-    obs->DetachObserver();
-}
-
-/**
- * @brief Reads timestamps from a single legacy master-time channel into the timestamp cache.
- */
-void MDF4::Player::readLegacyTimestamps(const std::vector<mdf::IDataGroup*>& dataGroups,
-                                        uint64_t legacyTimeRecId)
-{
-  for (auto* dg : dataGroups) {
-    if (!dg)
-      continue;
-
-    LegacyTimestampObserver tsObs(*dg, m_timestampCache, m_masterTimeChannel, legacyTimeRecId);
-    tsObs.AttachObserver();
-    m_reader->ReadData(*dg);
-    tsObs.DetachObserver();
-    break;
-  }
-}
-
-/**
- * @brief Builds a sparse frame index for efficient streaming playback.
- */
-void MDF4::Player::buildFrameIndex()
-{
-  m_frameIndex.clear();
-  m_channels.clear();
-  m_sampleCache.clear();
-  m_stringCache.clear();
-  m_timestampCache.clear();
-  m_activeChannels.clear();
-  m_channelIsString.clear();
-  m_masterTimeChannel = nullptr;
-
-  if (!m_reader || !m_reader->IsOk())
-    return;
-
-  auto* file = m_reader->GetFile();
-  if (!file)
-    return;
-
-  mdf::DataGroupList dataGroups;
-  file->DataGroups(dataGroups);
-
-  if (dataGroups.empty())
-    return;
-
-  std::vector<mdf::IChannel*> allChannels;
-  std::map<mdf::IChannelGroup*, mdf::IChannel*> groupTimeChannels;
-  int masterChannelCount = 0;
-  collectAllChannels(dataGroups, allChannels, groupTimeChannels, masterChannelCount);
-
-  const bool perGroupTime  = (masterChannelCount > 1);
-  uint64_t legacyTimeRecId = 0;
-  if (masterChannelCount == 1) {
-    auto it             = groupTimeChannels.begin();
-    m_masterTimeChannel = it->second;
-    legacyTimeRecId     = it->first->RecordId();
-    groupTimeChannels.clear();
-  }
-
-  m_channels = allChannels;
-
-  m_channelIsString.clear();
-  m_channelIsString.reserve(m_channels.size());
-  for (const auto* ch : m_channels)
-    m_channelIsString.push_back(isStringChannel(ch));
-
-  for (auto* dg : dataGroups) {
-    if (!dg)
-      continue;
-
-    readDataGroupWithObservers(dg, perGroupTime, groupTimeChannels);
-  }
-
-  if (m_isSerialStudioFile && !perGroupTime && m_masterTimeChannel)
-    readLegacyTimestamps(dataGroups, legacyTimeRecId);
-
-  buildFrameIndexFromCache();
-}
-
-/**
- * @brief Builds the frame index from the sample cache populated during observer-based data reading.
- */
-void MDF4::Player::buildFrameIndexFromCache()
-{
-  if (m_sampleCache.empty())
-    return;
-
-  uint64_t sampleIndex = 0;
-  m_frameIndex.reserve(m_sampleCache.size());
-
-  for (const auto& cachePair : m_sampleCache) {
-    FrameIndex frameIdx;
-
-    if (m_isSerialStudioFile && !m_timestampCache.empty()) {
-      auto timeIt = m_timestampCache.find(cachePair.first);
-      if (timeIt != m_timestampCache.end())
-        frameIdx.timestamp = timeIt->second;
-      else
-        frameIdx.timestamp = static_cast<double>(sampleIndex) * 0.001;
-    } else {
-      frameIdx.timestamp = static_cast<double>(sampleIndex) * 0.001;
-    }
-
-    frameIdx.recordIndex  = cachePair.first;
-    frameIdx.channelGroup = nullptr;
-
-    m_frameIndex.push_back(frameIdx);
-    ++sampleIndex;
-  }
-
-  std::sort(m_frameIndex.begin(), m_frameIndex.end(), [](const FrameIndex& a, const FrameIndex& b) {
-    return a.recordIndex < b.recordIndex;
   });
 }
 
@@ -1169,7 +885,7 @@ void MDF4::Player::sendFrame(int frameIndex)
  */
 void MDF4::Player::sendHeaderFrame()
 {
-  if (!isOpen() || m_channels.empty())
+  if (m_channelNames.isEmpty())
     return;
 
   static auto& appState = AppState::instance();
@@ -1180,18 +896,13 @@ void MDF4::Player::sendHeaderFrame()
   }
 
   QStringList headers;
-  for (size_t i = 0; i < m_channels.size(); ++i) {
-    auto* channel = m_channels[i];
-    if (channel) {
-      QString name = QString::fromStdString(channel->Name());
-      if (name.isEmpty())
-        name = QString("Channel_%1").arg(i + 1);
+  headers.reserve(m_channelNames.size());
+  for (int i = 0; i < m_channelNames.size(); ++i) {
+    QString name = m_channelNames.at(i);
+    if (name.isEmpty())
+      name = QString("Channel_%1").arg(i + 1);
 
-      headers.append(name);
-    }
-
-    else
-      headers.append(QString("Channel_%1").arg(i + 1));
+    headers.append(name);
   }
 
   if (appState.operationMode() != SerialStudio::ProjectFile) {
@@ -1229,41 +940,83 @@ QString MDF4::Player::formatTimestamp(double timestamp) const
     .arg(qMax(seconds, 0.0), 6, 'f', 3, QChar('0'));
 }
 
+//--------------------------------------------------------------------------------------------------
+// Frame building
+//--------------------------------------------------------------------------------------------------
+
 /**
- * @brief Fills @p cells with the row at @p index. String-typed channels replay their cached
- *        text verbatim; numeric channels format the cached double. Returns false out of range.
+ * @brief Returns the recorded activity bit for (channel, frame); missing entries count as
+ *        inactive.
+ */
+bool MDF4::Player::channelActive(int channel, int frameIndex) const
+{
+  if (channel < 0 || channel >= static_cast<int>(m_active.size()))
+    return false;
+
+  const auto& column = m_active[static_cast<size_t>(channel)];
+  if (frameIndex < 0 || frameIndex >= static_cast<int>(column.size()))
+    return false;
+
+  return column[static_cast<size_t>(frameIndex)];
+}
+
+/**
+ * @brief Fills @p cells with the row at @p index for the byte path. String-typed channels
+ *        replay their cached text verbatim; numeric channels format the cached double with
+ *        the same 'g'/10 rendering the typed lane uses.
  */
 bool MDF4::Player::buildRowCells(int index, QStringList& cells) const
 {
   if (!isOpen() || index < 0 || index >= frameCount())
     return false;
 
-  const auto& frameIdx = m_frameIndex[index];
+  const auto row            = static_cast<size_t>(index);
+  const size_t channelCount = m_channelIsString.size();
 
   cells.clear();
-  cells.reserve(static_cast<int>(m_channels.size()));
+  cells.reserve(static_cast<int>(channelCount));
 
-  auto it = m_sampleCache.find(frameIdx.recordIndex);
-  if (it == m_sampleCache.end()) {
-    for (size_t i = 0; i < m_channels.size(); ++i)
-      cells.append(QStringLiteral("0"));
-
-    return true;
-  }
-
-  const auto sit                      = m_stringCache.find(frameIdx.recordIndex);
-  const std::vector<QString>* strings = (sit != m_stringCache.end()) ? &sit->second : nullptr;
-
-  const auto& values = it->second;
-  for (size_t i = 0; i < values.size(); ++i) {
-    const bool is_string = i < m_channelIsString.size() && m_channelIsString[i];
-    if (is_string && strings && i < strings->size())
-      cells.append((*strings)[i]);
+  for (size_t c = 0; c < channelCount; ++c) {
+    const bool is_string = m_channelIsString[c];
+    if (is_string && c < m_text.size() && row < m_text[c].size())
+      cells.append(m_text[c][row]);
+    else if (!is_string && c < m_numeric.size() && row < m_numeric[c].size())
+      cells.append(QString::number(m_numeric[c][row], 'g', 10));
     else
-      cells.append(QString::number(values[i], 'g', 10));
+      cells.append(QStringLiteral("0"));
   }
 
   return true;
+}
+
+/**
+ * @brief Fills @p cells with typed replay cells for the row at @p index: numeric channels
+ *        pass the native double (spec 0022 R7), string channels borrow the cached text.
+ */
+qsizetype MDF4::Player::buildRowCellsTyped(
+  int index, QVarLengthArray<DataModel::FrameBuilder::ReplayCell, 128>& cells) const
+{
+  Q_ASSERT(index >= 0);
+  Q_ASSERT(index < frameCount());
+
+  const auto row            = static_cast<size_t>(index);
+  const size_t channelCount = m_channelIsString.size();
+
+  cells.clear();
+  cells.reserve(static_cast<qsizetype>(channelCount));
+
+  for (size_t c = 0; c < channelCount; ++c) {
+    DataModel::FrameBuilder::ReplayCell cell{nullptr, 0.0};
+    const bool is_string = m_channelIsString[c];
+    if (is_string && c < m_text.size() && row < m_text[c].size())
+      cell.text = &m_text[c][row];
+    else if (!is_string && c < m_numeric.size() && row < m_numeric[c].size())
+      cell.number = m_numeric[c][row];
+
+    cells.append(cell);
+  }
+
+  return cells.size();
 }
 
 /**
@@ -1287,8 +1040,9 @@ void MDF4::Player::anchorSteadyBase(int frameIndex)
 {
   Q_ASSERT(frameIndex >= 0);
 
-  m_steadyBase           = std::chrono::steady_clock::now();
-  m_steadyBaseRowSeconds = (frameIndex < frameCount()) ? m_frameIndex[frameIndex].timestamp : 0.0;
+  m_steadyBase = std::chrono::steady_clock::now();
+  m_steadyBaseRowSeconds =
+    (frameIndex < frameCount()) ? m_timestamps[static_cast<size_t>(frameIndex)] : 0.0;
 }
 
 /**
@@ -1298,17 +1052,17 @@ void MDF4::Player::anchorSteadyBase(int frameIndex)
 std::chrono::steady_clock::time_point MDF4::Player::rowSteadyTimestamp(int frameIndex) const
 {
   Q_ASSERT(frameIndex >= 0);
-  Q_ASSERT(frameIndex < static_cast<int>(m_frameIndex.size()));
+  Q_ASSERT(frameIndex < frameCount());
 
-  const auto delta =
-    std::chrono::duration<double>(m_frameIndex[frameIndex].timestamp - m_steadyBaseRowSeconds);
+  const auto delta = std::chrono::duration<double>(m_timestamps[static_cast<size_t>(frameIndex)]
+                                                   - m_steadyBaseRowSeconds);
   return m_steadyBase + std::chrono::duration_cast<std::chrono::steady_clock::duration>(delta);
 }
 
 /**
- * @brief Replays one indexed row through the FrameBuilder replay fast lane (spec 0020): cached
- *        cells go straight in with the recorded timestamp, no join/split round trip. QuickPlot
- *        mode keeps the byte path (its parser consumes raw payloads).
+ * @brief Replays one indexed row through the FrameBuilder typed replay lane (spec 0022):
+ *        numeric channels flow as native doubles with the recorded timestamp -- no per-cell
+ *        number formatting. QuickPlot mode keeps the byte path.
  */
 void MDF4::Player::injectRow(int frameIndex)
 {
@@ -1321,37 +1075,37 @@ void MDF4::Player::injectRow(int frameIndex)
     return;
   }
 
-  QStringList cells;
-  if (!buildRowCells(frameIndex, cells) || cells.isEmpty())
+  const qsizetype count = buildRowCellsTyped(frameIndex, m_typedCells);
+  if (count <= 0) [[unlikely]]
     return;
 
   static auto& frameBuilder = DataModel::FrameBuilder::instance();
   const auto timestamp      = rowSteadyTimestamp(frameIndex);
 
   if (!m_multiSource) {
-    frameBuilder.replayChannels(0, cells, timestamp);
+    frameBuilder.replayChannelsTyped(0, m_typedCells.constData(), count, timestamp);
     return;
   }
-
-  const std::vector<bool>* active = nullptr;
-  const auto ait                  = m_activeChannels.find(m_frameIndex[frameIndex].recordIndex);
-  if (ait != m_activeChannels.end())
-    active = &ait->second;
 
   for (auto it = m_sourceChannelsByIndex.constBegin(); it != m_sourceChannelsByIndex.constEnd();
        ++it) {
     const auto& orderedChs = it.value();
-    QStringList sourceCells;
+    QVarLengthArray<DataModel::FrameBuilder::ReplayCell, 128> sourceCells;
     sourceCells.reserve(orderedChs.size());
-    bool anyActive = !active;
+    bool anyActive = false;
     for (int ch : orderedChs) {
-      sourceCells.append((ch >= 0 && ch < cells.size()) ? cells[ch] : QString());
-      if (active && ch >= 0 && ch < static_cast<int>(active->size()) && (*active)[ch])
-        anyActive = true;
+      static const QString kEmpty;
+      DataModel::FrameBuilder::ReplayCell cell{&kEmpty, 0.0};
+      if (ch >= 0 && ch < count)
+        cell = m_typedCells.at(ch);
+
+      sourceCells.append(cell);
+      anyActive = anyActive || channelActive(ch, frameIndex);
     }
 
     if (anyActive)
-      frameBuilder.replayChannels(it.key(), sourceCells, timestamp);
+      frameBuilder.replayChannelsTyped(
+        it.key(), sourceCells.constData(), sourceCells.size(), timestamp);
   }
 }
 
@@ -1426,13 +1180,6 @@ void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
     return;
   }
 
-  const std::vector<bool>* active = nullptr;
-  if (frameIndex >= 0 && frameIndex < static_cast<int>(m_frameIndex.size())) {
-    auto ait = m_activeChannels.find(m_frameIndex[frameIndex].recordIndex);
-    if (ait != m_activeChannels.end())
-      active = &ait->second;
-  }
-
   const QString row = QString::fromUtf8(frame).trimmed();
   const auto fields = DataModel::splitReplayRow(row);
 
@@ -1444,15 +1191,14 @@ void MDF4::Player::injectFrame(const QByteArray& frame, int frameIndex)
     const auto& orderedChs = it.value();
     QStringList orderedCells;
     orderedCells.reserve(orderedChs.size());
-    bool anyActive = !active;
+    bool anyActive = false;
     for (int ch : orderedChs) {
       const QString cell = (ch >= 0 && ch < fields.size()) ? fields[ch] : QString();
       orderedCells.append(cell);
-      if (active && ch >= 0 && ch < static_cast<int>(active->size()) && (*active)[ch])
-        anyActive = true;
+      anyActive = anyActive || channelActive(ch, frameIndex);
     }
     sourceFields.insert(srcId, std::move(orderedCells));
-    sourceHasActive.insert(srcId, anyActive);
+    sourceHasActive.insert(srcId, anyActive || frameIndex < 0);
   }
 
   QMap<int, QByteArray> sourcePayloads;

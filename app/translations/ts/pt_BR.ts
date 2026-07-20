@@ -2213,103 +2213,119 @@ Habilite apenas em redes confiáveis. Clientes não confiáveis podem ler dados 
 <context>
     <name>CSV::Player</name>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="223"/>
+        <location filename="../../src/CSV/Player.cpp" line="382"/>
         <source>Select CSV file</source>
         <translation>Selecionar arquivo CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="225"/>
+        <location filename="../../src/CSV/Player.cpp" line="384"/>
         <source>CSV files (*.csv)</source>
         <translation>Arquivos CSV (*.CSV)</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="391"/>
+        <location filename="../../src/CSV/Player.cpp" line="507"/>
         <source>Device Connection Active</source>
         <translation>Conexão com Dispositivo Ativa</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="392"/>
+        <location filename="../../src/CSV/Player.cpp" line="508"/>
         <source>To use this feature, you must disconnect from the device. Do you want to proceed?</source>
         <translation>Para usar este recurso, você deve desconectar do dispositivo. Deseja continuar?</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="406"/>
+        <location filename="../../src/CSV/Player.cpp" line="522"/>
+        <location filename="../../src/CSV/Player.cpp" line="540"/>
         <source>Check file permissions and location</source>
         <translation>Verifique as permissões e localização do arquivo</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="438"/>
+        <location filename="../../src/CSV/Player.cpp" line="529"/>
+        <location filename="../../src/CSV/Player.cpp" line="611"/>
+        <location filename="../../src/CSV/Player.cpp" line="786"/>
         <source>Insufficient Data in CSV File</source>
         <translation>Dados Insuficientes no Arquivo CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="406"/>
+        <location filename="../../src/CSV/Player.cpp" line="522"/>
+        <location filename="../../src/CSV/Player.cpp" line="540"/>
         <source>Cannot read CSV file</source>
         <translation>Não é possível ler o arquivo CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="439"/>
+        <location filename="../../src/CSV/Player.cpp" line="530"/>
+        <location filename="../../src/CSV/Player.cpp" line="612"/>
+        <location filename="../../src/CSV/Player.cpp" line="787"/>
         <source>The CSV file must contain at least one data row to proceed. Check the file and try again.</source>
         <translation>O arquivo CSV deve conter pelo menos uma linha de dados para prosseguir. Verifique o arquivo e tente novamente.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="817"/>
+        <location filename="../../src/CSV/Player.cpp" line="780"/>
+        <source>CSV Row Limit Reached</source>
+        <translation>Limite de Linhas CSV Atingido</translation>
+    </message>
+    <message>
+        <location filename="../../src/CSV/Player.cpp" line="781"/>
+        <source>Playback is limited to %L1 rows; the rest of the file was not indexed.</source>
+        <translation>A reprodução está limitada a %L1 linhas; o restante do arquivo não foi indexado.</translation>
+    </message>
+    <message>
+        <location filename="../../src/CSV/Player.cpp" line="1228"/>
         <source>Invalid CSV</source>
         <translation>CSV Inválido</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="818"/>
+        <location filename="../../src/CSV/Player.cpp" line="1229"/>
         <source>The CSV file does not contain any data or headers.</source>
         <translation>O arquivo CSV não contém dados ou cabeçalhos.</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="827"/>
+        <location filename="../../src/CSV/Player.cpp" line="1236"/>
         <source>Select a date/time column</source>
         <translation>Selecionar uma Coluna de Data/Hora</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="827"/>
-        <location filename="../../src/CSV/Player.cpp" line="839"/>
+        <location filename="../../src/CSV/Player.cpp" line="1236"/>
+        <location filename="../../src/CSV/Player.cpp" line="1248"/>
         <source>Set interval manually</source>
         <translation>Definir Intervalo Manualmente</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="829"/>
+        <location filename="../../src/CSV/Player.cpp" line="1238"/>
         <source>CSV Date/Time Selection</source>
         <translation>Seleção de Data/hora do CSV</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="830"/>
+        <location filename="../../src/CSV/Player.cpp" line="1239"/>
         <source>Choose how to handle the date/time data:</source>
         <translation>Escolha como manipular os dados de data/hora:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="842"/>
+        <location filename="../../src/CSV/Player.cpp" line="1251"/>
         <source>Set Interval</source>
         <translation>Definir Intervalo</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="843"/>
+        <location filename="../../src/CSV/Player.cpp" line="1252"/>
         <source>Please enter the interval between rows in milliseconds:</source>
         <translation>Insira o intervalo entre linhas em milissegundos:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="859"/>
+        <location filename="../../src/CSV/Player.cpp" line="1269"/>
         <source>Select Date/Time Column</source>
         <translation>Selecionar Coluna de Data/hora</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="860"/>
+        <location filename="../../src/CSV/Player.cpp" line="1270"/>
         <source>Please select the column that contains the date/time data:</source>
         <translation>Selecione a coluna que contém os dados de data/hora:</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="870"/>
+        <location filename="../../src/CSV/Player.cpp" line="1280"/>
         <source>Invalid Selection</source>
         <translation>Seleção Inválida</translation>
     </message>
     <message>
-        <location filename="../../src/CSV/Player.cpp" line="870"/>
+        <location filename="../../src/CSV/Player.cpp" line="1280"/>
         <source>The selected column is not valid.</source>
         <translation>A coluna selecionada não é válida.</translation>
     </message>
@@ -3582,54 +3598,54 @@ Habilite apenas em redes confiáveis. Clientes não confiáveis podem ler dados 
 <context>
     <name>DataModel::FrameBuilder</name>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1810"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1925"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2040"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2155"/>
         <source>Channel %1</source>
         <translation>Canal %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1936"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2166"/>
         <source>Audio Input</source>
         <translation>Entrada de Áudio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1819"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1941"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2049"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2171"/>
         <source>Quick Plot</source>
         <translation>Gráfico Rápido</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1517"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1747"/>
         <source>JavaScript transform exceeded budget</source>
         <translation>Transformação JavaScript excedeu o orçamento</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1518"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1748"/>
         <source>A dataset transform took longer than %1 ms; remaining datasets in the frame fell back to raw values until the next frame. Profile or simplify the transform code.</source>
         <translation>Uma transformação de conjunto de dados levou mais de %1 ms; os conjuntos de dados restantes na frame voltaram para valores brutos até a próxima frame. Faça o perfil ou simplifique o código da transformação.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="264"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="269"/>
         <source>Frame pool exhausted</source>
         <translation>Pool de Frames esgotado</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="266"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="271"/>
         <source>A downstream consumer (dashboard, CSV/MDF4 export, session DB, or API subscriber) is not draining frames fast enough. Serial Studio is falling back to per-frame allocations until the backlog clears. Disable a heavy consumer or reduce the data rate.</source>
         <translation>Um consumidor a jusante (dashboard, exportação CSV/MDF4, banco de dados de sessões ou assinante da API) não está processando as frames rapidamente o suficiente. O Serial Studio está recorrendo a alocações por frame até que o acúmulo seja eliminado. Desative um consumidor pesado ou reduza a taxa de dados.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1770"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2000"/>
         <source>Device A</source>
         <translation>Dispositivo A</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1826"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2056"/>
         <source>Quick Plot Data</source>
         <translation>Dados do Gráfico Rápido</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1838"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2068"/>
         <source>Multiple Plots</source>
         <translation>Múltiplos Gráficos</translation>
     </message>
@@ -11719,62 +11735,68 @@ Para reutilizar esta licença em outro dispositivo, envie um e-mail para alex@se
 <context>
     <name>MDF4::Player</name>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="421"/>
+        <location filename="../../src/MDF4/Player.cpp" line="245"/>
         <source>Select MDF4 file</source>
         <translation>Selecionar arquivo MDF4</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="423"/>
+        <location filename="../../src/MDF4/Player.cpp" line="247"/>
         <source>MDF4 files (*.mf4 *.dat)</source>
         <translation>Arquivos MDF4 (*.mf4 *.dat)</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="453"/>
+        <location filename="../../src/MDF4/Player.cpp" line="279"/>
         <source>MDF4 Playback is a Pro feature.</source>
         <translation>Reprodução MDF4 é um recurso Pro.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="454"/>
+        <location filename="../../src/MDF4/Player.cpp" line="280"/>
         <source>This feature requires a license. Please purchase one to enable MDF4 playback.</source>
         <translation>Este recurso requer uma licença. Adquira uma para habilitar a reprodução MDF4.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="461"/>
+        <location filename="../../src/MDF4/Player.cpp" line="287"/>
         <source>Disconnect from device?</source>
         <translation>Desconectar do dispositivo?</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="462"/>
+        <location filename="../../src/MDF4/Player.cpp" line="288"/>
         <source>You must disconnect from the current device before opening a MDF4 file.</source>
         <translation>Você deve desconectar do dispositivo atual antes de abrir um arquivo MDF4.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="478"/>
+        <location filename="../../src/MDF4/Player.cpp" line="483"/>
+        <source>MDF4 data may be incomplete</source>
+        <translation>Dados MDF4 podem estar incompletos</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/Player.cpp" line="484"/>
+        <source>Part of the file's data section could not be read; the recording may be truncated.</source>
+        <translation>Parte da seção de dados do arquivo não pôde ser lida; a gravação pode estar truncada.</translation>
+    </message>
+    <message>
         <source>Cannot open MDF4 file</source>
-        <translation>Não é possível abrir o arquivo MDF4</translation>
+        <translation type="vanished">Não é possível abrir o arquivo MDF4</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="479"/>
         <source>The file may be corrupted or in an unsupported format.</source>
-        <translation>O arquivo pode estar corrompido ou em um formato não suportado.</translation>
+        <translation type="vanished">O arquivo pode estar corrompido ou em um formato não suportado.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="486"/>
         <source>Invalid MDF4 file</source>
-        <translation>Arquivo MDF4 Inválido</translation>
+        <translation type="vanished">Arquivo MDF4 Inválido</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="487"/>
         <source>Failed to read file structure. The file may be corrupted.</source>
-        <translation>Falha ao ler estrutura do arquivo. O arquivo pode estar corrompido.</translation>
+        <translation type="vanished">Falha ao ler estrutura do arquivo. O arquivo pode estar corrompido.</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="502"/>
+        <location filename="../../src/MDF4/Player.cpp" line="457"/>
         <source>No data in file</source>
         <translation>Nenhum dado no arquivo</translation>
     </message>
     <message>
-        <location filename="../../src/MDF4/Player.cpp" line="503"/>
+        <location filename="../../src/MDF4/Player.cpp" line="458"/>
         <source>The MDF4 file contains no measurement data.</source>
         <translation>O arquivo MDF4 não contém dados de medição.</translation>
     </message>
@@ -16253,12 +16275,12 @@ O parâmetro separador não é mais necessário.</translation>
         <translation>Nenhuma chave de API Groq definida. Abra Gerenciar Chaves para adicionar uma.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1235"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1465"/>
         <source>The frame parser is using more than %1% of CPU time.</source>
         <translation>O analisador de frames está usando mais de %1% do tempo de CPU.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1237"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="1467"/>
         <source>Serial Studio is dropping frames to keep the application responsive. Please simplify or optimize the frame parser script to reduce its workload.</source>
         <translation>O Serial Studio está descartando frames para manter a aplicação responsiva. Simplifique ou otimize o script do analisador de frames para reduzir sua carga de trabalho.</translation>
     </message>
@@ -16467,6 +16489,26 @@ O parâmetro separador não é mais necessário.</translation>
         <location filename="../../src/Misc/HighDpiScaling.cpp" line="316"/>
         <source>Custom…</source>
         <translation>Personalizado…</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="500"/>
+        <source>Cannot open MDF4 file</source>
+        <translation>Não é possível abrir o arquivo MDF4</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="501"/>
+        <source>The file may be corrupted or in an unsupported format.</source>
+        <translation>O arquivo pode estar corrompido ou em um formato não suportado.</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="506"/>
+        <source>Invalid MDF4 file</source>
+        <translation>Arquivo MDF4 Inválido</translation>
+    </message>
+    <message>
+        <location filename="../../src/MDF4/PlayerLoaderWorker.cpp" line="507"/>
+        <source>Failed to read file structure. The file may be corrupted.</source>
+        <translation>Falha ao ler estrutura do arquivo. O arquivo pode estar corrompido.</translation>
     </message>
 </context>
 <context>
@@ -19431,17 +19473,17 @@ Ative Incorporar Projeto para incluir o projeto no atalho, para que continue fun
     </message>
     <message>
         <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="179"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="242"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="241"/>
         <source>Clear</source>
         <translation>Limpar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="257"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="256"/>
         <source>Find</source>
         <translation>Localizar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="285"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="284"/>
         <source>Collapse</source>
         <translation>Recolher</translation>
     </message>
@@ -19454,148 +19496,148 @@ Ative Incorporar Projeto para incluir o projeto no atalho, para que continue fun
         <translation type="vanished">Registrar saída do console em um arquivo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="388"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="387"/>
         <source>Settings</source>
         <translation>Configurações</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="391"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="390"/>
         <source>Console settings</source>
         <translation>Configurações do console</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="564"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="563"/>
         <source>Find in console</source>
         <translation>Localizar no console</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="600"/>
         <source>%1 of %2</source>
         <translation>%1 de %2</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="602"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="601"/>
         <source>No results</source>
         <translation>Nenhum resultado</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="614"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="613"/>
         <source>Match case</source>
         <translation>Diferenciar maiúsculas</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="629"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="628"/>
         <source>Previous match</source>
         <translation>Correspondência anterior</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="640"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="639"/>
         <source>Next match</source>
         <translation>Próxima correspondência</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="650"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="649"/>
         <source>Close search</source>
         <translation>Fechar pesquisa</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="682"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="681"/>
         <source>Send a file to the connected device</source>
         <translation>Enviar um arquivo para o dispositivo conectado</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="262"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="261"/>
         <source>Search console output</source>
         <translation>Pesquisar saída do console</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="231"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="230"/>
         <source>Utilities</source>
         <translation>Utilitários</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="289"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Recolher linhas repetidas em uma única entrada</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="314"/>
         <source>Resume</source>
         <translation>Retomar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="315"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="314"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="319"/>
         <source>Resume console updates</source>
         <translation>Retomar atualizações do console</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="321"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="320"/>
         <source>Freeze the console display (data keeps logging)</source>
         <translation>Congelar a exibição do console (dados continuam sendo registrados)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="340"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="339"/>
         <source>Format</source>
         <translation>Formatar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="348"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="347"/>
         <source>Text</source>
         <translation>Texto</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="351"/>
         <source>Plain text display mode</source>
         <translation>Modo de exibição de texto simples</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="363"/>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="829"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="362"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="828"/>
         <source>Hex</source>
         <translation>Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="367"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="366"/>
         <source>Hex display mode</source>
         <translation>Modo de exibição Hex</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="467"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="466"/>
         <source>Scrollback Lines</source>
         <translation>Linhas de Histórico</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="722"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="721"/>
         <source>Send Data to Device</source>
         <translation>Enviar Dados para o Dispositivo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="879"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="878"/>
         <source>Send data to the device</source>
         <translation>Enviar dados para o dispositivo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="422"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="421"/>
         <source>Show Timestamp</source>
         <translation>Mostrar Carimbo de Data/hora</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="429"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="428"/>
         <source>Echo</source>
         <translation>Eco</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="445"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="444"/>
         <source>Emulate VT-100</source>
         <translation>Emular VT-100</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="457"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="456"/>
         <source>ANSI Colors</source>
         <translation>Cores ANSI</translation>
     </message>
@@ -19604,7 +19646,7 @@ Ative Incorporar Projeto para incluir o projeto no atalho, para que continue fun
         <translation type="vanished">Exibição: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="246"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="245"/>
         <source>Clear console output</source>
         <translation>Limpar saída do console</translation>
     </message>

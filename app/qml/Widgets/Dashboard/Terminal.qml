@@ -216,7 +216,6 @@ Item {
         id: consoleRibbon
 
         anchors.fill: parent
-        anchors.leftMargin: 8
         anchors.rightMargin: 8
         secondaryToolbar: true
         fadeColor: Cpp_ThemeManager.colors["window_toolbar_background"]

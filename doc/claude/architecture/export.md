@@ -18,6 +18,18 @@
     final-value players** (`SerialStudio::isFinalValuePlayerOpen`), so per-dataset transforms
     never re-run during playback — they read live inputs (data tables) that don't exist then.
     Raw columns are only a fallback for pre-final-column session files.
+  - **CSV/MDF4 players stream instead of materializing (spec 0022)**: the CSV player maps the
+    file (`QFile::map`) and a `CSV::PlayerLoaderWorker` thread builds only row offsets +
+    per-row seconds (`indexing`/`indexProgress` properties; playback clamps to the growing
+    frontier and auto-resumes); rows split on demand via the byte-level
+    `splitReplayRowSpans` (semantics-identical twin of `splitReplayRow`) and inject through
+    `FrameBuilder::replayChannelSpans` (UTF-8 views, in-place writes). The MDF4 player decodes
+    on an `MDF4::PlayerLoaderWorker` thread (mdflib pointers never leave the worker; the
+    ns-quantized cache-key merge is unchanged) into columnar per-channel vectors and injects
+    through `FrameBuilder::replayChannelsTyped` (native doubles + borrowed text — no per-cell
+    `QString::number`/`toDouble` round trip; display strings stay 'g'/10-identical via
+    std::to_chars). Both workers are generation-stamped and cancel+join before unmap/teardown;
+    re-opening mid-index is safe.
   - **ProjectFile replay bypasses the byte round-trip (spec 0020)**: all three players hand
     their already-split cells to `FrameBuilder::replayChannels(sourceId, channels, recordedTs)`
     — no `joinReplayRow` → bytes → re-split. It publishes via the slot pool through

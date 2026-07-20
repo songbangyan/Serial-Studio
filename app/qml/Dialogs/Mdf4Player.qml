@@ -34,18 +34,32 @@ Widgets.SmartDialog {
   Connections {
     target: Cpp_MDF4_Player
     function onOpenChanged() {
-      if (Cpp_MDF4_Player.isOpen)
+      if (Cpp_MDF4_Player.isOpen && !root.visible)
         root.showNormal()
-      else
+      else if (!Cpp_MDF4_Player.isOpen)
         root.hide()
     }
   }
 
   //
-  // Automatically close MDF file when dialog is hidden
+  // Show the window while the background decode runs so its progress is visible; hide it
+  // again when a decode ends without the file opening (error or cancel)
+  //
+  Connections {
+    target: Cpp_MDF4_Player
+    function onIndexingChanged() {
+      if (Cpp_MDF4_Player.indexing && !root.visible)
+        root.showNormal()
+      else if (!Cpp_MDF4_Player.indexing && !Cpp_MDF4_Player.isOpen && root.visible)
+        root.hide()
+    }
+  }
+
+  //
+  // Automatically close MDF file (or cancel an in-flight decode) when dialog is hidden
   //
   onVisibilityChanged: {
-    if (!visible && Cpp_MDF4_Player.isOpen)
+    if (!visible && (Cpp_MDF4_Player.isOpen || Cpp_MDF4_Player.indexing))
       Cpp_MDF4_Player.closeFile()
   }
 
@@ -71,6 +85,14 @@ Widgets.SmartDialog {
           if (!isNaN(value) && value !== Cpp_MDF4_Player.progress)
             Cpp_MDF4_Player.setProgress(value)
         }
+      }
+
+      ProgressBar {
+        to: 1
+        from: 0
+        Layout.fillWidth: true
+        visible: Cpp_MDF4_Player.indexing
+        value: Cpp_MDF4_Player.indexProgress
       }
 
       Item {

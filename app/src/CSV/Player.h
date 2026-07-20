@@ -2,7 +2,7 @@
  * Serial Studio
  * https://serial-studio.com/
  *
- * Copyright (C) 2020–2025 Alex Spataru
+ * Copyright (C) 2020-2025 Alex Spataru
  *
  * This file is dual-licensed:
  *
@@ -22,19 +22,25 @@
 #pragma once
 
 #include <chrono>
-#include <QDateTime>
 #include <QElapsedTimer>
 #include <QFile>
 #include <QHash>
 #include <QKeyEvent>
 #include <QMap>
 #include <QObject>
+#include <QStringList>
+#include <QThread>
 #include <QTimer>
+#include <QVarLengthArray>
 #include <QVector>
+
+#include "CSV/PlayerLoaderWorker.h"
 
 namespace CSV {
 /**
- * @brief CSV player that re-plays a CSV file as if it were live data.
+ * @brief CSV player that re-plays a recording as if it were live data. The file stays on
+ *        disk (memory-mapped); a background worker indexes row offsets + seconds, so opening
+ *        is immediate and memory stays bounded regardless of file size (spec 0022).
  */
 class Player : public QObject {
   // clang-format off
@@ -57,12 +63,19 @@ class Player : public QObject {
   Q_PROPERTY(const QString& timestamp
              READ timestamp
              NOTIFY timestampChanged)
+  Q_PROPERTY(bool indexing
+             READ indexing
+             NOTIFY indexingChanged)
+  Q_PROPERTY(double indexProgress
+             READ indexProgress
+             NOTIFY indexingChanged)
   // clang-format on
 
 signals:
   void openChanged();
   void timestampChanged();
   void playerStateChanged();
+  void indexingChanged();
 
 private:
   explicit Player();
@@ -70,6 +83,8 @@ private:
   Player(const Player&)            = delete;
   Player& operator=(Player&&)      = delete;
   Player& operator=(const Player&) = delete;
+
+  ~Player();
 
 public:
   [[nodiscard]] static Player& instance();
@@ -79,6 +94,8 @@ public:
   [[nodiscard]] bool isPlaying() const;
   [[nodiscard]] int frameCount() const;
   [[nodiscard]] int framePosition() const;
+  [[nodiscard]] bool indexing() const;
+  [[nodiscard]] double indexProgress() const;
 
   [[nodiscard]] QString filename() const;
   [[nodiscard]] const QString& timestamp() const;
@@ -98,29 +115,18 @@ private slots:
   void updateData();
   void performSeekTick();
   void performSeekSettle();
+  void onIndexBatch(const CSV::PlayerIndexBatchPtr& batch);
+  void onIndexFinished(bool ok, quint64 generation);
 
 private:
+  bool runQuickPass();
+  void startIndexing();
+  bool stopIndexing();
+  void frontierPause();
   void sendHeaderFrame();
   void updateTimestampDisplay();
   void processFrameBatch(int startFrame, int endFrame);
-  void parseCsvRows(QTextStream& stream);
-  void initializeTimestamps();
-  bool recomputeMsUntilNext(qint64& msUntilNext);
-
-private:
-  bool promptUserForDateTimeOrInterval();
-  void generateDateTimeForRows(int interval);
-  void convertColumnToDateTime(int columnIndex);
-
-  QDateTime getDateTime(int row);
-  QDateTime getDateTime(const QString& cell);
-  double getTimestampSeconds(int row);
-  double getTimestampSeconds(const QString& cell);
-  [[nodiscard]] QString formatTimestamp(double seconds) const;
-
-  QByteArray getFrame(const int row);
-
-  const QString getCellValue(const int row, const int column, bool& error);
+  bool promptUserForDateTimeOrInterval(QByteArrayView firstDataRow);
 
 protected:
   bool eventFilter(QObject* obj, QEvent* event) override;
@@ -135,28 +141,51 @@ private:
                        int endRow,
                        QVector<double>& times,
                        QHash<qint64, QVector<double>>& series);
-  void buildDateTimeSecondsCache();
   [[nodiscard]] int seekWindowStartRow(int target);
-  [[nodiscard]] double rowSecondsSinceStart(int row);
+  [[nodiscard]] double rowSecondsSinceStart(int row) const;
+  [[nodiscard]] int catchUpTargetRow(double target) const;
   [[nodiscard]] std::chrono::steady_clock::time_point rowSteadyTimestamp(int row);
+  [[nodiscard]] QByteArrayView rawRow(int row) const;
+  [[nodiscard]] qsizetype splitDataCells(int row);
+  [[nodiscard]] QByteArray quickPlotPayload(int row);
+  [[nodiscard]] bool recomputeMsUntilNext(qint64& msUntilNext);
 
 private:
   int m_framePos;
   bool m_playing;
   bool m_multiSource;
+  bool m_indexing;
+  bool m_pausedAtFrontier;
   QFile m_csvFile;
   QString m_timestamp;
-  QList<QStringList> m_csvData;
+
+  const char* m_mapped;
+  qint64 m_mappedSize;
+  qint64 m_dataOffset;
+  qint64 m_bytesIndexed;
+  quint64 m_indexGeneration;
+  quint64 m_playbackEpoch;
+  QVector<quint64> m_rowOffsets;
+  QVector<double> m_rowSeconds;
+
+  PlayerTimestampMode m_tsMode;
+  int m_timestampColumn;
+  double m_intervalSeconds;
+  qint64 m_anchorMs;
+  double m_startSeconds;
+  QStringList m_headerCells;
 
   QElapsedTimer m_elapsedTimer;
-  QDateTime m_startTimestamp;
-  double m_startTimestampSeconds;
-  bool m_useHighPrecisionTimestamps;
-  QVector<double> m_timestampCache;
-  QVector<double> m_dateTimeSecondsCache;
-
+  QElapsedTimer m_catchUpFillTimer;
   double m_steadyBaseRowSeconds;
   std::chrono::steady_clock::time_point m_steadyBase;
+
+  QThread* m_loaderThread;
+  PlayerLoaderWorker* m_loader;
+
+  DataModel::ReplayCellViews m_cells;
+  QByteArray m_splitScratch;
+  QVarLengthArray<QByteArrayView, 64> m_dataSpans;
 
   QTimer m_seekTimer;
   QTimer m_settleTimer;

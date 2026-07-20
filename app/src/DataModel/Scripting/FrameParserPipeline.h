@@ -22,10 +22,12 @@
 #pragma once
 
 #include <QByteArray>
+#include <QByteArrayView>
 #include <QJsonObject>
 #include <QList>
 #include <QString>
 #include <QStringList>
+#include <QVarLengthArray>
 #include <QVector>
 
 #include "SerialStudio.h"
@@ -103,6 +105,23 @@ void splitQuickPlotChannels(const QByteArray& rawFrame, QList<QStringList>& outC
  * @brief Quote-aware comma split of one synthesized replay row (RFC-4180 double-quote escape).
  */
 [[nodiscard]] QStringList splitReplayRow(QStringView row);
+
+/**
+ * @brief Reusable per-cell view buffer for splitReplayRowSpans (stack storage for the
+ *        common column counts).
+ */
+using ReplayCellViews = QVarLengthArray<QByteArrayView, 64>;
+
+/**
+ * @brief Byte-level twin of splitReplayRow for disk-backed replay rows: identical quote,
+ *        trim and injection-guard semantics, but cells come back as views into @p row (or
+ *        into @p scratch for cells that need RFC-4180 unescaping). A trailing CR is chopped
+ *        (QTextStream did that upstream); trimming covers ASCII whitespace, the one
+ *        documented divergence from QString::trimmed for exotic Unicode spaces. Views stay
+ *        valid while @p row's bytes and @p scratch are alive and untouched -- scratch is
+ *        pre-reserved so appends never reallocate.
+ */
+void splitReplayRowSpans(QByteArrayView row, ReplayCellViews& out, QByteArray& scratch);
 
 /**
  * @brief Replay twin of splitQuickPlotChannels: one quote-aware row per non-empty line.

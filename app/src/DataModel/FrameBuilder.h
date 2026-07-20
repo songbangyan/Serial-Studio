@@ -98,6 +98,15 @@ public:
   [[nodiscard]] quint64 parsedFrameCount() const noexcept;
   [[nodiscard]] quint64 skippedFrameCount() const noexcept;
 
+  /**
+   * @brief One replay cell for the typed lane: a borrowed text pointer for string channels,
+   *        or a native double (text == nullptr) for numeric channels.
+   */
+  struct ReplayCell {
+    const QString* text;
+    double number;
+  };
+
   void injectTableApiLua(lua_State* L);
   void injectTableApiJS(QJSEngine* js);
   void refreshTableStoreFromProjectModel();
@@ -105,6 +114,14 @@ public:
   void replayChannels(int sourceId,
                       const QStringList& channels,
                       const DataModel::TimestampedFrame::SteadyTimePoint& timestamp);
+  void replayChannelSpans(int sourceId,
+                          const QByteArrayView* cells,
+                          qsizetype count,
+                          const DataModel::TimestampedFrame::SteadyTimePoint& timestamp);
+  void replayChannelsTyped(int sourceId,
+                           const ReplayCell* cells,
+                           qsizetype count,
+                           const DataModel::TimestampedFrame::SteadyTimePoint& timestamp);
 
   [[nodiscard]] bool reprocessFrames();
   [[nodiscard]] bool dashboardTick();
@@ -195,6 +212,7 @@ private:
   bool m_externalTableApiUsers;
   bool m_captureLatestFrame;
   bool m_changeDriven;
+  bool m_shuttingDown;
   int m_seenEngineEpoch;
   SerialStudio::OperationMode m_operationMode;
   qint64 m_parseBudgetUsedNs;
@@ -314,6 +332,15 @@ private:
                          const TransformFrameInfo& info,
                          const std::unordered_map<int, int>* replayColumns,
                          bool finalValueReplay);
+  [[nodiscard]] const std::unordered_map<int, int>* replayColumnsFor(int sourceId) const;
+  void applyReplaySpanValue(Dataset& dataset,
+                            const QByteArrayView* cells,
+                            qsizetype count,
+                            const std::unordered_map<int, int>* columns);
+  void applyReplayTypedValue(Dataset& dataset,
+                             const ReplayCell* cells,
+                             qsizetype count,
+                             const std::unordered_map<int, int>* columns);
   SS_HOT void applyDatasetValueSpan(Dataset& dataset,
                                     const QByteArrayView* spans,
                                     qsizetype count,

@@ -338,8 +338,10 @@ set(SOURCES
   src/DataModel/NotificationCenter.cpp
   src/DataModel/Dialogs/TransmitTestDialog.cpp
   src/CSV/Player.cpp
+  src/CSV/PlayerLoaderWorker.cpp
   src/CSV/Export.cpp
   src/MDF4/Player.cpp
+  src/MDF4/PlayerLoaderWorker.cpp
   src/MDF4/Export.cpp
   src/main.cpp
   src/AppState.cpp
@@ -478,7 +480,9 @@ set(HEADERS
   src/DataModel/Dialogs/TransmitTestDialog.h
   src/CSV/Export.h
   src/CSV/Player.h
+  src/CSV/PlayerLoaderWorker.h
   src/MDF4/Player.h
+  src/MDF4/PlayerLoaderWorker.h
   src/MDF4/Export.h
   src/ThirdParty/atomicops.h
   src/ThirdParty/fast_float.h

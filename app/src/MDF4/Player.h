@@ -2,7 +2,7 @@
  * Serial Studio
  * https://serial-studio.com/
  *
- * Copyright (C) 2020–2025 Alex Spataru
+ * Copyright (C) 2020-2025 Alex Spataru
  *
  * This file is dual-licensed:
  *
@@ -22,8 +22,6 @@
 #pragma once
 
 #include <chrono>
-#include <map>
-#include <memory>
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QHash>
@@ -31,20 +29,20 @@
 #include <QMap>
 #include <QObject>
 #include <QString>
+#include <QStringList>
+#include <QThread>
 #include <QTimer>
+#include <QVarLengthArray>
 #include <QVector>
 #include <vector>
 
-namespace mdf {
-class MdfReader;
-class IChannel;
-class IChannelGroup;
-class IDataGroup;
-}  // namespace mdf
+#include "DataModel/FrameBuilder.h"
+#include "MDF4/PlayerLoaderWorker.h"
 
 namespace MDF4 {
 /**
- * @brief MDF4 file player for Serial Studio.
+ * @brief MDF4 file player for Serial Studio. Decode runs on a background worker (spec 0022);
+ *        playback reads only the columnar payload -- no mdflib object lives on this class.
  */
 class Player : public QObject {
   // clang-format off
@@ -67,12 +65,19 @@ class Player : public QObject {
   Q_PROPERTY(const QString& timestamp
              READ timestamp
              NOTIFY timestampChanged)
+  Q_PROPERTY(bool indexing
+             READ indexing
+             NOTIFY indexingChanged)
+  Q_PROPERTY(double indexProgress
+             READ indexProgress
+             NOTIFY indexingChanged)
   // clang-format on
 
 signals:
   void openChanged();
   void timestampChanged();
   void playerStateChanged();
+  void indexingChanged();
 
 private:
   explicit Player();
@@ -90,6 +95,8 @@ public:
   [[nodiscard]] bool isPlaying() const;
   [[nodiscard]] int frameCount() const;
   [[nodiscard]] double progress() const;
+  [[nodiscard]] bool indexing() const;
+  [[nodiscard]] double indexProgress() const;
   [[nodiscard]] QString filename() const;
   [[nodiscard]] int framePosition() const;
   [[nodiscard]] const QString& timestamp() const;
@@ -107,30 +114,17 @@ public slots:
 
 private slots:
   void updateData();
-  void buildFrameIndex();
   void sendFrame(int frameIndex);
   void processFrameBatch(int startFrame, int endFrame);
   void performSeekTick();
   void performSeekSettle();
+  void onDecodeProgress(double fraction, quint64 generation);
+  void onDecodeFinished(const MDF4::PlayerDecodePayloadPtr& payload);
 
 private:
+  void startDecoding(const QString& filePath);
+  void stopDecoding();
   void catchUpToTarget(double targetTime);
-  void buildFrameIndexFromCache();
-  void scanChannelGroup(mdf::IChannelGroup* cg,
-                        std::vector<mdf::IChannel*>& allChannels,
-                        std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels,
-                        int& masterChannelCount);
-  void collectAllChannels(const std::vector<mdf::IDataGroup*>& dataGroups,
-                          std::vector<mdf::IChannel*>& allChannels,
-                          std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels,
-                          int& masterChannelCount);
-  void readDataGroupWithObservers(
-    mdf::IDataGroup* dg,
-    bool perGroupTime,
-    const std::map<mdf::IChannelGroup*, mdf::IChannel*>& groupTimeChannels);
-  void readLegacyTimestamps(const std::vector<mdf::IDataGroup*>& dataGroups,
-                            uint64_t legacyTimeRecId);
-
   void sendHeaderFrame();
   void buildReplayLayout();
   void injectFrame(const QByteArray& frame, int frameIndex = -1);
@@ -142,43 +136,47 @@ private:
                        QVector<double>& times,
                        QHash<qint64, QVector<double>>& series);
   [[nodiscard]] bool buildRowCells(int index, QStringList& cells) const;
-  QByteArray getFrame(const int index);
+  [[nodiscard]] qsizetype buildRowCellsTyped(
+    int index, QVarLengthArray<DataModel::FrameBuilder::ReplayCell, 128>& cells) const;
+  [[nodiscard]] QByteArray getFrame(const int index);
   [[nodiscard]] std::chrono::steady_clock::time_point rowSteadyTimestamp(int frameIndex) const;
   [[nodiscard]] QString formatTimestamp(double timestamp) const;
+  [[nodiscard]] bool channelActive(int channel, int frameIndex) const;
 
 protected:
   bool handleKeyPress(QKeyEvent* keyEvent);
   bool eventFilter(QObject* obj, QEvent* event) override;
 
 private:
-  struct FrameIndex {
-    double timestamp;
-    uint64_t recordIndex;
-    mdf::IChannelGroup* channelGroup;
-  };
-
   int m_framePos;
   bool m_playing;
+  bool m_open;
+  bool m_decoding;
   bool m_multiSource;
-  bool m_isSerialStudioFile;
+  double m_decodeProgress;
   QString m_filePath;
   QString m_timestamp;
   double m_startTimestamp;
   double m_steadyBaseRowSeconds;
   std::chrono::steady_clock::time_point m_steadyBase;
   QElapsedTimer m_elapsedTimer;
+  QElapsedTimer m_catchUpFillTimer;
   QTimer m_seekTimer;
   QTimer m_settleTimer;
   QHash<qint64, int> m_seekColumnByKey;
-  mdf::IChannel* m_masterTimeChannel;
-  std::vector<FrameIndex> m_frameIndex;
-  std::vector<mdf::IChannel*> m_channels;
+
+  quint64 m_playbackEpoch;
+  quint64 m_decodeGeneration;
+  QThread* m_loaderThread;
+  PlayerLoaderWorker* m_loader;
+  QVarLengthArray<DataModel::FrameBuilder::ReplayCell, 128> m_typedCells;
+
+  QStringList m_channelNames;
   std::vector<bool> m_channelIsString;
-  std::unique_ptr<mdf::MdfReader> m_reader;
-  std::map<uint64_t, double> m_timestampCache;
-  std::map<uint64_t, std::vector<double>> m_sampleCache;
-  std::map<uint64_t, std::vector<QString>> m_stringCache;
-  std::map<uint64_t, std::vector<bool>> m_activeChannels;
+  std::vector<double> m_timestamps;
+  std::vector<std::vector<double>> m_numeric;
+  std::vector<std::vector<QString>> m_text;
+  std::vector<std::vector<bool>> m_active;
 
   QMap<int, QVector<int>> m_sourceChannelsByIndex;
 };

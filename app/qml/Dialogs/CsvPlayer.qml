@@ -46,9 +46,9 @@ Widgets.SmartDialog {
   Connections {
     target: Cpp_CSV_Player
     function onOpenChanged() {
-      if (Cpp_CSV_Player.isOpen)
+      if (Cpp_CSV_Player.isOpen && !root.visible)
         root.showNormal()
-      else
+      else if (!Cpp_CSV_Player.isOpen)
         root.hide()
     }
   }
@@ -89,6 +89,17 @@ Widgets.SmartDialog {
           if (!isNaN(value) && value !== Cpp_CSV_Player.progress)
             Cpp_CSV_Player.setProgress(value)
         }
+      }
+
+      //
+      // Background indexing progress
+      //
+      ProgressBar {
+        to: 1
+        from: 0
+        Layout.fillWidth: true
+        visible: Cpp_CSV_Player.indexing
+        value: Cpp_CSV_Player.indexProgress
       }
 
       //

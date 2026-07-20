@@ -98,7 +98,7 @@
 /**
  * @brief Marks a function cold: exiles it to the cold section away from hot code and biases branch
  *        prediction against entering it. Use only on provably rare helpers; pairs with
- * [[unlikely]].
+ *        [[unlikely]].
  */
 #if defined(__clang__) || defined(__GNUC__)
 #  define SS_COLD __attribute__((cold))

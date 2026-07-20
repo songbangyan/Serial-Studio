@@ -305,6 +305,183 @@ QStringList DataModel::splitReplayRow(QStringView row)
 }
 
 /**
+ * @brief True when every byte in [begin, end) of @p row is ASCII whitespace.
+ */
+[[nodiscard]] static bool allAsciiSpace(QByteArrayView row, qsizetype begin, qsizetype end)
+{
+  for (qsizetype i = begin; i < end; ++i) {
+    const char c = row.at(i);
+    if (c != ' ' && c != '\t' && c != '\n' && c != '\v' && c != '\f' && c != '\r')
+      return false;
+  }
+
+  return true;
+}
+
+/**
+ * @brief ASCII-whitespace trim of a cell view (byte twin of QString::trimmed for the
+ *        character set replay rows actually contain).
+ */
+[[nodiscard]] static QByteArrayView trimmedCellView(QByteArrayView v)
+{
+  qsizetype b = 0;
+  qsizetype e = v.size();
+  while (b < e && allAsciiSpace(v, b, b + 1))
+    ++b;
+  while (e > b && allAsciiSpace(v, e - 1, e))
+    --e;
+
+  return v.sliced(b, e - b);
+}
+
+/**
+ * @brief View twin of stripCsvInjectionGuard: drops the sanitizer apostrophe by advancing
+ *        the view instead of mutating a string.
+ */
+[[nodiscard]] static QByteArrayView stripGuardView(QByteArrayView v)
+{
+  if (v.size() < 2 || v.at(0) != '\'')
+    return v;
+
+  const char c      = v.at(1);
+  const bool danger = c == '=' || c == '+' || c == '-' || c == '@' || c == '\t' || c == '\r';
+  return danger ? v.sliced(1) : v;
+}
+
+/**
+ * @brief Byte replica of splitReplayRow's per-character machine for one cell region that
+ *        needs rewriting (escaped quotes or content around a closed quote); appends the
+ *        finalized cell bytes to @p scratch.
+ */
+static void appendRewrittenCell(QByteArrayView row,
+                                qsizetype begin,
+                                qsizetype end,
+                                QByteArray& scratch)
+{
+  Q_ASSERT(begin <= end);
+  Q_ASSERT(end <= row.size());
+
+  bool in_quotes            = false;
+  bool was_quoted           = false;
+  const qsizetype cell_base = scratch.size();
+  for (qsizetype i = begin; i < end; ++i) {
+    const char c = row.at(i);
+    if (in_quotes) {
+      const bool escaped = c == '"' && i + 1 < end && row.at(i + 1) == '"';
+      if (escaped) {
+        scratch.append('"');
+        ++i;
+        continue;
+      }
+
+      if (c == '"') {
+        in_quotes = false;
+        continue;
+      }
+
+      scratch.append(c);
+      continue;
+    }
+
+    if (c == '"' && !was_quoted
+        && allAsciiSpace(QByteArrayView(scratch), cell_base, scratch.size())) {
+      in_quotes  = true;
+      was_quoted = true;
+      scratch.resize(cell_base);
+      continue;
+    }
+
+    scratch.append(c);
+  }
+}
+
+/**
+ * @brief Byte-level twin of splitReplayRow: identical quote/trim/guard semantics with cells
+ *        returned as views into @p row, or into @p scratch for cells needing RFC-4180
+ *        unescaping. Scratch is reserved to the row length up front, so appended cells never
+ *        reallocate under earlier views.
+ */
+void DataModel::splitReplayRowSpans(QByteArrayView row, ReplayCellViews& out, QByteArray& scratch)
+{
+  out.clear();
+  scratch.resize(0);
+  if (row.endsWith('\r'))
+    row.chop(1);
+
+  if (scratch.capacity() < row.size())
+    scratch.reserve(row.size());
+
+  Q_ASSERT(scratch.capacity() >= row.size());
+
+  const qsizetype length  = row.size();
+  qsizetype cell_start    = 0;
+  qsizetype interior_from = -1;
+  qsizetype interior_to   = -1;
+  bool in_quotes          = false;
+  bool was_quoted         = false;
+  bool needs_rewrite      = false;
+
+  const auto finalize = [&](qsizetype end) {
+    QByteArrayView value;
+    if (!was_quoted)
+      value = trimmedCellView(row.sliced(cell_start, end - cell_start));
+    else if (!needs_rewrite) {
+      const qsizetype to = (interior_to >= 0) ? interior_to : end;
+      value              = row.sliced(interior_from, to - interior_from);
+    } else {
+      const qsizetype base = scratch.size();
+      appendRewrittenCell(row, cell_start, end, scratch);
+      Q_ASSERT(scratch.size() <= row.size());
+      value = QByteArrayView(scratch).sliced(base);
+    }
+
+    out.append(stripGuardView(value));
+    interior_from = -1;
+    interior_to   = -1;
+    was_quoted    = false;
+    needs_rewrite = false;
+  };
+
+  for (qsizetype i = 0; i < length; ++i) {
+    const char c = row.at(i);
+
+    if (in_quotes) {
+      const bool escaped = c == '"' && i + 1 < length && row.at(i + 1) == '"';
+      if (escaped) {
+        needs_rewrite = true;
+        ++i;
+        continue;
+      }
+
+      if (c == '"') {
+        in_quotes   = false;
+        interior_to = i;
+      }
+
+      continue;
+    }
+
+    if (c == ',') {
+      finalize(i);
+      cell_start = i + 1;
+      continue;
+    }
+
+    if (c == '"' && !was_quoted && allAsciiSpace(row, cell_start, i)) {
+      in_quotes     = true;
+      was_quoted    = true;
+      interior_from = i + 1;
+      continue;
+    }
+
+    if (was_quoted)
+      needs_rewrite = true;
+  }
+
+  finalize(length);
+}
+
+/**
  * @brief Replay twin of splitQuickPlotChannels: one quote-aware row per non-empty line.
  */
 void DataModel::splitReplayChannels(const QByteArray& rawFrame, QList<QStringList>& outChannels)

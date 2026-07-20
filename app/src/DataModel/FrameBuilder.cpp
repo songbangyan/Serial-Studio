@@ -26,6 +26,7 @@
 #include <lualib.h>
 
 #include <algorithm>
+#include <charconv>
 #include <cmath>
 #include <QCoreApplication>
 #include <QDateTime>
@@ -128,6 +129,7 @@ DataModel::FrameBuilder::FrameBuilder()
   , m_externalTableApiUsers(false)
   , m_captureLatestFrame(false)
   , m_changeDriven(false)
+  , m_shuttingDown(false)
   , m_seenEngineEpoch(-1)
   , m_operationMode(SerialStudio::ProjectFile)
   , m_parseBudgetUsedNs(0)
@@ -157,7 +159,10 @@ DataModel::FrameBuilder::FrameBuilder()
 #endif
 
   if (auto* app = qApp)
-    connect(app, &QCoreApplication::aboutToQuit, this, [this]() { destroyTransformEngines(); });
+    connect(app, &QCoreApplication::aboutToQuit, this, [this]() {
+      m_shuttingDown = true;
+      destroyTransformEngines();
+    });
 }
 
 /**
@@ -880,11 +885,14 @@ bool DataModel::FrameBuilder::dashboardTick()
 /**
  * @brief Handles connection transitions: recompiles transforms, reloads parser, fires
  *        auto-actions. The latest-frame store clears on both edges so io.getLatestFrame can
- *        never serve a previous connection's frame (the capture flag can stay on across the
- *        cycle when the API server is enabled).
+ *        never serve a previous connection's frame. No-op after aboutToQuit: a connection
+ *        signal fired during static destruction must not reload the parser or rebuild engines.
  */
 void DataModel::FrameBuilder::onConnectedChanged()
 {
+  if (m_shuttingDown) [[unlikely]]
+    return;
+
   static auto& appState  = AppState::instance();
   static auto& ioManager = IO::ConnectionManager::instance();
   Q_ASSERT(appState.operationMode() >= SerialStudio::ProjectFile
@@ -1089,6 +1097,228 @@ void DataModel::FrameBuilder::replayChannels(
   info.sourceId = sourceId;
 
   applyDatasetValues(srcFrame, channels, info);
+  publishReplayFrame(acquireFrame(srcFrame, timestamp));
+  ++m_parsedFrameCount;
+}
+
+/**
+ * @brief Formats a double exactly like QString::number(v, 'g', 10) but locale-independent and
+ *        in place (std::to_chars, C-locale %g semantics): the typed replay lane's display
+ *        string. The debug parity assert is temporary scaffolding for spec 0022's corner A/B.
+ */
+static void assignFormattedDouble(QString& dst, double value)
+{
+  char buf[32];
+  const auto res = std::to_chars(buf, buf + sizeof(buf), value, std::chars_format::general, 10);
+  Q_ASSERT(res.ec == std::errc());
+  DataModel::assign_utf8_in_place(dst, QByteArrayView(buf, static_cast<qsizetype>(res.ptr - buf)));
+  Q_ASSERT(dst == QString::number(value, 'g', 10));
+}
+
+/**
+ * @brief Returns the installed uniqueId->column replay map for @p sourceId, or nullptr when the
+ *        player registered none (index-based fallback applies).
+ */
+const std::unordered_map<int, int>* DataModel::FrameBuilder::replayColumnsFor(int sourceId) const
+{
+  Q_ASSERT(sourceId >= 0);
+  Q_ASSERT(SerialStudio::isFinalValuePlayerOpen());
+
+  const auto it = m_replayColumnMap.find(sourceId);
+  return (it != m_replayColumnMap.end()) ? &it->second : nullptr;
+}
+
+/**
+ * @brief Replay twin of applyDatasetValue for UTF-8 view cells: identical final-value branch
+ *        order (column map, virtual zeros, index fallback), in-place string writes, one parse
+ *        per cell, and no transform run -- replay keeps engines torn down.
+ */
+void DataModel::FrameBuilder::applyReplaySpanValue(Dataset& dataset,
+                                                   const QByteArrayView* cells,
+                                                   qsizetype count,
+                                                   const std::unordered_map<int, int>* columns)
+{
+  Q_ASSERT(cells != nullptr);
+  Q_ASSERT(count > 0);
+
+  if (columns) [[likely]] {
+    const auto it       = columns->find(dataset.uniqueId);
+    const qsizetype col = (it != columns->end()) ? it->second : -1;
+    if (col >= 0 && col < count) {
+      DataModel::assign_utf8_in_place(dataset.value, cells[col]);
+      dataset.numericValue = SerialStudio::toDouble(cells[col], &dataset.isNumeric);
+    } else {
+      dataset.numericValue = 0.0;
+      dataset.value.clear();
+      dataset.isNumeric = true;
+    }
+  } else if (dataset.virtual_) {
+    dataset.numericValue = 0.0;
+    dataset.value.clear();
+    dataset.isNumeric = true;
+  } else {
+    const qsizetype idx = dataset.index;
+    if (idx <= 0 || idx > count) [[unlikely]]
+      return;
+
+    DataModel::assign_utf8_in_place(dataset.value, cells[idx - 1]);
+    dataset.numericValue = SerialStudio::toDouble(cells[idx - 1], &dataset.isNumeric);
+  }
+
+  dataset.rawNumericValue = dataset.numericValue;
+  DataModel::assign_string_in_place(dataset.rawValue, dataset.value);
+
+  if (m_captureDatasetValues)
+    m_tableStore.setDatasetRaw(
+      dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
+
+  if (!dataset.isNumeric)
+    dataset.numericValue = (dataset.wgtMax > dataset.wgtMin) ? dataset.wgtMin : 0.0;
+
+  if (m_captureDatasetValues)
+    m_tableStore.setDatasetFinal(
+      dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
+}
+
+/**
+ * @brief Replay twin of applyDatasetValue for typed cells: numeric cells keep the native double
+ *        (spec 0022's R7 -- no format/parse round trip) while the display string is written in
+ *        place with the same 'g'/10 rendering as before; text cells parse once like today.
+ */
+void DataModel::FrameBuilder::applyReplayTypedValue(Dataset& dataset,
+                                                    const ReplayCell* cells,
+                                                    qsizetype count,
+                                                    const std::unordered_map<int, int>* columns)
+{
+  Q_ASSERT(cells != nullptr);
+  Q_ASSERT(count > 0);
+
+  const auto applyCell = [&](const ReplayCell& cell) {
+    if (cell.text) {
+      DataModel::assign_string_in_place(dataset.value, *cell.text);
+      dataset.numericValue = SerialStudio::toDouble(dataset.value, &dataset.isNumeric);
+    } else {
+      assignFormattedDouble(dataset.value, cell.number);
+      dataset.numericValue = cell.number;
+      dataset.isNumeric    = true;
+    }
+  };
+
+  if (columns) [[likely]] {
+    const auto it       = columns->find(dataset.uniqueId);
+    const qsizetype col = (it != columns->end()) ? it->second : -1;
+    if (col >= 0 && col < count) {
+      applyCell(cells[col]);
+    } else {
+      dataset.numericValue = 0.0;
+      dataset.value.clear();
+      dataset.isNumeric = true;
+    }
+  } else if (dataset.virtual_) {
+    dataset.numericValue = 0.0;
+    dataset.value.clear();
+    dataset.isNumeric = true;
+  } else {
+    const qsizetype idx = dataset.index;
+    if (idx <= 0 || idx > count) [[unlikely]]
+      return;
+
+    applyCell(cells[idx - 1]);
+  }
+
+  dataset.rawNumericValue = dataset.numericValue;
+  DataModel::assign_string_in_place(dataset.rawValue, dataset.value);
+
+  if (m_captureDatasetValues)
+    m_tableStore.setDatasetRaw(
+      dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
+
+  if (!dataset.isNumeric)
+    dataset.numericValue = (dataset.wgtMax > dataset.wgtMin) ? dataset.wgtMin : 0.0;
+
+  if (m_captureDatasetValues)
+    m_tableStore.setDatasetFinal(
+      dataset.uniqueId, dataset.numericValue, dataset.value, dataset.isNumeric);
+}
+
+/**
+ * @brief Span-cell replay lane (spec 0022): UTF-8 view cells from the CSV player's mapped rows
+ *        go straight into the per-source frame with zero intermediate QString lists, then
+ *        publish through the same pooled-slot replay fan-out as replayChannels.
+ */
+void DataModel::FrameBuilder::replayChannelSpans(
+  int sourceId,
+  const QByteArrayView* cells,
+  qsizetype count,
+  const DataModel::TimestampedFrame::SteadyTimePoint& timestamp)
+{
+  Q_ASSERT(sourceId >= 0);
+  Q_ASSERT(cells != nullptr || count == 0);
+  Q_ASSERT(m_playerOpen);
+  Q_ASSERT(m_operationMode == SerialStudio::ProjectFile);
+
+  if (count <= 0 || m_frame.groups.empty()) [[unlikely]]
+    return;
+
+  DataModel::Frame& srcFrame = ensureSourceFrame(sourceId);
+  if (srcFrame.groups.empty() || srcFrame.title.isEmpty()) [[unlikely]]
+    return;
+
+  const auto* columns = replayColumnsFor(sourceId);
+
+  TransformFrameInfo info;
+  info.sourceId = sourceId;
+
+  const bool armedWatchdog = beginDatasetPass(info);
+  for (auto& group : srcFrame.groups) {
+    SS_NO_UNROLL
+    for (auto& dataset : group.datasets)
+      applyReplaySpanValue(dataset, cells, count, columns);
+  }
+
+  endDatasetPass(armedWatchdog);
+
+  publishReplayFrame(acquireFrame(srcFrame, timestamp));
+  ++m_parsedFrameCount;
+}
+
+/**
+ * @brief Typed-cell replay lane (spec 0022): native doubles and borrowed text pointers from the
+ *        MDF4 player's columnar caches, published through the same pooled-slot replay fan-out
+ *        as replayChannels.
+ */
+void DataModel::FrameBuilder::replayChannelsTyped(
+  int sourceId,
+  const ReplayCell* cells,
+  qsizetype count,
+  const DataModel::TimestampedFrame::SteadyTimePoint& timestamp)
+{
+  Q_ASSERT(sourceId >= 0);
+  Q_ASSERT(cells != nullptr || count == 0);
+  Q_ASSERT(m_playerOpen);
+  Q_ASSERT(m_operationMode == SerialStudio::ProjectFile);
+
+  if (count <= 0 || m_frame.groups.empty()) [[unlikely]]
+    return;
+
+  DataModel::Frame& srcFrame = ensureSourceFrame(sourceId);
+  if (srcFrame.groups.empty() || srcFrame.title.isEmpty()) [[unlikely]]
+    return;
+
+  const auto* columns = replayColumnsFor(sourceId);
+
+  TransformFrameInfo info;
+  info.sourceId = sourceId;
+
+  const bool armedWatchdog = beginDatasetPass(info);
+  for (auto& group : srcFrame.groups) {
+    SS_NO_UNROLL
+    for (auto& dataset : group.datasets)
+      applyReplayTypedValue(dataset, cells, count, columns);
+  }
+
+  endDatasetPass(armedWatchdog);
+
   publishReplayFrame(acquireFrame(srcFrame, timestamp));
   ++m_parsedFrameCount;
 }
@@ -2117,10 +2347,14 @@ void DataModel::FrameBuilder::setReplayColumnMap(
 /**
  * @brief Compiles per-dataset transforms into one shared Lua/JS engine per source, caching function
  * refs. Defers when a frame is in flight (m_compileGuard > 0): mutating m_transformEngines while a
- * dataset pass holds hot pointers into it would dangle them.
+ * dataset pass holds hot pointers into it would dangle them. No-op after aboutToQuit: rebuilding
+ * a QJSEngine once QCoreApplication is gone is a qFatal at exit.
  */
 void DataModel::FrameBuilder::compileTransforms()
 {
+  if (m_shuttingDown) [[unlikely]]
+    return;
+
   if (m_compileGuard > 0) [[unlikely]] {
     m_compilePending = true;
     return;
