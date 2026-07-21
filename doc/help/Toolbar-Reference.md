@@ -111,7 +111,7 @@ The Start menu opens from the leftmost taskbar button. It is the dashboard's mai
 
 | Entry | Icon | What it does | Notes |
 |-------|------|--------------|-------|
-| **Workspaces** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/groups.svg" width="16" height="16"> | Picks the active [workspace](#a-note-on-workspaces), creates a new one, shows hidden ones, or edits and deletes user workspaces. | Submenu. |
+| **Workspaces** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/workspaces.svg" width="16" height="16"> | Picks the active [workspace](#a-note-on-workspaces), creates a new one, shows hidden ones, or edits and deletes user workspaces. | Submenu. |
 | **Actions** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/actions.svg" width="16" height="16"> | Lists the project's [actions](Actions.md); picking one runs it. | Hidden when the project defines no actions. |
 | **Plugins** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/toolbar/extensions.svg" width="16" height="16"> | Lists installed [plugins](Plugin-Development.md), plus **Manage Plugins…**. | Hidden when no plugins are installed. |
 | **Auto Layout** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/start/auto-layout.svg" width="16" height="16"> | Toggles automatic tiling of dashboard windows. | Toggle. |

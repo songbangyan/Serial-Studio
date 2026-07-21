@@ -225,7 +225,7 @@ Window {
       Widgets.SearchField {
         Layout.fillWidth: true
         color: Cpp_ThemeManager.colors["base"]
-        placeholderText: qsTr("Search")
+        placeholderText: qsTr("Search…")
         onTextChanged: root.searchText = text
       }
 

@@ -477,6 +477,23 @@ void UI::Taskbar::setActiveGroupId(int groupId)
 }
 
 /**
+ * @brief Resolves a workspace widget reference to its live windowId, or -1 if absent.
+ */
+int UI::Taskbar::resolveWorkspaceRefWindowId(const DataModel::WidgetRef& ref) const
+{
+  const int windowId = findWindowIdByGroupAndIndex(ref.widgetType, ref.relativeIndex);
+  if (windowId < 0)
+    return -1;
+
+  const int refGid = m_dashboard.groupIdForUniqueId(ref.groupUniqueId);
+  auto* item       = findItemByWindowId(windowId);
+  if (!item || item->data(TaskbarModel::GroupIdRole).toInt() != refGid)
+    return -1;
+
+  return windowId;
+}
+
+/**
  * @brief Populates the taskbar buttons for a user-defined workspace (id >= 1000).
  */
 void UI::Taskbar::populateTaskbarFromWorkspace(int groupId)
@@ -487,15 +504,11 @@ void UI::Taskbar::populateTaskbarFromWorkspace(int groupId)
       continue;
 
     for (const auto& ref : ws.widgetRefs) {
-      const int windowId = findWindowIdByGroupAndIndex(ref.widgetType, ref.relativeIndex);
+      const int windowId = resolveWorkspaceRefWindowId(ref);
       if (windowId < 0)
         continue;
 
-      const int refGid = m_dashboard.groupIdForUniqueId(ref.groupUniqueId);
-      auto* item       = findItemByWindowId(windowId);
-      if (!item || item->data(TaskbarModel::GroupIdRole).toInt() != refGid)
-        continue;
-
+      auto* item  = findItemByWindowId(windowId);
       auto* clone = item->clone();
       setWindowState(windowId, TaskbarModel::WindowNormal);
       m_taskbarButtons->appendRow(clone);
@@ -1534,9 +1547,10 @@ QVariantList UI::Taskbar::workspaceTree() const
 }
 
 /**
- * @brief Navigates to the workspace containing the given widget and shows it.
+ * @brief Navigates to the widget: reveals it in place, adds it to the active user
+ *        workspace when allowAddToWorkspace is set, else activates its own group.
  */
-void UI::Taskbar::navigateToWidget(int windowId, int groupId)
+void UI::Taskbar::navigateToWidget(int windowId, int groupId, bool allowAddToWorkspace)
 {
   for (int i = 0; i < m_taskbarButtons->rowCount(); ++i) {
     auto* item = m_taskbarButtons->item(i);
@@ -1552,7 +1566,8 @@ void UI::Taskbar::navigateToWidget(int windowId, int groupId)
     }
   }
 
-  if (!m_dashboard.frozen() && m_activeGroupId >= WorkspaceIds::AutoStart) {
+  if (allowAddToWorkspace && !m_dashboard.frozen()
+      && m_activeGroupId >= WorkspaceIds::AutoStart) {
     addWidgetToActiveWorkspace(windowId);
     QTimer::singleShot(100, this, [this, windowId]() {
       auto* window = windowData(windowId);
@@ -1744,22 +1759,47 @@ QVariantList UI::Taskbar::workspaceWidgetIds(int workspaceId) const
       continue;
 
     for (const auto& ref : ws.widgetRefs) {
-      const int windowId = findWindowIdByGroupAndIndex(ref.widgetType, ref.relativeIndex);
-      if (windowId < 0)
-        continue;
-
-      const int refGid = m_dashboard.groupIdForUniqueId(ref.groupUniqueId);
-      auto* item       = findItemByWindowId(windowId);
-      if (!item || item->data(TaskbarModel::GroupIdRole).toInt() != refGid)
-        continue;
-
-      ids.append(windowId);
+      const int windowId = resolveWorkspaceRefWindowId(ref);
+      if (windowId >= 0)
+        ids.append(windowId);
     }
 
     break;
   }
 
   return ids;
+}
+
+/**
+ * @brief Returns the user workspace containing windowId (active preferred), else -1.
+ */
+int UI::Taskbar::workspaceContainingWidget(int windowId) const
+{
+  const auto& workspaces = m_projectModel.activeWorkspaces();
+
+  int firstMatch = -1;
+  for (const auto& ws : workspaces) {
+    if (ws.workspaceId < WorkspaceIds::AutoStart)
+      continue;
+
+    bool contains = false;
+    for (const auto& ref : ws.widgetRefs)
+      if (resolveWorkspaceRefWindowId(ref) == windowId) {
+        contains = true;
+        break;
+      }
+
+    if (!contains)
+      continue;
+
+    if (ws.workspaceId == m_activeGroupId)
+      return ws.workspaceId;
+
+    if (firstMatch < 0)
+      firstMatch = ws.workspaceId;
+  }
+
+  return firstMatch;
 }
 
 /**

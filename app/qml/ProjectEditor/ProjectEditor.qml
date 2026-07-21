@@ -31,6 +31,7 @@ import SerialStudio
 import "Sections" as Sections
 import "../Widgets" as Widgets
 import "../Dialogs" as Dialogs
+import "../MainWindow/Panes/Dashboard" as DashPanes
 
 Widgets.SmartWindow {
   id: root
@@ -114,6 +115,46 @@ Widgets.SmartWindow {
       else
         activate()
     }
+  }
+
+  //
+  // Tools-only command palette (Ctrl+K), sharing the same model as the other contexts.
+  //
+  DashPanes.ToolActions {
+    id: _pePaletteTools
+
+    taskBar: null
+    allowFullScreen: false
+    allowExternalWindow: false
+  }
+
+  ProjectEditorActions {
+    id: _peProjectActions
+
+    editorWindow: root
+  }
+
+  DashPanes.PaletteModel {
+    id: _pePaletteModel
+
+    host: null
+    taskBar: null
+    workspacesEnabled: false
+    extraTitle: qsTr("Project")
+    toolActions: _pePaletteTools
+    extraTools: _peProjectActions
+  }
+
+  Widgets.CommandPalette {
+    id: _pePalette
+
+    z: 5000
+    model: _pePaletteModel
+  }
+
+  Shortcut {
+    sequences: ["Ctrl+K"]
+    onActivated: _pePalette.toggle()
   }
 
   //

@@ -586,9 +586,13 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <translation>Klicka på en rad för att lägga till den i arbetsytan.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
@@ -2395,6 +2399,48 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
     </message>
 </context>
 <context>
+    <name>CommandPalette</name>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <source>Folder</source>
+        <translation>Mapp</translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="vanished">Sök</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <source>Commands</source>
+        <translation type="unfinished">Kommandon</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <source>Close</source>
+        <translation>Stäng</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <source>Back</source>
+        <translation>Tillbaka</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <source>Type to search, Enter to open, Esc to close</source>
+        <translation>Skriv för att söka, Enter för att öppna, Esc för att stänga</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <source>No results found</source>
+        <translation>Inga resultat hittades</translation>
+    </message>
+</context>
+<context>
     <name>Console</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Console.qml" line="32"/>
@@ -2673,8 +2719,12 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
+    </message>
+    <message>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="250"/>
@@ -3079,6 +3129,11 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="235"/>
         <source>API Server Off</source>
         <translation>API-server Av</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="579"/>
+        <source>Workspaces</source>
+        <translation>Arbetsytor</translation>
     </message>
 </context>
 <context>
@@ -5979,15 +6034,15 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Spara Serial Studio-projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio-projektfiler (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>Namnlöst Projekt</translation>
     </message>
@@ -6242,9 +6297,9 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Arbetsyta</translation>
     </message>
@@ -6271,6 +6326,8 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6283,8 +6340,6 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Namn:</translation>
     </message>
@@ -6324,10 +6379,10 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Byt Namn på Register</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>Denna åtgärd kan inte ångras.</translation>
     </message>
@@ -6337,9 +6392,9 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Detta tar bort %1 register tillsammans med tabellen. Denna åtgärd kan inte ångras.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>Ta Bort "%1"?</translation>
     </message>
@@ -6370,8 +6425,8 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Importera Tabell</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>Ny Arbetsyta</translation>
     </message>
@@ -12681,34 +12736,43 @@ Ange nödvändiga inloggningsuppgifter.</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="211"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="212"/>
         <source>Console Only Mode</source>
         <translation>Endast Konsolläge</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="214"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="215"/>
         <source>Quick Plot Mode</source>
         <translation>Snabbdiagramläge</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="221"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="222"/>
         <source>Empty Project</source>
         <translation>Tomt Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="738"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="743"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="746"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="751"/>
         <source>Waiting for data…</source>
         <translation>Väntar på data…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="747"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="752"/>
         <source>Connecting to device…</source>
         <translation>Ansluter till enhet…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <source>Application</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation type="vanished">Kommandon</translation>
     </message>
     <message>
         <location filename="../../../lib/QCodeEditor/example/src/MainWindow.cpp" line="146"/>
@@ -12734,6 +12798,49 @@ Ange nödvändiga inloggningsuppgifter.</translation>
         <location filename="../../../lib/QCodeEditor/example/src/MainWindow.cpp" line="214"/>
         <source> spaces</source>
         <translation>mellanslag</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowActions</name>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
+        <source>Project Editor</source>
+        <translation type="unfinished">Projektredigerare</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
+        <source>Open Project</source>
+        <translation type="unfinished">Öppna Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
+        <source>Open CSV</source>
+        <translation type="unfinished">Öppna CSV</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
+        <source>Open MDF4</source>
+        <translation type="unfinished">Öppna MDF4</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
+        <source>Deploy Operator App</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
+        <source>Extensions</source>
+        <translation type="unfinished">Tillägg</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
+        <source>Examples</source>
+        <translation type="unfinished">Exempel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
+        <source>About</source>
+        <translation type="unfinished">Om</translation>
     </message>
 </context>
 <context>
@@ -13284,8 +13391,8 @@ Vill du öppna nedladdningssidan?</translation>
         <translation>Kunde inte skriva Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windows-genvägsverktyget är inte tillgängligt på denna plattform.</translation>
     </message>
@@ -13316,8 +13423,8 @@ Vill du öppna nedladdningssidan?</translation>
         <translation>Sparande av .lnk-filen misslyckades (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>MacOS-genvägsverktyget är inte tillgängligt på denna plattform.</translation>
     </message>
@@ -14496,8 +14603,12 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
+    </message>
+    <message>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="148"/>
@@ -14826,6 +14937,41 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="245"/>
         <source>Close</source>
         <translation>Stäng</translation>
+    </message>
+</context>
+<context>
+    <name>PaletteModel</name>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="126"/>
+        <source>Add Workspace</source>
+        <translation>Lägg till Arbetsyta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="129"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="194"/>
+        <source>Workspaces</source>
+        <translation>Arbetsytor</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="209"/>
+        <source>Tools</source>
+        <translation>Verktyg</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="191"/>
+        <source>Folders</source>
+        <translation>Mappar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="197"/>
+        <source>Groups</source>
+        <translation>Grupper</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="200"/>
+        <source>Widgets</source>
+        <translation>Widgetar</translation>
     </message>
 </context>
 <context>
@@ -15178,54 +15324,276 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
 <context>
     <name>ProjectEditor</name>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="43"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="44"/>
         <source>modified</source>
         <translation>ändrad</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="374"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <source>Project</source>
+        <translation>Projekt</translation>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation type="vanished">Kommandon</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
         <source>This project is password protected</source>
         <translation>Detta projekt är lösenordsskyddat</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="375"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
         <source>Editing is available in Project mode</source>
         <translation>Redigering är tillgänglig i Projektläge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Ange lösenordet för att göra ändringar, eller öppna ett annat projekt.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="387"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Växla till Projektläge för att ladda och redigera ett projekt.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="409"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
         <source>Unlock</source>
         <translation>Lås Upp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="410"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
         <source>Switch to Project Mode</source>
         <translation>Växla till Projektläge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="429"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
         <source>Open Other Project</source>
         <translation>Öppna Annat Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="430"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
         <source>Close</source>
         <translation>Stäng</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="446"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
         <source>Create New Project</source>
         <translation>Skapa Nytt Projekt</translation>
+    </message>
+</context>
+<context>
+    <name>ProjectEditorActions</name>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="56"/>
+        <source>New Project</source>
+        <translation>Nytt Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="58"/>
+        <source>Open Project</source>
+        <translation>Öppna Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="60"/>
+        <source>Save Project</source>
+        <translation>Spara Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="63"/>
+        <source>Save Project As</source>
+        <translation>Spara Projekt Som</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="66"/>
+        <source>Import Protobuf Schema</source>
+        <translation>Importera Protobuf-schema</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="68"/>
+        <source>Restore Backup</source>
+        <translation>Återställ Säkerhetskopia</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="71"/>
+        <source>Lock Project Editor</source>
+        <translation>Lås Projektredigerare</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="73"/>
+        <source>Add Device</source>
+        <translation>Lägg till Enhet</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
+        <source>Add Group</source>
+        <translation type="unfinished">Lägg till Grupp</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
+        <source>Dataset Container</source>
+        <translation type="unfinished">Datauppsättningscontainer</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
+        <source>Add Image View</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
+        <source>Image View</source>
+        <translation type="unfinished">Bildvisning</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
+        <source>Add Web View</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
+        <source>Web View</source>
+        <translation type="unfinished">Webbvisning</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
+        <source>Add Painter</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
+        <source>Painter Widget</source>
+        <translation type="unfinished">Painter-widget</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
+        <source>Add Data Table</source>
+        <translation type="unfinished">Lägg till Datatabell</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
+        <source>Data Grid</source>
+        <translation type="unfinished">Datarutnät</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
+        <source>Add Multi-Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
+        <source>Multiple Plot</source>
+        <translation type="unfinished">Flerplott</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
+        <source>Add 3D Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
+        <source>3D Plot</source>
+        <translation type="unfinished">3D-plott</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
+        <source>Add Accelerometer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
+        <source>Accelerometer</source>
+        <translation type="unfinished">Accelerometer</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
+        <source>Add Gyroscope</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
+        <source>Gyroscope</source>
+        <translation type="unfinished">Gyroskop</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
+        <source>Add GPS Map</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
+        <source>GPS Map</source>
+        <translation type="unfinished">GPS-karta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
+        <source>Add Dataset</source>
+        <translation type="unfinished">Lägg till Dataset</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
+        <source>Add Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
+        <source>Add FFT Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
+        <source>Add Gauge</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
+        <source>Add Level Indicator</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
+        <source>Add Compass</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
+        <source>Add LED Indicator</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
+        <source>Add Action</source>
+        <translation>Lägg till Åtgärd</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="111"/>
+        <source>Add Output Panel</source>
+        <translation>Lägg till Utdatapanel</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
+        <source>Add Output Slider</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
+        <source>Add Output Toggle</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
+        <source>Add Output Knob</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
+        <source>Add Output Text Field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
+        <source>Add Output Button</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -15236,9 +15604,13 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
         <translation>Projektstruktur</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
@@ -16024,8 +16396,8 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
         <translation>Allmänt I/O-fel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>Frame-parser Inaktiverad</translation>
     </message>
@@ -16067,8 +16439,8 @@ Troligaste orsak: en oändlig loop eller extremt långsam operation i skriptkrop
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Parse-funktion Saknas</translation>
     </message>
@@ -16084,8 +16456,8 @@ Säkerställ att din kod innehåller:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Körningsfel i Parse-funktionen</translation>
     </message>
@@ -18974,194 +19346,182 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
 <context>
     <name>StartMenu</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="278"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="191"/>
         <source>Workspaces</source>
         <translation>Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="380"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="293"/>
         <source>No Workspaces Available</source>
         <translation>Inga Arbetsytor Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="415"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="328"/>
         <source>Actions</source>
         <translation>Åtgärder</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="438"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="351"/>
         <source>No Actions Available</source>
         <translation>Inga Åtgärder Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="468"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="381"/>
         <source>Plugins</source>
         <translation>Tillägg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="366"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="279"/>
         <source>New Workspace…</source>
         <translation>Ny Arbetsyta…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="506"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="419"/>
         <source>Manage Plugins…</source>
         <translation>Hantera Tillägg…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="516"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="429"/>
         <source>No Plugins Installed</source>
         <translation>Inga Tillägg Installerade</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="101"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="552"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="465"/>
         <source>Auto Layout</source>
         <translation>Automatisk Layout</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="619"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="532"/>
         <source>Full Screen</source>
         <translation>Helskärm</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="631"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="544"/>
         <source>Add External Window</source>
         <translation>Lägg till Externt Fönster</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="820"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="733"/>
         <source>Clock</source>
         <translation>Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="740"/>
         <source>Stopwatch</source>
         <translation>Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="844"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="757"/>
         <source>Sessions</source>
         <translation>Sessioner</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="766"/>
         <source>File Transmission</source>
         <translation>Filöverföring</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="861"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="774"/>
         <source>AI Assistant</source>
         <translation>Ai-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="352"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="265"/>
         <source>Show "%1"</source>
         <translation>Visa "%1"</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="357"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="270"/>
         <source>Show All Hidden Workspaces</source>
         <translation>Visa Alla Dolda Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="581"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="494"/>
         <source>Freeze Dashboard</source>
         <translation>Frys Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="651"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="564"/>
         <source>Export</source>
         <translation>Exportera</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="682"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="595"/>
         <source>CSV File</source>
         <translation>CSV-fil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="688"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="601"/>
         <source>MDF4 File</source>
         <translation>MDF4-fil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="694"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
         <source>Console Transcript</source>
         <translation>Konsolutskrift</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="703"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="616"/>
         <source>Session Database</source>
         <translation>Sessionsdatabas</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="717"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="630"/>
         <source>No Export Formats Available</source>
         <translation>Inga Exportformat Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="747"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="660"/>
         <source>Tools</source>
         <translation>Verktyg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="876"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="789"/>
         <source>No Tools Available</source>
         <translation>Inga Verktyg Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="944"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="857"/>
         <source>Reset</source>
         <translation>Återställ</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="965"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Quit</source>
         <translation>Avsluta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="991"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="904"/>
         <source>Edit…</source>
         <translation>Redigera…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="803"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="716"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="725"/>
         <source>Notifications</source>
         <translation>Aviseringar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="835"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="748"/>
         <source>Preferences</source>
         <translation>Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="916"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="829"/>
         <source>Help Center</source>
         <translation>Hjälpcenter</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="915"/>
         <source>Delete</source>
         <translation>Ta Bort</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="916"/>
         <source>Hide</source>
         <translation>Dölj</translation>
     </message>
@@ -19170,17 +19530,17 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="937"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="850"/>
         <source>Resume</source>
         <translation>Återuppta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="938"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>Pause</source>
         <translation>Pausa</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="965"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Disconnect</source>
         <translation>Koppla Från</translation>
     </message>
@@ -19245,9 +19605,8 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation>Datamängdsvärden</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="183"/>
@@ -19293,6 +19652,11 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="349"/>
         <source>No datasets defined in this project.</source>
         <translation>Inga dataset definierade i detta projekt.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
+        <source>Search…</source>
+        <translation type="unfinished">Sök…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
@@ -19410,132 +19774,133 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
 <context>
     <name>Taskbar</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="67"/>
         <source>Start Menu</source>
-        <translation>Startmeny</translation>
+        <translation type="vanished">Startmeny</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="196"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="183"/>
         <source>Menu</source>
         <translation>Meny</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="232"/>
         <source>Search…</source>
-        <translation>Sök…</translation>
+        <translation type="vanished">Sök…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="498"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
         <source>Settings</source>
         <translation>Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="499"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="500"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Notifications</source>
         <translation>Notifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="501"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Clock</source>
         <translation>Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="502"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Stopwatch</source>
         <translation>Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>AI Assistant</source>
         <translation>Ai-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>Resume</source>
         <translation>Återuppta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>Pause</source>
         <translation>Pausa</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="773"/>
         <source>New Workspace…</source>
-        <translation>Ny Arbetsyta…</translation>
+        <translation type="vanished">Ny Arbetsyta…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="799"/>
         <source>No Workspaces Available</source>
-        <translation>Inga Arbetsytor Tillgängliga</translation>
+        <translation type="vanished">Inga Arbetsytor Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <source>Search… (%1)</source>
+        <translation>Sök… (%1)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
         <source>Unfreeze Dashboard</source>
         <translation>Lås Upp Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
         <source>Freeze Dashboard</source>
         <translation>Lås Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Ansluten till %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Ej ansluten</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
         <source>MQTT Publisher</source>
         <translation>MQTT-utgivare</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
         <source>Connected</source>
         <translation>Ansluten</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
         <source>Disconnected</source>
         <translation>Frånkopplad</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
         <source>Mode:</source>
         <translation>Läge:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
         <source>Messages sent:</source>
         <translation>Meddelanden skickade:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>Open MQTT Settings</source>
         <translation>Öppna MQTT-inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="503"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>File Transmission</source>
         <translation>Filöverföring</translation>
     </message>
@@ -19544,7 +19909,7 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Sök widgetar…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
         <source>Remove from Workspace</source>
         <translation>Ta Bort från Arbetsyta</translation>
     </message>
@@ -19822,6 +20187,69 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
     <message>
         <source>Close</source>
         <translation type="vanished">Stäng</translation>
+    </message>
+</context>
+<context>
+    <name>ToolActions</name>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="48"/>
+        <source>Auto Layout</source>
+        <translation>Automatisk Layout</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="56"/>
+        <source>Full Screen</source>
+        <translation>Helskärm</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="62"/>
+        <source>Add External Window</source>
+        <translation>Lägg till Externt Fönster</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="68"/>
+        <source>Console</source>
+        <translation>Konsol</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="74"/>
+        <source>Notifications</source>
+        <translation>Notifikationer</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="82"/>
+        <source>Clock</source>
+        <translation>Klocka</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="90"/>
+        <source>Stopwatch</source>
+        <translation>Stoppur</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="98"/>
+        <source>Preferences</source>
+        <translation>Inställningar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="104"/>
+        <source>Help Center</source>
+        <translation>Hjälpcenter</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="110"/>
+        <source>Sessions</source>
+        <translation>Sessioner</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="117"/>
+        <source>File Transmission</source>
+        <translation>Filöverföring</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="124"/>
+        <source>AI Assistant</source>
+        <translation>Ai-assistent</translation>
     </message>
 </context>
 <context>
@@ -21389,6 +21817,18 @@ Jag förstår att när den löper ut måste jag köpa en licens eller bygga GPLv
     </message>
 </context>
 <context>
+    <name>Widgets::Terminal</name>
+    <message>
+        <source>Tip: press %1 anywhere to open the command palette.</source>
+        <translation type="vanished">Tips: tryck %1 var som helst för att öppna kommandopaletten.</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <source>Tip: Press %1 anywhere to open the command palette.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>Widgets::Waterfall</name>
     <message>
         <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
@@ -21545,105 +21985,84 @@ Jag förstår att när den löper ut måste jag köpa en licens eller bygga GPLv
 <context>
     <name>WorkspaceSwitcherOverlay</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="65"/>
         <source>Console</source>
-        <translation>Konsol</translation>
+        <translation type="vanished">Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="66"/>
         <source>Terminal</source>
-        <translation>Terminal</translation>
+        <translation type="vanished">Terminal</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="67"/>
         <source>Notifications</source>
-        <translation>Notifikationer</translation>
+        <translation type="vanished">Notifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="69"/>
         <source>Clock</source>
-        <translation>Klocka</translation>
+        <translation type="vanished">Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="70"/>
         <source>Stopwatch</source>
-        <translation>Stoppur</translation>
+        <translation type="vanished">Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="92"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="206"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="556"/>
         <source>Workspaces</source>
-        <translation>Arbetsytor</translation>
+        <translation type="vanished">Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="203"/>
         <source>Folders</source>
-        <translation>Mappar</translation>
+        <translation type="vanished">Mappar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="209"/>
         <source>Groups</source>
-        <translation>Grupper</translation>
+        <translation type="vanished">Grupper</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="212"/>
         <source>Widgets</source>
-        <translation>Widgetar</translation>
+        <translation type="vanished">Widgetar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="215"/>
         <source>Tools</source>
-        <translation>Verktyg</translation>
+        <translation type="vanished">Verktyg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="221"/>
         <source>Add Workspace</source>
-        <translation>Lägg till Arbetsyta</translation>
+        <translation type="vanished">Lägg till Arbetsyta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="357"/>
         <source>New Folder</source>
-        <translation>Ny Mapp</translation>
+        <translation type="vanished">Ny Mapp</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="365"/>
         <source>Rename Folder</source>
-        <translation>Byt Namn på Mapp</translation>
+        <translation type="vanished">Byt Namn på Mapp</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="569"/>
         <source>Search</source>
-        <translation>Sök</translation>
+        <translation type="vanished">Sök</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="637"/>
         <source>Back</source>
-        <translation>Tillbaka</translation>
+        <translation type="vanished">Tillbaka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="695"/>
         <source>Type to search, Enter to open, Esc to close</source>
-        <translation>Skriv för att söka, Enter för att öppna, Esc för att stänga</translation>
+        <translation type="vanished">Skriv för att söka, Enter för att öppna, Esc för att stänga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="803"/>
         <source>No results found</source>
-        <translation>Inga resultat hittades</translation>
+        <translation type="vanished">Inga resultat hittades</translation>
     </message>
     <message>
         <source>Search Workspaces…</source>
         <translation type="vanished">Sök Arbetsytor…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="587"/>
         <source>Close</source>
-        <translation>Stäng</translation>
+        <translation type="vanished">Stäng</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="453"/>
         <source>Folder</source>
-        <translation>Mapp</translation>
+        <translation type="vanished">Mapp</translation>
     </message>
     <message>
         <source>No workspaces match your search.</source>

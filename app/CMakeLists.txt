@@ -529,10 +529,11 @@ set(QML_SOURCES
   qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml
   qml/MainWindow/Panes/Dashboard/DashboardLayout.qml
   qml/MainWindow/Panes/Dashboard/ExternalWidgetWindow.qml
+  qml/MainWindow/Panes/Dashboard/PaletteModel.qml
   qml/MainWindow/Panes/Dashboard/StartMenu.qml
   qml/MainWindow/Panes/Dashboard/Taskbar.qml
+  qml/MainWindow/Panes/Dashboard/ToolActions.qml
   qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml
-  qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml
@@ -542,6 +543,7 @@ set(QML_SOURCES
   qml/MainWindow/Panes/Setup.qml
   qml/MainWindow/Panes/Toolbar.qml
   qml/MainWindow/MainWindow.qml
+  qml/MainWindow/MainWindowActions.qml
   qml/ProjectEditor/Sections/ProjectStructure.qml
   qml/ProjectEditor/Sections/ProjectToolbar.qml
   qml/ProjectEditor/Views/ActionView.qml
@@ -573,6 +575,7 @@ set(QML_SOURCES
   qml/ProjectEditor/Dialogs/FrequencyMarkersEditor.qml
   qml/ProjectEditor/Dialogs/ProtoPreviewDialog.qml
   qml/ProjectEditor/ProjectEditor.qml
+  qml/ProjectEditor/ProjectEditorActions.qml
   qml/Widgets/Dashboard/Accelerometer.qml
   qml/Widgets/Dashboard/Bar.qml
   qml/Widgets/Dashboard/Clock.qml
@@ -596,6 +599,7 @@ set(QML_SOURCES
   qml/Widgets/Dashboard/ValueFormat.js
   qml/Widgets/BigButton.qml
   qml/Widgets/BoundField.qml
+  qml/Widgets/CommandPalette.qml
   qml/Widgets/Combo.qml
   qml/Widgets/InfoBullet.qml
   qml/Widgets/LedIndicator.qml

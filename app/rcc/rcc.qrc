@@ -557,7 +557,6 @@
         <file>icons/start/file-transmission.svg</file>
         <file>icons/start/freeze.svg</file>
         <file>icons/start/full-screen.svg</file>
-        <file>icons/start/groups.svg</file>
         <file>icons/start/help.svg</file>
         <file>icons/start/mf4-log.svg</file>
         <file>icons/start/normal-screen.svg</file>
@@ -911,5 +910,7 @@
         <file>chat-viewer.html</file>
         <file>markdown-viewer.html</file>
         <file>icons/start/workspaces.svg</file>
+        <file>icons/start/add-workspace.svg</file>
+        <file>icons/buttons/utilities.svg</file>
     </qresource>
 </RCC>

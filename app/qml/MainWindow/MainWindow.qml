@@ -28,6 +28,7 @@ import QtQuick.Controls
 import SerialStudio
 import "Panes" as Panes
 import "../Widgets" as Widgets
+import "Panes/Dashboard" as DashPanes
 
 Widgets.SmartWindow {
   id: root
@@ -506,8 +507,12 @@ Widgets.SmartWindow {
     onActivated: dashboard.jumpToWorkspaceIndex(8)
   } Shortcut {
     sequence: "Ctrl+K"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.openWorkspaceSwitcher()
+    onActivated: {
+      if (root.dashboardVisible)
+        dashboard.openWorkspaceSwitcher()
+      else
+        _mwPalette.toggle()
+    }
   }
 
   //
@@ -749,6 +754,32 @@ Widgets.SmartWindow {
           color: Cpp_ThemeManager.colors["placeholder_text"]
         }
       }
+    }
+
+    //
+    // Tools-only command palette (Ctrl+K when the dashboard is not the active pane, R12).
+    //
+    DashPanes.ToolActions {
+      id: _mwPaletteTools
+
+      taskBar: null
+      allowExternalWindow: false
+      onFullScreenRequested: root.toggleFullScreen()
+    } MainWindowActions {
+      id: _mwToolbarActions
+    } DashPanes.PaletteModel {
+      id: _mwPaletteModel
+
+      host: null
+      taskBar: null
+      workspacesEnabled: false
+      toolActions: _mwPaletteTools
+      extraTools: _mwToolbarActions
+      extraTitle: qsTr("Application")
+    } Widgets.CommandPalette {
+      id: _mwPalette
+
+      model: _mwPaletteModel
     }
   }
 }

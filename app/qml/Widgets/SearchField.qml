@@ -41,6 +41,11 @@ Rectangle {
 
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
+  //
+  // Additive: forwarded from the inner field so Enter fires regardless of which child has focus.
+  //
+  signal accepted()
+
   onActiveFocusChanged: if (activeFocus) textField.forceActiveFocus()
 
   LineField {
@@ -51,6 +56,7 @@ Rectangle {
     anchors.leftMargin: 4
     anchors.rightMargin: 4
     font: Cpp_Misc_CommonFonts.uiFont
+    onAccepted: root.accepted()
 
     leftPadding: root.rtl ? actionButton.width + 12 : 8
     rightPadding: root.rtl ? 8 : actionButton.width + 12

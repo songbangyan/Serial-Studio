@@ -2,7 +2,7 @@
  * Serial Studio
  * https://serial-studio.com/
  *
- * Copyright (C) 2020–2025 Alex Spataru
+ * Copyright (C) 2020-2025 Alex Spataru
  *
  * This file is dual-licensed:
  *
@@ -26,9 +26,8 @@ import QtQuick.Controls
 import QtQuick.Controls.impl
 
 import SerialStudio
-import SerialStudio.UI as SS_Ui
 
-import "../../../Widgets" as Widgets
+import "." as Widgets
 
 Item {
   id: root
@@ -38,7 +37,16 @@ Item {
   anchors.fill: parent
   onVisibleChanged: if (visible) Qt.callLater(_search.forceActiveFocus)
 
-  required property SS_Ui.TaskBar taskBar
+  //
+  // The palette is entirely driven by an injected controller; it holds no context assumptions.
+  //
+  required property var model
+
+  //
+  // Context-provided chrome (dashboard = Workspaces, main window = Tools, ...).
+  //
+  property string title: qsTr("Commands")
+  property string titleIcon: "qrc:/icons/buttons/utilities.svg"
 
   //
   // Breadcrumb of folder levels; each frame is { text, nodes, folderId }. folderId -1 is the root.
@@ -46,7 +54,7 @@ Item {
   property var levelStack: []
 
   //
-  // Ordered categories { title, items } for rendering, plus a flat list for keyboard navigation.
+  // Ordered { title, items } sections for rendering, plus a flat list for keyboard navigation.
   //
   property var sections: []
   property var displayNodes: []
@@ -61,43 +69,23 @@ Item {
   readonly property bool searching: _search.text.trim().length > 0
   readonly property int columns: Math.max(1, Math.floor((panel.width - 64) / 152))
 
-  readonly property var toolDefs: [
-    { "tool": "terminal", "text": qsTr("Console"), "icon": "qrc:/icons/start/console.svg",
-      "keywords": [qsTr("Terminal")] },
-    { "tool": "notificationLog", "text": qsTr("Notifications"),
-      "icon": "qrc:/icons/start/notifications.svg" },
-    { "tool": "clock", "text": qsTr("Clock"), "icon": "qrc:/icons/start/clock.svg" },
-    { "tool": "stopwatch", "text": qsTr("Stopwatch"), "icon": "qrc:/icons/start/stopwatch.svg" }
-  ]
-
   //
-  // True when a tool matches the query by its label or any translated synonym (e.g. "terminal"
-  // finds the Console). Keeps discovery forgiving of the name users reach for first.
+  // Header/hint collapse thresholds for small windows (R8).
   //
-  function toolMatches(td, query) {
-    if (td.text.toLowerCase().indexOf(query) >= 0)
-      return true
-
-    const kw = td.keywords || []
-    for (let i = 0; i < kw.length; ++i)
-      if (kw[i].toLowerCase().indexOf(query) >= 0)
-        return true
-
-    return false
-  }
+  readonly property bool compact: panel.width < 460
 
   function open() {
     _search.text = ""
-    const tree = taskBar ? taskBar.workspaceTree() : []
-    root.levelStack = [{ text: qsTr("Workspaces"), nodes: tree, folderId: -1 }]
+    const tree = root.model ? root.model.workspaceTree() : []
+    root.levelStack = [{ text: root.title, nodes: tree, folderId: -1 }]
     root.recompute()
     root.visible = true
     _search.forceActiveFocus()
   }
 
   function close() {
-    if (taskBar)
-      taskBar.searchFilter = ""
+    if (root.model && typeof root.model.dismiss === "function")
+      root.model.dismiss()
 
     root.visible = false
   }
@@ -110,119 +98,21 @@ Item {
   }
 
   //
-  // Flattens every workspace leaf, tagging each with its full folder path (e.g. DAQ / ATAM / Sum).
-  //
-  function flattenWorkspaces(nodes, prefix, out) {
-    for (let i = 0; i < nodes.length; ++i) {
-      const node = nodes[i]
-      const path = prefix.length > 0 ? (prefix + " / " + node.text) : node.text
-      if (node.isFolder)
-        root.flattenWorkspaces(node.children, path, out)
-      else
-        out.push({ id: node.id, text: node.text, icon: node.icon, isFolder: false, fullPath: path })
-    }
-  }
-
-  //
-  // Flattens every folder at any depth, tagging each with its full path, so search can match and
-  // drill into folders (not just workspace leaves). Children are kept intact for enterFolder().
-  //
-  function flattenFolders(nodes, prefix, out) {
-    for (let i = 0; i < nodes.length; ++i) {
-      const node = nodes[i]
-      if (!node.isFolder)
-        continue
-
-      const path = prefix.length > 0 ? (prefix + " / " + node.text) : node.text
-      out.push({ id: node.id, text: node.text, icon: node.icon, isFolder: true,
-                 children: node.children, fullPath: path })
-      root.flattenFolders(node.children, path, out)
-    }
-  }
-
-  function activateTool(tool) {
-    if (tool === "terminal")
-      Cpp_UI_Dashboard.terminalEnabled = true
-    else if (tool === "notificationLog")
-      Cpp_UI_Dashboard.notificationLogEnabled = true
-    else if (tool === "clock")
-      Cpp_UI_Dashboard.clockEnabled = true
-    else if (tool === "stopwatch")
-      Cpp_UI_Dashboard.stopwatchEnabled = true
-  }
-
-  //
-  // Rebuilds the categorized sections and the flat navigation list. Browsing (empty query) shows
-  // the current folder level plus an "add workspace" cell; searching splits results by category.
+  // Rebuilds the sections and the flat navigation list from the model: browse for an empty query,
+  // categorized search results otherwise.
   //
   function recompute() {
-    const query = _search.text.trim().toLowerCase()
-    if (taskBar)
-      taskBar.searchFilter = _search.text.trim()
-
-    let secs = []
-    if (query.length > 0) {
-      const tree = taskBar ? taskBar.workspaceTree() : []
-
-      let ws = []
-      root.flattenWorkspaces(tree, "", ws)
-      ws = ws.filter(n => n.text.toLowerCase().indexOf(query) >= 0)
-
-      let folders = []
-      root.flattenFolders(tree, "", folders)
-      folders = folders.filter(n => n.text.toLowerCase().indexOf(query) >= 0)
-
-      let groups = []
-      let widgets = []
-      const wr = taskBar ? taskBar.searchResults : []
-      for (let i = 0; i < wr.length; ++i) {
-        const w = wr[i]
-        const node = {
-          "id": w.windowId,
-          "isWidget": true,
-          "isFolder": false,
-          "text": w.widgetName,
-          "icon": w.widgetIcon,
-          "groupId": w.groupId
-        }
-        if (w.isGroupWidget)
-          groups.push(node)
-        else
-          widgets.push(node)
-      }
-
-      let tools = []
-      for (let t = 0; t < root.toolDefs.length; ++t) {
-        const td = root.toolDefs[t]
-        if (root.toolMatches(td, query))
-          tools.push({ "isTool": true, "isFolder": false, "tool": td.tool,
-                       "text": td.text, "icon": td.icon })
-      }
-
-      if (folders.length > 0)
-        secs.push({ "title": qsTr("Folders"), "items": folders })
-
-      if (ws.length > 0)
-        secs.push({ "title": qsTr("Workspaces"), "items": ws })
-
-      if (groups.length > 0)
-        secs.push({ "title": qsTr("Groups"), "items": groups })
-
-      if (widgets.length > 0)
-        secs.push({ "title": qsTr("Widgets"), "items": widgets })
-
-      if (tools.length > 0)
-        secs.push({ "title": qsTr("Tools"), "items": tools })
-    } else {
-      const addCell = {
-        "id": -1,
-        "isAdd": true,
-        "isFolder": false,
-        "text": qsTr("Add Workspace"),
-        "icon": "qrc:/icons/buttons/add-workspace.svg"
-      }
-      secs.push({ "title": "", "items": root.currentNodes.concat([addCell]) })
+    if (!root.model) {
+      root.sections = []
+      root.displayNodes = []
+      root.currentIndex = -1
+      return
     }
+
+    const query = _search.text.trim()
+    let secs = query.length > 0
+               ? root.model.searchSections(query)
+               : root.model.browseSections(root.currentNodes, root.currentFolderId)
 
     let flat = []
     for (let s = 0; s < secs.length; ++s)
@@ -237,8 +127,7 @@ Item {
   }
 
   //
-  // Slide the result grid in from the given direction: +1 (forward, from the right) on drill-in,
-  // -1 (back, from the left) on go-up. The new content is already in place; only the offset animates.
+  // Slide the result area in from the given direction: +1 on drill-in, -1 on go-up.
   //
   function slide(direction) {
     _slide.x = direction * panel.width
@@ -266,8 +155,7 @@ Item {
   }
 
   //
-  // Jump straight to a breadcrumb level (a shallower folder in the trail). Ignores the current
-  // level and any out-of-range index.
+  // Jump to a shallower breadcrumb level; ignores the current level and out-of-range indices.
   //
   function goToLevel(level) {
     if (level < 0 || level >= root.levelStack.length - 1)
@@ -283,35 +171,8 @@ Item {
     if (!node)
       return
 
-    if (node.isAdd) {
-      Cpp_JSON_ProjectModel.promptAddWorkspaceInFolder(root.currentFolderId)
-      root.currentIndex = -1
-      return
-    }
-
-    if (node.isTool) {
-      root.activateTool(node.tool)
-      root.close()
-      return
-    }
-
-    if (node.isWidget) {
-      if (taskBar)
-        taskBar.navigateToWidget(node.id, node.groupId)
-
-      root.close()
-      return
-    }
-
-    if (node.isFolder) {
-      root.enterFolder(node)
-      return
-    }
-
-    if (taskBar)
-      taskBar.selectWorkspaceById(node.id)
-
-    root.close()
+    root.model.activate(node)
+    root.currentIndex = -1
   }
 
   function activateCurrent() {
@@ -336,37 +197,31 @@ Item {
   }
 
   //
-  // Transparent catcher: a press anywhere outside the dialog dismisses it (no dimming).
+  // The model raises folder drill-in and close as navigation outcomes of activation.
+  //
+  Connections {
+    target: root.model
+    function onEnterFolderRequested(node) { root.enterFolder(node) }
+    function onCloseRequested() { root.close() }
+  }
+
+  //
+  // Focus-independent Escape: closes no matter which child holds focus.
+  //
+  Shortcut {
+    sequences: ["Escape"]
+    enabled: root.visible
+    onActivated: root.close()
+  }
+
+  //
+  // Transparent catcher: a press outside the dialog dismisses it, and wheel events are swallowed
+  // so widgets underneath (e.g. plots) never scroll or zoom while the palette is open.
   //
   MouseArea {
     anchors.fill: parent
     onClicked: root.close()
-  }
-
-  //
-  // Folder context menu (right-click a cell).
-  //
-  Menu {
-    id: _ctxMenu
-
-    property int folderId: -1
-
-    MenuItem {
-      icon.width: 16
-      icon.height: 16
-      text: qsTr("New Folder")
-      icon.source: "qrc:/icons/project-editor/actions/add-folder-small.svg"
-      onTriggered: Cpp_JSON_ProjectModel.promptAddWorkspaceFolder(root.currentFolderId)
-    }
-
-    MenuItem {
-      icon.width: 16
-      icon.height: 16
-      text: qsTr("Rename Folder")
-      enabled: _ctxMenu.folderId >= 0
-      icon.source: "qrc:/icons/project-editor/actions/rename.svg"
-      onTriggered: Cpp_JSON_ProjectModel.promptRenameWorkspaceFolder(_ctxMenu.folderId)
-    }
+    onWheel: (wheel) => { wheel.accepted = true }
   }
 
   //
@@ -381,7 +236,7 @@ Item {
   }
 
   //
-  // One result cell (workspace, folder, group, widget, tool, or the add-workspace action).
+  // One browse grid cell (workspace, folder, tool, or the add-workspace action).
   //
   Component {
     id: _cellComponent
@@ -408,9 +263,6 @@ Item {
                       ? Cpp_ThemeManager.colors["highlight"]
                       : Cpp_ThemeManager.colors["groupbox_border"]
 
-        //
-        // Very slight highlight wash on hover (skipped when already selected).
-        //
         Rectangle {
           opacity: 0.10
           anchors.fill: parent
@@ -440,10 +292,9 @@ Item {
           Label {
             elide: Text.ElideRight
             Layout.fillWidth: true
+            text: _cell.modelData.text
             font: Cpp_Misc_CommonFonts.uiFont
             horizontalAlignment: Text.AlignHCenter
-            text: _cell.modelData.fullPath !== undefined ? _cell.modelData.fullPath
-                                                         : _cell.modelData.text
             color: _cell.highlighted ? Cpp_ThemeManager.colors["highlighted_text"]
                                      : Cpp_ThemeManager.colors["text"]
           }
@@ -465,25 +316,97 @@ Item {
           hoverEnabled: true
           anchors.fill: parent
           cursorShape: Qt.PointingHandCursor
-          acceptedButtons: Qt.LeftButton | Qt.RightButton
-          onClicked: (mouse) => {
-                       // Right-click opens the folder menu without stealing the selection highlight.
-                       if (mouse.button === Qt.RightButton) {
-                         _ctxMenu.folderId = _cell.modelData.isFolder ? _cell.modelData.id : -1
-                         _ctxMenu.popup()
-                         return
-                       }
-
-                       root.currentIndex = _cell.modelData._idx
-                       root.activate(_cell.modelData)
-                     }
+          onClicked: {
+            root.currentIndex = _cell.modelData._idx
+            root.activate(_cell.modelData)
+          }
         }
       }
     }
   }
 
   //
-  // Switcher dialog
+  // One dense search row: icon + elided primary name + elided reduced-opacity path subtitle.
+  //
+  Component {
+    id: _rowComponent
+
+    Item {
+      id: _row
+
+      height: 34
+      width: parent ? parent.width : 0
+
+      required property var modelData
+
+      readonly property bool hovered: _rowMouse.containsMouse
+      readonly property bool highlighted: _row.modelData._idx === root.currentIndex
+
+      Rectangle {
+        radius: 4
+        anchors.fill: parent
+        anchors.rightMargin: 2
+        color: _row.highlighted ? Cpp_ThemeManager.colors["highlight"]
+                                : (_row.hovered ? Cpp_ThemeManager.colors["groupbox_background"]
+                                                : "transparent")
+
+        RowLayout {
+          spacing: 8
+          anchors.fill: parent
+          anchors.leftMargin: 8
+          anchors.rightMargin: 8
+
+          IconImage {
+            width: 18
+            height: 18
+            opacity: 0.9
+            color: "transparent"
+            sourceSize: Qt.size(18, 18)
+            source: _row.modelData.icon
+            Layout.alignment: Qt.AlignVCenter
+          }
+
+          Label {
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+            text: _row.modelData.text
+            font: Cpp_Misc_CommonFonts.uiFont
+            verticalAlignment: Text.AlignVCenter
+            color: _row.highlighted ? Cpp_ThemeManager.colors["highlighted_text"]
+                                    : Cpp_ThemeManager.colors["text"]
+          }
+
+          Label {
+            opacity: 0.7
+            elide: Text.ElideRight
+            Layout.maximumWidth: Math.min(240, _row.width * 0.5)
+            verticalAlignment: Text.AlignVCenter
+            text: _row.modelData.subtitle !== undefined ? _row.modelData.subtitle : ""
+            visible: _row.modelData.subtitle !== undefined && _row.modelData.subtitle.length > 0
+            font: Cpp_Misc_CommonFonts.customUiFont(0.8, false)
+            color: _row.highlighted ? Cpp_ThemeManager.colors["highlighted_text"]
+                                    : Cpp_ThemeManager.colors["text"]
+          }
+        }
+
+        MouseArea {
+          id: _rowMouse
+
+          hoverEnabled: true
+          anchors.fill: parent
+          cursorShape: Qt.PointingHandCursor
+          onEntered: root.currentIndex = _row.modelData._idx
+          onClicked: {
+            root.currentIndex = _row.modelData._idx
+            root.activate(_row.modelData)
+          }
+        }
+      }
+    }
+  }
+
+  //
+  // Palette dialog
   //
   Rectangle {
     id: panel
@@ -492,24 +415,15 @@ Item {
     radius: 12
     border.width: 1
     anchors.centerIn: parent
-    width: Math.min(680, root.width - 80)
-    height: Math.min(480, root.height - 80)
+    width: Math.min(680, root.width - 32)
+    height: Math.min(480, root.height - 32)
     color: Cpp_ThemeManager.colors["pane_background"]
     border.color: Cpp_ThemeManager.colors["groupbox_border"]
 
-    //
-    // Swallows clicks so they never reach the outside dismiss-catcher, and turns any right-click on
-    // the dialog chrome (or empty space) into the folder context menu at the current level.
-    //
     MouseArea {
       anchors.fill: parent
       acceptedButtons: Qt.LeftButton | Qt.RightButton
-      onClicked: (mouse) => {
-                   if (mouse.button === Qt.RightButton) {
-                     _ctxMenu.folderId = -1
-                     _ctxMenu.popup()
-                   }
-                 }
+      onWheel: (wheel) => { wheel.accepted = true }
     }
 
     ColumnLayout {
@@ -517,10 +431,10 @@ Item {
       anchors.fill: parent
 
       //
-      // Header: a constant Workspaces identity (icon + title), centered search, and close. Folder
-      // navigation lives in the breadcrumb bar below, so this title never changes underfoot.
+      // Header
       //
       Rectangle {
+        z: 999
         border.width: 1
         Layout.fillWidth: true
         Layout.preferredHeight: 56
@@ -531,12 +445,12 @@ Item {
         gradient: Gradient {
           GradientStop {
             position: 0
-            color: Cpp_ThemeManager.colors["pane_caption_bg_top"]
+            color: Cpp_ThemeManager.colors["toolbar_top"]
           }
 
           GradientStop {
             position: 1
-            color: Cpp_ThemeManager.colors["pane_caption_bg_bottom"]
+            color: Cpp_ThemeManager.colors["toolbar_bottom"]
           }
         }
 
@@ -545,36 +459,39 @@ Item {
 
           anchors.leftMargin: 12
           anchors.left: parent.left
+          source: root.titleIcon
           sourceSize: Qt.size(18, 18)
-          source: "qrc:/icons/buttons/workspaces.svg"
+          visible: !root.compact
           anchors.verticalCenter: parent.verticalCenter
-          color: Cpp_ThemeManager.colors["pane_caption_foreground"]
+          color: Cpp_ThemeManager.colors["toolbar_text"]
         }
 
         Label {
+          id: _headerTitle
+
           anchors.leftMargin: 8
-          text: qsTr("Workspaces")
+          text: root.title
+          visible: !root.compact
           anchors.left: _headerIcon.right
           verticalAlignment: Text.AlignVCenter
           font: Cpp_Misc_CommonFonts.boldUiFont
           anchors.verticalCenter: parent.verticalCenter
-          color: Cpp_ThemeManager.colors["pane_caption_foreground"]
+          color: Cpp_ThemeManager.colors["toolbar_text"]
         }
 
         Widgets.SearchField {
           id: _search
 
           anchors.centerIn: parent
+          onAccepted: root.activateCurrent()
           onTextChanged: root.recompute()
-          placeholderText: qsTr("Search")
+          placeholderText: qsTr("Search…")
           Keys.onLeftPressed: root.move(-1)
           Keys.onRightPressed: root.move(1)
           Keys.onEscapePressed: root.close()
-          width: Math.min(300, parent.width - 360)
-          Keys.onUpPressed: root.move(-root.columns)
-          Keys.onDownPressed: root.move(root.columns)
-          Keys.onEnterPressed: root.activateCurrent()
-          Keys.onReturnPressed: root.activateCurrent()
+          width: Math.max(120, Math.min(300, parent.width - 360))
+          Keys.onUpPressed: root.move(root.searching ? -1 : -root.columns)
+          Keys.onDownPressed: root.move(root.searching ? 1 : root.columns)
         }
 
         Widgets.IconButton {
@@ -589,7 +506,7 @@ Item {
           icon.source: "qrc:/icons/buttons/close.svg"
           anchors.verticalCenter: parent.verticalCenter
           icon.color: (hovered || down) ? Cpp_ThemeManager.colors["highlight"]
-                                        : Cpp_ThemeManager.colors["pane_caption_foreground"]
+                                        : Cpp_ThemeManager.colors["toolbar_text"]
 
           HoverHandler {
             cursorShape: Qt.PointingHandCursor
@@ -598,28 +515,26 @@ Item {
       }
 
       //
-      // Breadcrumb bar: a Back button plus the folder trail. Each earlier crumb jumps to that level;
-      // the trail is hidden at the root (where Back is disabled) and a hint explains how to drive it.
+      // Breadcrumb bar (kept above the unclipped scroll content).
       //
       Rectangle {
-        Layout.leftMargin: 1
-        Layout.rightMargin: 1
+        z: 2
+        border.width: 1
+        Layout.topMargin: -1
         Layout.fillWidth: true
         Layout.preferredHeight: 32
-        color: Cpp_ThemeManager.colors["groupbox_background"]
+        border.color: Cpp_ThemeManager.colors["pane_caption_border"]
 
-        Rectangle {
-          height: 1
-          width: parent.width
-          anchors.top: parent.top
-          color: Cpp_ThemeManager.colors["groupbox_border"]
-        }
+        gradient: Gradient {
+          GradientStop {
+            position: 0
+            color: Cpp_ThemeManager.colors["pane_caption_bg_top"]
+          }
 
-        Rectangle {
-          height: 1
-          width: parent.width
-          anchors.bottom: parent.bottom
-          color: Cpp_ThemeManager.colors["groupbox_border"]
+          GradientStop {
+            position: 1
+            color: Cpp_ThemeManager.colors["pane_caption_bg_bottom"]
+          }
         }
 
         RowLayout {
@@ -637,8 +552,8 @@ Item {
             ToolTip.text: qsTr("Back")
             Layout.alignment: Qt.AlignVCenter
             enabled: root.levelStack.length > 1
-            icon.color: Cpp_ThemeManager.colors["text"]
             icon.source: "qrc:/icons/buttons/backward.svg"
+            icon.color: Cpp_ThemeManager.colors["pane_caption_foreground"]
 
             HoverHandler {
               cursorShape: Qt.PointingHandCursor
@@ -665,7 +580,7 @@ Item {
                 Layout.maximumWidth: 160
                 text: _crumb.modelData.text
                 verticalAlignment: Text.AlignVCenter
-                color: Cpp_ThemeManager.colors["text"]
+                color: Cpp_ThemeManager.colors["pane_caption_foreground"]
                 font: _crumb.isLast ? Cpp_Misc_CommonFonts.boldUiFont
                                     : Cpp_Misc_CommonFonts.uiFont
 
@@ -681,8 +596,8 @@ Item {
                 text: "/"
                 opacity: 0.4
                 visible: !_crumb.isLast
-                color: Cpp_ThemeManager.colors["text"]
                 font: Cpp_Misc_CommonFonts.uiFont
+                color: Cpp_ThemeManager.colors["pane_caption_foreground"]
               }
             }
           }
@@ -692,10 +607,11 @@ Item {
           Label {
             opacity: 0.5
             elide: Text.ElideRight
-            text: qsTr("Type to search, Enter to open, Esc to close")
-            color: Cpp_ThemeManager.colors["text"]
+            visible: !root.compact
             verticalAlignment: Text.AlignVCenter
             font: Cpp_Misc_CommonFonts.customUiFont(0.85, false)
+            text: qsTr("Type to search, Enter to open, Esc to close")
+            color: Cpp_ThemeManager.colors["pane_caption_foreground"]
           }
         }
       }
@@ -703,7 +619,6 @@ Item {
       Flickable {
         id: _scroll
 
-        clip: true
         Layout.margins: 16
         contentWidth: width
         Layout.fillWidth: true
@@ -713,21 +628,6 @@ Item {
 
         ScrollBar.vertical: ScrollBar {
           policy: _scroll.contentHeight > _scroll.height ? ScrollBar.AlwaysOn : ScrollBar.AsNeeded
-        }
-
-        //
-        // Right-click on the empty space between/below result cells opens the current-level folder
-        // menu. Spans the whole viewport (not just the content) so short result sets still respond.
-        //
-        MouseArea {
-          z: -1
-          width: _scroll.width
-          acceptedButtons: Qt.RightButton
-          height: Math.max(_scroll.height, _sectionColumn.height)
-          onClicked: {
-            _ctxMenu.folderId = -1
-            _ctxMenu.popup()
-          }
         }
 
         Column {
@@ -769,6 +669,7 @@ Item {
                   text: _section.modelData.title
                   color: Cpp_ThemeManager.colors["text"]
                   font: Cpp_Misc_CommonFonts.boldUiFont
+                  Component.onCompleted: font.capitalization = Font.AllUppercase
                 }
 
                 Rectangle {
@@ -781,10 +682,22 @@ Item {
 
               Flow {
                 width: parent.width
+                visible: !root.searching
 
                 Repeater {
                   delegate: _cellComponent
-                  model: _section.modelData.items
+                  model: root.searching ? [] : _section.modelData.items
+                }
+              }
+
+              Column {
+                spacing: 2
+                width: parent.width
+                visible: root.searching
+
+                Repeater {
+                  delegate: _rowComponent
+                  model: root.searching ? _section.modelData.items : []
                 }
               }
             }
@@ -797,10 +710,25 @@ Item {
         Layout.fillWidth: true
         Layout.bottomMargin: 16
         font: Cpp_Misc_CommonFonts.uiFont
+        text: qsTr("No results found")
         color: Cpp_ThemeManager.colors["text"]
         horizontalAlignment: Text.AlignHCenter
         visible: root.displayNodes.length === 0
-        text: qsTr("No results found")
+      }
+    }
+
+    //
+    // Thin bottom rule kept above the unclipped scroll content, inset by the corner radius.
+    //
+    Rectangle {
+      z: 2
+      height: 1
+      width: panel.width - 2 * panel.radius
+      color: Cpp_ThemeManager.colors["groupbox_border"]
+
+      anchors {
+        bottom: parent.bottom
+        horizontalCenter: parent.horizontalCenter
       }
     }
   }

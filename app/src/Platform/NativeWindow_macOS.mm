@@ -204,7 +204,9 @@ static void applyMacOSWindowStyle(QWindow *win)
 }
 
 /**
- * @brief Initializes the native window customization for macOS.
+ * @brief Initializes the native window customization for macOS; re-applies nothing for a
+ * window that is already tracked, because color is ignored here and re-running setStyleMask
+ * resets the NSWindow first responder, dropping keyboard focus from the active text field.
  */
 void NativeWindow::addWindow(QObject *window, const QString &color)
 {
@@ -217,25 +219,25 @@ void NativeWindow::addWindow(QObject *window, const QString &color)
   if (!win->handle())
     win->create();
 
-  applyMacOSWindowStyle(win);
-  if (!m_windows.contains(win))
-  {
-    m_windows.append(win);
-    connect(win, &QWindow::windowStateChanged, this,
-            &NativeWindow::onWindowStateChanged);
+  if (m_windows.contains(win))
+    return;
 
-    NSView *view = reinterpret_cast<NSView *>(win->winId());
-    NSWindow *nsWin = view ? [view window] : nil;
-    if (nsWin)
-    {
-      [[NSNotificationCenter defaultCenter]
-          addObserverForName:NSWindowDidExitFullScreenNotification
-                      object:nsWin
-                       queue:[NSOperationQueue mainQueue]
-                  usingBlock:^(NSNotification *note) {
-                    applyMacOSWindowStyleToNSWindow((NSWindow *)note.object);
-                  }];
-    }
+  applyMacOSWindowStyle(win);
+  m_windows.append(win);
+  connect(win, &QWindow::windowStateChanged, this,
+          &NativeWindow::onWindowStateChanged);
+
+  NSView *view = reinterpret_cast<NSView *>(win->winId());
+  NSWindow *nsWin = view ? [view window] : nil;
+  if (nsWin)
+  {
+    [[NSNotificationCenter defaultCenter]
+        addObserverForName:NSWindowDidExitFullScreenNotification
+                    object:nsWin
+                     queue:[NSOperationQueue mainQueue]
+                usingBlock:^(NSNotification *note) {
+                  applyMacOSWindowStyleToNSWindow((NSWindow *)note.object);
+                }];
   }
 }
 

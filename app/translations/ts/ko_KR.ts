@@ -586,9 +586,13 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>행을 클릭하여 작업 공간에 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
@@ -2395,6 +2399,48 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     </message>
 </context>
 <context>
+    <name>CommandPalette</name>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <source>Folder</source>
+        <translation>폴더</translation>
+    </message>
+    <message>
+        <source>Search</source>
+        <translation type="vanished">검색</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <source>Commands</source>
+        <translation type="unfinished">명령</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <source>Close</source>
+        <translation>닫기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <source>Back</source>
+        <translation>뒤로</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <source>Type to search, Enter to open, Esc to close</source>
+        <translation>입력하여 검색, Enter로 열기, Esc로 닫기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <source>No results found</source>
+        <translation>결과 없음</translation>
+    </message>
+</context>
+<context>
     <name>Console</name>
     <message>
         <location filename="../../qml/MainWindow/Panes/Console.qml" line="32"/>
@@ -2673,8 +2719,12 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
+    </message>
+    <message>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="250"/>
@@ -3079,6 +3129,11 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="235"/>
         <source>API Server Off</source>
         <translation>API 서버 꺼짐</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="579"/>
+        <source>Workspaces</source>
+        <translation>작업 공간</translation>
     </message>
 </context>
 <context>
@@ -5979,15 +6034,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Serial Studio 프로젝트 저장</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio 프로젝트 파일 (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>제목 없는 프로젝트</translation>
     </message>
@@ -6242,9 +6297,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>작업 공간</translation>
     </message>
@@ -6271,6 +6326,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6283,8 +6340,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>이름:</translation>
     </message>
@@ -6324,10 +6379,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>레지스터 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>이 작업은 취소할 수 없습니다.</translation>
     </message>
@@ -6337,9 +6392,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>테이블과 함께 %1개의 레지스터가 제거됩니다. 이 작업은 취소할 수 없습니다.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>"%1"을(를) 삭제하시겠습니까?</translation>
     </message>
@@ -6370,8 +6425,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>테이블 가져오기</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>새 작업 공간</translation>
     </message>
@@ -12681,34 +12736,43 @@ Please provide the necessary credentials.</source>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="211"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="212"/>
         <source>Console Only Mode</source>
         <translation>콘솔 전용 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="214"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="215"/>
         <source>Quick Plot Mode</source>
         <translation>빠른 플롯 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="221"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="222"/>
         <source>Empty Project</source>
         <translation>빈 프로젝트</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="738"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="743"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="746"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="751"/>
         <source>Waiting for data…</source>
         <translation>데이터 대기 중…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="747"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="752"/>
         <source>Connecting to device…</source>
         <translation>장치 연결 중…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <source>Application</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation type="vanished">명령</translation>
     </message>
     <message>
         <location filename="../../../lib/QCodeEditor/example/src/MainWindow.cpp" line="146"/>
@@ -12734,6 +12798,49 @@ Please provide the necessary credentials.</source>
         <location filename="../../../lib/QCodeEditor/example/src/MainWindow.cpp" line="214"/>
         <source> spaces</source>
         <translation>공백</translation>
+    </message>
+</context>
+<context>
+    <name>MainWindowActions</name>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
+        <source>Project Editor</source>
+        <translation type="unfinished">프로젝트 편집기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
+        <source>Open Project</source>
+        <translation type="unfinished">프로젝트 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
+        <source>Open CSV</source>
+        <translation type="unfinished">CSV 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
+        <source>Open MDF4</source>
+        <translation type="unfinished">MDF4 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
+        <source>Deploy Operator App</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
+        <source>Extensions</source>
+        <translation type="unfinished">확장 기능</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
+        <source>Examples</source>
+        <translation type="unfinished">예제</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
+        <source>About</source>
+        <translation type="unfinished">정보</translation>
     </message>
 </context>
 <context>
@@ -13284,8 +13391,8 @@ Would you like to open the download page?</source>
         <translation>Info.plist를 쓸 수 없음: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windows 바로가기 생성기는 이 플랫폼에서 사용할 수 없습니다.</translation>
     </message>
@@ -13316,8 +13423,8 @@ Would you like to open the download page?</source>
         <translation>.lnk 파일 저장 실패(HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>macOS 바로가기 생성기는 이 플랫폼에서 사용할 수 없습니다.</translation>
     </message>
@@ -14496,8 +14603,12 @@ Add groups above to poll multiple register types.</source>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
+    </message>
+    <message>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="148"/>
@@ -14826,6 +14937,41 @@ Add groups above to poll multiple register types.</source>
         <location filename="../../qml/ProjectEditor/Dialogs/PainterTestDialog.qml" line="245"/>
         <source>Close</source>
         <translation>닫기</translation>
+    </message>
+</context>
+<context>
+    <name>PaletteModel</name>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="126"/>
+        <source>Add Workspace</source>
+        <translation>작업 공간 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="129"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="194"/>
+        <source>Workspaces</source>
+        <translation>작업 공간</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="140"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="209"/>
+        <source>Tools</source>
+        <translation>도구</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="191"/>
+        <source>Folders</source>
+        <translation>폴더</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="197"/>
+        <source>Groups</source>
+        <translation>그룹</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="200"/>
+        <source>Widgets</source>
+        <translation>위젯</translation>
     </message>
 </context>
 <context>
@@ -15178,54 +15324,276 @@ Click Refresh to update the list.</source>
 <context>
     <name>ProjectEditor</name>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="43"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="44"/>
         <source>modified</source>
         <translation>수정됨</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="374"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <source>Project</source>
+        <translation>프로젝트</translation>
+    </message>
+    <message>
+        <source>Commands</source>
+        <translation type="vanished">명령</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
         <source>This project is password protected</source>
         <translation>이 프로젝트는 비밀번호로 보호되어 있습니다</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="375"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
         <source>Editing is available in Project mode</source>
         <translation>프로젝트 모드에서 편집 가능</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>변경하려면 비밀번호를 입력하거나 다른 프로젝트를 여십시오.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="387"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>프로젝트를 불러오고 편집하려면 프로젝트 모드로 전환하십시오.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="409"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
         <source>Unlock</source>
         <translation>잠금 해제</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="410"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
         <source>Switch to Project Mode</source>
         <translation>프로젝트 모드로 전환</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="429"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
         <source>Open Other Project</source>
         <translation>다른 프로젝트 열기</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="430"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
         <source>Close</source>
         <translation>닫기</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="446"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
         <source>Create New Project</source>
         <translation>새 프로젝트 생성</translation>
+    </message>
+</context>
+<context>
+    <name>ProjectEditorActions</name>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="56"/>
+        <source>New Project</source>
+        <translation>새 프로젝트</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="58"/>
+        <source>Open Project</source>
+        <translation>프로젝트 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="60"/>
+        <source>Save Project</source>
+        <translation>프로젝트 저장</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="63"/>
+        <source>Save Project As</source>
+        <translation>프로젝트 다른 이름으로 저장</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="66"/>
+        <source>Import Protobuf Schema</source>
+        <translation>Protobuf 스키마 가져오기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="68"/>
+        <source>Restore Backup</source>
+        <translation>백업 복원</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="71"/>
+        <source>Lock Project Editor</source>
+        <translation>프로젝트 편집기 잠금</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="73"/>
+        <source>Add Device</source>
+        <translation>장치 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
+        <source>Add Group</source>
+        <translation type="unfinished">그룹 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
+        <source>Dataset Container</source>
+        <translation type="unfinished">데이터셋 컨테이너</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
+        <source>Add Image View</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
+        <source>Image View</source>
+        <translation type="unfinished">이미지 뷰</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
+        <source>Add Web View</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
+        <source>Web View</source>
+        <translation type="unfinished">웹 뷰</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
+        <source>Add Painter</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
+        <source>Painter Widget</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
+        <source>Add Data Table</source>
+        <translation type="unfinished">데이터 테이블 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
+        <source>Data Grid</source>
+        <translation type="unfinished">데이터 그리드</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
+        <source>Add Multi-Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
+        <source>Multiple Plot</source>
+        <translation type="unfinished">다중 플롯</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
+        <source>Add 3D Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
+        <source>3D Plot</source>
+        <translation type="unfinished">3D 플롯</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
+        <source>Add Accelerometer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
+        <source>Accelerometer</source>
+        <translation type="unfinished">가속도계</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
+        <source>Add Gyroscope</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
+        <source>Gyroscope</source>
+        <translation type="unfinished">자이로스코프</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
+        <source>Add GPS Map</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
+        <source>GPS Map</source>
+        <translation type="unfinished">GPS 맵</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
+        <source>Add Dataset</source>
+        <translation type="unfinished">데이터셋 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
+        <source>Add Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
+        <source>Add FFT Plot</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
+        <source>Add Gauge</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
+        <source>Add Level Indicator</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
+        <source>Add Compass</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
+        <source>Add LED Indicator</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
+        <source>Add Action</source>
+        <translation>액션 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="111"/>
+        <source>Add Output Panel</source>
+        <translation>출력 패널 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
+        <source>Add Output Slider</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
+        <source>Add Output Toggle</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
+        <source>Add Output Knob</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
+        <source>Add Output Text Field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
+        <source>Add Output Button</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -15236,9 +15604,13 @@ Click Refresh to update the list.</source>
         <translation>프로젝트 구조</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
@@ -16024,8 +16396,8 @@ Click Refresh to update the list.</source>
         <translation>일반 I/O 오류</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>프레임 파서 비활성화됨</translation>
     </message>
@@ -16067,8 +16439,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Parse 함수 누락</translation>
     </message>
@@ -16084,8 +16456,8 @@ function parse(frame) ... end</source>
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Parse 함수 런타임 오류</translation>
     </message>
@@ -18974,194 +19346,182 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>StartMenu</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="278"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="191"/>
         <source>Workspaces</source>
         <translation>작업 공간</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="415"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="328"/>
         <source>Actions</source>
         <translation>작업</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="438"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="351"/>
         <source>No Actions Available</source>
         <translation>사용 가능한 작업 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="468"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="381"/>
         <source>Plugins</source>
         <translation>플러그인</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="516"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="429"/>
         <source>No Plugins Installed</source>
         <translation>설치된 플러그인 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="101"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="552"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="465"/>
         <source>Auto Layout</source>
         <translation>자동 레이아웃</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="109"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="619"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="532"/>
         <source>Full Screen</source>
         <translation>전체 화면</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="115"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="631"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="544"/>
         <source>Add External Window</source>
         <translation>외부 창 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="157"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="916"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="829"/>
         <source>Help Center</source>
         <translation>도움말 센터</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="747"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="660"/>
         <source>Tools</source>
         <translation>도구</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="876"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="789"/>
         <source>No Tools Available</source>
         <translation>사용 가능한 도구 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="944"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="857"/>
         <source>Reset</source>
         <translation>재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="965"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Quit</source>
         <translation>종료</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="915"/>
         <source>Delete</source>
         <translation>삭제</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="916"/>
         <source>Hide</source>
         <translation>숨기기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="366"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="279"/>
         <source>New Workspace…</source>
         <translation>새 작업 공간…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="135"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="820"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="733"/>
         <source>Clock</source>
         <translation>시계</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="143"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="827"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="740"/>
         <source>Stopwatch</source>
         <translation>스톱워치</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="163"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="844"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="757"/>
         <source>Sessions</source>
         <translation>세션</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="170"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="853"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="766"/>
         <source>File Transmission</source>
         <translation>파일 전송</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="177"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="861"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="774"/>
         <source>AI Assistant</source>
         <translation>AI 어시스턴트</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="352"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="265"/>
         <source>Show "%1"</source>
         <translation>"%1" 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="357"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="270"/>
         <source>Show All Hidden Workspaces</source>
         <translation>숨겨진 모든 작업 공간 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="380"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="293"/>
         <source>No Workspaces Available</source>
         <translation>사용 가능한 작업 공간 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="506"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="419"/>
         <source>Manage Plugins…</source>
         <translation>플러그인 관리…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="581"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="494"/>
         <source>Freeze Dashboard</source>
         <translation>대시보드 고정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="651"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="564"/>
         <source>Export</source>
         <translation>내보내기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="682"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="595"/>
         <source>CSV File</source>
         <translation>CSV 파일</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="688"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="601"/>
         <source>MDF4 File</source>
         <translation>MDF4 파일</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="694"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
         <source>Console Transcript</source>
         <translation>콘솔 기록</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="703"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="616"/>
         <source>Session Database</source>
         <translation>세션 데이터베이스</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="717"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="630"/>
         <source>No Export Formats Available</source>
         <translation>사용 가능한 내보내기 형식 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="121"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="803"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="716"/>
         <source>Console</source>
         <translation>콘솔</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="127"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="725"/>
         <source>Notifications</source>
         <translation>알림</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="151"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="835"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="748"/>
         <source>Preferences</source>
         <translation>환경설정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="991"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="904"/>
         <source>Edit…</source>
         <translation>편집…</translation>
     </message>
@@ -19170,17 +19530,17 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="937"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="850"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="938"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="965"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Disconnect</source>
         <translation>연결 해제</translation>
     </message>
@@ -19245,9 +19605,8 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>데이터셋 값</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="183"/>
@@ -19293,6 +19652,11 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="349"/>
         <source>No datasets defined in this project.</source>
         <translation>이 프로젝트에 정의된 데이터셋이 없습니다.</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
+        <source>Search…</source>
+        <translation type="unfinished">검색…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
@@ -19410,132 +19774,133 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>Taskbar</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="67"/>
         <source>Start Menu</source>
-        <translation>시작 메뉴</translation>
+        <translation type="vanished">시작 메뉴</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="196"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="183"/>
         <source>Menu</source>
         <translation>메뉴</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="232"/>
         <source>Search…</source>
-        <translation>검색…</translation>
+        <translation type="vanished">검색…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="498"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
         <source>Settings</source>
         <translation>설정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="499"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
         <source>Console</source>
         <translation>콘솔</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="500"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Notifications</source>
         <translation>알림</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="501"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Clock</source>
         <translation>시계</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="502"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Stopwatch</source>
         <translation>스톱워치</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>AI Assistant</source>
         <translation>AI 어시스턴트</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="773"/>
         <source>New Workspace…</source>
-        <translation>새 작업 공간…</translation>
+        <translation type="vanished">새 작업 공간…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="799"/>
         <source>No Workspaces Available</source>
-        <translation>사용 가능한 작업 공간 없음</translation>
+        <translation type="vanished">사용 가능한 작업 공간 없음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="929"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <source>Search… (%1)</source>
+        <translation>검색… (%1)</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
         <source>Unfreeze Dashboard</source>
         <translation>대시보드 고정 해제</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="930"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
         <source>Freeze Dashboard</source>
         <translation>대시보드 고정</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1에 연결됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: 연결되지 않음</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
         <source>MQTT Publisher</source>
         <translation>MQTT 발행자</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
         <source>Status:</source>
         <translation>상태:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
         <source>Connected</source>
         <translation>연결됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
         <source>Disconnected</source>
         <translation>연결 해제됨</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
         <source>Broker:</source>
         <translation>브로커:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
         <source>Mode:</source>
         <translation>모드:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
         <source>Messages sent:</source>
         <translation>전송된 메시지:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT 설정 열기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="503"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>File Transmission</source>
         <translation>파일 전송</translation>
     </message>
@@ -19544,7 +19909,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">위젯 검색…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
         <source>Remove from Workspace</source>
         <translation>작업 공간에서 제거</translation>
     </message>
@@ -19822,6 +20187,69 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     <message>
         <source>Close</source>
         <translation type="vanished">닫기</translation>
+    </message>
+</context>
+<context>
+    <name>ToolActions</name>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="48"/>
+        <source>Auto Layout</source>
+        <translation>자동 레이아웃</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="56"/>
+        <source>Full Screen</source>
+        <translation>전체 화면</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="62"/>
+        <source>Add External Window</source>
+        <translation>외부 창 추가</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="68"/>
+        <source>Console</source>
+        <translation>콘솔</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="74"/>
+        <source>Notifications</source>
+        <translation>알림</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="82"/>
+        <source>Clock</source>
+        <translation>시계</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="90"/>
+        <source>Stopwatch</source>
+        <translation>스톱워치</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="98"/>
+        <source>Preferences</source>
+        <translation>환경설정</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="104"/>
+        <source>Help Center</source>
+        <translation>도움말 센터</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="110"/>
+        <source>Sessions</source>
+        <translation>세션</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="117"/>
+        <source>File Transmission</source>
+        <translation>파일 전송</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="124"/>
+        <source>AI Assistant</source>
+        <translation>AI 어시스턴트</translation>
     </message>
 </context>
 <context>
@@ -21389,6 +21817,18 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
     </message>
 </context>
 <context>
+    <name>Widgets::Terminal</name>
+    <message>
+        <source>Tip: press %1 anywhere to open the command palette.</source>
+        <translation type="vanished">팁: 명령 팔레트를 열려면 아무 곳에서나 %1을(를) 누르세요.</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <source>Tip: Press %1 anywhere to open the command palette.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>Widgets::Waterfall</name>
     <message>
         <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
@@ -21545,105 +21985,84 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>WorkspaceSwitcherOverlay</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="65"/>
         <source>Console</source>
-        <translation>콘솔</translation>
+        <translation type="vanished">콘솔</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="66"/>
         <source>Terminal</source>
-        <translation>터미널</translation>
+        <translation type="vanished">터미널</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="67"/>
         <source>Notifications</source>
-        <translation>알림</translation>
+        <translation type="vanished">알림</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="69"/>
         <source>Clock</source>
-        <translation>시계</translation>
+        <translation type="vanished">시계</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="70"/>
         <source>Stopwatch</source>
-        <translation>스톱워치</translation>
+        <translation type="vanished">스톱워치</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="92"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="206"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="556"/>
         <source>Workspaces</source>
-        <translation>작업 공간</translation>
+        <translation type="vanished">작업 공간</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="203"/>
         <source>Folders</source>
-        <translation>폴더</translation>
+        <translation type="vanished">폴더</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="209"/>
         <source>Groups</source>
-        <translation>그룹</translation>
+        <translation type="vanished">그룹</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="212"/>
         <source>Widgets</source>
-        <translation>위젯</translation>
+        <translation type="vanished">위젯</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="215"/>
         <source>Tools</source>
-        <translation>도구</translation>
+        <translation type="vanished">도구</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="221"/>
         <source>Add Workspace</source>
-        <translation>작업 공간 추가</translation>
+        <translation type="vanished">작업 공간 추가</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="357"/>
         <source>New Folder</source>
-        <translation>새 폴더</translation>
+        <translation type="vanished">새 폴더</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="365"/>
         <source>Rename Folder</source>
-        <translation>폴더 이름 변경</translation>
+        <translation type="vanished">폴더 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="569"/>
         <source>Search</source>
-        <translation>검색</translation>
+        <translation type="vanished">검색</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="637"/>
         <source>Back</source>
-        <translation>뒤로</translation>
+        <translation type="vanished">뒤로</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="695"/>
         <source>Type to search, Enter to open, Esc to close</source>
-        <translation>입력하여 검색, Enter로 열기, Esc로 닫기</translation>
+        <translation type="vanished">입력하여 검색, Enter로 열기, Esc로 닫기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="803"/>
         <source>No results found</source>
-        <translation>결과 없음</translation>
+        <translation type="vanished">결과 없음</translation>
     </message>
     <message>
         <source>Search Workspaces…</source>
         <translation type="vanished">작업 공간 검색…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="587"/>
         <source>Close</source>
-        <translation>닫기</translation>
+        <translation type="vanished">닫기</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="453"/>
         <source>Folder</source>
-        <translation>폴더</translation>
+        <translation type="vanished">폴더</translation>
     </message>
     <message>
         <source>No workspaces match your search.</source>

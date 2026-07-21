@@ -159,7 +159,7 @@ Widgets.Pane {
           Layout.alignment: Qt.AlignVCenter
           text: root.searchText
           color: Cpp_ThemeManager.colors["base"]
-          placeholderText: qsTr("Search")
+          placeholderText: qsTr("Search…")
           onTextChanged: root.searchText = text
 
           anchors {

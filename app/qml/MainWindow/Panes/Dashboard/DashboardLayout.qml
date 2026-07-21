@@ -468,6 +468,7 @@ Widgets.Pane {
           width: parent.width
           taskBar: root.taskBar
           startMenu: _startMenu
+          paletteModel: _paletteModel
 
           //
           // Anchor to the bottom of the host
@@ -480,7 +481,6 @@ Widgets.Pane {
             NumberAnimation { duration: 350; easing.type: Easing.OutCubic }
           }
 
-          onNewWorkspaceRequested: _wsDialog.openNew(root.taskBar)
           onEditWorkspaceRequested: (wsId, name) => _wsDialog.openEdit(root.taskBar, wsId, name)
           onWorkspaceSwitcherRequested: root.openWorkspaceSwitcher()
           onStartClicked: {
@@ -549,13 +549,40 @@ Widgets.Pane {
   }
 
   //
-  // Virtual-desktop workspace switcher overlay (opened via Ctrl+K)
+  // Command palette (opened via Ctrl+K), backed by the shared dashboard-context model.
   //
-  WorkspaceSwitcherOverlay {
+  ToolActions {
+    id: _paletteTools
+
+    taskBar: root.taskBar
+    onExternalWindowRequested: root.externalWindowClicked()
+    onFullScreenRequested: {
+      if (root.hostWindow)
+        root.hostWindow.toggleFullScreen()
+    }
+  }
+
+  PaletteModel {
+    id: _paletteModel
+
+    host: root
+    taskBar: root.taskBar
+    workspacesEnabled: true
+    toolActions: _paletteTools
+  }
+
+  Widgets.CommandPalette {
     id: _switcherOverlay
 
     z: 5000
-    taskBar: root.taskBar
+    model: _paletteModel
+    title: qsTr("Workspaces")
+    titleIcon: "qrc:/icons/buttons/workspaces.svg"
+
+    //
+    // Parented to the host window so the dialog centers on the whole window, not just this pane.
+    //
+    parent: root.hostWindow ? root.hostWindow.contentItem : root
   }
 
   //

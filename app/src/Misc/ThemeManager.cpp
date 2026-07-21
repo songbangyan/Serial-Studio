@@ -379,7 +379,7 @@ void Misc::ThemeManager::loadSystemTheme()
 
   Q_EMIT themeChanged();
 
-  m_applyingTheme = false;
+  QTimer::singleShot(0, this, [this]() { m_applyingTheme = false; });
 }
 
 //--------------------------------------------------------------------------------------------------

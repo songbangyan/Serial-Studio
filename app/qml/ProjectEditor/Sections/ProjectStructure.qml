@@ -68,7 +68,7 @@ Widgets.Pane {
         id: searchField
 
         implicitHeight: 32
-        placeholderText: qsTr("Search")
+        placeholderText: qsTr("Search…")
         color: Cpp_ThemeManager.colors["base"]
         text: Cpp_JSON_ProjectEditor.treeSearchQuery
         onTextChanged: Cpp_JSON_ProjectEditor.treeSearchQuery = text
@@ -388,7 +388,7 @@ Widgets.Pane {
 
           Cpp_JSON_ProjectEditor.expandTreeToIndex(idx)
 
-          if (dir >= 0)
+          if (dir > 0)
             treeView.navExpandCurrent(idx)
         }
 

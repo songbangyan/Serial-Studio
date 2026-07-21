@@ -92,108 +92,21 @@ Popup {
   signal renameWorkspaceRequested(int workspaceId, string currentName)
 
   //
+  // Single tools/actions model shared with the command palette and taskbar search.
+  //
+  ToolActions {
+    id: _toolActions
+
+    taskBar: root.taskBar
+    onFullScreenRequested: root.fullScreenRequested()
+    onExternalWindowRequested: root.externalWindowClicked()
+  }
+
+  //
   // Returns visible actions whose name matches `filter`; each item is { name, icon, run }.
   //
   function searchableItems(filter) {
-    var runtimeMode = (typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
-    var items = [
-      {
-        name: qsTr("Auto Layout"),
-        icon: "qrc:/icons/start/auto-layout.svg",
-        visible: !(app.runtimeMode && Cpp_UI_Dashboard.frozen),
-        run: function() {
-          taskBar.windowManager.autoLayoutEnabled = !taskBar.windowManager.autoLayoutEnabled
-        }
-      },
-      {
-        name: qsTr("Full Screen"),
-        icon: "qrc:/icons/start/full-screen.svg",
-        visible: true,
-        run: function() { root.fullScreenRequested() }
-      },
-      {
-        name: qsTr("Add External Window"),
-        icon: "qrc:/icons/start/external-window.svg",
-        visible: true,
-        run: function() { root.externalWindowClicked() }
-      },
-      {
-        name: qsTr("Console"),
-        icon: "qrc:/icons/start/console.svg",
-        visible: !app.runtimeMode,
-        run: function() { Cpp_UI_Dashboard.terminalEnabled = !Cpp_UI_Dashboard.terminalEnabled }
-      },
-      {
-        name: qsTr("Notifications"),
-        icon: "qrc:/icons/start/notifications.svg",
-        visible: Cpp_CommercialBuild,
-        run: function() {
-          Cpp_UI_Dashboard.notificationLogEnabled = !Cpp_UI_Dashboard.notificationLogEnabled
-        }
-      },
-      {
-        name: qsTr("Clock"),
-        icon: "qrc:/icons/start/clock.svg",
-        visible: true,
-        run: function() {
-          Cpp_UI_Dashboard.clockEnabled = !Cpp_UI_Dashboard.clockEnabled
-        }
-      },
-      {
-        name: qsTr("Stopwatch"),
-        icon: "qrc:/icons/start/stopwatch.svg",
-        visible: true,
-        run: function() {
-          Cpp_UI_Dashboard.stopwatchEnabled = !Cpp_UI_Dashboard.stopwatchEnabled
-        }
-      },
-      {
-        name: qsTr("Preferences"),
-        icon: "qrc:/icons/start/settings.svg",
-        visible: !app.runtimeMode,
-        run: function() { app.showSettingsDialog() }
-      },
-      {
-        name: qsTr("Help Center"),
-        icon: "qrc:/icons/start/help.svg",
-        visible: true,
-        run: function() { app.showHelpCenter() }
-      },
-      {
-        name: qsTr("Sessions"),
-        icon: "qrc:/icons/start/sessions.svg",
-        visible: Cpp_CommercialBuild
-                 && (!app.runtimeMode || Cpp_Sessions_Export.exportEnabled),
-        run: function() { app.showDatabaseExplorer() }
-      },
-      {
-        name: qsTr("File Transmission"),
-        icon: "qrc:/icons/taskbar/file-transmission.svg",
-        visible: Cpp_CommercialBuild
-                 && (!app.runtimeMode || Cpp_IO_FileTransmission.runtimeAccessAllowed),
-        run: function() { app.showFileTransmission() }
-      },
-      {
-        name: qsTr("AI Assistant"),
-        icon: "qrc:/icons/taskbar/ai.svg",
-        visible: Cpp_CommercialBuild && !app.runtimeMode,
-        run: function() { app.showAIAssistant() }
-      }
-    ]
-
-    var f = (filter || "").trim().toLowerCase()
-    var out = []
-    for (var i = 0; i < items.length; ++i) {
-      if (!items[i].visible)
-        continue
-
-      if (f.length > 0 && items[i].name.toLowerCase().indexOf(f) === -1)
-        continue
-
-      out.push(items[i])
-    }
-
-    return out
+    return _toolActions.items(filter)
   }
 
   //
@@ -364,7 +277,7 @@ Popup {
                        "icon": "", "separator": true})
           model.push({"id": "__new_workspace__", "separator": false,
                        "text": qsTr("New Workspace…"),
-                       "icon": "qrc:/icons/project-editor/toolbar/add-group.svg"})
+                       "icon": "qrc:/icons/start/add-workspace.svg"})
         }
 
         //

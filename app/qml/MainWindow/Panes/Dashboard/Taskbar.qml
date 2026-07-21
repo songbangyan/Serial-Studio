@@ -40,71 +40,59 @@ Item {
   readonly property int iconSize: 18
   required property SS_Ui.TaskBar taskBar
   property var startMenu: null
-  property var combinedSearchResults: []
+  property var paletteModel: null
+  property var searchSections: []
+  property var flatSearchNodes: []
+  property int searchIndex: -1
 
   //
   // True while a popup or the search field has focus
   //
   readonly property bool isBusy: (searchField && searchField.activeFocus)
                                  || (searchPopup && searchPopup.opened)
-                                 || (_switcherMenu && _switcherMenu.opened)
                                  || (_tbContextMenu && _tbContextMenu.opened)
                                  || (startMenu && startMenu.visible)
 
   //
-  // Rebuilds the unified search list
+  // Rebuilds the sectioned search list from the shared palette model (parity with the palette).
   //
-  function refreshCombinedSearchResults() {
-    var widgetHits = taskBar ? taskBar.searchResults : []
-    var menuHits = []
-    if (startMenu && typeof startMenu.searchableItems === "function") {
-      var items = startMenu.searchableItems(taskBar ? taskBar.searchFilter : "")
-      for (var i = 0; i < items.length; ++i) {
-        menuHits.push({
-          "isStartMenuAction": true,
-          "widgetName": items[i].name,
-          "widgetIcon": items[i].icon,
-          "groupName": qsTr("Start Menu"),
-          "run": items[i].run
-        })
+  function refreshSearch() {
+    var secs = paletteModel ? paletteModel.searchSections(taskBar ? taskBar.searchFilter : "") : []
+    var flat = []
+    for (var s = 0; s < secs.length; ++s)
+      for (var k = 0; k < secs[s].items.length; ++k) {
+        secs[s].items[k]._idx = flat.length
+        flat.push(secs[s].items[k])
       }
-    }
 
-    combinedSearchResults = widgetHits.concat(menuHits)
-    if (searchResultsList)
-      searchResultsList.currentIndex = combinedSearchResults.length > 0 ? 0 : -1
+    root.searchSections = secs
+    root.flatSearchNodes = flat
+    root.searchIndex = flat.length > 0 ? 0 : -1
   }
 
   //
-  // Snapshot entry fields before dismissSearch() rebuilds the model.
+  // Routes activation through the shared model; a folder opens the palette drilled into it.
   //
-  function triggerSearchEntry(entry) {
-    if (!entry)
+  function activateSearchNode(node) {
+    if (!node || !paletteModel)
       return
 
-    if (entry["isStartMenuAction"]) {
-      var run = entry["run"]
+    if (node.isFolder) {
       taskBar.dismissSearch()
-      if (typeof run === "function")
-        run()
-    } else if (entry["isWorkspace"]) {
-      var gid = entry["groupId"]
-      taskBar.dismissSearch()
-      taskBar.activeGroupId = gid
+      root.workspaceSwitcherRequested()
     } else {
-      var wid = entry["windowId"]
-      var grp = entry["groupId"]
       taskBar.dismissSearch()
-      taskBar.navigateToWidget(wid, grp)
     }
+
+    paletteModel.activate(node)
   }
 
-  Component.onCompleted: refreshCombinedSearchResults()
-  onStartMenuChanged: refreshCombinedSearchResults()
+  Component.onCompleted: refreshSearch()
+  onPaletteModelChanged: refreshSearch()
   Connections {
     target: taskBar
-    function onSearchResultsChanged() { refreshCombinedSearchResults() }
-    function onSearchFilterChanged()  { refreshCombinedSearchResults() }
+    function onSearchResultsChanged() { refreshSearch() }
+    function onSearchFilterChanged()  { refreshSearch() }
   }
 
   //
@@ -113,7 +101,6 @@ Item {
   signal startClicked()
   signal settingsClicked()
   signal extendWindowClicked()
-  signal newWorkspaceRequested()
   signal workspaceSwitcherRequested()
   signal editWorkspaceRequested(int workspaceId, string currentName)
 
@@ -229,7 +216,7 @@ Item {
         font: Cpp_Misc_CommonFonts.uiFont
         color: Cpp_ThemeManager.colors["text"]
         verticalAlignment: Text.AlignVCenter
-        placeholderText: qsTr("Search…")
+        placeholderText: qsTr("Search… (%1)").arg(Qt.platform.os === "osx" ? "⌘+K" : "Ctrl+K")
         selectionColor: Cpp_ThemeManager.colors["highlight"]
         horizontalAlignment: rtl ? Text.AlignRight : Text.AlignLeft
         selectedTextColor: Cpp_ThemeManager.colors["highlighted_text"]
@@ -276,31 +263,24 @@ Item {
         }
 
         Keys.onDownPressed: {
-          if (searchResultsList.count > 0) {
-            searchResultsList.currentIndex
-              = Math.min(searchResultsList.currentIndex + 1,
-                         searchResultsList.count - 1)
-          }
+          if (root.flatSearchNodes.length > 0)
+            root.searchIndex = Math.min(root.searchIndex + 1, root.flatSearchNodes.length - 1)
         }
 
         Keys.onUpPressed: {
-          if (searchResultsList.count > 0) {
-            searchResultsList.currentIndex
-              = Math.max(searchResultsList.currentIndex - 1, 0)
-          }
+          if (root.flatSearchNodes.length > 0)
+            root.searchIndex = Math.max(root.searchIndex - 1, 0)
         }
 
         Keys.onEnterPressed: searchField.triggerSelection()
         Keys.onReturnPressed: searchField.triggerSelection()
 
         function triggerSelection() {
-          if (root.combinedSearchResults.length === 0)
+          if (root.flatSearchNodes.length === 0)
             return
 
-          var idx = searchResultsList.currentIndex >= 0
-                    ? searchResultsList.currentIndex : 0
-          var entry = root.combinedSearchResults[idx]
-          root.triggerSearchEntry(entry)
+          var idx = root.searchIndex >= 0 ? root.searchIndex : 0
+          root.activateSearchNode(root.flatSearchNodes[idx])
         }
 
         Widgets.IconButton {
@@ -321,90 +301,147 @@ Item {
         x: Cpp_Misc_Translator.rtl ? searchContainer.width - width : 0
         y: -height - searchContainer.y + 1
         visible: searchField.activeFocus
-                 && root.combinedSearchResults.length > 0
+                 && root.flatSearchNodes.length > 0
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
         background: Rectangle {
           border.width: 1
           color: Cpp_ThemeManager.colors["start_menu_background"]
           border.color: Cpp_ThemeManager.colors["start_menu_border"]
+
+          MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            onWheel: (wheel) => { wheel.accepted = true }
+          }
         }
 
-        contentItem: ListView {
-          id: searchResultsList
+        contentItem: Flickable {
+          id: _searchFlick
 
           clip: true
-          spacing: 2
-          model: root.combinedSearchResults
+          contentWidth: width
+          contentHeight: _tbSectionColumn.height
           boundsBehavior: Flickable.StopAtBounds
-          implicitHeight: Math.min(contentHeight, 300)
+          implicitHeight: Math.min(contentHeight, 320)
 
-          delegate: Item {
-            id: searchDelegate
+          ScrollBar.vertical: ScrollBar {}
 
-            required property int index
-            required property var modelData
+          Column {
+            id: _tbSectionColumn
 
-            height: 28
-            width: searchResultsList.width
+            spacing: 6
+            width: _searchFlick.width
 
-            readonly property bool hovered: _searchMa.containsMouse
-                                            || searchResultsList.currentIndex === index
+            Repeater {
+              model: root.searchSections
 
-            Rectangle {
-              anchors.fill: parent
-              visible: searchDelegate.hovered
-              color: Cpp_ThemeManager.colors["start_menu_highlight"]
-            }
+              delegate: Column {
+                id: _tbSection
 
-            RowLayout {
-              spacing: 8
-              anchors.fill: parent
-              anchors.leftMargin: 6
-              anchors.rightMargin: 6
+                spacing: 2
+                width: _tbSectionColumn.width
 
-              Image {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
-                sourceSize: Qt.size(16, 16)
-                source: searchDelegate.modelData["widgetIcon"]
+                required property var modelData
+
+                RowLayout {
+                  spacing: 6
+                  width: parent.width
+                  visible: _tbSection.modelData.title.length > 0
+
+                  Label {
+                    leftPadding: 6
+                    text: _tbSection.modelData.title
+                    color: Cpp_ThemeManager.colors["start_menu_text"]
+                    font: Cpp_Misc_CommonFonts.customUiFont(0.8, true)
+                    Component.onCompleted: font.capitalization = Font.AllUppercase
+                  }
+
+                  Rectangle {
+                    height: 1
+                    opacity: 0.4
+                    Layout.rightMargin: 6
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
+                    color: Cpp_ThemeManager.colors["start_menu_border"]
+                  }
+                }
+
+                Repeater {
+                  model: _tbSection.modelData.items
+
+                  delegate: Item {
+                    id: _tbRow
+
+                    height: 28
+                    width: _tbSection.width
+
+                    required property var modelData
+
+                    readonly property bool hovered: _tbRowMa.containsMouse
+                                                    || root.searchIndex === _tbRow.modelData._idx
+
+                    Rectangle {
+                      anchors.fill: parent
+                      visible: _tbRow.hovered
+                      color: Cpp_ThemeManager.colors["start_menu_highlight"]
+                    }
+
+                    RowLayout {
+                      spacing: 8
+                      anchors.fill: parent
+                      anchors.leftMargin: 6
+                      anchors.rightMargin: 6
+
+                      Image {
+                        Layout.preferredWidth: 16
+                        Layout.preferredHeight: 16
+                        sourceSize: Qt.size(16, 16)
+                        source: _tbRow.modelData.icon
+                      }
+
+                      Label {
+                        elide: Text.ElideRight
+                        Layout.fillWidth: true
+                        text: _tbRow.modelData.text
+                        font: Cpp_Misc_CommonFonts.uiFont
+                        LayoutMirroring.enabled: false
+                        horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                                     : Text.AlignLeft
+                        color: _tbRow.hovered
+                               ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
+                               : Cpp_ThemeManager.colors["start_menu_text"]
+                      }
+
+                      Label {
+                        opacity: 0.5
+                        elide: Text.ElideRight
+                        Layout.maximumWidth: 120
+                        LayoutMirroring.enabled: false
+                        font: Cpp_Misc_CommonFonts.uiFont
+                        text: _tbRow.modelData.subtitle !== undefined
+                              ? _tbRow.modelData.subtitle : ""
+                        visible: _tbRow.modelData.subtitle !== undefined
+                                 && _tbRow.modelData.subtitle.length > 0
+                        horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
+                                                                     : Text.AlignLeft
+                        color: _tbRow.hovered
+                               ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
+                               : Cpp_ThemeManager.colors["start_menu_text"]
+                      }
+                    }
+
+                    MouseArea {
+                      id: _tbRowMa
+
+                      hoverEnabled: true
+                      anchors.fill: parent
+                      onEntered: root.searchIndex = _tbRow.modelData._idx
+                      onClicked: root.activateSearchNode(_tbRow.modelData)
+                    }
+                  }
+                }
               }
-
-              Label {
-                elide: Text.ElideRight
-                Layout.fillWidth: true
-                text: searchDelegate.modelData["widgetName"]
-                font: Cpp_Misc_CommonFonts.uiFont
-                LayoutMirroring.enabled: false
-                horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
-                                                             : Text.AlignLeft
-                color: searchDelegate.hovered
-                       ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
-                       : Cpp_ThemeManager.colors["start_menu_text"]
-              }
-
-              Label {
-                opacity: 0.5
-                elide: Text.ElideRight
-                Layout.maximumWidth: 120
-                text: searchDelegate.modelData["groupName"]
-                font: Cpp_Misc_CommonFonts.uiFont
-                LayoutMirroring.enabled: false
-                horizontalAlignment: Cpp_Misc_Translator.rtl ? Text.AlignRight
-                                                             : Text.AlignLeft
-                color: searchDelegate.hovered
-                       ? Cpp_ThemeManager.colors["start_menu_highlighted_text"]
-                       : Cpp_ThemeManager.colors["start_menu_text"]
-              }
-            }
-
-            MouseArea {
-              id: _searchMa
-
-              hoverEnabled: true
-              anchors.fill: parent
-              onEntered: searchResultsList.currentIndex = searchDelegate.index
-              onClicked: root.triggerSearchEntry(searchDelegate.modelData)
             }
           }
         }
@@ -734,10 +771,6 @@ Item {
       Layout.alignment: Qt.AlignVCenter
       implicitWidth: _switcherLayout.implicitWidth
 
-      //
-      // Menu rows carry the folder tree, but the compact taskbar label shows only the active
-      // workspace's own title, resolved from the unfiltered model by id.
-      //
       readonly property string activeTitle: {
         if (!taskBar)
           return ""
@@ -750,68 +783,6 @@ Item {
         return m.length > 0 ? m[0].text : ""
       }
 
-      //
-      // Rebuilds the same folder -> children tree the Start menu's Workspaces submenu shows and
-      // opens it above the taskbar; building on every open removes the need for live refreshes.
-      //
-      function openMenu() {
-        if (!taskBar)
-          return
-
-        _switcherMenu.currentValue = taskBar.activeGroupId
-
-        var model = []
-        var roots = taskBar.workspaceTree()
-        for (var r = 0; r < roots.length; ++r)
-          model.push(_switcherMenu.folderRow(roots[r]))
-
-        var runtimeMode = (typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
-        if (!runtimeMode) {
-          model.push({"id": "__separator__", "text": "",
-                       "icon": "", "separator": true})
-          model.push({"id": "__new_workspace__", "separator": false,
-                       "text": qsTr("New Workspace…"),
-                       "icon": "qrc:/icons/project-editor/toolbar/add-group.svg"})
-        }
-
-        const pos = _switcher.mapToItem(root, 0, 0)
-        _switcherMenu.anchorLeft = pos.x
-        _switcherMenu.anchorRight = pos.x + _switcher.width
-        _switcherMenu.setRootModel(model)
-        _switcherMenu.open()
-      }
-
-      //
-      // Parented to the taskbar so submenu cascade logic sees the full taskbar width
-      //
-      Widgets.SubMenuCombo {
-        id: _switcherMenu
-
-        parent: root
-        alignBottom: true
-        showCheckable: true
-
-        property real anchorLeft: 0
-        property double closedAt: 0
-        property real anchorRight: 0
-
-        y: -height + 1
-        placeholderText: qsTr("No Workspaces Available")
-        x: Cpp_Misc_Translator.rtl ? anchorLeft : anchorRight - width
-
-        onClosed: closedAt = Date.now()
-        onValueSelected: (value) => {
-          if (value === "__new_workspace__")
-            root.newWorkspaceRequested()
-          else if (taskBar && value !== taskBar.activeGroupId)
-            taskBar.selectWorkspaceById(value)
-        }
-      }
-
-      //
-      // The closedAt guard keeps a click on the switcher from reopening the menu that the
-      // same press just dismissed via the close-on-press-outside policy
-      //
       MouseArea {
         anchors.fill: parent
         onPressed: root.workspaceSwitcherRequested()

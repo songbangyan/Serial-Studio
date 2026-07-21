@@ -35,6 +35,7 @@ class AppState;
 
 namespace DataModel {
 class ProjectModel;
+struct WidgetRef;
 }  // namespace DataModel
 
 namespace UI {
@@ -168,6 +169,7 @@ public:
   Q_INVOKABLE [[nodiscard]] TaskbarModel::WindowState windowState(QQuickItem* window) const;
   Q_INVOKABLE [[nodiscard]] QQuickItem* nextActiveWindow(int delta) const;
   Q_INVOKABLE [[nodiscard]] QVariantList workspaceTree() const;
+  Q_INVOKABLE [[nodiscard]] int workspaceContainingWidget(int windowId) const;
 
   [[nodiscard]] QVector<int> taskbarWindowIds() const;
 
@@ -189,7 +191,7 @@ public slots:
   void setWindowManager(UI::WindowManager* manager);
   void registerWindow(const int id, QQuickItem* window);
   void setWindowState(const int id, const UI::TaskbarModel::WindowState state);
-  void navigateToWidget(int windowId, int groupId);
+  void navigateToWidget(int windowId, int groupId, bool allowAddToWorkspace = true);
   void createWorkspace(const QString& name);
   void deleteWorkspace(int workspaceId);
   void renameWorkspace(int workspaceId, const QString& name);
@@ -239,6 +241,7 @@ private:
   [[nodiscard]] QStandardItem* findGroupItemByGroupId(int groupId) const;
   [[nodiscard]] QStandardItem* createItemFromWidgetInfo(const UI::WidgetInfo& info);
   [[nodiscard]] int findWindowIdByGroupAndIndex(int widgetType, int relativeIndex) const;
+  [[nodiscard]] int resolveWorkspaceRefWindowId(const DataModel::WidgetRef& ref) const;
   [[nodiscard]] int relativeIndexForWindow(int windowId) const;
   [[nodiscard]] int indexForGroupId(int groupId) const;
   void emitWorkspaceChangeAnticipation(int toGroupId);

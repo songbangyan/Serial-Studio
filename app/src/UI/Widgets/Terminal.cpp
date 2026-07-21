@@ -25,6 +25,7 @@
 #include <QClipboard>
 #include <QFontMetrics>
 #include <QKeyEvent>
+#include <QKeySequence>
 #include <QPainter>
 
 #include "Console/Handler.h"
@@ -1571,6 +1572,13 @@ void Widgets::Terminal::loadWelcomeGuide()
   setAutoscroll(false);
   append(logo);
   append(m_translator.welcomeConsoleText());
+
+  auto key = QKeySequence(QStringLiteral("Ctrl+K")).toString(QKeySequence::NativeText);
+#ifdef Q_OS_MAC
+  key = key.replace("⌘", "⌘+");
+#endif
+
+  append(tr("Tip: Press %1 anywhere to open the command palette.").arg(key) + QStringLiteral("\n"));
   setAutoscroll(true);
 
   const int lines = linesPerPage();
