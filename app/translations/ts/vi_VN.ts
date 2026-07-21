@@ -1794,7 +1794,12 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation>Chạy thử nghiệm để xem kết quả</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="539"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="537"/>
+        <source>Peak memory: %1</source>
+        <translation>Bộ nhớ đỉnh: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="551"/>
         <source>Pass/Fail applies to the data-pipeline and parser stages (data pipeline and Built-in numeric 1024 K frames/s; Built-in mixed 512 K; Lua numeric 256 K; JavaScript numeric and Lua mixed 128 K; JavaScript mixed 64 K). The export and dashboard stages are informational.</source>
         <translation>Đạt/Không Đạt áp dụng cho các giai đoạn data-pipeline và parser (data pipeline và Built-in số 1024 K frames/s; Built-in hỗn hợp 512 K; Lua số 256 K; JavaScript số và Lua hỗn hợp 128 K; JavaScript hỗn hợp 64 K). Các giai đoạn export và dashboard chỉ mang tính thông tin.</translation>
     </message>
@@ -1807,7 +1812,7 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Đạt/Không Đạt áp dụng cho các giai đoạn pipeline dữ liệu và phân tích cú pháp (pipeline dữ liệu và Native số 1024 K khung/s; Native hỗn hợp 512 K; Lua số 256 K; JavaScript số và Lua hỗn hợp 128 K; JavaScript hỗn hợp 64 K). Các giai đoạn xuất và bảng điều khiển chỉ mang tính thông tin.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="554"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="566"/>
         <source>Copy</source>
         <translation>Sao Chép</translation>
     </message>
@@ -1820,22 +1825,22 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Đạt/Không Đạt chỉ áp dụng cho các giai đoạn parser (Lua mục tiêu 256 K frames/s, JavaScript 128 K). Các giai đoạn export và dashboard chỉ mang tính thông tin.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="561"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="573"/>
         <source>Clear</source>
         <translation>Xóa</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="570"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="582"/>
         <source>Close</source>
         <translation>Đóng</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="580"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="592"/>
         <source>Running...</source>
         <translation>Đang Chạy...</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="580"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="592"/>
         <source>Run Benchmark</source>
         <translation>Chạy Benchmark</translation>
     </message>
@@ -1843,7 +1848,7 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
 <context>
     <name>BenchmarkRunner</name>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="255"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="267"/>
         <source>Data pipeline</source>
         <translation>Đường ống dữ liệu</translation>
     </message>
@@ -1880,22 +1885,22 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Trình phân tích cú pháp Built-in (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="281"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="293"/>
         <source>Lua parser (numeric)</source>
         <translation>Trình phân tích Lua (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="288"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="300"/>
         <source>JavaScript parser (numeric)</source>
         <translation>Trình phân tích JavaScript (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="299"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="311"/>
         <source>Lua parser (mixed)</source>
         <translation>Trình phân tích Lua (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="306"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="318"/>
         <source>JavaScript parser (mixed)</source>
         <translation>Trình phân tích JavaScript (hỗn hợp)</translation>
     </message>
@@ -1904,12 +1909,12 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Built-in + xuất dữ liệu (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="329"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="341"/>
         <source>Lua + data export (numeric)</source>
         <translation>Lua + xuất dữ liệu (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="336"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="348"/>
         <source>JavaScript + data export (numeric)</source>
         <translation>JavaScript + xuất dữ liệu (số)</translation>
     </message>
@@ -1918,12 +1923,12 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Built-in + xuất dữ liệu (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="347"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="359"/>
         <source>Lua + data export (mixed)</source>
         <translation>Lua + xuất dữ liệu (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="354"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="366"/>
         <source>JavaScript + data export (mixed)</source>
         <translation>JavaScript + xuất dữ liệu (hỗn hợp)</translation>
     </message>
@@ -1932,163 +1937,173 @@ Chỉ bật tính năng này trên các mạng đáng tin cậy. Các máy khác
         <translation type="vanished">Built-in + dashboard (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="372"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="384"/>
         <source>Lua + dashboard (numeric)</source>
         <translation>Lua + dashboard (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>100 K frames</source>
         <translation>100 K khung</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>250 K frames</source>
         <translation>250 K frame</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>500 K frames</source>
         <translation>500 K frame</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>1 M frames</source>
         <translation>1 M frame</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>1 second</source>
         <translation>1 giây</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>2 seconds</source>
         <translation>2 giây</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>5 seconds</source>
         <translation>5 giây</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>10 seconds</source>
         <translation>10 giây</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="198"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="207"/>
         <source>Serial Studio %1 - Hotpath Benchmark</source>
         <translation>Serial Studio %1 - Đánh Giá Hiệu Năng Hotpath</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="200"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
         <source>%1 (%2), workload: %3 frames minimum, %4 s minimum</source>
         <translation>%1 (%2), khối lượng công việc: tối thiểu %3 khung, tối thiểu %4 s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="206"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="215"/>
         <source>Build: %1</source>
         <translation>Bản Dựng: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Pipeline</source>
         <translation>Pipeline</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Throughput</source>
         <translation>Thông Lượng</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Target</source>
         <translation>Mục Tiêu</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Time</source>
         <translation>Thời Gian</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Result</source>
         <translation>Kết Quả</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="219"/>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="225"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="228"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="234"/>
         <source>%1 frames/s</source>
         <translation>%1 frame/s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="219"/>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="228"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>n/a</source>
         <translation>n/a</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>Pass</source>
         <translation>Đạt</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>Fail</source>
         <translation>Không Đạt</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="227"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="236"/>
         <source>%1 s</source>
         <translation>%1 s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="279"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="241"/>
+        <source>Peak memory: %1</source>
+        <translation>Bộ nhớ đỉnh: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="291"/>
         <source>Built-In parser (numeric)</source>
         <translation>Trình phân tích cú pháp Built-in (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="297"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="309"/>
         <source>Built-In parser (mixed)</source>
         <translation>Trình phân tích cú pháp Built-in (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="322"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="334"/>
         <source>Built-In + data export (numeric)</source>
         <translation>Built-in + xuất dữ liệu (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="345"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="357"/>
         <source>Built-In + data export (mixed)</source>
         <translation>Built-in + xuất dữ liệu (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="370"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="382"/>
         <source>Built-In + dashboard (numeric)</source>
         <translation>Built-in + dashboard (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="379"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="391"/>
         <source>JavaScript + dashboard (numeric)</source>
         <translation>JavaScript + bảng điều khiển (số)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="388"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="400"/>
         <source>Built-In + dashboard (mixed)</source>
         <translation>Built-in + dashboard (hỗn hợp)</translation>
+    </message>
+    <message>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="605"/>
+        <source>%1 MiB</source>
+        <translation>%1 Mib</translation>
     </message>
     <message>
         <source>Built-in + dashboard (mixed)</source>
         <translation type="vanished">Tích hợp sẵn + bảng điều khiển (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="390"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="402"/>
         <source>Lua + dashboard (mixed)</source>
         <translation>Lua + bảng điều khiển (hỗn hợp)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="397"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="409"/>
         <source>JavaScript + dashboard (mixed)</source>
         <translation>JavaScript + bảng điều khiển (hỗn hợp)</translation>
     </message>
@@ -5667,32 +5682,32 @@ Thêm %4 dataset sử dụng giá trị mặc định của mẫu?</translation>
         <translation>Dọn Dẹp Không Gian Làm Việc</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="644"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="643"/>
         <source>Alias "%1" is already in use</source>
         <translation>Bí danh "%1" đã được sử dụng</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="645"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="644"/>
         <source>Dataset aliases must be unique across the project. The change was not applied.</source>
         <translation>Bí danh dataset phải là duy nhất trong toàn bộ dự án. Thay đổi không được áp dụng.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="647"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="646"/>
         <source>Duplicate Alias</source>
         <translation>Bí Danh Trùng Lặp</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="664"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="663"/>
         <source>Alias "%1" contains only digits</source>
         <translation>Bí danh "%1" chỉ chứa chữ số</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="665"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="664"/>
         <source>Scripts must quote it as a string, e.g. getDataset("%1"); a numeric argument is read as a uniqueId, not this alias.</source>
         <translation>Các script phải đặt nó trong dấu ngoặc kép dưới dạng chuỗi, ví dụ: getDataset("%1"); tham số số được đọc là uniqueId, không phải bí danh này.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="669"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="668"/>
         <source>Numeric Alias</source>
         <translation>Bí Danh Số</translation>
     </message>
@@ -9380,67 +9395,67 @@ sudo ip link set %1 up type can bitrate %2
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="394"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>Không thể khởi tạo libusb cho bộ chuyển đổi CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="421"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>Không thể liệt kê các thiết bị USB.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="441"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>Bộ chuyển đổi CANable đã chọn không còn được kết nối, hoặc một ứng dụng khác đang mở nó. Trên Windows, thiết bị phải sử dụng trình điều khiển WinUSB (candleLight tự động cài đặt nó).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="454"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>Không thể chiếm giao diện USB CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="518"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>Bộ chuyển đổi CANable không được mở để ghi.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="553"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>Không thể truyền khung CAN đến bộ chuyển đổi.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="569"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>Lỗi CAN bus được báo cáo bởi bộ chuyển đổi CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="624"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>Một khung CAN không được xác nhận trên bus.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="723"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>Bộ chuyển đổi CANable từ chối bắt tay định dạng máy chủ.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="730"/>
         <source>Could not read CANable timing constants.</source>
         <translation>Không thể đọc hằng số thời gian CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="736"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>Tốc độ bit %1 bps không được hỗ trợ bởi bộ chuyển đổi CANable này.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="742"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>Bộ chuyển đổi CANable từ chối tốc độ bit được yêu cầu.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="756"/>
         <source>Could not start the CANable channel.</source>
         <translation>Không thể khởi động kênh CANable.</translation>
     </message>

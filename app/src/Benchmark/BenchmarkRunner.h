@@ -62,6 +62,9 @@ class BenchmarkRunner : public QObject {
   Q_PROPERTY(QVariantList results
              READ results
              NOTIFY resultsChanged)
+  Q_PROPERTY(QString peakMemory
+             READ peakMemory
+             NOTIFY peakMemoryChanged)
   Q_PROPERTY(QStringList frameOptions
              READ frameOptions
              NOTIFY optionsChanged)
@@ -75,6 +78,7 @@ signals:
   void progressChanged();
   void currentPhaseChanged();
   void resultsChanged();
+  void peakMemoryChanged();
   void optionsChanged();
   void finished();
   void dashboardPreviewActive(bool active);
@@ -93,6 +97,7 @@ public:
   [[nodiscard]] double progress() const noexcept;
   [[nodiscard]] QString currentPhase() const;
   [[nodiscard]] QVariantList results() const;
+  [[nodiscard]] QString peakMemory() const;
   [[nodiscard]] QStringList frameOptions() const;
   [[nodiscard]] QStringList secondsOptions() const;
   [[nodiscard]] Q_INVOKABLE QString formatCount(double value) const;
@@ -129,6 +134,7 @@ private:
   quint64 m_frames;
   double m_seconds;
   QString m_currentPhase;
+  QString m_peakMemory;
   QVariantList m_results;
   std::vector<PhaseSpec> m_phases;
   QStringList m_frameOptions;

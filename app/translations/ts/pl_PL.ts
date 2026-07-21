@@ -1806,7 +1806,12 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation>Uruchom test, aby zobaczyć wyniki</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="539"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="537"/>
+        <source>Peak memory: %1</source>
+        <translation>Pamięć szczytowa: %1</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="551"/>
         <source>Pass/Fail applies to the data-pipeline and parser stages (data pipeline and Built-in numeric 1024 K frames/s; Built-in mixed 512 K; Lua numeric 256 K; JavaScript numeric and Lua mixed 128 K; JavaScript mixed 64 K). The export and dashboard stages are informational.</source>
         <translation>Zaliczenie/niezaliczenie dotyczy wyłącznie etapów potoku danych i parsera (potok danych i parser wbudowany numeryczny: 1024 K ramek/s; wbudowany mieszany: 512 K; Lua numeryczny: 256 K; JavaScript numeryczny i Lua mieszany: 128 K; JavaScript mieszany: 64 K). Etapy eksportu i pulpitu mają charakter informacyjny.</translation>
     </message>
@@ -1819,7 +1824,7 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Zaliczony/Niezaliczony dotyczy faz potoku danych i parsera (potok danych i natywny numeryczny 1024 K ramek/s; natywny mieszany 512 K; Lua numeryczny 256 K; JavaScript numeryczny i Lua mieszany 128 K; JavaScript mieszany 64 K). Fazy eksportu i pulpitu mają charakter informacyjny.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="554"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="566"/>
         <source>Copy</source>
         <translation>Kopiuj</translation>
     </message>
@@ -1832,22 +1837,22 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Zaliczenie/niezaliczenie dotyczy wyłącznie faz parsera (cel Lua: 256 K ramek/s, JavaScript: 128 K). Fazy eksportu i pulpitu mają charakter informacyjny.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="561"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="573"/>
         <source>Clear</source>
         <translation>Wyczyść</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="570"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="582"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="580"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="592"/>
         <source>Running...</source>
         <translation>Uruchamianie…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Benchmark.qml" line="580"/>
+        <location filename="../../qml/Dialogs/Benchmark.qml" line="592"/>
         <source>Run Benchmark</source>
         <translation>Uruchom Test Wydajności</translation>
     </message>
@@ -1855,7 +1860,7 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
 <context>
     <name>BenchmarkRunner</name>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="255"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="267"/>
         <source>Data pipeline</source>
         <translation>Potok danych</translation>
     </message>
@@ -1892,22 +1897,22 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Parser wbudowany (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="281"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="293"/>
         <source>Lua parser (numeric)</source>
         <translation>Parser Lua (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="288"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="300"/>
         <source>JavaScript parser (numeric)</source>
         <translation>Parser JavaScript (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="299"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="311"/>
         <source>Lua parser (mixed)</source>
         <translation>Parser Lua (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="306"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="318"/>
         <source>JavaScript parser (mixed)</source>
         <translation>Parser JavaScript (mieszany)</translation>
     </message>
@@ -1916,12 +1921,12 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Parser wbudowany + eksport danych (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="329"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="341"/>
         <source>Lua + data export (numeric)</source>
         <translation>Lua + eksport danych (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="336"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="348"/>
         <source>JavaScript + data export (numeric)</source>
         <translation>JavaScript + eksport danych (numeryczny)</translation>
     </message>
@@ -1930,12 +1935,12 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Parser wbudowany + eksport danych (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="347"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="359"/>
         <source>Lua + data export (mixed)</source>
         <translation>Lua + eksport danych (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="354"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="366"/>
         <source>JavaScript + data export (mixed)</source>
         <translation>JavaScript + eksport danych (mieszany)</translation>
     </message>
@@ -1944,163 +1949,173 @@ Włączaj tę opcję tylko w zaufanych sieciach. Niezaufani klienci mogą odczyt
         <translation type="vanished">Parser wbudowany + pulpit (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="372"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="384"/>
         <source>Lua + dashboard (numeric)</source>
         <translation>Lua + pulpit (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>100 K frames</source>
         <translation>100 tys. ramek</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>250 K frames</source>
         <translation>250 tys. ramek</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>500 K frames</source>
         <translation>500 tys. ramek</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="180"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="189"/>
         <source>1 M frames</source>
         <translation>1 mln ramek</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>1 second</source>
         <translation>1 sekunda</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>2 seconds</source>
         <translation>2 sekundy</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>5 seconds</source>
         <translation>5 sekund</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="181"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="190"/>
         <source>10 seconds</source>
         <translation>10 sekund</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="198"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="207"/>
         <source>Serial Studio %1 - Hotpath Benchmark</source>
         <translation>Serial Studio %1 - Test Wydajności Ścieżki Krytycznej</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="200"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
         <source>%1 (%2), workload: %3 frames minimum, %4 s minimum</source>
         <translation>%1 (%2), obciążenie: minimum %3 ramek, minimum %4 s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="206"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="215"/>
         <source>Build: %1</source>
         <translation>Kompilacja: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Pipeline</source>
         <translation>Potok</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Throughput</source>
         <translation>Przepustowość</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Target</source>
         <translation>Cel</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Time</source>
         <translation>Czas</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="209"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="218"/>
         <source>Result</source>
         <translation>Wynik</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="219"/>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="225"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="228"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="234"/>
         <source>%1 frames/s</source>
         <translation>%1 ramek/s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="219"/>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="228"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>n/a</source>
         <translation>nie dotyczy</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>Pass</source>
         <translation>Zaliczony</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="221"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="230"/>
         <source>Fail</source>
         <translation>Niezaliczony</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="227"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="236"/>
         <source>%1 s</source>
         <translation>%1 s</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="279"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="241"/>
+        <source>Peak memory: %1</source>
+        <translation>Pamięć szczytowa: %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="291"/>
         <source>Built-In parser (numeric)</source>
         <translation>Parser wbudowany (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="297"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="309"/>
         <source>Built-In parser (mixed)</source>
         <translation>Parser wbudowany (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="322"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="334"/>
         <source>Built-In + data export (numeric)</source>
         <translation>Parser wbudowany + eksport danych (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="345"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="357"/>
         <source>Built-In + data export (mixed)</source>
         <translation>Parser wbudowany + eksport danych (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="370"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="382"/>
         <source>Built-In + dashboard (numeric)</source>
         <translation>Parser wbudowany + pulpit (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="379"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="391"/>
         <source>JavaScript + dashboard (numeric)</source>
         <translation>JavaScript + panel (numeryczny)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="388"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="400"/>
         <source>Built-In + dashboard (mixed)</source>
         <translation>Parser wbudowany + pulpit (mieszany)</translation>
+    </message>
+    <message>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="605"/>
+        <source>%1 MiB</source>
+        <translation>%1 Mib</translation>
     </message>
     <message>
         <source>Built-in + dashboard (mixed)</source>
         <translation type="vanished">Wbudowany + panel (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="390"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="402"/>
         <source>Lua + dashboard (mixed)</source>
         <translation>Lua + panel (mieszany)</translation>
     </message>
     <message>
-        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="397"/>
+        <location filename="../../src/Benchmark/BenchmarkRunner.cpp" line="409"/>
         <source>JavaScript + dashboard (mixed)</source>
         <translation>JavaScript + panel (mieszany)</translation>
     </message>
@@ -5763,32 +5778,32 @@ Dodać %4 zbiorów danych używając domyślnych wartości szablonu?</translatio
         <translation>Rozmiar Kroku</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="644"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="643"/>
         <source>Alias "%1" is already in use</source>
         <translation>Alias "%1" jest już w użyciu</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="645"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="644"/>
         <source>Dataset aliases must be unique across the project. The change was not applied.</source>
         <translation>Aliasy zestawów danych muszą być unikalne w całym projekcie. Zmiana nie została zastosowana.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="647"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="646"/>
         <source>Duplicate Alias</source>
         <translation>Duplikuj Alias</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="664"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="663"/>
         <source>Alias "%1" contains only digits</source>
         <translation>Alias "%1" zawiera tylko cyfry</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="665"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="664"/>
         <source>Scripts must quote it as a string, e.g. getDataset("%1"); a numeric argument is read as a uniqueId, not this alias.</source>
         <translation>Skrypty muszą cytować go jako ciąg znaków, np. getDataset("%1"); argument numeryczny jest odczytywany jako uniqueId, a nie ten alias.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="669"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorCommit.cpp" line="668"/>
         <source>Numeric Alias</source>
         <translation>Alias Numeryczny</translation>
     </message>
@@ -9480,67 +9495,67 @@ sudo ip link set %1 up type can bitrate %2
 <context>
     <name>IO::Drivers::GsUsbCanBackend</name>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="382"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="394"/>
         <source>Failed to initialize libusb for the CANable adapter.</source>
         <translation>Nie udało się zainicjować libusb dla adaptera CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="410"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="421"/>
         <source>Unable to enumerate USB devices.</source>
         <translation>Nie można wyliczyć urządzeń USB.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="430"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="441"/>
         <source>The selected CANable adapter is no longer connected, or another application has it open. On Windows the device must use the WinUSB driver (candleLight installs it automatically).</source>
         <translation>Wybrany adapter CANable nie jest już podłączony lub inna aplikacja go używa. W systemie Windows urządzenie musi używać sterownika WinUSB (candleLight instaluje go automatycznie).</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="443"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="454"/>
         <source>Could not claim the CANable USB interface.</source>
         <translation>Nie można przejąć interfejsu USB CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="510"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="518"/>
         <source>CANable adapter is not open for writing.</source>
         <translation>Adapter CANable nie jest otwarty do zapisu.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="545"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="553"/>
         <source>Failed to transmit CAN frame to the adapter.</source>
         <translation>Nie udało się przesłać ramki CAN do adaptera.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="561"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="569"/>
         <source>CAN bus error reported by the CANable adapter.</source>
         <translation>Błąd magistrali CAN zgłoszony przez adapter CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="616"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="624"/>
         <source>A CAN frame was not acknowledged on the bus.</source>
         <translation>Ramka CAN nie została potwierdzona na magistrali.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="715"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="723"/>
         <source>CANable adapter rejected the host-format handshake.</source>
         <translation>Adapter CANable odrzucił uzgadnianie formatu hosta.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="722"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="730"/>
         <source>Could not read CANable timing constants.</source>
         <translation>Nie można odczytać stałych czasowych CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="728"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="736"/>
         <source>The bitrate %1 bps is not supported by this CANable adapter.</source>
         <translation>Przepływność %1 bps nie jest obsługiwana przez ten adapter CANable.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="734"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="742"/>
         <source>CANable adapter rejected the requested bitrate.</source>
         <translation>Adapter CANable odrzucił żądaną przepływność.</translation>
     </message>
     <message>
-        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="748"/>
+        <location filename="../../src/IO/Drivers/CANBus/GsUsbCanBackend.cpp" line="756"/>
         <source>Could not start the CANable channel.</source>
         <translation>Nie można uruchomić kanału CANable.</translation>
     </message>

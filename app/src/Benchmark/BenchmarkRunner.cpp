@@ -38,6 +38,7 @@
 #include "DataModel/Scripting/FrameParser.h"
 #include "Misc/Translator.h"
 #include "Misc/WorkspaceManager.h"
+#include "Platform/AppPlatform.h"
 #include "SerialStudio.h"
 #include "UI/Dashboard.h"
 #ifdef BUILD_COMMERCIAL
@@ -147,6 +148,14 @@ QVariantList BenchmarkRunner::results() const
 }
 
 /**
+ * @brief Returns the process peak resident set size, formatted (empty until a run completes).
+ */
+QString BenchmarkRunner::peakMemory() const
+{
+  return m_peakMemory;
+}
+
+/**
  * @brief Returns the selectable frame-count workloads as display strings.
  */
 QStringList BenchmarkRunner::frameOptions() const
@@ -227,6 +236,9 @@ void BenchmarkRunner::copyResults()
                    tr("%1 s").arg(QString::number(seconds, 'f', 2)),
                    result);
   }
+
+  if (!m_peakMemory.isEmpty())
+    text += tr("Peak memory: %1").arg(m_peakMemory) + QStringLiteral("\n");
 
   if (auto* clipboard = QGuiApplication::clipboard())
     clipboard->setText(text);
@@ -588,6 +600,11 @@ void BenchmarkRunner::executePhase(int index)
  */
 void BenchmarkRunner::finishSession()
 {
+  const quint64 peakBytes = Platform::AppPlatform::peakResidentBytes();
+  const double peakMiB     = static_cast<double>(peakBytes) / (1024.0 * 1024.0);
+  m_peakMemory = peakBytes > 0 ? tr("%1 MiB").arg(QString::number(peakMiB, 'f', 1)) : QString();
+  Q_EMIT peakMemoryChanged();
+
   endSession();
   Q_EMIT dashboardPreviewActive(false);
 

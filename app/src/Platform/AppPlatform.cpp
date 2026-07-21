@@ -27,6 +27,7 @@
 #  include <windows.h>
 #  include <avrt.h>
 #  include <shlobj.h>
+#  include <psapi.h>
 #  include <io.h>
 #  include <fcntl.h>
 #endif
@@ -44,6 +45,7 @@
 
 #if defined(__linux__) || defined(__APPLE__)
 #  include <sys/mman.h>
+#  include <sys/resource.h>
 #endif
 // clang-format on
 
@@ -662,6 +664,35 @@ void unlockMemoryResident(const void* ptr, size_t len)
 #else
   Q_UNUSED(ptr);
   Q_UNUSED(len);
+#endif
+}
+
+/**
+ * @brief Process peak resident set size in bytes (0 when unexposed). The OS keeps the high-water
+ *        mark, so one late read spans a whole run; ru_maxrss is bytes on macOS, kilobytes on Linux.
+ */
+quint64 peakResidentBytes()
+{
+#if defined(Q_OS_WIN)
+  PROCESS_MEMORY_COUNTERS pmc = {};
+  if (K32GetProcessMemoryInfo(GetCurrentProcess(), &pmc, sizeof(pmc)))
+    return static_cast<quint64>(pmc.PeakWorkingSetSize);
+
+  return 0;
+#elif defined(Q_OS_MACOS)
+  struct rusage usage = {};
+  if (getrusage(RUSAGE_SELF, &usage) != 0)
+    return 0;
+
+  return static_cast<quint64>(usage.ru_maxrss);
+#elif defined(Q_OS_LINUX)
+  struct rusage usage = {};
+  if (getrusage(RUSAGE_SELF, &usage) != 0)
+    return 0;
+
+  return static_cast<quint64>(usage.ru_maxrss) * 1024ull;
+#else
+  return 0;
 #endif
 }
 

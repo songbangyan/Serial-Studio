@@ -66,6 +66,8 @@ QString shortcutIdentityHash(const QString& shortcutPath);
 [[nodiscard]] bool lockMemoryResident(const void* ptr, size_t len);
 void unlockMemoryResident(const void* ptr, size_t len);
 
+[[nodiscard]] quint64 peakResidentBytes();
+
 void registerIngestThreadWithMmcss();
 }  // namespace AppPlatform
 

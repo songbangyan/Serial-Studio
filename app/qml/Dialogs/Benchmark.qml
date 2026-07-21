@@ -527,6 +527,18 @@ Widgets.SmartDialog {
     }
 
     //
+    // Peak process memory reached during the run
+    //
+    Label {
+      Layout.fillWidth: true
+      visible: root.runner.peakMemory.length > 0
+      color: Cpp_ThemeManager.colors["text"]
+      font: Cpp_Misc_CommonFonts.customUiFont(0.9, true)
+      text: qsTr("Peak memory: %1").arg(root.runner.peakMemory)
+      horizontalAlignment: root.rtl ? Text.AlignRight : Text.AlignLeft
+    }
+
+    //
     // Footnote: the gated targets
     //
     Label {

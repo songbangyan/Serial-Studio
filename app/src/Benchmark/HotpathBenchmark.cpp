@@ -934,6 +934,11 @@ bool HotpathBenchmark::printReport(const Result* results,
   printData("hotpath: dashboard ingest costs %.2fx throughput (same project, ingest on vs off)\n",
             dashIngest);
 
+  const quint64 peakRssBytes = Platform::AppPlatform::peakResidentBytes();
+  printData("hotpath: peak rss %.1f MiB (%s bytes)\n",
+            static_cast<double>(peakRssBytes) / (1024.0 * 1024.0),
+            groupedCount(static_cast<double>(peakRssBytes)).toUtf8().constData());
+
   const bool allPassed = data.passed && native.passed && nativeMix.passed && lua.passed && js.passed
                       && luaMix.passed && jsMix.passed && luaX.passed && luaD.passed;
   printData("HOTPATH_FPS=%.0f HOTPATH_TARGET=%.0f HOTPATH_JS_FPS=%.0f HOTPATH_JS_TARGET=%.0f "
@@ -969,6 +974,8 @@ bool HotpathBenchmark::printReport(const Result* results,
               stages.extractNs,
               stages.tokenizeNs,
               stages.datasetsPublishNs);
+
+  printData("HOTPATH_PEAK_RSS_BYTES=%llu\n", static_cast<unsigned long long>(peakRssBytes));
 
   std::fflush(stdout);
   if (fileOpen) {
