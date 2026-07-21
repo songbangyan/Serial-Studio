@@ -181,6 +181,28 @@ static_assert(sizeof(GsHostFrame) == kClassicFrameSize, "gs_host_frame must be 2
 }
 
 /**
+ * @brief Returns a process-lifetime libusb context shared by every probe and connection.
+ *
+ * libusb_exit() on macOS signals its CFRunLoop event thread and pthread_join()s it; that
+ * join deadlocks (seen at startup from GsUsbCanBackend::supported(), and aggravated by the
+ * mimalloc override). Initializing one context once and never calling libusb_exit() removes
+ * every join: the event thread lives until the process exits. Ownership is the static;
+ * callers borrow the pointer and must never libusb_exit() it.
+ */
+[[nodiscard]] static libusb_context* sharedUsbContext()
+{
+  static libusb_context* const ctx = [] {
+    libusb_context* c = nullptr;
+    if (libusb_init(&c) != 0)
+      c = nullptr;
+
+    return c;
+  }();
+
+  return ctx;
+}
+
+/**
  * @brief Solves gs_usb bit-timing segments for a target bitrate from BT_CONST limits.
  */
 [[nodiscard]] static bool solveBitTiming(const GsDeviceBtConst& bt,
@@ -275,12 +297,7 @@ const QString& IO::Drivers::GsUsbCanBackend::pluginKey()
  */
 bool IO::Drivers::GsUsbCanBackend::supported()
 {
-  libusb_context* ctx = nullptr;
-  if (libusb_init(&ctx) < 0)
-    return false;
-
-  libusb_exit(ctx);
-  return true;
+  return sharedUsbContext() != nullptr;
 }
 
 /**
@@ -290,16 +307,14 @@ QStringList IO::Drivers::GsUsbCanBackend::availableInterfaces()
 {
   QStringList interfaces;
 
-  libusb_context* ctx = nullptr;
-  if (libusb_init(&ctx) < 0)
+  libusb_context* ctx = sharedUsbContext();
+  if (!ctx)
     return interfaces;
 
   libusb_device** devices = nullptr;
   const ssize_t count     = libusb_get_device_list(ctx, &devices);
-  if (count < 0) {
-    libusb_exit(ctx);
+  if (count < 0)
     return interfaces;
-  }
 
   for (ssize_t i = 0; i < count; ++i) {
     libusb_device_descriptor desc{};
@@ -311,7 +326,6 @@ QStringList IO::Drivers::GsUsbCanBackend::availableInterfaces()
   }
 
   libusb_free_device_list(devices, 1);
-  libusb_exit(ctx);
   return interfaces;
 }
 
@@ -361,10 +375,7 @@ IO::Drivers::GsUsbCanBackend::~GsUsbCanBackend()
     m_handle = nullptr;
   }
 
-  if (m_ctx) {
-    libusb_exit(m_ctx);
-    m_ctx = nullptr;
-  }
+  m_ctx = nullptr;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -378,7 +389,8 @@ bool IO::Drivers::GsUsbCanBackend::open()
 {
   Q_ASSERT(m_handle == nullptr);
 
-  if (libusb_init(&m_ctx) < 0) {
+  m_ctx = sharedUsbContext();
+  if (!m_ctx) {
     setError(tr("Failed to initialize libusb for the CANable adapter."),
              QCanBusDevice::ConnectionError);
     setState(QCanBusDevice::UnconnectedState);
@@ -399,7 +411,6 @@ bool IO::Drivers::GsUsbCanBackend::open()
       m_handle = nullptr;
     }
 
-    libusb_exit(m_ctx);
     m_ctx             = nullptr;
     m_interfaceNumber = -1;
   });
@@ -488,10 +499,7 @@ void IO::Drivers::GsUsbCanBackend::close()
     m_handle = nullptr;
   }
 
-  if (m_ctx) {
-    libusb_exit(m_ctx);
-    m_ctx = nullptr;
-  }
+  m_ctx = nullptr;
 
   m_interfaceNumber = -1;
   m_inEndpoint      = 0;

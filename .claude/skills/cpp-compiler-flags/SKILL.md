@@ -22,7 +22,7 @@ read them before answering anything flag-related:
 | `cmake/Optimization.cmake` | `-O3`/`/O2`, `-march`, SIMD, LTO, and the full PGO (GENERATE/USE) flow, per toolchain. |
 | `cmake/Hardening.cmake` | Stack protectors, FORTIFY, CFI/CET, RELRO/DEP, ASLR, `serial_studio_harden()` per-target deltas. |
 | `cmake/Sanitizers.cmake` | ASan+UBSan (`DEBUG_SANITIZER`) and the separate TSan build (`ENABLE_TSAN`). |
-| `cmake/MiMalloc.cmake` | The process-wide mimalloc allocator override (Windows/MSVC + Linux; macOS opts out). |
+| `cmake/MiMalloc.cmake` | The process-wide mimalloc allocator override (Windows/MSVC + Linux shared; macOS static interpose via `-Wl,-force_load`). |
 
 Wiring: the four user-facing options (`DEBUG_SANITIZER`, `PRODUCTION_OPTIMIZATION`,
 `ENABLE_HARDENING`, `ENABLE_PGO`) are declared in `CMakeLists.txt` (around lines 79-87);

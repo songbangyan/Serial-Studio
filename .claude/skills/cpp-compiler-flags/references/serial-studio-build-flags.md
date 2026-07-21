@@ -182,17 +182,24 @@ TSan exists to prove the lock-free hotpath (driver thread -> main via SPSC `Circ
 
 ## MiMalloc.cmake
 
-Process-wide allocator override on Windows/MSVC (incl. clang-cl) and Linux; **macOS opts out**
-(good system allocator, fragile DYLD interposing). FetchContent-builds mimalloc v2.1.9 with
-`MI_OVERRIDE`/`MI_BUILD_SHARED`. Rationale: the frame-parse hotpath allocates many small
-QString/QByteArray/Lua buffers per frame; the system heap (MSVC CRT / glibc) is slower, and
-glibc thrashes per-thread arenas under the main-allocates / worker-frees pattern. clang-cl
-builds mimalloc as C++ (`MI_USE_CXX`) to dodge a C-atomics miscompile in `segment-map.c`.
-Included **before** Optimization.cmake so it isn't swept into LTO/PGO. Call
-`target_link_mimalloc(<target>)`:
+Process-wide allocator override on Windows/MSVC (incl. clang-cl), Linux, and macOS (static
+interpose, spec 0025; on by default, `SS_MIMALLOC_ENABLE_APPLE`). On macOS `-Wl,-force_load` of
+the static archive pulls both the malloc `__interpose` entries and the operator new/delete
+overrides the archive already defines under `MI_OVERRIDE` — do **not** also include
+`mimalloc-new-delete.h` (duplicate-symbol link error). FetchContent-builds mimalloc v3.4.3 with
+`MI_OVERRIDE` (shared on Windows/Linux; static on macOS). Pinned to v3.4.3, not v3.4.1: 3.4.1
+crashed on macOS in the cross-thread free path (mimalloc#1333, fixed in 3.4.3). Rationale: the frame-parse hotpath allocates many small QString/QByteArray/Lua buffers
+per frame; the system heap (MSVC CRT / glibc) is slower, and glibc thrashes per-thread arenas
+under the main-allocates / worker-frees pattern. clang-cl builds mimalloc as C++ (`MI_USE_CXX`)
+to dodge a C-atomics miscompile in `segment-map.c`. Included **before** Optimization.cmake so
+it isn't swept into LTO/PGO. Call `target_link_mimalloc(<target>)`:
 - Windows/MSVC: link `mimalloc` + `/INCLUDE:mi_version`, copy `mimalloc.dll` +
   `mimalloc-redirect.dll` (patches malloc process-wide at load, Qt DLLs included).
 - Linux: `-Wl,--no-as-needed mimalloc` (force the interpose).
+- macOS: `-Wl,-force_load` the `mimalloc-static` archive so its `__DATA,__interpose` entries (and
+  the operator new/delete overrides it defines under `MI_OVERRIDE`) survive `-dead_strip` and
+  override the allocator process-wide with no injected dylib (survives SIP / hardened runtime /
+  notarization; nothing extra enters the signed `.app`). No `mimalloc-new-delete.h` — it duplicates.
 
 ## Why the invariants exist (one line each)
 

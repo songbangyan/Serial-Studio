@@ -1,5 +1,5 @@
 #
-# Serial Studio — mimalloc allocator override (Windows/MSVC + Linux)
+# Serial Studio — mimalloc allocator override (Windows/MSVC + Linux + macOS)
 # https://serial-studio.com/
 #
 # Copyright (C) 2020–2025 Alex Spataru
@@ -29,7 +29,10 @@ include_guard(GLOBAL)
 #                                  C-atomics miscompile in segment-map.c.
 #   Linux                          shared libmimalloc.so linked with -Wl,--no-as-needed so its
 #                                  malloc/free interpose over glibc via ELF symbol resolution.
-#   macOS                          opts out (good system allocator, fragile DYLD interposing).
+#   macOS                          static libmimalloc.a linked with -Wl,-force_load so its
+#                                  __DATA,__interpose entries override malloc process-wide with no
+#                                  injected dylib, surviving SIP / hardened runtime / notarization.
+#                                  force_load also pulls the operator new/delete overrides.
 #
 # mimalloc's own warnings are silenced (third-party). Include BEFORE Optimization.cmake so it is not
 # swept into LTO/PGO. Call target_link_mimalloc(<target>) on the executable.
@@ -39,8 +42,13 @@ include_guard(GLOBAL)
 #
 #---------------------------------------------------------------------------------------------------
 
+option(SS_MIMALLOC_ENABLE_APPLE "Enable mimalloc static override on macOS (advanced opt-out)" ON)
+mark_as_advanced(SS_MIMALLOC_ENABLE_APPLE)
+
 set(SS_MIMALLOC_PLATFORM FALSE)
-if(SS_USE_MIMALLOC AND ((WIN32 AND MSVC) OR (UNIX AND NOT APPLE)))
+if(SS_USE_MIMALLOC AND ((WIN32 AND MSVC)
+                        OR (UNIX AND NOT APPLE)
+                        OR (APPLE AND SS_MIMALLOC_ENABLE_APPLE)))
   set(SS_MIMALLOC_PLATFORM TRUE)
 endif()
 
@@ -48,10 +56,16 @@ if(SS_MIMALLOC_PLATFORM)
   include(FetchContent)
 
   set(MI_OVERRIDE     ON  CACHE BOOL "" FORCE)
-  set(MI_BUILD_SHARED ON  CACHE BOOL "" FORCE)
-  set(MI_BUILD_STATIC OFF CACHE BOOL "" FORCE)
   set(MI_BUILD_OBJECT OFF CACHE BOOL "" FORCE)
   set(MI_BUILD_TESTS  OFF CACHE BOOL "" FORCE)
+
+  if(APPLE)
+    set(MI_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+    set(MI_BUILD_STATIC ON  CACHE BOOL "" FORCE)
+  else()
+    set(MI_BUILD_SHARED ON  CACHE BOOL "" FORCE)
+    set(MI_BUILD_STATIC OFF CACHE BOOL "" FORCE)
+  endif()
 
   if(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(MI_USE_CXX ON CACHE BOOL "" FORCE)
@@ -60,12 +74,14 @@ if(SS_MIMALLOC_PLATFORM)
   FetchContent_Declare(
     mimalloc
     GIT_REPOSITORY https://github.com/microsoft/mimalloc.git
-    GIT_TAG        v3.4.1
+    GIT_TAG        v3.4.3
     GIT_SHALLOW    TRUE
   )
   FetchContent_MakeAvailable(mimalloc)
 
-  if(MSVC)
+  if(APPLE)
+    target_compile_options(mimalloc-static PRIVATE -w)
+  elseif(MSVC)
     target_compile_options(mimalloc PRIVATE /w)
   else()
     target_compile_options(mimalloc PRIVATE -w)
@@ -82,9 +98,6 @@ function(target_link_mimalloc target)
     return()
   endif()
 
-  # Skip the allocator override under ASan/UBSan/TSan: mimalloc interposes
-  # malloc/free, which collides with the sanitizer's own allocator and
-  # produces shadow-memory corruption, bogus reports, or a pre-main crash.
   if(DEBUG_SANITIZER OR ENABLE_TSAN)
     message(STATUS "mimalloc disabled for sanitizer build (${target})")
     return()
@@ -101,6 +114,12 @@ function(target_link_mimalloc target)
       VERBATIM)
 
     install(FILES $<TARGET_FILE:mimalloc> "${SS_MIMALLOC_REDIRECT_DLL}" DESTINATION bin)
+    return()
+  endif()
+
+  if(APPLE)
+    add_dependencies(${target} mimalloc-static)
+    target_link_options(${target} PRIVATE "-Wl,-force_load,$<TARGET_FILE:mimalloc-static>")
     return()
   endif()
 
