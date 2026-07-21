@@ -1575,7 +1575,9 @@ void Widgets::Terminal::loadWelcomeGuide()
 
   auto key = QKeySequence(QStringLiteral("Ctrl+K")).toString(QKeySequence::NativeText);
 #ifdef Q_OS_MAC
+  // code-verify off (glyph must match the command symbol NativeText emits)
   key = key.replace("⌘", "⌘+");
+  // code-verify on
 #endif
 
   append(tr("Tip: Press %1 anywhere to open the command palette.").arg(key) + QStringLiteral("\n"));

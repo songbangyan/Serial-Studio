@@ -216,7 +216,9 @@ Item {
         font: Cpp_Misc_CommonFonts.uiFont
         color: Cpp_ThemeManager.colors["text"]
         verticalAlignment: Text.AlignVCenter
+        // code-verify off
         placeholderText: qsTr("Search… (%1)").arg(Qt.platform.os === "osx" ? "⌘+K" : "Ctrl+K")
+        // code-verify on
         selectionColor: Cpp_ThemeManager.colors["highlight"]
         horizontalAlignment: rtl ? Text.AlignRight : Text.AlignLeft
         selectedTextColor: Cpp_ThemeManager.colors["highlighted_text"]
