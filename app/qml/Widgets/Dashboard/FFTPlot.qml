@@ -188,12 +188,6 @@ Item {
                      : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
     }
 
-    Rectangle {
-      implicitWidth: 1
-      implicitHeight: 24
-      color: Cpp_ThemeManager.colors["widget_border"]
-    }
-
     DashboardToolButton {
       opacity: enabled ? 1 : 0.5
       checked: root.showAreaUnderPlot
@@ -290,6 +284,40 @@ Item {
       ToolTip.text: qsTr("Axis Range Settings")
       icon.source: "qrc:/icons/toolbar/settings.svg"
       onClicked: axisRangeDialog.openDialog(plot, root.model)
+    }
+
+    Rectangle {
+      visible: Cpp_CommercialBuild
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    //
+    // Record the widget's time-domain input to WAV (Pro)
+    //
+    DashboardToolButton {
+      visible: Cpp_CommercialBuild
+      ToolTip.text: qsTr("Record Audio")
+      icon.source: "qrc:/icons/dashboard-buttons/audio-file.svg"
+      checked: Cpp_CommercialBuild && root.model && root.model.audioRecordingEnabled
+      onClicked: {
+        if (root.model)
+          root.model.audioRecordingEnabled = !root.model.audioRecordingEnabled
+      }
+    }
+
+    //
+    // Reveal the folder holding this widget's recorded WAV files (Pro)
+    //
+    DashboardToolButton {
+      visible: Cpp_CommercialBuild
+      ToolTip.text: qsTr("Open Recordings Folder")
+      icon.source: "qrc:/icons/dashboard-buttons/sound-folder.svg"
+      onClicked: {
+        if (root.model)
+          Cpp_Misc_Utilities.revealFile(root.model.recordingsFolder())
+      }
     }
 
     Rectangle {

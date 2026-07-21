@@ -209,6 +209,9 @@ public:
   [[nodiscard]] bool multiplotRunning(const int index);
 #ifdef BUILD_COMMERCIAL
   [[nodiscard]] bool waterfallRunning(const int index);
+
+  void setFftAudioTap(const int index, const bool enabled, const quint32 key);
+  void setWaterfallAudioTap(const int index, const bool enabled, const quint32 key);
 #endif
 
 public slots:
@@ -383,6 +386,10 @@ private:
     const bool* activeFlag;
     DSP::AxisData* buf;
     const double* value;
+#ifdef BUILD_COMMERCIAL
+    bool record;
+    quint32 sessionKey;
+#endif
   };
 
   /**

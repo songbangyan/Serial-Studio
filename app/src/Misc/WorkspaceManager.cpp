@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QRegularExpression>
 #include <QStandardPaths>
 
 //--------------------------------------------------------------------------------------------------
@@ -97,6 +98,26 @@ QString Misc::WorkspaceManager::path(const QString& subdirectory) const
   }
 
   return path;
+}
+
+/**
+ * @brief Reduces an untrusted title to a safe single path component: path separators, drive/scheme
+ *        colons, shell wildcards, control chars and ".." collapse to "_", leading/trailing dots and
+ *        spaces are stripped. An empty result falls back to "untitled" so no traversal can occur.
+ */
+QString Misc::WorkspaceManager::sanitizeName(const QString& name)
+{
+  static const QRegularExpression unsafe(QStringLiteral("[/\\\\:*?\"<>|\\x00-\\x1F]"));
+  static const QRegularExpression edges(QStringLiteral("^[ .]+|[ .]+$"));
+
+  QString out = name;
+  out.replace(unsafe, QStringLiteral("_"));
+  out.replace(QStringLiteral(".."), QStringLiteral("_"));
+  out.replace(edges, QString());
+  if (out.isEmpty())
+    out = QStringLiteral("untitled");
+
+  return out;
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -267,12 +267,6 @@ Item {
       icon.source: "qrc:/icons/dashboard-buttons/front_view.svg"
     }
 
-    Rectangle {
-      implicitWidth: 1
-      implicitHeight: 24
-      color: Cpp_ThemeManager.colors["widget_border"]
-    }
-
     DashboardToolButton {
       onClicked: {
         model.autoCenter = !model.autoCenter

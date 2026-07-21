@@ -662,6 +662,7 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Plot3D.h
     src/UI/Widgets/ImageView.h
     src/UI/Widgets/ImageExport.h
+    src/UI/Widgets/AudioExport.h
     src/UI/Widgets/Waterfall.h
     src/UI/Widgets/Painter.h
     src/UI/Widgets/PainterContext.h
@@ -762,6 +763,7 @@ if(BUILD_COMMERCIAL)
     src/UI/Widgets/Plot3D.cpp
     src/UI/Widgets/ImageView.cpp
     src/UI/Widgets/ImageExport.cpp
+    src/UI/Widgets/AudioExport.cpp
     src/UI/Widgets/Waterfall.cpp
     src/UI/Widgets/Painter.cpp
     src/UI/Widgets/PainterContext.cpp

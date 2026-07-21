@@ -36,6 +36,7 @@
 #  include "Licensing/CommercialToken.h"
 #  include "Licensing/LemonSqueezy.h"
 #  include "Sessions/Player.h"
+#  include "UI/Widgets/AudioExport.h"
 #endif
 
 #include <algorithm>
@@ -2466,6 +2467,10 @@ void UI::Dashboard::updateFftSeries(int sourceId)
   Q_ASSERT(static_cast<int>(m_fftPushes.size()) == m_fftValues.size());
   Q_ASSERT(m_activeFFTPlots.size() == m_fftValues.size());
 
+#ifdef BUILD_COMMERCIAL
+  static auto& audioExport = Widgets::AudioExport::instance();
+#endif
+
   for (const auto& p : m_fftPushes) {
     if (!*p.activeFlag)
       continue;
@@ -2474,8 +2479,30 @@ void UI::Dashboard::updateFftSeries(int sourceId)
       continue;
 
     p.buf->push(*p.value);
+#ifdef BUILD_COMMERCIAL
+    if (p.record) [[unlikely]]
+      audioExport.enqueueSample(p.sessionKey, *p.value);
+#endif
   }
 }
+
+#ifdef BUILD_COMMERCIAL
+/**
+ * @brief Arms or disarms the audio-recording tap on one FFT widget's ingest push. Taps are
+ *        index-aligned with the FFT widget order and reset on every push-table rebuild, so a
+ *        stale index can never fire against a re-indexed widget.
+ */
+void UI::Dashboard::setFftAudioTap(const int index, const bool enabled, const quint32 key)
+{
+  Q_ASSERT(index >= 0);
+  Q_ASSERT(static_cast<int>(m_fftPushes.size()) == m_fftValues.size());
+  if (index < 0 || index >= static_cast<int>(m_fftPushes.size()))
+    return;
+
+  m_fftPushes[index].record     = enabled;
+  m_fftPushes[index].sessionKey = key;
+}
+#endif
 
 /**
  * @brief Updates GPS trajectory series for all GPS widgets.
@@ -2675,6 +2702,10 @@ void UI::Dashboard::configureFftSeries()
     push.activeFlag = &m_activeFFTPlots[i];
     push.buf        = &m_fftValues[i];
     push.value      = &dataset.numericValue;
+#ifdef BUILD_COMMERCIAL
+    push.record     = false;
+    push.sessionKey = 0;
+#endif
     m_fftPushes.push_back(push);
   }
 }
@@ -2688,6 +2719,8 @@ void UI::Dashboard::updateWaterfallSeries(int sourceId)
   Q_ASSERT(static_cast<int>(m_waterfallPushes.size()) == m_waterfallValues.size());
   Q_ASSERT(m_activeWaterfalls.size() == m_waterfallValues.size());
 
+  static auto& audioExport = Widgets::AudioExport::instance();
+
   for (const auto& p : m_waterfallPushes) {
     if (!*p.activeFlag)
       continue;
@@ -2696,7 +2729,25 @@ void UI::Dashboard::updateWaterfallSeries(int sourceId)
       continue;
 
     p.buf->push(*p.value);
+    if (p.record) [[unlikely]]
+      audioExport.enqueueSample(p.sessionKey, *p.value);
   }
+}
+
+/**
+ * @brief Arms or disarms the audio-recording tap on one waterfall widget's ingest push. Taps
+ *        are index-aligned with the waterfall widget order and reset on every push-table
+ *        rebuild, so a stale index can never fire against a re-indexed widget.
+ */
+void UI::Dashboard::setWaterfallAudioTap(const int index, const bool enabled, const quint32 key)
+{
+  Q_ASSERT(index >= 0);
+  Q_ASSERT(static_cast<int>(m_waterfallPushes.size()) == m_waterfallValues.size());
+  if (index < 0 || index >= static_cast<int>(m_waterfallPushes.size()))
+    return;
+
+  m_waterfallPushes[index].record     = enabled;
+  m_waterfallPushes[index].sessionKey = key;
 }
 
 /**
@@ -2729,6 +2780,8 @@ void UI::Dashboard::configureWaterfallSeries()
     push.activeFlag = &m_activeWaterfalls[i];
     push.buf        = &m_waterfallValues[i];
     push.value      = &dataset.numericValue;
+    push.record     = false;
+    push.sessionKey = 0;
     m_waterfallPushes.push_back(push);
   }
 }

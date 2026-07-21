@@ -255,6 +255,12 @@ Item {
       }
     }
 
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
     DashboardToolButton {
       ToolTip.text: qsTr("Show Crosshair")
       checked: root.model && root.model.cursorEnabled
@@ -280,6 +286,40 @@ Item {
         Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId,
                                                 "showFrequencyMarkers",
                                                 root.model.markersVisible)
+      }
+    }
+
+    Rectangle {
+      visible: Cpp_CommercialBuild
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    //
+    // Record the widget's time-domain input to WAV (Pro)
+    //
+    DashboardToolButton {
+      visible: Cpp_CommercialBuild
+      ToolTip.text: qsTr("Record Audio")
+      icon.source: "qrc:/icons/dashboard-buttons/audio-file.svg"
+      checked: Cpp_CommercialBuild && root.model && root.model.audioRecordingEnabled
+      onClicked: {
+        if (root.model)
+          root.model.audioRecordingEnabled = !root.model.audioRecordingEnabled
+      }
+    }
+
+    //
+    // Reveal the folder holding this widget's recorded WAV files (Pro)
+    //
+    DashboardToolButton {
+      visible: Cpp_CommercialBuild
+      ToolTip.text: qsTr("Open Recordings Folder")
+      icon.source: "qrc:/icons/dashboard-buttons/sound-folder.svg"
+      onClicked: {
+        if (root.model)
+          Cpp_Misc_Utilities.revealFile(root.model.recordingsFolder())
       }
     }
 

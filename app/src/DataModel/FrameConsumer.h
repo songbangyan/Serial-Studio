@@ -277,11 +277,14 @@ public:
   }
 
   /**
-   * @brief Flushes and stops the worker thread. Idempotent; call before QApplication teardown. The
-   * blocking flush spins a QEventLoop needing a live QCoreApplication, so it is skipped at exit.
+   * @brief Flushes and stops the worker thread, then disables enqueues and drops the deleted
+   * worker/timer pointers so a post-teardown enqueueData() cannot invoke on freed memory.
+   * Idempotent; call before QApplication teardown. The blocking flush needs a live qApp.
    */
   void stopWorker()
   {
+    m_consumerEnabled.store(false, std::memory_order_relaxed);
+
     if (!m_worker || !m_workerThread.isRunning())
       return;
 
@@ -291,6 +294,9 @@ public:
 
     m_workerThread.quit();
     m_workerThread.wait();
+
+    m_worker = nullptr;
+    m_timer  = nullptr;
   }
 
   /**

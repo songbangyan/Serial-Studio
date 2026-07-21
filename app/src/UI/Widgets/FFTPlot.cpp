@@ -29,6 +29,10 @@
 #include "UI/Widgets/FFTWindow.h"
 #include "UI/Widgets/PlotLogScale.h"
 
+#ifdef BUILD_COMMERCIAL
+#  include "UI/Widgets/AudioExport.h"
+#endif
+
 //--------------------------------------------------------------------------------------------------
 // Log-axis display constants
 //--------------------------------------------------------------------------------------------------
@@ -67,6 +71,10 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
   , m_windowType(SerialStudio::FFTWindowBlackmanHarris)
   , m_interpolationMode(SerialStudio::InterpolationLinear)
   , m_plan(nullptr)
+#ifdef BUILD_COMMERCIAL
+  , m_audioExport(Widgets::AudioExport::instance())
+  , m_audioRecordingEnabled(false)
+#endif
 {
   if (VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index)) {
     const auto& dataset      = GET_DATASET(SerialStudio::DashboardFFT, m_index);
@@ -112,6 +120,45 @@ Widgets::FFTPlot::FFTPlot(const int index, QQuickItem* parent)
         m_halfRange    = qMax(1e-12, (maxVal - minVal) * 0.5);
       }
     }
+  }
+
+#ifdef BUILD_COMMERCIAL
+  connect(&m_audioExport, &Widgets::AudioExport::sessionsClosed, this, [this] {
+    if (!m_audioRecordingEnabled)
+      return;
+
+    m_audioRecordingEnabled = false;
+    m_dashboard.setFftAudioTap(m_index, false, 0);
+    Q_EMIT audioRecordingEnabledChanged();
+  });
+
+  connect(&m_audioExport, &Widgets::AudioExport::sessionClosed, this, [this](quint32 key) {
+    if (key != Widgets::AudioExport::sessionKey(SerialStudio::DashboardFFT, m_index)
+        || !m_audioRecordingEnabled)
+      return;
+
+    m_audioRecordingEnabled = false;
+    m_dashboard.setFftAudioTap(m_index, false, 0);
+    Q_EMIT audioRecordingEnabledChanged();
+  });
+#endif
+}
+
+/**
+ * @brief Releases the FFT plan and, on commercial builds, finalises any active recording session.
+ */
+Widgets::FFTPlot::~FFTPlot()
+{
+#ifdef BUILD_COMMERCIAL
+  if (m_audioRecordingEnabled) {
+    m_dashboard.setFftAudioTap(m_index, false, 0);
+    m_audioExport.closeSession(SerialStudio::DashboardFFT, m_index);
+  }
+#endif
+
+  if (m_plan) {
+    kiss_fft_free(m_plan);
+    m_plan = nullptr;
   }
 }
 
@@ -413,6 +460,66 @@ void Widgets::FFTPlot::setInterpolationMode(SerialStudio::InterpolationMode mode
   m_interpolationMode = resolved;
   Q_EMIT interpolationModeChanged();
 }
+
+#ifdef BUILD_COMMERCIAL
+/**
+ * @brief Returns whether WAV recording of the widget's time-domain input is active (Pro).
+ */
+bool Widgets::FFTPlot::audioRecordingEnabled() const noexcept
+{
+  return m_audioRecordingEnabled;
+}
+
+/**
+ * @brief Resolves the shared WAV output folder live from the current dataset title, so a dataset
+ *        rename after construction still reveals the correct recordings folder.
+ */
+QString Widgets::FFTPlot::recordingsFolder() const
+{
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index))
+    return QString();
+
+  return m_audioExport.audioPath(GET_DATASET(SerialStudio::DashboardFFT, m_index).title,
+                                 m_dashboard.title());
+}
+
+/**
+ * @brief Toggles WAV recording of the input signal; enabling is refused without a Pro license,
+ *        disabling always disarms the Dashboard tap before finalising the session.
+ */
+void Widgets::FFTPlot::setAudioRecordingEnabled(const bool enabled)
+{
+  if (m_audioRecordingEnabled == enabled)
+    return;
+
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardFFT, m_index))
+    return;
+
+  if (enabled) {
+    if (!SerialStudio::proWidgetsEnabled())
+      return;
+
+    const auto& dataset = GET_DATASET(SerialStudio::DashboardFFT, m_index);
+    AudioSessionConfig cfg;
+    cfg.sampleRate   = m_samplingRate;
+    cfg.useScale     = m_scaleIsValid;
+    cfg.center       = m_center;
+    cfg.halfRange    = m_halfRange;
+    cfg.datasetTitle = dataset.title;
+    cfg.projectTitle = m_dashboard.title();
+
+    m_audioExport.openSession(SerialStudio::DashboardFFT, m_index, cfg);
+    m_dashboard.setFftAudioTap(
+      m_index, true, Widgets::AudioExport::sessionKey(SerialStudio::DashboardFFT, m_index));
+  } else {
+    m_dashboard.setFftAudioTap(m_index, false, 0);
+    m_audioExport.closeSession(SerialStudio::DashboardFFT, m_index);
+  }
+
+  m_audioRecordingEnabled = enabled;
+  Q_EMIT audioRecordingEnabledChanged();
+}
+#endif
 
 //--------------------------------------------------------------------------------------------------
 // Data updates

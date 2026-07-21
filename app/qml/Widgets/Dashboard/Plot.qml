@@ -351,15 +351,6 @@ Item {
       icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
     }
 
-    DashboardToolButton {
-      checked: !model.running
-      ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
-      icon.source: model.running?
-                     "qrc:/icons/dashboard-buttons/pause.svg" :
-                     "qrc:/icons/dashboard-buttons/resume.svg"
-      onClicked: model.running = !model.running
-    }
-
     Rectangle {
       visible: root.sweepAllowed
       implicitWidth: 1
@@ -415,6 +406,21 @@ Item {
       ToolTip.text: qsTr("Axis Range Settings")
       icon.source: "qrc:/icons/toolbar/settings.svg"
       onClicked: axisRangeDialog.openDialog(plot, root.model)
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
+    }
+
+    DashboardToolButton {
+      checked: !model.running
+      ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
+      icon.source: model.running?
+                     "qrc:/icons/dashboard-buttons/pause.svg" :
+                     "qrc:/icons/dashboard-buttons/resume.svg"
+      onClicked: model.running = !model.running
     }
 
     Item {

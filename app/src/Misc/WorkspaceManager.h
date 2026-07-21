@@ -58,6 +58,8 @@ public:
 
   [[nodiscard]] QString path(const QString& subdirectory) const;
 
+  [[nodiscard]] static QString sanitizeName(const QString& name);
+
   [[nodiscard]] QString remapLegacyPath(const QString& path) const;
 
   void setTemporaryPath(const QString& path);

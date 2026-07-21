@@ -37,6 +37,10 @@ class Dashboard;
 }  // namespace UI
 
 namespace Widgets {
+#ifdef BUILD_COMMERCIAL
+class AudioExport;
+#endif
+
 /**
  * @brief Fast Fourier Transform visualization widget for frequency analysis.
  */
@@ -77,6 +81,12 @@ class FFTPlot : public QQuickItem {
   Q_PROPERTY(QVariantList markers
              READ markers
              CONSTANT)
+#ifdef BUILD_COMMERCIAL
+  Q_PROPERTY(bool audioRecordingEnabled
+             READ audioRecordingEnabled
+             WRITE setAudioRecordingEnabled
+             NOTIFY audioRecordingEnabledChanged)
+#endif
   // clang-format on
 
 signals:
@@ -84,17 +94,13 @@ signals:
   void dataSizeChanged();
   void markerValuesChanged();
   void interpolationModeChanged();
+#ifdef BUILD_COMMERCIAL
+  void audioRecordingEnabledChanged();
+#endif
 
 public:
   explicit FFTPlot(const int index = -1, QQuickItem* parent = nullptr);
-
-  ~FFTPlot()
-  {
-    if (m_plan) {
-      kiss_fft_free(m_plan);
-      m_plan = nullptr;
-    }
-  }
+  ~FFTPlot();
 
   [[nodiscard]] int dataW() const noexcept;
   [[nodiscard]] int dataH() const noexcept;
@@ -106,6 +112,10 @@ public:
   [[nodiscard]] bool running() const noexcept;
   [[nodiscard]] QVariantList markers() const;
   [[nodiscard]] SerialStudio::InterpolationMode interpolationMode() const noexcept;
+#ifdef BUILD_COMMERCIAL
+  [[nodiscard]] bool audioRecordingEnabled() const noexcept;
+  Q_INVOKABLE [[nodiscard]] QString recordingsFolder() const;
+#endif
 
   Q_INVOKABLE [[nodiscard]] double markerPeakDb(int index) const;
   Q_INVOKABLE [[nodiscard]] int markerState(int index) const;
@@ -116,6 +126,9 @@ public slots:
   void setDataH(const int height);
   void setRunning(const bool enabled);
   void setInterpolationMode(SerialStudio::InterpolationMode mode);
+#ifdef BUILD_COMMERCIAL
+  void setAudioRecordingEnabled(const bool enabled);
+#endif
 
 private slots:
   void updateData();
@@ -191,5 +204,10 @@ private:
 
   QVariantList m_markerConfig;
   std::vector<MarkerRuntime> m_markerRt;
+
+#ifdef BUILD_COMMERCIAL
+  AudioExport& m_audioExport;
+  bool m_audioRecordingEnabled;
+#endif
 };
 }  // namespace Widgets

@@ -5964,15 +5964,15 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <translation>Serial Studio-project Opslaan</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio-projectbestanden (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>Naamloos Project</translation>
     </message>
@@ -6227,9 +6227,9 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Werkruimte</translation>
     </message>
@@ -6256,6 +6256,8 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6268,8 +6270,6 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Naam:</translation>
     </message>
@@ -6309,10 +6309,10 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <translation>Register Hernoemen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>Deze actie kan niet ongedaan worden gemaakt.</translation>
     </message>
@@ -6322,9 +6322,9 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <translation>Dit verwijdert %1 register(s) samen met de tabel. Deze actie kan niet ongedaan worden gemaakt.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>"%1" Verwijderen?</translation>
     </message>
@@ -6355,8 +6355,8 @@ Voeg %4 dataset(s) toe met de standaardwaarden van de sjabloon?</translation>
         <translation>Tabel Importeren</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>Nieuwe Werkruimte</translation>
     </message>
@@ -7545,77 +7545,87 @@ Geldig formaat: 01 A2 FF 3C</translation>
         <translation>Interpolatie: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="194"/>
         <source>Show Area Under Plot</source>
         <translation>Toon Gebied Onder Plot</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="212"/>
         <source>Show X Axis Label</source>
         <translation>Toon X-aslabel</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="224"/>
         <source>Show Y Axis Label</source>
         <translation>Toon Y-aslabel</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="242"/>
         <source>Show Crosshair</source>
         <translation>Toon Kruisdraad</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
         <source>Show Frequency Markers</source>
         <translation>Toon Frequentiemarkeringen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <source>Record Audio</source>
+        <translation>Audio Opnemen</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="315"/>
+        <source>Open Recordings Folder</source>
+        <translation>Opnamemap Openen</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Resume</source>
         <translation>Hervatten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="692"/>
         <source>Click to clear the spotlight.</source>
         <translation>Klik om de spotlight te wissen.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="693"/>
         <source>Click to spotlight this marker.</source>
         <translation>Klik om deze markering te belichten.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="278"/>
         <source>Reset View</source>
         <translation>Weergave Resetten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Axis Range Settings</source>
         <translation>Asbereik Instellingen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="363"/>
         <source>Magnitude (dB)</source>
         <translation>Magnitude (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="364"/>
         <source>Frequency (Hz)</source>
         <translation>Frequentie (Hz)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="651"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="655"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
@@ -8550,37 +8560,37 @@ Geldig formaat: 01 A2 FF 3C</translation>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
         <source>Auto Center</source>
         <translation>Automatisch Centreren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="141"/>
         <source>Plot Trajectory</source>
         <translation>Traject Plotten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="210"/>
         <source>Zoom In</source>
         <translation>Inzoomen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="221"/>
         <source>Zoom Out</source>
         <translation>Uitzoomen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="159"/>
         <source>Show Weather</source>
         <translation>Weer Tonen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA Weeroverlay</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="120"/>
         <source>Base Map: %1</source>
         <translation>Basiskaart: %1</translation>
     </message>
@@ -11211,27 +11221,27 @@ Het apparaat biedt mogelijk geen data-eindpunten in zijn actieve configuratie, o
         <translation>Amber</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="244"/>
         <source>Export Images</source>
         <translation>Afbeeldingen Exporteren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="254"/>
         <source>Open Export Folder</source>
         <translation>Exportmap Openen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="212"/>
         <source>Zoom In</source>
         <translation>Inzoomen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="225"/>
         <source>Zoom Out</source>
         <translation>Uitzoomen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="194"/>
         <source>Show Crosshair</source>
         <translation>Toon Kruisdraad</translation>
     </message>
@@ -13236,8 +13246,8 @@ Wilt u de downloadpagina openen?</translation>
         <translation>Kon Info.plist niet schrijven: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windows-snelkoppelingsschrijver is niet beschikbaar op dit platform.</translation>
     </message>
@@ -13268,8 +13278,8 @@ Wilt u de downloadpagina openen?</translation>
         <translation>Opslaan van .lnk-bestand mislukt (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>MacOS-snelkoppelingsschrijver is niet beschikbaar op dit platform.</translation>
     </message>
@@ -13401,7 +13411,7 @@ Wilt u de downloadpagina openen?</translation>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="261"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="282"/>
         <source>Select Workspace Location</source>
         <translation>Werkruimtelocatie Selecteren</translation>
     </message>
@@ -13758,47 +13768,47 @@ Voeg hierboven groepen toe om meerdere registertypes te pollen.</translation>
         <translation type="vanished">Toon Legenda's</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="328"/>
         <source>Show X Axis Label</source>
         <translation>Toon X-aslabel</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="339"/>
         <source>Show Y Axis Label</source>
         <translation>Toon Y-aslabel</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="351"/>
         <source>Show Crosshair</source>
         <translation>Toon Kruisdraad</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Resume</source>
         <translation>Hervatten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="366"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Sweep- / Triggermodus</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="378"/>
         <source>Trigger Settings</source>
         <translation>Triggerinstellingen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="402"/>
         <source>Reset View</source>
         <translation>Weergave Resetten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="408"/>
         <source>Axis Range Settings</source>
         <translation>Asbereik Instellingen</translation>
     </message>
@@ -14812,32 +14822,32 @@ Voeg hierboven groepen toe om meerdere registertypes te pollen.</translation>
         <translation>Toon Kruisdraad</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Resume</source>
         <translation>Hervatten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="373"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="364"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Sweep- / Triggermodus</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="376"/>
         <source>Trigger Settings</source>
         <translation>Triggerinstellingen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="409"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="400"/>
         <source>Reset View</source>
         <translation>Weergave Resetten</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Axis Range Settings</source>
         <translation>Asbereik Instellingen</translation>
     </message>
@@ -14880,17 +14890,17 @@ Voeg hierboven groepen toe om meerdere registertypes te pollen.</translation>
         <translation>Vooraanzicht</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="276"/>
         <source>Auto Center</source>
         <translation>Automatisch Centreren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="292"/>
         <source>Anaglyph 3D</source>
         <translation>Anaglyph 3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="306"/>
         <source>Invert Eye Positions</source>
         <translation>Oogposities Omkeren</translation>
     </message>
@@ -15976,8 +15986,8 @@ Klik op Vernieuwen om de lijst bij te werken.</translation>
         <translation>Algemene I/O-fout</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>Frame-parser Uitgeschakeld</translation>
     </message>
@@ -16019,8 +16029,8 @@ Meest waarschijnlijke oorzaak: een oneindige lus of extreem trage bewerking in h
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Ontbrekende Parse-functie</translation>
     </message>
@@ -16036,8 +16046,8 @@ Zorg ervoor dat uw code het volgende bevat:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Runtime-fout in Parse-functie</translation>
     </message>
@@ -16198,12 +16208,12 @@ function parse(%1) { ... }
 De scheidingsteken-parameter is niet langer nodig.</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Critical</source>
         <translation>Kritiek</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Warning</source>
         <translation>Waarschuwing</translation>
     </message>
@@ -16237,22 +16247,22 @@ De scheidingsteken-parameter is niet langer nodig.</translation>
         <translation>Afsluiten</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1318"/>
         <source>Time (s)</source>
         <translation>Tijd (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1397"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1509"/>
         <source>Freq: %1</source>
         <translation>Freq: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1512"/>
         <source>Time: −%1</source>
         <translation>Tijd: −%1</translation>
     </message>
@@ -20412,34 +20422,34 @@ Schakel Project Insluiten in om het project in de snelkoppeling in te bakken, zo
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2007"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2015"/>
         <source>Notifications</source>
         <translation>Meldingen</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2023"/>
         <source>Clock</source>
         <translation>Klok</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2030"/>
         <source>Stopwatch</source>
         <translation>Stopwatch</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2077"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2092"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Terugval)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2114"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2186"/>
         <source>LED Panel (%1)</source>
         <translation>LED-paneel (%1)</translation>
     </message>
@@ -20779,22 +20789,32 @@ Schakel Project Insluiten in om het project in de snelkoppeling in te bakken, zo
         <translation>Toon Assen &amp; Raster</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="265"/>
         <source>Show Crosshair</source>
         <translation>Toon Kruisdraad</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="278"/>
         <source>Show Frequency Markers</source>
         <translation>Frequentiemarkeringen Weergeven</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="304"/>
+        <source>Record Audio</source>
+        <translation>Audio Opnemen</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="318"/>
+        <source>Open Recordings Folder</source>
+        <translation>Opnamemap Openen</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Pause</source>
         <translation>Pauzeren</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Resume</source>
         <translation>Hervatten</translation>
     </message>
@@ -21333,47 +21353,47 @@ Ik begrijp dat ik bij het einde een licentie moet kopen of de GPLv3-versie moet 
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="418"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="420"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="422"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="424"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="426"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="428"/>
         <source>Hot</source>
         <translation>Hot</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="430"/>
         <source>Grayscale</source>
         <translation>Grijswaarden</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="432"/>
         <source>Unknown</source>
         <translation>Onbekend</translation>
     </message>

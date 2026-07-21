@@ -5964,15 +5964,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Guardar Proyecto de Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Archivos de Proyecto de Serial Studio (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>Proyecto sin Título</translation>
     </message>
@@ -6227,9 +6227,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Espacio de Trabajo</translation>
     </message>
@@ -6256,6 +6256,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6268,8 +6270,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Nombre:</translation>
     </message>
@@ -6309,10 +6309,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Renombrar Registro</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>Esta acción no se puede deshacer.</translation>
     </message>
@@ -6322,9 +6322,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Esto elimina %1 registro(s) junto con la tabla. Esta acción no se puede deshacer.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>¿Eliminar "%1"?</translation>
     </message>
@@ -6355,8 +6355,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Importar Tabla</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>Nuevo Espacio de Trabajo</translation>
     </message>
@@ -7545,77 +7545,87 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation>Interpolación: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="194"/>
         <source>Show Area Under Plot</source>
         <translation>Mostrar Área Bajo la Gráfica</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="212"/>
         <source>Show X Axis Label</source>
         <translation>Mostrar Etiqueta del Eje X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="224"/>
         <source>Show Y Axis Label</source>
         <translation>Mostrar Etiqueta del Eje Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="242"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Retícula</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
         <source>Show Frequency Markers</source>
         <translation>Mostrar Marcadores de Frecuencia</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <source>Record Audio</source>
+        <translation>Grabar Audio</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="315"/>
+        <source>Open Recordings Folder</source>
+        <translation>Abrir Carpeta de Grabaciones</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Resume</source>
         <translation>Reanudar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="692"/>
         <source>Click to clear the spotlight.</source>
         <translation>Haz clic para limpiar el resaltado.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="693"/>
         <source>Click to spotlight this marker.</source>
         <translation>Haz clic para resaltar este marcador.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="278"/>
         <source>Reset View</source>
         <translation>Restablecer Vista</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Axis Range Settings</source>
         <translation>Configuración de Rango de Ejes</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="363"/>
         <source>Magnitude (dB)</source>
         <translation>Magnitud (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="364"/>
         <source>Frequency (Hz)</source>
         <translation>Frecuencia (Hz)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="651"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="655"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
@@ -8550,37 +8560,37 @@ Formato válido: 01 A2 FF 3C</translation>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
         <source>Auto Center</source>
         <translation>Centrado Automático</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="141"/>
         <source>Plot Trajectory</source>
         <translation>Graficar Trayectoria</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="210"/>
         <source>Zoom In</source>
         <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="221"/>
         <source>Zoom Out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="159"/>
         <source>Show Weather</source>
         <translation>Mostrar Clima</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>NASA Weather Overlay</source>
         <translation>Capa de Clima NASA</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="120"/>
         <source>Base Map: %1</source>
         <translation>Mapa Base: %1</translation>
     </message>
@@ -11211,27 +11221,27 @@ El dispositivo puede no exponer endpoints de datos en su configuración activa, 
         <translation>Ámbar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="244"/>
         <source>Export Images</source>
         <translation>Exportar Imágenes</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="254"/>
         <source>Open Export Folder</source>
         <translation>Abrir Carpeta de Exportación</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="212"/>
         <source>Zoom In</source>
         <translation>Acercar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="225"/>
         <source>Zoom Out</source>
         <translation>Alejar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="194"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Retícula</translation>
     </message>
@@ -13236,8 +13246,8 @@ Would you like to open the download page?</source>
         <translation>No se pudo escribir Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>El escritor de accesos directos de Windows no está disponible en esta plataforma.</translation>
     </message>
@@ -13268,8 +13278,8 @@ Would you like to open the download page?</source>
         <translation>Falló el guardado del archivo .lnk (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>El escritor de accesos directos de macOS no está disponible en esta plataforma.</translation>
     </message>
@@ -13401,7 +13411,7 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="261"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="282"/>
         <source>Select Workspace Location</source>
         <translation>Seleccionar Ubicación del Espacio de Trabajo</translation>
     </message>
@@ -13758,47 +13768,47 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
         <translation type="vanished">Mostrar Leyendas</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="328"/>
         <source>Show X Axis Label</source>
         <translation>Mostrar Etiqueta del Eje X</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="339"/>
         <source>Show Y Axis Label</source>
         <translation>Mostrar Etiqueta del Eje Y</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="351"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Retícula</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Resume</source>
         <translation>Reanudar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="366"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Modo Barrido / Disparo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="378"/>
         <source>Trigger Settings</source>
         <translation>Configuración de Disparo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="402"/>
         <source>Reset View</source>
         <translation>Restablecer Vista</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="408"/>
         <source>Axis Range Settings</source>
         <translation>Configuración de Rango de Ejes</translation>
     </message>
@@ -14812,32 +14822,32 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
         <translation>Mostrar Retícula</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Resume</source>
         <translation>Reanudar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="373"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="364"/>
         <source>Sweep / Trigger Mode</source>
         <translation>Modo Barrido / Disparo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="376"/>
         <source>Trigger Settings</source>
         <translation>Configuración de Disparo</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="409"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="400"/>
         <source>Reset View</source>
         <translation>Restablecer Vista</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Axis Range Settings</source>
         <translation>Configuración de Rango de Ejes</translation>
     </message>
@@ -14880,17 +14890,17 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
         <translation>Vista Frontal</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="276"/>
         <source>Auto Center</source>
         <translation>Centrado Automático</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="292"/>
         <source>Anaglyph 3D</source>
         <translation>3D Anaglífico</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="306"/>
         <source>Invert Eye Positions</source>
         <translation>Invertir Posiciones de Ojos</translation>
     </message>
@@ -15976,8 +15986,8 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>Error general de E/S</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>Analizador de Tramas Deshabilitado</translation>
     </message>
@@ -16019,8 +16029,8 @@ Causa más probable: un bucle infinito o una operación extremadamente lenta en 
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Falta la Función Parse</translation>
     </message>
@@ -16036,8 +16046,8 @@ Asegúrese de que su código incluya:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Error de Ejecución de la Función de Análisis</translation>
     </message>
@@ -16198,12 +16208,12 @@ function parse(%1) { ... }
 El parámetro separador ya no es necesario.</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Critical</source>
         <translation>Crítico</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Warning</source>
         <translation>Advertencia</translation>
     </message>
@@ -16237,22 +16247,22 @@ El parámetro separador ya no es necesario.</translation>
         <translation>Salir</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1318"/>
         <source>Time (s)</source>
         <translation>Tiempo (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1397"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1509"/>
         <source>Freq: %1</source>
         <translation>Frec: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1512"/>
         <source>Time: −%1</source>
         <translation>Tiempo: −%1</translation>
     </message>
@@ -20412,34 +20422,34 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2007"/>
         <source>Console</source>
         <translation>Consola</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2015"/>
         <source>Notifications</source>
         <translation>Notificaciones</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2023"/>
         <source>Clock</source>
         <translation>Reloj</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2030"/>
         <source>Stopwatch</source>
         <translation>Cronómetro</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2077"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2092"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (Respaldo)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2114"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2186"/>
         <source>LED Panel (%1)</source>
         <translation>Panel LED (%1)</translation>
     </message>
@@ -20779,22 +20789,32 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation>Mostrar Ejes y Cuadrícula</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="265"/>
         <source>Show Crosshair</source>
         <translation>Mostrar Retícula</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="278"/>
         <source>Show Frequency Markers</source>
         <translation>Mostrar Marcadores de Frecuencia</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="304"/>
+        <source>Record Audio</source>
+        <translation>Grabar Audio</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="318"/>
+        <source>Open Recordings Folder</source>
+        <translation>Abrir Carpeta de Grabaciones</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Resume</source>
         <translation>Reanudar</translation>
     </message>
@@ -21333,47 +21353,47 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="418"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="420"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="422"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="424"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="426"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="428"/>
         <source>Hot</source>
         <translation>Caliente</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="430"/>
         <source>Grayscale</source>
         <translation>Escala de Grises</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="432"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>

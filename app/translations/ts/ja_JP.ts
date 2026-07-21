@@ -5964,15 +5964,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Serial Studioプロジェクトを保存</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studioプロジェクトファイル (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>無題のプロジェクト</translation>
     </message>
@@ -6227,9 +6227,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>ワークスペース</translation>
     </message>
@@ -6256,6 +6256,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6268,8 +6270,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>名前:</translation>
     </message>
@@ -6309,10 +6309,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>レジスタ名を変更</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>この操作は元に戻せません。</translation>
     </message>
@@ -6322,9 +6322,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>これにより、テーブルと共に %1 個のレジスタが削除されます。この操作は元に戻せません。</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>"%1" を削除しますか？</translation>
     </message>
@@ -6355,8 +6355,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>テーブルをインポート</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>新規ワークスペース</translation>
     </message>
@@ -7545,77 +7545,87 @@ Valid format: 01 A2 FF 3C</source>
         <translation>補間: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="194"/>
         <source>Show Area Under Plot</source>
         <translation>プロット下の面積を表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="212"/>
         <source>Show X Axis Label</source>
         <translation>X軸ラベルを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="224"/>
         <source>Show Y Axis Label</source>
         <translation>Y軸ラベルを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="242"/>
         <source>Show Crosshair</source>
         <translation>クロスヘアを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
         <source>Show Frequency Markers</source>
         <translation>周波数マーカーを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <source>Record Audio</source>
+        <translation>オーディオを録音</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="315"/>
+        <source>Open Recordings Folder</source>
+        <translation>録音フォルダを開く</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Pause</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Resume</source>
         <translation>再開</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="692"/>
         <source>Click to clear the spotlight.</source>
         <translation>クリックしてスポットライトをクリア</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="693"/>
         <source>Click to spotlight this marker.</source>
         <translation>クリックしてこのマーカーをスポットライト表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="278"/>
         <source>Reset View</source>
         <translation>ビューをリセット</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Axis Range Settings</source>
         <translation>軸範囲設定</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="363"/>
         <source>Magnitude (dB)</source>
         <translation>振幅 (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="364"/>
         <source>Frequency (Hz)</source>
         <translation>周波数 (Hz)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="651"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="655"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
@@ -8550,37 +8560,37 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
         <source>Auto Center</source>
         <translation>自動センタリング</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="141"/>
         <source>Plot Trajectory</source>
         <translation>軌跡をプロット</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="210"/>
         <source>Zoom In</source>
         <translation>ズームイン</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="221"/>
         <source>Zoom Out</source>
         <translation>ズームアウト</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="159"/>
         <source>Show Weather</source>
         <translation>気象情報を表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA気象オーバーレイ</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="120"/>
         <source>Base Map: %1</source>
         <translation>ベースマップ: %1</translation>
     </message>
@@ -11211,27 +11221,27 @@ The device may not expose data endpoints in its active configuration, or it may 
         <translation>アンバー</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="244"/>
         <source>Export Images</source>
         <translation>画像をエクスポート</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="254"/>
         <source>Open Export Folder</source>
         <translation>エクスポートフォルダを開く</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="212"/>
         <source>Zoom In</source>
         <translation>ズームイン</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="225"/>
         <source>Zoom Out</source>
         <translation>ズームアウト</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="194"/>
         <source>Show Crosshair</source>
         <translation>クロスヘアを表示</translation>
     </message>
@@ -13236,8 +13246,8 @@ Would you like to open the download page?</source>
         <translation>Info.plistを書き込めませんでした: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windowsショートカット作成機能はこのプラットフォームでは利用できません。</translation>
     </message>
@@ -13268,8 +13278,8 @@ Would you like to open the download page?</source>
         <translation>.lnkファイルの保存に失敗しました（HRESULT 0x%1）。</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>macOSショートカット作成機能はこのプラットフォームでは利用できません。</translation>
     </message>
@@ -13401,7 +13411,7 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="261"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="282"/>
         <source>Select Workspace Location</source>
         <translation>ワークスペースの場所を選択</translation>
     </message>
@@ -13758,47 +13768,47 @@ Add groups above to poll multiple register types.</source>
         <translation type="vanished">凡例を表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="328"/>
         <source>Show X Axis Label</source>
         <translation>X軸ラベルを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="339"/>
         <source>Show Y Axis Label</source>
         <translation>Y軸ラベルを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="351"/>
         <source>Show Crosshair</source>
         <translation>クロスヘアを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Pause</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Resume</source>
         <translation>再開</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="366"/>
         <source>Sweep / Trigger Mode</source>
         <translation>スイープ / トリガーモード</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="378"/>
         <source>Trigger Settings</source>
         <translation>トリガー設定</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="402"/>
         <source>Reset View</source>
         <translation>ビューをリセット</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="408"/>
         <source>Axis Range Settings</source>
         <translation>軸範囲設定</translation>
     </message>
@@ -14812,32 +14822,32 @@ Add groups above to poll multiple register types.</source>
         <translation>クロスヘアを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Pause</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Resume</source>
         <translation>再開</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="373"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="364"/>
         <source>Sweep / Trigger Mode</source>
         <translation>スイープ / トリガーモード</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="376"/>
         <source>Trigger Settings</source>
         <translation>トリガー設定</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="409"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="400"/>
         <source>Reset View</source>
         <translation>ビューをリセット</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Axis Range Settings</source>
         <translation>軸範囲設定</translation>
     </message>
@@ -14880,17 +14890,17 @@ Add groups above to poll multiple register types.</source>
         <translation>フロントビュー</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="276"/>
         <source>Auto Center</source>
         <translation>自動センタリング</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="292"/>
         <source>Anaglyph 3D</source>
         <translation>アナグリフ3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="306"/>
         <source>Invert Eye Positions</source>
         <translation>視点位置を反転</translation>
     </message>
@@ -15976,8 +15986,8 @@ Click Refresh to update the list.</source>
         <translation>一般的なI/Oエラー</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>フレームパーサーが無効化されました</translation>
     </message>
@@ -16019,8 +16029,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Parse関数が見つかりません</translation>
     </message>
@@ -16036,8 +16046,8 @@ function parse(frame) ... end</source>
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Parse関数ランタイムエラー</translation>
     </message>
@@ -16198,12 +16208,12 @@ function parse(%1) { ... }
 セパレータパラメータは不要になりました。</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Critical</source>
         <translation>重大</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
@@ -16237,22 +16247,22 @@ function parse(%1) { ... }
         <translation>終了</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1318"/>
         <source>Time (s)</source>
         <translation>時間 (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1397"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1509"/>
         <source>Freq: %1</source>
         <translation>周波数: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1512"/>
         <source>Time: −%1</source>
         <translation>時間: −%1</translation>
     </message>
@@ -20412,34 +20422,34 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2007"/>
         <source>Console</source>
         <translation>コンソール</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2015"/>
         <source>Notifications</source>
         <translation>通知</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2023"/>
         <source>Clock</source>
         <translation>時計</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2030"/>
         <source>Stopwatch</source>
         <translation>ストップウォッチ</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2077"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2092"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (フォールバック)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2114"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2186"/>
         <source>LED Panel (%1)</source>
         <translation>LEDパネル (%1)</translation>
     </message>
@@ -20779,22 +20789,32 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>軸とグリッドを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="265"/>
         <source>Show Crosshair</source>
         <translation>クロスヘアを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="278"/>
         <source>Show Frequency Markers</source>
         <translation>周波数マーカーを表示</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="304"/>
+        <source>Record Audio</source>
+        <translation>オーディオを録音</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="318"/>
+        <source>Open Recordings Folder</source>
+        <translation>録音フォルダを開く</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Pause</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Resume</source>
         <translation>再開</translation>
     </message>
@@ -21333,47 +21353,47 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="418"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="420"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="422"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="424"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="426"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="428"/>
         <source>Hot</source>
         <translation>Hot</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="430"/>
         <source>Grayscale</source>
         <translation>グレースケール</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="432"/>
         <source>Unknown</source>
         <translation>不明</translation>
     </message>

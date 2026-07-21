@@ -237,8 +237,8 @@ void DataModel::ProjectEditor::buildMultiDatasetModel()
  * @brief Maps an OutputWidget's editable fields to a ParameterType -> value hash, used to decide
  *        which aggregate rows agree across the selection.
  */
-QHash<int, QVariant>
-DataModel::ProjectEditor::outputWidgetEditValues(const DataModel::OutputWidget& widget)
+QHash<int, QVariant> DataModel::ProjectEditor::outputWidgetEditValues(
+  const DataModel::OutputWidget& widget)
 {
   QHash<int, QVariant> out;
   out.insert(kOutputWidget_Title, widget.title);
@@ -253,9 +253,9 @@ DataModel::ProjectEditor::outputWidgetEditValues(const DataModel::OutputWidget& 
 }
 
 /**
- * @brief Builds the output-widget aggregate form: rows from the first selection member, the per-item
- *        title greyed, shared fields marked "Mixed" when the selection disagrees. Fans edits out on
- *        change via onMultiSelectionItemChanged.
+ * @brief Builds the output-widget aggregate form: rows from the first selection member, the
+ * per-item title greyed, shared fields marked "Mixed" when the selection disagrees. Fans edits out
+ * on change via onMultiSelectionItemChanged.
  */
 void DataModel::ProjectEditor::buildMultiOutputWidgetModel()
 {
@@ -413,8 +413,8 @@ void DataModel::ProjectEditor::onMultiSelectionItemChanged(QStandardItem* item)
 }
 
 /**
- * @brief Fans one aggregate-form field edit out across every selected output widget, as one modified
- *        state and one autosave, then rebuilds the aggregate model to refresh common/mixed.
+ * @brief Fans one aggregate-form field edit out across every selected output widget, as one
+ * modified state and one autosave, then rebuilds the aggregate model to refresh common/mixed.
  */
 void DataModel::ProjectEditor::fanOutputWidgetSelectionEdit(QStandardItem* item)
 {

@@ -94,20 +94,36 @@ Item {
       right: parent.right
     }
 
-    DashboardToolButton {
-      id: _autoCenter
+    ToolButton {
+      icon.width: 24
+      enabled: false
+      icon.height: 24
+      icon.color: "transparent"
+      icon.source: "qrc:/icons/dashboard-buttons/map.svg"
+    }
 
-      onClicked: {
+    Widgets.Combo {
+      id: _mapType
+
+      Layout.fillWidth: true
+      Layout.maximumWidth: 220
+      onCurrentIndexChanged: {
         if (root.model) {
-          root.model.autoCenter = !root.model.autoCenter
-          checked = root.model.autoCenter
-          Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "autoCenter", root.model.autoCenter)
+          if (root.model.mapType !== currentIndex) {
+            root.model.mapType = currentIndex
+            currentIndex = root.model.mapType
+            Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "mapType", root.model.mapType)
+          }
         }
       }
-      icon.width: 24
-      icon.height: 24
-      ToolTip.text: qsTr("Auto Center")
-      icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
+      Layout.alignment: Qt.AlignVCenter
+      displayText: qsTr("Base Map: %1").arg(currentText)
+    }
+
+    Rectangle {
+      implicitWidth: 1
+      implicitHeight: 24
+      color: Cpp_ThemeManager.colors["widget_border"]
     }
 
     DashboardToolButton {
@@ -124,40 +140,6 @@ Item {
       icon.height: 24
       ToolTip.text: qsTr("Plot Trajectory")
       icon.source: "qrc:/icons/dashboard-buttons/poliline.svg"
-    }
-
-    Rectangle {
-      implicitWidth: 1
-      implicitHeight: 24
-      color: Cpp_ThemeManager.colors["widget_border"]
-    }
-
-    DashboardToolButton {
-      onClicked: {
-        if (root.model)
-          root.model.zoomLevel = root.model.zoomLevel + 1
-      }
-      icon.width: 24
-      icon.height: 24
-      ToolTip.text: qsTr("Zoom In")
-      icon.source: "qrc:/icons/dashboard-buttons/zoom-in.svg"
-    }
-
-    DashboardToolButton {
-      onClicked: {
-        if (root.model)
-          root.model.zoomLevel = root.model.zoomLevel - 1
-      }
-      icon.width: 24
-      icon.height: 24
-      ToolTip.text: qsTr("Zoom Out")
-      icon.source: "qrc:/icons/dashboard-buttons/zoom-out.svg"
-    }
-
-    Rectangle {
-      implicitWidth: 1
-      implicitHeight: 24
-      color: Cpp_ThemeManager.colors["widget_border"]
     }
 
     DashboardToolButton {
@@ -202,29 +184,46 @@ Item {
       color: Cpp_ThemeManager.colors["widget_border"]
     }
 
-    ToolButton {
-      icon.width: 24
-      enabled: false
-      icon.height: 24
-      icon.color: "transparent"
-      icon.source: "qrc:/icons/dashboard-buttons/map.svg"
-    }
+    DashboardToolButton {
+      id: _autoCenter
 
-    Widgets.Combo {
-      id: _mapType
-
-      Layout.fillWidth: true
-      onCurrentIndexChanged: {
+      onClicked: {
         if (root.model) {
-          if (root.model.mapType !== currentIndex) {
-            root.model.mapType = currentIndex
-            currentIndex = root.model.mapType
-            Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "mapType", root.model.mapType)
-          }
+          root.model.autoCenter = !root.model.autoCenter
+          checked = root.model.autoCenter
+          Cpp_JSON_ProjectModel.saveWidgetSetting(widgetId, "autoCenter", root.model.autoCenter)
         }
       }
-      Layout.alignment: Qt.AlignVCenter
-      displayText: qsTr("Base Map: %1").arg(currentText)
+      icon.width: 24
+      icon.height: 24
+      ToolTip.text: qsTr("Auto Center")
+      icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
+    }
+
+    DashboardToolButton {
+      onClicked: {
+        if (root.model)
+          root.model.zoomLevel = root.model.zoomLevel + 1
+      }
+      icon.width: 24
+      icon.height: 24
+      ToolTip.text: qsTr("Zoom In")
+      icon.source: "qrc:/icons/dashboard-buttons/zoom-in.svg"
+    }
+
+    DashboardToolButton {
+      onClicked: {
+        if (root.model)
+          root.model.zoomLevel = root.model.zoomLevel - 1
+      }
+      icon.width: 24
+      icon.height: 24
+      ToolTip.text: qsTr("Zoom Out")
+      icon.source: "qrc:/icons/dashboard-buttons/zoom-out.svg"
+    }
+
+    Item {
+      Layout.fillWidth: true
     }
   }
 

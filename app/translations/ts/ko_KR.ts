@@ -5964,15 +5964,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Serial Studio 프로젝트 저장</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Serial Studio 프로젝트 파일 (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
+        <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
         <source>Untitled Project</source>
         <translation>제목 없는 프로젝트</translation>
     </message>
@@ -6227,9 +6227,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>작업 공간</translation>
     </message>
@@ -6256,6 +6256,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6268,8 +6270,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>이름:</translation>
     </message>
@@ -6309,10 +6309,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>레지스터 이름 변경</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <source>This action cannot be undone.</source>
         <translation>이 작업은 취소할 수 없습니다.</translation>
     </message>
@@ -6322,9 +6322,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>테이블과 함께 %1개의 레지스터가 제거됩니다. 이 작업은 취소할 수 없습니다.</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>"%1"을(를) 삭제하시겠습니까?</translation>
     </message>
@@ -6355,8 +6355,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>테이블 가져오기</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>새 작업 공간</translation>
     </message>
@@ -7545,77 +7545,87 @@ Valid format: 01 A2 FF 3C</source>
         <translation>보간: %1</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="200"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="194"/>
         <source>Show Area Under Plot</source>
         <translation>플롯 아래 영역 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="218"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="212"/>
         <source>Show X Axis Label</source>
         <translation>X축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="230"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="224"/>
         <source>Show Y Axis Label</source>
         <translation>Y축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="248"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="242"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="255"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="249"/>
         <source>Show Frequency Markers</source>
         <translation>주파수 마커 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="301"/>
+        <source>Record Audio</source>
+        <translation>오디오 녹음</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="315"/>
+        <source>Open Recordings Folder</source>
+        <translation>녹음 폴더 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="303"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="331"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="664"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="692"/>
         <source>Click to clear the spotlight.</source>
         <translation>클릭하여 스포트라이트를 지웁니다.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="665"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="693"/>
         <source>Click to spotlight this marker.</source>
         <translation>클릭하여 이 마커를 스포트라이트합니다.</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="278"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="290"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="284"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="335"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="363"/>
         <source>Magnitude (dB)</source>
         <translation>크기 (dB)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="336"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="364"/>
         <source>Frequency (Hz)</source>
         <translation>주파수 (Hz)</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="623"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="651"/>
         <source>%1 Hz</source>
         <translation>%1 Hz</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="627"/>
+        <location filename="../../qml/Widgets/Dashboard/FFTPlot.qml" line="655"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
@@ -8550,37 +8560,37 @@ Valid format: 01 A2 FF 3C</source>
 <context>
     <name>GPS</name>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="109"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="199"/>
         <source>Auto Center</source>
         <translation>자동 중심</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="125"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="141"/>
         <source>Plot Trajectory</source>
         <translation>궤적 플롯</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="142"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="210"/>
         <source>Zoom In</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="153"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="221"/>
         <source>Zoom Out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="159"/>
         <source>Show Weather</source>
         <translation>날씨 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="195"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="177"/>
         <source>NASA Weather Overlay</source>
         <translation>NASA 날씨 오버레이</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="227"/>
+        <location filename="../../qml/Widgets/Dashboard/GPS.qml" line="120"/>
         <source>Base Map: %1</source>
         <translation>기본 맵: %1</translation>
     </message>
@@ -11211,27 +11221,27 @@ The device may not expose data endpoints in its active configuration, or it may 
         <translation>앰버</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="167"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="244"/>
         <source>Export Images</source>
         <translation>이미지 내보내기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="177"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="254"/>
         <source>Open Export Folder</source>
         <translation>내보내기 폴더 열기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="193"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="212"/>
         <source>Zoom In</source>
         <translation>확대</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="206"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="225"/>
         <source>Zoom Out</source>
         <translation>축소</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="226"/>
+        <location filename="../../qml/Widgets/Dashboard/ImageView.qml" line="194"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
@@ -13236,8 +13246,8 @@ Would you like to open the download page?</source>
         <translation>Info.plist를 쓸 수 없음: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>Windows 바로가기 생성기는 이 플랫폼에서 사용할 수 없습니다.</translation>
     </message>
@@ -13268,8 +13278,8 @@ Would you like to open the download page?</source>
         <translation>.lnk 파일 저장 실패(HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>macOS 바로가기 생성기는 이 플랫폼에서 사용할 수 없습니다.</translation>
     </message>
@@ -13401,7 +13411,7 @@ Would you like to open the download page?</source>
 <context>
     <name>Misc::WorkspaceManager</name>
     <message>
-        <location filename="../../src/Misc/WorkspaceManager.cpp" line="261"/>
+        <location filename="../../src/Misc/WorkspaceManager.cpp" line="282"/>
         <source>Select Workspace Location</source>
         <translation>작업 공간 위치 선택</translation>
     </message>
@@ -13758,47 +13768,47 @@ Add groups above to poll multiple register types.</source>
         <translation type="vanished">범례 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="322"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="328"/>
         <source>Show X Axis Label</source>
         <translation>X축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="333"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="339"/>
         <source>Show Y Axis Label</source>
         <translation>Y축 레이블 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="345"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="351"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="352"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="421"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="369"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="366"/>
         <source>Sweep / Trigger Mode</source>
         <translation>스윕 / 트리거 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="381"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="378"/>
         <source>Trigger Settings</source>
         <translation>트리거 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="405"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="402"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="411"/>
+        <location filename="../../qml/Widgets/Dashboard/MultiPlot.qml" line="408"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
@@ -14812,32 +14822,32 @@ Add groups above to poll multiple register types.</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="356"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="419"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="373"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="364"/>
         <source>Sweep / Trigger Mode</source>
         <translation>스윕 / 트리거 모드</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="385"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="376"/>
         <source>Trigger Settings</source>
         <translation>트리거 설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="409"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="400"/>
         <source>Reset View</source>
         <translation>보기 재설정</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="415"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot.qml" line="406"/>
         <source>Axis Range Settings</source>
         <translation>축 범위 설정</translation>
     </message>
@@ -14880,17 +14890,17 @@ Add groups above to poll multiple register types.</source>
         <translation>정면 보기</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="282"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="276"/>
         <source>Auto Center</source>
         <translation>자동 중심</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="298"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="292"/>
         <source>Anaglyph 3D</source>
         <translation>애너글리프 3D</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="312"/>
+        <location filename="../../qml/Widgets/Dashboard/Plot3D.qml" line="306"/>
         <source>Invert Eye Positions</source>
         <translation>눈 위치 반전</translation>
     </message>
@@ -15976,8 +15986,8 @@ Click Refresh to update the list.</source>
         <translation>일반 I/O 오류</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
         <source>Frame Parser Disabled</source>
         <translation>프레임 파서 비활성화됨</translation>
     </message>
@@ -16019,8 +16029,8 @@ Most likely cause: an infinite loop or extremely slow operation in the script bo
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
         <source>Missing Parse Function</source>
         <translation>Parse 함수 누락</translation>
     </message>
@@ -16036,8 +16046,8 @@ function parse(frame) ... end</source>
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
+        <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
         <source>Parse Function Runtime Error</source>
         <translation>Parse 함수 런타임 오류</translation>
     </message>
@@ -16198,12 +16208,12 @@ function parse(%1) { ... }
 구분 기호 매개변수는 더 이상 필요하지 않습니다.</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Critical</source>
         <translation>심각</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="211"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
         <source>Warning</source>
         <translation>경고</translation>
     </message>
@@ -16237,22 +16247,22 @@ function parse(%1) { ... }
         <translation>종료</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1291"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1318"/>
         <source>Time (s)</source>
         <translation>시간 (s)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1370"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1397"/>
         <source>%1  %2 dB</source>
         <translation>%1  %2 dB</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1482"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1509"/>
         <source>Freq: %1</source>
         <translation>주파수: %1</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1485"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="1512"/>
         <source>Time: −%1</source>
         <translation>시간: −%1</translation>
     </message>
@@ -20412,34 +20422,34 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
 <context>
     <name>UI::Dashboard</name>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2006"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2007"/>
         <source>Console</source>
         <translation>콘솔</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2014"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2015"/>
         <source>Notifications</source>
         <translation>알림</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2022"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2023"/>
         <source>Clock</source>
         <translation>시계</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2029"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2030"/>
         <source>Stopwatch</source>
         <translation>스톱워치</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2076"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2091"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2077"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2092"/>
         <source>%1 (Fallback)</source>
         <translation>%1 (대체)</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Dashboard.cpp" line="2113"/>
-        <location filename="../../src/UI/Dashboard.cpp" line="2185"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2114"/>
+        <location filename="../../src/UI/Dashboard.cpp" line="2186"/>
         <source>LED Panel (%1)</source>
         <translation>LED 패널 (%1)</translation>
     </message>
@@ -20779,22 +20789,32 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation>축 및 격자 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="259"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="265"/>
         <source>Show Crosshair</source>
         <translation>십자선 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="272"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="278"/>
         <source>Show Frequency Markers</source>
         <translation>주파수 마커 표시</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="304"/>
+        <source>Record Audio</source>
+        <translation>오디오 녹음</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="318"/>
+        <source>Open Recordings Folder</source>
+        <translation>녹음 폴더 열기</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Pause</source>
         <translation>일시정지</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="294"/>
+        <location filename="../../qml/Widgets/Dashboard/Waterfall.qml" line="334"/>
         <source>Resume</source>
         <translation>재개</translation>
     </message>
@@ -21333,47 +21353,47 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
 <context>
     <name>Widgets::Waterfall</name>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="389"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="416"/>
         <source>Viridis</source>
         <translation>Viridis</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="391"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="418"/>
         <source>Inferno</source>
         <translation>Inferno</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="393"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="420"/>
         <source>Magma</source>
         <translation>Magma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="395"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="422"/>
         <source>Plasma</source>
         <translation>Plasma</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="397"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="424"/>
         <source>Turbo</source>
         <translation>Turbo</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="399"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="426"/>
         <source>Jet</source>
         <translation>Jet</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="401"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="428"/>
         <source>Hot</source>
         <translation>Hot</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="403"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="430"/>
         <source>Grayscale</source>
         <translation>그레이스케일</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="405"/>
+        <location filename="../../src/UI/Widgets/Waterfall.cpp" line="432"/>
         <source>Unknown</source>
         <translation>알 수 없음</translation>
     </message>

@@ -163,23 +163,42 @@ Item {
       windowRoot: root.windowRoot
       available: !!root.model && root.model.frameCount > 0
 
-      DashboardToolButton {
-        ToolTip.text: qsTr("Export Images")
-        checked: model && model.exportEnabled
-        icon.source: "qrc:/icons/dashboard-buttons/camcoder.svg"
-        onClicked: {
-          if (model)
-            model.exportEnabled = !model.exportEnabled
-        }
+      ToolButton {
+        width: 24
+        height: 24
+        enabled: false
+        icon.width: 18
+        icon.height: 18
+        icon.color: "transparent"
+        icon.source: "qrc:/icons/dashboard-buttons/color.svg"
+      }
+
+      Widgets.Combo {
+        id: filterCombo
+
+        implicitHeight: 24
+        implicitWidth: 120
+        currentIndex: root.filterIndex
+        model: root.filterModel.map(f => f.label)
+        onActivated: root.filterIndex = currentIndex
+      }
+
+      Rectangle {
+        implicitWidth: 1
+        implicitHeight: 24
+        color: Cpp_ThemeManager.colors["widget_border"]
       }
 
       DashboardToolButton {
-        ToolTip.text: qsTr("Open Export Folder")
-        icon.source: "qrc:/icons/dashboard-buttons/pictures-folder.svg"
+        checked: root.showCrosshair
+        ToolTip.text: qsTr("Show Crosshair")
+        icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
         onClicked: {
-          if (model)
-            Cpp_Misc_Utilities.revealFile(
-                  Cpp_Image_Export.imagesPath(model.groupTitle, Cpp_UI_Dashboard.title))
+          root.showCrosshair = !root.showCrosshair
+          if (!root.showCrosshair) {
+            root.cursorImgX = -1
+            root.cursorImgY = -1
+          }
         }
       }
 
@@ -222,42 +241,23 @@ Item {
       }
 
       DashboardToolButton {
-        checked: root.showCrosshair
-        ToolTip.text: qsTr("Show Crosshair")
-        icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
+        ToolTip.text: qsTr("Export Images")
+        checked: model && model.exportEnabled
+        icon.source: "qrc:/icons/dashboard-buttons/camcoder.svg"
         onClicked: {
-          root.showCrosshair = !root.showCrosshair
-          if (!root.showCrosshair) {
-            root.cursorImgX = -1
-            root.cursorImgY = -1
-          }
+          if (model)
+            model.exportEnabled = !model.exportEnabled
         }
       }
 
-      Rectangle {
-        implicitWidth: 1
-        implicitHeight: 24
-        color: Cpp_ThemeManager.colors["widget_border"]
-      }
-
-      ToolButton {
-        width: 24
-        height: 24
-        enabled: false
-        icon.width: 18
-        icon.height: 18
-        icon.color: "transparent"
-        icon.source: "qrc:/icons/dashboard-buttons/color.svg"
-      }
-
-      Widgets.Combo {
-        id: filterCombo
-
-        implicitHeight: 24
-        implicitWidth: 120
-        currentIndex: root.filterIndex
-        model: root.filterModel.map(f => f.label)
-        onActivated: root.filterIndex = currentIndex
+      DashboardToolButton {
+        ToolTip.text: qsTr("Open Export Folder")
+        icon.source: "qrc:/icons/dashboard-buttons/pictures-folder.svg"
+        onClicked: {
+          if (model)
+            Cpp_Misc_Utilities.revealFile(
+                  Cpp_Image_Export.imagesPath(model.groupTitle, Cpp_UI_Dashboard.title))
+        }
       }
 
       Item { Layout.fillWidth: true }

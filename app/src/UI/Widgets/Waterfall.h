@@ -38,6 +38,8 @@
 
 namespace Widgets {
 
+class AudioExport;
+
 /**
  * @brief Pro waterfall (spectrogram) widget -- scrolling time-frequency plot.
  */
@@ -110,6 +112,10 @@ class Waterfall : public QQuickPaintedItem {
              READ markersVisible
              WRITE setMarkersVisible
              NOTIFY markersVisibleChanged)
+  Q_PROPERTY(bool audioRecordingEnabled
+             READ audioRecordingEnabled
+             WRITE setAudioRecordingEnabled
+             NOTIFY audioRecordingEnabledChanged)
   // clang-format on
 
 signals:
@@ -122,6 +128,7 @@ signals:
   void dynamicRangeChanged();
   void markersVisibleChanged();
   void colorbarVisibleChanged();
+  void audioRecordingEnabledChanged();
 
 public:
   /**
@@ -162,9 +169,11 @@ public:
   [[nodiscard]] bool cursorEnabled() const noexcept;
   [[nodiscard]] bool markersVisible() const noexcept;
   [[nodiscard]] bool colorbarVisible() const noexcept;
+  [[nodiscard]] bool audioRecordingEnabled() const noexcept;
 
   Q_INVOKABLE [[nodiscard]] QString colorMapName(int index) const;
   Q_INVOKABLE [[nodiscard]] QColor colorAt(double normalized) const;
+  Q_INVOKABLE [[nodiscard]] QString recordingsFolder() const;
 
   void paint(QPainter* painter) override;
 
@@ -191,6 +200,7 @@ public slots:
   void setCursorEnabled(const bool enabled);
   void setMarkersVisible(const bool enabled);
   void setColorbarVisible(const bool enabled);
+  void setAudioRecordingEnabled(const bool enabled);
   void clearHistory();
 
 private slots:
@@ -351,6 +361,9 @@ private:
   Misc::ThemeManager& m_themeManager;
   Misc::CommonFonts& m_commonFonts;
   Misc::TimerEvents& m_timerEvents;
+  AudioExport& m_audioExport;
+
+  bool m_audioRecordingEnabled;
 };
 
 }  // namespace Widgets

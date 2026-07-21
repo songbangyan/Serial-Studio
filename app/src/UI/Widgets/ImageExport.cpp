@@ -185,7 +185,10 @@ bool Widgets::VideoExportWorker::ensureSession(int groupId,
   const auto stamp              = dt.toString(QStringLiteral("yyyy-MM-dd_HH-mm-ss-zzz"));
   static auto& workspaceManager = Misc::WorkspaceManager::instance();
   const auto base               = workspaceManager.path(QStringLiteral("Video Recordings"));
-  const QString path            = QStringLiteral("%1/%2/%3").arg(base, projectTitle, groupTitle);
+  const QString path            = QStringLiteral("%1/%2/%3")
+                         .arg(base,
+                              Misc::WorkspaceManager::sanitizeName(projectTitle),
+                              Misc::WorkspaceManager::sanitizeName(groupTitle));
 
   QDir dir(path);
   if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
@@ -342,7 +345,10 @@ QString Widgets::ImageExport::imagesPath(const QString& groupTitle,
 {
   static auto& workspaceManager = Misc::WorkspaceManager::instance();
   const auto base               = workspaceManager.path(QStringLiteral("Video Recordings"));
-  return QStringLiteral("%1/%2/%3").arg(base, projectTitle, groupTitle);
+  return QStringLiteral("%1/%2/%3")
+    .arg(base,
+         Misc::WorkspaceManager::sanitizeName(projectTitle),
+         Misc::WorkspaceManager::sanitizeName(groupTitle));
 }
 
 /**

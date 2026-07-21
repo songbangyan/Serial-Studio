@@ -50,8 +50,7 @@
  * @brief Parses the AlarmBandsEditor dialog's QVariantList payload into validated alarm bands,
  *        dropping degenerate (max <= min) entries.
  */
-[[nodiscard]] static std::vector<DataModel::AlarmBand>
-parseAlarmBandList(const QVariantList& bands)
+[[nodiscard]] static std::vector<DataModel::AlarmBand> parseAlarmBandList(const QVariantList& bands)
 {
   std::vector<DataModel::AlarmBand> out;
   out.reserve(bands.size());

@@ -37,6 +37,7 @@
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
 #include "UI/Dashboard.h"
+#include "UI/Widgets/AudioExport.h"
 #include "UI/Widgets/FFTWindow.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -225,6 +226,8 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
   , m_themeManager(Misc::ThemeManager::instance())
   , m_commonFonts(Misc::CommonFonts::instance())
   , m_timerEvents(Misc::TimerEvents::instance())
+  , m_audioExport(Widgets::AudioExport::instance())
+  , m_audioRecordingEnabled(false)
 {
   setAcceptedMouseButtons(Qt::LeftButton);
   setAcceptHoverEvents(true);
@@ -285,13 +288,37 @@ Widgets::Waterfall::Waterfall(const int index, QQuickItem* parent)
           this,
           &Widgets::Waterfall::syncHistoryToTimeRange);
   syncHistoryToTimeRange();
+
+  connect(&m_audioExport, &Widgets::AudioExport::sessionsClosed, this, [this] {
+    if (!m_audioRecordingEnabled)
+      return;
+
+    m_audioRecordingEnabled = false;
+    m_dashboard.setWaterfallAudioTap(m_index, false, 0);
+    Q_EMIT audioRecordingEnabledChanged();
+  });
+
+  connect(&m_audioExport, &Widgets::AudioExport::sessionClosed, this, [this](quint32 key) {
+    if (key != Widgets::AudioExport::sessionKey(SerialStudio::DashboardWaterfall, m_index)
+        || !m_audioRecordingEnabled)
+      return;
+
+    m_audioRecordingEnabled = false;
+    m_dashboard.setWaterfallAudioTap(m_index, false, 0);
+    Q_EMIT audioRecordingEnabledChanged();
+  });
 }
 
 /**
- * @brief Releases the FFT plan and any owned buffers.
+ * @brief Releases the FFT plan and finalises any active recording session.
  */
 Widgets::Waterfall::~Waterfall()
 {
+  if (m_audioRecordingEnabled) {
+    m_dashboard.setWaterfallAudioTap(m_index, false, 0);
+    m_audioExport.closeSession(SerialStudio::DashboardWaterfall, m_index);
+  }
+
   releaseFftPlan();
 }
 
@@ -1765,6 +1792,64 @@ void Widgets::Waterfall::setColorbarVisible(const bool enabled)
 
   m_colorbarVisible = enabled;
   Q_EMIT colorbarVisibleChanged();
+}
+
+/**
+ * @brief Returns whether WAV recording of the widget's time-domain input is active (Pro).
+ */
+bool Widgets::Waterfall::audioRecordingEnabled() const noexcept
+{
+  return m_audioRecordingEnabled;
+}
+
+/**
+ * @brief Resolves the shared WAV output folder live from the current dataset title, so a dataset
+ *        rename after construction still reveals the correct recordings folder.
+ */
+QString Widgets::Waterfall::recordingsFolder() const
+{
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardWaterfall, m_index))
+    return QString();
+
+  return m_audioExport.audioPath(GET_DATASET(SerialStudio::DashboardWaterfall, m_index).title,
+                                 m_dashboard.title());
+}
+
+/**
+ * @brief Toggles WAV recording of the input signal; enabling is refused without a Pro license,
+ *        disabling always disarms the Dashboard tap before finalising the session.
+ */
+void Widgets::Waterfall::setAudioRecordingEnabled(const bool enabled)
+{
+  if (m_audioRecordingEnabled == enabled)
+    return;
+
+  if (!VALIDATE_WIDGET(SerialStudio::DashboardWaterfall, m_index))
+    return;
+
+  if (enabled) {
+    if (!SerialStudio::proWidgetsEnabled())
+      return;
+
+    const auto& dataset = GET_DATASET(SerialStudio::DashboardWaterfall, m_index);
+    AudioSessionConfig cfg;
+    cfg.sampleRate   = m_samplingRate;
+    cfg.useScale     = m_scaleIsValid;
+    cfg.center       = m_center;
+    cfg.halfRange    = m_halfRange;
+    cfg.datasetTitle = dataset.title;
+    cfg.projectTitle = m_dashboard.title();
+
+    m_audioExport.openSession(SerialStudio::DashboardWaterfall, m_index, cfg);
+    m_dashboard.setWaterfallAudioTap(
+      m_index, true, Widgets::AudioExport::sessionKey(SerialStudio::DashboardWaterfall, m_index));
+  } else {
+    m_dashboard.setWaterfallAudioTap(m_index, false, 0);
+    m_audioExport.closeSession(SerialStudio::DashboardWaterfall, m_index);
+  }
+
+  m_audioRecordingEnabled = enabled;
+  Q_EMIT audioRecordingEnabledChanged();
 }
 
 /**

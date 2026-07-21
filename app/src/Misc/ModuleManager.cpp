@@ -121,6 +121,7 @@
 #  include "Sessions/Export.h"
 #  include "Sessions/Player.h"
 #  include "UI/ImageProvider.h"
+#  include "UI/Widgets/AudioExport.h"
 #  include "UI/Widgets/ImageExport.h"
 #  include "UI/Widgets/ImageView.h"
 #  include "UI/Widgets/Painter.h"
@@ -369,6 +370,7 @@ void Misc::ModuleManager::onQuit()
   Sessions::Player::instance().shutdown();
   Sessions::DatabaseManager::instance().closeDatabase(false);
   Sessions::DatabaseManager::instance().shutdown();
+  Widgets::AudioExport::instance().closeAllSessions();
 #endif
   IO::ConnectionManager::instance().disconnectAllDevices();
   API::Server::instance().removeConnection();
@@ -869,6 +871,10 @@ void Misc::ModuleManager::registerImageProvidersAndLoadQml()
   auto* imageExport = &Widgets::ImageExport::instance();
   imageExport->setupExternalConnections();
   m_engine.rootContext()->setContextProperty("Cpp_Image_Export", imageExport);
+
+  auto* audioExport = &Widgets::AudioExport::instance();
+  audioExport->setupExternalConnections();
+  m_engine.rootContext()->setContextProperty("Cpp_Audio_Export", audioExport);
 #endif
 
   m_engine.load(QUrl("qrc:/serial-studio.com/gui/qml/main.qml"));
