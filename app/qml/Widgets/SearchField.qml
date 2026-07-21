@@ -41,6 +41,8 @@ Rectangle {
 
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
+  onActiveFocusChanged: if (activeFocus) textField.forceActiveFocus()
+
   LineField {
     id: textField
 
@@ -50,8 +52,8 @@ Rectangle {
     anchors.rightMargin: 4
     font: Cpp_Misc_CommonFonts.uiFont
 
-    leftPadding: root.rtl ? actionButton.width + 12 : 0
-    rightPadding: root.rtl ? 0 : actionButton.width + 12
+    leftPadding: root.rtl ? actionButton.width + 12 : 8
+    rightPadding: root.rtl ? 8 : actionButton.width + 12
 
     IconButton {
       id: actionButton

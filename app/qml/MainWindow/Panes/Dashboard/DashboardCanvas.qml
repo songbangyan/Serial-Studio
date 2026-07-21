@@ -46,6 +46,11 @@ Item {
   property bool isExternalWindow: false
 
   //
+  // Set by the layout: when a dashboard is fullscreen, pop-out widgets/tools stay on top
+  //
+  property bool widgetsStayOnTop: false
+
+  //
   // Raised by external-window canvases to forward a pop-out request to the main canvas
   //
   signal externalWidgetWindowRequested(int windowId)
@@ -87,6 +92,7 @@ Item {
     if (!win)
       return
 
+    win.stayOnTop = Qt.binding(function() { return root.widgetsStayOnTop })
     externalWidgetWindows[windowId] = win
     win.externalWidgetRequested.connect(root.openExternalWidgetWindow)
     win.closing.connect(function() {
@@ -416,10 +422,59 @@ Item {
   }
 
   //
+  // Workspace-switch slide: the rebuilt canvas slides in vertically from the travel side (up when
+  // advancing to a later workspace, down when returning) and fades up.
+  //
+  property int slideDirection: 0
+
+  Connections {
+    target: taskBar
+
+    function onAboutToChangeWorkspace(fromIndex, toIndex) {
+      root.slideDirection = (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex)
+                            ? 0 : (toIndex > fromIndex ? 1 : -1)
+    }
+
+    function onActiveGroupIdChanged() {
+      if (root.slideDirection === 0)
+        return
+
+      _slideTransform.y = root.slideDirection * windowCanvas.height
+      root.slideDirection = 0
+      _slideAnimation.restart()
+    }
+  }
+
+  ParallelAnimation {
+    id: _slideAnimation
+
+    NumberAnimation {
+      to: 0
+      duration: 220
+      property: "y"
+      target: _slideTransform
+      easing.type: Easing.OutCubic
+    }
+
+    NumberAnimation {
+      to: 1
+      from: 0.35
+      duration: 220
+      property: "opacity"
+      target: windowCanvas
+      easing.type: Easing.OutCubic
+    }
+  }
+
+  //
   // Window canvas
   //
   Item {
     id: windowCanvas
+
+    transform: Translate {
+      id: _slideTransform
+    }
 
     anchors {
       bottomMargin: -1

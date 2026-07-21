@@ -161,6 +161,14 @@ int UI::Taskbar::activeGroupId() const
  */
 int UI::Taskbar::activeGroupIndex() const
 {
+  return indexForGroupId(m_activeGroupId);
+}
+
+/**
+ * @brief Returns the position of @p groupId in the workspace model, or -1 if absent.
+ */
+int UI::Taskbar::indexForGroupId(int groupId) const
+{
   const auto model = workspaceModel();
   int index        = 0;
   for (auto it = model.begin(); it != model.end(); ++it) {
@@ -168,13 +176,41 @@ int UI::Taskbar::activeGroupIndex() const
     if (!map.contains(QStringLiteral("id")))
       continue;
 
-    if (map.value(QStringLiteral("id")).toInt() == m_activeGroupId)
+    if (map.value(QStringLiteral("id")).toInt() == groupId)
       return index;
 
     ++index;
   }
 
   return -1;
+}
+
+/**
+ * @brief Emits aboutToChangeWorkspace(from, to), resolving both indices in one workspace-model
+ *        pass so the pre-switch signal never rebuilds the model twice per switch.
+ */
+void UI::Taskbar::emitWorkspaceChangeAnticipation(int toGroupId)
+{
+  const auto model = workspaceModel();
+  int fromIndex    = -1;
+  int toIndex      = -1;
+  int index        = 0;
+  for (auto it = model.begin(); it != model.end(); ++it) {
+    const auto map = it->toMap();
+    if (!map.contains(QStringLiteral("id")))
+      continue;
+
+    const int id = map.value(QStringLiteral("id")).toInt();
+    if (id == m_activeGroupId)
+      fromIndex = index;
+
+    if (id == toGroupId)
+      toIndex = index;
+
+    ++index;
+  }
+
+  Q_EMIT aboutToChangeWorkspace(fromIndex, toIndex);
 }
 
 /**
@@ -389,6 +425,9 @@ void UI::Taskbar::saveLayout()
  */
 void UI::Taskbar::setActiveGroupId(int groupId)
 {
+  if (groupId != m_activeGroupId && !m_rebuildInProgress)
+    emitWorkspaceChangeAnticipation(groupId);
+
   m_focusCycleTimer.stop();
   m_focusCycleQueue.clear();
 
@@ -1322,6 +1361,7 @@ QVariantList UI::Taskbar::searchResults() const
       entry[QStringLiteral("groupName")]   = groupName;
       entry[QStringLiteral("groupId")]     = groupItem->data(TaskbarModel::GroupIdRole);
       entry[QStringLiteral("isWorkspace")] = false;
+      entry[QStringLiteral("isGroupWidget")] = true;
       results.append(entry);
     }
 
@@ -1345,6 +1385,7 @@ QVariantList UI::Taskbar::searchResults() const
         entry[QStringLiteral("groupName")]   = groupName;
         entry[QStringLiteral("groupId")]     = child->data(TaskbarModel::GroupIdRole);
         entry[QStringLiteral("isWorkspace")] = false;
+        entry[QStringLiteral("isGroupWidget")] = false;
         results.append(entry);
       }
     }
@@ -1511,7 +1552,7 @@ void UI::Taskbar::navigateToWidget(int windowId, int groupId)
     }
   }
 
-  if (m_activeGroupId >= WorkspaceIds::AutoStart) {
+  if (!m_dashboard.frozen() && m_activeGroupId >= WorkspaceIds::AutoStart) {
     addWidgetToActiveWorkspace(windowId);
     QTimer::singleShot(100, this, [this, windowId]() {
       auto* window = windowData(windowId);

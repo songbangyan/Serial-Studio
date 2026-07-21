@@ -33,6 +33,8 @@ Widgets.Pane {
   implicitHeight: 0
   title: qsTr("Project Summary")
   icon: Cpp_JSON_ProjectEditor.selectedIcon
+
+  actionComponent: EditorNavActions {}
   Component.onCompleted: Cpp_JSON_ProjectEditor.buildProjectModel()
 
   //

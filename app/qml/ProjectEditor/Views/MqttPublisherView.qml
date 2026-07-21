@@ -33,6 +33,8 @@ Widgets.Pane {
   title: qsTr("MQTT Publisher")
   icon: "qrc:/icons/project-editor/treeview/mqtt-publisher.svg"
 
+  actionComponent: EditorNavActions {}
+
   Page {
     palette.mid: Cpp_ThemeManager.colors["mid"]
     palette.dark: Cpp_ThemeManager.colors["dark"]

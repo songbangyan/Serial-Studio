@@ -70,6 +70,21 @@ Widgets.SmartWindow {
   property int titlebarHeight: 0
 
   //
+  // Driven by the owning canvas: keep this pop-out above a fullscreen dashboard so it is not
+  // hidden behind it. Only the stays-on-top bit is toggled, then native styling is re-applied.
+  //
+  property bool stayOnTop: false
+  onStayOnTopChanged: {
+    if (stayOnTop)
+      window.flags |= Qt.WindowStaysOnTopHint
+    else
+      window.flags &= ~Qt.WindowStaysOnTopHint
+
+    if (window.visible)
+      Cpp_NativeWindow.addWindow(window, window.captionColor)
+  }
+
+  //
   // Caption color blends with toolbar or window background.
   //
   readonly property color captionColor: hasToolbar

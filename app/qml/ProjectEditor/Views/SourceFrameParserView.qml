@@ -33,6 +33,8 @@ Widgets.Pane {
   icon: Cpp_JSON_ProjectEditor.selectedIcon
   title: Cpp_JSON_ProjectEditor.selectedText
 
+  actionComponent: EditorNavActions {}
+
   //
   // Native mode swaps the code editor for the template configuration pane
   //

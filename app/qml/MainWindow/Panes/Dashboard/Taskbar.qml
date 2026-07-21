@@ -114,6 +114,7 @@ Item {
   signal settingsClicked()
   signal extendWindowClicked()
   signal newWorkspaceRequested()
+  signal workspaceSwitcherRequested()
   signal editWorkspaceRequested(int workspaceId, string currentName)
 
   //
@@ -813,10 +814,7 @@ Item {
       //
       MouseArea {
         anchors.fill: parent
-        onPressed: {
-          if (Date.now() - _switcherMenu.closedAt > 150)
-            _switcher.openMenu()
-        }
+        onPressed: root.workspaceSwitcherRequested()
       }
 
       RowLayout {

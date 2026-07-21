@@ -538,32 +538,32 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
 <context>
     <name>ActionView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="136"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="138"/>
         <source>Change Icon</source>
         <translation>Cambiar Ícono</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="138"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="140"/>
         <source>Change the icon used for this action</source>
         <translation>Cambiar el ícono usado para esta acción</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="156"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="158"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="160"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="162"/>
         <source>Duplicate this action with all its settings</source>
         <translation>Duplicar esta acción con toda su configuración</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="169"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="171"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="171"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="173"/>
         <source>Delete this action from the project</source>
         <translation>Eliminar esta acción del proyecto</translation>
     </message>
@@ -2729,67 +2729,67 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
         <translation>Bucle de Control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="45"/>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="168"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="47"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="170"/>
         <source>Undo</source>
         <translation>Deshacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="52"/>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="54"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="181"/>
         <source>Redo</source>
         <translation>Rehacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="60"/>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="198"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="62"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="200"/>
         <source>Cut</source>
         <translation>Cortar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="61"/>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="208"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="63"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="210"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="62"/>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="218"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="64"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="220"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="67"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="69"/>
         <source>Select All</source>
         <translation>Seleccionar Todo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="77"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="79"/>
         <source>Format Document</source>
         <translation>Formatear Documento</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="84"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="86"/>
         <source>Format Selection</source>
         <translation>Formatear Selección</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="148"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="150"/>
         <source>Reset</source>
         <translation>Restablecer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="153"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="155"/>
         <source>Reset to the default control loop</source>
         <translation>Restablecer al bucle de control predeterminado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="163"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="165"/>
         <source>Import a control loop file</source>
         <translation>Importar un archivo de bucle de control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="243"/>
         <source>Open the control loop documentation</source>
         <translation>Abrir la documentación del bucle de control</translation>
     </message>
@@ -2798,7 +2798,7 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
         <translation type="vanished">Restablecer al script de control predeterminado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="158"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="160"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
@@ -2807,32 +2807,32 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
         <translation type="vanished">Importar un archivo de script de control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="175"/>
         <source>Undo the last code edit</source>
         <translation>Deshacer la última edición de código</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="185"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="187"/>
         <source>Redo the previously undone edit</source>
         <translation>Rehacer la edición previamente deshecha</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="203"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="205"/>
         <source>Cut selected code to clipboard</source>
         <translation>Cortar código seleccionado al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="213"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="215"/>
         <source>Copy selected code to clipboard</source>
         <translation>Copiar código seleccionado al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="224"/>
         <source>Paste code from clipboard</source>
         <translation>Pegar código desde el portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="236"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="238"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
@@ -2841,12 +2841,12 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
         <translation type="vanished">Abrir la documentación del script de control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="253"/>
         <source>Validate</source>
         <translation>Validar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="255"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="257"/>
         <source>Verify that the script compiles correctly</source>
         <translation>Verificar que el script compile correctamente</translation>
     </message>
@@ -2978,7 +2978,7 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="263"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="287"/>
         <source>Dashboard %1</source>
         <translation>Tablero %1</translation>
     </message>
@@ -2999,61 +2999,61 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
 <context>
     <name>DashboardCanvas</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="326"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="332"/>
         <source>Set Wallpaper…</source>
         <translation>Establecer Fondo de Pantalla…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="332"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="338"/>
         <source>Clear Wallpaper</source>
         <translation>Borrar Fondo de Pantalla</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="342"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="348"/>
         <source>Tile Windows</source>
         <translation>Organizar Ventanas en Mosaico</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="352"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="358"/>
         <source>Show Grid</source>
         <translation>Mostrar Cuadrícula</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="359"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="365"/>
         <source>Grid Size</source>
         <translation>Tamaño de Cuadrícula</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="364"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="371"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="378"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="385"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="392"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="370"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="377"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="384"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="391"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="398"/>
         <source>%1 px</source>
         <translation>%1 px</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="413"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="419"/>
         <source>Pro features detected in this project.</source>
         <translation>Funciones Pro detectadas en este proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="415"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="421"/>
         <source>Fallback widgets are active. Purchase a license for full functionality.</source>
         <translation>Widgets de respaldo activos. Adquiere una licencia para funcionalidad completa.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="696"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="751"/>
         <source>Empty Workspace</source>
         <translation>Espacio de Trabajo Vacío</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="710"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="765"/>
         <source>Use the search bar to find and add widgets, or right-click a widget in another workspace to add it here.</source>
         <translation>Usa la barra de búsqueda para encontrar y agregar widgets, o haz clic derecho en un widget de otro espacio de trabajo para agregarlo aquí.</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="725"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardCanvas.qml" line="780"/>
         <source>Search Widgets</source>
         <translation>Buscar Widgets</translation>
     </message>
@@ -3066,17 +3066,17 @@ Habilita esto solo en redes confiables. Clientes no confiables pueden leer datos
         <translation>Tablero</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="231"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
         <source>API Server Active (%1)</source>
         <translation>Servidor API Activo (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="232"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="234"/>
         <source>API Server Ready</source>
         <translation>Servidor API Listo</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="235"/>
         <source>API Server Off</source>
         <translation>Servidor API Apagado</translation>
     </message>
@@ -4345,12 +4345,12 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Lugares decimales fijos para la visualización del valor; anula el formato (-1 = auto)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="689"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
         <source>Auto-detect</source>
         <translation>Detección Automática</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="689"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
         <source>Manual Delimiters</source>
         <translation>Delimitadores Manuales</translation>
     </message>
@@ -4360,8 +4360,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Modo de Detección</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="260"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="263"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="264"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="267"/>
         <source>Frame Parser</source>
         <translation>Analizador de Tramas</translation>
     </message>
@@ -4370,33 +4370,33 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">Grupos</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="549"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="562"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="563"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="580"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="553"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="566"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="567"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="584"/>
         <source>Shared Memory</source>
         <translation>Memoria Compartida</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="133"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="549"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="568"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="553"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="572"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="573"/>
         <source>Dataset Values</source>
         <translation>Valores de Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="729"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="742"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="743"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="758"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="733"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="746"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="747"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="762"/>
         <source>Workspaces</source>
         <translation>Espacios de Trabajo</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="775"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="778"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="779"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="782"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="783"/>
         <source>MQTT Publisher</source>
         <translation>Publicador MQTT</translation>
     </message>
@@ -5117,12 +5117,12 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>El LED se enciende cuando el valor alcanza o supera este umbral; define bandas de alarma para colores de múltiples estados</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="704"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="707"/>
         <source>Painter Widget</source>
         <translation>Widget de Pintor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="705"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="708"/>
         <source>Web View</source>
         <translation>Visor Web</translation>
     </message>
@@ -5162,15 +5162,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Índice de Trama</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="428"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="429"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="432"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="433"/>
         <source>Dashboard Widgets</source>
         <translation>Widgets del Tablero</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="799"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="802"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="803"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="806"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="807"/>
         <source>Control Loop</source>
         <translation>Bucle de Control</translation>
     </message>
@@ -5336,7 +5336,7 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">Límite superior del rango de visualización del indicador o barra</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="716"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="719"/>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1419"/>
         <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1454"/>
         <source>Auto</source>
@@ -5423,234 +5423,234 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">El LED se enciende cuando el valor alcanza o supera este umbral</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="653"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
         <source>Rectangular (None)</source>
         <translation>Rectangular (Ninguna)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="653"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
         <source>Bartlett (Triangular)</source>
         <translation>Bartlett (Triangular)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="653"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
         <source>Hann</source>
         <translation>Hann</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="657"/>
         <source>Hamming</source>
         <translation>Hamming</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="657"/>
         <source>Blackman</source>
         <translation>Blackman</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="657"/>
         <source>Blackman-Harris</source>
         <translation>Blackman-harris</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="654"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="657"/>
         <source>Nuttall</source>
         <translation>Nuttall</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="655"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="658"/>
         <source>Blackman-Nuttall</source>
         <translation>Blackman-nuttall</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="655"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="658"/>
         <source>Flat Top</source>
         <translation>Flat Top</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="655"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="658"/>
         <source>Welch</source>
         <translation>Welch</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="655"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="658"/>
         <source>Bartlett-Hann</source>
         <translation>Bartlett-hann</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="659"/>
         <source>Bohman</source>
         <translation>Bohman</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="659"/>
         <source>Cosine (Sine)</source>
         <translation>Coseno (Seno)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="659"/>
         <source>Lanczos</source>
         <translation>Lanczos</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="656"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="659"/>
         <source>Parzen</source>
         <translation>Parzen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="667"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="670"/>
         <source>Off</source>
         <translation>Apagado</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="667"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="670"/>
         <source>Auto Start</source>
         <translation>Inicio Automático</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="667"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="670"/>
         <source>Start on Trigger</source>
         <translation>Iniciar con Disparador</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="667"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="670"/>
         <source>Toggle on Trigger</source>
         <translation>Alternar con Disparador</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="668"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="671"/>
         <source>Repeat N Times</source>
         <translation>Repetir N Veces</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="671"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="674"/>
         <source>Plain Text (UTF8)</source>
         <translation>Texto Plano (UTF8)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="671"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="674"/>
         <source>Hexadecimal</source>
         <translation>Hexadecimal</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="671"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="674"/>
         <source>Base64</source>
         <translation>Base64</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="672"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="675"/>
         <source>Binary (Direct)</source>
         <translation>Binario (Directo)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="677"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="680"/>
         <source>No Checksum</source>
         <translation>Sin Checksum</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="681"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="684"/>
         <source>End Delimiter Only</source>
         <translation>Solo Delimitador Final</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="681"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="684"/>
         <source>Start Delimiter Only</source>
         <translation>Solo Delimitador Inicial</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="682"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="685"/>
         <source>Start + End Delimiter</source>
         <translation>Delimitador Inicial + Final</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="682"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="685"/>
         <source>No Delimiters</source>
         <translation>Sin Delimitadores</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="695"/>
         <source>Button</source>
         <translation>Botón</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="695"/>
         <source>Slider</source>
         <translation>Control Deslizante</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="695"/>
         <source>Toggle</source>
         <translation>Interruptor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="692"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="695"/>
         <source>Text Field</source>
         <translation>Campo de Texto</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="693"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="696"/>
         <source>Knob</source>
         <translation>Perilla</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="697"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="700"/>
         <source>Data Grid</source>
         <translation>Cuadrícula de Datos</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="698"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="701"/>
         <source>GPS Map</source>
         <translation>Mapa GPS</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="699"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="702"/>
         <source>Gyroscope</source>
         <translation>Giroscopio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="700"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="703"/>
         <source>Multiple Plot</source>
         <translation>Gráfica Múltiple</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="701"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="704"/>
         <source>Accelerometer</source>
         <translation>Acelerómetro</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="702"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="705"/>
         <source>3D Plot</source>
         <translation>Gráfica 3D</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="703"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="706"/>
         <source>Image View</source>
         <translation>Visor de Imagen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="706"/>
         <location filename="../../src/DataModel/ProjectEditor.cpp" line="709"/>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="724"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="712"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="727"/>
         <source>None</source>
         <translation>Ninguno</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="710"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="713"/>
         <source>Bar</source>
         <translation>Barra</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="711"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="714"/>
         <source>Gauge</source>
         <translation>Indicador</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="712"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="715"/>
         <source>Compass</source>
         <translation>Brújula</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="713"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="716"/>
         <source>Meter</source>
         <translation>Medidor</translation>
     </message>
@@ -5659,52 +5659,52 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">Termómetro</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="717"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="720"/>
         <source>Integer (0 decimals)</source>
         <translation>Entero (0 decimales)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="718"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="721"/>
         <source>1 decimal</source>
         <translation>1 decimal</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="719"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="722"/>
         <source>2 decimals</source>
         <translation>2 decimales</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="720"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="723"/>
         <source>3 decimals</source>
         <translation>3 decimales</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="721"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="724"/>
         <source>Scientific</source>
         <translation>Científico</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="725"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="728"/>
         <source>New Line (\n)</source>
         <translation>Nueva Línea (</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="726"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="729"/>
         <source>Carriage Return (\r)</source>
         <translation>Retorno de Carro (\r)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="727"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="730"/>
         <source>CRLF (\r\n)</source>
         <translation>CRLF (\r</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="730"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="733"/>
         <source>No</source>
         <translation>No</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/ProjectEditor.cpp" line="731"/>
+        <location filename="../../src/DataModel/ProjectEditor.cpp" line="734"/>
         <source>Yes</source>
         <translation>Sí</translation>
     </message>
@@ -5979,15 +5979,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Guardar Proyecto de Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="402"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="159"/>
         <source>Serial Studio Project Files (*.ssproj)</source>
         <translation>Archivos de Proyecto de Serial Studio (*.ssproj)</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1364"/>
-        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <location filename="../../src/DataModel/Project/ProjectModelLoading.cpp" line="393"/>
+        <location filename="../../src/DataModel/Project/ProjectModelPersistence.cpp" line="180"/>
         <source>Untitled Project</source>
         <translation>Proyecto sin Título</translation>
     </message>
@@ -6242,9 +6242,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Z</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
         <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Espacio de Trabajo</translation>
     </message>
@@ -6271,8 +6271,6 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6285,6 +6283,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="373"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="393"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="415"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
         <source>Name:</source>
         <translation>Nombre:</translation>
     </message>
@@ -6324,10 +6324,10 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Renombrar Registro</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
-        <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
         <source>This action cannot be undone.</source>
         <translation>Esta acción no se puede deshacer.</translation>
     </message>
@@ -6337,9 +6337,9 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Esto elimina %1 registro(s) junto con la tabla. Esta acción no se puede deshacer.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
         <source>Delete "%1"?</source>
         <translation>¿Eliminar "%1"?</translation>
     </message>
@@ -6370,8 +6370,8 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>Importar Tabla</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
         <source>New Workspace</source>
         <translation>Nuevo Espacio de Trabajo</translation>
     </message>
@@ -6717,42 +6717,42 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation>Memoria Compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="167"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="169"/>
         <source>Add Folder</source>
         <translation>Agregar Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="169"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="171"/>
         <source>Add a top-level folder</source>
         <translation>Agregar una carpeta de nivel superior</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="177"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="179"/>
         <source>Add Shared Table</source>
         <translation>Agregar Tabla Compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="181"/>
         <source>Add shared table</source>
         <translation>Agregar tabla compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="188"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="190"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="193"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="195"/>
         <source>Open help documentation for shared memory</source>
         <translation>Abrir documentación de ayuda para memoria compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="202"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="204"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="203"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="205"/>
         <source>Registers</source>
         <translation>Registros</translation>
     </message>
@@ -6769,7 +6769,7 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation type="vanished">Entradas</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/DataTablesView.qml" line="299"/>
         <source>No shared tables.</source>
         <translation>No hay tablas compartidas.</translation>
     </message>
@@ -6890,107 +6890,107 @@ Formato válido: 01 A2 FF 3C</translation>
 <context>
     <name>DatasetView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="139"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="141"/>
         <source>Pro features detected in this project.</source>
         <translation>Funciones Pro detectadas en este proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="141"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="143"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Usando widgets de respaldo. Compra una licencia para desbloquear la funcionalidad completa.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="169"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="171"/>
         <source>Plots</source>
         <translation>Gráficas</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="176"/>
         <source>Plot</source>
         <translation>Gráfica</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="178"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="180"/>
         <source>Toggle 2D plot visualization for this dataset</source>
         <translation>Alternar visualización de gráfica 2D para este conjunto de datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="190"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="192"/>
         <source>FFT Plot</source>
         <translation>Gráfico FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="193"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="195"/>
         <source>Toggle FFT plot to visualize frequency content</source>
         <translation>Activar gráfica FFT para visualizar contenido de frecuencia</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="207"/>
         <source>Waterfall</source>
         <translation>Cascada</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="211"/>
         <source>Toggle waterfall (spectrogram) plot — uses the FFT settings</source>
         <translation>Alternar gráfico de cascada (espectrograma) — usa la configuración FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="226"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="228"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="232"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="234"/>
         <source>Bar/Level</source>
         <translation>Barra/nivel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="236"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="238"/>
         <source>Toggle bar/level indicator for this dataset</source>
         <translation>Activar indicador de barra/nivel para este conjunto de datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="247"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="249"/>
         <source>Gauge</source>
         <translation>Indicador</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="252"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="254"/>
         <source>Toggle gauge widget for analog-style display</source>
         <translation>Activar widget de medidor para visualización estilo analógico</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="264"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="266"/>
         <source>Compass</source>
         <translation>Brújula</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="268"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="270"/>
         <source>Toggle compass widget for directional data</source>
         <translation>Activar widget de brújula para datos direccionales</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="279"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="281"/>
         <source>Meter</source>
         <translation>Medidor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="284"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="286"/>
         <source>Toggle analog meter (half-arc) widget</source>
         <translation>Activar widget de medidor analógico (medio arco)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="335"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="337"/>
         <source>Define colored value ranges with severity tiers for this dataset's gauge or LED.</source>
         <translation>Define rangos de valores coloreados con niveles de severidad para el indicador o LED de este conjunto de datos.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="341"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="343"/>
         <source>Freq. Markers</source>
         <translation>Marcadores de Frec.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="348"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="350"/>
         <source>Pin labeled frequencies or bands on the FFT plot and waterfall, with optional warning and alarm levels.</source>
         <translation>Fija frecuencias o bandas etiquetadas en el gráfico FFT y cascada, con niveles opcionales de advertencia y alarma.</translation>
     </message>
@@ -7003,22 +7003,22 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation type="vanished">Activar widget de termómetro para datos de temperatura</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="295"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="297"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="300"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="302"/>
         <source>Toggle LED indicator for binary or thresholded values</source>
         <translation>Activar indicador LED para valores binarios o con umbral</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="320"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="322"/>
         <source>Behavior</source>
         <translation>Comportamiento</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="325"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="327"/>
         <source>Alarm Bands</source>
         <translation>Bandas de Alarma</translation>
     </message>
@@ -7027,32 +7027,32 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation type="vanished">Define rangos de valores coloreados con niveles de severidad para el indicador de este conjunto de datos.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="354"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="356"/>
         <source>Transform</source>
         <translation>Transformación</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="358"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="360"/>
         <source>Edit a value transform expression for calibration, filtering, or unit conversion</source>
         <translation>Editar una expresión de transformación de valor para calibración, filtrado o conversión de unidades</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="371"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="373"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="376"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="378"/>
         <source>Duplicate this dataset with the same configuration</source>
         <translation>Duplicar este conjunto de datos con la misma configuración</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="381"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="383"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="384"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="386"/>
         <source>Delete this dataset from the group</source>
         <translation>Eliminar este conjunto de datos del grupo</translation>
     </message>
@@ -7254,6 +7254,29 @@ Formato válido: 01 A2 FF 3C</translation>
     <message>
         <source>Open</source>
         <translation type="vanished">Abrir</translation>
+    </message>
+</context>
+<context>
+    <name>EditorNavActions</name>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="107"/>
+        <source>Go back</source>
+        <translation>Regresar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="108"/>
+        <source>Go forward</source>
+        <translation>Avanzar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="122"/>
+        <source>Move Up</source>
+        <translation>Mover Arriba</translation>
+    </message>
+    <message>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="125"/>
+        <source>Move Down</source>
+        <translation>Mover Abajo</translation>
     </message>
 </context>
 <context>
@@ -8618,57 +8641,57 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation>Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="132"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="134"/>
         <source>Add Sub-folder</source>
         <translation>Agregar Subcarpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="134"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="136"/>
         <source>Add a sub-folder inside this folder</source>
         <translation>Agregar una subcarpeta dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="142"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="144"/>
         <source>Add Group</source>
         <translation>Agregar Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="144"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="146"/>
         <source>Add a group inside this folder</source>
         <translation>Agregar un grupo dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="154"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="156"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="156"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="158"/>
         <source>Rename folder</source>
         <translation>Renombrar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="164"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="166"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="166"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="168"/>
         <source>Delete folder</source>
         <translation>Eliminar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="181"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="180"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="182"/>
         <source>Contents</source>
         <translation>Contenidos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="270"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupFolderView.qml" line="272"/>
         <source>This folder is empty. Use the toolbar to add a group or sub-folder.</source>
         <translation>Esta carpeta está vacía. Usa la barra de herramientas para agregar un grupo o subcarpeta.</translation>
     </message>
@@ -8743,97 +8766,97 @@ Formato válido: 01 A2 FF 3C</translation>
 <context>
     <name>GroupView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="100"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="102"/>
         <source>Pro features detected in this project.</source>
         <translation>Funciones Pro detectadas en este proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="102"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="104"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Usando widgets de respaldo. Compra una licencia para desbloquear la funcionalidad completa.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="132"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="134"/>
         <source>Add Dataset</source>
         <translation>Agregar Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="139"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="141"/>
         <source>Dataset</source>
         <translation>Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="142"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="144"/>
         <source>Add a generic dataset to the current group</source>
         <translation>Agregar un conjunto de datos genérico al grupo actual</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="149"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="151"/>
         <source>Plot</source>
         <translation>Gráfica</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="153"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="155"/>
         <source>Add a 2D plot to visualize numeric data</source>
         <translation>Agregar una gráfica 2D para visualizar datos numéricos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="161"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="163"/>
         <source>FFT Plot</source>
         <translation>Gráfico FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="166"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="168"/>
         <source>Add an FFT plot for frequency domain visualization</source>
         <translation>Agregar un gráfico FFT para visualización en el dominio de frecuencia</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="172"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="174"/>
         <source>Waterfall</source>
         <translation>Cascada</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="177"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="179"/>
         <source>Add a waterfall (spectrogram) plot — uses the FFT settings</source>
         <translation>Agregar un gráfico de cascada (espectrograma) — usa la configuración FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="183"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="185"/>
         <source>Bar/Level</source>
         <translation>Barra/nivel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="187"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="189"/>
         <source>Add a bar or level indicator for scaled values</source>
         <translation>Agregar un indicador de barra o nivel para valores escalados</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="193"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="195"/>
         <source>Gauge</source>
         <translation>Indicador</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="198"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="200"/>
         <source>Add a gauge widget for analog-style visualization</source>
         <translation>Agregar un widget de medidor para visualización de estilo analógico</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="207"/>
         <source>Compass</source>
         <translation>Brújula</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="211"/>
         <source>Add a compass to display directional or angular data</source>
         <translation>Agregar una brújula para mostrar datos direccionales o angulares</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="215"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="217"/>
         <source>Meter</source>
         <translation>Medidor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="219"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="221"/>
         <source>Add an analog meter (half-arc) widget</source>
         <translation>Agregar un widget de medidor analógico (arco medio)</translation>
     </message>
@@ -8846,97 +8869,97 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation type="vanished">Agregar un widget de termómetro para datos de temperatura</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="226"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="228"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="231"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="233"/>
         <source>Add an LED indicator for binary status signals</source>
         <translation>Agregar un indicador LED para señales de estado binario</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="244"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="246"/>
         <source>Add Control</source>
         <translation>Agregar Control</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="252"/>
         <source>Button</source>
         <translation>Botón</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="254"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="256"/>
         <source>Add a button that sends a command on click</source>
         <translation>Agregar un botón que envíe un comando al hacer clic</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="260"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="262"/>
         <source>Slider</source>
         <translation>Control Deslizante</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="264"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="266"/>
         <source>Add a slider for sending scaled numeric values</source>
         <translation>Agregar un control deslizante para enviar valores numéricos escalados</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="270"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="272"/>
         <source>Toggle</source>
         <translation>Interruptor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="274"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="276"/>
         <source>Add a toggle switch for on/off commands</source>
         <translation>Agregar un interruptor para comandos de encendido/apagado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="281"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="283"/>
         <source>Text Field</source>
         <translation>Campo de Texto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="284"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="286"/>
         <source>Add a text field for typing and sending commands</source>
         <translation>Agregar un campo de texto para escribir y enviar comandos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="290"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="292"/>
         <source>Knob</source>
         <translation>Perilla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="294"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="296"/>
         <source>Add a rotary knob for setpoint control</source>
         <translation>Agregar una perilla rotatoria para control de punto de ajuste</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="313"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="315"/>
         <source>Edit Code</source>
         <translation>Editar Código</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="319"/>
         <source>Edit the JavaScript that draws this painter widget</source>
         <translation>Editar el JavaScript que dibuja este widget de pintor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="330"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="332"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="334"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="336"/>
         <source>Duplicate the current group and its contents</source>
         <translation>Duplicar el grupo actual y su contenido</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="339"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="341"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="344"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupView.qml" line="346"/>
         <source>Delete the current group and all contained datasets</source>
         <translation>Eliminar el grupo actual y todos los conjuntos de datos contenidos</translation>
     </message>
@@ -8949,37 +8972,37 @@ Formato válido: 01 A2 FF 3C</translation>
         <translation>Widgets del Tablero</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="127"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="129"/>
         <source>Add Folder</source>
         <translation>Agregar Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="131"/>
         <source>Add a top-level folder</source>
         <translation>Agregar una carpeta de nivel superior</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="137"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="139"/>
         <source>Add Group</source>
         <translation>Agregar Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="139"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="141"/>
         <source>Add a group from a template</source>
         <translation>Agregar un grupo desde una plantilla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="154"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="156"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="155"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="157"/>
         <source>Contents</source>
         <translation>Contenidos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="245"/>
+        <location filename="../../qml/ProjectEditor/Views/GroupsView.qml" line="247"/>
         <source>No groups yet. Use the toolbar to add a group or a folder.</source>
         <translation>Aún no hay grupos. Usa la barra de herramientas para agregar un grupo o una carpeta.</translation>
     </message>
@@ -12673,17 +12696,17 @@ Proporcione las credenciales necesarias.</translation>
         <translation>Proyecto Vacío</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="734"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="738"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="742"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="746"/>
         <source>Waiting for data…</source>
         <translation>Esperando datos…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="743"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="747"/>
         <source>Connecting to device…</source>
         <translation>Conectando al dispositivo…</translation>
     </message>
@@ -13261,8 +13284,8 @@ Would you like to open the download page?</source>
         <translation>No se pudo escribir Info.plist: %1</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="140"/>
+        <location filename="../../src/Misc/ShortcutGenerator_macOS.cpp" line="271"/>
         <source>Windows shortcut writer is not available on this platform.</source>
         <translation>El escritor de accesos directos de Windows no está disponible en esta plataforma.</translation>
     </message>
@@ -13293,8 +13316,8 @@ Would you like to open the download page?</source>
         <translation>Falló el guardado del archivo .lnk (HRESULT 0x%1).</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
         <location filename="../../src/Misc/ShortcutGenerator_Linux.cpp" line="154"/>
+        <location filename="../../src/Misc/ShortcutGenerator_Windows.cpp" line="185"/>
         <source>macOS shortcut writer is not available on this platform.</source>
         <translation>El escritor de accesos directos de macOS no está disponible en esta plataforma.</translation>
     </message>
@@ -13715,54 +13738,54 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
         <translation>Publicador MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="110"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="112"/>
         <source>Connected to broker</source>
         <translation>Conectado al broker</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="111"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="113"/>
         <source>Not connected</source>
         <translation>No conectado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="124"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="126"/>
         <source>Test Connection</source>
         <translation>Probar Conexión</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="131"/>
         <source>Probe the broker with the current settings</source>
         <translation>Probar el broker con la configuración actual</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="130"/>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="147"/>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="162"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="132"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="149"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="164"/>
         <source>Enable publishing first</source>
         <translation>Habilite la publicación primero</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="140"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="142"/>
         <source>Edit Script</source>
         <translation>Editar Script</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="146"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="148"/>
         <source>Edit the publisher script (Lua or JavaScript)</source>
         <translation>Editar el script de publicación (Lua o JavaScript)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="158"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="160"/>
         <source>Load CA Certs</source>
         <translation>Cargar Certificados CA</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="164"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="166"/>
         <source>Add PEM certificates from a folder</source>
         <translation>Agregar certificados PEM desde una carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="165"/>
+        <location filename="../../qml/ProjectEditor/Views/MqttPublisherView.qml" line="167"/>
         <source>Enable SSL/TLS first</source>
         <translation>Habilite SSL/TLS primero</translation>
     </message>
@@ -13840,132 +13863,132 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
         <translation>%1 elementos seleccionados</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="145"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="147"/>
         <source>Plots</source>
         <translation>Gráficas</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="150"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="152"/>
         <source>Plot</source>
         <translation>Gráfica</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="154"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="156"/>
         <source>Toggle 2D plot for every selected dataset</source>
         <translation>Alternar gráfica 2D para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="166"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="168"/>
         <source>FFT Plot</source>
         <translation>Gráfico FFT</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="169"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="171"/>
         <source>Toggle FFT plot for every selected dataset</source>
         <translation>Alternar gráfica FFT para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="181"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="183"/>
         <source>Waterfall</source>
         <translation>Cascada</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="184"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="186"/>
         <source>Toggle waterfall for every selected dataset</source>
         <translation>Alternar cascada para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="200"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="202"/>
         <source>Widgets</source>
         <translation>Widgets</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="206"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="208"/>
         <source>Bar/Level</source>
         <translation>Barra/nivel</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="209"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="211"/>
         <source>Set bar/level for every selected dataset</source>
         <translation>Establecer barra/nivel para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="220"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="222"/>
         <source>Gauge</source>
         <translation>Indicador</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="224"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="226"/>
         <source>Set gauge for every selected dataset</source>
         <translation>Establecer indicador para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="236"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="238"/>
         <source>Compass</source>
         <translation>Brújula</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="239"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="241"/>
         <source>Set compass for every selected dataset</source>
         <translation>Establecer brújula para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="250"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="252"/>
         <source>Meter</source>
         <translation>Medidor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="254"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="256"/>
         <source>Set meter for every selected dataset</source>
         <translation>Establecer medidor para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="265"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="267"/>
         <source>LED</source>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="269"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="271"/>
         <source>Toggle LED for every selected dataset</source>
         <translation>Alternar LED para cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="285"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="287"/>
         <source>Behavior</source>
         <translation>Comportamiento</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="291"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="293"/>
         <source>Alarm Bands</source>
         <translation>Bandas de Alarma</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="294"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="296"/>
         <source>Define colored value ranges and apply them to every selected dataset.</source>
         <translation>Define rangos de valores con color y aplícalos a cada conjunto de datos seleccionado.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="313"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="315"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="315"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="317"/>
         <source>Duplicate every selected dataset</source>
         <translation>Duplicar cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="323"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="325"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="326"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="328"/>
         <source>Delete every selected dataset</source>
         <translation>Eliminar cada conjunto de datos seleccionado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="368"/>
         <source>Editing %1 items. Shared fields apply to all; per-item fields are locked.</source>
         <translation>Editando %1 elementos. Los campos compartidos se aplican a todos; los campos por elemento están bloqueados.</translation>
     </message>
@@ -14495,157 +14518,157 @@ Agregue grupos arriba para sondear múltiples tipos de registros.</translation>
 <context>
     <name>OutputWidgetView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="91"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="93"/>
         <source>Output widgets require a Pro license.</source>
         <translation>Los widgets de salida requieren una licencia Pro.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="125"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="127"/>
         <source>Button</source>
         <translation>Botón</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="131"/>
         <source>Send a command on click</source>
         <translation>Enviar un comando al hacer clic</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="134"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="136"/>
         <source>Slider</source>
         <translation>Control Deslizante</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="138"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="140"/>
         <source>Send scaled numeric values</source>
         <translation>Enviar valores numéricos escalados</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="145"/>
         <source>Toggle</source>
         <translation>Interruptor</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="149"/>
         <source>Send on/off commands</source>
         <translation>Enviar comandos de encendido/apagado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="152"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="154"/>
         <source>Text Field</source>
         <translation>Campo de Texto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="156"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="158"/>
         <source>Type and send arbitrary commands</source>
         <translation>Escribir y enviar comandos arbitrarios</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="160"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="162"/>
         <source>Knob</source>
         <translation>Perilla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="165"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="167"/>
         <source>Rotary input for setpoints</source>
         <translation>Entrada rotativa para puntos de ajuste</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="93"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="95"/>
         <source>You can configure output widgets, but they only appear on the dashboard with a Pro license.</source>
         <translation>Puede configurar widgets de salida, pero solo aparecen en el tablero con una licencia Pro.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="182"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="184"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="185"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="187"/>
         <source>Duplicate this output widget</source>
         <translation>Duplicar este widget de salida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="195"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="197"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="197"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="199"/>
         <source>Delete this output widget</source>
         <translation>Eliminar este widget de salida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="274"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="276"/>
         <source>Transmit Function</source>
         <translation>Función de Transmisión</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="284"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="286"/>
         <source>Import</source>
         <translation>Importar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="290"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="292"/>
         <source>Import transmit function from a .js file</source>
         <translation>Importar función de transmisión desde un archivo .js</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="299"/>
         <source>Template</source>
         <translation>Plantilla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="301"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="303"/>
         <source>Select a pre-built transmit function template</source>
         <translation>Seleccionar una plantilla de función de transmisión predefinida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="306"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="308"/>
         <source>Test</source>
         <translation>Probar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="312"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="314"/>
         <source>Test the transmit function with sample input</source>
         <translation>Probar la función de transmisión con entrada de muestra</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="353"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="355"/>
         <source>Undo</source>
         <translation>Deshacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="359"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="361"/>
         <source>Redo</source>
         <translation>Rehacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="367"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="369"/>
         <source>Cut</source>
         <translation>Cortar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="372"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="374"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="377"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="379"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="384"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="386"/>
         <source>Select All</source>
         <translation>Seleccionar Todo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="391"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="393"/>
         <source>Format Document</source>
         <translation>Formatear Documento</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="396"/>
+        <location filename="../../qml/ProjectEditor/Views/OutputWidgetView.qml" line="398"/>
         <source>Format Selection</source>
         <translation>Formatear Selección</translation>
     </message>
@@ -15160,47 +15183,47 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>modificado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="367"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="374"/>
         <source>This project is password protected</source>
         <translation>Este proyecto está protegido con contraseña</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="368"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="375"/>
         <source>Editing is available in Project mode</source>
         <translation>La edición está disponible en modo Proyecto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="379"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="386"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Ingresa la contraseña para realizar cambios o abre un proyecto diferente.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="380"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="387"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Cambia al modo Proyecto para cargar y editar un proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="402"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="409"/>
         <source>Unlock</source>
         <translation>Desbloquear</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="403"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="410"/>
         <source>Switch to Project Mode</source>
         <translation>Cambiar a Modo Proyecto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="422"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="429"/>
         <source>Open Other Project</source>
         <translation>Abrir Otro Proyecto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="423"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="430"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="439"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="446"/>
         <source>Create New Project</source>
         <translation>Crear Proyecto Nuevo</translation>
     </message>
@@ -15218,87 +15241,87 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="357"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
         <source>Move Up</source>
         <translation>Mover Arriba</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="365"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="432"/>
         <source>Move Down</source>
         <translation>Mover Abajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="453"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="404"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="471"/>
         <source>Hide Selected (%1)</source>
         <translation>Mostrar Seleccionados (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="405"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="472"/>
         <source>Show Selected (%1)</source>
         <translation>Ocultar Seleccionados (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="406"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="473"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="406"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="473"/>
         <source>Show</source>
         <translation>Mostrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="429"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="496"/>
         <source>Duplicate Selected (%1)</source>
         <translation>Duplicar Seleccionado (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="430"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="497"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="452"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="519"/>
         <source>Delete Selected (%1)</source>
         <translation>Eliminar Seleccionado (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="453"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="520"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="501"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="568"/>
         <source>Seed Aliases from Titles</source>
         <translation>Inicializar Alias desde Títulos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="520"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="587"/>
         <source>New Folder</source>
         <translation>Nueva Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="533"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="600"/>
         <source>New Sub-Folder</source>
         <translation>Nueva Subcarpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="549"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="616"/>
         <source>Move to Folder</source>
         <translation>Mover a Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="556"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="623"/>
         <source>Top Level</source>
         <translation>Nivel Superior</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="589"/>
+        <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="656"/>
         <source>Move Here</source>
         <translation>Mover Aquí</translation>
     </message>
@@ -15711,22 +15734,22 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>Resumen del Proyecto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="81"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="83"/>
         <source>Pro features detected in this project.</source>
         <translation>Funciones Pro detectadas en este proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="83"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="85"/>
         <source>Using fallback widgets. Buy a license to unlock full functionality.</source>
         <translation>Usando widgets alternativos. Compra una licencia para desbloquear la funcionalidad completa.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="118"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="120"/>
         <source>Project Title:</source>
         <translation>Título del Proyecto:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="129"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="131"/>
         <source>Untitled Project</source>
         <translation>Proyecto sin Título</translation>
     </message>
@@ -15735,77 +15758,77 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation type="vanished">Puntos:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="148"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="150"/>
         <source>Settings</source>
         <translation>Configuración</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="153"/>
         <source>Project settings</source>
         <translation>Configuración del Proyecto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="177"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="179"/>
         <source>Time Range:</source>
         <translation>Rango de Tiempo:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="225"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="227"/>
         <source>Point Count:</source>
         <translation>Cantidad de Puntos:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="244"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="246"/>
         <source>Change-Driven Transforms:</source>
         <translation>Transformaciones Dirigidas por Cambios:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="254"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="256"/>
         <source>Run a dataset's transform only when one of its inputs changes. Speeds up large table-driven projects; off by default.</source>
         <translation>Ejecuta la transformación de un conjunto de datos solo cuando cambia una de sus entradas. Acelera proyectos grandes basados en tablas; desactivado por defecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="301"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="303"/>
         <source>Source</source>
         <translation>Fuente</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="302"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="304"/>
         <source>Sources</source>
         <translation>Fuentes</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="307"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="309"/>
         <source>Group</source>
         <translation>Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="308"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="310"/>
         <source>Groups</source>
         <translation>Grupos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="313"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="315"/>
         <source>Dataset</source>
         <translation>Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="314"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="316"/>
         <source>Datasets</source>
         <translation>Conjuntos de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="319"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="321"/>
         <source>Action</source>
         <translation>Acción</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="320"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="322"/>
         <source>Actions</source>
         <translation>Acciones</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="408"/>
+        <location filename="../../qml/ProjectEditor/Views/ProjectView.qml" line="410"/>
         <source>Double-click a block to edit it. Right-click anywhere to add a group, dataset, action, data table, or device.</source>
         <translation>Haz doble clic en un bloque para editarlo. Haz clic derecho en cualquier lugar para agregar un grupo, conjunto de datos, acción, tabla de datos o dispositivo.</translation>
     </message>
@@ -16001,8 +16024,8 @@ Haz clic en Actualizar para actualizar la lista.</translation>
         <translation>Error general de E/S</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="253"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="283"/>
         <source>Frame Parser Disabled</source>
         <translation>Analizador de Tramas Deshabilitado</translation>
     </message>
@@ -16044,8 +16067,8 @@ Causa más probable: un bucle infinito o una operación extremadamente lenta en 
 %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="479"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="428"/>
         <source>Missing Parse Function</source>
         <translation>Falta la Función Parse</translation>
     </message>
@@ -16061,8 +16084,8 @@ Asegúrese de que su código incluya:
 function parse(frame) ... end</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
         <location filename="../../src/DataModel/Scripting/JsScriptEngine.cpp" line="531"/>
+        <location filename="../../src/DataModel/Scripting/LuaScriptEngine.cpp" line="491"/>
         <source>Parse Function Runtime Error</source>
         <translation>Error de Ejecución de la Función de Análisis</translation>
     </message>
@@ -16297,7 +16320,7 @@ El parámetro separador ya no es necesario.</translation>
         <translation>No se ha configurado una clave API de Gemini. Abre Administrar Claves para agregar una.</translation>
     </message>
     <message>
-        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="323"/>
+        <location filename="../../src/AI/Providers/LocalProvider.cpp" line="320"/>
         <source>No local model server URL configured. Open Manage Keys to set one.</source>
         <translation>No se configuró la URL del servidor de modelo local. Abre Administrar Claves para establecer una.</translation>
     </message>
@@ -18758,62 +18781,62 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>SourceFrameParserView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="80"/>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="317"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="82"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="319"/>
         <source>Undo</source>
         <translation>Deshacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="87"/>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="328"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="89"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="330"/>
         <source>Redo</source>
         <translation>Rehacer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="96"/>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="347"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="98"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="349"/>
         <source>Cut</source>
         <translation>Cortar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="101"/>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="357"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="103"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="359"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="106"/>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="367"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="108"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="369"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="113"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="115"/>
         <source>Select All</source>
         <translation>Seleccionar Todo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="123"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="125"/>
         <source>Format Document</source>
         <translation>Formatear Documento</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="130"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="132"/>
         <source>Format Selection</source>
         <translation>Formatear Selección</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="297"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="299"/>
         <source>Reset</source>
         <translation>Restablecer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="382"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="384"/>
         <source>Validate</source>
         <translation>Validar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="386"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="388"/>
         <source>Verify that the script compiles correctly</source>
         <translation>Verificar que el script compile correctamente</translation>
     </message>
@@ -18822,17 +18845,17 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation type="vanished">Restablecer los parámetros de la plantilla a sus valores predeterminados</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="302"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="304"/>
         <source>Reset to the default parsing script</source>
         <translation>Restablecer al script de análisis predeterminado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="307"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="309"/>
         <source>Open</source>
         <translation>Abrir</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="312"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="314"/>
         <source>Import a script file for data parsing</source>
         <translation>Importar un archivo de script para análisis de datos</translation>
     </message>
@@ -18849,47 +18872,47 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation type="vanished">Nativo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="224"/>
         <source>Select Template…</source>
         <translation>Seleccionar Plantilla…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="322"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="324"/>
         <source>Undo the last code edit</source>
         <translation>Deshacer la última edición de código</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="334"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="336"/>
         <source>Redo the previously undone edit</source>
         <translation>Rehacer la edición previamente deshecha</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="352"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="354"/>
         <source>Cut selected code to clipboard</source>
         <translation>Cortar código seleccionado al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="362"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="364"/>
         <source>Copy selected code to clipboard</source>
         <translation>Copiar código seleccionado al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="371"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="373"/>
         <source>Paste code from clipboard</source>
         <translation>Pegar código desde el portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="247"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="249"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="196"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="198"/>
         <source>Platform:</source>
         <translation>Plataforma:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="204"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="206"/>
         <source>Built-In</source>
         <translation>Integrado</translation>
     </message>
@@ -18898,7 +18921,7 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation type="vanished">Plantilla:</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="238"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="240"/>
         <source>Test With Sample Data</source>
         <translation>Probar con Datos de Muestra</translation>
     </message>
@@ -18910,27 +18933,27 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>SourceView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="107"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="109"/>
         <source>Duplicate</source>
         <translation>Duplicar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="109"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="111"/>
         <source>Create a copy of this data source</source>
         <translation>Crear una copia de esta fuente de datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="121"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="123"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="126"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="128"/>
         <source>Remove this data source</source>
         <translation>Quitar esta fuente de datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="127"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceView.qml" line="129"/>
         <source>The primary data source cannot be removed</source>
         <translation>La fuente de datos principal no se puede quitar</translation>
     </message>
@@ -19209,7 +19232,7 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>SubMenuCombo</name>
     <message>
-        <location filename="../../qml/Widgets/SubMenuCombo.qml" line="168"/>
+        <location filename="../../qml/Widgets/SubMenuCombo.qml" line="186"/>
         <source>No Data Available</source>
         <translation>No Hay Datos Disponibles</translation>
     </message>
@@ -19222,57 +19245,57 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation>Valores de Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="160"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search</source>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="181"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="183"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="182"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="184"/>
         <source>Group</source>
         <translation>Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="183"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="185"/>
         <source>Dataset</source>
         <translation>Conjunto de Datos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="184"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="186"/>
         <source>Alias</source>
         <translation>Alias</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="185"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="187"/>
         <source>Units</source>
         <translation>Unidades</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="255"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="257"/>
         <source>(virtual)</source>
         <translation>(virtual)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="322"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="324"/>
         <source>Copy access code %1 to clipboard</source>
         <translation>Copiar código de acceso %1 al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="398"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="400"/>
         <source>Dataset access code copied</source>
         <translation>Código de acceso de conjunto de datos copiado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="347"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="349"/>
         <source>No datasets defined in this project.</source>
         <translation>No hay conjuntos de datos definidos en este proyecto.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="348"/>
+        <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
         <source>No datasets match your search.</source>
         <translation>No hay conjuntos de datos que coincidan con tu búsqueda.</translation>
     </message>
@@ -19329,57 +19352,57 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation>Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="126"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="128"/>
         <source>Add Sub-folder</source>
         <translation>Agregar Subcarpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="128"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="130"/>
         <source>Add a sub-folder inside this folder</source>
         <translation>Agregar una subcarpeta dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="136"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="138"/>
         <source>Add Shared Table</source>
         <translation>Agregar Tabla Compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="138"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="140"/>
         <source>Add a shared table inside this folder</source>
         <translation>Agregar una tabla compartida dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="148"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="150"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="150"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="152"/>
         <source>Rename folder</source>
         <translation>Renombrar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="158"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="160"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="160"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="162"/>
         <source>Delete folder</source>
         <translation>Eliminar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="175"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="176"/>
         <source>Registers</source>
         <translation>Registros</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="264"/>
+        <location filename="../../qml/ProjectEditor/Views/TableFolderView.qml" line="266"/>
         <source>This folder is empty. Use the toolbar to add a table or sub-folder.</source>
         <translation>Esta carpeta está vacía. Usa la barra de herramientas para agregar una tabla o subcarpeta.</translation>
     </message>
@@ -19392,127 +19415,127 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation>Menú de Inicio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="195"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="196"/>
         <source>Menu</source>
         <translation>Menú</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="231"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="232"/>
         <source>Search…</source>
         <translation>Buscar…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="497"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="498"/>
         <source>Settings</source>
         <translation>Configuración</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="498"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="499"/>
         <source>Console</source>
         <translation>Consola</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="499"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="500"/>
         <source>Notifications</source>
         <translation>Notificaciones</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="500"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="501"/>
         <source>Clock</source>
         <translation>Reloj</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="501"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="502"/>
         <source>Stopwatch</source>
         <translation>Cronómetro</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="503"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="504"/>
         <source>AI Assistant</source>
         <translation>Asistente de IA</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
         <source>Resume</source>
         <translation>Reanudar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="504"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="505"/>
         <source>Pause</source>
         <translation>Pausar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="772"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="773"/>
         <source>New Workspace…</source>
         <translation>Nuevo Espacio de Trabajo…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="798"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="799"/>
         <source>No Workspaces Available</source>
         <translation>No Hay Espacios de Trabajo Disponibles</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="931"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="929"/>
         <source>Unfreeze Dashboard</source>
         <translation>Descongelar Tablero</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="932"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="930"/>
         <source>Freeze Dashboard</source>
         <translation>Congelar Tablero</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="990"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="988"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Conectado a %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="991"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="989"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: No conectado</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1015"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1013"/>
         <source>MQTT Publisher</source>
         <translation>Publicador MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
         <source>Status:</source>
         <translation>Estado:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1033"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1031"/>
         <source>Connected</source>
         <translation>Conectado</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1034"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1032"/>
         <source>Disconnected</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1041"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1039"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1054"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
         <source>Mode:</source>
         <translation>Modo:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1067"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1065"/>
         <source>Messages sent:</source>
         <translation>Mensajes enviados:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1081"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1079"/>
         <source>Open MQTT Settings</source>
         <translation>Abrir Configuración MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="502"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="503"/>
         <source>File Transmission</source>
         <translation>Transmisión de Archivos</translation>
     </message>
@@ -19521,7 +19544,7 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
         <translation type="vanished">Buscar widgets…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1127"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1125"/>
         <source>Remove from Workspace</source>
         <translation>Eliminar del Espacio de Trabajo</translation>
     </message>
@@ -20676,117 +20699,117 @@ Activa Incrustar Proyecto para integrar el proyecto en el acceso directo, de mod
 <context>
     <name>UserTableView</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="174"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="176"/>
         <source>Add Register</source>
         <translation>Agregar Registro</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="177"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="179"/>
         <source>Add register</source>
         <translation>Agregar registro</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="184"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="186"/>
         <source>Insert Constant</source>
         <translation>Insertar Constante</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="187"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="189"/>
         <source>Insert constant</source>
         <translation>Insertar constante</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="194"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="196"/>
         <source>Import</source>
         <translation>Importar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="197"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="199"/>
         <source>Import registers from CSV</source>
         <translation>Importar registros desde CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="204"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="206"/>
         <source>Export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="207"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="209"/>
         <source>Export registers to CSV</source>
         <translation>Exportar registros a CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="219"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="221"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="222"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="224"/>
         <source>Rename table</source>
         <translation>Renombrar tabla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="229"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="231"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="232"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="234"/>
         <source>Delete table</source>
         <translation>Eliminar tabla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="246"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="248"/>
         <source>Help</source>
         <translation>Ayuda</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="251"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="253"/>
         <source>Open help documentation for shared memory</source>
         <translation>Abrir documentación de ayuda para memoria compartida</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="291"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="293"/>
         <source>Permissions</source>
         <translation>Permisos</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="292"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="294"/>
         <source>Register Name</source>
         <translation>Nombre de Registro</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="293"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="295"/>
         <source>Default Value</source>
         <translation>Valor Predeterminado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="339"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="341"/>
         <source>Read-Only</source>
         <translation>Solo Lectura</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="339"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="341"/>
         <source>Read/Write</source>
         <translation>Lectura/escritura</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="477"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="479"/>
         <source>Copy access code %1 to clipboard</source>
         <translation>Copiar código de acceso %1 al portapapeles</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="510"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="512"/>
         <source>Delete register</source>
         <translation>Eliminar registro</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="528"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="530"/>
         <source>No registers.</source>
         <translation>No hay registros.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="578"/>
+        <location filename="../../qml/ProjectEditor/Views/UserTableView.qml" line="580"/>
         <source>Register access code copied</source>
         <translation>Código de acceso de registro copiado</translation>
     </message>
@@ -21464,59 +21487,167 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation>Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="127"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="129"/>
         <source>Add Sub-folder</source>
         <translation>Agregar Subcarpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="130"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="132"/>
         <source>Add a sub-folder inside this folder</source>
         <translation>Agregar una subcarpeta dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="138"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="140"/>
         <source>Add Workspace</source>
         <translation>Agregar Espacio de Trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="141"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="143"/>
         <source>Add a workspace inside this folder</source>
         <translation>Agregar un espacio de trabajo dentro de esta carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="153"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="153"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="155"/>
         <source>Rename folder</source>
         <translation>Renombrar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="162"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="164"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="164"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="166"/>
         <source>Delete folder</source>
         <translation>Eliminar carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="178"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="180"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="179"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="181"/>
         <source>Contents</source>
         <translation>Contenido</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="269"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceFolderView.qml" line="271"/>
         <source>This folder is empty. Use the toolbar to add a workspace or sub-folder.</source>
         <translation>Esta carpeta está vacía. Usa la barra de herramientas para agregar un espacio de trabajo o subcarpeta.</translation>
+    </message>
+</context>
+<context>
+    <name>WorkspaceSwitcherOverlay</name>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="65"/>
+        <source>Console</source>
+        <translation>Consola</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="66"/>
+        <source>Terminal</source>
+        <translation>Terminal</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="67"/>
+        <source>Notifications</source>
+        <translation>Notificaciones</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="69"/>
+        <source>Clock</source>
+        <translation>Reloj</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="70"/>
+        <source>Stopwatch</source>
+        <translation>Cronómetro</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="92"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="206"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="556"/>
+        <source>Workspaces</source>
+        <translation>Espacios de Trabajo</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="203"/>
+        <source>Folders</source>
+        <translation>Carpetas</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="209"/>
+        <source>Groups</source>
+        <translation>Grupos</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="212"/>
+        <source>Widgets</source>
+        <translation>Widgets</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="215"/>
+        <source>Tools</source>
+        <translation>Herramientas</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="221"/>
+        <source>Add Workspace</source>
+        <translation>Agregar Espacio de Trabajo</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="357"/>
+        <source>New Folder</source>
+        <translation>Nueva Carpeta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="365"/>
+        <source>Rename Folder</source>
+        <translation>Renombrar Carpeta</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="569"/>
+        <source>Search</source>
+        <translation>Buscar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="637"/>
+        <source>Back</source>
+        <translation>Atrás</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="695"/>
+        <source>Type to search, Enter to open, Esc to close</source>
+        <translation>Escribe para buscar, Enter para abrir, Esc para cerrar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="803"/>
+        <source>No results found</source>
+        <translation>No se encontraron resultados</translation>
+    </message>
+    <message>
+        <source>Search Workspaces…</source>
+        <translation type="vanished">Buscar Espacios de Trabajo…</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="587"/>
+        <source>Close</source>
+        <translation>Cerrar</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml" line="453"/>
+        <source>Folder</source>
+        <translation>Carpeta</translation>
+    </message>
+    <message>
+        <source>No workspaces match your search.</source>
+        <translation type="vanished">Ningún espacio de trabajo coincide con la búsqueda.</translation>
     </message>
 </context>
 <context>
@@ -21527,123 +21658,123 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation>Espacio de Trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="145"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="147"/>
         <source>Add Widget</source>
         <translation>Agregar Widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="147"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="149"/>
         <source>Add widget to workspace</source>
         <translation>Agregar widget al espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="158"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="160"/>
         <source>Move Up</source>
         <translation>Mover Arriba</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="160"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="162"/>
         <source>Move workspace up</source>
         <translation>Mover espacio de trabajo arriba</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="170"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="172"/>
         <source>Move Down</source>
         <translation>Mover Abajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="172"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="174"/>
         <source>Move workspace down</source>
         <translation>Mover espacio de trabajo hacia abajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="182"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="184"/>
         <source>Change Icon</source>
         <translation>Cambiar Ícono</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="184"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="186"/>
         <source>Change workspace icon</source>
         <translation>Cambiar ícono del espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="199"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="201"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="201"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="203"/>
         <source>Rename workspace</source>
         <translation>Renombrar espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="210"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="212"/>
         <source>Delete</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="212"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="214"/>
         <source>Delete workspace</source>
         <translation>Eliminar espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="234"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="242"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="236"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="244"/>
         <source>Group</source>
         <translation>Grupo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="235"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="243"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="237"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="245"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="236"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="238"/>
         <source>Display Title</source>
         <translation>Mostrar Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="237"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="239"/>
         <source>Freeze Title</source>
         <translation>Congelar Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="238"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="244"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="240"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="246"/>
         <source>Type</source>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="288"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="402"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="290"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="404"/>
         <source>(unknown)</source>
         <translation>(desconocido)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="306"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="308"/>
         <source>(group widget)</source>
         <translation>(widget de grupo)</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="368"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="369"/>
         <source>Title Bar</source>
         <translation>Barra de Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="368"/>
         <source>Painted Title</source>
         <translation>Título Pintado</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="366"/>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="367"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="368"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="369"/>
         <source>Hidden</source>
         <translation>Oculto</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="432"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="434"/>
         <source>Remove widget from workspace</source>
         <translation>Eliminar widget del espacio de trabajo</translation>
     </message>
@@ -21652,7 +21783,7 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation type="vanished">Quitar del espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="452"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspaceView.qml" line="454"/>
         <source>No widgets in this workspace.</source>
         <translation>No hay widgets en este espacio de trabajo.</translation>
     </message>
@@ -21665,22 +21796,22 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation>Espacios de Trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="124"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="126"/>
         <source>Add Folder</source>
         <translation>Agregar Carpeta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="126"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="128"/>
         <source>Add a top-level folder</source>
         <translation>Agregar una carpeta de nivel superior</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="151"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="153"/>
         <source>Customize</source>
         <translation>Personalizar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="153"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="155"/>
         <source>Edit workspaces manually</source>
         <translation>Editar espacios de trabajo manualmente</translation>
     </message>
@@ -21701,37 +21832,37 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation type="vanished">Mover el espacio de trabajo seleccionado hacia abajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="135"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="137"/>
         <source>Add Workspace</source>
         <translation>Agregar Espacio de Trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="137"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="139"/>
         <source>Add workspace</source>
         <translation>Agregar espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="167"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="169"/>
         <source>Cleanup</source>
         <translation>Limpiar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="170"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="172"/>
         <source>Remove %1 widget reference(s) whose target group or dataset no longer exists</source>
         <translation>Eliminar %1 referencia(s) de widget cuyo grupo o conjunto de datos de destino ya no existe</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="173"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="175"/>
         <source>No stale widget references in any workspace</source>
         <translation>No hay referencias de widgets obsoletas en ningún espacio de trabajo</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="188"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="190"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="189"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="191"/>
         <source>Contents</source>
         <translation>Contenidos</translation>
     </message>
@@ -21740,17 +21871,17 @@ Entiendo que cuando termine, necesitaré comprar una licencia o compilar la vers
         <translation type="vanished">Widgets</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="282"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="284"/>
         <source>No workspaces. Add one with the toolbar above, or reset to the auto layout.</source>
         <translation>Sin espacios de trabajo. Agrega uno con la barra de herramientas superior, o restablece al diseño automático.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="284"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="286"/>
         <source>Project has no eligible groups -- add a group with widgets to populate workspaces.</source>
         <translation>El proyecto no tiene grupos elegibles -- agrega un grupo con widgets para poblar espacios de trabajo.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="290"/>
+        <location filename="../../qml/ProjectEditor/Views/WorkspacesView.qml" line="292"/>
         <source>Reset to Auto Layout</source>
         <translation>Restablecer a Diseño Automático</translation>
     </message>

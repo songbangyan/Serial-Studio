@@ -42,6 +42,8 @@ Widgets.Pane {
 
   title: workspaceName.length > 0 ? workspaceName : qsTr("Workspace")
 
+  actionComponent: EditorNavActions {}
+
   function refresh() {
     workspaceName = Cpp_JSON_ProjectModel.workspaceTitle(workspaceId)
     workspaceIcon = Cpp_JSON_ProjectModel.workspaceIcon(workspaceId)

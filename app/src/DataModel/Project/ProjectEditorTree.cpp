@@ -126,17 +126,21 @@ void DataModel::ProjectEditor::buildTreeModel()
   m_mqttPublisherItem  = nullptr;
   m_controlScriptItem  = nullptr;
 
-  const bool seeding = m_seedExpansionFromModel;
+  const bool seeding      = m_seedExpansionFromModel;
+  const bool filterActive = !m_treeSearchQuery.trimmed().isEmpty();
   QHash<QString, bool> expandedStates;
-  if (seeding) {
-    const auto& persisted = m_projectModelRef.treeExpansion();
-    for (auto it = persisted.constBegin(); it != persisted.constEnd(); ++it)
-      expandedStates.insert(it.key(), it.value().toBool());
 
-    m_seedExpansionFromModel = false;
-  } else if (m_treeModel) {
-    saveExpandedStateMap(m_treeModel->invisibleRootItem(), expandedStates, "");
-  }
+  // code-verify off
+  // Seed expansion only from the persisted map (the single source of truth, kept current by every
+  // manual toggle via persistTreeExpansion), never from the live tree: this stops transient
+  // force-expansion (search) and reveal (expandToIndex) from corrupting the saved state. A filtered
+  // build is likewise never persisted back below, since its rows are force-expanded.
+  // code-verify on
+  const auto& persisted = m_projectModelRef.treeExpansion();
+  for (auto it = persisted.constBegin(); it != persisted.constEnd(); ++it)
+    expandedStates.insert(it.key(), it.value().toBool());
+
+  m_seedExpansionFromModel = false;
 
   if (m_currentSelectionConnection) {
     QObject::disconnect(m_currentSelectionConnection);
@@ -183,7 +187,7 @@ void DataModel::ProjectEditor::buildTreeModel()
   if (!revealIndex.isValid())
     restoreTreeSelection();
 
-  if (!seeding)
+  if (!seeding && !filterActive)
     m_projectModelRef.setTreeExpansion(snapshotTreeExpansion());
 
   Q_EMIT treeRebuildFinished(revealIndex);
@@ -1024,4 +1028,55 @@ QJsonObject DataModel::ProjectEditor::snapshotTreeExpansion()
 void DataModel::ProjectEditor::persistTreeExpansion()
 {
   m_projectModelRef.setTreeExpansion(snapshotTreeExpansion());
+}
+
+//--------------------------------------------------------------------------------------------------
+// Navigation-driven expansion: model-role authority, the view follows via syncExpandedState
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * @brief Marks every ancestor of @p index expanded so the item is revealed. Writes the model role
+ *        (the view's source of truth) rather than the view directly, so the reveal survives reuse.
+ */
+void DataModel::ProjectEditor::expandTreeToIndex(const QModelIndex& index)
+{
+  if (!m_treeModel)
+    return;
+
+  const auto* item = m_treeModel->itemFromIndex(index);
+  if (!item)
+    return;
+
+  for (auto* p = item->parent(); p != nullptr; p = p->parent())
+    p->setData(true, TreeViewExpanded);
+}
+
+/**
+ * @brief Sets the expanded model role of @p index; the delegate reacts and expands/collapses the row.
+ */
+void DataModel::ProjectEditor::setTreeIndexExpanded(const QModelIndex& index, bool expanded)
+{
+  if (!m_treeModel)
+    return;
+
+  if (auto* item = m_treeModel->itemFromIndex(index))
+    item->setData(expanded, TreeViewExpanded);
+}
+
+/**
+ * @brief True when the tree item at @p index has child rows (a foldable node).
+ */
+bool DataModel::ProjectEditor::treeIndexHasChildren(const QModelIndex& index) const
+{
+  const auto* item = m_treeModel ? m_treeModel->itemFromIndex(index) : nullptr;
+  return item && item->hasChildren();
+}
+
+/**
+ * @brief True when the tree item at @p index is currently marked expanded in the model.
+ */
+bool DataModel::ProjectEditor::treeIndexExpanded(const QModelIndex& index) const
+{
+  const auto* item = m_treeModel ? m_treeModel->itemFromIndex(index) : nullptr;
+  return item && item->data(TreeViewExpanded).toBool();
 }

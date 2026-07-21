@@ -504,6 +504,10 @@ Widgets.SmartWindow {
     sequence: "Ctrl+9"
     enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(8)
+  } Shortcut {
+    sequence: "Ctrl+K"
+    enabled: root.dashboardVisible
+    onActivated: dashboard.openWorkspaceSwitcher()
   }
 
   //

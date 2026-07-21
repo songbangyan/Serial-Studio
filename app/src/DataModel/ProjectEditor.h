@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <QHash>
 #include <QItemSelectionModel>
 #include <QObject>
@@ -91,6 +93,12 @@ class ProjectEditor : public QObject {
   Q_PROPERTY(CurrentView currentView
              READ currentView
              NOTIFY currentViewChanged)
+  Q_PROPERTY(bool canGoBack
+             READ canGoBack
+             NOTIFY navHistoryChanged)
+  Q_PROPERTY(bool canGoForward
+             READ canGoForward
+             NOTIFY navHistoryChanged)
   Q_PROPERTY(int multiSelectionKind
              READ multiSelectionKind
              NOTIFY currentViewChanged)
@@ -106,6 +114,12 @@ class ProjectEditor : public QObject {
   Q_PROPERTY(quint16 datasetOptions
              READ datasetOptions
              NOTIFY datasetOptionsChanged)
+  Q_PROPERTY(bool canMoveCurrentUp
+             READ canMoveCurrentUp
+             NOTIFY editableOptionsChanged)
+  Q_PROPERTY(bool canMoveCurrentDown
+             READ canMoveCurrentDown
+             NOTIFY editableOptionsChanged)
   Q_PROPERTY(bool currentGroupIsEditable
              READ currentGroupIsEditable
              NOTIFY editableOptionsChanged)
@@ -178,6 +192,7 @@ signals:
   void groupModelChanged();
   void sourceModelChanged();
   void currentViewChanged();
+  void navHistoryChanged();
   void selectedTextChanged();
   void actionModelChanged();
   void projectModelChanged();
@@ -301,6 +316,11 @@ public:
   Q_ENUM(ItemKind)
 
   [[nodiscard]] CurrentView currentView() const;
+  [[nodiscard]] bool canGoBack() const noexcept;
+  [[nodiscard]] bool canGoForward() const noexcept;
+  [[nodiscard]] Q_INVOKABLE int navDirection() const noexcept;
+  [[nodiscard]] Q_INVOKABLE bool treeIndexHasChildren(const QModelIndex& index) const;
+  [[nodiscard]] Q_INVOKABLE bool treeIndexExpanded(const QModelIndex& index) const;
   [[nodiscard]] int multiSelectionKind() const noexcept;
   [[nodiscard]] int multiSelectionCount() const noexcept;
   [[nodiscard]] QString selectedText() const;
@@ -308,6 +328,8 @@ public:
   [[nodiscard]] const QString actionIcon() const;
   [[nodiscard]] const QString outputWidgetIcon() const;
   [[nodiscard]] const QStringList& availableActionIcons() const;
+  [[nodiscard]] bool canMoveCurrentUp() const;
+  [[nodiscard]] bool canMoveCurrentDown() const;
   [[nodiscard]] bool currentGroupIsEditable() const;
   [[nodiscard]] bool currentDatasetIsEditable() const;
   [[nodiscard]] bool datasetWidgetEditable(const DataModel::Dataset& dataset) const;
@@ -379,6 +401,8 @@ public:
     const DataModel::ProjectModel& pm);
 
 public slots:
+  void navigateBack();
+  void navigateForward();
   void selectUserTable(const QString& tableName);
   void selectWorkspace(int workspaceId);
   void selectWorkspaceFolder(int folderId);
@@ -390,6 +414,8 @@ public slots:
   void setTreeSearchQuery(const QString& query);
   void confirmCleanupUnresolvedWorkspaceWidgets();
   void persistTreeExpansion();
+  void expandTreeToIndex(const QModelIndex& index);
+  void setTreeIndexExpanded(const QModelIndex& index, bool expanded);
 
   void buildTreeModel();
   void buildProjectModel();
@@ -467,6 +493,7 @@ private:
   void restoreTreeSelection();
   [[nodiscard]] QStandardItem* entitySelectionItem() const;
   [[nodiscard]] QStandardItem* containerSelectionItem() const;
+  [[nodiscard]] bool canMoveCurrent(int direction) const;
   bool selectSourceParserItem(QStandardItem* item);
   bool selectSourceItem(QStandardItem* item);
   bool selectGroupItem(QStandardItem* item);
@@ -478,6 +505,25 @@ private:
   bool selectWorkspaceTreeItem(QStandardItem* item);
   bool selectMqttPublisherItem(QStandardItem* item);
   bool selectControlScriptItem(QStandardItem* item);
+
+  /**
+   * @brief Stable logical identity of a visited tree node for back/forward history.
+   */
+  struct NavEntry {
+    bool valid       = false;
+    bool container   = false;
+    ItemKind kind    = KindNone;
+    CurrentView view = ProjectView;
+    int id           = -1;
+    int parentId     = -1;
+    QString key;
+  };
+
+  [[nodiscard]] static bool sameNavTarget(const NavEntry& a, const NavEntry& b) noexcept;
+  [[nodiscard]] NavEntry captureNavEntry(QStandardItem* item) const;
+  [[nodiscard]] QStandardItem* resolveNavEntry(const NavEntry& entry) const;
+  void pushNavEntry(const NavEntry& entry);
+  void clearNavHistory();
   void syncDatasetItemCache(int groupId, int datasetId);
   void appendDriverPropertyRows(const DataModel::Source& source);
   void applyGroupSourceEdit(int srcIdx, int groupId);
@@ -577,6 +623,12 @@ private:
 
   CurrentView m_currentView;
   bool m_suppressViewChange;
+
+  static constexpr int kMaxNavHistory = 128;
+  std::vector<NavEntry> m_navHistory;
+  int m_navCursor;
+  int m_navDirection;
+  bool m_navigatingHistory;
 
   ItemKind m_batchKind;
   bool m_batchApplying;

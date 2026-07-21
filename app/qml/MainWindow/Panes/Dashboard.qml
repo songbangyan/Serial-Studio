@@ -56,6 +56,7 @@ Item {
   function toggleAutoLayout()        { _mainLayout.toggleAutoLayout() }
   function toggleFreeze()            { _mainLayout.toggleFreeze() }
   function jumpToWorkspaceIndex(i)   { _mainLayout.jumpToWorkspaceIndex(i) }
+  function openWorkspaceSwitcher()   { _mainLayout.openWorkspaceSwitcher() }
 
   //
   // Taskbar helper
@@ -71,6 +72,7 @@ Item {
     anchors.fill: parent
     taskBar: root.taskBar
     hostWindow: mainWindow
+    widgetsStayOnTop: root.anyDashboardFullscreen
     onExternalWindowClicked: root.openExternalWindow()
   }
 
@@ -78,6 +80,26 @@ Item {
   // Open external dashboard windows, tracked by their stable project id
   //
   property var extWindows: []
+
+  //
+  // True while the main window or any external dashboard is fullscreen; drives the stay-on-top
+  // flag on every pop-out widget/tool window so they are not hidden behind the fullscreen surface
+  //
+  property bool externalFullscreenActive: false
+  readonly property bool anyDashboardFullscreen: mainWindow.visibility === Window.FullScreen
+                                                 || externalFullscreenActive
+
+  function updateExternalFullscreen() {
+    var active = false
+    for (var i = 0; i < extWindows.length; ++i) {
+      if (extWindows[i] && extWindows[i].visibility === Window.FullScreen) {
+        active = true
+        break
+      }
+    }
+
+    root.externalFullscreenActive = active
+  }
 
   //
   // Suppresses persistence while windows are reconciled against the project file
@@ -140,10 +162,12 @@ Item {
 
         win.destroy()
         root.syncExternalWindows()
+        root.updateExternalFullscreen()
       })
     }
 
     root.syncExternalWindows()
+    root.updateExternalFullscreen()
   }
 
   //
@@ -434,7 +458,7 @@ Item {
         function onPreviousWidthChanged()  { root.syncExternalWindows() }
         function onPreviousHeightChanged() { root.syncExternalWindows() }
         function onIsMaximizedChanged()    { root.syncExternalWindows() }
-        function onVisibilityChanged()     { root.syncExternalWindows() }
+        function onVisibilityChanged()     { root.syncExternalWindows(); root.updateExternalFullscreen() }
       }
 
       Component.onCompleted: {

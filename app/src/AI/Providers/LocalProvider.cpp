@@ -291,17 +291,14 @@ void AI::LocalProvider::refreshModels()
         ids.append(id);
     }
 
-    if (ids.isEmpty()) {
-      qCInfo(serialStudioAI) << "Local model list returned 0 entries; keeping cache";
+    if (ids.isEmpty())
       return;
-    }
 
     if (ids == m_models)
       return;
 
     m_models = ids;
     persistCachedModels();
-    qCInfo(serialStudioAI) << "Local model list refreshed:" << ids.size() << "models";
     Q_EMIT modelsChanged();
   });
 }

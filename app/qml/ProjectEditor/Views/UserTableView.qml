@@ -31,6 +31,8 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   icon: "qrc:/icons/project-editor/treeview/shared-table.svg"
+
+  actionComponent: EditorNavActions {}
   title: {
     const i = root.tableName.lastIndexOf('/')
     return i >= 0 ? root.tableName.substring(i + 1) : root.tableName

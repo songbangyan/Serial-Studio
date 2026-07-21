@@ -33,6 +33,8 @@ Widgets.Pane {
   title: qsTr("Workspaces")
   icon: "qrc:/icons/project-editor/treeview/workspaces.svg"
 
+  actionComponent: EditorNavActions {}
+
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
   property var summary: []

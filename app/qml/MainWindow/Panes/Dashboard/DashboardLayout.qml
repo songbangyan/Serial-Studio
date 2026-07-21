@@ -48,6 +48,7 @@ Widgets.Pane {
   //
   property var hostWindow: null
   property bool isExternalWindow: false
+  property bool widgetsStayOnTop: false
   readonly property bool operatorMode: !isExternalWindow && app.runtimeMode
   readonly property bool zeroBottom: operatorMode && Cpp_UI_TaskbarSettings.taskbarHidden
 
@@ -98,9 +99,10 @@ Widgets.Pane {
   //
   // Shortcut hooks
   //
-  function focusTaskbarSearch()   { _taskbar.focusSearch() }
-  function toggleStartMenu()      { _taskbar.toggleStartMenu() }
-  function cycleWorkspace(delta)  { _taskbar.cycleWorkspace(delta) }
+  function focusTaskbarSearch()    { _taskbar.focusSearch() }
+  function toggleStartMenu()       { _taskbar.toggleStartMenu() }
+  function cycleWorkspace(delta)   { _taskbar.cycleWorkspace(delta) }
+  function openWorkspaceSwitcher() { _switcherOverlay.toggle() }
 
   function cycleWindow(delta) {
     const next = taskBar.nextActiveWindow(delta)
@@ -386,6 +388,7 @@ Widgets.Pane {
         Layout.fillHeight: true
         Layout.minimumWidth: 480
         isExternalWindow: root.isExternalWindow
+        widgetsStayOnTop: root.widgetsStayOnTop
         onExternalWidgetWindowRequested: (windowId) => root.widgetWindowRequested(windowId)
       }
 
@@ -479,6 +482,7 @@ Widgets.Pane {
 
           onNewWorkspaceRequested: _wsDialog.openNew(root.taskBar)
           onEditWorkspaceRequested: (wsId, name) => _wsDialog.openEdit(root.taskBar, wsId, name)
+          onWorkspaceSwitcherRequested: root.openWorkspaceSwitcher()
           onStartClicked: {
             if (_startMenu.visible)
               _startMenu.close()
@@ -542,6 +546,16 @@ Widgets.Pane {
           root.hostWindow.toggleFullScreen()
       }
     }
+  }
+
+  //
+  // Virtual-desktop workspace switcher overlay (opened via Ctrl+K)
+  //
+  WorkspaceSwitcherOverlay {
+    id: _switcherOverlay
+
+    z: 5000
+    taskBar: root.taskBar
   }
 
   //

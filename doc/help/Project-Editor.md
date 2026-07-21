@@ -71,6 +71,18 @@ Project Root
 
 The number in brackets is the dataset's frame index: its position in the parsed data array. Click any item to edit its properties in the right panel.
 
+#### Navigation and quick actions
+
+The caption bar above the tree carries two groups of buttons. On the left are **Back** and **Forward**, which step through the items you have visited, the same way a file manager or browser does. Back returns to the previously selected item; Forward returns to the item you stepped back from. Selecting a new item after going back drops the forward trail from that point. Deleted items are skipped automatically, so you never land on an empty panel.
+
+You can trigger the same navigation three other ways:
+
+- The **back and forward buttons on a mouse** that has them (for example a Logitech MX Master).
+- **Alt+Left** (back) and **Alt+Right** (forward) from anywhere in the editor.
+- **Backspace** to go back, while the tree has keyboard focus. It never interferes with typing, because it only acts when a text field is not focused.
+
+On the right of the caption bar are folder shortcuts that act on the current selection: **New Folder**, **Move to Folder**, **Move Up**, and **Move Down**. Each button is enabled only when it applies to what is selected, and produces the same result as the matching entry in the right-click menu.
+
 ### Property panel (right panel)
 
 Shows a form for the selected tree item. Every change takes effect immediately in the project model. The form fields vary depending on whether you selected the project root, a group, a dataset, an action, or a source.

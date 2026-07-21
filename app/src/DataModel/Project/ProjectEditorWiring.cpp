@@ -123,6 +123,7 @@ void DataModel::ProjectEditor::wireProjectModelRebuilds()
 
     m_lastJsonFilePath       = path;
     m_seedExpansionFromModel = true;
+    clearNavHistory();
     if (m_selectionModel) {
       auto index = m_treeModel->index(0, 0);
       m_selectionModel->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);

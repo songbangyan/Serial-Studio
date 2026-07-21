@@ -532,6 +532,7 @@ set(QML_SOURCES
   qml/MainWindow/Panes/Dashboard/StartMenu.qml
   qml/MainWindow/Panes/Dashboard/Taskbar.qml
   qml/MainWindow/Panes/Dashboard/WidgetDelegate.qml
+  qml/MainWindow/Panes/Dashboard/WorkspaceSwitcherOverlay.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/BluetoothLE.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/Network.qml
   qml/MainWindow/Panes/SetupPanes/Drivers/UART.qml
@@ -544,6 +545,7 @@ set(QML_SOURCES
   qml/ProjectEditor/Sections/ProjectStructure.qml
   qml/ProjectEditor/Sections/ProjectToolbar.qml
   qml/ProjectEditor/Views/ActionView.qml
+  qml/ProjectEditor/Views/EditorNavActions.qml
   qml/ProjectEditor/Views/OutputWidgetView.qml
   qml/ProjectEditor/Views/DatasetView.qml
   qml/ProjectEditor/Views/MultiSelectionView.qml

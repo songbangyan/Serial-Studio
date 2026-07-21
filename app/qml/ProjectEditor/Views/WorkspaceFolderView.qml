@@ -41,6 +41,8 @@ Widgets.Pane {
 
   title: folderName.length > 0 ? folderName : qsTr("Folder")
 
+  actionComponent: EditorNavActions {}
+
   function refresh() {
     folderName = Cpp_JSON_ProjectModel.workspaceFolderTitle(folderId)
     contents = Cpp_JSON_ProjectEditor.workspaceFolderContents(folderId)

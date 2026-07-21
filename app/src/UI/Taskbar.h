@@ -140,6 +140,7 @@ signals:
   void layoutScopeChanged();
   void registeredWindowsChanged();
   void independentWorkspaceChanged();
+  void aboutToChangeWorkspace(int fromIndex, int toIndex);
 
 public:
   Taskbar(QQuickItem* parent = nullptr);
@@ -239,6 +240,8 @@ private:
   [[nodiscard]] QStandardItem* createItemFromWidgetInfo(const UI::WidgetInfo& info);
   [[nodiscard]] int findWindowIdByGroupAndIndex(int widgetType, int relativeIndex) const;
   [[nodiscard]] int relativeIndexForWindow(int windowId) const;
+  [[nodiscard]] int indexForGroupId(int groupId) const;
+  void emitWorkspaceChangeAnticipation(int toGroupId);
 
   UI::Dashboard& m_dashboard;
   DataModel::ProjectModel& m_projectModel;

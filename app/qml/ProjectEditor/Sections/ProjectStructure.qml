@@ -314,6 +314,7 @@ Widgets.Pane {
       property int deletableSelectionCount: 0
       property int selectableSelectionCount: 0
       property int enableableSelectionCount: 0
+
       function refreshSelectableCount() {
         const sel = Cpp_JSON_ProjectEditor.selectedTreeItems()
         selectableSelectionCount = sel.filter(
@@ -337,10 +338,76 @@ Widgets.Pane {
               || it.kind === ProjectEditor.KindTableFolder).length
       }
 
+      //
+      // Transient stack of nodes expanded by navigation (not by the user). Never persisted; it is
+      // unwound one node per Back step and dropped on every rebuild (its indices go stale).
+      //
+      property var navExpandStack: []
+      property bool rebuilding: false
+
+      //
+      // Expand into the current node via its model role (recorded for Back); no-op for leaves and
+      // already-expanded nodes so saved expansions are never unwound.
+      //
+      function navExpandCurrent(idx) {
+        if (!Cpp_JSON_ProjectEditor.treeIndexHasChildren(idx)
+            || Cpp_JSON_ProjectEditor.treeIndexExpanded(idx))
+          return
+
+        Cpp_JSON_ProjectEditor.setTreeIndexExpanded(idx, true)
+        treeView.navExpandStack = treeView.navExpandStack.concat([idx])
+      }
+
+      //
+      // Collapse the most recently navigation-expanded node (the last Back step's counterpart).
+      //
+      function collapseLastNavExpanded() {
+        const stack = treeView.navExpandStack
+        if (stack.length === 0)
+          return
+
+        const idx = stack[stack.length - 1]
+        treeView.navExpandStack = stack.slice(0, stack.length - 1)
+        if (idx && idx.valid)
+          Cpp_JSON_ProjectEditor.setTreeIndexExpanded(idx, false)
+      }
+
+      //
+      // Reveal the current node as the user navigates (all via the model role, never the view):
+      // Back collapses the last auto-expanded node, ancestors expand, forward expands into it.
+      //
+      function revealCurrent() {
+        const idx = treeView.selectionModel ? treeView.selectionModel.currentIndex : null
+        if (!idx || !idx.valid)
+          return
+
+        if (!treeView.rebuilding) {
+          const dir = Cpp_JSON_ProjectEditor.navDirection()
+          if (dir < 0)
+            treeView.collapseLastNavExpanded()
+
+          Cpp_JSON_ProjectEditor.expandTreeToIndex(idx)
+
+          if (dir >= 0)
+            treeView.navExpandCurrent(idx)
+        }
+
+        Qt.callLater(function() {
+          treeView.forceLayout()
+          treeView.warmupContentHeight()
+          const row = treeView.rowAtIndex(idx)
+          if (row >= 0)
+            treeView.positionViewAtRow(row, Qt.AlignVCenter)
+        })
+      }
+
       Connections {
         target: treeView.selectionModel
         function onSelectionChanged() { treeView.refreshSelectableCount() }
-        function onCurrentChanged()   { treeView.refreshSelectableCount() }
+        function onCurrentChanged() {
+          treeView.refreshSelectableCount()
+          treeView.revealCurrent()
+        }
       }
 
       Component.onCompleted: refreshSelectableCount()
@@ -602,15 +669,26 @@ Widgets.Pane {
         target: Cpp_JSON_ProjectEditor
 
         //
+        // A fresh model invalidates the transient nav-expansion stack; guard against the
+        // restore-selection reveal being mistaken for a user navigation.
+        //
+        function onTreeModelChanged() {
+          treeView.rebuilding = true
+          treeView.navExpandStack = []
+        }
+
+        //
         // Fired at the end of every buildTreeModel()
         //
         function onTreeRebuildFinished(revealIndex) {
+          treeView.rebuilding = false
+
           // Snapshot before the new model resets contentY to 0
           const previousY = treeView.contentY
 
           Qt.callLater(function() {
             if (revealIndex && revealIndex.valid) {
-              treeView.expandToIndex(revealIndex)
+              Cpp_JSON_ProjectEditor.expandTreeToIndex(revealIndex)
               treeView.forceLayout()
               treeView.warmupContentHeight()
               const row = treeView.rowAtIndex(revealIndex)
@@ -713,6 +791,7 @@ Widgets.Pane {
         implicitHeight: depth === 0 ? 30 : 18
         TableView.onReused: syncExpandedState()
         Component.onCompleted: syncExpandedState()
+        onModelExpandedChanged: syncExpandedState()
 
         required property int row
         required property int depth
@@ -739,6 +818,7 @@ Widgets.Pane {
                                             ? true : model.treeViewEnabled
         readonly property bool itemSelfEnabled: model.treeViewSelfEnabled === undefined
                                                 ? true : model.treeViewSelfEnabled
+        readonly property bool modelExpanded: model.treeViewExpanded === true
 
         //
         // Restore expanded state from C++ model
@@ -887,8 +967,8 @@ Widgets.Pane {
             enabled: hasChildren
             sourceSize: Qt.size(8, 8)
             opacity: hasChildren ? 1 : 0
+            rotation: expanded ? 0 : 270
             Layout.alignment: Qt.AlignVCenter
-            rotation: model.treeViewExpanded ? 0 : 270
             source: "qrc:/icons/project-editor/treeview/indicator.svg"
 
             MouseArea {

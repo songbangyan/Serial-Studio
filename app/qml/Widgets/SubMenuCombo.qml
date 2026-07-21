@@ -40,6 +40,24 @@ Popup {
     contentItem.LayoutMirroring.childrenInherit = true
   }
 
+  enter: Transition {
+    NumberAnimation {
+      duration: 200
+      from: 0; to: 1
+      property: "opacity"
+      easing.type: Easing.OutCubic
+    }
+  }
+
+  exit: Transition {
+    NumberAnimation {
+      duration: 120
+      from: 1; to: 0
+      property: "opacity"
+      easing.type: Easing.InCubic
+    }
+  }
+
   //
   // External data
   //

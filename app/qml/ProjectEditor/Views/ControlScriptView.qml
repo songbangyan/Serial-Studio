@@ -33,6 +33,8 @@ Widgets.Pane {
   title: qsTr("Control Loop")
   icon: Cpp_JSON_ProjectEditor.selectedIcon
 
+  actionComponent: EditorNavActions {}
+
   //
   // Right-click context menu
   //

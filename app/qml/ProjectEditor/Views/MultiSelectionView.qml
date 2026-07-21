@@ -34,6 +34,8 @@ Widgets.Pane {
   icon: "qrc:/icons/project-editor/model/dataset.svg"
   title: qsTr("%1 items selected").arg(Cpp_JSON_ProjectEditor.multiSelectionCount)
 
+  actionComponent: EditorNavActions {}
+
   //
   // Picks the aggregate form model for the current multi-selection kind.
   //

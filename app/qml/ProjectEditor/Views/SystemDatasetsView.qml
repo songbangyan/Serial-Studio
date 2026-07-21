@@ -33,6 +33,8 @@ Widgets.Pane {
   title: qsTr("Dataset Values")
   icon: "qrc:/icons/project-editor/treeview/dataset-values.svg"
 
+  actionComponent: EditorNavActions {}
+
   //
   // Shared column widths and row height: header, rows, and empty-column
   // spacers stay aligned. Matches TableDelegate's 30-px row height.

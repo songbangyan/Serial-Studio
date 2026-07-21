@@ -896,6 +896,88 @@ QVariantList DataModel::ProjectEditor::allWidgetsSummary() const
 //--------------------------------------------------------------------------------------------------
 
 /**
+ * @brief Whether the current selection can move up; drives the faded state of the Move Up button.
+ */
+bool DataModel::ProjectEditor::canMoveCurrentUp() const
+{
+  return canMoveCurrent(-1);
+}
+
+/**
+ * @brief Whether the current selection can move down; drives the faded state of Move Down.
+ */
+bool DataModel::ProjectEditor::canMoveCurrentDown() const
+{
+  return canMoveCurrent(1);
+}
+
+/**
+ * @brief Bounds check mirroring the move guards without mutating: true only when a sibling exists
+ *        in @p direction. Folders allow it (bounds enforced at commit); non-orderable views false.
+ */
+bool DataModel::ProjectEditor::canMoveCurrent(int direction) const
+{
+  const int step = direction < 0 ? -1 : 1;
+
+  if (m_currentView == GroupView) {
+    const int target = m_selectedGroup.groupId + step;
+    return m_selectedGroup.groupId >= 0 && target >= 0 && target < m_projectModelRef.groupCount();
+  }
+
+  if (m_currentView == ActionView) {
+    const int target = m_selectedAction.actionId + step;
+    return m_selectedAction.actionId >= 0 && target >= 0
+           && target < static_cast<int>(m_projectModelRef.actions().size());
+  }
+
+  const auto& groups = m_projectModelRef.groups();
+
+  if (m_currentView == DatasetView) {
+    const int gid = m_selectedDataset.groupId;
+    if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+      return false;
+
+    const int target = m_selectedDataset.datasetId + step;
+    return m_selectedDataset.datasetId >= 0 && target >= 0
+           && target < static_cast<int>(groups[static_cast<size_t>(gid)].datasets.size());
+  }
+
+  if (m_currentView == OutputWidgetView) {
+    const int gid = m_selectedOutputWidget.groupId;
+    if (gid < 0 || static_cast<size_t>(gid) >= groups.size())
+      return false;
+
+    const int target = m_selectedOutputWidget.widgetId + step;
+    return m_selectedOutputWidget.widgetId >= 0 && target >= 0
+           && target < static_cast<int>(groups[static_cast<size_t>(gid)].outputWidgets.size());
+  }
+
+  if (m_currentView == WorkspaceView) {
+    const auto& ws = m_projectModelRef.editorWorkspaces();
+    const int n    = static_cast<int>(ws.size());
+    int from       = -1;
+    for (int i = 0; i < n; ++i)
+      if (ws[static_cast<size_t>(i)].workspaceId == m_selectedWorkspaceId) {
+        from = i;
+        break;
+      }
+
+    if (from < 0)
+      return false;
+
+    const int parent = ws[static_cast<size_t>(from)].parentFolderId;
+    for (int j = from + step; j >= 0 && j < n; j += step)
+      if (ws[static_cast<size_t>(j)].parentFolderId == parent)
+        return true;
+
+    return false;
+  }
+
+  return m_currentView == GroupFolderView || m_currentView == TableFolderView
+         || m_currentView == WorkspaceFolderView;
+}
+
+/**
  * @brief Moves the currently selected group by one step (direction = -1 up, +1 down).
  */
 bool DataModel::ProjectEditor::moveCurrentGroup(int direction)

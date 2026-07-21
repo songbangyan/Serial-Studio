@@ -217,6 +217,7 @@
         <file>icons/buttons/visible.svg</file>
         <file>icons/buttons/website.svg</file>
         <file>icons/buttons/workspace-settings.svg</file>
+        <file>icons/buttons/workspaces.svg</file>
         <file>icons/buttons/wrench.svg</file>
         <file>icons/code-editor/copy.svg</file>
         <file>icons/code-editor/cut.svg</file>
@@ -409,6 +410,7 @@
         <file>icons/project-editor/actions/import-table.svg</file>
         <file>icons/project-editor/actions/insert-constant.svg</file>
         <file>icons/project-editor/actions/led.svg</file>
+        <file>icons/project-editor/actions/left.svg</file>
         <file>icons/project-editor/actions/load-ca-certs.svg</file>
         <file>icons/project-editor/actions/meter.svg</file>
         <file>icons/project-editor/actions/move-down.svg</file>
@@ -424,6 +426,7 @@
         <file>icons/project-editor/actions/plot.svg</file>
         <file>icons/project-editor/actions/rename-table.svg</file>
         <file>icons/project-editor/actions/rename.svg</file>
+        <file>icons/project-editor/actions/right.svg</file>
         <file>icons/project-editor/actions/show.svg</file>
         <file>icons/project-editor/actions/test-connection.svg</file>
         <file>icons/project-editor/actions/top-level-folder.svg</file>
@@ -907,5 +910,6 @@
         <file>vendor/showdown.min.js</file>
         <file>chat-viewer.html</file>
         <file>markdown-viewer.html</file>
+        <file>icons/start/workspaces.svg</file>
     </qresource>
 </RCC>

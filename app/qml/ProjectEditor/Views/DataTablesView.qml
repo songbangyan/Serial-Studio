@@ -33,6 +33,8 @@ Widgets.Pane {
   title: qsTr("Shared Memory")
   icon: "qrc:/icons/project-editor/treeview/shared-memory.svg"
 
+  actionComponent: EditorNavActions {}
+
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
   //

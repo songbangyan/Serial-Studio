@@ -276,7 +276,7 @@ Popup {
       expandable: true
       Layout.fillWidth: true
       text: qsTr("Workspaces")
-      icon.source: "qrc:/icons/start/groups.svg"
+      icon.source: "qrc:/icons/start/workspaces.svg"
 
       property var popup: null
       function showMenu() {
@@ -350,12 +350,12 @@ Popup {
             model.push({"id": "__show_hidden_" + hg.id,
                          "separator": false,
                          "text": qsTr("Show \"%1\"").arg(hg.title),
-                         "icon": "qrc:/icons/start/groups.svg"})
+                         "icon": "qrc:/icons/start/workspaces.svg"})
           }
           if (hiddenGroups.length > 1) {
             model.push({"id": "__show_all_hidden__", "separator": false,
                          "text": qsTr("Show All Hidden Workspaces"),
-                         "icon": "qrc:/icons/start/groups.svg"})
+                         "icon": "qrc:/icons/start/workspaces.svg"})
           }
         }
 
