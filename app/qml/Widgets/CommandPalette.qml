@@ -33,9 +33,25 @@ Item {
   id: root
 
   z: 5000
-  visible: false
   anchors.fill: parent
+  opacity: opened ? 1 : 0
+  visible: opened || opacity > 0
   onVisibleChanged: if (visible) Qt.callLater(_search.forceActiveFocus)
+
+  //
+  // Logical open state, kept distinct from visibility so the fade/scale can play out on close.
+  //
+  property bool opened: false
+
+  //
+  // Open/close fade; the dialog additionally scales in for a subtle pop.
+  //
+  Behavior on opacity {
+    NumberAnimation {
+      duration: 150
+      easing.type: Easing.OutCubic
+    }
+  }
 
   //
   // The palette is entirely driven by an injected controller; it holds no context assumptions.
@@ -79,7 +95,7 @@ Item {
     const tree = root.model ? root.model.workspaceTree() : []
     root.levelStack = [{ text: root.title, nodes: tree, folderId: -1 }]
     root.recompute()
-    root.visible = true
+    root.opened = true
     _search.forceActiveFocus()
   }
 
@@ -87,11 +103,11 @@ Item {
     if (root.model && typeof root.model.dismiss === "function")
       root.model.dismiss()
 
-    root.visible = false
+    root.opened = false
   }
 
   function toggle() {
-    if (root.visible)
+    if (root.opened)
       root.close()
     else
       root.open()
@@ -206,21 +222,23 @@ Item {
   }
 
   //
-  // Focus-independent Escape: closes no matter which child holds focus.
+  // Focus-independent close: Escape or Cmd+W / Ctrl+W, no matter which child holds focus.
   //
   Shortcut {
-    sequences: ["Escape"]
-    enabled: root.visible
+    enabled: root.opened
     onActivated: root.close()
+    sequences: ["Escape", StandardKey.Close]
   }
 
   //
-  // Transparent catcher: a press outside the dialog dismisses it, and wheel events are swallowed
-  // so widgets underneath (e.g. plots) never scroll or zoom while the palette is open.
+  // Modal catcher: swallows every pointer event (all buttons, hover and wheel) so the scene behind
+  // the palette is inert without any dimming tint, while a press outside the dialog dismisses it.
   //
   MouseArea {
+    hoverEnabled: true
     anchors.fill: parent
     onClicked: root.close()
+    acceptedButtons: Qt.AllButtons
     onWheel: (wheel) => { wheel.accepted = true }
   }
 
@@ -415,10 +433,21 @@ Item {
     radius: 12
     border.width: 1
     anchors.centerIn: parent
+    scale: root.opened ? 1 : 0.96
     width: Math.min(680, root.width - 32)
     height: Math.min(480, root.height - 32)
     color: Cpp_ThemeManager.colors["pane_background"]
     border.color: Cpp_ThemeManager.colors["groupbox_border"]
+
+    //
+    // Scale-in accompanies the fade for a subtle pop on open.
+    //
+    Behavior on scale {
+      NumberAnimation {
+        duration: 150
+        easing.type: Easing.OutCubic
+      }
+    }
 
     MouseArea {
       anchors.fill: parent

@@ -757,23 +757,17 @@ Widgets.SmartWindow {
     }
 
     //
-    // Tools-only command palette (Ctrl+K when the dashboard is not the active pane, R12).
+    // Application command palette (Ctrl+K when the dashboard is not the active pane, R12).
     //
-    DashPanes.ToolActions {
-      id: _mwPaletteTools
-
-      taskBar: null
-      allowExternalWindow: false
-      onFullScreenRequested: root.toggleFullScreen()
-    } MainWindowActions {
+    MainWindowActions {
       id: _mwToolbarActions
+
     } DashPanes.PaletteModel {
       id: _mwPaletteModel
 
       host: null
       taskBar: null
       workspacesEnabled: false
-      toolActions: _mwPaletteTools
       extraTools: _mwToolbarActions
       extraTitle: qsTr("Application")
     } Widgets.CommandPalette {

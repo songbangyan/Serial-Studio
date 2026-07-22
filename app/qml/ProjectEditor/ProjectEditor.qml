@@ -118,16 +118,8 @@ Widgets.SmartWindow {
   }
 
   //
-  // Tools-only command palette (Ctrl+K), sharing the same model as the other contexts.
+  // Command palette (Ctrl+K) exposing project actions, sharing the model with the other contexts.
   //
-  DashPanes.ToolActions {
-    id: _pePaletteTools
-
-    taskBar: null
-    allowFullScreen: false
-    allowExternalWindow: false
-  }
-
   ProjectEditorActions {
     id: _peProjectActions
 
@@ -141,7 +133,6 @@ Widgets.SmartWindow {
     taskBar: null
     workspacesEnabled: false
     extraTitle: qsTr("Project")
-    toolActions: _pePaletteTools
     extraTools: _peProjectActions
   }
 
