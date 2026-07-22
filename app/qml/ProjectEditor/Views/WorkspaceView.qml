@@ -163,7 +163,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.workspaceId >= 5000
             onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(root.workspaceId, -1)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-up", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-up", 24)
           }
 
           Widgets.ToolbarButton {
@@ -175,7 +175,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.workspaceId >= 5000
             onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(root.workspaceId, 1)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-down", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-down", 24)
           }
 
           Widgets.ToolbarButton {

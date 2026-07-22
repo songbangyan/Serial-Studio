@@ -79,7 +79,7 @@ Widgets.SmartDialog {
           sourceSize: Qt.size(64, 64)
           Layout.alignment: Qt.AlignTop
           fillMode: Image.PreserveAspectFit
-          source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 16)
+          source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 48)
         }
 
         ColumnLayout {

@@ -358,7 +358,7 @@ Widgets.Pane {
           Image {
             sourceSize: Qt.size(18, 18)
             Layout.alignment: Qt.AlignVCenter
-            source: Cpp_Misc_IconRegistry.icon("editor", "dataset", 16)
+            source: Cpp_Misc_IconRegistry.icon("editor", "dataset", 24)
           }
 
           Label {

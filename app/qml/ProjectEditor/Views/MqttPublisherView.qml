@@ -143,7 +143,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             visible: Cpp_MQTT_Publisher.mode === 1
             enabled: Cpp_MQTT_Publisher.enabled
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "edit-code", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "edit-code", 24)
             ToolTip.text: Cpp_MQTT_Publisher.enabled
                           ? qsTr("Edit the publisher script (Lua or JavaScript)")
                           : qsTr("Enable publishing first")

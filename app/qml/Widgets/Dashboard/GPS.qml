@@ -99,7 +99,7 @@ Item {
       enabled: false
       icon.height: 24
       icon.color: "transparent"
-      icon.source: Cpp_Misc_IconRegistry.icon("commands", "map", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "map", 24)
     }
 
     Widgets.Combo {
@@ -157,7 +157,7 @@ Item {
       icon.width: 24
       icon.height: 24
       ToolTip.text: qsTr("Show Weather")
-      icon.source: Cpp_Misc_IconRegistry.icon("commands", "weather", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "weather", 24)
     }
 
     DashboardToolButton {
@@ -197,7 +197,7 @@ Item {
       icon.width: 24
       icon.height: 24
       ToolTip.text: qsTr("Auto Center")
-      icon.source: Cpp_Misc_IconRegistry.icon("commands", "crosshair", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "crosshair", 24)
     }
 
     DashboardToolButton {

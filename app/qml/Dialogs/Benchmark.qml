@@ -156,7 +156,7 @@ Widgets.SmartDialog {
             Layout.preferredHeight: 48
             sourceSize: Qt.size(48, 48)
             Layout.alignment: Qt.AlignVCenter
-            source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 16)
+            source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 48)
           }
 
           ColumnLayout {

@@ -541,7 +541,7 @@ Item {
           sourceSize.width: 48
           sourceSize.height: 48
           Layout.alignment: Qt.AlignHCenter
-          source: Cpp_Misc_IconRegistry.icon("widgets", "image", 32)
+          source: Cpp_Misc_IconRegistry.icon("widgets", "image", 48)
           layer.effect: MultiEffect { colorization: 1.0; colorizationColor: "white" }
         }
 

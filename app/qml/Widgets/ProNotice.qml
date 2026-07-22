@@ -74,7 +74,7 @@ Rectangle {
       Image {
         sourceSize.width: 72
         anchors.centerIn: parent
-        source: Cpp_Misc_IconRegistry.icon("commands", "activate", 24)
+        source: Cpp_Misc_IconRegistry.icon("commands", "activate", 48)
       }
     }
 

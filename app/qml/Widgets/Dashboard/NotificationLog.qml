@@ -296,7 +296,7 @@ Item {
             sourceSize: Qt.size(64, 64)
             Layout.alignment: Qt.AlignHCenter
             fillMode: Image.PreserveAspectFit
-            source: Cpp_Misc_IconRegistry.icon("widgets", "notification-log", 32)
+            source: Cpp_Misc_IconRegistry.icon("widgets", "notification-log", 48)
           }
 
           Label {

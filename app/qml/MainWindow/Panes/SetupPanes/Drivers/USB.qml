@@ -324,7 +324,7 @@ Item {
         sourceSize.width: 32
         sourceSize.height: 32
         Layout.alignment: Qt.AlignTop
-        source: Cpp_Misc_IconRegistry.icon("panes", "important", 24)
+        source: Cpp_Misc_IconRegistry.icon("panes", "important", 32)
       }
 
       ColumnLayout {

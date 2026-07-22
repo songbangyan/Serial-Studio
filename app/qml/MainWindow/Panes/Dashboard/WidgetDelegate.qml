@@ -529,7 +529,7 @@ Widgets.MiniWindow {
           Layout.preferredHeight: 24
           sourceSize: Qt.size(24, 24)
           fillMode: Image.PreserveAspectFit
-          source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 16)
+          source: Cpp_Misc_IconRegistry.icon("notifications", "warning", 24)
         }
 
         Label {

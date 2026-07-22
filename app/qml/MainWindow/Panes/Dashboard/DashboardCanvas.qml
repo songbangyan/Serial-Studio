@@ -742,7 +742,7 @@ Item {
           opacity: 0.4
           sourceSize: Qt.size(64, 64)
           Layout.alignment: Qt.AlignHCenter
-          source: Cpp_Misc_IconRegistry.icon("panes", "dashboard", 16)
+          source: Cpp_Misc_IconRegistry.icon("panes", "dashboard", 48)
         }
 
         Label {
