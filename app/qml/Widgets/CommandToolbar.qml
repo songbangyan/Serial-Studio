@@ -65,7 +65,7 @@ Item {
     horizontalLayout: hints.horizontalLayout === true
     visible: behavior !== null && behavior.visible !== false
     enabled: behavior !== null && behavior.enabled !== false
-    iconSize: hints.iconSize !== undefined ? hints.iconSize : 24
+    iconSize: hints.iconSize !== undefined ? hints.iconSize : 32
     text: (isChecked && node.titleChecked !== undefined && node.titleChecked.length > 0)
             ? node.titleChecked : node.title
     icon.source: iconRef.length > 0 ? Cpp_Misc_IconRegistry.iconById(iconRef, iconSize) : ""

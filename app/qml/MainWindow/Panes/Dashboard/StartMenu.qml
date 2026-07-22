@@ -183,7 +183,7 @@ Popup {
     checked: entry !== null && entry.checked
     enabled: entry === null || entry.enabled
     visible: entry !== null && entry.visible
-    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 16) : ""
+    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 32) : ""
 
     property bool closesMenu: true
     required property string commandId
@@ -211,7 +211,7 @@ Popup {
     checked: entry !== null && entry.checked
     enabled: entry === null || entry.enabled
     visible: entry !== null && entry.visible
-    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 16) : ""
+    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 32) : ""
 
     required property string commandId
     readonly property var entry: _menuModel.entryFor(commandId)
@@ -608,7 +608,7 @@ Popup {
       text: node !== null ? node.title : ""
       Layout.fillWidth: true
       visible: root.anyChildVisible(childItems)
-      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 16) : ""
+      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 32) : ""
 
       readonly property var node: root.submenuNode("export")
       readonly property var childItems: node !== null ? node.items : []
@@ -635,7 +635,7 @@ Popup {
           model.push({
             "id": entry.id,
             "text": entry.name,
-            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 16),
+            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 32),
             "checked": entry.checked
           })
         }
@@ -681,7 +681,7 @@ Popup {
       text: node !== null ? node.title : ""
       Layout.fillWidth: true
       visible: root.anyChildVisible(childItems)
-      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 16) : ""
+      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 32) : ""
 
       readonly property var node: root.submenuNode("tools")
       readonly property var childItems: node !== null ? node.items : []
@@ -710,7 +710,7 @@ Popup {
           model.push({
             "id": entry.id,
             "text": entry.name,
-            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 16),
+            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 32),
             "checked": entry.checked
           })
         }

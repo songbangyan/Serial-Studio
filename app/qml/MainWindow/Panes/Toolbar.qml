@@ -243,7 +243,7 @@ Rectangle {
       visible: Cpp_CommercialBuild && Cpp_Licensing_Trial.trialExpired
                && !Cpp_Licensing_LemonSqueezy.isActivated
       ToolTip.text: qsTr("Manage license and activate Serial Studio Pro")
-      icon.source: Cpp_Misc_IconRegistry.iconById("commands/activate", 24)
+      icon.source: Cpp_Misc_IconRegistry.iconById("commands/activate", 32)
       onClicked: entry.run()
     }
 
@@ -263,7 +263,7 @@ Rectangle {
       checked: entry !== null && entry.checked === true
       text: checked ? qsTr("Disconnect") : qsTr("Connect")
       ToolTip.text: qsTr("Connect or disconnect from the configured device")
-      icon.source: Cpp_Misc_IconRegistry.iconById(checked ? "editor/connect" : "editor/disconnect", 24)
+      icon.source: Cpp_Misc_IconRegistry.iconById(checked ? "commands/connect" : "commands/disconnect", 32)
 
       visible: entry !== null && entry.visible !== false
       enabled: entry !== null && entry.enabled !== false

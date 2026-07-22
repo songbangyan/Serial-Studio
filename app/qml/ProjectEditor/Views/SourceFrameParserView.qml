@@ -301,7 +301,7 @@ Widgets.Pane {
                 Layout.alignment: Qt.AlignVCenter
                 onClicked: frameParser.reload(true)
                 ToolTip.text: qsTr("Reset to the default parsing script")
-                icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 16)
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 24)
               }
 
               Widgets.ToolbarButton {
@@ -310,7 +310,7 @@ Widgets.Pane {
                 toolbarButton: false
                 onClicked: frameParser.importFile()
                 Layout.alignment: Qt.AlignVCenter
-                icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 16)
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 24)
                 ToolTip.text: qsTr("Import a script file for data parsing")
               }
 
@@ -384,7 +384,7 @@ Widgets.Pane {
                 text: qsTr("Validate")
                 Layout.alignment: Qt.AlignVCenter
                 onClicked: frameParser.evaluate()
-                icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 16)
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 24)
                 ToolTip.text: qsTr("Verify that the script compiles correctly")
               }
             }

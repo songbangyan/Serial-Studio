@@ -249,7 +249,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               onClicked: app.showHelpCenter("data-tables")
-              icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 16)
+              icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 24)
               ToolTip.text: qsTr("Open help documentation for shared memory")
             }
           }

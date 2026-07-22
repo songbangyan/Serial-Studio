@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40px" height="40px">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+<g transform="scale(0.6)">
   <!-- Color wheel (scaled and centered on the left to leave room for the scale) -->
   <g transform="translate(13 20) scale(0.685) translate(-20 -20)">
     <path fill="#b53838" d="M33.435,6.565C29.997,3.127,25.247,1,20,1v19L33.435,6.565z"/>
@@ -31,4 +32,5 @@
   <path fill="#7496c4" d="M35 15H39V16H35z"/>
   <path fill="#c74343" d="M35 11H39V12H35z"/>
   <path fill="#c74343" d="M35 7H39V8H35z"/>
+</g>
 </svg>

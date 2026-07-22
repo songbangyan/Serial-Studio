@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="18pt" height="18pt" viewBox="0 0 18 18" version="1.1">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" version="1.1">
+<g transform="scale(1.33333333)">
 <g id="surface_add_waterfall_action" transform="matrix(0.887349,0,0,0.887349,0.126732,0.331791)">
 <!-- Cream plot area (rounded rect) -->
 <path style="stroke:none;fill-rule:nonzero;fill:rgb(88.235295%,92.156863%,94.901961%);fill-opacity:1;" d="M 1.800781 16.875 C 1.179688 16.875 0.675781 16.371094 0.675781 15.75 L 0.675781 1.800781 C 0.675781 1.179688 1.179688 0.675781 1.800781 0.675781 L 15.75 0.675781 C 16.371094 0.675781 16.875 1.179688 16.875 1.800781 L 16.875 15.75 C 16.875 16.371094 16.371094 16.875 15.75 16.875 Z M 1.800781 16.875 "/>
@@ -30,6 +31,7 @@
 </g>
 <g transform="matrix(1.94409,0,0,1,-5.75304,0)">
 <rect x="5.688" y="2.844" width="0.813" height="6.5" style="fill:white;fill-rule:nonzero;"/>
+</g>
 </g>
 </g>
 </svg>

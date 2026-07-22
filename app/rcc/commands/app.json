@@ -232,8 +232,8 @@
       "id": "io.toggleConnection",
       "title": "Connect",
       "titleChecked": "Disconnect",
-      "icon": "editor/disconnect",
-      "iconChecked": "editor/connect",
+      "icon": "commands/disconnect",
+      "iconChecked": "commands/connect",
       "tooltip": "Connect or disconnect from the configured device",
       "kind": "toggle",
       "contexts": [

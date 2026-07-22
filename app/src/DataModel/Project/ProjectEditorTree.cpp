@@ -363,23 +363,23 @@ void DataModel::ProjectEditor::appendOutputWidgetChildren(QStandardItem* groupIt
     QString owIcon;
     switch (ow.type) {
       case DataModel::OutputWidgetType::Button:
-        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-button-alt"), 16);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-button"), 16);
         break;
       case DataModel::OutputWidgetType::Slider:
-        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-slider-alt"), 16);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-slider"), 16);
         break;
       case DataModel::OutputWidgetType::Toggle:
-        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-toggle-alt"), 16);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-toggle"), 16);
         break;
       case DataModel::OutputWidgetType::TextField:
         owIcon =
-          registry.icon(QStringLiteral("editor"), QStringLiteral("output-textfield-alt"), 48);
+          registry.icon(QStringLiteral("editor"), QStringLiteral("output-textfield"), 16);
         break;
       case DataModel::OutputWidgetType::Knob:
-        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-knob-alt"), 16);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-knob"), 16);
         break;
       default:
-        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("widget"), 48);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("widget"), 16);
         break;
     }
 
@@ -443,7 +443,7 @@ void DataModel::ProjectEditor::appendGroupTreeItems(QStandardItem* root,
   auto* groupsRoot      = new QStandardItem(tr("Dashboard Widgets"));
   groupsRoot->setData(tr("Dashboard Widgets"), TreeViewText);
   groupsRoot->setData(
-    registry.icon(QStringLiteral("editor"), QStringLiteral("dashboard-widgets"), 48), TreeViewIcon);
+    registry.icon(QStringLiteral("editor"), QStringLiteral("dashboard-widgets"), 16), TreeViewIcon);
   groupsRoot->setData(-1, TreeViewFrameIndex);
   groupsRoot->setData(true, TreeViewExpanded);
 
@@ -580,14 +580,14 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
 
   auto* tablesRoot = new QStandardItem(tr("Shared Memory"));
   tablesRoot->setData(tr("Shared Memory"), TreeViewText);
-  tablesRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("shared-memory"), 24),
+  tablesRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("shared-memory"), 16),
                       TreeViewIcon);
   tablesRoot->setData(-1, TreeViewFrameIndex);
   tablesRoot->setData(true, TreeViewExpanded);
 
   auto* sysDsItem = new QStandardItem(tr("Dataset Values"));
   sysDsItem->setData(tr("Dataset Values"), TreeViewText);
-  sysDsItem->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("dataset-values"), 24),
+  sysDsItem->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("dataset-values"), 16),
                      TreeViewIcon);
   sysDsItem->setData(-1, TreeViewFrameIndex);
   tablesRoot->appendRow(sysDsItem);
@@ -771,7 +771,7 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
   static auto& registry = Misc::IconRegistry::instance();
   auto* wsRoot          = new QStandardItem(tr("Workspaces"));
   wsRoot->setData(tr("Workspaces"), TreeViewText);
-  wsRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("workspace"), 48),
+  wsRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("workspace"), 16),
                   TreeViewIcon);
   wsRoot->setData(-1, TreeViewFrameIndex);
   wsRoot->setData(true, TreeViewExpanded);
@@ -809,7 +809,7 @@ void DataModel::ProjectEditor::appendMqttPublisherTreeItem(QStandardItem* root)
   static auto& registry = Misc::IconRegistry::instance();
   auto* item            = new QStandardItem(tr("MQTT Publisher"));
   item->setData(tr("MQTT Publisher"), TreeViewText);
-  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("mqtt-publisher"), 48),
+  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("mqtt-publisher"), 16),
                 TreeViewIcon);
   item->setData(-1, TreeViewFrameIndex);
   item->setData(KindMqttPublisher, TreeItemKind);
@@ -835,7 +835,7 @@ void DataModel::ProjectEditor::appendControlScriptTreeItem(QStandardItem* root)
   static auto& registry = Misc::IconRegistry::instance();
   auto* item            = new QStandardItem(tr("Control Loop"));
   item->setData(tr("Control Loop"), TreeViewText);
-  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("control-script"), 48),
+  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("control-script"), 16),
                 TreeViewIcon);
   item->setData(-1, TreeViewFrameIndex);
   item->setData(KindControlScript, TreeItemKind);

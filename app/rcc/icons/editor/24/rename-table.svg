@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="100%" height="100%" viewBox="0 0 60 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+<svg width="24" height="24" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+<g transform="scale(0.4)">
     <g id="surface918">
         <rect x="3.75" y="3.75" width="52.5" height="52.5" style="fill:rgb(254,254,254);fill-rule:nonzero;"/>
         <path d="M55.5,4.5L55.5,55.5L4.5,55.5L4.5,4.5L55.5,4.5M57,3L3,3L3,57L57,57L57,3Z" style="fill:rgb(120,139,156);fill-rule:nonzero;"/>
@@ -25,4 +26,5 @@
         <path d="M49.246,39.145L52.699,35.691L57.309,40.301L53.855,43.754L49.246,39.145Z" style="fill:rgb(217,231,245);fill-rule:nonzero;"/>
         <path d="M52.699,36.754L56.246,40.305L53.855,42.695L50.309,39.145L52.699,36.754M52.699,34.633L48.188,39.145L53.855,44.816L58.367,40.305L52.699,34.633Z" style="fill:rgb(120,139,156);fill-rule:nonzero;"/>
     </g>
+</g>
 </svg>

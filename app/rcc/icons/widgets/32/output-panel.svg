@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60pt" height="60pt" viewBox="0 0 60 60" version="1.1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="32" height="32" viewBox="0 0 32 32" version="1.1">
+<g transform="scale(0.53333333)">
 <g id="surface85">
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(76.078433%,90.980393%,100%);fill-opacity:1;" d="M 2.25 9.75 L 57.75 9.75 L 57.75 47.25 L 2.25 47.25 Z M 2.25 9.75 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(45.490196%,58.823532%,76.862746%);fill-opacity:1;" d="M 57 10.5 L 57 46.5 L 3 46.5 L 3 10.5 L 57 10.5 M 58.5 9 L 1.5 9 L 1.5 48 L 58.5 48 Z M 58.5 9 "/>
@@ -17,5 +18,6 @@
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(30.588236%,47.843137%,70.980394%);fill-opacity:1;" d="M 52.5 37.5 L 34.5 37.5 L 34.5 36 L 52.5 36 Z M 52.5 37.5 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(55.29412%,75.686276%,87.843138%);fill-opacity:1;" d="M 52.5 31.5 L 48 31.5 L 48 30 L 52.5 30 Z M 52.5 31.5 "/>
 <path style=" stroke:none;fill-rule:nonzero;fill:rgb(55.29412%,75.686276%,87.843138%);fill-opacity:1;" d="M 52.5 37.5 L 42 37.5 L 42 36 L 52.5 36 Z M 52.5 37.5 "/>
+</g>
 </g>
 </svg>

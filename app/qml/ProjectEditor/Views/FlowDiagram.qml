@@ -949,12 +949,12 @@ Item {
   }
 
   function outputWidgetIcon(type) {
-    let name = "output-button-alt"
+    let name = "output-button"
     switch (type) {
-      case SerialStudio.OutputSlider:    name = "output-slider-alt";    break
-      case SerialStudio.OutputToggle:    name = "output-toggle-alt";    break
-      case SerialStudio.OutputTextField: name = "output-textfield-alt"; break
-      case SerialStudio.OutputKnob:      name = "output-knob-alt";      break
+      case SerialStudio.OutputSlider:    name = "output-slider";    break
+      case SerialStudio.OutputToggle:    name = "output-toggle";    break
+      case SerialStudio.OutputTextField: name = "output-textfield"; break
+      case SerialStudio.OutputKnob:      name = "output-knob";      break
     }
 
     return Cpp_Misc_IconRegistry.icon("editor", name, 16)
@@ -1895,7 +1895,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Slider")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-slider-alt", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-slider", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputSlider,
@@ -1908,7 +1908,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Toggle")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-toggle-alt", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-toggle", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputToggle,
@@ -1921,7 +1921,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Knob")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-knob-alt", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-knob", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputKnob,
@@ -1934,7 +1934,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Text Field")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-textfield-alt", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-textfield", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputTextField,
@@ -1947,7 +1947,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Button")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-button-alt", 16)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "output-button", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputControl(SerialStudio.OutputButton,

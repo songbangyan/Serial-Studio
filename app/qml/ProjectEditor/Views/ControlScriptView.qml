@@ -152,7 +152,7 @@ Widgets.Pane {
             onClicked: editor.reload()
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Reset to the default control loop")
-            icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 24)
           }
 
           Widgets.ToolbarButton {
@@ -162,7 +162,7 @@ Widgets.Pane {
             onClicked: editor.importFile()
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Import a control loop file")
-            icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 24)
           }
 
           Widgets.ToolbarButton {
@@ -238,7 +238,7 @@ Widgets.Pane {
             text: qsTr("Help")
             toolbarButton: false
             Layout.alignment: Qt.AlignVCenter
-            icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 24)
             onClicked: app.showHelpCenter("Control-Script")
             ToolTip.text: qsTr("Open the control loop documentation")
           }
@@ -253,7 +253,7 @@ Widgets.Pane {
             text: qsTr("Validate")
             onClicked: editor.evaluate()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 16)
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 24)
             ToolTip.text: qsTr("Verify that the script compiles correctly")
           }
         }

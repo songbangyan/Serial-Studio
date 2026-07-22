@@ -298,25 +298,25 @@ Widgets.Pane {
           Repeater {
             model: [
               {
-                icon:     Cpp_Misc_IconRegistry.icon("editor", "device", 16),
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "device", 48),
                 value:    Cpp_JSON_ProjectModel.sourceCount,
                 singular: qsTr("Source"),
                 plural:   qsTr("Sources")
               },
               {
-                icon:     Cpp_Misc_IconRegistry.icon("editor", "group", 32),
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "group", 48),
                 value:    Cpp_JSON_ProjectModel.groupCount,
                 singular: qsTr("Group"),
                 plural:   qsTr("Groups")
               },
               {
-                icon:     Cpp_Misc_IconRegistry.icon("editor", "dataset", 32),
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "dataset", 48),
                 value:    Cpp_JSON_ProjectModel.datasetCount,
                 singular: qsTr("Dataset"),
                 plural:   qsTr("Datasets")
               },
               {
-                icon:     Cpp_Misc_IconRegistry.icon("editor", "action", 32),
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "action", 48),
                 value:    statsBar.actionCount,
                 singular: qsTr("Action"),
                 plural:   qsTr("Actions")

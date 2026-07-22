@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="3 -0.3 9 14.1" width="13.5pt" height="13.5pt">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+<g transform="translate(-0.5106383,0.34042553) scale(1.13475177)">
 <g id="surface-toolbar-add-bar">
   <path fill="#e1ebf2" d="M6,13.5c-0.827,0-1.5-0.673-1.5-1.5V0.5h6V12c0,0.827-0.673,1.5-1.5,1.5H6z"/>
   <path fill="#788b9c" d="M10,1v11c0,0.551-0.449,1-1,1H6c-0.551,0-1-0.449-1-1V1H10 M11,0H4v12c0,1.1,0.9,2,2,2h3 c1.1,0,2-0.9,2-2V0L11,0z"/>
@@ -11,5 +12,6 @@
   <path fill="#788b9c" d="M6 2H7V6H6z"/>
   <path fill="#788b9c" d="M6 2H8V3H6zM6 4H8V5H6z"/>
   <path fill="#4e7ab5" d="M6 8H8V9H6zM6 10H8V11H6z"/>
+</g>
 </g>
 </svg>
