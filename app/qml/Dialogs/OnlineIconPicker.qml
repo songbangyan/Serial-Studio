@@ -106,8 +106,8 @@ Widgets.SmartDialog {
       Widgets.IconButton {
         iconSize: 14
         highlighted: true
-        text: qsTr("Search…")
         horizontalPadding: 8
+        text: qsTr("Search…")
         icon.source: "qrc:/icons/buttons/search.svg"
         onClicked: Cpp_Misc_IconEngine.searchIcons(searchField.text)
         enabled: !Cpp_Misc_IconEngine.busy && searchField.text.length > 0

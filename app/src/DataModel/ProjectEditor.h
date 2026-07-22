@@ -21,13 +21,12 @@
 
 #pragma once
 
-#include <vector>
-
 #include <QHash>
 #include <QItemSelectionModel>
 #include <QObject>
 #include <QStandardItemModel>
 #include <QTimer>
+#include <vector>
 
 #include "DataModel/Editors/DatasetTransformEditor.h"
 #include "DataModel/Frame.h"

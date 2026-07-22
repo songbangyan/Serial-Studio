@@ -592,7 +592,7 @@ Nur in vertrauenswürdigen Netzwerken aktivieren. Nicht vertrauenswürdige Clien
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
@@ -2401,7 +2401,7 @@ Nur in vertrauenswürdigen Netzwerken aktivieren. Nicht vertrauenswürdige Clien
 <context>
     <name>CommandPalette</name>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="320"/>
         <source>Folder</source>
         <translation>Ordner</translation>
     </message>
@@ -2410,32 +2410,32 @@ Nur in vertrauenswürdigen Netzwerken aktivieren. Nicht vertrauenswürdige Clien
         <translation type="vanished">Suchen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="64"/>
         <source>Commands</source>
-        <translation type="unfinished">Befehle</translation>
+        <translation>Befehle</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="515"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="531"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="579"/>
         <source>Back</source>
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="640"/>
         <source>Type to search, Enter to open, Esc to close</source>
         <translation>Tippen zum Suchen, Eingabe zum Öffnen, Esc zum Schließen</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="740"/>
         <source>No results found</source>
         <translation>Keine Ergebnisse gefunden</translation>
     </message>
@@ -2720,7 +2720,7 @@ Nur in vertrauenswürdigen Netzwerken aktivieren. Nicht vertrauenswürdige Clien
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -12766,9 +12766,9 @@ Bitte geben Sie die erforderlichen Anmeldedaten ein.</translation>
         <translation>Verbinde mit Gerät…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="772"/>
         <source>Application</source>
-        <translation type="unfinished"/>
+        <translation>Anwendung</translation>
     </message>
     <message>
         <source>Commands</source>
@@ -12805,42 +12805,42 @@ Bitte geben Sie die erforderlichen Anmeldedaten ein.</translation>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
         <source>Project Editor</source>
-        <translation type="unfinished">Projekt-editor</translation>
+        <translation>Projekt-editor</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
         <source>Open Project</source>
-        <translation type="unfinished">Projekt Öffnen</translation>
+        <translation>Projekt Öffnen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
         <source>Open CSV</source>
-        <translation type="unfinished">CSV Öffnen</translation>
+        <translation>CSV Öffnen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
         <source>Open MDF4</source>
-        <translation type="unfinished">MDF4 Öffnen</translation>
+        <translation>MDF4 Öffnen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
         <source>Deploy Operator App</source>
-        <translation type="unfinished"/>
+        <translation>Operator-app Bereitstellen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
         <source>Extensions</source>
-        <translation type="unfinished">Erweiterungen</translation>
+        <translation>Erweiterungen</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
         <source>Examples</source>
-        <translation type="unfinished">Beispiele</translation>
+        <translation>Beispiele</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
         <source>About</source>
-        <translation type="unfinished">Über</translation>
+        <translation>Über</translation>
     </message>
 </context>
 <context>
@@ -14602,9 +14602,9 @@ Fügen Sie oben Gruppen hinzu, um mehrere Registertypen abzufragen.</translation
         <translation>Symbole suchen (z. B. Temperatur, Pfeil, Abspielen)…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="110"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -15329,7 +15329,7 @@ Aktualisieren klicken, um die Liste zu aktualisieren.</translation>
         <translation>geändert</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="135"/>
         <source>Project</source>
         <translation>Projekt</translation>
     </message>
@@ -15338,47 +15338,47 @@ Aktualisieren klicken, um die Liste zu aktualisieren.</translation>
         <translation type="vanished">Befehle</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="406"/>
         <source>This project is password protected</source>
         <translation>Dieses Projekt ist passwortgeschützt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="407"/>
         <source>Editing is available in Project mode</source>
         <translation>Bearbeitung ist im Projektmodus verfügbar</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="418"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Geben Sie das Passwort ein, um Änderungen vorzunehmen, oder öffnen Sie ein anderes Projekt.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="419"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Wechseln Sie in den Projektmodus, um ein Projekt zu laden und zu bearbeiten.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="441"/>
         <source>Unlock</source>
         <translation>Entsperren</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="442"/>
         <source>Switch to Project Mode</source>
         <translation>In Projektmodus Wechseln</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="461"/>
         <source>Open Other Project</source>
         <translation>Anderes Projekt Öffnen</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="462"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="478"/>
         <source>Create New Project</source>
         <translation>Neues Projekt Erstellen</translation>
     </message>
@@ -15428,137 +15428,137 @@ Aktualisieren klicken, um die Liste zu aktualisieren.</translation>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
         <source>Add Group</source>
-        <translation type="unfinished">Gruppe Hinzufügen</translation>
+        <translation>Gruppe Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
         <source>Dataset Container</source>
-        <translation type="unfinished">Datensatz-container</translation>
+        <translation>Datensatz-container</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
         <source>Add Image View</source>
-        <translation type="unfinished"/>
+        <translation>Bildansicht Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
         <source>Image View</source>
-        <translation type="unfinished">Bildansicht</translation>
+        <translation>Bildansicht</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
         <source>Add Web View</source>
-        <translation type="unfinished"/>
+        <translation>Webansicht Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
         <source>Web View</source>
-        <translation type="unfinished">Webansicht</translation>
+        <translation>Webansicht</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
         <source>Add Painter</source>
-        <translation type="unfinished"/>
+        <translation>Painter Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
         <source>Painter Widget</source>
-        <translation type="unfinished">Painter-widget</translation>
+        <translation>Painter-widget</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
         <source>Add Data Table</source>
-        <translation type="unfinished">Datentabelle Hinzufügen</translation>
+        <translation>Datentabelle Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
         <source>Data Grid</source>
-        <translation type="unfinished">Datenraster</translation>
+        <translation>Datenraster</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
         <source>Add Multi-Plot</source>
-        <translation type="unfinished"/>
+        <translation>Mehrfachdiagramm Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
         <source>Multiple Plot</source>
-        <translation type="unfinished"/>
+        <translation>Mehrfachdiagramm</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
         <source>Add 3D Plot</source>
-        <translation type="unfinished"/>
+        <translation>3D-diagramm Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
         <source>3D Plot</source>
-        <translation type="unfinished"/>
+        <translation>3D-diagramm</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
         <source>Add Accelerometer</source>
-        <translation type="unfinished"/>
+        <translation>Beschleunigungsmesser Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
         <source>Accelerometer</source>
-        <translation type="unfinished"/>
+        <translation>Beschleunigungsmesser</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
         <source>Add Gyroscope</source>
-        <translation type="unfinished"/>
+        <translation>Gyroskop Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
         <source>Gyroscope</source>
-        <translation type="unfinished">Gyroskop</translation>
+        <translation>Gyroskop</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
         <source>Add GPS Map</source>
-        <translation type="unfinished"/>
+        <translation>GPS-karte Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
         <source>GPS Map</source>
-        <translation type="unfinished">GPS-karte</translation>
+        <translation>GPS-karte</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
         <source>Add Dataset</source>
-        <translation type="unfinished">Datensatz Hinzufügen</translation>
+        <translation>Datensatz Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
         <source>Add Plot</source>
-        <translation type="unfinished"/>
+        <translation>Diagramm Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
         <source>Add FFT Plot</source>
-        <translation type="unfinished"/>
+        <translation>FFT-diagramm Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
         <source>Add Gauge</source>
-        <translation type="unfinished"/>
+        <translation>Messgerät Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
         <source>Add Level Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Pegelanzeige Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
         <source>Add Compass</source>
-        <translation type="unfinished"/>
+        <translation>Kompass Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
         <source>Add LED Indicator</source>
-        <translation type="unfinished"/>
+        <translation>LED-indikator Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
@@ -15573,27 +15573,27 @@ Aktualisieren klicken, um die Liste zu aktualisieren.</translation>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
         <source>Add Output Slider</source>
-        <translation type="unfinished"/>
+        <translation>Ausgabe-schieberegler Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
         <source>Add Output Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Ausgabe-umschalter Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
         <source>Add Output Knob</source>
-        <translation type="unfinished"/>
+        <translation>Ausgabe-drehknopf Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
         <source>Add Output Text Field</source>
-        <translation type="unfinished"/>
+        <translation>Ausgabe-textfeld Hinzufügen</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
         <source>Add Output Button</source>
-        <translation type="unfinished"/>
+        <translation>Ausgabe-schaltfläche Hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -15610,7 +15610,7 @@ Aktualisieren klicken, um die Liste zu aktualisieren.</translation>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
@@ -19656,7 +19656,7 @@ Projekt Einbetten aktivieren, um das Projekt in die Verknüpfung einzubetten, so
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search…</source>
-        <translation type="unfinished">Suchen…</translation>
+        <translation>Suchen…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
@@ -19787,42 +19787,42 @@ Projekt Einbetten aktivieren, um das Projekt in die Verknüpfung einzubetten, so
         <translation type="vanished">Suchen…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Console</source>
         <translation>Konsole</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Notifications</source>
         <translation>Benachrichtigungen</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>Clock</source>
         <translation>Uhr</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>Stopwatch</source>
         <translation>Stoppuhr</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
         <source>AI Assistant</source>
         <translation>Ki-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Resume</source>
         <translation>Fortsetzen</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Pause</source>
         <translation>Pausieren</translation>
     </message>
@@ -19835,72 +19835,72 @@ Projekt Einbetten aktivieren, um das Projekt in die Verknüpfung einzubetten, so
         <translation type="vanished">Keine Arbeitsbereiche Verfügbar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="220"/>
         <source>Search… (%1)</source>
         <translation>Suchen… (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="902"/>
         <source>Unfreeze Dashboard</source>
         <translation>Dashboard Entsperren</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="903"/>
         <source>Freeze Dashboard</source>
         <translation>Dashboard Sperren</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="961"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Verbunden mit %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Nicht verbunden</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="986"/>
         <source>MQTT Publisher</source>
         <translation>MQTT-publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
         <source>Connected</source>
         <translation>Verbunden</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1005"/>
         <source>Disconnected</source>
         <translation>Getrennt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1012"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
         <source>Mode:</source>
         <translation>Modus:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1038"/>
         <source>Messages sent:</source>
         <translation>Gesendete Nachrichten:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT-einstellungen Öffnen</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>File Transmission</source>
         <translation>Dateiübertragung</translation>
     </message>
@@ -19909,7 +19909,7 @@ Projekt Einbetten aktivieren, um das Projekt in die Verknüpfung einzubetten, so
         <translation type="vanished">Widgets suchen…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1098"/>
         <source>Remove from Workspace</source>
         <translation>Aus Arbeitsbereich entfernen</translation>
     </message>
@@ -21823,9 +21823,9 @@ Es ist klar, dass nach Ablauf eine Lizenz erworben oder die GPLv3-Version erstel
         <translation type="vanished">Tipp: Drücken Sie %1 an beliebiger Stelle, um die Befehlspalette zu öffnen.</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1583"/>
         <source>Tip: Press %1 anywhere to open the command palette.</source>
-        <translation type="unfinished"/>
+        <translation>Tipp: Drücken Sie %1 an beliebiger Stelle, um die Befehlspalette zu öffnen.</translation>
     </message>
 </context>
 <context>

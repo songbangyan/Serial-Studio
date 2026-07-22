@@ -2401,7 +2401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>CommandPalette</name>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="320"/>
         <source>Folder</source>
         <translation>Folder</translation>
     </message>
@@ -2410,32 +2410,32 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">Search</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="64"/>
         <source>Commands</source>
         <translation>Commands</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="515"/>
         <source>Search…</source>
         <translation>Search…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="531"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="579"/>
         <source>Back</source>
         <translation>Back</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="640"/>
         <source>Type to search, Enter to open, Esc to close</source>
         <translation>Type to search, Enter to open, Esc to close</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="740"/>
         <source>No results found</source>
         <translation>No results found</translation>
     </message>
@@ -12766,7 +12766,7 @@ Please provide the necessary credentials.</translation>
         <translation>Connecting to device…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="772"/>
         <source>Application</source>
         <translation>Application</translation>
     </message>
@@ -14602,7 +14602,7 @@ Add groups above to poll multiple register types.</translation>
         <translation>Search icons (e.g. temperature, arrow, play)…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="110"/>
         <source>Search…</source>
         <translation>Search…</translation>
     </message>
@@ -15329,7 +15329,7 @@ Click Refresh to update the list.</translation>
         <translation>modified</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="135"/>
         <source>Project</source>
         <translation>Project</translation>
     </message>
@@ -15338,47 +15338,47 @@ Click Refresh to update the list.</translation>
         <translation type="vanished">Commands</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="406"/>
         <source>This project is password protected</source>
         <translation>This project is password protected</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="407"/>
         <source>Editing is available in Project mode</source>
         <translation>Editing is available in Project mode</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="418"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Enter the password to make changes, or open a different project.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="419"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Switch to Project mode to load and edit a project.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="441"/>
         <source>Unlock</source>
         <translation>Unlock</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="442"/>
         <source>Switch to Project Mode</source>
         <translation>Switch to Project Mode</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="461"/>
         <source>Open Other Project</source>
         <translation>Open Other Project</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="462"/>
         <source>Close</source>
         <translation>Close</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="478"/>
         <source>Create New Project</source>
         <translation>Create New Project</translation>
     </message>
@@ -19787,42 +19787,42 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Search…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Console</source>
         <translation>Console</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Notifications</source>
         <translation>Notifications</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>Clock</source>
         <translation>Clock</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>Stopwatch</source>
         <translation>Stopwatch</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
         <source>AI Assistant</source>
         <translation>AI Assistant</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Resume</source>
         <translation>Resume</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
@@ -19835,72 +19835,72 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">No Workspaces Available</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="220"/>
         <source>Search… (%1)</source>
         <translation>Search… (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="902"/>
         <source>Unfreeze Dashboard</source>
         <translation>Unfreeze Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="903"/>
         <source>Freeze Dashboard</source>
         <translation>Freeze Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="961"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Connected to %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Not connected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="986"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
         <source>Connected</source>
         <translation>Connected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1005"/>
         <source>Disconnected</source>
         <translation>Disconnected</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1012"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
         <source>Mode:</source>
         <translation>Mode:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1038"/>
         <source>Messages sent:</source>
         <translation>Messages sent:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
         <source>Open MQTT Settings</source>
         <translation>Open MQTT Settings</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>File Transmission</source>
         <translation>File Transmission</translation>
     </message>
@@ -19909,7 +19909,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Search widgets…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1098"/>
         <source>Remove from Workspace</source>
         <translation>Remove from Workspace</translation>
     </message>
@@ -21823,7 +21823,7 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">Tip: press %1 anywhere to open the command palette.</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1583"/>
         <source>Tip: Press %1 anywhere to open the command palette.</source>
         <translation>Tip: Press %1 anywhere to open the command palette.</translation>
     </message>

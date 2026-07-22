@@ -601,7 +601,7 @@ void BenchmarkRunner::executePhase(int index)
 void BenchmarkRunner::finishSession()
 {
   const quint64 peakBytes = Platform::AppPlatform::peakResidentBytes();
-  const double peakMiB     = static_cast<double>(peakBytes) / (1024.0 * 1024.0);
+  const double peakMiB    = static_cast<double>(peakBytes) / (1024.0 * 1024.0);
   m_peakMemory = peakBytes > 0 ? tr("%1 MiB").arg(QString::number(peakMiB, 'f', 1)) : QString();
   Q_EMIT peakMemoryChanged();
 

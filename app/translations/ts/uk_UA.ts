@@ -592,7 +592,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
@@ -2401,7 +2401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>CommandPalette</name>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="320"/>
         <source>Folder</source>
         <translation>Папка</translation>
     </message>
@@ -2410,32 +2410,32 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">Пошук</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="64"/>
         <source>Commands</source>
-        <translation type="unfinished">Команди</translation>
+        <translation>Команди</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="515"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="531"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="579"/>
         <source>Back</source>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="640"/>
         <source>Type to search, Enter to open, Esc to close</source>
         <translation>Введіть для пошуку, Enter для відкриття, Esc для закриття</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="740"/>
         <source>No results found</source>
         <translation>Результатів не знайдено</translation>
     </message>
@@ -2720,7 +2720,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -12766,9 +12766,9 @@ Please provide the necessary credentials.</source>
         <translation>Підключення до пристрою…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="772"/>
         <source>Application</source>
-        <translation type="unfinished"/>
+        <translation>Застосунок</translation>
     </message>
     <message>
         <source>Commands</source>
@@ -12805,42 +12805,42 @@ Please provide the necessary credentials.</source>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
         <source>Project Editor</source>
-        <translation type="unfinished">Редактор Проєкту</translation>
+        <translation>Редактор Проєкту</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
         <source>Open Project</source>
-        <translation type="unfinished">Відкрити Проєкт</translation>
+        <translation>Відкрити Проєкт</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
         <source>Open CSV</source>
-        <translation type="unfinished">Відкрити CSV</translation>
+        <translation>Відкрити CSV</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
         <source>Open MDF4</source>
-        <translation type="unfinished">Відкрити MDF4</translation>
+        <translation>Відкрити MDF4</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
         <source>Deploy Operator App</source>
-        <translation type="unfinished"/>
+        <translation>Розгорнути Застосунок Оператора</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
         <source>Extensions</source>
-        <translation type="unfinished">Розширення</translation>
+        <translation>Розширення</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
         <source>Examples</source>
-        <translation type="unfinished">Приклади</translation>
+        <translation>Приклади</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
         <source>About</source>
-        <translation type="unfinished">Про Програму</translation>
+        <translation>Про Програму</translation>
     </message>
 </context>
 <context>
@@ -14602,9 +14602,9 @@ Add groups above to poll multiple register types.</source>
         <translation>Пошук іконок (наприклад, temperature, arrow, play)…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="110"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -15329,7 +15329,7 @@ Click Refresh to update the list.</source>
         <translation>змінено</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="135"/>
         <source>Project</source>
         <translation>Проєкт</translation>
     </message>
@@ -15338,47 +15338,47 @@ Click Refresh to update the list.</source>
         <translation type="vanished">Команди</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="406"/>
         <source>This project is password protected</source>
         <translation>Цей проєкт захищено паролем</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="407"/>
         <source>Editing is available in Project mode</source>
         <translation>Редагування доступне в режимі проєкту</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="418"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Введіть пароль для внесення змін або відкрийте інший проєкт.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="419"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Перейдіть у режим проєкту для завантаження та редагування проєкту.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="441"/>
         <source>Unlock</source>
         <translation>Розблокувати</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="442"/>
         <source>Switch to Project Mode</source>
         <translation>Перейти в режим проєкту</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="461"/>
         <source>Open Other Project</source>
         <translation>Відкрити Інший Проєкт</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="462"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="478"/>
         <source>Create New Project</source>
         <translation>Створити Новий Проєкт</translation>
     </message>
@@ -15428,137 +15428,137 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
         <source>Add Group</source>
-        <translation type="unfinished">Додати Групу</translation>
+        <translation>Додати Групу</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
         <source>Dataset Container</source>
-        <translation type="unfinished">Контейнер Наборів Даних</translation>
+        <translation>Контейнер Наборів Даних</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
         <source>Add Image View</source>
-        <translation type="unfinished"/>
+        <translation>Додати Перегляд Зображень</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
         <source>Image View</source>
-        <translation type="unfinished">Перегляд Зображень</translation>
+        <translation>Перегляд Зображень</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
         <source>Add Web View</source>
-        <translation type="unfinished"/>
+        <translation>Додати Веб-перегляд</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
         <source>Web View</source>
-        <translation type="unfinished">Веб-перегляд</translation>
+        <translation>Веб-перегляд</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
         <source>Add Painter</source>
-        <translation type="unfinished"/>
+        <translation>Додати Малювання</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
         <source>Painter Widget</source>
-        <translation type="unfinished"/>
+        <translation>Віджет Малювання</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
         <source>Add Data Table</source>
-        <translation type="unfinished">Додати Таблицю Даних</translation>
+        <translation>Додати Таблицю Даних</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
         <source>Data Grid</source>
-        <translation type="unfinished">Таблиця Даних</translation>
+        <translation>Таблиця Даних</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
         <source>Add Multi-Plot</source>
-        <translation type="unfinished"/>
+        <translation>Додати Множинний Графік</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
         <source>Multiple Plot</source>
-        <translation type="unfinished">Множинний Графік</translation>
+        <translation>Множинний Графік</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
         <source>Add 3D Plot</source>
-        <translation type="unfinished"/>
+        <translation>Додати 3D Графік</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
         <source>3D Plot</source>
-        <translation type="unfinished">3D Графік</translation>
+        <translation>3D Графік</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
         <source>Add Accelerometer</source>
-        <translation type="unfinished"/>
+        <translation>Додати Акселерометр</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
         <source>Accelerometer</source>
-        <translation type="unfinished">Акселерометр</translation>
+        <translation>Акселерометр</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
         <source>Add Gyroscope</source>
-        <translation type="unfinished"/>
+        <translation>Додати Гіроскоп</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
         <source>Gyroscope</source>
-        <translation type="unfinished">Гіроскоп</translation>
+        <translation>Гіроскоп</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
         <source>Add GPS Map</source>
-        <translation type="unfinished"/>
+        <translation>Додати Карту GPS</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
         <source>GPS Map</source>
-        <translation type="unfinished">Карта GPS</translation>
+        <translation>Карта GPS</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
         <source>Add Dataset</source>
-        <translation type="unfinished">Додати Набір Даних</translation>
+        <translation>Додати Набір Даних</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
         <source>Add Plot</source>
-        <translation type="unfinished"/>
+        <translation>Додати Графік</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
         <source>Add FFT Plot</source>
-        <translation type="unfinished"/>
+        <translation>Додати Графік FFT</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
         <source>Add Gauge</source>
-        <translation type="unfinished"/>
+        <translation>Додати Датчик</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
         <source>Add Level Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Додати Індикатор Рівня</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
         <source>Add Compass</source>
-        <translation type="unfinished"/>
+        <translation>Додати Компас</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
         <source>Add LED Indicator</source>
-        <translation type="unfinished"/>
+        <translation>Додати Світлодіодний Індикатор</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
@@ -15573,27 +15573,27 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
         <source>Add Output Slider</source>
-        <translation type="unfinished"/>
+        <translation>Додати Вихідний Повзунок</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
         <source>Add Output Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Додати Вихідний Перемикач</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
         <source>Add Output Knob</source>
-        <translation type="unfinished"/>
+        <translation>Додати Вихідну Ручку</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
         <source>Add Output Text Field</source>
-        <translation type="unfinished"/>
+        <translation>Додати Вихідне Текстове Поле</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
         <source>Add Output Button</source>
-        <translation type="unfinished"/>
+        <translation>Додати Вихідну Кнопку</translation>
     </message>
 </context>
 <context>
@@ -15610,7 +15610,7 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
@@ -19656,7 +19656,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search…</source>
-        <translation type="unfinished">Пошук…</translation>
+        <translation>Пошук…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
@@ -19787,42 +19787,42 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Пошук…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Settings</source>
         <translation>Налаштування</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Console</source>
         <translation>Консоль</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Notifications</source>
         <translation>Сповіщення</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>Clock</source>
         <translation>Годинник</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>Stopwatch</source>
         <translation>Секундомір</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
         <source>AI Assistant</source>
         <translation>AI-Асистент</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Resume</source>
         <translation>Відновити</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Pause</source>
         <translation>Пауза</translation>
     </message>
@@ -19835,72 +19835,72 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Немає Доступних Робочих Областей</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="220"/>
         <source>Search… (%1)</source>
         <translation>Пошук… (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="902"/>
         <source>Unfreeze Dashboard</source>
         <translation>Розморозити Панель Приладів</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="903"/>
         <source>Freeze Dashboard</source>
         <translation>Заморозити Панель Приладів</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="961"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Підключено до %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Не підключено</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="986"/>
         <source>MQTT Publisher</source>
         <translation>Видавець MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
         <source>Status:</source>
         <translation>Статус:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
         <source>Connected</source>
         <translation>Підключено</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1005"/>
         <source>Disconnected</source>
         <translation>Відключено</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1012"/>
         <source>Broker:</source>
         <translation>Брокер:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
         <source>Mode:</source>
         <translation>Режим:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1038"/>
         <source>Messages sent:</source>
         <translation>Надіслано повідомлень:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
         <source>Open MQTT Settings</source>
         <translation>Відкрити Налаштування MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>File Transmission</source>
         <translation>Передача Файлу</translation>
     </message>
@@ -19909,7 +19909,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">Пошук віджетів…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1098"/>
         <source>Remove from Workspace</source>
         <translation>Видалити з Робочого Простору</translation>
     </message>
@@ -21823,9 +21823,9 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">Порада: натисніть %1 будь-де, щоб відкрити палітру команд.</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1583"/>
         <source>Tip: Press %1 anywhere to open the command palette.</source>
-        <translation type="unfinished"/>
+        <translation>Порада: Натисніть %1 будь-де, щоб відкрити палітру команд.</translation>
     </message>
 </context>
 <context>

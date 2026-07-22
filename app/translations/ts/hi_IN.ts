@@ -592,7 +592,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="228"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/AddWidgetDialog.qml" line="247"/>
@@ -2401,7 +2401,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
 <context>
     <name>CommandPalette</name>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="304"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="320"/>
         <source>Folder</source>
         <translation>फ़ोल्डर</translation>
     </message>
@@ -2410,32 +2410,32 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation type="vanished">खोजें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="48"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="64"/>
         <source>Commands</source>
-        <translation type="unfinished"/>
+        <translation>कमांड्स</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="488"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="515"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="504"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="531"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="552"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="579"/>
         <source>Back</source>
         <translation>वापस</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="613"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="640"/>
         <source>Type to search, Enter to open, Esc to close</source>
         <translation>खोजने के लिए टाइप करें, खोलने के लिए Enter दबाएं, बंद करने के लिए Esc दबाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="713"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="740"/>
         <source>No results found</source>
         <translation>कोई परिणाम नहीं मिला</translation>
     </message>
@@ -2720,7 +2720,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     <message>
         <location filename="../../qml/ProjectEditor/Views/ConstantsLibraryDialog.qml" line="231"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -12766,9 +12766,9 @@ Please provide the necessary credentials.</source>
         <translation>डिवाइस से कनेक्ट हो रहा है…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="778"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="772"/>
         <source>Application</source>
-        <translation type="unfinished"/>
+        <translation>एप्लिकेशन</translation>
     </message>
     <message>
         <source>Commands</source>
@@ -12805,42 +12805,42 @@ Please provide the necessary credentials.</source>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
         <source>Project Editor</source>
-        <translation type="unfinished">प्रोजेक्ट एडिटर</translation>
+        <translation>प्रोजेक्ट एडिटर</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
         <source>Open Project</source>
-        <translation type="unfinished">प्रोजेक्ट खोलें</translation>
+        <translation>प्रोजेक्ट खोलें</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
         <source>Open CSV</source>
-        <translation type="unfinished">CSV खोलें</translation>
+        <translation>CSV खोलें</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
         <source>Open MDF4</source>
-        <translation type="unfinished">MDF4 खोलें</translation>
+        <translation>MDF4 खोलें</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
         <source>Deploy Operator App</source>
-        <translation type="unfinished"/>
+        <translation>ऑपरेटर ऐप डिप्लॉय करें</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
         <source>Extensions</source>
-        <translation type="unfinished">एक्सटेंशन</translation>
+        <translation>एक्सटेंशन</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
         <source>Examples</source>
-        <translation type="unfinished">उदाहरण</translation>
+        <translation>उदाहरण</translation>
     </message>
     <message>
         <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
         <source>About</source>
-        <translation type="unfinished">परिचय</translation>
+        <translation>परिचय</translation>
     </message>
 </context>
 <context>
@@ -14602,9 +14602,9 @@ Add groups above to poll multiple register types.</source>
         <translation>आइकन खोजें (जैसे temperature, arrow, play)…</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="109"/>
+        <location filename="../../qml/Dialogs/OnlineIconPicker.qml" line="110"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
         <source>Search</source>
@@ -15329,7 +15329,7 @@ Click Refresh to update the list.</source>
         <translation>संशोधित</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="143"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="135"/>
         <source>Project</source>
         <translation>प्रोजेक्ट</translation>
     </message>
@@ -15338,47 +15338,47 @@ Click Refresh to update the list.</source>
         <translation type="vanished">कमांड्स</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="415"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="406"/>
         <source>This project is password protected</source>
         <translation>यह प्रोजेक्ट पासवर्ड से सुरक्षित है</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="416"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="407"/>
         <source>Editing is available in Project mode</source>
         <translation>प्रोजेक्ट मोड में संपादन उपलब्ध है</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="427"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="418"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>परिवर्तन करने के लिए पासवर्ड दर्ज करें, या कोई अन्य प्रोजेक्ट खोलें।</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="428"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="419"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>प्रोजेक्ट लोड और संपादित करने के लिए प्रोजेक्ट मोड पर स्विच करें।</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="450"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="441"/>
         <source>Unlock</source>
         <translation>अनलॉक करें</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="451"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="442"/>
         <source>Switch to Project Mode</source>
         <translation>प्रोजेक्ट मोड पर स्विच करें</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="470"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="461"/>
         <source>Open Other Project</source>
         <translation>अन्य प्रोजेक्ट खोलें</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="471"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="462"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="487"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="478"/>
         <source>Create New Project</source>
         <translation>नया प्रोजेक्ट बनाएँ</translation>
     </message>
@@ -15428,137 +15428,137 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
         <source>Add Group</source>
-        <translation type="unfinished"/>
+        <translation>ग्रुप जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
         <source>Dataset Container</source>
-        <translation type="unfinished">डेटासेट कंटेनर</translation>
+        <translation>डेटासेट कंटेनर</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
         <source>Add Image View</source>
-        <translation type="unfinished"/>
+        <translation>इमेज व्यू जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
         <source>Image View</source>
-        <translation type="unfinished">इमेज व्यू</translation>
+        <translation>इमेज व्यू</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
         <source>Add Web View</source>
-        <translation type="unfinished"/>
+        <translation>वेब व्यू जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
         <source>Web View</source>
-        <translation type="unfinished">वेब व्यू</translation>
+        <translation>वेब व्यू</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
         <source>Add Painter</source>
-        <translation type="unfinished"/>
+        <translation>पेंटर जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
         <source>Painter Widget</source>
-        <translation type="unfinished">पेंटर विजेट</translation>
+        <translation>पेंटर विजेट</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
         <source>Add Data Table</source>
-        <translation type="unfinished">डेटा टेबल जोड़ें</translation>
+        <translation>डेटा टेबल जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
         <source>Data Grid</source>
-        <translation type="unfinished">डेटा ग्रिड</translation>
+        <translation>डेटा ग्रिड</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
         <source>Add Multi-Plot</source>
-        <translation type="unfinished"/>
+        <translation>मल्टी-प्लॉट जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
         <source>Multiple Plot</source>
-        <translation type="unfinished">मल्टीपल प्लॉट</translation>
+        <translation>मल्टीपल प्लॉट</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
         <source>Add 3D Plot</source>
-        <translation type="unfinished"/>
+        <translation>3D प्लॉट जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
         <source>3D Plot</source>
-        <translation type="unfinished">3D प्लॉट</translation>
+        <translation>3D प्लॉट</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
         <source>Add Accelerometer</source>
-        <translation type="unfinished"/>
+        <translation>एक्सेलेरोमीटर जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
         <source>Accelerometer</source>
-        <translation type="unfinished">एक्सेलेरोमीटर</translation>
+        <translation>एक्सेलेरोमीटर</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
         <source>Add Gyroscope</source>
-        <translation type="unfinished"/>
+        <translation>जायरोस्कोप जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
         <source>Gyroscope</source>
-        <translation type="unfinished">जायरोस्कोप</translation>
+        <translation>जायरोस्कोप</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
         <source>Add GPS Map</source>
-        <translation type="unfinished"/>
+        <translation>GPS मैप जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
         <source>GPS Map</source>
-        <translation type="unfinished">GPS मैप</translation>
+        <translation>GPS मैप</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
         <source>Add Dataset</source>
-        <translation type="unfinished">डेटासेट जोड़ें</translation>
+        <translation>डेटासेट जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
         <source>Add Plot</source>
-        <translation type="unfinished"/>
+        <translation>प्लॉट जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
         <source>Add FFT Plot</source>
-        <translation type="unfinished"/>
+        <translation>FFT प्लॉट जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
         <source>Add Gauge</source>
-        <translation type="unfinished"/>
+        <translation>गेज जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
         <source>Add Level Indicator</source>
-        <translation type="unfinished"/>
+        <translation>लेवल इंडिकेटर जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
         <source>Add Compass</source>
-        <translation type="unfinished"/>
+        <translation>कंपास जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
         <source>Add LED Indicator</source>
-        <translation type="unfinished"/>
+        <translation>LED संकेतक जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
@@ -15573,27 +15573,27 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
         <source>Add Output Slider</source>
-        <translation type="unfinished"/>
+        <translation>आउटपुट स्लाइडर जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
         <source>Add Output Toggle</source>
-        <translation type="unfinished"/>
+        <translation>आउटपुट टॉगल जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
         <source>Add Output Knob</source>
-        <translation type="unfinished"/>
+        <translation>आउटपुट नॉब जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
         <source>Add Output Text Field</source>
-        <translation type="unfinished"/>
+        <translation>आउटपुट टेक्स्ट फ़ील्ड जोड़ें</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
         <source>Add Output Button</source>
-        <translation type="unfinished"/>
+        <translation>आउटपुट बटन जोड़ें</translation>
     </message>
 </context>
 <context>
@@ -15610,7 +15610,7 @@ Click Refresh to update the list.</source>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="71"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Sections/ProjectStructure.qml" line="424"/>
@@ -19656,7 +19656,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="162"/>
         <source>Search…</source>
-        <translation type="unfinished">खोजें…</translation>
+        <translation>खोजें…</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/SystemDatasetsView.qml" line="350"/>
@@ -19787,42 +19787,42 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">खोजें…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="535"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
         <source>Settings</source>
         <translation>सेटिंग्स</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="536"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
         <source>Console</source>
         <translation>कंसोल</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Notifications</source>
         <translation>सूचनाएं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>Clock</source>
         <translation>घड़ी</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>Stopwatch</source>
         <translation>स्टॉपवॉच</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
         <source>AI Assistant</source>
         <translation>AI असिस्टेंट</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Resume</source>
         <translation>फिर से शुरू करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>Pause</source>
         <translation>रोकें</translation>
     </message>
@@ -19835,72 +19835,72 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">कोई वर्कस्पेस उपलब्ध नहीं</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="219"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="220"/>
         <source>Search… (%1)</source>
         <translation>खोजें… (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="900"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="902"/>
         <source>Unfreeze Dashboard</source>
         <translation>डैशबोर्ड अनफ्रीज़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="901"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="903"/>
         <source>Freeze Dashboard</source>
         <translation>डैशबोर्ड फ्रीज़ करें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="959"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="961"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: %1 से कनेक्ट हो गया</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="960"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: कनेक्ट नहीं है</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="984"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="986"/>
         <source>MQTT Publisher</source>
         <translation>MQTT Publisher</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="994"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
         <source>Status:</source>
         <translation>स्थिति:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1002"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
         <source>Connected</source>
         <translation>कनेक्टेड</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1003"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1005"/>
         <source>Disconnected</source>
         <translation>डिस्कनेक्टेड</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1010"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1012"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1023"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
         <source>Mode:</source>
         <translation>मोड:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1036"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1038"/>
         <source>Messages sent:</source>
         <translation>भेजे गए संदेश:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1050"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
         <source>Open MQTT Settings</source>
         <translation>MQTT सेटिंग्स खोलें</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>File Transmission</source>
         <translation>फ़ाइल ट्रांसमिशन</translation>
     </message>
@@ -19909,7 +19909,7 @@ Turn on Embed Project to bake the project into the shortcut, so it keeps working
         <translation type="vanished">विजेट खोजें…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1096"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1098"/>
         <source>Remove from Workspace</source>
         <translation>वर्कस्पेस से हटाएं</translation>
     </message>
@@ -21823,9 +21823,9 @@ I understand that when it ends, I'll need to buy a license or build the GPLv3 ve
         <translation type="vanished">टिप: कमांड पैलेट खोलने के लिए कहीं भी %1 दबाएँ।</translation>
     </message>
     <message>
-        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1581"/>
+        <location filename="../../src/UI/Widgets/Terminal.cpp" line="1583"/>
         <source>Tip: Press %1 anywhere to open the command palette.</source>
-        <translation type="unfinished"/>
+        <translation>सुझाव: कमांड पैलेट खोलने के लिए कहीं भी %1 दबाएँ।</translation>
     </message>
 </context>
 <context>

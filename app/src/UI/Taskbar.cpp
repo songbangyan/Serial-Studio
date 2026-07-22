@@ -1367,13 +1367,13 @@ QVariantList UI::Taskbar::searchResults() const
         && (noFilter || groupWidgetName.contains(filter, Qt::CaseInsensitive)
             || groupName.contains(filter, Qt::CaseInsensitive))) {
       QVariantMap entry;
-      entry[QStringLiteral("windowId")]    = groupItem->data(TaskbarModel::WindowIdRole);
-      entry[QStringLiteral("widgetName")]  = groupWidgetName;
-      entry[QStringLiteral("widgetIcon")]  = groupItem->data(TaskbarModel::WidgetIconRole);
-      entry[QStringLiteral("widgetType")]  = groupType;
-      entry[QStringLiteral("groupName")]   = groupName;
-      entry[QStringLiteral("groupId")]     = groupItem->data(TaskbarModel::GroupIdRole);
-      entry[QStringLiteral("isWorkspace")] = false;
+      entry[QStringLiteral("windowId")]      = groupItem->data(TaskbarModel::WindowIdRole);
+      entry[QStringLiteral("widgetName")]    = groupWidgetName;
+      entry[QStringLiteral("widgetIcon")]    = groupItem->data(TaskbarModel::WidgetIconRole);
+      entry[QStringLiteral("widgetType")]    = groupType;
+      entry[QStringLiteral("groupName")]     = groupName;
+      entry[QStringLiteral("groupId")]       = groupItem->data(TaskbarModel::GroupIdRole);
+      entry[QStringLiteral("isWorkspace")]   = false;
       entry[QStringLiteral("isGroupWidget")] = true;
       results.append(entry);
     }
@@ -1391,13 +1391,13 @@ QVariantList UI::Taskbar::searchResults() const
       if (noFilter || name.contains(filter, Qt::CaseInsensitive)
           || groupName.contains(filter, Qt::CaseInsensitive)) {
         QVariantMap entry;
-        entry[QStringLiteral("windowId")]    = child->data(TaskbarModel::WindowIdRole);
-        entry[QStringLiteral("widgetName")]  = name;
-        entry[QStringLiteral("widgetIcon")]  = child->data(TaskbarModel::WidgetIconRole);
-        entry[QStringLiteral("widgetType")]  = child->data(TaskbarModel::WidgetTypeRole);
-        entry[QStringLiteral("groupName")]   = groupName;
-        entry[QStringLiteral("groupId")]     = child->data(TaskbarModel::GroupIdRole);
-        entry[QStringLiteral("isWorkspace")] = false;
+        entry[QStringLiteral("windowId")]      = child->data(TaskbarModel::WindowIdRole);
+        entry[QStringLiteral("widgetName")]    = name;
+        entry[QStringLiteral("widgetIcon")]    = child->data(TaskbarModel::WidgetIconRole);
+        entry[QStringLiteral("widgetType")]    = child->data(TaskbarModel::WidgetTypeRole);
+        entry[QStringLiteral("groupName")]     = groupName;
+        entry[QStringLiteral("groupId")]       = child->data(TaskbarModel::GroupIdRole);
+        entry[QStringLiteral("isWorkspace")]   = false;
         entry[QStringLiteral("isGroupWidget")] = false;
         results.append(entry);
       }
@@ -1566,8 +1566,7 @@ void UI::Taskbar::navigateToWidget(int windowId, int groupId, bool allowAddToWor
     }
   }
 
-  if (allowAddToWorkspace && !m_dashboard.frozen()
-      && m_activeGroupId >= WorkspaceIds::AutoStart) {
+  if (allowAddToWorkspace && !m_dashboard.frozen() && m_activeGroupId >= WorkspaceIds::AutoStart) {
     addWidgetToActiveWorkspace(windowId);
     QTimer::singleShot(100, this, [this, windowId]() {
       auto* window = windowData(windowId);

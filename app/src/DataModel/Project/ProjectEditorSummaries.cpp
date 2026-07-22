@@ -927,7 +927,7 @@ bool DataModel::ProjectEditor::canMoveCurrent(int direction) const
   if (m_currentView == ActionView) {
     const int target = m_selectedAction.actionId + step;
     return m_selectedAction.actionId >= 0 && target >= 0
-           && target < static_cast<int>(m_projectModelRef.actions().size());
+        && target < static_cast<int>(m_projectModelRef.actions().size());
   }
 
   const auto& groups = m_projectModelRef.groups();
@@ -939,7 +939,7 @@ bool DataModel::ProjectEditor::canMoveCurrent(int direction) const
 
     const int target = m_selectedDataset.datasetId + step;
     return m_selectedDataset.datasetId >= 0 && target >= 0
-           && target < static_cast<int>(groups[static_cast<size_t>(gid)].datasets.size());
+        && target < static_cast<int>(groups[static_cast<size_t>(gid)].datasets.size());
   }
 
   if (m_currentView == OutputWidgetView) {
@@ -949,7 +949,7 @@ bool DataModel::ProjectEditor::canMoveCurrent(int direction) const
 
     const int target = m_selectedOutputWidget.widgetId + step;
     return m_selectedOutputWidget.widgetId >= 0 && target >= 0
-           && target < static_cast<int>(groups[static_cast<size_t>(gid)].outputWidgets.size());
+        && target < static_cast<int>(groups[static_cast<size_t>(gid)].outputWidgets.size());
   }
 
   if (m_currentView == WorkspaceView) {
@@ -974,7 +974,7 @@ bool DataModel::ProjectEditor::canMoveCurrent(int direction) const
   }
 
   return m_currentView == GroupFolderView || m_currentView == TableFolderView
-         || m_currentView == WorkspaceFolderView;
+      || m_currentView == WorkspaceFolderView;
 }
 
 /**

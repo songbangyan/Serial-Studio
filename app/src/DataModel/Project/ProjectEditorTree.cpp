@@ -1052,7 +1052,8 @@ void DataModel::ProjectEditor::expandTreeToIndex(const QModelIndex& index)
 }
 
 /**
- * @brief Sets the expanded model role of @p index; the delegate reacts and expands/collapses the row.
+ * @brief Sets the expanded model role of @p index; the delegate reacts and expands/collapses the
+ * row.
  */
 void DataModel::ProjectEditor::setTreeIndexExpanded(const QModelIndex& index, bool expanded)
 {

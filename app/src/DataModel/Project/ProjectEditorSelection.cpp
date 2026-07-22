@@ -386,12 +386,11 @@ void DataModel::ProjectEditor::onCurrentSelectionChanged(const QModelIndex& curr
   if (!m_navigatingHistory)
     pushNavEntry(captureNavEntry(item));
 
-  const bool handled = selectSourceParserItem(item) || selectSourceItem(item)
-                       || selectGroupItem(item) || selectGroupFolderItem(item)
-                       || selectDatasetItem(item) || selectActionItem(item)
-                       || selectOutputWidgetItem(item) || selectDataTableItem(item)
-                       || selectWorkspaceTreeItem(item) || selectMqttPublisherItem(item)
-                       || selectControlScriptItem(item);
+  const bool handled =
+    selectSourceParserItem(item) || selectSourceItem(item) || selectGroupItem(item)
+    || selectGroupFolderItem(item) || selectDatasetItem(item) || selectActionItem(item)
+    || selectOutputWidgetItem(item) || selectDataTableItem(item) || selectWorkspaceTreeItem(item)
+    || selectMqttPublisherItem(item) || selectControlScriptItem(item);
 
   if (!handled && m_rootItems.contains(item)) {
     setCurrentView(ProjectView);
@@ -483,12 +482,18 @@ QStandardItem* DataModel::ProjectEditor::resolveNavEntry(const NavEntry& entry) 
 
   if (entry.container) {
     switch (entry.view) {
-      case ProjectView:        return m_rootItems.isEmpty() ? nullptr : m_rootItems.firstKey();
-      case GroupsView:         return m_groupsRootItem;
-      case DataTablesView:     return m_tablesRootItem;
-      case SystemDatasetsView: return m_systemDatasetsItem;
-      case WorkspacesView:     return m_workspacesRootItem;
-      default:                 return nullptr;
+      case ProjectView:
+        return m_rootItems.isEmpty() ? nullptr : m_rootItems.firstKey();
+      case GroupsView:
+        return m_groupsRootItem;
+      case DataTablesView:
+        return m_tablesRootItem;
+      case SystemDatasetsView:
+        return m_systemDatasetsItem;
+      case WorkspacesView:
+        return m_workspacesRootItem;
+      default:
+        return nullptr;
     }
   }
 
