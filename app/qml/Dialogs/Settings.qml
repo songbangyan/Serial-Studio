@@ -1344,14 +1344,15 @@ Widgets.SmartDialog {
                 "ai_assistant": qsTr("AI Assistant")
               }
               const icons = {
-                "settings": "qrc:/icons/taskbar/settings.svg",
-                "console": "qrc:/icons/taskbar/console.svg",
-                "notifications": "qrc:/icons/taskbar/notifications.svg",
-                "clock": "qrc:/icons/taskbar/clock.svg",
-                "stopwatch": "qrc:/icons/taskbar/stopwatch.svg",
-                "pause": "qrc:/icons/taskbar/pause.svg",
-                "file_transmission": "qrc:/icons/taskbar/file-transmission.svg",
-                "ai_assistant": "qrc:/icons/taskbar/ai.svg"
+                "settings": Cpp_Misc_IconRegistry.icon("commands", "settings", 16),
+                "console": Cpp_Misc_IconRegistry.icon("commands", "console", 32),
+                "notifications": Cpp_Misc_IconRegistry.icon("widgets", "notification-log", 16),
+                "clock": Cpp_Misc_IconRegistry.icon("widgets", "clock", 16),
+                "stopwatch": Cpp_Misc_IconRegistry.icon("widgets", "stopwatch", 16),
+                "pause": Cpp_Misc_IconRegistry.icon("commands", "pause", 16),
+                "file_transmission":
+                  Cpp_Misc_IconRegistry.icon("commands", "file-transmission", 16),
+                "ai_assistant": Cpp_Misc_IconRegistry.icon("commands", "ai", 48)
               }
 
               function shouldShow(id) {

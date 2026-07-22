@@ -158,8 +158,8 @@ Widgets.Pane {
           text: qsTr("Duplicate")
           Layout.alignment: Qt.AlignVCenter
           onClicked: Cpp_JSON_ProjectModel.duplicateCurrentAction()
-          icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
           ToolTip.text: qsTr("Duplicate this action with all its settings")
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
         }
 
         //
@@ -172,7 +172,7 @@ Widgets.Pane {
           Layout.alignment: Qt.AlignVCenter
           ToolTip.text: qsTr("Delete this action from the project")
           onClicked: Cpp_JSON_ProjectModel.deleteCurrentAction()
-          icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
         }
       }
       }

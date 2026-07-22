@@ -33,8 +33,8 @@ Widgets.Pane {
   id: root
 
   title: qsTr("Device Setup")
-  icon: "qrc:/icons/panes/setup.svg"
   implicitHeight: layout.implicitHeight + 32
+  icon: Cpp_Misc_IconRegistry.icon("panes", "setup", 16)
 
   //
   // Custom properties

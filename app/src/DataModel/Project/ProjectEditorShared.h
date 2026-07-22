@@ -24,6 +24,7 @@
 #include <QString>
 #include <vector>
 
+#include "Misc/IconRegistry.h"
 #include "SerialStudio.h"
 
 namespace DataModel {
@@ -60,32 +61,43 @@ QString folderDisplayPath(const std::vector<Folder>& folders, int folderId)
  */
 inline QString busTypeIcon(int busType)
 {
+  static auto& registry = Misc::IconRegistry::instance();
+  const char* name      = "uart";
   switch (static_cast<SerialStudio::BusType>(busType)) {
-    case SerialStudio::BusType::UART:
-      return QStringLiteral("qrc:/icons/devices/drivers/uart.svg");
     case SerialStudio::BusType::Network:
-      return QStringLiteral("qrc:/icons/devices/drivers/network.svg");
+      name = "network";
+      break;
     case SerialStudio::BusType::BluetoothLE:
-      return QStringLiteral("qrc:/icons/devices/drivers/bluetooth.svg");
+      name = "bluetooth";
+      break;
 #ifdef BUILD_COMMERCIAL
     case SerialStudio::BusType::Audio:
-      return QStringLiteral("qrc:/icons/devices/drivers/audio.svg");
+      name = "audio";
+      break;
     case SerialStudio::BusType::ModBus:
-      return QStringLiteral("qrc:/icons/devices/drivers/modbus.svg");
+      name = "modbus";
+      break;
     case SerialStudio::BusType::CanBus:
-      return QStringLiteral("qrc:/icons/devices/drivers/canbus.svg");
+      name = "canbus";
+      break;
     case SerialStudio::BusType::RawUsb:
-      return QStringLiteral("qrc:/icons/devices/drivers/usb.svg");
+      name = "usb";
+      break;
     case SerialStudio::BusType::HidDevice:
-      return QStringLiteral("qrc:/icons/devices/drivers/hid.svg");
+      name = "hid";
+      break;
     case SerialStudio::BusType::Process:
-      return QStringLiteral("qrc:/icons/devices/drivers/process.svg");
+      name = "process";
+      break;
     case SerialStudio::BusType::Mqtt:
-      return QStringLiteral("qrc:/icons/devices/drivers/mqtt.svg");
+      name = "mqtt";
+      break;
 #endif
     default:
-      return QStringLiteral("qrc:/icons/devices/drivers/uart.svg");
+      break;
   }
+
+  return registry.icon(QStringLiteral("devices"), QLatin1String(name), 16);
 }
 
 }  // namespace DataModel

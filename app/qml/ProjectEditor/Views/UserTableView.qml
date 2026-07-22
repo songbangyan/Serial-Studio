@@ -30,7 +30,7 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
-  icon: "qrc:/icons/project-editor/treeview/shared-table.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "shared-table-alt", 16)
 
   actionComponent: EditorNavActions {}
   title: {
@@ -177,7 +177,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectModel.promptAddRegister(root.tableName)
               ToolTip.text: qsTr("Add register")
-              icon.source: "qrc:/icons/project-editor/actions/add-register.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-register", 24)
             }
 
             Widgets.ToolbarButton {
@@ -187,7 +187,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: constantsLibraryDialog.open(root.tableName)
               ToolTip.text: qsTr("Insert constant")
-              icon.source: "qrc:/icons/project-editor/actions/insert-constant.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "insert-constant", 24)
             }
 
             Widgets.ToolbarButton {
@@ -197,7 +197,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectModel.importTableFromCsv(root.tableName)
               ToolTip.text: qsTr("Import registers from CSV")
-              icon.source: "qrc:/icons/project-editor/actions/import-table.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "import-table", 24)
             }
 
             Widgets.ToolbarButton {
@@ -207,7 +207,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectModel.exportTableToCsv(root.tableName)
               ToolTip.text: qsTr("Export registers to CSV")
-              icon.source: "qrc:/icons/project-editor/actions/export-table.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "export-table", 24)
             }
 
             Item {
@@ -222,7 +222,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectModel.promptRenameTable(root.tableName)
               ToolTip.text: qsTr("Rename table")
-              icon.source: "qrc:/icons/project-editor/actions/rename-table.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename-table", 24)
             }
 
             Widgets.ToolbarButton {
@@ -232,7 +232,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectModel.confirmDeleteTable(root.tableName)
               ToolTip.text: qsTr("Delete table")
-              icon.source: "qrc:/icons/project-editor/actions/delete-table.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete-table", 24)
             }
 
             Rectangle {
@@ -249,7 +249,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               onClicked: app.showHelpCenter("data-tables")
-              icon.source: "qrc:/icons/code-editor/help.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 16)
               ToolTip.text: qsTr("Open help documentation for shared memory")
             }
           }
@@ -353,8 +353,8 @@ Widgets.Pane {
                   fillMode: Image.PreserveAspectFit
                   sourceSize: Qt.size(14, 14)
                   source: typeCombo.currentIndex === 1
-                          ? "qrc:/icons/project-editor/permissions/read-write.svg"
-                          : "qrc:/icons/project-editor/permissions/read-only.svg"
+                          ? Cpp_Misc_IconRegistry.icon("editor", "read-write", 16)
+                          : Cpp_Misc_IconRegistry.icon("editor", "read-only", 16)
                 }
 
                 Label {

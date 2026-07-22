@@ -492,7 +492,7 @@ Widgets.SmartDialog {
                 Layout.preferredHeight: 56
                 Layout.alignment: Qt.AlignHCenter
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/icons/toolbar/ai.svg"
+                source: Cpp_Misc_IconRegistry.icon("editor", "ai", 48)
               }
 
               Label {

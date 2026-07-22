@@ -519,12 +519,12 @@ Widgets.SmartDialog {
   //
   function iconForKind(kind) {
     if (kind === "folder")
-      return "qrc:/icons/project-editor/treeview/folder.svg"
+      return Cpp_Misc_IconRegistry.icon("widgets", "folder", 16)
 
     if (kind === "group")
-      return "qrc:/icons/project-editor/treeview/group.svg"
+      return Cpp_Misc_IconRegistry.icon("widgets", "group", 16)
 
-    return "qrc:/icons/project-editor/treeview/dataset.svg"
+    return Cpp_Misc_IconRegistry.icon("editor", "dataset", 16)
   }
 
   //
@@ -1011,7 +1011,7 @@ Widgets.SmartDialog {
                     sourceSize: Qt.size(8, 8)
                     visible: model.hasChildren
                     rotation: model.expanded ? 0 : 270
-                    source: "qrc:/icons/project-editor/treeview/indicator.svg"
+                    source: Cpp_Misc_IconRegistry.icon("editor", "indicator", 16)
                   }
 
                   MouseArea {

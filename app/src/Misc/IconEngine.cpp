@@ -30,6 +30,8 @@
 #include <QSvgRenderer>
 #include <QUrlQuery>
 
+#include "Misc/IconRegistryLegacy.h"
+
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access functions
 //--------------------------------------------------------------------------------------------------
@@ -95,7 +97,7 @@ QString Misc::IconEngine::resolveActionIconSource(const QString& icon)
 
   if (icon.startsWith(QStringLiteral("qrc:")) || icon.startsWith(QChar(':'))
       || icon.contains(QStringLiteral("://")))
-    return icon;
+    return Misc::legacyIconPath(icon);
 
   return QStringLiteral("qrc:/actions/%1.svg").arg(icon);
 }

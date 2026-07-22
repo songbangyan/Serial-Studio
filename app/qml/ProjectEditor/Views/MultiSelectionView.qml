@@ -31,7 +31,7 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
-  icon: "qrc:/icons/project-editor/model/dataset.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "dataset", 16)
   title: qsTr("%1 items selected").arg(Cpp_JSON_ProjectEditor.multiSelectionCount)
 
   actionComponent: EditorNavActions {}
@@ -145,14 +145,14 @@ Widgets.Pane {
             collapsible: true
             collapsePriority: 30
             collapsedText: qsTr("Plots")
-            collapsedIcon: "qrc:/icons/project-editor/actions/plot.svg"
+            collapsedIcon: Cpp_Misc_IconRegistry.icon("editor", "plot", 24)
 
             Widgets.ToolbarButton {
               iconSize: 24
               text: qsTr("Plot")
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/plot.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "plot", 24)
               ToolTip.text: qsTr("Toggle 2D plot for every selected dataset")
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetPlot
               onClicked: {
@@ -167,7 +167,7 @@ Widgets.Pane {
               toolbarButton: false
               text: qsTr("FFT Plot")
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/fft.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "fft", 24)
               ToolTip.text: qsTr("Toggle FFT plot for every selected dataset")
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetFFT
               onClicked: {
@@ -182,8 +182,8 @@ Widgets.Pane {
               toolbarButton: false
               text: qsTr("Waterfall")
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/waterfall.svg"
               ToolTip.text: qsTr("Toggle waterfall for every selected dataset")
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "waterfall", 24)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetWaterfall
               onClicked: {
                 const option = SerialStudio.DatasetWaterfall
@@ -200,14 +200,14 @@ Widgets.Pane {
             collapsible: true
             collapsePriority: 20
             collapsedText: qsTr("Widgets")
-            collapsedIcon: "qrc:/icons/project-editor/actions/gauge.svg"
+            collapsedIcon: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 32)
 
             Widgets.ToolbarButton {
               iconSize: 24
               toolbarButton: false
               text: qsTr("Bar/Level")
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/bar.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "bar", 24)
               ToolTip.text: qsTr("Set bar/level for every selected dataset")
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetBar
               onClicked: {
@@ -222,8 +222,8 @@ Widgets.Pane {
               text: qsTr("Gauge")
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/gauge.svg"
               ToolTip.text: qsTr("Set gauge for every selected dataset")
+              icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 32)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetGauge
               onClicked: {
                 const option = SerialStudio.DatasetGauge
@@ -237,8 +237,8 @@ Widgets.Pane {
               toolbarButton: false
               text: qsTr("Compass")
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/compass.svg"
               ToolTip.text: qsTr("Set compass for every selected dataset")
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "compass", 24)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetCompass
               onClicked: {
                 const option = SerialStudio.DatasetCompass
@@ -252,8 +252,8 @@ Widgets.Pane {
               text: qsTr("Meter")
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/meter.svg"
               ToolTip.text: qsTr("Set meter for every selected dataset")
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "meter", 24)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetMeter
               onClicked: {
                 const option = SerialStudio.DatasetMeter
@@ -267,8 +267,8 @@ Widgets.Pane {
               text: qsTr("LED")
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/led.svg"
               ToolTip.text: qsTr("Toggle LED for every selected dataset")
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "led", 24)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetLED
               onClicked: {
                 const option = SerialStudio.DatasetLED
@@ -285,14 +285,14 @@ Widgets.Pane {
             collapsible: true
             collapsePriority: 10
             collapsedText: qsTr("Behavior")
-            collapsedIcon: "qrc:/icons/project-editor/actions/alarm-bands.svg"
+            collapsedIcon: Cpp_Misc_IconRegistry.icon("editor", "alarm-bands", 24)
 
             Widgets.ToolbarButton {
               iconSize: 24
               toolbarButton: false
               text: qsTr("Alarm Bands")
               Layout.alignment: Qt.AlignVCenter
-              icon.source: "qrc:/icons/project-editor/actions/alarm-bands.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "alarm-bands", 24)
               ToolTip.text: qsTr("Define colored value ranges and apply them to every selected dataset.")
               onClicked: Cpp_JSON_ProjectEditor.openAlarmBandsEditorForSelection()
             }
@@ -317,7 +317,7 @@ Widgets.Pane {
               ToolTip.text: qsTr("Duplicate every selected dataset")
               onClicked: Cpp_JSON_ProjectModel.duplicateSelectedItems(
                            Cpp_JSON_ProjectEditor.selectedTreeItems())
-              icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
             }
 
             Widgets.ToolbarButton {
@@ -326,7 +326,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               ToolTip.text: qsTr("Delete every selected dataset")
-              icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
               onClicked: Cpp_JSON_ProjectModel.confirmDeleteSelectedItems(
                            Cpp_JSON_ProjectEditor.selectedTreeItems())
             }
@@ -358,7 +358,7 @@ Widgets.Pane {
           Image {
             sourceSize: Qt.size(18, 18)
             Layout.alignment: Qt.AlignVCenter
-            source: "qrc:/icons/project-editor/model/dataset.svg"
+            source: Cpp_Misc_IconRegistry.icon("editor", "dataset", 16)
           }
 
           Label {

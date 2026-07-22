@@ -21,14 +21,13 @@
 
 import QtCore
 import QtQuick
-import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import SerialStudio
 import SerialStudio.UI as SS_Ui
 
 import "../../../Widgets" as Widgets
+import "../../../Commands" as Commands
 
 Popup {
   id: root
@@ -92,21 +91,75 @@ Popup {
   signal renameWorkspaceRequested(int workspaceId, string currentName)
 
   //
-  // Single tools/actions model shared with the command palette and taskbar search.
+  // Behavior bindings and registry-backed command model shared with the command palette.
   //
-  ToolActions {
-    id: _toolActions
+  Commands.DashboardCommandBindings {
+    id: _menuBindings
 
     taskBar: root.taskBar
+    hostWindow: root.hostWindow
     onFullScreenRequested: root.fullScreenRequested()
     onExternalWindowRequested: root.externalWindowClicked()
   }
 
+  Commands.CommandModel {
+    id: _menuModel
+
+    context: "dashboard"
+    bindingSets: [_menuBindings]
+  }
+
   //
-  // Returns visible actions whose name matches `filter`; each item is { name, icon, run }.
+  // Returns visible commands matching `filter`; forwarded to the command palette.
   //
   function searchableItems(filter) {
-    return _toolActions.items(filter)
+    return _menuModel.items(filter)
+  }
+
+  //
+  // Start-menu layout tree, re-pulled when the registry retranslates.
+  //
+  readonly property var menuLayout: {
+    void _menuModel.revision
+    var tree = Cpp_UI_CommandRegistry.layout("start-menu")
+    return tree.items !== undefined ? tree.items : []
+  }
+
+  //
+  // Looks up a start-menu submenu node ("export"/"tools") by name; null when absent.
+  //
+  function submenuNode(name) {
+    for (var i = 0; i < root.menuLayout.length; ++i) {
+      if (root.menuLayout[i].type === "submenu" && root.menuLayout[i].name === name)
+        return root.menuLayout[i]
+    }
+
+    return null
+  }
+
+  //
+  // True when at least one child command node resolves to a visible entry.
+  //
+  function anyChildVisible(children) {
+    for (var i = 0; i < children.length; ++i) {
+      var entry = _menuModel.entryFor(children[i].id)
+      if (entry !== null && entry.visible)
+        return true
+    }
+
+    return false
+  }
+
+  //
+  // True when at least one child command node is a toggle (reserves the checkmark column).
+  //
+  function anyChildToggle(children) {
+    for (var i = 0; i < children.length; ++i) {
+      if (children[i].kind === "toggle")
+        return true
+    }
+
+    return false
   }
 
   //
@@ -116,6 +169,62 @@ Popup {
     id: _subMenuComponent
 
     Widgets.SubMenuCombo {}
+  }
+
+  //
+  // Renders one action/toggle command as a start-menu button; closes the menu unless told not to.
+  //
+  component StartMenuCommand: Widgets.MenuButton {
+    id: _command
+
+    expandable: false
+    Layout.fillWidth: true
+    text: entry !== null ? entry.name : ""
+    checked: entry !== null && entry.checked
+    enabled: entry === null || entry.enabled
+    visible: entry !== null && entry.visible
+    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 16) : ""
+
+    property bool closesMenu: true
+    required property string commandId
+    readonly property var entry: _menuModel.entryFor(commandId)
+
+    onClicked: {
+      if (_command.closesMenu)
+        root.close()
+
+      if (entry !== null)
+        entry.run()
+    }
+  }
+
+  //
+  // Renders a checkable command entry; the click flips state directly and never closes.
+  //
+  component StartMenuToggle: Widgets.MenuButton {
+    id: _toggle
+
+    checkable: true
+    expandable: false
+    Layout.fillWidth: true
+    text: entry !== null ? entry.name : ""
+    checked: entry !== null && entry.checked
+    enabled: entry === null || entry.enabled
+    visible: entry !== null && entry.visible
+    icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 16) : ""
+
+    required property string commandId
+    readonly property var entry: _menuModel.entryFor(commandId)
+
+    onCheckedChanged: {
+      if (entry !== null && checked !== entry.checked)
+        entry.run()
+    }
+
+    onEntryChanged: {
+      if (entry !== null && checked !== entry.checked)
+        checked = entry.checked
+    }
   }
 
   //
@@ -189,7 +298,7 @@ Popup {
       expandable: true
       Layout.fillWidth: true
       text: qsTr("Workspaces")
-      icon.source: "qrc:/icons/start/workspaces.svg"
+      icon.source: Cpp_Misc_IconRegistry.iconById("commands/workspaces", 32)
 
       property var popup: null
       function showMenu() {
@@ -263,12 +372,12 @@ Popup {
             model.push({"id": "__show_hidden_" + hg.id,
                          "separator": false,
                          "text": qsTr("Show \"%1\"").arg(hg.title),
-                         "icon": "qrc:/icons/start/workspaces.svg"})
+                         "icon": Cpp_Misc_IconRegistry.iconById("commands/workspaces", 32)})
           }
           if (hiddenGroups.length > 1) {
             model.push({"id": "__show_all_hidden__", "separator": false,
                          "text": qsTr("Show All Hidden Workspaces"),
-                         "icon": "qrc:/icons/start/workspaces.svg"})
+                         "icon": Cpp_Misc_IconRegistry.iconById("commands/workspaces", 32)})
           }
         }
 
@@ -277,7 +386,7 @@ Popup {
                        "icon": "", "separator": true})
           model.push({"id": "__new_workspace__", "separator": false,
                        "text": qsTr("New Workspace…"),
-                       "icon": "qrc:/icons/start/add-workspace.svg"})
+                       "icon": Cpp_Misc_IconRegistry.iconById("commands/add-workspace", 32)})
         }
 
         //
@@ -327,8 +436,8 @@ Popup {
       expandable: true
       text: qsTr("Actions")
       Layout.fillWidth: true
-      icon.source: "qrc:/icons/start/actions.svg"
       visible: Cpp_UI_Dashboard.actions.length > 0
+      icon.source: Cpp_Misc_IconRegistry.iconById("commands/actions", 32)
 
       property var popup: null
       function showMenu() {
@@ -380,8 +489,8 @@ Popup {
       expandable: true
       text: qsTr("Plugins")
       Layout.fillWidth: true
-      icon.source: "qrc:/icons/toolbar/extensions.svg"
       visible: Cpp_ExtensionManager.installedPlugins.length > 0
+      icon.source: Cpp_Misc_IconRegistry.iconById("commands/extensions", 48)
 
       property var popup: null
       function showMenu() {
@@ -417,7 +526,7 @@ Popup {
         items.push({
                      "id": "__manage_plugins__",
                      "title": qsTr("Manage Plugins…"),
-                     "icon": "qrc:/icons/toolbar/extensions.svg"
+                     "icon": Cpp_Misc_IconRegistry.iconById("commands/extensions", 48)
                    })
 
         _plugins.popup.model = items
@@ -456,66 +565,16 @@ Popup {
       color: Cpp_ThemeManager.colors["start_menu_text"]
     }
 
-    Widgets.MenuButton {
+    StartMenuToggle {
       id: _autoLayoutBt
 
-      checkable: true
-      expandable: false
-      Layout.fillWidth: true
-      text: qsTr("Auto Layout")
-      opacity: enabled ? 1 : 0.5
-      enabled: !Cpp_UI_Dashboard.frozen
-      icon.source: "qrc:/icons/start/auto-layout.svg"
-      checked: taskBar.windowManager.autoLayoutEnabled
-      visible: !(app.runtimeMode && Cpp_UI_Dashboard.frozen)
-      onCheckedChanged: {
-        if (checked !== taskBar.windowManager.autoLayoutEnabled)
-          taskBar.windowManager.autoLayoutEnabled = checked
-      }
-
-      Connections {
-        target: taskBar.windowManager
-        function onAutoLayoutEnabledChanged() {
-          _autoLayoutBt.checked = taskBar.windowManager.autoLayoutEnabled
-        }
-      }
+      commandId: "dashboard.autoLayout"
     }
 
-    Widgets.MenuButton {
+    StartMenuToggle {
       id: _freezeBt
 
-      readonly property bool freezeAllowed: Cpp_CommercialBuild
-                                            && (Cpp_Licensing_LemonSqueezy.isActivated
-                                                || Cpp_Licensing_Trial.trialEnabled)
-
-      checkable: true
-      expandable: false
-      Layout.fillWidth: true
-      text: qsTr("Freeze Dashboard")
-      checked: Cpp_UI_Dashboard.frozen
-      opacity: freezeAllowed ? 1 : 0.5
-      icon.source: "qrc:/icons/start/freeze.svg"
-      visible: Cpp_AppState.operationMode === SerialStudio.ProjectFile && !app.runtimeMode
-      onCheckedChanged: {
-        if (checked === Cpp_UI_Dashboard.frozen)
-          return
-
-        if (_freezeBt.freezeAllowed)
-          Cpp_UI_Dashboard.setFrozen(checked)
-
-        else {
-          _freezeBt.checked = Cpp_UI_Dashboard.frozen
-          root.close()
-          app.showLicenseDialog()
-        }
-      }
-
-      Connections {
-        target: Cpp_UI_Dashboard
-        function onFrozenChanged() {
-          _freezeBt.checked = Cpp_UI_Dashboard.frozen
-        }
-      }
+      commandId: "dashboard.freeze"
     }
 
     Rectangle {
@@ -526,27 +585,12 @@ Popup {
       visible: _autoLayoutBt.visible || _freezeBt.visible
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      Layout.fillWidth: true
-      text: qsTr("Full Screen")
-      icon.source: "qrc:/icons/start/full-screen.svg"
-      checked: root.hostWindow ? root.hostWindow.visibility === Window.FullScreen : false
-      onClicked: {
-        root.close()
-        root.fullScreenRequested()
-      }
+    StartMenuCommand {
+      commandId: "app.fullScreen"
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      Layout.fillWidth: true
-      text: qsTr("Add External Window")
-      icon.source: "qrc:/icons/start/external-window.svg"
-      onClicked: {
-        root.close()
-        root.externalWindowClicked()
-      }
+    StartMenuCommand {
+      commandId: "window.external"
     }
 
     Rectangle {
@@ -561,15 +605,13 @@ Popup {
       id: _export
 
       expandable: true
-      text: qsTr("Export")
+      text: node !== null ? node.title : ""
       Layout.fillWidth: true
-      icon.source: "qrc:/icons/start/export.svg"
-      visible: !(typeof CLI_RUNTIME_MODE !== "undefined" && CLI_RUNTIME_MODE === true)
+      visible: root.anyChildVisible(childItems)
+      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 16) : ""
 
-      readonly property string kCsv: "csv"
-      readonly property string kMdf4: "mdf4"
-      readonly property string kConsole: "console"
-      readonly property string kDatabase: "database"
+      readonly property var node: root.submenuNode("export")
+      readonly property var childItems: node !== null ? node.items : []
 
       property var popup: null
       function showMenu() {
@@ -577,51 +619,30 @@ Popup {
           _export.popup = _subMenuComponent.createObject(root)
           _export.popup.parent = root.parent
           _export.popup.valueSelected.connect((value) => {
-            if (value === _export.kCsv)
-              Cpp_CSV_Export.exportEnabled = !Cpp_CSV_Export.exportEnabled
-            else if (value === _export.kMdf4)
-              Cpp_MDF4_Export.exportEnabled = !Cpp_MDF4_Export.exportEnabled
-            else if (value === _export.kConsole)
-              Cpp_Console_Export.exportEnabled = !Cpp_Console_Export.exportEnabled
-            else if (value === _export.kDatabase && Cpp_CommercialBuild)
-              Cpp_Sessions_Export.exportEnabled = !Cpp_Sessions_Export.exportEnabled
+            var entry = _menuModel.entryFor(value)
+            if (entry !== null)
+              entry.run()
           })
         }
 
-        // Build model with per-row enabled state
-        var model = [
-          {
-            "id": _export.kCsv,
-            "text": qsTr("CSV File"),
-            "icon": "qrc:/icons/start/csv-log.svg",
-            "checked": Cpp_CSV_Export.exportEnabled
-          },
-          {
-            "id": _export.kMdf4,
-            "text": qsTr("MDF4 File"),
-            "icon": "qrc:/icons/start/mf4-log.svg",
-            "checked": Cpp_MDF4_Export.exportEnabled
-          },
-          {
-            "id": _export.kConsole,
-            "text": qsTr("Console Transcript"),
-            "icon": "qrc:/icons/start/console-log.svg",
-            "checked": Cpp_Console_Export.exportEnabled
-          }
-        ]
+        // Build model from the registry's child command entries
+        var model = []
+        for (var i = 0; i < _export.childItems.length; ++i) {
+          var entry = _menuModel.entryFor(_export.childItems[i].id)
+          if (entry === null || !entry.visible)
+            continue
 
-        if (Cpp_CommercialBuild) {
           model.push({
-            "id": _export.kDatabase,
-            "text": qsTr("Session Database"),
-            "icon": "qrc:/icons/start/database-export.svg",
-            "checked": Cpp_Sessions_Export.exportEnabled
+            "id": entry.id,
+            "text": entry.name,
+            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 16),
+            "checked": entry.checked
           })
         }
 
         // Update popup state
         _export.popup.model = model
-        _export.popup.showCheckable = true
+        _export.popup.showCheckable = root.anyChildToggle(_export.childItems)
         _export.popup.maximumHeight = root.height
         _export.popup.x = Cpp_Misc_Translator.rtl
                           ? root.x - _export.popup.width + 1
@@ -657,19 +678,13 @@ Popup {
       id: _tools
 
       expandable: true
-      text: qsTr("Tools")
+      text: node !== null ? node.title : ""
       Layout.fillWidth: true
-      icon.source: "qrc:/icons/start/tools.svg"
-      visible: !app.runtimeMode || Cpp_CommercialBuild
+      visible: root.anyChildVisible(childItems)
+      icon.source: node !== null ? Cpp_Misc_IconRegistry.iconById(node.icon, 16) : ""
 
-      readonly property string kClock: "clock"
-      readonly property string kConsole: "console"
-      readonly property string kSessions: "sessions"
-      readonly property string kStopwatch: "stopwatch"
-      readonly property string kPreferences: "preferences"
-      readonly property string kAiAssistant: "ai_assistant"
-      readonly property string kNotifications: "notifications"
-      readonly property string kFileTransmission: "file_transmission"
+      readonly property var node: root.submenuNode("tools")
+      readonly property var childItems: node !== null ? node.items : []
 
       property var popup: null
       function showMenu() {
@@ -677,110 +692,32 @@ Popup {
           _tools.popup = _subMenuComponent.createObject(root)
           _tools.popup.parent = root.parent
           _tools.popup.valueSelected.connect((value) => {
-            if (value === _tools.kConsole) {
+            var entry = _menuModel.entryFor(value)
+            if (entry !== null) {
               root.close()
-              Cpp_UI_Dashboard.terminalEnabled = !Cpp_UI_Dashboard.terminalEnabled
-            } else if (value === _tools.kNotifications && Cpp_CommercialBuild) {
-              root.close()
-              Cpp_UI_Dashboard.notificationLogEnabled = !Cpp_UI_Dashboard.notificationLogEnabled
-            } else if (value === _tools.kClock) {
-              root.close()
-              Cpp_UI_Dashboard.clockEnabled = !Cpp_UI_Dashboard.clockEnabled
-            } else if (value === _tools.kStopwatch) {
-              root.close()
-              Cpp_UI_Dashboard.stopwatchEnabled = !Cpp_UI_Dashboard.stopwatchEnabled
-            } else if (value === _tools.kPreferences) {
-              root.close()
-              app.showSettingsDialog()
-            } else if (value === _tools.kSessions && Cpp_CommercialBuild) {
-              root.close()
-              app.showDatabaseExplorer()
-            } else if (value === _tools.kFileTransmission && Cpp_CommercialBuild) {
-              root.close()
-              app.showFileTransmission()
-            } else if (value === _tools.kAiAssistant && Cpp_CommercialBuild) {
-              root.close()
-              app.showAIAssistant()
+              entry.run()
             }
           })
         }
 
-        //
-        // Filter the model to items applicable to the current build/runtime mode.
-        //
+        // Build model from the registry's child command entries
         var model = []
+        for (var i = 0; i < _tools.childItems.length; ++i) {
+          var entry = _menuModel.entryFor(_tools.childItems[i].id)
+          if (entry === null || !entry.visible)
+            continue
 
-        if (!app.runtimeMode) {
           model.push({
-            "id": _tools.kConsole,
-            "text": qsTr("Console"),
-            "icon": "qrc:/icons/start/console.svg",
-            "checked": Cpp_UI_Dashboard.terminalEnabled
+            "id": entry.id,
+            "text": entry.name,
+            "icon": Cpp_Misc_IconRegistry.iconById(entry.iconId, 16),
+            "checked": entry.checked
           })
         }
 
-        if (Cpp_CommercialBuild) {
-          model.push({
-            "id": _tools.kNotifications,
-            "text": qsTr("Notifications"),
-            "icon": "qrc:/icons/start/notifications.svg",
-            "checked": Cpp_UI_Dashboard.notificationLogEnabled
-          })
-        }
-
-        model.push({
-          "id": _tools.kClock,
-          "text": qsTr("Clock"),
-          "icon": "qrc:/icons/start/clock.svg",
-          "checked": Cpp_UI_Dashboard.clockEnabled
-        })
-
-        model.push({
-          "id": _tools.kStopwatch,
-          "text": qsTr("Stopwatch"),
-          "icon": "qrc:/icons/start/stopwatch.svg",
-          "checked": Cpp_UI_Dashboard.stopwatchEnabled
-        })
-
-        if (!app.runtimeMode) {
-          model.push({
-            "id": _tools.kPreferences,
-            "text": qsTr("Preferences"),
-            "icon": "qrc:/icons/start/settings.svg"
-          })
-        }
-
-        if (Cpp_CommercialBuild
-            && (!app.runtimeMode || Cpp_Sessions_Export.exportEnabled)) {
-          model.push({
-            "id": _tools.kSessions,
-            "text": qsTr("Sessions"),
-            "icon": "qrc:/icons/start/sessions.svg"
-          })
-        }
-
-        if (Cpp_CommercialBuild
-            && (!app.runtimeMode || Cpp_IO_FileTransmission.runtimeAccessAllowed)) {
-          model.push({
-            "id": _tools.kFileTransmission,
-            "text": qsTr("File Transmission"),
-            "icon": "qrc:/icons/taskbar/file-transmission.svg"
-          })
-        }
-
-        if (Cpp_CommercialBuild && !app.runtimeMode) {
-          model.push({
-            "id": _tools.kAiAssistant,
-            "text": qsTr("AI Assistant"),
-            "icon": "qrc:/icons/taskbar/ai.svg"
-          })
-        }
-
-        //
         // Update popup state
-        //
         _tools.popup.model = model
-        _tools.popup.showCheckable = true
+        _tools.popup.showCheckable = root.anyChildToggle(_tools.childItems)
         _tools.popup.maximumHeight = root.height
         _tools.popup.x = Cpp_Misc_Translator.rtl
                          ? root.x - _tools.popup.width + 1
@@ -788,14 +725,10 @@ Popup {
         _tools.popup.y = _tools.y + _layout.y + root.y + 4
         _tools.popup.placeholderText = qsTr("No Tools Available")
 
-        //
         // Open the popup
-        //
         _tools.popup.open()
 
-        //
         // Close other menus
-        //
         if (_groups.popup)
           _groups.popup.close()
 
@@ -823,15 +756,8 @@ Popup {
       color: Cpp_ThemeManager.colors["start_menu_text"]
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      Layout.fillWidth: true
-      text: qsTr("Help Center")
-      icon.source: "qrc:/icons/start/help.svg"
-      onClicked: {
-        root.close()
-        app.showHelpCenter()
-      }
+    StartMenuCommand {
+      commandId: "app.helpCenter"
     }
 
     Rectangle {
@@ -841,50 +767,21 @@ Popup {
       color: Cpp_ThemeManager.colors["start_menu_text"]
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      Layout.fillWidth: true
-      icon.source: Cpp_IO_Manager.paused ?
-                     "qrc:/icons/start/resume.svg" :
-                     "qrc:/icons/start/pause.svg"
-      text: Cpp_IO_Manager.paused ? qsTr("Resume") :
-                                    qsTr("Pause")
-      onClicked: Cpp_IO_Manager.paused = !Cpp_IO_Manager.paused
+    StartMenuCommand {
+      closesMenu: false
+      commandId: "io.pause"
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      text: qsTr("Reset")
-      Layout.fillWidth: true
-      icon.source: "qrc:/icons/start/reset.svg"
-      onClicked: {
-        // Reset dashboard
-        root.close()
-        Cpp_UI_Dashboard.clearPlotData()
-
-        // Rotate any active recorders so the next frame opens a fresh file/session
-        Cpp_CSV_Export.closeFile()
-        Cpp_Console_Export.closeFile()
-        if (Cpp_CommercialBuild) {
-          Cpp_MDF4_Export.closeFile()
-          Cpp_Sessions_Export.closeFile()
-        }
-      }
+    StartMenuCommand {
+      commandId: "dashboard.reset"
     }
 
-    Widgets.MenuButton {
-      expandable: false
-      Layout.fillWidth: true
-      text: app.runtimeMode ? qsTr("Quit") : qsTr("Disconnect")
-      icon.source: app.runtimeMode ? "qrc:/icons/start/quit.svg"
-                                   : "qrc:/icons/start/disconnect.svg"
-      onClicked: {
-        root.close()
-        if (typeof mainWindow !== "undefined" && mainWindow.userDisconnect)
-          mainWindow.userDisconnect()
-        else
-          Cpp_IO_Manager.disconnectDevice()
-      }
+    StartMenuCommand {
+      commandId: "io.disconnect"
+    }
+
+    StartMenuCommand {
+      commandId: "app.quit"
     }
   }
 

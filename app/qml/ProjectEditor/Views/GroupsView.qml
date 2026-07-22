@@ -31,7 +31,7 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   title: qsTr("Dashboard Widgets")
-  icon: "qrc:/icons/project-editor/treeview/dashboard-widgets.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "dashboard-widgets", 48)
 
   actionComponent: EditorNavActions {}
 
@@ -130,7 +130,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a top-level folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddGroupFolder(-1)
-            icon.source: "qrc:/icons/project-editor/actions/add-folder.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
           }
 
           Widgets.ToolbarButton {
@@ -140,7 +140,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a group from a template")
             onClicked: addGroupMenu.popup()
-            icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
           }
 
           Item { Layout.fillWidth: true }

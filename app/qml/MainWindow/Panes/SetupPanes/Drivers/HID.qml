@@ -121,7 +121,7 @@ Item {
         sourceSize.width: 20
         sourceSize.height: 20
         Layout.alignment: Qt.AlignTop
-        source: "qrc:/icons/panes/info.svg"
+        source: Cpp_Misc_IconRegistry.icon("panes", "info", 24)
       }
 
       ColumnLayout {

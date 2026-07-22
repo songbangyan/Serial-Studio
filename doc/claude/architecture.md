@@ -15,6 +15,7 @@ summarized inline in CLAUDE.md — the sub-files hold the full detail.
 | [architecture/scripting.md](architecture/scripting.md) | The three parser engines (JS/Lua/Native), watchdogs, per-dataset transforms, data tables, control scripts (worker-thread contract + lifecycle), embedded code-editor plumbing, binary-decoder byte-table semantics. |
 | [architecture/dashboard.md](architecture/dashboard.md) | `UI::Dashboard` ingest push tables, alarm bands, dashboard tools, plot X-axis / TimeRing / downsamplers / GPU curves / area fill / sweep-trigger, time range, waterfall, output widgets, workspaces. |
 | [architecture/export.md](architecture/export.md) | CSV/MDF4 export schema, the Sessions SQLite DB (schema, replay, snapshots, PK/index rules). |
+| [architecture/commands-icons.md](architecture/commands-icons.md) | Before adding a toolbar button, palette entry, menu item, keyboard shortcut, or fixed icon: the spec-0028 icon registry (tiered tree, `IconRegistry` resolution, legacy map) and command registry (JSON command/layout manifests, per-context bindings, `CommandModel`/`CommandToolbar`, contexts + binding-set ordering, shortcuts, translations) with recipes for new commands/surfaces. |
 
 Cross-cutting reads: a Dashboard ingest change is also a hotpath change (dataflow.md); a
 ProjectModel ctor-adjacent change is also a startup change (startup.md). When a change spans

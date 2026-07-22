@@ -18,6 +18,7 @@ import QtQuick.Layouts
 import QtQuick.Controls
 
 import "../Widgets" as Widgets
+import "../Commands" as Commands
 
 Widgets.SmartWindow {
   id: root
@@ -199,144 +200,29 @@ Widgets.SmartWindow {
         //
         // Ribbon toolbar content
         //
-        Widgets.RibbonToolbar {
+        DatabaseCommandBindings {
+          id: _dbBindings
+
+          reportDialog: _reportDialog
+        }
+
+        Commands.CommandModel {
+          id: _dbModel
+
+          context: "database"
+          bindingSets: [_dbBindings]
+        }
+
+        Widgets.CommandToolbar {
           height: 80
+          model: _dbModel
+          surface: "database-toolbar"
           anchors {
             left: parent.left
             right: parent.right
             verticalCenter: parent.verticalCenter
             verticalCenterOffset: toolbar.titlebarHeight / 2
           }
-
-          //
-          // Database section
-          //
-          Widgets.RibbonSection {
-            visible: !root.operatorMode
-
-            Widgets.ToolbarButton {
-              text: qsTr("Open")
-              Layout.alignment: Qt.AlignVCenter
-              ToolTip.text: qsTr("Open a session file")
-              onClicked: Cpp_Sessions_Manager.openDatabase()
-              icon.source: "qrc:/icons/database/open.svg"
-            }
-
-            Widgets.ToolbarButton {
-              text: qsTr("Close")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-              ToolTip.text: qsTr("Close session file")
-              onClicked: Cpp_Sessions_Manager.closeDatabase()
-              icon.source: "qrc:/icons/database/close.svg"
-            }
-          }
-
-          //
-          // Session section
-          //
-          Widgets.RibbonSection {
-            visible: !root.operatorMode
-
-            Widgets.ToolbarButton {
-              text: qsTr("Replay")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-                       && Cpp_Sessions_Manager.selectedSessionId >= 0
-              ToolTip.text: qsTr("Replay selected session on the dashboard")
-              onClicked: Cpp_Sessions_Manager.replaySelectedSession()
-              icon.source: "qrc:/icons/database/replay.svg"
-            }
-
-            Widgets.ToolbarButton {
-              text: qsTr("Delete")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-                       && Cpp_Sessions_Manager.selectedSessionId >= 0
-                       && !Cpp_Sessions_Manager.locked
-              ToolTip.text: Cpp_Sessions_Manager.locked
-                            ? qsTr("Unlock the session file to delete sessions")
-                            : qsTr("Delete the selected session")
-              onClicked: Cpp_Sessions_Manager.confirmDeleteSession(
-                           Cpp_Sessions_Manager.selectedSessionId)
-              icon.source: "qrc:/icons/database/delete.svg"
-            }
-          }
-
-          //
-          // Lock / unlock section
-          //
-          Widgets.RibbonSection {
-            visible: !root.operatorMode
-
-            Widgets.ToolbarButton {
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-              text: Cpp_Sessions_Manager.locked
-                    ? qsTr("Unlock")
-                    : qsTr("Lock")
-              icon.source: Cpp_Sessions_Manager.locked
-                           ? "qrc:/icons/database/unlock.svg"
-                           : "qrc:/icons/database/lock.svg"
-              ToolTip.text: Cpp_Sessions_Manager.locked
-                            ? qsTr("Unlock the session file to allow deletions")
-                            : qsTr("Set a password to prevent session deletions")
-              onClicked: {
-                if (Cpp_Sessions_Manager.locked)
-                  Cpp_Sessions_Manager.unlockDatabase()
-                else
-                  Cpp_Sessions_Manager.lockDatabase()
-              }
-            }
-          }
-
-          //
-          // Export session
-          //
-          Widgets.RibbonSection {
-            Widgets.ToolbarButton {
-              text: qsTr("Export CSV")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-                       && Cpp_Sessions_Manager.selectedSessionId >= 0
-                       && !Cpp_Sessions_Manager.csvExportBusy
-              ToolTip.text: qsTr("Export selected session to CSV")
-              onClicked: Cpp_Sessions_Manager.exportSessionToCsv(
-                           Cpp_Sessions_Manager.selectedSessionId)
-              icon.source: "qrc:/icons/database/export-csv.svg"
-            }
-
-            Widgets.ToolbarButton {
-              text: qsTr("Export PDF")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-                       && Cpp_Sessions_Manager.selectedSessionId >= 0
-                       && !Cpp_Sessions_Manager.pdfExportBusy
-              ToolTip.text: qsTr("Generate a PDF report for the selected session")
-              onClicked: _reportDialog.openFor(Cpp_Sessions_Manager.selectedSessionId)
-              icon.source: "qrc:/icons/database/export-pdf.svg"
-            }
-          }
-
-          //
-          // Project section
-          //
-          Widgets.RibbonSection {
-            showSeparator: false
-            visible: !root.operatorMode
-
-            Widgets.ToolbarButton {
-              text: qsTr("Restore Project")
-              Layout.alignment: Qt.AlignVCenter
-              enabled: Cpp_Sessions_Manager.isOpen
-                       && Cpp_Sessions_Manager.selectedSessionId >= 0
-              ToolTip.text: qsTr("Restore the project file from this session file")
-              onClicked: Cpp_Sessions_Manager.restoreProjectFromDb()
-              icon.source: "qrc:/icons/database/restore.svg"
-            }
-          }
-
-          Widgets.RibbonSpacer {}
         }
       }
 

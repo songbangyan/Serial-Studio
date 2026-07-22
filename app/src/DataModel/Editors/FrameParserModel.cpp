@@ -33,6 +33,7 @@
 #include "DataModel/Scripting/FrameParserPipeline.h"
 #include "DataModel/Scripting/NativeTemplates/NativeTemplate.h"
 #include "IO/Checksum.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/Translator.h"
 #include "SerialStudio.h"
 
@@ -729,7 +730,8 @@ void DataModel::FrameParserModel::rebuildParameterModel()
   auto* header = new QStandardItem();
   header->setData(ProjectEditor::SectionHeader, ProjectEditor::WidgetType);
   header->setData(tr("Parameters"), ProjectEditor::PlaceholderValue);
-  header->setData(QStringLiteral("qrc:/icons/project-editor/model/widget.svg"),
+  static auto& registry = Misc::IconRegistry::instance();
+  header->setData(registry.iconById(QStringLiteral("editor/widget"), 16),
                   ProjectEditor::ParameterIcon);
   model->appendRow(header);
 

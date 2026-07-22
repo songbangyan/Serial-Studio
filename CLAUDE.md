@@ -99,6 +99,9 @@ to run from any directory.
 | `documentation-verify.py` | Markdown linter for AI-narration / marketing copy. Read-only; writes `.doc-report`. Targets `README.md`, `AGENTS.md`, `doc/help/**`, `examples/**/README.md` (CLAUDE.md is exempt). |
 | `expand-doxygen.py` | Rewrites single-line `/** text */` into the canonical 3-line block. |
 | `tu-cutter.py` | Deterministic TU splitter for god-class .cpp files: key-based manifest drives verbatim block moves into per-concern TUs + shared headers; refuses to cut unless the block parse reconstructs the original exactly. Used for the 2026-07 ProjectModel/ProjectEditor/ProjectHandler split (spec 0002). |
+| `registry-verify.py` | Spec-0028 registry lint: icon-tree layout/dup/qrc sync + command-manifest schema/ids/icons/shortcuts + commercial-guard scan of `app/qml/Commands/`. Run after touching icons, manifests, or bindings. |
+| `generate-command-strings.py` | Manifests -> `app/src/UI/CommandStrings.cpp` (lupdate stub, "Commands" context). Hooked into sanitize-commit; `--check` gates drift. |
+| `generate-legacy-icons.py` | icon-map.csv -> `Misc::legacyIconPath()` table mapping pre-0028 icon URLs persisted in user project files. Rerun only if the migration manifest changes. |
 
 Suppression: wrap a region in `// code-verify off` / `// code-verify on` (C++ and QML);
 `<!-- doc-verify off -->` / `<!-- doc-verify on -->` (Markdown). Suppressions are a
@@ -262,6 +265,25 @@ Parser,Batch}.cpp` + `ProjectApiSupport.h`, with registration staying in `Projec
 Facade headers are unchanged — QML/API contracts intact. Map in
 [doc/claude/directory-map.md](doc/claude/directory-map.md); splitter: `scripts/tu-cutter.py`
 (spec 0002 holds the manifests' logic and the collaborator-extraction plan).
+
+## Icon & Command Registry (spec 0028)
+
+Full detail + recipes: [doc/claude/architecture/commands-icons.md](doc/claude/architecture/commands-icons.md)
+(read before adding a toolbar button, palette entry, menu item, shortcut, or fixed icon).
+
+- **Icons**: `qrc:/icons/<category>/<tier>/<name>.svg` (tiers 16/24/32/48; `buttons/`
+  exempt). Resolve via `Misc::IconRegistry` — QML `Cpp_Misc_IconRegistry.icon(cat, name, px)`
+  / `iconById("cat/name", px)`, C++ `iconPath()` for QPixmap/QIcon. Nearest tier
+  at-or-above px; unknown ids warn once and serve `system/16/missing.svg`. Never hardcode a
+  path. Old URLs in saved projects remap via `Misc::legacyIconPath()`.
+- **Commands**: metadata declared once in `app/rcc/commands/*.json` (+ layout manifests in
+  `layouts/`), behavior bound per context in `app/qml/Commands/*CommandBindings.qml`, joined
+  by `CommandModel.qml`, rendered by `Widgets/CommandToolbar.qml`; loaded by
+  `UI::CommandRegistry` (`Cpp_UI_CommandRegistry`). **New command = one manifest entry + one
+  bindings entry**; palette, Start menu, toolbars, shortcuts follow. A command shows in a
+  palette only if its `contexts` includes that palette AND the context's model has a binding
+  for it (binding-set order `[app,dashboard]` main / `[dashboard,app]` dashboard). Commercial
+  bindings need a `Cpp_CommercialBuild` guard; run `scripts/registry-verify.py`.
 
 ## Code Style — Essentials
 

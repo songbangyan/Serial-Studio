@@ -306,6 +306,7 @@ public:
   Q_INVOKABLE [[nodiscard]] static SerialStudio::DashboardWidget getDashboardWidget(const DataModel::Group& group);
   Q_INVOKABLE [[nodiscard]] static QList<SerialStudio::DashboardWidget> getDashboardWidgets(const DataModel::Dataset& dataset);
   Q_INVOKABLE [[nodiscard]] static QString dashboardWidgetIcon(const SerialStudio::DashboardWidget w, const bool large = false);
+  Q_INVOKABLE [[nodiscard]] static QString dashboardWidgetIconId(const SerialStudio::DashboardWidget w);
   // clang-format on
 
   // clang-format off

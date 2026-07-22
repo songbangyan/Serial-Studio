@@ -567,7 +567,7 @@ ColumnLayout {
               Layout.maximumWidth: 32
               Layout.alignment: Qt.AlignVCenter
               icon.color: Cpp_ThemeManager.colors["table_text"]
-              icon.source: "qrc:/icons/project-editor/open.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "open", 48)
 
               background: Item {}
             }

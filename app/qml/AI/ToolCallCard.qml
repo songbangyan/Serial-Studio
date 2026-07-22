@@ -116,7 +116,7 @@ Rectangle {
         Layout.alignment: Qt.AlignVCenter
         fillMode: Image.PreserveAspectFit
         rotation: root.expanded ? 0 : 270
-        source: "qrc:/icons/project-editor/treeview/indicator.svg"
+        source: Cpp_Misc_IconRegistry.icon("editor", "indicator", 16)
 
         Behavior on rotation { NumberAnimation { duration: 120 } }
 

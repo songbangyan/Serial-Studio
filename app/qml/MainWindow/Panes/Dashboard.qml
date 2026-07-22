@@ -64,6 +64,12 @@ Item {
   property SS_UI.TaskBar taskBar: SS_UI.TaskBar {}
 
   //
+  // Main dashboard's palette model + open request, surfaced to the main window's single palette.
+  //
+  property alias paletteModel: _mainLayout.paletteModel
+  signal paletteRequested()
+
+  //
   // Main dashboard layout
   //
   DbItems.DashboardLayout {
@@ -74,6 +80,7 @@ Item {
     hostWindow: mainWindow
     widgetsStayOnTop: root.anyDashboardFullscreen
     onExternalWindowClicked: root.openExternalWindow()
+    onPaletteRequested: root.paletteRequested()
   }
 
   //

@@ -228,8 +228,8 @@ Item {
           collapsePriority: 10
           compactCollapse: true
           collapsedText: qsTr("Utilities")
-          collapsedIcon: "qrc:/icons/console/utilities.svg"
           separatorColor: Cpp_ThemeManager.colors["widget_border"]
+          collapsedIcon: Cpp_Misc_IconRegistry.icon("console", "utilities", 32)
 
           Widgets.IconButton {
             id: clearButton
@@ -243,7 +243,7 @@ Item {
             icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Clear console output")
-            icon.source: "qrc:/icons/console/clear.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "clear", 32)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
           }
 
@@ -259,7 +259,7 @@ Item {
             icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Search console output")
-            icon.source: "qrc:/icons/console/search.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "search", 32)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
 
             onClicked: {
@@ -285,9 +285,9 @@ Item {
             icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
             checked: Cpp_Console_Handler.collapseDuplicates
-            icon.source: "qrc:/icons/console/collapse-duplicates.svg"
             ToolTip.text: qsTr("Collapse repeated lines into a single entry")
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "collapse-duplicates", 32)
             onClicked: Cpp_Console_Handler.collapseDuplicates = !Cpp_Console_Handler.collapseDuplicates
           }
         }
@@ -313,8 +313,8 @@ Item {
             onClicked: terminal.paused = !terminal.paused
             text: terminal.paused ? qsTr("Resume") : qsTr("Pause")
             icon.source: terminal.paused
-                         ? "qrc:/icons/dashboard-buttons/resume.svg"
-                         : "qrc:/icons/dashboard-buttons/pause.svg"
+                         ? Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
+                         : Cpp_Misc_IconRegistry.icon("commands", "pause", 16)
             ToolTip.text: terminal.paused
                           ? qsTr("Resume console updates")
                           : qsTr("Freeze the console display (data keeps logging)")
@@ -337,8 +337,8 @@ Item {
           collapsePriority: 20
           compactCollapse: true
           collapsedText: qsTr("Format")
-          collapsedIcon: "qrc:/icons/console/plain-text.svg"
           separatorColor: Cpp_ThemeManager.colors["widget_border"]
+          collapsedIcon: Cpp_Misc_IconRegistry.icon("console", "plain-text", 16)
 
           Widgets.IconButton {
             flat: true
@@ -351,7 +351,7 @@ Item {
             ToolTip.text: qsTr("Plain text display mode")
             checked: Cpp_Console_Handler.displayMode === 0
             onClicked: Cpp_Console_Handler.displayMode = 0
-            icon.source: "qrc:/icons/console/plain-text.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "plain-text", 16)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
           }
 
@@ -366,7 +366,7 @@ Item {
             ToolTip.text: qsTr("Hex display mode")
             checked: Cpp_Console_Handler.displayMode === 1
             onClicked: Cpp_Console_Handler.displayMode = 1
-            icon.source: "qrc:/icons/console/hexadecimal.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "hexadecimal", 16)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
           }
         }
@@ -388,7 +388,7 @@ Item {
             icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Console settings")
-            icon.source: "qrc:/icons/console/settings.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "settings", 32)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
             onClicked: settingsPopup.visible ? settingsPopup.close() : settingsPopup.open()
 

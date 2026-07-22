@@ -93,7 +93,7 @@ public slots:
   void copy();
   void paste();
   void apply();
-  void import();
+  void importFile();
   void evaluate();
   void readCode();
   void selectAll();

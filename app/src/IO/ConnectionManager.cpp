@@ -882,7 +882,15 @@ void IO::ConnectionManager::disconnectAllDevices()
 void IO::ConnectionManager::shutdownDrivers()
 {
   disconnectAllDevices();
+
+  // code-verify off
+  // A driver's close() during destruction re-emits configurationChanged, which
+  // re-enters isConnected(); drain the member map first so that iteration sees
+  // an empty container instead of nodes being destroyed under it.
+  // code-verify on
+  auto devices = std::move(m_devices);
   m_devices.clear();
+  devices.clear();
 
   m_uartUi.reset();
   m_networkUi.reset();

@@ -30,7 +30,7 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
-  icon: "qrc:/icons/project-editor/treeview/folder.svg"
+  icon: Cpp_Misc_IconRegistry.icon("widgets", "folder", 16)
 
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
@@ -129,7 +129,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a sub-folder inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddTableFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/add-folder.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
           }
 
           Widgets.ToolbarButton {
@@ -139,7 +139,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a shared table inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddTableInFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/add-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-table", 24)
           }
 
           Item { Layout.fillWidth: true }
@@ -151,7 +151,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Rename folder")
             onClicked: Cpp_JSON_ProjectModel.promptRenameTableFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/rename-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename-table", 24)
           }
 
           Widgets.ToolbarButton {
@@ -161,7 +161,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Delete folder")
             onClicked: Cpp_JSON_ProjectModel.confirmDeleteTableFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/delete-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete-table", 24)
           }
         }
       }

@@ -300,17 +300,17 @@ Widgets.Pane {
                 toolbarButton: false
                 Layout.alignment: Qt.AlignVCenter
                 onClicked: frameParser.reload(true)
-                icon.source: "qrc:/icons/code-editor/reload.svg"
                 ToolTip.text: qsTr("Reset to the default parsing script")
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 16)
               }
 
               Widgets.ToolbarButton {
                 iconSize: 24
                 text: qsTr("Open")
                 toolbarButton: false
-                onClicked: frameParser.import()
+                onClicked: frameParser.importFile()
                 Layout.alignment: Qt.AlignVCenter
-                icon.source: "qrc:/icons/code-editor/open.svg"
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 16)
                 ToolTip.text: qsTr("Import a script file for data parsing")
               }
 
@@ -322,7 +322,7 @@ Widgets.Pane {
                 Layout.alignment: Qt.AlignVCenter
                 enabled: frameParser.undoAvailable
                 ToolTip.text: qsTr("Undo the last code edit")
-                icon.source: "qrc:/icons/code-editor/undo.svg"
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "undo", 24)
               }
 
               Widgets.ToolbarButton {
@@ -332,8 +332,8 @@ Widgets.Pane {
                 onClicked: frameParser.redo()
                 Layout.alignment: Qt.AlignVCenter
                 enabled: frameParser.redoAvailable
-                icon.source: "qrc:/icons/code-editor/redo.svg"
                 ToolTip.text: qsTr("Redo the previously undone edit")
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "redo", 24)
               }
 
               Rectangle {
@@ -350,8 +350,8 @@ Widgets.Pane {
                 toolbarButton: false
                 onClicked: frameParser.cut()
                 Layout.alignment: Qt.AlignVCenter
-                icon.source: "qrc:/icons/code-editor/cut.svg"
                 ToolTip.text: qsTr("Cut selected code to clipboard")
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "cut", 24)
               }
 
               Widgets.ToolbarButton {
@@ -360,8 +360,8 @@ Widgets.Pane {
                 toolbarButton: false
                 onClicked: frameParser.copy()
                 Layout.alignment: Qt.AlignVCenter
-                icon.source: "qrc:/icons/code-editor/copy.svg"
                 ToolTip.text: qsTr("Copy selected code to clipboard")
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "copy", 24)
               }
 
               Widgets.ToolbarButton {
@@ -371,7 +371,7 @@ Widgets.Pane {
                 onClicked: frameParser.paste()
                 Layout.alignment: Qt.AlignVCenter
                 ToolTip.text: qsTr("Paste code from clipboard")
-                icon.source: "qrc:/icons/code-editor/paste.svg"
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "paste", 24)
               }
 
               Item {
@@ -384,7 +384,7 @@ Widgets.Pane {
                 text: qsTr("Validate")
                 Layout.alignment: Qt.AlignVCenter
                 onClicked: frameParser.evaluate()
-                icon.source: "qrc:/icons/code-editor/test.svg"
+                icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 16)
                 ToolTip.text: qsTr("Verify that the script compiles correctly")
               }
             }

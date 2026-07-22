@@ -31,7 +31,7 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   title: qsTr("MQTT Publisher")
-  icon: "qrc:/icons/project-editor/treeview/mqtt-publisher.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "mqtt-publisher", 48)
 
   actionComponent: EditorNavActions {}
 
@@ -126,7 +126,7 @@ Widgets.Pane {
             text: qsTr("Test Connection")
             enabled: Cpp_MQTT_Publisher.enabled
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/project-editor/actions/test-connection.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "test-connection", 24)
             ToolTip.text: Cpp_MQTT_Publisher.enabled
                           ? qsTr("Probe the broker with the current settings")
                           : qsTr("Enable publishing first")
@@ -143,7 +143,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             visible: Cpp_MQTT_Publisher.mode === 1
             enabled: Cpp_MQTT_Publisher.enabled
-            icon.source: "qrc:/icons/project-editor/actions/edit-code.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "edit-code", 16)
             ToolTip.text: Cpp_MQTT_Publisher.enabled
                           ? qsTr("Edit the publisher script (Lua or JavaScript)")
                           : qsTr("Enable publishing first")
@@ -159,7 +159,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             text: qsTr("Load CA Certs")
             enabled: Cpp_MQTT_Publisher.enabled && Cpp_MQTT_Publisher.sslEnabled
-            icon.source: "qrc:/icons/project-editor/actions/load-ca-certs.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "load-ca-certs", 24)
             ToolTip.text: !Cpp_MQTT_Publisher.enabled
                           ? qsTr("Enable publishing first")
                           : (Cpp_MQTT_Publisher.sslEnabled

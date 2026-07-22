@@ -376,7 +376,7 @@ void DataModel::JsCodeEditor::apply()
 /**
  * @brief Opens a file dialog to import an external script file.
  */
-void DataModel::JsCodeEditor::import()
+void DataModel::JsCodeEditor::importFile()
 {
   const auto filter = (m_language == 1) ? QStringLiteral("*.lua") : QStringLiteral("*.js");
   const auto title =

@@ -297,7 +297,7 @@ void DataModel::PainterCodeEditor::formatSelection()
 /**
  * @brief Opens a file dialog to import an external JS file.
  */
-void DataModel::PainterCodeEditor::import()
+void DataModel::PainterCodeEditor::importFile()
 {
   auto* dialog = new QFileDialog(
     nullptr, tr("Select Javascript file to import"), QDir::homePath(), QStringLiteral("*.js"));

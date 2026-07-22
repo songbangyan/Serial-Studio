@@ -76,6 +76,7 @@
 #include "Misc/HelpCenter.h"
 #include "Misc/HighDpiScaling.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/ThemeManager.h"
 #include "Misc/TimerEvents.h"
 #include "Misc/Translator.h"
@@ -84,6 +85,7 @@
 #include "Platform/AppPlatform.h"
 #include "SerialStudio.h"
 #include "UI/AlarmMonitor.h"
+#include "UI/CommandRegistry.h"
 #include "UI/Dashboard.h"
 #include "UI/DashboardWidget.h"
 #include "UI/Taskbar.h"
@@ -770,6 +772,8 @@ void Misc::ModuleManager::registerCoreContextProperties(QQmlContext* ctx)
   ctx->setContextProperty("Cpp_HelpCenter", &Misc::HelpCenter::instance());
   ctx->setContextProperty("Cpp_ExtensionManager", &Misc::ExtensionManager::instance());
   ctx->setContextProperty("Cpp_Misc_IconEngine", &Misc::IconEngine::instance());
+  ctx->setContextProperty("Cpp_Misc_IconRegistry", &Misc::IconRegistry::instance());
+  ctx->setContextProperty("Cpp_UI_CommandRegistry", &UI::CommandRegistry::instance());
   ctx->setContextProperty("Cpp_Misc_GraphicsBackend", &Misc::GraphicsBackend::instance());
   ctx->setContextProperty("Cpp_Misc_HighDpiScaling", &Misc::HighDpiScaling::instance());
   ctx->setContextProperty("Cpp_Misc_CrashTracker", &Misc::CrashTracker::instance());

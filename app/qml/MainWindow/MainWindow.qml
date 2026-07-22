@@ -29,6 +29,7 @@ import SerialStudio
 import "Panes" as Panes
 import "../Widgets" as Widgets
 import "Panes/Dashboard" as DashPanes
+import "../Commands" as Commands
 
 Widgets.SmartWindow {
   id: root
@@ -414,34 +415,6 @@ Widgets.SmartWindow {
   // Shortcuts
   //
   Shortcut {
-    enabled: !app.runtimeMode
-    sequences: [StandardKey.Preferences]
-    onActivated: app.showSettingsDialog()
-  } Shortcut {
-    sequences: [StandardKey.Quit]
-    onActivated: app.quitApplication()
-  } Shortcut {
-    enabled: !app.runtimeMode
-    sequences: [StandardKey.Open]
-    onActivated: Cpp_CSV_Player.openFile()
-  } Shortcut {
-    sequence: "Ctrl+F"
-    enabled: root.dashboardVisible && Cpp_UI_TaskbarSettings.searchEnabled
-    onActivated: dashboard.focusTaskbarSearch()
-  } Shortcut {
-    sequence: "Ctrl+M"
-    enabled: root.dashboardVisible
-    context: Qt.ApplicationShortcut
-    onActivated: dashboard.toggleStartMenu()
-  } Shortcut {
-    sequence: "PgDown"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.cycleWorkspace(+1)
-  } Shortcut {
-    sequence: "PgUp"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.cycleWorkspace(-1)
-  } Shortcut {
     enabled: root.dashboardVisible && !root._focusOwnsTab()
     sequences: ["Tab"]
     onActivated: dashboard.cycleWindow(-1)
@@ -449,26 +422,6 @@ Widgets.SmartWindow {
     enabled: root.dashboardVisible && !root._focusOwnsTab()
     sequences: ["Backtab", "Shift+Tab"]
     onActivated: dashboard.cycleWindow(+1)
-  } Shortcut {
-    sequence: "Ctrl+Shift+W"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.closeActiveWindow()
-  } Shortcut {
-    sequence: "Ctrl+Shift+M"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.minimizeActiveWindow()
-  } Shortcut {
-    sequence: "Ctrl+Shift+L"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.toggleAutoLayout()
-  } Shortcut {
-    sequence: "Ctrl+Shift+F"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.toggleFreeze()
-  } Shortcut {
-    sequence: "Ctrl+Home"
-    enabled: root.dashboardVisible
-    onActivated: dashboard.clearActiveWindow()
   } Shortcut {
     sequence: "Ctrl+1"
     enabled: root.dashboardVisible
@@ -505,13 +458,27 @@ Widgets.SmartWindow {
     sequence: "Ctrl+9"
     enabled: root.dashboardVisible
     onActivated: dashboard.jumpToWorkspaceIndex(8)
-  } Shortcut {
-    sequence: "Ctrl+K"
-    onActivated: {
-      if (root.dashboardVisible)
-        dashboard.openWorkspaceSwitcher()
-      else
-        _mwPalette.toggle()
+  }
+
+  Instantiator {
+    model: {
+      void _mwCommandModel.revision
+      return Cpp_UI_CommandRegistry.shortcutCommands("main")
+    }
+
+    delegate: Shortcut {
+      required property var modelData
+
+      readonly property var behavior: _mwCommandModel.binding(modelData.id)
+
+      sequences: modelData.sequences
+      context: modelData.shortcutContext === "application" ? Qt.ApplicationShortcut
+                                                           : Qt.WindowShortcut
+      enabled: behavior !== null && behavior.enabled !== false
+      onActivated: {
+        if (behavior !== null)
+          behavior.run()
+      }
     }
   }
 
@@ -759,21 +726,48 @@ Widgets.SmartWindow {
     //
     // Application command palette (Ctrl+K when the dashboard is not the active pane, R12).
     //
-    MainWindowActions {
+    Commands.AppCommandBindings {
       id: _mwToolbarActions
 
+      dashboard: dashboard
+      mwPalette: _mwPalette
+      dashboardVisible: root.dashboardVisible
+    } Commands.DashboardCommandBindings {
+      id: _mwDashActions
+    } Commands.CommandModel {
+      id: _mwCommandModel
+
+      context: "app"
+      bindingSets: [_mwToolbarActions, _mwDashActions]
     } DashPanes.PaletteModel {
       id: _mwPaletteModel
 
       host: null
       taskBar: null
       workspacesEnabled: false
-      extraTools: _mwToolbarActions
+      extraTools: _mwCommandModel
       extraTitle: qsTr("Application")
     } Widgets.CommandPalette {
       id: _mwPalette
 
-      model: _mwPaletteModel
+      title: qsTr("Command Palette")
+      titleIcon: "qrc:/icons/buttons/workspaces.svg"
+
+      //
+      // When a dashboard is active, drive the single palette from its model (workspaces +
+      // widget search + dashboard commands); otherwise the application-context model.
+      //
+      model: (root.dashboardVisible && root.dashboard) ? root.dashboard.paletteModel
+                                                        : _mwPaletteModel
+    }
+
+    //
+    // The main dashboard's taskbar switcher button and Ctrl+K both open this one palette.
+    //
+    Connections {
+      target: root.dashboard
+      ignoreUnknownSignals: true
+      function onPaletteRequested() { _mwPalette.toggle() }
     }
   }
 }

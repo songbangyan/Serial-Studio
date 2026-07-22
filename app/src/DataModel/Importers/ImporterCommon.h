@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "DataModel/Frame.h"
+#include "Misc/IconRegistry.h"
 #include "SerialStudio.h"
 
 namespace DataModel {
@@ -195,10 +196,11 @@ inline void applyTableTransform(Dataset& dataset, const QString& table, const QS
 
   QJsonArray workspaces;
   if (perGroup.size() >= 2) {
+    static auto& registry = Misc::IconRegistry::instance();
     Workspace overview;
     overview.workspaceId = WorkspaceIds::UserStart;
     overview.title       = overviewTitle;
-    overview.icon        = QStringLiteral("qrc:/icons/panes/overview.svg");
+    overview.icon        = registry.iconById(QStringLiteral("panes/overview"), 16);
     for (const auto& ws : perGroup)
       overview.widgetRefs.insert(
         overview.widgetRefs.end(), ws.widgetRefs.begin(), ws.widgetRefs.end());

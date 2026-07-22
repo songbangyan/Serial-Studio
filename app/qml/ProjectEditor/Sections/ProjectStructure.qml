@@ -30,7 +30,7 @@ Widgets.Pane {
   id: root
 
   title: qsTr("Project Structure")
-  icon: "qrc:/icons/project-editor/windows/project-structure.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "project-structure", 16)
 
   signal groupClicked(var title)
   signal datasetClicked(var title)
@@ -424,7 +424,7 @@ Widgets.Pane {
           text: qsTr("Move Up")
           visible: treeView.ctxItemOrderable
           height: visible ? implicitHeight : 0
-          icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-up", 16)
           onTriggered: treeView.moveContextItemBy(-1)
         } MenuItem {
           icon.width: 16
@@ -432,7 +432,7 @@ Widgets.Pane {
           text: qsTr("Move Down")
           visible: treeView.ctxItemOrderable
           height: visible ? implicitHeight : 0
-          icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-down", 16)
           onTriggered: treeView.moveContextItemBy(1)
         }
 
@@ -454,7 +454,7 @@ Widgets.Pane {
           visible: treeView.ctxRenameable
           height: visible ? implicitHeight : 0
           onTriggered: treeView.renameCtxItem()
-          icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename", 16)
         }
 
         //
@@ -471,8 +471,8 @@ Widgets.Pane {
                    ? qsTr("Hide Selected (%1)").arg(treeView.enableableSelectionCount)
                    : qsTr("Show Selected (%1)").arg(treeView.enableableSelectionCount))
                 : (treeView.ctxItemEnabled ? qsTr("Hide") : qsTr("Show"))
-          icon.source: treeView.ctxItemEnabled ? "qrc:/icons/project-editor/actions/hide.svg" :
-                                                 "qrc:/icons/project-editor/actions/show.svg"
+          icon.source: treeView.ctxItemEnabled ? Cpp_Misc_IconRegistry.icon("editor", "hide", 16) :
+                                                 Cpp_Misc_IconRegistry.icon("editor", "show", 48)
           onTriggered: {
             const items = Cpp_JSON_ProjectEditor.selectedTreeItems()
             .filter(it => it.kind === ProjectEditor.KindGroup
@@ -491,7 +491,7 @@ Widgets.Pane {
           icon.height: 16
           height: visible ? implicitHeight : 0
           visible: treeView.selectableSelectionCount > 0
-          icon.source: "qrc:/icons/project-editor/actions/duplicate-small.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
           text: treeView.selectableSelectionCount > 1
                 ? qsTr("Duplicate Selected (%1)").arg(treeView.selectableSelectionCount)
                 : qsTr("Duplicate")
@@ -514,7 +514,7 @@ Widgets.Pane {
           icon.height: 16
           height: visible ? implicitHeight : 0
           visible: treeView.deletableSelectionCount > 0
-          icon.source: "qrc:/icons/project-editor/actions/delete-small.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
           text: treeView.deletableSelectionCount > 1
                 ? qsTr("Delete Selected (%1)").arg(treeView.deletableSelectionCount)
                 : qsTr("Delete")
@@ -566,7 +566,7 @@ Widgets.Pane {
           icon.width: 16
           icon.height: 16
           text: qsTr("Seed Aliases from Titles")
-          icon.source: "qrc:/icons/project-editor/actions/rename.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename", 16)
           onTriggered: Cpp_JSON_ProjectModel.seedDatasetAliases()
         }
 
@@ -588,7 +588,7 @@ Widgets.Pane {
           height: visible ? implicitHeight : 0
           visible: treeView.ctxSupportsFolders
           onTriggered: treeView.newTopFolderForCtx()
-          icon.source: "qrc:/icons/project-editor/actions/add-folder-small.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 16)
         }
 
         //
@@ -601,7 +601,7 @@ Widgets.Pane {
           visible: treeView.ctxIsFolder
           height: visible ? implicitHeight : 0
           onTriggered: treeView.newSubFolderForCtx()
-          icon.source: "qrc:/icons/project-editor/actions/add-folder-small.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 16)
         }
 
         //
@@ -615,14 +615,14 @@ Widgets.Pane {
           icon.height: 16
           title: qsTr("Move to Folder")
           enabled: treeView.ctxSupportsFolders
-          icon.source: "qrc:/icons/project-editor/actions/move-folder.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-folder", 16)
 
           MenuItem {
             icon.width: 16
             icon.height: 16
             text: qsTr("Top Level")
             onTriggered: treeView.moveCtxItemToFolder(-1)
-            icon.source: "qrc:/icons/project-editor/actions/top-level-folder.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "top-level-folder", 16)
           }
 
           MenuSeparator {
@@ -648,13 +648,13 @@ Widgets.Pane {
           icon.width: 16
           icon.height: 16
           title: folderTitle
-          icon.source: "qrc:/icons/project-editor/treeview/folder.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("widgets", "folder", 16)
 
           MenuItem {
             icon.width: 16
             icon.height: 16
             text: qsTr("Move Here")
-            icon.source: "qrc:/icons/project-editor/actions/move-here.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-here", 16)
             onTriggered: treeView.moveCtxItemToFolder(folderSubMenu.folderId2)
           }
 
@@ -969,7 +969,7 @@ Widgets.Pane {
             opacity: hasChildren ? 1 : 0
             rotation: expanded ? 0 : 270
             Layout.alignment: Qt.AlignVCenter
-            source: "qrc:/icons/project-editor/treeview/indicator.svg"
+            source: Cpp_Misc_IconRegistry.icon("editor", "indicator", 16)
 
             MouseArea {
               anchors.fill: parent
@@ -1111,7 +1111,7 @@ Widgets.Pane {
           Image {
             sourceSize: Qt.size(24, 24)
             Layout.alignment: Qt.AlignTop
-            source: "qrc:/icons/project-editor/treeview/save-warning.svg"
+            source: Cpp_Misc_IconRegistry.icon("editor", "save-warning", 24)
           }
 
           Label {

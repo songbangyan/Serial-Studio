@@ -466,7 +466,7 @@ QString AI::ContextBuilder::howToRecipe(const QString& task)
                           "2. project.workspace.add {title} -> returns "
                           "workspaceId (>= 1000). Then set an icon with "
                           "project.workspace.update {id, icon: "
-                          "'qrc:/icons/panes/overview.svg'} -- add only takes title, "
+                          "'qrc:/icons/panes/16/overview.svg'} -- add only takes title, "
                           "and without an icon the taskbar tile renders blank.\n"
                           "3. Pin widgets with assistant.workspace.addTile. See "
                           "meta.howTo('add_widget_to_workspace') for the exact rules.\n");
@@ -530,7 +530,7 @@ QString AI::ContextBuilder::howToRecipe(const QString& task)
                           "5. project.workspace.setCustomizeMode {enabled: true}, then "
                           "project.workspace.add {title: 'Overview'} followed by "
                           "project.workspace.update {id, icon: "
-                          "'qrc:/icons/panes/overview.svg'} -- always set an icon.\n"
+                          "'qrc:/icons/panes/16/overview.svg'} -- always set an icon.\n"
                           "6. For each pick, call assistant.workspace.addTile with "
                           "widgetType as a string slug. If a call fails, read its repair "
                           "hint and fix the preflight before retrying.\n"

@@ -30,7 +30,7 @@ Widgets.Pane {
   id: root
 
   title: qsTr("Console")
-  icon: "qrc:/icons/panes/console.svg"
+  icon: Cpp_Misc_IconRegistry.icon("widgets", "terminal", 16)
 
   Layout.minimumWidth: terminal.implicitWidth
   Layout.minimumHeight: terminal.implicitHeight

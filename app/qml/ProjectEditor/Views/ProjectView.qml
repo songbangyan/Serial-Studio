@@ -151,7 +151,7 @@ Widgets.Pane {
             icon.color: "transparent"
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Project settings")
-            icon.source: "qrc:/icons/console/settings.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("console", "settings", 32)
             Layout.preferredWidth: implicitContentWidth + leftPadding + rightPadding
             onClicked: settingsPopup.visible ? settingsPopup.close() : settingsPopup.open()
 
@@ -298,25 +298,25 @@ Widgets.Pane {
           Repeater {
             model: [
               {
-                icon:     "qrc:/icons/project-editor/summary/device.svg",
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "device", 16),
                 value:    Cpp_JSON_ProjectModel.sourceCount,
                 singular: qsTr("Source"),
                 plural:   qsTr("Sources")
               },
               {
-                icon:     "qrc:/icons/project-editor/summary/group.svg",
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "group", 32),
                 value:    Cpp_JSON_ProjectModel.groupCount,
                 singular: qsTr("Group"),
                 plural:   qsTr("Groups")
               },
               {
-                icon:     "qrc:/icons/project-editor/summary/dataset.svg",
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "dataset", 32),
                 value:    Cpp_JSON_ProjectModel.datasetCount,
                 singular: qsTr("Dataset"),
                 plural:   qsTr("Datasets")
               },
               {
-                icon:     "qrc:/icons/project-editor/summary/action.svg",
+                icon:     Cpp_Misc_IconRegistry.icon("editor", "action", 32),
                 value:    statsBar.actionCount,
                 singular: qsTr("Action"),
                 plural:   qsTr("Actions")

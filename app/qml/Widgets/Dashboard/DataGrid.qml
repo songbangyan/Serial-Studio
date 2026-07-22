@@ -89,8 +89,8 @@ Item {
 
     DashboardToolButton {
       checked: !root.running
-      icon.source: root.running ? "qrc:/icons/dashboard-buttons/pause.svg"
-                                : "qrc:/icons/dashboard-buttons/resume.svg"
+      icon.source: root.running ? Cpp_Misc_IconRegistry.icon("commands", "pause", 16)
+                                : Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
       onClicked: root.running = !root.running
       text: root.running ? qsTr("Pause") : qsTr("Resume")
       ToolTip.text: root.running ? qsTr("Pause") : qsTr("Resume")

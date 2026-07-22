@@ -104,8 +104,16 @@ RowLayout {
   Repeater {
     delegate: _navButton
     model: [
-      { act: "back", tip: qsTr("Go back"), icon: "qrc:/icons/project-editor/actions/left.svg" },
-      { act: "forward", tip: qsTr("Go forward"), icon: "qrc:/icons/project-editor/actions/right.svg" }
+      {
+        act: "back",
+        tip: qsTr("Go back"),
+        icon: Cpp_Misc_IconRegistry.icon("editor", "left", 16)
+      },
+      {
+        act: "forward",
+        tip: qsTr("Go forward"),
+        icon: Cpp_Misc_IconRegistry.icon("editor", "right", 16)
+      }
     ]
   }
 
@@ -119,11 +127,15 @@ RowLayout {
   Repeater {
     delegate: _navButton
     model: [
-      { act: "moveUp", tip: qsTr("Move Up"), icon: "qrc:/icons/project-editor/actions/move-up.svg" },
+      {
+        act: "moveUp",
+        tip: qsTr("Move Up"),
+        icon: Cpp_Misc_IconRegistry.icon("editor", "move-up", 16)
+      },
       {
         act: "moveDown",
         tip: qsTr("Move Down"),
-        icon: "qrc:/icons/project-editor/actions/move-down.svg"
+        icon: Cpp_Misc_IconRegistry.icon("editor", "move-down", 16)
       }
     ]
   }

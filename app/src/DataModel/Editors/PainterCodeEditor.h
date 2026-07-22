@@ -56,7 +56,7 @@ public slots:
   void copy();
   void paste();
   void commit();
-  void import();
+  void importFile();
   void selectAll();
   void readCode();
   void formatDocument();

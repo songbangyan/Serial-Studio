@@ -39,6 +39,7 @@
 #endif
 
 #include "Misc/CommonFonts.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/ThemeManager.h"
 
 namespace CSD {
@@ -200,11 +201,16 @@ void Titlebar::paint(QPainter* painter)
   painter->drawText(rect, Qt::AlignCenter, title());
 #endif
 
+  static auto& registry = Misc::IconRegistry::instance();
+
   // clang-format off
-  const QString closeSvg = QStringLiteral(":/icons/csd/close.svg");
-  const QString minimizeSvg = QStringLiteral(":/icons/csd/minimize.svg");
-  const QString maximizeSvg = isMaximized() ? QStringLiteral(":/icons/csd/restore.svg")
-                                            : QStringLiteral(":/icons/csd/maximize.svg");
+  const QString closeSvg =
+    registry.iconPath(QStringLiteral("window"), QStringLiteral("close"), 32);
+  const QString minimizeSvg =
+    registry.iconPath(QStringLiteral("window"), QStringLiteral("minimize"), 32);
+  const QString maximizeSvg =
+    isMaximized() ? registry.iconPath(QStringLiteral("window"), QStringLiteral("restore"), 32)
+                  : registry.iconPath(QStringLiteral("window"), QStringLiteral("maximize"), 32);
   // clang-format on
 
   if (shouldShowButton(Button::Close))

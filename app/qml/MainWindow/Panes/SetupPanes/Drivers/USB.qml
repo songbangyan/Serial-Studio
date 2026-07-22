@@ -237,7 +237,7 @@ Item {
         sourceSize.width: 20
         sourceSize.height: 20
         Layout.alignment: Qt.AlignTop
-        source: "qrc:/icons/panes/info.svg"
+        source: Cpp_Misc_IconRegistry.icon("panes", "info", 24)
       }
 
       ColumnLayout {
@@ -284,7 +284,7 @@ Item {
         sourceSize.width: 20
         sourceSize.height: 20
         Layout.alignment: Qt.AlignTop
-        source: "qrc:/icons/panes/important.svg"
+        source: Cpp_Misc_IconRegistry.icon("panes", "important", 24)
       }
 
       Label {
@@ -324,7 +324,7 @@ Item {
         sourceSize.width: 32
         sourceSize.height: 32
         Layout.alignment: Qt.AlignTop
-        source: "qrc:/icons/panes/important.svg"
+        source: Cpp_Misc_IconRegistry.icon("panes", "important", 24)
       }
 
       ColumnLayout {
@@ -375,7 +375,7 @@ Item {
         sourceSize.width: 20
         sourceSize.height: 20
         Layout.alignment: Qt.AlignVCenter
-        source: "qrc:/icons/panes/info.svg"
+        source: Cpp_Misc_IconRegistry.icon("panes", "info", 24)
       }
 
       Label {

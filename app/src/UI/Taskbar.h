@@ -58,6 +58,7 @@ public:
     GroupNameRole,
     IsGroupRole,
     WindowStateRole,
+    IconIdRole,
   };
 
   enum WindowState {

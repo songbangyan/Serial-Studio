@@ -75,7 +75,7 @@ public slots:
   void redo();
   void copy();
   void paste();
-  void import();
+  void importFile();
   void reload();
   void evaluate();
   void selectAll();

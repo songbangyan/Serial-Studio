@@ -182,6 +182,11 @@ def main() -> int:
     )
 
     run_python_step(
+        "Regenerating command translation strings",
+        root / "scripts" / "generate-command-strings.py",
+    )
+
+    run_python_step(
         "Rebuilding AI search index",
         root / "app" / "rcc" / "ai" / "build_search_index.py",
     )

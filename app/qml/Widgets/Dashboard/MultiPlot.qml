@@ -308,8 +308,8 @@ Item {
                                                 root.interpolationMode)
       }
       icon.source: root.interpolationMode === SerialStudio.InterpolationNone
-                     ? "qrc:/icons/dashboard-buttons/interpolate-off.svg"
-                     : "qrc:/icons/dashboard-buttons/interpolate-on.svg"
+                     ? Cpp_Misc_IconRegistry.icon("commands", "interpolate-off", 16)
+                     : Cpp_Misc_IconRegistry.icon("commands", "interpolate-on", 16)
     }
 
     Rectangle {
@@ -326,7 +326,7 @@ Item {
       }
       checked: root.userShowXLabel
       ToolTip.text: qsTr("Show X Axis Label")
-      icon.source: "qrc:/icons/dashboard-buttons/x.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "x", 16)
     }
 
     DashboardToolButton {
@@ -337,7 +337,7 @@ Item {
       }
       checked: root.userShowYLabel
       ToolTip.text: qsTr("Show Y Axis Label")
-      icon.source: "qrc:/icons/dashboard-buttons/y.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "y", 16)
     }
 
     Rectangle {
@@ -350,7 +350,7 @@ Item {
       checked: plot.showCrosshairs
       ToolTip.text: qsTr("Show Crosshair")
       onClicked: plot.showCrosshairs = !plot.showCrosshairs
-      icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "crosshair", 16)
     }
 
     Rectangle {
@@ -364,7 +364,7 @@ Item {
       visible: root.sweepAllowed
       checked: root.model.sweepEnabled
       ToolTip.text: qsTr("Sweep / Trigger Mode")
-      icon.source: "qrc:/icons/dashboard-buttons/sweep.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "sweep", 16)
       onClicked: {
         root.model.sweepEnabled = !root.model.sweepEnabled
         root.resetSweepSettings()
@@ -376,7 +376,7 @@ Item {
       opacity: enabled ? 1 : 0.5
       enabled: root.model.sweepEnabled
       ToolTip.text: qsTr("Trigger Settings")
-      icon.source: "qrc:/icons/dashboard-buttons/trigger.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "trigger", 24)
       onClicked: triggerDialog.openDialog(root.model, true)
     }
 
@@ -400,13 +400,13 @@ Item {
       }
       opacity: enabled ? 1 : 0.5
       ToolTip.text: qsTr("Reset View")
-      icon.source: "qrc:/icons/dashboard-buttons/return.svg"
       enabled: plot.xAxis.zoom !== 1 || plot.yAxis.zoom !== 1
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "return", 16)
     }
 
     DashboardToolButton {
       ToolTip.text: qsTr("Axis Range Settings")
-      icon.source: "qrc:/icons/toolbar/settings.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "settings", 32)
       onClicked: axisRangeDialog.openDialog(plot, root.model)
     }
 
@@ -420,8 +420,8 @@ Item {
       checked: !model.running
       ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
       icon.source: model.running?
-                     "qrc:/icons/dashboard-buttons/pause.svg" :
-                     "qrc:/icons/dashboard-buttons/resume.svg"
+                     Cpp_Misc_IconRegistry.icon("commands", "pause", 16) :
+                     Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
       onClicked: model.running = !model.running
     }
 

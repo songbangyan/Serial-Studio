@@ -31,7 +31,7 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   title: qsTr("Workspaces")
-  icon: "qrc:/icons/project-editor/treeview/workspaces.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "workspace", 48)
 
   actionComponent: EditorNavActions {}
 
@@ -128,7 +128,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Add a top-level folder")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceFolder(-1)
-            icon.source: "qrc:/icons/project-editor/actions/add-folder.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
           }
 
           Widgets.ToolbarButton {
@@ -139,7 +139,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Add workspace")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspace()
-            icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
           }
 
           Item { Layout.fillWidth: true }
@@ -154,7 +154,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Edit workspaces manually")
             checked: Cpp_JSON_ProjectModel.customizeWorkspaces
-            icon.source: "qrc:/icons/project-editor/actions/customize.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "customize", 24)
             onClicked: {
               if (Cpp_JSON_ProjectModel.customizeWorkspaces)
                 Cpp_JSON_ProjectModel.confirmResetWorkspacesToAuto()
@@ -176,7 +176,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.unresolvedCount > 0
             onClicked: Cpp_JSON_ProjectEditor.confirmCleanupUnresolvedWorkspaceWidgets()
-            icon.source: "qrc:/icons/project-editor/actions/clear.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "clear", 32)
           }
         }
       }

@@ -69,7 +69,7 @@ Window {
         Image {
           sourceSize: Qt.size(18, 18)
           Layout.alignment: Qt.AlignVCenter
-          source: "qrc:/icons/project-editor/treeview/code.svg"
+          source: Cpp_Misc_IconRegistry.icon("editor", "code", 16)
         }
 
         Label {
@@ -86,10 +86,10 @@ Window {
           text: qsTr("Import")
           toolbarButton: false
           horizontalLayout: true
-          onClicked: editor.import()
+          onClicked: editor.importFile()
           Layout.alignment: Qt.AlignVCenter
-          icon.source: "qrc:/icons/code-editor/open.svg"
           ToolTip.text: qsTr("Import painter code from a .js file")
+          icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 16)
         }
 
         Widgets.ToolbarButton {
@@ -99,8 +99,8 @@ Window {
           text: qsTr("Template")
           Layout.alignment: Qt.AlignVCenter
           onClicked: editor.selectTemplate()
-          icon.source: "qrc:/icons/code-editor/template.svg"
           ToolTip.text: qsTr("Select a built-in painter template")
+          icon.source: Cpp_Misc_IconRegistry.icon("code", "template", 16)
         }
 
         Widgets.ToolbarButton {
@@ -111,7 +111,7 @@ Window {
           onClicked: editor.formatDocument()
           Layout.alignment: Qt.AlignVCenter
           ToolTip.text: qsTr("Reformat the painter code")
-          icon.source: "qrc:/icons/code-editor/reload.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 16)
         }
 
         Widgets.ToolbarButton {
@@ -120,7 +120,7 @@ Window {
           toolbarButton: false
           horizontalLayout: true
           Layout.alignment: Qt.AlignVCenter
-          icon.source: "qrc:/icons/code-editor/test.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 16)
           ToolTip.text: qsTr("Open a live preview with simulated dataset values")
           onClicked: {
             const ds = Cpp_JSON_ProjectEditor.currentGroupDatasetsForPreview()

@@ -31,7 +31,7 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
-  icon: "qrc:/icons/project-editor/treeview/group.svg"
+  icon: Cpp_Misc_IconRegistry.icon("widgets", "group", 16)
 
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
@@ -149,7 +149,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Add widget to workspace")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: addWidgetDialog.open(root.workspaceId)
-            icon.source: "qrc:/icons/project-editor/actions/add-dataset.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-dataset", 24)
           }
 
           Item { Layout.fillWidth: true }
@@ -163,7 +163,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.workspaceId >= 5000
             onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(root.workspaceId, -1)
-            icon.source: "qrc:/icons/project-editor/actions/move-up.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-up", 16)
           }
 
           Widgets.ToolbarButton {
@@ -175,7 +175,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.workspaceId >= 5000
             onClicked: Cpp_JSON_ProjectEditor.moveWorkspace(root.workspaceId, 1)
-            icon.source: "qrc:/icons/project-editor/actions/move-down.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "move-down", 16)
           }
 
           Widgets.ToolbarButton {
@@ -192,7 +192,7 @@ Widgets.Pane {
             }
             icon.source: root.workspaceIcon.length > 0
                          ? Cpp_Misc_IconEngine.resolveActionIconSource(root.workspaceIcon)
-                         : "qrc:/icons/dashboard-large/workspace.svg"
+                         : Cpp_Misc_IconRegistry.icon("widgets", "workspace", 32)
           }
 
           Widgets.ToolbarButton {
@@ -203,7 +203,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Rename workspace")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptRenameWorkspace(root.workspaceId)
-            icon.source: "qrc:/icons/project-editor/actions/rename-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename-table", 24)
           }
 
           Widgets.ToolbarButton {
@@ -214,7 +214,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Delete workspace")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.confirmDeleteWorkspace(root.workspaceId)
-            icon.source: "qrc:/icons/project-editor/actions/delete-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete-table", 24)
           }
         }
       }

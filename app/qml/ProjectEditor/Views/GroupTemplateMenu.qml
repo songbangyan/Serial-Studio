@@ -41,7 +41,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Dataset Container")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
     onTriggered: root.add(qsTr("Dataset Container"), SerialStudio.NoGroupWidget)
   }
 
@@ -49,7 +49,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Data Grid")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-datagrid.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "datagrid", 16)
     onTriggered: root.add(qsTr("Data Grid"), SerialStudio.DataGrid)
   }
 
@@ -57,7 +57,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Multi-Plot")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-multiplot.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "multiplot", 16)
     onTriggered: root.add(qsTr("Multiple Plot"), SerialStudio.MultiPlot)
   }
 
@@ -65,7 +65,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("3D Plot")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-plot3d.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "plot3d", 16)
     onTriggered: root.add(qsTr("3D Plot"), SerialStudio.Plot3D)
   }
 
@@ -73,7 +73,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Accelerometer")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-accelerometer.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "accelerometer", 16)
     onTriggered: root.add(qsTr("Accelerometer"), SerialStudio.Accelerometer)
   }
 
@@ -81,7 +81,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Gyroscope")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-gyroscope.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gyroscope", 16)
     onTriggered: root.add(qsTr("Gyroscope"), SerialStudio.Gyroscope)
   }
 
@@ -89,7 +89,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("GPS Map")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-gps.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gps", 16)
     onTriggered: root.add(qsTr("GPS Map"), SerialStudio.GPS)
   }
 
@@ -97,7 +97,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Image View")
-    icon.source: "qrc:/icons/project-editor/toolbar/image.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "image", 32)
     onTriggered: root.add(qsTr("Image View"), SerialStudio.ImageView)
   }
 
@@ -105,7 +105,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Web View")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-webview.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "webview", 32)
     onTriggered: root.add(qsTr("Web View"), SerialStudio.WebView)
   }
 
@@ -113,7 +113,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Painter Widget")
-    icon.source: "qrc:/icons/project-editor/toolbar/add-painter.svg"
+    icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-painter", 16)
     onTriggered: root.add(qsTr("Painter Widget"), SerialStudio.Painter)
   }
 }

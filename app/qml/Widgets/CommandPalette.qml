@@ -299,7 +299,9 @@ Item {
             height: 32
             opacity: 0.9
             sourceSize: Qt.size(32, 32)
-            source: _cell.modelData.icon
+            source: _cell.modelData.iconId && _cell.modelData.iconId.length
+                    ? Cpp_Misc_IconRegistry.iconById(_cell.modelData.iconId, 32)
+                    : _cell.modelData.icon
             Layout.alignment: Qt.AlignHCenter
             color: _cell.modelData.isAdd === true
                    ? (_cell.highlighted ? Cpp_ThemeManager.colors["highlighted_text"]
@@ -380,7 +382,9 @@ Item {
             opacity: 0.9
             color: "transparent"
             sourceSize: Qt.size(18, 18)
-            source: _row.modelData.icon
+            source: _row.modelData.iconId && _row.modelData.iconId.length
+                    ? Cpp_Misc_IconRegistry.iconById(_row.modelData.iconId, 18)
+                    : _row.modelData.icon
             Layout.alignment: Qt.AlignVCenter
           }
 
@@ -404,6 +408,15 @@ Item {
             font: Cpp_Misc_CommonFonts.customUiFont(0.8, false)
             color: _row.highlighted ? Cpp_ThemeManager.colors["highlighted_text"]
                                     : Cpp_ThemeManager.colors["text"]
+          }
+
+          Label {
+            opacity: 0.55
+            verticalAlignment: Text.AlignVCenter
+            text: _row.modelData.shortcut !== undefined ? _row.modelData.shortcut : ""
+            visible: _row.modelData.shortcut !== undefined && _row.modelData.shortcut.length > 0
+            font: Cpp_Misc_CommonFonts.customUiFont(0.8, false)
+            color: Cpp_ThemeManager.colors["text"]
           }
         }
 

@@ -509,7 +509,7 @@ void API::Handlers::WorkspacesHandler::registerWorkspaceCrudCommands()
         QStringLiteral("New workspace title (optional)")},
        {QStringLiteral("icon"),
         QStringLiteral("string"),
-        QStringLiteral("New workspace icon, e.g. 'qrc:/icons/panes/overview.svg' (optional)")},
+        QStringLiteral("New workspace icon, e.g. 'qrc:/icons/panes/16/overview.svg' (optional)")},
        {QStringLiteral("description"),
         QStringLiteral("string"),
         QStringLiteral("Free-text intent / audience note for the workspace (optional)")}}),

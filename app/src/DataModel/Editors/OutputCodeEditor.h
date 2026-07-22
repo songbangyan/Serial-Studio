@@ -66,7 +66,7 @@ public slots:
   void redo();
   void copy();
   void paste();
-  void import();
+  void importFile();
   void selectAll();
   void readCode();
   void formatDocument();

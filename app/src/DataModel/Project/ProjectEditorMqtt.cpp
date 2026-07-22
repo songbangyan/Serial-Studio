@@ -42,6 +42,7 @@
 #  include "MQTT/Publisher.h"
 #  include "MQTT/PublisherScriptEditor.h"
 #endif
+#include "Misc/IconRegistry.h"
 #include "ProjectEditorItemIds.h"
 #include "ProjectEditorShared.h"
 
@@ -109,7 +110,8 @@ void DataModel::ProjectEditor::buildMqttPublishingSection(const MQTT::Publisher&
   auto* pubHdr = new QStandardItem();
   pubHdr->setData(SectionHeader, WidgetType);
   pubHdr->setData(tr("Publishing"), PlaceholderValue);
-  pubHdr->setData("qrc:/icons/project-editor/model/mqtt-publishing.svg", ParameterIcon);
+  static auto& registry = Misc::IconRegistry::instance();
+  pubHdr->setData(registry.iconById(QStringLiteral("editor/output-range"), 16), ParameterIcon);
   m_mqttPublisherModel->appendRow(pubHdr);
 
   auto* enabledItem = new QStandardItem();
@@ -208,7 +210,8 @@ void DataModel::ProjectEditor::buildMqttBrokerSection(const MQTT::Publisher& pub
   auto* brokerHdr = new QStandardItem();
   brokerHdr->setData(SectionHeader, WidgetType);
   brokerHdr->setData(tr("Broker"), PlaceholderValue);
-  brokerHdr->setData("qrc:/icons/project-editor/model/mqtt-broker.svg", ParameterIcon);
+  static auto& registry = Misc::IconRegistry::instance();
+  brokerHdr->setData(registry.iconById(QStringLiteral("editor/mqtt-broker"), 16), ParameterIcon);
   m_mqttPublisherModel->appendRow(brokerHdr);
 
   auto* hostItem = new QStandardItem();
@@ -330,7 +333,8 @@ void DataModel::ProjectEditor::buildMqttSslSection(const MQTT::Publisher& pub, b
   auto* sslHdr = new QStandardItem();
   sslHdr->setData(SectionHeader, WidgetType);
   sslHdr->setData(tr("SSL / TLS"), PlaceholderValue);
-  sslHdr->setData("qrc:/icons/project-editor/model/mqtt-ssl.svg", ParameterIcon);
+  static auto& registry = Misc::IconRegistry::instance();
+  sslHdr->setData(registry.iconById(QStringLiteral("editor/mqtt-ssl"), 16), ParameterIcon);
   m_mqttPublisherModel->appendRow(sslHdr);
 
   auto* sslItem = new QStandardItem();

@@ -31,7 +31,7 @@ Widgets.Pane {
 
   implicitWidth: 0
   implicitHeight: 0
-  icon: "qrc:/icons/project-editor/treeview/folder.svg"
+  icon: Cpp_Misc_IconRegistry.icon("widgets", "folder", 16)
 
   readonly property bool rtl: Cpp_Misc_Translator.rtl
 
@@ -131,7 +131,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             ToolTip.text: qsTr("Add a sub-folder inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/add-folder.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
           }
 
           Widgets.ToolbarButton {
@@ -142,7 +142,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             ToolTip.text: qsTr("Add a workspace inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceInFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/toolbar/add-group.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
           }
 
           Item { Layout.fillWidth: true }
@@ -155,7 +155,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Rename folder")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptRenameWorkspaceFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/rename-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "rename-table", 24)
           }
 
           Widgets.ToolbarButton {
@@ -166,7 +166,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Delete folder")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.confirmDeleteWorkspaceFolder(root.folderId)
-            icon.source: "qrc:/icons/project-editor/actions/delete-table.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete-table", 24)
           }
         }
       }

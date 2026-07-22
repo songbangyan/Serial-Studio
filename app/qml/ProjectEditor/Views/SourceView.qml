@@ -109,7 +109,7 @@ Widgets.Pane {
             text: qsTr("Duplicate")
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Create a copy of this data source")
-            icon.source: "qrc:/icons/project-editor/actions/duplicate.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
             onClicked: Cpp_JSON_ProjectModel.duplicateSource(
                          Cpp_JSON_ProjectEditor.selectedSourceId)
           }
@@ -123,7 +123,7 @@ Widgets.Pane {
             text: qsTr("Delete")
             Layout.alignment: Qt.AlignVCenter
             enabled: Cpp_JSON_ProjectEditor.selectedSourceId > 0
-            icon.source: "qrc:/icons/project-editor/actions/delete.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
             ToolTip.text: Cpp_JSON_ProjectEditor.selectedSourceId > 0
                           ? qsTr("Remove this data source")
                           : qsTr("The primary data source cannot be removed")

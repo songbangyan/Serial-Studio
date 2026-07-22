@@ -111,7 +111,7 @@ Widgets.SmartDialog {
             sourceSize.width: 128
             sourceSize.height: 128
             Layout.alignment: Qt.AlignVCenter
-            source: "qrc:/icons/licensing/license.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "license", 48)
           }
 
           ColumnLayout {
@@ -228,7 +228,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/plan.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "plan", 16)
           }
 
           Label {
@@ -245,7 +245,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/user.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "user", 16)
             visible: Cpp_Licensing_LemonSqueezy.customerName.length > 0
           }
 
@@ -265,7 +265,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/email.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "email", 16)
           }
 
           Label {
@@ -282,7 +282,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/devices.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "devices", 16)
           }
 
           Label {
@@ -301,7 +301,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/uuid.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "uuid", 16)
           }
 
           Label {
@@ -347,7 +347,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/key.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "key", 16)
             visible: Cpp_Licensing_LemonSqueezy.variantName.indexOf("Pro") !== -1
           }
 
@@ -419,7 +419,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/plan.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "plan", 16)
           }
 
           Label {
@@ -436,7 +436,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/uuid.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "uuid", 16)
           }
 
           Label {
@@ -453,7 +453,7 @@ Widgets.SmartDialog {
           Image {
             sourceSize.width: 18
             sourceSize.height: 18
-            source: "qrc:/icons/licensing/key.svg"
+            source: Cpp_Misc_IconRegistry.icon("licensing", "key", 16)
           }
 
           Label {

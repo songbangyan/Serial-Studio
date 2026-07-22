@@ -53,6 +53,7 @@
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/JsonValidator.h"
 #include "Misc/PasswordHash.h"
 #include "Misc/Translator.h"
@@ -674,11 +675,12 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
   if (eligibleGroups == 0)
     return result;
 
+  static auto& registry = Misc::IconRegistry::instance();
   if (overviewRefs.size() >= 2) {
     DataModel::Workspace ws;
     ws.workspaceId = WorkspaceIds::Overview;
     ws.title       = tr("Overview");
-    ws.icon        = QStringLiteral("qrc:/icons/panes/overview.svg");
+    ws.icon        = registry.iconById(QStringLiteral("panes/overview"), 16);
     ws.widgetRefs  = overviewRefs;
     result.push_back(std::move(ws));
   }
@@ -687,7 +689,7 @@ std::vector<DataModel::Workspace> DataModel::ProjectModel::buildAutoWorkspaces()
     DataModel::Workspace ws;
     ws.workspaceId = WorkspaceIds::AllData;
     ws.title       = tr("All Data");
-    ws.icon        = QStringLiteral("qrc:/icons/panes/dashboard.svg");
+    ws.icon        = registry.iconById(QStringLiteral("panes/dashboard"), 16);
     ws.widgetRefs  = allRefs;
     result.push_back(std::move(ws));
   }

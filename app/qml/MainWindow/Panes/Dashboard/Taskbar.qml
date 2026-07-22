@@ -399,7 +399,9 @@ Item {
                         Layout.preferredWidth: 16
                         Layout.preferredHeight: 16
                         sourceSize: Qt.size(16, 16)
-                        source: _tbRow.modelData.icon
+                        source: _tbRow.modelData.iconId && _tbRow.modelData.iconId.length
+                                ? Cpp_Misc_IconRegistry.iconById(_tbRow.modelData.iconId, 16)
+                                : _tbRow.modelData.icon
                       }
 
                       Label {
@@ -548,16 +550,18 @@ Item {
 
           icon.source: {
             switch (modelData) {
-            case "settings":          return "qrc:/icons/taskbar/settings.svg"
-            case "console":           return "qrc:/icons/taskbar/console.svg"
-            case "notifications":     return "qrc:/icons/taskbar/notifications.svg"
-            case "clock":             return "qrc:/icons/taskbar/clock.svg"
-            case "stopwatch":         return "qrc:/icons/taskbar/stopwatch.svg"
-            case "file_transmission": return "qrc:/icons/taskbar/file-transmission.svg"
-            case "ai_assistant":      return "qrc:/icons/taskbar/ai.svg"
+            case "settings":          return Cpp_Misc_IconRegistry.icon("commands", "settings", 16)
+            case "console":           return Cpp_Misc_IconRegistry.icon("commands", "console", 32)
+            case "notifications":     return Cpp_Misc_IconRegistry.icon(
+                                             "widgets", "notification-log", 16)
+            case "clock":             return Cpp_Misc_IconRegistry.icon("widgets", "clock", 16)
+            case "stopwatch":         return Cpp_Misc_IconRegistry.icon("widgets", "stopwatch", 16)
+            case "file_transmission": return Cpp_Misc_IconRegistry.icon(
+                                             "commands", "file-transmission", 16)
+            case "ai_assistant":      return Cpp_Misc_IconRegistry.icon("commands", "ai", 48)
             case "pause":             return Cpp_IO_Manager.paused
-                                             ? "qrc:/icons/taskbar/resume.svg"
-                                             : "qrc:/icons/taskbar/pause.svg"
+                                             ? Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
+                                             : Cpp_Misc_IconRegistry.icon("commands", "pause", 16)
             }
             return ""
           }

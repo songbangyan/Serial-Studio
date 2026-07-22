@@ -29,6 +29,7 @@
 #include "DataModel/FrameBuilder.h"
 #include "DataModel/ProjectModel.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "UI/Dashboard.h"
 #include "UI/UISessionRegistry.h"
 #include "UI/WidgetRegistry.h"
@@ -58,6 +59,7 @@ QHash<int, QByteArray> UI::TaskbarModel::roleNames() const
     { WidgetNameRole,  BAL("widgetName")},
     { WidgetIconRole,  BAL("widgetIcon")},
     {WindowStateRole, BAL("windowState")},
+    {     IconIdRole,      BAL("iconId")},
   };
 #undef BAL
 
@@ -1013,6 +1015,7 @@ void UI::Taskbar::buildOverviewGroupItem(QStandardItem* groupItem,
   groupItem->setData(groupName, TaskbarModel::WidgetNameRole);
   groupItem->setData(groupType, TaskbarModel::WidgetTypeRole);
   groupItem->setData(groupIcon, TaskbarModel::WidgetIconRole);
+  groupItem->setData(SerialStudio::dashboardWidgetIconId(groupType), TaskbarModel::IconIdRole);
   groupItem->setData(mainWindowId, TaskbarModel::WindowIdRole);
   groupItem->setData(!alreadyRegistered, TaskbarModel::IsGroupRole);
   groupItem->setData(TaskbarModel::WindowNormal, TaskbarModel::WindowStateRole);
@@ -1090,6 +1093,7 @@ void UI::Taskbar::appendGroupChildItem(QStandardItem* groupItem,
   auto* child     = new QStandardItem();
   child->setData(false, TaskbarModel::IsGroupRole);
   child->setData(icon, TaskbarModel::WidgetIconRole);
+  child->setData(SerialStudio::dashboardWidgetIconId(widgetType), TaskbarModel::IconIdRole);
   child->setData(groupId, TaskbarModel::GroupIdRole);
   child->setData(groupName, TaskbarModel::GroupNameRole);
   child->setData(windowId, TaskbarModel::WindowIdRole);
@@ -1260,6 +1264,7 @@ QStandardItem* UI::Taskbar::createItemFromWidgetInfo(const UI::WidgetInfo& info)
   item->setData(info.title, TaskbarModel::WidgetNameRole);
   item->setData(info.type, TaskbarModel::WidgetTypeRole);
   item->setData(icon, TaskbarModel::WidgetIconRole);
+  item->setData(SerialStudio::dashboardWidgetIconId(info.type), TaskbarModel::IconIdRole);
   item->setData(info.isGroupWidget, TaskbarModel::IsGroupRole);
   item->setData(TaskbarModel::WindowNormal, TaskbarModel::WindowStateRole);
 
@@ -1469,15 +1474,19 @@ QVariantList UI::Taskbar::workspaceModel() const
 {
   const auto& pm = m_projectModel;
   QVariantList model;
+  static auto& registry  = Misc::IconRegistry::instance();
   const auto& workspaces = pm.activeWorkspaces();
   for (const auto& ws : workspaces) {
     QVariantMap entry;
-    const auto icon = ws.icon.isEmpty() ? QStringLiteral("qrc:/icons/dashboard-small/workspace.svg")
-                                        : Misc::IconEngine::resolveActionIconSource(ws.icon);
+    const bool fixedIcon               = ws.icon.isEmpty();
+    const auto icon                    = fixedIcon
+                                         ? registry.icon(QStringLiteral("widgets"), QStringLiteral("workspace"), 16)
+                                         : Misc::IconEngine::resolveActionIconSource(ws.icon);
     entry[QStringLiteral("id")]        = ws.workspaceId;
     entry[QStringLiteral("text")]      = ws.title;
     entry[QStringLiteral("separator")] = false;
     entry[QStringLiteral("icon")]      = icon;
+    entry[QStringLiteral("iconId")] = fixedIcon ? QStringLiteral("widgets/workspace") : QString();
     model.append(entry);
   }
 
@@ -1502,11 +1511,14 @@ static QVariantList buildWorkspaceTreeLevel(int parentFolderId,
     if (children.isEmpty())
       continue;
 
+    static auto& registry = Misc::IconRegistry::instance();
     QVariantMap node;
     node[QStringLiteral("isFolder")] = true;
     node[QStringLiteral("id")]       = f.folderId;
     node[QStringLiteral("text")]     = f.title;
-    node[QStringLiteral("icon")]     = QStringLiteral("qrc:/icons/dashboard-small/folder.svg");
+    node[QStringLiteral("icon")] =
+      registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16);
+    node[QStringLiteral("iconId")]   = QStringLiteral("widgets/folder");
     node[QStringLiteral("children")] = children;
     level.append(node);
   }
@@ -1518,13 +1530,17 @@ static QVariantList buildWorkspaceTreeLevel(int parentFolderId,
     if (ws.widgetRefs.empty())
       continue;
 
+    static auto& registry = Misc::IconRegistry::instance();
     QVariantMap node;
-    const auto icon = ws.icon.isEmpty() ? QStringLiteral("qrc:/icons/dashboard-small/workspace.svg")
-                                        : Misc::IconEngine::resolveActionIconSource(ws.icon);
+    const bool fixedIcon             = ws.icon.isEmpty();
+    const auto icon                  = fixedIcon
+                                       ? registry.icon(QStringLiteral("widgets"), QStringLiteral("workspace"), 16)
+                                       : Misc::IconEngine::resolveActionIconSource(ws.icon);
     node[QStringLiteral("isFolder")] = false;
     node[QStringLiteral("id")]       = ws.workspaceId;
     node[QStringLiteral("text")]     = ws.title;
     node[QStringLiteral("icon")]     = icon;
+    node[QStringLiteral("iconId")]   = fixedIcon ? QStringLiteral("widgets/workspace") : QString();
     node[QStringLiteral("children")] = QVariantList();
     level.append(node);
   }

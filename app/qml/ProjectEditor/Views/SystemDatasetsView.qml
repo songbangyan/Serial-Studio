@@ -31,7 +31,7 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   title: qsTr("Dataset Values")
-  icon: "qrc:/icons/project-editor/treeview/dataset-values.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "dataset-values", 24)
 
   actionComponent: EditorNavActions {}
 

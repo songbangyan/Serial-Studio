@@ -146,7 +146,7 @@ Item {
           sourceSize: Qt.size(16, 16)
           Layout.alignment: Qt.AlignVCenter
           fillMode: Image.PreserveAspectFit
-          source: "qrc:/icons/dashboard-buttons/color.svg"
+          source: Cpp_Misc_IconRegistry.icon("commands", "color", 16)
         }
 
         Label {
@@ -232,7 +232,7 @@ Item {
     DashboardToolButton {
       ToolTip.text: qsTr("Show Colorbar")
       checked: root.model && root.model.colorbarVisible
-      icon.source: "qrc:/icons/dashboard-buttons/color.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "color", 16)
       onClicked: {
         if (!root.model)
           return
@@ -245,7 +245,7 @@ Item {
     DashboardToolButton {
       ToolTip.text: qsTr("Show Axes & Grid")
       checked: root.model && root.model.axisVisible
-      icon.source: "qrc:/icons/dashboard-buttons/abscissa.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "abscissa", 16)
       onClicked: {
         if (!root.model)
           return
@@ -264,7 +264,7 @@ Item {
     DashboardToolButton {
       ToolTip.text: qsTr("Show Crosshair")
       checked: root.model && root.model.cursorEnabled
-      icon.source: "qrc:/icons/dashboard-buttons/crosshair.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "crosshair", 16)
       onClicked: {
         if (!root.model)
           return
@@ -277,7 +277,7 @@ Item {
     DashboardToolButton {
       ToolTip.text: qsTr("Show Frequency Markers")
       checked: root.model && root.model.markersVisible
-      icon.source: "qrc:/icons/dashboard-buttons/labels.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "labels", 16)
       onClicked: {
         if (!root.model)
           return
@@ -302,7 +302,7 @@ Item {
     DashboardToolButton {
       visible: Cpp_CommercialBuild
       ToolTip.text: qsTr("Record Audio")
-      icon.source: "qrc:/icons/dashboard-buttons/audio-file.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "audio-file", 32)
       checked: Cpp_CommercialBuild && root.model && root.model.audioRecordingEnabled
       onClicked: {
         if (root.model)
@@ -316,7 +316,7 @@ Item {
     DashboardToolButton {
       visible: Cpp_CommercialBuild
       ToolTip.text: qsTr("Open Recordings Folder")
-      icon.source: "qrc:/icons/dashboard-buttons/sound-folder.svg"
+      icon.source: Cpp_Misc_IconRegistry.icon("commands", "sound-folder", 32)
       onClicked: {
         if (root.model)
           Cpp_Misc_Utilities.revealFile(root.model.recordingsFolder())
@@ -333,8 +333,8 @@ Item {
       checked: !model.running
       ToolTip.text: model.running ? qsTr("Pause") : qsTr("Resume")
       icon.source: model.running
-                   ? "qrc:/icons/dashboard-buttons/pause.svg"
-                   : "qrc:/icons/dashboard-buttons/resume.svg"
+                   ? Cpp_Misc_IconRegistry.icon("commands", "pause", 16)
+                   : Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
       onClicked: model.running = !model.running
     }
 

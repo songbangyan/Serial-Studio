@@ -30,12 +30,13 @@ import SerialStudio.UI as SS_Ui
 
 import "../../../Widgets" as Widgets
 import "../../../Dialogs" as Dialogs
+import "../../../Commands" as Commands
 
 Widgets.Pane {
   id: root
 
   title: qsTr("Dashboard")
-  icon: "qrc:/icons/panes/dashboard.svg"
+  icon: Cpp_Misc_IconRegistry.icon("panes", "dashboard", 16)
   headerVisible: mainWindow.toolbarBarShown && !isExternalWindow && !app.runtimeMode
 
   //
@@ -49,6 +50,7 @@ Widgets.Pane {
   property var hostWindow: null
   property bool isExternalWindow: false
   property bool widgetsStayOnTop: false
+  property alias paletteModel: _paletteModel
   readonly property bool operatorMode: !isExternalWindow && app.runtimeMode
   readonly property bool zeroBottom: operatorMode && Cpp_UI_TaskbarSettings.taskbarHidden
 
@@ -102,7 +104,18 @@ Widgets.Pane {
   function focusTaskbarSearch()    { _taskbar.focusSearch() }
   function toggleStartMenu()       { _taskbar.toggleStartMenu() }
   function cycleWorkspace(delta)   { _taskbar.cycleWorkspace(delta) }
-  function openWorkspaceSwitcher() { _switcherOverlay.toggle() }
+
+  //
+  // Only external windows own a palette overlay; the main dashboard defers to the main
+  // window's single command palette (spec 0028 unification).
+  //
+  signal paletteRequested()
+  function openWorkspaceSwitcher() {
+    if (root.isExternalWindow && _switcherLoader.item)
+      _switcherLoader.item.toggle()
+    else
+      root.paletteRequested()
+  }
 
   function cycleWindow(delta) {
     const next = taskBar.nextActiveWindow(delta)
@@ -551,10 +564,11 @@ Widgets.Pane {
   //
   // Command palette (opened via Ctrl+K), backed by the shared dashboard-context model.
   //
-  ToolActions {
-    id: _paletteTools
+  Commands.DashboardCommandBindings {
+    id: _dashBindings
 
     taskBar: root.taskBar
+    hostWindow: root.hostWindow
     onExternalWindowRequested: root.externalWindowClicked()
     onFullScreenRequested: {
       if (root.hostWindow)
@@ -562,6 +576,28 @@ Widgets.Pane {
     }
   }
 
+  //
+  // App-level commands (Project Editor, Deploy, Extensions...) shown in the palette when
+  // connected; the dashboard bindings take precedence for the ids both sets define.
+  //
+  Commands.AppCommandBindings {
+    id: _dashAppBindings
+
+    dashboard: root
+    dashboardVisible: true
+  }
+
+  Commands.CommandModel {
+    id: _paletteTools
+
+    context: "dashboard"
+    bindingSets: [_dashBindings, _dashAppBindings]
+  }
+
+  //
+  // The main dashboard's model is consumed by the main window's palette (see
+  // `paletteModel` alias); external windows render it through their own overlay below.
+  //
   PaletteModel {
     id: _paletteModel
 
@@ -571,18 +607,21 @@ Widgets.Pane {
     toolActions: _paletteTools
   }
 
-  Widgets.CommandPalette {
-    id: _switcherOverlay
+  Loader {
+    id: _switcherLoader
 
-    z: 5000
-    model: _paletteModel
-    title: qsTr("Workspaces")
-    titleIcon: "qrc:/icons/buttons/workspaces.svg"
+    active: root.isExternalWindow
+    sourceComponent: Widgets.CommandPalette {
+      z: 5000
+      model: _paletteModel
+      title: qsTr("Command Palette")
+      titleIcon: "qrc:/icons/buttons/workspaces.svg"
 
-    //
-    // Parented to the host window so the dialog centers on the whole window, not just this pane.
-    //
-    parent: root.hostWindow ? root.hostWindow.contentItem : root
+      //
+      // Parented to the host window so the dialog centers on the whole window, not the Loader.
+      //
+      parent: root.hostWindow ? root.hostWindow.contentItem : root
+    }
   }
 
   //

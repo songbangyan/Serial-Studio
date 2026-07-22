@@ -34,6 +34,7 @@
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/Translator.h"
 #include "Misc/Utilities.h"
 #include "SerialStudio.h"
@@ -96,10 +97,12 @@ void DataModel::ProjectEditor::buildProjectModel()
   m_projectModel = new CustomModel(this);
   const auto& pm = m_projectModelRef;
 
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Project Information"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/project.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("project"), 16),
+               ParameterIcon);
   m_projectModel->appendRow(hdr);
 
   auto* title = new QStandardItem();
@@ -126,10 +129,12 @@ void DataModel::ProjectEditor::buildProjectModel()
  */
 void DataModel::ProjectEditor::buildGroupGeneralSection(const DataModel::Group& group)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Group Information"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/group.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("group"), 16),
+               ParameterIcon);
   m_groupModel->appendRow(hdr);
 
   auto* titleItem = new QStandardItem();
@@ -188,10 +193,12 @@ void DataModel::ProjectEditor::buildGroupImageSection(const DataModel::Group& gr
   if (group.widget != QLatin1String("image"))
     return;
 
-  auto* imgHdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* imgHdr          = new QStandardItem();
   imgHdr->setData(SectionHeader, WidgetType);
   imgHdr->setData(tr("Image Configuration"), PlaceholderValue);
-  imgHdr->setData("qrc:/icons/project-editor/model/image.svg", ParameterIcon);
+  imgHdr->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("image"), 16),
+                  ParameterIcon);
   m_groupModel->appendRow(imgHdr);
 
   int modeIndex = group.imgDetectionMode == QLatin1String("manual") ? 1 : 0;
@@ -244,15 +251,17 @@ void DataModel::ProjectEditor::buildGroupDatasetsSection(const DataModel::Group&
   if (group.datasets.empty())
     return;
 
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Datasets"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/dataset.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("dataset"), 16),
+               ParameterIcon);
   m_groupModel->appendRow(hdr);
 
   for (const auto& dataset : group.datasets) {
     const auto widgets = SerialStudio::getDashboardWidgets(dataset);
-    QString icon       = QStringLiteral("qrc:/icons/project-editor/treeview/dataset.svg");
+    QString icon       = registry.icon(QStringLiteral("editor"), QStringLiteral("dataset"), 16);
     if (widgets.count() > 0)
       icon = SerialStudio::dashboardWidgetIcon(widgets.first(), false);
 
@@ -401,10 +410,12 @@ void DataModel::ProjectEditor::buildGroupModel(const DataModel::Group& group)
  */
 void DataModel::ProjectEditor::buildSourceCommonRows(const DataModel::Source& source)
 {
-  auto* identHdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* identHdr        = new QStandardItem();
   identHdr->setData(SectionHeader, WidgetType);
   identHdr->setData(tr("Input Device"), PlaceholderValue);
-  identHdr->setData("qrc:/icons/project-editor/model/project.svg", ParameterIcon);
+  identHdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("project"), 16),
+                    ParameterIcon);
   m_sourceModel->appendRow(identHdr);
 
   auto* titleItem = new QStandardItem();
@@ -438,6 +449,15 @@ void DataModel::ProjectEditor::buildSourceCommonRows(const DataModel::Source& so
 }
 
 /**
+ * @brief Resolves a 16 px editor-category form icon through the icon registry.
+ */
+static QString formIcon(const char* id)
+{
+  static auto& registry = Misc::IconRegistry::instance();
+  return registry.iconById(QLatin1String(id), 16);
+}
+
+/**
  * @brief Appends the Frame Detection + Payload Processing rows to the source form model.
  */
 void DataModel::ProjectEditor::buildSourceFrameDetectionRows(const DataModel::Source& source)
@@ -445,7 +465,7 @@ void DataModel::ProjectEditor::buildSourceFrameDetectionRows(const DataModel::So
   auto* fdHdr = new QStandardItem();
   fdHdr->setData(SectionHeader, WidgetType);
   fdHdr->setData(tr("Frame Detection"), PlaceholderValue);
-  fdHdr->setData("qrc:/icons/project-editor/model/frame-detection.svg", ParameterIcon);
+  fdHdr->setData(formIcon("editor/frame-detection"), ParameterIcon);
   m_sourceModel->appendRow(fdHdr);
 
   const auto detection     = static_cast<SerialStudio::FrameDetection>(source.frameDetection);
@@ -509,7 +529,7 @@ void DataModel::ProjectEditor::buildSourceFrameDetectionRows(const DataModel::So
   auto* ppHdr = new QStandardItem();
   ppHdr->setData(SectionHeader, WidgetType);
   ppHdr->setData(tr("Payload Processing & Validation"), PlaceholderValue);
-  ppHdr->setData("qrc:/icons/project-editor/model/data-conversion.svg", ParameterIcon);
+  ppHdr->setData(formIcon("editor/data-conversion"), ParameterIcon);
   m_sourceModel->appendRow(ppHdr);
 
   auto* decoderItem = new QStandardItem();
@@ -639,10 +659,12 @@ void DataModel::ProjectEditor::appendDriverPropertyRows(const DataModel::Source&
  */
 void DataModel::ProjectEditor::buildActionGeneralRows(const DataModel::Action& action)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("General Information"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/action.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("action"), 16),
+               ParameterIcon);
   m_actionModel->appendRow(hdr);
 
   auto* titleItem = new QStandardItem();
@@ -702,10 +724,12 @@ void DataModel::ProjectEditor::buildActionGeneralRows(const DataModel::Action& a
  */
 void DataModel::ProjectEditor::buildActionPayloadRows(const DataModel::Action& action)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Data Payload"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/tx-data.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("tx-data"), 16),
+               ParameterIcon);
   m_actionModel->appendRow(hdr);
 
   auto* binaryItem = new QStandardItem();
@@ -788,10 +812,12 @@ void DataModel::ProjectEditor::buildActionPayloadRows(const DataModel::Action& a
  */
 void DataModel::ProjectEditor::buildActionTimingRows(const DataModel::Action& action)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Execution Behavior"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/action-behavior.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("output-range"), 16),
+               ParameterIcon);
   m_actionModel->appendRow(hdr);
 
   auto* autoExec = new QStandardItem();
@@ -809,7 +835,7 @@ void DataModel::ProjectEditor::buildActionTimingRows(const DataModel::Action& ac
   hdr = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Timer Behavior"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/timer.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("timer"), 16), ParameterIcon);
   m_actionModel->appendRow(hdr);
 
   auto* timerMode = new QStandardItem();
@@ -909,10 +935,12 @@ void DataModel::ProjectEditor::buildDatasetModel(const DataModel::Dataset& datas
 void DataModel::ProjectEditor::addGeneralSection(CustomModel* model,
                                                  const DataModel::Dataset& dataset)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("General Information"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/dataset.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("dataset"), 16),
+               ParameterIcon);
   model->appendRow(hdr);
 
   auto* titleItem = new QStandardItem();
@@ -1058,10 +1086,11 @@ void DataModel::ProjectEditor::addDatasetRangeRows(CustomModel* model,
  */
 void DataModel::ProjectEditor::addPlotSection(CustomModel* model, const DataModel::Dataset& dataset)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Plot Settings"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/plot.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("plot"), 16), ParameterIcon);
   model->appendRow(hdr);
 
   int plotIndex          = 0;
@@ -1142,10 +1171,11 @@ void DataModel::ProjectEditor::addPlotSection(CustomModel* model, const DataMode
 void DataModel::ProjectEditor::buildFftGeneralRows(CustomModel* model,
                                                    const DataModel::Dataset& dataset)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Frequency Analysis"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/fft.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("fft"), 16), ParameterIcon);
   model->appendRow(hdr);
 
   auto* fftItem = new QStandardItem();
@@ -1334,10 +1364,12 @@ void DataModel::ProjectEditor::addWidgetSection(CustomModel* model,
 {
   const bool showWidget = datasetWidgetEditable(dataset);
 
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("Widget Settings"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/widget.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("widget"), 16),
+               ParameterIcon);
   model->appendRow(hdr);
 
   int widgetIndex = 0;
@@ -1594,10 +1626,11 @@ void DataModel::ProjectEditor::openFrequencyMarkersEditorForSelection()
  */
 void DataModel::ProjectEditor::addLEDSection(CustomModel* model, const DataModel::Dataset& dataset)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("LED Display Settings"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/led.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("led"), 16), ParameterIcon);
   model->appendRow(hdr);
 
   auto* ledItem = new QStandardItem();
@@ -1638,11 +1671,13 @@ void DataModel::ProjectEditor::addLEDSection(CustomModel* model, const DataModel
  */
 void DataModel::ProjectEditor::buildOutputWidgetCommonRows(const DataModel::OutputWidget& widget)
 {
-  auto* hdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* hdr             = new QStandardItem();
   hdr->setData(true, Active);
   hdr->setData(SectionHeader, WidgetType);
   hdr->setData(tr("General Information"), PlaceholderValue);
-  hdr->setData("qrc:/icons/project-editor/model/output-widget.svg", ParameterIcon);
+  hdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("widget"), 16),
+               ParameterIcon);
   m_outputWidgetModel->appendRow(hdr);
 
   auto* titleItem = new QStandardItem();
@@ -1716,11 +1751,13 @@ void DataModel::ProjectEditor::buildOutputWidgetValueRows(const DataModel::Outpu
   if (!isNumeric)
     return;
 
-  auto* rangeHdr = new QStandardItem();
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* rangeHdr        = new QStandardItem();
   rangeHdr->setData(true, Active);
   rangeHdr->setData(SectionHeader, WidgetType);
   rangeHdr->setData(tr("Value Range"), PlaceholderValue);
-  rangeHdr->setData("qrc:/icons/project-editor/model/output-range.svg", ParameterIcon);
+  rangeHdr->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("output-range"), 16),
+                    ParameterIcon);
   m_outputWidgetModel->appendRow(rangeHdr);
 
   auto* minItem = new QStandardItem();

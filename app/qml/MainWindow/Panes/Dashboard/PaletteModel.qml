@@ -36,7 +36,7 @@ QtObject {
   property bool workspacesEnabled: true
 
   //
-  // Optional context-specific actions provider (same items(filter) shape as ToolActions), shown
+  // Optional context-specific actions provider (the CommandModel items(filter) shape), shown
   // as its own section before Tools in both browse and search.
   //
   property var extraTools: null
@@ -68,7 +68,7 @@ QtObject {
       if (node.isFolder)
         root.flattenWorkspaces(node.children, path, out)
       else
-        out.push({ id: node.id, text: node.text, icon: node.icon,
+        out.push({ id: node.id, text: node.text, icon: node.icon, iconId: node.iconId,
                    isFolder: false, subtitle: prefix })
     }
   }
@@ -84,8 +84,8 @@ QtObject {
         continue
 
       const path = prefix.length > 0 ? (prefix + " / " + node.text) : node.text
-      out.push({ id: node.id, text: node.text, icon: node.icon, isFolder: true,
-                 children: node.children, subtitle: prefix })
+      out.push({ id: node.id, text: node.text, icon: node.icon, iconId: node.iconId,
+                 isFolder: true, children: node.children, subtitle: prefix })
       root.flattenFolders(node.children, path, out)
     }
   }
@@ -101,13 +101,63 @@ QtObject {
     const items = provider.items(query)
     for (let i = 0; i < items.length; ++i)
       out.push({ isTool: true, isFolder: false,
-                 text: items[i].name, icon: items[i].icon, run: items[i].run })
+                 text: items[i].name, icon: items[i].icon, iconId: items[i].iconId,
+                 shortcut: items[i].shortcut, category: items[i].category, run: items[i].run })
 
     return out
   }
 
-  function toolNodes(query) {
-    return root.actionNodes(root.toolActions, query)
+  //
+  // Palette section order and display names for command categories (manifest `category`).
+  //
+  readonly property var categoryOrder: ["file", "mode", "connection", "view", "export",
+                                        "console", "project", "license", "tools", "help"]
+
+  function categoryLabel(key) {
+    switch (key) {
+      case "file":       return qsTr("File")
+      case "mode":       return qsTr("Operation Mode")
+      case "connection": return qsTr("Connection")
+      case "view":       return qsTr("View")
+      case "export":     return qsTr("Data Export")
+      case "console":    return qsTr("Console")
+      case "project":    return qsTr("Project")
+      case "license":    return qsTr("License")
+      case "tools":      return qsTr("Tools")
+      case "help":       return qsTr("Help")
+    }
+
+    return qsTr("Other")
+  }
+
+  //
+  // Merges the tool/action providers and groups their entries into ordered category sections.
+  //
+  function categorizedSections(providers, query) {
+    let nodes = []
+    for (let p = 0; p < providers.length; ++p)
+      nodes = nodes.concat(root.actionNodes(providers[p], query))
+
+    let byCat = ({})
+    let order = root.categoryOrder.slice()
+    for (let i = 0; i < nodes.length; ++i) {
+      const key = (nodes[i].category && nodes[i].category.length > 0) ? nodes[i].category : "other"
+      if (byCat[key] === undefined) {
+        byCat[key] = []
+        if (order.indexOf(key) === -1)
+          order.push(key)
+      }
+      byCat[key].push(nodes[i])
+    }
+
+    let secs = []
+    for (let j = 0; j < order.length; ++j) {
+      const items = byCat[order[j]]
+      if (items !== undefined && items.length > 0)
+        secs.push({ "title": root.categoryLabel(order[j]), "items": items })
+    }
+
+    return secs
   }
 
   //
@@ -131,13 +181,9 @@ QtObject {
     }
 
     if (!root.workspacesEnabled || currentFolderId === -1) {
-      const extra = root.actionNodes(root.extraTools, "")
-      if (extra.length > 0)
-        secs.push({ "title": root.extraTitle, "items": extra })
-
-      const tools = root.toolNodes("")
-      if (tools.length > 0)
-        secs.push({ "title": qsTr("Tools"), "items": tools })
+      const toolSecs = root.categorizedSections([root.extraTools, root.toolActions], "")
+      for (let i = 0; i < toolSecs.length; ++i)
+        secs.push(toolSecs[i])
     }
 
     return secs
@@ -200,13 +246,9 @@ QtObject {
         secs.push({ "title": qsTr("Widgets"), "items": widgets })
     }
 
-    const extra = root.actionNodes(root.extraTools, query)
-    if (extra.length > 0)
-      secs.push({ "title": root.extraTitle, "items": extra })
-
-    const tools = root.toolNodes(query)
-    if (tools.length > 0)
-      secs.push({ "title": qsTr("Tools"), "items": tools })
+    const toolSecs = root.categorizedSections([root.extraTools, root.toolActions], query)
+    for (let i = 0; i < toolSecs.length; ++i)
+      secs.push(toolSecs[i])
 
     return secs
   }

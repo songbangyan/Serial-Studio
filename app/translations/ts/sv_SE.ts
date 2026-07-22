@@ -553,7 +553,7 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <translation>Duplicera</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="162"/>
+        <location filename="../../qml/ProjectEditor/Views/ActionView.qml" line="161"/>
         <source>Duplicate this action with all its settings</source>
         <translation>Duplicera denna åtgärd med alla dess inställningar</translation>
     </message>
@@ -2401,7 +2401,7 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
 <context>
     <name>CommandPalette</name>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="320"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="324"/>
         <source>Folder</source>
         <translation>Mapp</translation>
     </message>
@@ -2415,29 +2415,972 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <translation>Kommandon</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="515"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="530"/>
         <source>Search…</source>
         <translation>Sök…</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="531"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="546"/>
         <source>Close</source>
         <translation>Stäng</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="579"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="594"/>
         <source>Back</source>
         <translation>Tillbaka</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="640"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="655"/>
         <source>Type to search, Enter to open, Esc to close</source>
         <translation>Skriv för att söka, Enter för att öppna, Esc för att stänga</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/CommandPalette.qml" line="740"/>
+        <location filename="../../qml/Widgets/CommandPalette.qml" line="755"/>
         <source>No results found</source>
         <translation>Inga resultat hittades</translation>
+    </message>
+</context>
+<context>
+    <name>Commands</name>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="28"/>
+        <source>3D Plot</source>
+        <translation>3D-plott</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="29"/>
+        <source>AI Assistant</source>
+        <translation>Ai-assistent</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="30"/>
+        <source>AI Wiki &amp; Chat</source>
+        <translation>Ai-wiki &amp; Chatt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="31"/>
+        <source>About</source>
+        <translation>Om</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="32"/>
+        <source>Accelerometer</source>
+        <translation>Accelerometer</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="33"/>
+        <source>Action</source>
+        <translation>Åtgärd</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="34"/>
+        <source>Add 3D Plot</source>
+        <translation>Lägg till 3D-plott</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="35"/>
+        <source>Add Accelerometer</source>
+        <translation>Lägg till Accelerometer</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="36"/>
+        <source>Add Action</source>
+        <translation>Lägg till Åtgärd</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="37"/>
+        <source>Add Compass</source>
+        <translation>Lägg till Kompass</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="38"/>
+        <source>Add Data Table</source>
+        <translation>Lägg till Datatabell</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="39"/>
+        <source>Add Dataset</source>
+        <translation>Lägg till Dataset</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="40"/>
+        <source>Add Device</source>
+        <translation>Lägg till Enhet</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="41"/>
+        <source>Add External Window</source>
+        <translation>Lägg till Externt Fönster</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="42"/>
+        <source>Add FFT Plot</source>
+        <translation>Lägg till FFT-diagram</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="43"/>
+        <source>Add GPS Map</source>
+        <translation>Lägg till GPS-karta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="44"/>
+        <source>Add Gauge</source>
+        <translation>Lägg till Mätare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="45"/>
+        <source>Add Group</source>
+        <translation>Lägg till Grupp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="46"/>
+        <source>Add Gyroscope</source>
+        <translation>Lägg till Gyroskop</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="47"/>
+        <source>Add Image View</source>
+        <translation>Lägg till Bildvisning</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="48"/>
+        <source>Add LED Indicator</source>
+        <translation>Lägg till LED-indikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="49"/>
+        <source>Add Level Indicator</source>
+        <translation>Lägg till Nivåindikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="50"/>
+        <source>Add Multi-Plot</source>
+        <translation>Lägg till Flerplott</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="51"/>
+        <source>Add Output Button</source>
+        <translation>Lägg till Utmatningsknapp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="52"/>
+        <source>Add Output Knob</source>
+        <translation>Lägg till Utmatningsvred</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="53"/>
+        <source>Add Output Panel</source>
+        <translation>Lägg till Utdatapanel</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="54"/>
+        <source>Add Output Slider</source>
+        <translation>Lägg till Utmatningsreglage</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="55"/>
+        <source>Add Output Text Field</source>
+        <translation>Lägg till Utmatningstextfält</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="56"/>
+        <source>Add Output Toggle</source>
+        <translation>Lägg till Utmatningsväxel</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="57"/>
+        <source>Add Painter</source>
+        <translation>Lägg till Painter</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="58"/>
+        <source>Add Plot</source>
+        <translation>Lägg till Diagram</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="59"/>
+        <source>Add Web View</source>
+        <translation>Lägg till Webbvisning</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="60"/>
+        <source>Add a 2D plot dataset</source>
+        <translation>Lägg till ett 2D-diagramdataset</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="61"/>
+        <source>Add a 2D plot with multiple signals</source>
+        <translation>Lägg till ett 2D-diagram med flera signaler</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="62"/>
+        <source>Add a 3D plot visualization</source>
+        <translation>Lägg till en 3D-plottvisualisering</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="63"/>
+        <source>Add a Fast Fourier Transform plot</source>
+        <translation>Lägg till ett Fast Fourier Transform-diagram</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="64"/>
+        <source>Add a compass widget for directional data</source>
+        <translation>Lägg till en kompasswidget för riktningsdata</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="65"/>
+        <source>Add a data table view</source>
+        <translation>Lägg till en datatabellvy</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="66"/>
+        <source>Add a dataset container group</source>
+        <translation>Lägg till en datauppsättningscontainergrupp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="67"/>
+        <source>Add a gauge widget for numeric data</source>
+        <translation>Lägg till en mätarwidget för numerisk data</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="68"/>
+        <source>Add a generic dataset</source>
+        <translation>Lägg till ett generiskt dataset</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="69"/>
+        <source>Add a group for 3-axis accelerometer data</source>
+        <translation>Lägg till en grupp för 3-axlig accelerometerdata</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="70"/>
+        <source>Add a group for 3-axis gyroscope data</source>
+        <translation>Lägg till en grupp för 3-axlig gyroskopdata</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="71"/>
+        <source>Add a map widget for GPS data</source>
+        <translation>Lägg till en kartwidget för GPS-data</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="72"/>
+        <source>Add a new action to the project</source>
+        <translation>Lägg till en ny åtgärd till projektet</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="73"/>
+        <source>Add a new data source (device) to the project</source>
+        <translation>Lägg till en ny datakälla (enhet) till projektet</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="74"/>
+        <source>Add a new output control panel with a button</source>
+        <translation>Lägg till en ny utgångskontrollpanel med en knapp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="75"/>
+        <source>Add a vertical bar level indicator</source>
+        <translation>Lägg till en vertikal stapelnivåindikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="76"/>
+        <source>Add a web viewer</source>
+        <translation>Lägg till en webbvisare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="77"/>
+        <source>Add an LED-style status indicator</source>
+        <translation>Lägg till en LED-statusindikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="78"/>
+        <source>Add an image/video stream viewer</source>
+        <translation>Lägg till en bild-/videoströmvisare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="79"/>
+        <source>Add an output button control</source>
+        <translation>Lägg till en utgångskontroll med knapp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="80"/>
+        <source>Add an output knob control</source>
+        <translation>Lägg till en utgångskontroll med vred</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="81"/>
+        <source>Add an output slider control</source>
+        <translation>Lägg till en utgångskontroll med skjutreglage</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="82"/>
+        <source>Add an output text field control</source>
+        <translation>Lägg till en utgångskontroll med textfält</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="83"/>
+        <source>Add an output toggle control</source>
+        <translation>Lägg till en utgångskontroll med växlare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="84"/>
+        <source>Assistant</source>
+        <translation>Assistent</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="85"/>
+        <source>Audio</source>
+        <translation>Ljud</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="86"/>
+        <source>Auto Layout</source>
+        <translation>Automatisk Layout</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="87"/>
+        <source>Bluetooth</source>
+        <translation>Bluetooth</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="88"/>
+        <source>Browse and install extensions</source>
+        <translation>Bläddra och installera tillägg</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="89"/>
+        <source>Browse documentation, FAQ, and wiki</source>
+        <translation>Bläddra dokumentation, FAQ och wiki</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="90"/>
+        <source>Browse example projects</source>
+        <translation>Bläddra exempelprojekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="91"/>
+        <source>Browse, replay, and export recorded sessions</source>
+        <translation>Bläddra, spela upp och exportera inspelade sessioner</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="92"/>
+        <source>Build an operator app for the current project</source>
+        <translation>Bygg en operatörsapp för det aktuella projektet</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="93"/>
+        <source>Button</source>
+        <translation>Knapp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="94"/>
+        <source>CAN Bus</source>
+        <translation>CAN-buss</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="95"/>
+        <source>CSV File</source>
+        <translation>CSV-fil</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="96"/>
+        <source>Chat with an AI to build and edit your project</source>
+        <translation>Chatta med en AI för att bygga och redigera ditt projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="97"/>
+        <source>Clear Console</source>
+        <translation>Rensa Konsol</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="98"/>
+        <source>Clear Window</source>
+        <translation>Rensa Fönster</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="99"/>
+        <source>Clear the console output</source>
+        <translation>Rensa konsolutmatningen</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="100"/>
+        <source>Clock</source>
+        <translation>Klocka</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="101"/>
+        <source>Close Window</source>
+        <translation>Stäng Fönster</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="102"/>
+        <source>Collapse Duplicates</source>
+        <translation>Komprimera Dubbletter</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="103"/>
+        <source>Collapse repeated console lines</source>
+        <translation>Komprimera upprepade konsolrader</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="104"/>
+        <source>Command Palette</source>
+        <translation>Kommandopalett</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="105"/>
+        <source>Compass</source>
+        <translation>Kompass</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="106"/>
+        <source>Connect</source>
+        <translation>Anslut</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="107"/>
+        <source>Connect or disconnect from the configured device</source>
+        <translation>Anslut eller koppla från den konfigurerade enheten</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="108"/>
+        <source>Console</source>
+        <translation>Konsol</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="109"/>
+        <source>Console Echo</source>
+        <translation>Konsoleko</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="110"/>
+        <source>Console Only Mode</source>
+        <translation>Endast Konsolläge</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="111"/>
+        <source>Console Timestamps</source>
+        <translation>Konsoltidsstämplar</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="112"/>
+        <source>Console Transcript</source>
+        <translation>Konsoltranskript</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="113"/>
+        <source>Create a new JSON project</source>
+        <translation>Skapa ett nytt JSON-projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="114"/>
+        <source>Dataset</source>
+        <translation>Dataset</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="115"/>
+        <source>Deploy</source>
+        <translation>Distribuera</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="116"/>
+        <source>Deploy Operator App</source>
+        <translation>Distribuera Operatörsapp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="117"/>
+        <source>Disconnect</source>
+        <translation>Koppla Från</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="118"/>
+        <source>Echo transmitted data in the console</source>
+        <translation>Eka överförda data i konsolen</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="119"/>
+        <source>Examples</source>
+        <translation>Exempel</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="120"/>
+        <source>Export</source>
+        <translation>Exportera</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="121"/>
+        <source>Extensions</source>
+        <translation>Tillägg</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="122"/>
+        <source>FFT Plot</source>
+        <translation>FFT-diagram</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="123"/>
+        <source>File Transmission</source>
+        <translation>Filöverföring</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="124"/>
+        <source>Freeze Dashboard</source>
+        <translation>Frys Instrumentpanel</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="125"/>
+        <source>Full Screen</source>
+        <translation>Helskärm</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="126"/>
+        <source>GPS Map</source>
+        <translation>GPS-karta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="127"/>
+        <source>Gauge</source>
+        <translation>Mätare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="128"/>
+        <source>Generate a project from a Protocol Buffers (.proto) schema</source>
+        <translation>Generera ett projekt från ett Protocol Buffers-schema (.proto)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="129"/>
+        <source>Group</source>
+        <translation>Grupp</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="130"/>
+        <source>Gyroscope</source>
+        <translation>Gyroskop</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="131"/>
+        <source>HID</source>
+        <translation>HID</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="132"/>
+        <source>Help Center</source>
+        <translation>Hjälpcenter</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="133"/>
+        <source>Hex Display</source>
+        <translation>Hexadecimal Visning</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="134"/>
+        <source>Image</source>
+        <translation>Bild</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="135"/>
+        <source>Import Protobuf Schema</source>
+        <translation>Importera Protobuf-schema</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="136"/>
+        <source>Knob</source>
+        <translation>Ratt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="137"/>
+        <source>LED Indicator</source>
+        <translation>LED-indikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="138"/>
+        <source>Level Indicator</source>
+        <translation>Nivåindikator</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="139"/>
+        <source>License Management</source>
+        <translation>Licenshantering</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="140"/>
+        <source>Lock</source>
+        <translation>Lås</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="141"/>
+        <source>Lock Project Editor</source>
+        <translation>Lås Projektredigerare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="142"/>
+        <source>MDF4 File</source>
+        <translation>MDF4-fil</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="143"/>
+        <source>Manage your Serial Studio Pro license</source>
+        <translation>Hantera din Serial Studio Pro-licens</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="144"/>
+        <source>Minimize Window</source>
+        <translation>Minimera Fönster</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="145"/>
+        <source>Modbus</source>
+        <translation>Modbus</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="146"/>
+        <source>Multi-Plot</source>
+        <translation>Flerplott</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="147"/>
+        <source>Navigate Back</source>
+        <translation>Navigera Tillbaka</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="148"/>
+        <source>Navigate Forward</source>
+        <translation>Navigera Framåt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="149"/>
+        <source>Network</source>
+        <translation>Nätverk</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="150"/>
+        <source>New</source>
+        <translation>Ny</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="151"/>
+        <source>New Project</source>
+        <translation>Nytt Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="152"/>
+        <source>Next Workspace</source>
+        <translation>Nästa Arbetsyta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="153"/>
+        <source>Notifications</source>
+        <translation>Notifikationer</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="154"/>
+        <source>Open</source>
+        <translation>Öppna</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="155"/>
+        <source>Open CSV</source>
+        <translation>Öppna CSV</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="156"/>
+        <source>Open MDF4</source>
+        <translation>Öppna MDF4</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="157"/>
+        <source>Open Project</source>
+        <translation>Öppna Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="158"/>
+        <source>Open an existing JSON project</source>
+        <translation>Öppna ett befintligt JSON-projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="159"/>
+        <source>Open application settings and preferences</source>
+        <translation>Öppna applikationsinställningar och preferenser</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="160"/>
+        <source>Open the Assistant</source>
+        <translation>Öppna Assistenten</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="161"/>
+        <source>Open the Project Editor documentation</source>
+        <translation>Öppna dokumentationen för Projektredigeraren</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="162"/>
+        <source>Open the Project Editor to create or modify your JSON layout</source>
+        <translation>Öppna Projektredigeraren för att skapa eller ändra din JSON-layout</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="163"/>
+        <source>Output</source>
+        <translation>Utgång</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="164"/>
+        <source>Painter</source>
+        <translation>Ritare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="165"/>
+        <source>Pause</source>
+        <translation>Pausa</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="166"/>
+        <source>Play a CSV file as if it were live sensor data</source>
+        <translation>Spela upp en CSV-fil som om den vore live sensordata</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="167"/>
+        <source>Play an MDF4 file as if it were live sensor data (Pro)</source>
+        <translation>Spela upp en MDF4-fil som om den vore live sensordata (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="168"/>
+        <source>Plot</source>
+        <translation>Diagram</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="169"/>
+        <source>Preferences</source>
+        <translation>Inställningar</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="170"/>
+        <source>Previous Workspace</source>
+        <translation>Föregående Arbetsyta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="171"/>
+        <source>Process</source>
+        <translation>Process</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="172"/>
+        <source>Project Editor</source>
+        <translation>Projektredigerare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="173"/>
+        <source>Project File Mode</source>
+        <translation>Projektfilsläge</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="174"/>
+        <source>Protobuf</source>
+        <translation>Protobuf</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="175"/>
+        <source>Quick Plot Mode</source>
+        <translation>Snabbdiagramläge</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="176"/>
+        <source>Quit</source>
+        <translation>Avsluta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="177"/>
+        <source>Reset</source>
+        <translation>Återställ</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="178"/>
+        <source>Restore</source>
+        <translation>Återställ</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="179"/>
+        <source>Restore Backup</source>
+        <translation>Återställ Säkerhetskopia</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="180"/>
+        <source>Restore a recent automatic snapshot of the current project</source>
+        <translation>Återställ en nyligen automatisk ögonblicksbild av det aktuella projektet</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="181"/>
+        <source>Resume</source>
+        <translation>Återuppta</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="182"/>
+        <source>Save</source>
+        <translation>Spara</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="183"/>
+        <source>Save As</source>
+        <translation>Spara Som</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="184"/>
+        <source>Save Project</source>
+        <translation>Spara Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="185"/>
+        <source>Save Project As</source>
+        <translation>Spara Projekt Som</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="186"/>
+        <source>Search</source>
+        <translation>Sök</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="187"/>
+        <source>Select Bluetooth Low Energy communication</source>
+        <translation>Välj Bluetooth Low Energy-kommunikation</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="188"/>
+        <source>Select CAN Bus communication (Pro)</source>
+        <translation>Välj CAN Bus-kommunikation (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="189"/>
+        <source>Select HID device communication (Pro)</source>
+        <translation>Välj HID-enhetskommunikation (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="190"/>
+        <source>Select MODBUS communication (Pro)</source>
+        <translation>Välj MODBUS-kommunikation (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="191"/>
+        <source>Select Serial port (UART) communication</source>
+        <translation>Välj seriell port (UART)-kommunikation</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="192"/>
+        <source>Select TCP/UDP network communication</source>
+        <translation>Välj TCP/UDP-nätverkskommunikation</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="193"/>
+        <source>Select audio input device (Pro)</source>
+        <translation>Välj ljudingångsenhet (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="194"/>
+        <source>Select process pipe communication (Pro)</source>
+        <translation>Välj processrörkommunikation (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="195"/>
+        <source>Select raw USB communication (Pro)</source>
+        <translation>Välj rå USB-kommunikation (Pro)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="196"/>
+        <source>Session Database</source>
+        <translation>Sessionsdatabas</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="197"/>
+        <source>Sessions</source>
+        <translation>Sessioner</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="198"/>
+        <source>Set a password and lock the Project Editor</source>
+        <translation>Ange ett lösenord och lås Projektredigeraren</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="199"/>
+        <source>Show application info and license details</source>
+        <translation>Visa applikationsinformation och licensdetaljer</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="200"/>
+        <source>Show timestamps in the console</source>
+        <translation>Visa tidsstämplar i konsolen</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="201"/>
+        <source>Slider</source>
+        <translation>Skjutreglage</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="202"/>
+        <source>Start Menu</source>
+        <translation>Startmeny</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="203"/>
+        <source>Stopwatch</source>
+        <translation>Stoppur</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="204"/>
+        <source>Switch to Console Only mode (no parsing)</source>
+        <translation>Växla till läget Endast Konsol (ingen parsning)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="205"/>
+        <source>Switch to Project File mode (parse via a project)</source>
+        <translation>Växla till läget Projektfil (parsning via ett projekt)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="206"/>
+        <source>Switch to Quick Plot mode (comma-separated values)</source>
+        <translation>Växla till läget Snabbdiagram (kommaseparerade värden)</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="207"/>
+        <source>Table</source>
+        <translation>Tabell</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="208"/>
+        <source>Text Field</source>
+        <translation>Textfält</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="209"/>
+        <source>Toggle</source>
+        <translation>Växlare</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="210"/>
+        <source>Toggle hexadecimal console display</source>
+        <translation>Växla hexadecimal konsoldisplay</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="211"/>
+        <source>Tools</source>
+        <translation>Verktyg</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="212"/>
+        <source>UART</source>
+        <translation>UART</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="213"/>
+        <source>USB</source>
+        <translation>USB</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="214"/>
+        <source>View detailed documentation and ask questions on DeepWiki</source>
+        <translation>Visa detaljerad dokumentation och ställ frågor på DeepWiki</translation>
+    </message>
+    <message>
+        <location filename="../../src/UI/CommandStrings.cpp" line="215"/>
+        <source>Web View</source>
+        <translation>Webbvisning</translation>
     </message>
 </context>
 <context>
@@ -2829,12 +3772,12 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <translation>Återställ</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="155"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="154"/>
         <source>Reset to the default control loop</source>
         <translation>Återställ till standardkontrollslingan</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="165"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="164"/>
         <source>Import a control loop file</source>
         <translation>Importera en kontrollslingafil</translation>
     </message>
@@ -2862,17 +3805,17 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
         <translation>Ångra den senaste kodredigeringen</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="187"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="186"/>
         <source>Redo the previously undone edit</source>
         <translation>Gör om den tidigare ångrade redigeringen</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="205"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="204"/>
         <source>Cut selected code to clipboard</source>
         <translation>Klipp ut markerad kod till urklipp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="215"/>
+        <location filename="../../qml/ProjectEditor/Views/ControlScriptView.qml" line="214"/>
         <source>Copy selected code to clipboard</source>
         <translation>Kopiera markerad kod till urklipp</translation>
     </message>
@@ -3028,7 +3971,7 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="287"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard.qml" line="294"/>
         <source>Dashboard %1</source>
         <translation>Instrumentpanel %1</translation>
     </message>
@@ -3111,29 +4054,33 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
 <context>
     <name>DashboardLayout</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="37"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="38"/>
         <source>Dashboard</source>
         <translation>Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="233"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="246"/>
         <source>API Server Active (%1)</source>
         <translation>API-server Aktiv (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="234"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="247"/>
         <source>API Server Ready</source>
         <translation>API-server Redo</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="235"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="248"/>
         <source>API Server Off</source>
         <translation>API-server Av</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="579"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/DashboardLayout.qml" line="617"/>
+        <source>Command Palette</source>
+        <translation>Kommandopalett</translation>
+    </message>
+    <message>
         <source>Workspaces</source>
-        <translation>Arbetsytor</translation>
+        <translation type="vanished">Arbetsytor</translation>
     </message>
 </context>
 <context>
@@ -3723,82 +4670,82 @@ Aktivera endast detta i betrodda nätverk. Ej betrodda klienter kan läsa liveda
 <context>
     <name>DataModel::FrameParserModel</name>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="261"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="262"/>
         <source>Plain text (UTF-8)</source>
         <translation>Ren text (UTF-8)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="261"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="262"/>
         <source>Hexadecimal</source>
         <translation>Hexadecimal</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="261"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="262"/>
         <source>Base64</source>
         <translation>Base64</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="261"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="262"/>
         <source>Binary (raw bytes)</source>
         <translation>Binär (råa byte)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="269"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="270"/>
         <source>End delimiter only</source>
         <translation>Endast slutavgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="270"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="271"/>
         <source>Start + end delimiters</source>
         <translation>Start- + slutavgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="271"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="272"/>
         <source>Start delimiter only</source>
         <translation>Endast startavgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="272"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="273"/>
         <source>No delimiters (whole chunk)</source>
         <translation>Inga avgränsare (hela blocket)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="283"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="284"/>
         <source>No Checksum</source>
         <translation>Ingen Kontrollsumma</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="314"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="315"/>
         <source>Select Frame Parser Template</source>
         <translation>Välj Ramparsersmall</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="315"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="316"/>
         <source>Choose a template to load:</source>
         <translation>Välj en mall att ladda:</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="497"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="498"/>
         <source>Invalid hexadecimal input.</source>
         <translation>Ogiltig hexadecimal inmatning.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="524"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="525"/>
         <source>No template selected.</source>
         <translation>Ingen mall vald.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="564"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="565"/>
         <source>%1 frame(s) extracted | %2 byte(s) consumed | %3 byte(s) buffered | %4 dropped</source>
         <translation>%1 ram(ar) extraherade | %2 byte förbrukade | %3 byte buffrade | %4 borttappade</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="635"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="636"/>
         <source>Invalid JSON: %1</source>
         <translation>Ogiltig JSON: %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="731"/>
+        <location filename="../../src/DataModel/Editors/FrameParserModel.cpp" line="732"/>
         <source>Parameters</source>
         <translation>Parametrar</translation>
     </message>
@@ -4193,209 +5140,209 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
 <context>
     <name>DataModel::ProjectEditor</name>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="101"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="103"/>
         <source>Project Information</source>
         <translation>Projektinformation</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="111"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="114"/>
         <source>Project Title</source>
         <translation>Projekttitel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="112"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="115"/>
         <source>Untitled Project</source>
         <translation>Namnlöst Projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="113"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="116"/>
         <source>Name or description of the project</source>
         <translation>Namn eller beskrivning av projektet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="249"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="257"/>
         <source>Datasets</source>
         <translation>Datamängder</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="278"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="287"/>
         <source>Time</source>
         <translation>Tid</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="278"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="287"/>
         <source>Samples</source>
         <translation>Sampel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="290"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="299"/>
         <source>Plot every curve against time or against the sample number</source>
         <translation>Rita varje kurva mot tid eller mot sampelnummer</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="305"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1119"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="314"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1148"/>
         <source>Logarithmic X Axis</source>
         <translation>Logaritmisk X-axel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="306"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="315"/>
         <source>Scale the X axis in decades; available when the X-Axis source is Samples (not Time)</source>
         <translation>Skala X-axeln i dekader; tillgänglig när X-axelkällan är Samplingar (inte Tid)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="318"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1132"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="327"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1161"/>
         <source>Logarithmic Y Axis</source>
         <translation>Logaritmisk Y-axel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="319"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="328"/>
         <source>Scale the shared Y axis in decades; values at or below zero are clamped</source>
         <translation>Skala den delade Y-axeln i dekader; värden vid eller under noll begränsas</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="336"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="345"/>
         <source>URL</source>
         <translation>URL</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="338"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="347"/>
         <source>Web address to load in this widget</source>
         <translation>Webbadress att ladda i denna widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="447"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="467"/>
         <source>Frame Detection</source>
         <translation>Ramdetektering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="461"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="481"/>
         <source>Frame Detection Method</source>
         <translation>Ramdetekteringsmetod</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="462"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="482"/>
         <source>Select how incoming data frames are identified</source>
         <translation>Välj hur inkommande dataramar identifieras</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="472"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="492"/>
         <source>Hexadecimal Delimiters</source>
         <translation>Hexadecimala Avgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="473"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="493"/>
         <source>Enter frame start/end sequences as hexadecimal values</source>
         <translation>Ange ramstart-/slutsekvenser som hexadecimala värden</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="489"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="509"/>
         <source>Frame Start Delimiter</source>
         <translation>Ramstartavgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="490"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="510"/>
         <source>e.g. /*</source>
         <translation>t.ex. /*</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="491"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="511"/>
         <source>Sequence that marks the beginning of a data frame</source>
         <translation>Sekvens som markerar början av en dataram</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="503"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="523"/>
         <source>Frame End Delimiter</source>
         <translation>Ramslutavgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="504"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="524"/>
         <source>e.g. */</source>
         <translation>t.ex. */</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="505"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="525"/>
         <source>Sequence that marks the end of a data frame</source>
         <translation>Sekvens som markerar slutet på en dataram</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="511"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="531"/>
         <source>Payload Processing &amp; Validation</source>
         <translation>Nyttolastbearbetning &amp; Validering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="522"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="542"/>
         <source>Data Conversion Method</source>
         <translation>Datakonverteringsmetod</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="523"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="543"/>
         <source>Select how incoming binary data is decoded before parsing</source>
         <translation>Välj hur inkommande binärdata avkodas före tolkning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="539"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="559"/>
         <source>Checksum Algorithm</source>
         <translation>Kontrollsummealgoritm</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="540"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="560"/>
         <source>Select the checksum algorithm used to validate frames</source>
         <translation>Välj den kontrollsummealgoritm som används för att validera ramar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="131"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="135"/>
         <source>Group Information</source>
         <translation>Gruppinformation</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="141"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="146"/>
         <source>Group Title</source>
         <translation>Grupptitel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="142"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="147"/>
         <source>Untitled Group</source>
         <translation>Namnlös Grupp</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="143"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="148"/>
         <source>Title or description of this dataset group</source>
         <translation>Titel eller beskrivning av denna datauppsättningsgrupp</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="378"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="387"/>
         <source>Composite Widget</source>
         <translation>Sammansatt Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="379"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="388"/>
         <source>Select how this group of datasets should be visualized (optional)</source>
         <translation>Välj hur denna grupp av datauppsättningar ska visualiseras (valfritt)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="193"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="199"/>
         <source>Image Configuration</source>
         <translation>Bildkonfiguration</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="938"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="966"/>
         <source>Virtual Dataset</source>
         <translation>Virtuell Datauppsättning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="939"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="967"/>
         <source>Virtual datasets compute their value from transforms and data tables, they do not require a frame index</source>
         <translation>Virtuella datauppsättningar beräknar sitt värde från transformeringar och datatabeller, de kräver inget ramindex</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1288"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1318"/>
         <source>Scale the frequency axis in decades so low octaves stay readable; applies to both the FFT plot and the waterfall</source>
         <translation>Skala frekvensaxeln i dekader så att låga oktaver förblir läsbara; gäller både FFT-plotten och vattenfallet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1459"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1491"/>
         <source>Fixed decimal places for the value display; overrides the format (-1 = auto)</source>
         <translation>Fasta decimaler för värdevisningen; åsidosätter formatet (-1 = auto)</translation>
     </message>
@@ -4410,13 +5357,13 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Manuella Avgränsare</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="206"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="213"/>
         <source>Detection Mode</source>
         <translation>Detekteringsläge</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="264"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="267"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="268"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="272"/>
         <source>Frame Parser</source>
         <translation>Frame-parser</translation>
     </message>
@@ -4425,33 +5372,33 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Grupper</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="553"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="566"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="567"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="584"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="568"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="581"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="582"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="601"/>
         <source>Shared Memory</source>
         <translation>Delat Minne</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="133"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="553"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="572"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="573"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="134"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="568"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="588"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="589"/>
         <source>Dataset Values</source>
         <translation>Datamängdsvärden</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="733"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="746"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="747"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="762"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="758"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="772"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="773"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="789"/>
         <source>Workspaces</source>
         <translation>Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="779"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="782"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="783"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="806"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="810"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="811"/>
         <source>MQTT Publisher</source>
         <translation>MQTT-publicerare</translation>
     </message>
@@ -4460,285 +5407,285 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Kontrollskript</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="111"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="112"/>
         <source>Publishing</source>
         <translation>Publicering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="121"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="123"/>
         <source>Enable Publishing</source>
         <translation>Aktivera Publicering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="122"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="124"/>
         <source>Broadcast frames, raw bytes and notifications to the broker</source>
         <translation>Sända ramar, råbytes och notifieringar till broker</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="133"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="135"/>
         <source>Payload</source>
         <translation>Nyttolast</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="134"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="136"/>
         <source>Selects what gets published: parsed dashboard data or raw RX bytes</source>
         <translation>Väljer vad som publiceras: tolkad instrumentpanelsdata eller råa RX-bytes</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="144"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="146"/>
         <source>Publish Rate (Hz)</source>
         <translation>Publiceringsfrekvens (Hz)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="145"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="147"/>
         <source>How many times per second to publish (1-30 Hz). Higher rates increase broker load; dashboard data is rate-limited so a slow broker never blocks frame parsing.</source>
         <translation>Hur många gånger per sekund som ska publiceras (1-30 Hz). Högre frekvenser ökar belastningen på broker; instrumentpanelens data är hastighetsbegränsad så en långsam broker blockerar aldrig frame-parsning.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="157"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="159"/>
         <source>Topic Base</source>
         <translation>Ämnesbas</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="158"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="160"/>
         <source>serial-studio/device</source>
         <translation>serial-studio/enhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="159"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="161"/>
         <source>Base topic used for frame and raw-byte publishing</source>
         <translation>Basämne som används för publicering av ramar och råbytes</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="169"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="171"/>
         <source>Script Topic</source>
         <translation>Skriptämne</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="170"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="194"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="172"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="196"/>
         <source>Defaults to Topic Base when empty</source>
         <translation>Använder Basämne som standard när tomt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="171"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="173"/>
         <source>Topic the user script publishes to</source>
         <translation>Ämne som användarskriptet publicerar till</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="181"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="183"/>
         <source>Publish Notifications</source>
         <translation>Publicera Notifieringar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="182"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="184"/>
         <source>Mirror dashboard notifications to a dedicated topic</source>
         <translation>Spegla instrumentpanelens notifieringar till ett dedikerat ämne</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="193"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="195"/>
         <source>Notification Topic</source>
         <translation>Notifieringsämne</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="195"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="197"/>
         <source>Topic where dashboard notifications are mirrored</source>
         <translation>Ämne där instrumentpanelens notifieringar speglas</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="210"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="212"/>
         <source>Broker</source>
         <translation>Broker</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="220"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="223"/>
         <source>Hostname</source>
         <translation>Värdnamn</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="221"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="224"/>
         <source>broker.hivemq.com</source>
         <translation>broker.hivemq.com</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="222"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="225"/>
         <source>Hostname or IP address of the MQTT broker</source>
         <translation>Värdnamn eller IP-adress för MQTT-broker</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="231"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="234"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="232"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="235"/>
         <source>TCP port exposed by the broker (1883 plain, 8883 TLS)</source>
         <translation>TCP-port som exponeras av broker (1883 okrypterad, 8883 TLS)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="242"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="245"/>
         <source>Custom Client ID</source>
         <translation>Anpassat Klient-ID</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="244"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="247"/>
         <source>Off: a fresh random id is generated on every project load. On: use the id below.</source>
         <translation>Av: ett nytt slumpmässigt ID genereras vid varje projektladdning. På: använd ID:t nedan.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="255"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="258"/>
         <source>Client ID</source>
         <translation>Klient-ID</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="256"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="259"/>
         <source>Identifier sent to the broker on CONNECT</source>
         <translation>Identifierare som skickas till broker vid CONNECT</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="269"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="272"/>
         <source>Protocol Version</source>
         <translation>Protokollversion</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="270"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="273"/>
         <source>MQTT protocol revision used on CONNECT</source>
         <translation>MQTT-protokollrevision som används vid CONNECT</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="279"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="282"/>
         <source>Keep Alive (s)</source>
         <translation>Keep Alive (s)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="280"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="283"/>
         <source>Seconds between PINGREQ packets when idle</source>
         <translation>Sekunder mellan PINGREQ-paket vid inaktivitet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="289"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="292"/>
         <source>Clean Session</source>
         <translation>Rensa Session</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="290"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="293"/>
         <source>Discard any persistent session state on CONNECT</source>
         <translation>Kassera eventuellt beständigt sessionstillstånd vid CONNECT</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="307"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="310"/>
         <source>Username</source>
         <translation>Användarnamn</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="308"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="311"/>
         <source>Username for broker authentication (leave empty for anonymous)</source>
         <translation>Användarnamn för broker-autentisering (lämna tomt för anonym)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="318"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="321"/>
         <source>Password</source>
         <translation>Lösenord</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="319"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="322"/>
         <source>Password for broker authentication</source>
         <translation>Lösenord för broker-autentisering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="332"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="335"/>
         <source>SSL / TLS</source>
         <translation>SSL / TLS</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="342"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="346"/>
         <source>Use SSL/TLS</source>
         <translation>Använd SSL/TLS</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="343"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="347"/>
         <source>Tunnel the broker connection over TLS</source>
         <translation>Tunnla broker-anslutningen över TLS</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="356"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="360"/>
         <source>Protocol</source>
         <translation>Protokoll</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="357"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="361"/>
         <source>Negotiated TLS protocol family</source>
         <translation>Förhandlad TLS-protokollfamilj</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="367"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="371"/>
         <source>Peer Verify</source>
         <translation>Verifiera Motpart</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="368"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="372"/>
         <source>How strictly the broker's certificate chain is validated</source>
         <translation>Hur strikt brokerns certifikatkedja valideras</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="378"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="382"/>
         <source>Verify Depth</source>
         <translation>Verifieringsdjup</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="379"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorMqtt.cpp" line="383"/>
         <source>Maximum certificate chain length accepted (0 = unlimited)</source>
         <translation>Maximal accepterad certifikatkedjelängd (0 = obegränsat)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="158"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="676"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="163"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="698"/>
         <source>Device %1</source>
         <translation>Enhet %1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="176"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="406"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="181"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="416"/>
         <source>Input Device</source>
         <translation>Ingångsenhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="177"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="182"/>
         <source>Select which connected device provides data for this group</source>
         <translation>Välj vilken ansluten enhet som tillhandahåller data för denna grupp</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="208"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="215"/>
         <source>Auto-detect reads JPEG/PNG magic bytes; Manual uses explicit start/end sequences</source>
         <translation>Auto-detektering läser JPEG/PNG magic bytes; Manuell använder explicita start-/slutsekvenser</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="218"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="225"/>
         <source>Start Sequence (Hex)</source>
         <translation>Startsekvens (Hex)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="219"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="226"/>
         <source>e.g. FF D8 FF</source>
         <translation>t.ex. FF D8 FF</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="220"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="227"/>
         <source>Hex bytes marking the start of an image frame</source>
         <translation>Hexbytes som markerar början av en bildram</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="229"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="236"/>
         <source>End Sequence (Hex)</source>
         <translation>Slutsekvens (Hex)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="230"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="237"/>
         <source>e.g. FF D9</source>
         <translation>t.ex. FF D9</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="231"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="238"/>
         <source>Hex bytes marking the end of an image frame</source>
         <translation>Hexbytes som markerar slutet av en bildram</translation>
     </message>
@@ -4747,372 +5694,372 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Identitet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="416"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="427"/>
         <source>Device Name</source>
         <translation>Enhetsnamn</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="417"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="428"/>
         <source>Device 1</source>
         <translation>Enhet 1</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="418"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="429"/>
         <source>Human-readable name for this input device</source>
         <translation>Läsbart namn för denna ingångsenhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="427"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="438"/>
         <source>Bus Type</source>
         <translation>Busstyp</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="428"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="439"/>
         <source>Select the hardware interface for this input device</source>
         <translation>Välj hårdvarugränssnitt för denna ingångsenhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="430"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="441"/>
         <source>Serial Port</source>
         <translation>Seriell Port</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="430"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="441"/>
         <source>Network Socket</source>
         <translation>Nätverksuttag</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="430"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="441"/>
         <source>Bluetooth LE</source>
         <translation>Bluetooth LE</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="432"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="443"/>
         <source>Audio Input</source>
         <translation>Ljudingång</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="432"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="443"/>
         <source>Modbus</source>
         <translation>Modbus</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="432"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="443"/>
         <source>CAN Bus</source>
         <translation>CAN-buss</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="432"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="443"/>
         <source>Raw USB</source>
         <translation>Rå USB</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="433"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="444"/>
         <source>HID Device</source>
         <translation>HID-enhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="433"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="444"/>
         <source>Process</source>
         <translation>Process</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="433"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="444"/>
         <source>MQTT Subscriber</source>
         <translation>MQTT-prenumerant</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="588"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="608"/>
         <source>Connection Settings</source>
         <translation>Anslutningsinställningar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="644"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="914"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1644"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="665"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="941"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1678"/>
         <source>General Information</source>
         <translation>Allmän Information</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="653"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="675"/>
         <source>Action Title</source>
         <translation>Åtgärdstitel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="655"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="677"/>
         <source>Untitled Action</source>
         <translation>Namnlös Åtgärd</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="656"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="678"/>
         <source>Name or description of this action</source>
         <translation>Namn eller beskrivning av denna åtgärd</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="665"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="687"/>
         <source>Action Icon</source>
         <translation>Åtgärdsikon</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="666"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="688"/>
         <source>Default Icon</source>
         <translation>Standardikon</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="667"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="689"/>
         <source>Icon displayed for this action in the dashboard</source>
         <translation>Ikon som visas för denna åtgärd i instrumentpanelen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="694"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="716"/>
         <source>Target Device</source>
         <translation>Målenhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="695"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="717"/>
         <source>Select which connected device this action sends data to</source>
         <translation>Välj vilken ansluten enhet denna åtgärd skickar data till</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="707"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="730"/>
         <source>Data Payload</source>
         <translation>Datalast</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="718"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="742"/>
         <source>Send as Binary</source>
         <translation>Skicka som Binär</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="719"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="743"/>
         <source>Send raw binary data when this action is triggered</source>
         <translation>Skicka rå binärdata när denna åtgärd utlöses</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="730"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="742"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="754"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="766"/>
         <source>Command</source>
         <translation>Kommando</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="731"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="755"/>
         <source>Transmit Data (Hex)</source>
         <translation>Överför Data (Hex)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="732"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="756"/>
         <source>Hexadecimal payload to send when the action is triggered</source>
         <translation>Hexadecimal last att skicka när åtgärden utlöses</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="743"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="767"/>
         <source>Transmit Data</source>
         <translation>Överför Data</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="744"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="768"/>
         <source>Text payload to send when the action is triggered</source>
         <translation>Textlast att skicka när åtgärden utlöses</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="755"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1703"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="779"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1738"/>
         <source>Text Encoding</source>
         <translation>Textkodning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="756"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="780"/>
         <source>Character encoding used to serialize the text payload</source>
         <translation>Teckenkodning som används för att serialisera textlasten</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="780"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="804"/>
         <source>End-of-Line Sequence</source>
         <translation>Radslutsekvens</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="781"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="805"/>
         <source>EOL characters to append to the message (e.g. \n, \r\n)</source>
         <translation>Radsluttecken att lägga till meddelandet (t.ex. </translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="793"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="818"/>
         <source>Execution Behavior</source>
         <translation>Körningsbeteende</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="804"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="830"/>
         <source>Auto-Execute on Connect</source>
         <translation>Autokör vid Anslutning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="805"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="831"/>
         <source>Automatically trigger this action when the device connects</source>
         <translation>Utlös denna åtgärd automatiskt när enheten ansluter</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="811"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="837"/>
         <source>Timer Behavior</source>
         <translation>Timerbeteende</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="820"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="846"/>
         <source>Timer Mode</source>
         <translation>Timerläge</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="823"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="849"/>
         <source>Choose when and how this action should repeat automatically</source>
         <translation>Välj när och hur denna åtgärd ska upprepas automatiskt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="830"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="856"/>
         <source>Interval (ms)</source>
         <translation>Intervall (ms)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="834"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="860"/>
         <source>Timer Interval (ms)</source>
         <translation>Timerintervall (ms)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="835"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="861"/>
         <source>Milliseconds between each repeated trigger of this action</source>
         <translation>Millisekunder mellan varje upprepad utlösning av denna åtgärd</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="842"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="846"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="868"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="872"/>
         <source>Repeat Count</source>
         <translation>Upprepningsantal</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="847"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="873"/>
         <source>Number of times to send the command on each trigger</source>
         <translation>Antal gånger kommandot ska skickas vid varje utlösning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="924"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="952"/>
         <source>Untitled Dataset</source>
         <translation>Namnlös Datamängd</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="925"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="953"/>
         <source>Dataset Title</source>
         <translation>Datamängdstitel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="926"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="954"/>
         <source>Name of the dataset, used for labeling and identification</source>
         <translation>Namn på datamängden, används för märkning och identifiering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="955"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="983"/>
         <source>Hide on Dashboard</source>
         <translation>Dölj på Instrumentpanelen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="956"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="984"/>
         <source>Suppress this dataset's standalone dashboard tile; the painter widget can still read its values</source>
         <translation>Undertryck detta datasets fristående instrumentpanelspanel; painter-widgeten kan fortfarande läsa dess värden</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="993"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1021"/>
         <source>Automatic</source>
         <translation>Automatisk</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="994"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1022"/>
         <source>Widget Color</source>
         <translation>Widgetfärg</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="995"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1023"/>
         <source>Custom display color for this dataset; automatic uses the theme palette</source>
         <translation>Anpassad visningsfärg för detta dataset; automatisk använder temats palett</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1015"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1043"/>
         <source>Stable name</source>
         <translation>Stabilt namn</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1016"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1044"/>
         <source>Script Alias</source>
         <translation>Skriptalias</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1017"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1045"/>
         <source>Stable name for getDataset-style script/API lookups; must be unique (optional)</source>
         <translation>Stabilt namn för getDataset-stil skript/API-uppslagningar; måste vara unikt (valfritt)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1037"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1065"/>
         <source>Lower bound of the dataset value range; widgets and FFT fall back to it when their own range is left unset</source>
         <translation>Nedre gräns för datauppsättningens värdeområde; widgets och FFT använder detta som standard när deras eget område inte är angivet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1050"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1078"/>
         <source>Upper bound of the dataset value range; widgets and FFT fall back to it when their own range is left unset</source>
         <translation>Övre gräns för datauppsättningens värdeområde; widgets och FFT använder detta som standard när deras eget område inte är angivet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1108"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1137"/>
         <source>Choose Time or a dataset to drive the X-Axis in plots</source>
         <translation>Välj Tid eller en datauppsättning för att styra X-axeln i diagram</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1120"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1149"/>
         <source>Scale the X axis in decades; available when the X-Axis source is Samples or a dataset (not Time)</source>
         <translation>Skala X-axeln i dekader; tillgänglig när X-axelkällan är Samplingar eller en datauppsättning (inte Tid)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1133"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1162"/>
         <source>Scale the Y axis in decades; values at or below zero are clamped</source>
         <translation>Skala Y-axeln i dekader; värden vid eller under noll begränsas</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1147"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1177"/>
         <source>Frequency Analysis</source>
         <translation>Frekvensanalys</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1181"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1211"/>
         <source>Peak Ballistics</source>
         <translation>Toppballistik</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1182"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1212"/>
         <source>Analyzer-style display: peaks rise instantly and decay smoothly over the release time</source>
         <translation>Analysatorliknande visning: toppar stiger omedelbart och avtar mjukt över frisläppningstiden</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1194"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1224"/>
         <source>Ballistics Release (ms)</source>
         <translation>Ballistisk Frisläppning (ms)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1195"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1225"/>
         <source>Decay time for the ballistics display (50-5000 ms)</source>
         <translation>Avklingningstid för ballistikvisningen (50-5000 ms)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1219"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1249"/>
         <source>Choose Time (default) or any dataset whose value drives the Y axis -- produces a Campbell diagram when bound to e.g. RPM</source>
         <translation>Välj Tid (standard) eller valfri datamängd vars värde styr Y-axeln -- producerar ett Campbell-diagram när det binds till t.ex. RPM</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1263"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1293"/>
         <source>FFT Window Function</source>
         <translation>FFT-fönsterfunktion</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1264"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1294"/>
         <source>Window applied before the transform to reduce spectral leakage; affects both the FFT plot and the waterfall</source>
         <translation>Fönster som appliceras före transformationen för att minska spektralläckage; påverkar både FFT-plotten och vattenfallet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1287"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1317"/>
         <source>Logarithmic Frequency Axis</source>
         <translation>Logaritmisk Frekvensaxel</translation>
     </message>
@@ -5121,39 +6068,39 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Skala FFT-frekvensaxeln i dekader så att låga oktaver förblir läsbara</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1300"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1389"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1330"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1421"/>
         <source>Minimum Value (optional)</source>
         <translation>Minimivärde (valfritt)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1301"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1331"/>
         <source>Lower bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>Nedre gräns för datanormalisering; återgår till datasetets värdeområde om den lämnas odefinierad</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1313"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1402"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1343"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1434"/>
         <source>Maximum Value (optional)</source>
         <translation>Maximivärde (valfritt)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1314"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1344"/>
         <source>Upper bound for data normalization; falls back to the dataset value range when left unset</source>
         <translation>Övre gräns för datanormalisering; återgår till datasetets värdeområde om den lämnas odefinierad</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1390"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1422"/>
         <source>Lower bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>Nedre gräns för mätare- eller stapelområdet; återgår till datasetets värdeområde om den lämnas odefinierad</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1403"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1435"/>
         <source>Upper bound of the gauge or bar range; falls back to the dataset value range when left unset</source>
         <translation>Övre gräns för mätare- eller stapelområdet; återgår till datasetets värdeområde om den lämnas odefinierad</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1455"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1487"/>
         <source>Decimal Points</source>
         <translation>Decimalpunkter</translation>
     </message>
@@ -5162,12 +6109,12 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Decimaler som visas i datarutnätets värdekolumn (-1 = auto)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1495"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1527"/>
         <source>On</source>
         <translation>På</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1626"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1659"/>
         <source>LED lights up when value meets or exceeds this threshold; define alarm bands for multi-state colors</source>
         <translation>LED lyser när värdet når eller överskrider detta tröskelvärde; definiera larmband för flertillståndsfärger</translation>
     </message>
@@ -5182,91 +6129,91 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Webbvisning</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="134"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="135"/>
         <source>Raw and transformed values for every dataset (read-only)</source>
         <translation>Råa och transformerade värden för varje datamängd (skrivskyddad)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="143"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="144"/>
         <source>Shared table defined in this project</source>
         <translation>Delad tabell definierad i detta projekt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="796"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="803"/>
         <source>Remove 1 widget reference whose target group or dataset no longer exists?</source>
         <translation>Ta bort 1 widgetreferens vars målgrupp eller dataset inte längre finns?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="797"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="804"/>
         <source>Remove %1 widget references whose target groups or datasets no longer exist?</source>
         <translation>Ta bort %1 widgetreferenser vars målgrupper eller dataset inte längre finns?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="802"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="809"/>
         <source>This will only affect workspace tile placement; no groups, datasets, or data are deleted.</source>
         <translation>Detta påverkar endast placering av arbetsytepaneler; inga grupper, dataset eller data tas bort.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="805"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="812"/>
         <source>Clean Up Workspaces</source>
         <translation>Rensa Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="969"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="997"/>
         <source>Frame Index</source>
         <translation>Ramindex</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="432"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="433"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="443"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="444"/>
         <source>Dashboard Widgets</source>
         <translation>Instrumentpanelswidgetar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="803"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="806"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="807"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="832"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="836"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="837"/>
         <source>Control Loop</source>
         <translation>Kontrollslinga</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="970"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="998"/>
         <source>Frame position used for aligning datasets in time</source>
         <translation>Ramposition som används för att tidsjustera datamängder</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="979"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1007"/>
         <source>Measurement Unit</source>
         <translation>Mätenhet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="980"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1008"/>
         <source>Volts, Amps, etc.</source>
         <translation>Volt, Ampere, etc.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="981"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1009"/>
         <source>Unit of measurement, such as volts or amps (optional)</source>
         <translation>Mätenhet, såsom volt eller ampere (valfritt)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1063"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1092"/>
         <source>Plot Settings</source>
         <translation>Diagraminställningar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1086"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1115"/>
         <source>Enable Plot Widget</source>
         <translation>Aktivera Diagramwidget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1088"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1117"/>
         <source>Plot data in real-time</source>
         <translation>Rita data i realtid</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="289"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1107"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="298"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1136"/>
         <source>X-Axis Source</source>
         <translation>X-axelkälla</translation>
     </message>
@@ -5295,27 +6242,27 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">FFT-konfiguration</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1158"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1188"/>
         <source>Enable FFT Analysis</source>
         <translation>Aktivera FFT-analys</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1159"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1189"/>
         <source>Perform frequency-domain analysis of the dataset</source>
         <translation>Utför frekvensdomänanalys av datasetet</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1169"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1199"/>
         <source>Enable Waterfall Plot</source>
         <translation>Aktivera Vattenfallsdiagram</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1170"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1200"/>
         <source>Show a scrolling spectrogram of frequency content over time (Pro)</source>
         <translation>Visa ett rullande spektrogram av frekvensinnehåll över tid (Pro)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1218"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1248"/>
         <source>Waterfall Y Axis</source>
         <translation>Vattenfall Y-axel</translation>
     </message>
@@ -5324,22 +6271,22 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Välj Tid (standard) eller valfri datamängd vars värde styr Y-axeln — producerar ett Campbell-diagram när det binds till t.ex. RPM</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1246"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1276"/>
         <source>FFT Window Size</source>
         <translation>FFT-fönsterstorlek</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1247"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1277"/>
         <source>Number of samples used for each FFT calculation window</source>
         <translation>Antal sampel som används för varje FFT-beräkningsfönster</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1276"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1306"/>
         <source>FFT Sampling Rate (Hz, required)</source>
         <translation>FFT-samplingsfrekvens (Hz, krävs)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1277"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1307"/>
         <source>Sampling frequency used for FFT (in Hz)</source>
         <translation>Samplingsfrekvens som används för FFT (i Hz)</translation>
     </message>
@@ -5360,17 +6307,17 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Övre gräns för datanormalisering</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1339"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1370"/>
         <source>Widget Settings</source>
         <translation>Widget-inställningar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1362"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1394"/>
         <source>Widget</source>
         <translation>Widget</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1363"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1395"/>
         <source>Select the visual widget used to display this dataset</source>
         <translation>Välj den visuella widget som används för att visa detta dataset</translation>
     </message>
@@ -5392,28 +6339,28 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/ProjectEditor.cpp" line="719"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1419"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1454"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1451"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1486"/>
         <source>Auto</source>
         <translation>Auto</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1420"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1452"/>
         <source>Tick Count</source>
         <translation>Antal Markeringar</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1424"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1456"/>
         <source>Major-tick count on the dial scale (0 = auto-fit to widget size)</source>
         <translation>Antal huvudmarkeringar på urtavlans skala (0 = anpassa automatiskt till widgetens storlek)</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1443"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1475"/>
         <source>Label Format</source>
         <translation>Etikettformat</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1444"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1476"/>
         <source>Decimal places or notation used on tick labels and the value display</source>
         <translation>Decimaler eller notation som används på markeringsetiketter och värdevisningen</translation>
     </message>
@@ -5454,22 +6401,22 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation type="vanished">Utlöser ett visuellt larm när värdet överskrider detta tröskelvärde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1599"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1632"/>
         <source>LED Display Settings</source>
         <translation>Inställningar för LED-display</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1610"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1643"/>
         <source>Show in LED Panel</source>
         <translation>Visa i LED-Panel</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1611"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1644"/>
         <source>Enable visual status monitoring using an LED display</source>
         <translation>Aktivera visuell statusövervakning med en LED-display</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1625"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1658"/>
         <source>LED On Threshold (required)</source>
         <translation>LED-tröskelvärde för På (obligatoriskt)</translation>
     </message>
@@ -5776,59 +6723,59 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Blandad</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1654"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1689"/>
         <source>Label</source>
         <translation>Etikett</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1655"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1690"/>
         <source>Display label</source>
         <translation>Visa Etikett</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1665"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1700"/>
         <source>Button Icon</source>
         <translation>Knappikon</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1674"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1709"/>
         <source>Colorize Icon</source>
         <translation>Färglägg Ikon</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1675"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1710"/>
         <source>Tint the icon with the button color</source>
         <translation>Tona ikonen med knappfärgen</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1692"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1727"/>
         <source>Initial Value</source>
         <translation>Initialt Värde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1704"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1739"/>
         <source>Character encoding used when transmit() returns a string value</source>
         <translation>Teckenkodning som används när transmit() returnerar ett strängvärde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1722"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1758"/>
         <source>Value Range</source>
         <translation>Värdeområde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1036"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1732"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1064"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1769"/>
         <source>Minimum Value</source>
         <translation>Minimivärde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1049"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1741"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1077"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1778"/>
         <source>Maximum Value</source>
         <translation>Maximivärde</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1750"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorForms.cpp" line="1787"/>
         <source>Step Size</source>
         <translation>Stegstorlek</translation>
     </message>
@@ -6297,8 +7244,8 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Z</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="231"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="232"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="570"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>Workspace</source>
         <translation>Arbetsyta</translation>
@@ -6326,8 +7273,8 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1778"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1805"/>
         <location filename="../../src/DataModel/ProjectModel.cpp" line="1824"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="570"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="593"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="421"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="464"/>
@@ -6379,7 +7326,7 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Byt Namn på Register</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1191"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1193"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="449"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="474"/>
         <location filename="../../src/DataModel/Project/ProjectModelCrud.cpp" line="2287"/>
@@ -6392,7 +7339,7 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Detta tar bort %1 register tillsammans med tabellen. Denna åtgärd kan inte ångras.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1190"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1192"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="453"/>
         <location filename="../../src/DataModel/Project/ProjectModelTables.cpp" line="473"/>
         <source>Delete "%1"?</source>
@@ -6425,13 +7372,13 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Importera Tabell</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="569"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="570"/>
         <location filename="../../src/DataModel/Project/ProjectModelFolders.cpp" line="440"/>
         <source>New Workspace</source>
         <translation>Ny Arbetsyta</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="592"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="593"/>
         <source>Rename Workspace</source>
         <translation>Byt Namn på Arbetsyta</translation>
     </message>
@@ -6489,32 +7436,32 @@ Lägg till %4 dataset med mallens standardvärden?</translation>
         <translation>Mappen tas bort; dess tabeller och undermappar flyttas upp till föräldern. Åtkomstsökvägen för dessa tabeller ändras därefter.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="680"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="682"/>
         <source>Overview</source>
         <translation>Översikt</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="689"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="691"/>
         <source>All Data</source>
         <translation>All Data</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="959"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="961"/>
         <source>Discard workspace customisations?</source>
         <translation>Kassera anpassningar av arbetsytor?</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="960"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="962"/>
         <source>Switching off Customize discards your edits and rebuilds the workspace list from the project's groups.</source>
         <translation>Att stänga av Anpassa kasserar dina ändringar och återskapar arbetsytelistan från projektets grupper.</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="963"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="965"/>
         <source>Customize Workspaces</source>
         <translation>Anpassa Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1193"/>
+        <location filename="../../src/DataModel/Project/ProjectModelWorkspaces.cpp" line="1195"/>
         <source>Delete Workspace</source>
         <translation>Ta Bort Arbetsyta</translation>
     </message>
@@ -6830,114 +7777,118 @@ Giltigt format: 01 A2 FF 3C</translation>
     </message>
 </context>
 <context>
-    <name>DatabaseExplorer</name>
+    <name>DatabaseCommandBindings</name>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="35"/>
-        <source>Sessions</source>
-        <translation>Sessioner</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="218"/>
-        <source>Open</source>
-        <translation>Öppna</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="220"/>
-        <source>Open a session file</source>
-        <translation>Öppna en sessionsfil</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="226"/>
-        <source>Close</source>
-        <translation>Stäng</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="229"/>
-        <source>Close session file</source>
-        <translation>Stäng sessionsfil</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="242"/>
-        <source>Replay</source>
-        <translation>Spela Upp</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="246"/>
-        <source>Replay selected session on the dashboard</source>
-        <translation>Spela upp vald session på instrumentpanelen</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="252"/>
-        <source>Delete</source>
-        <translation>Ta Bort</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="258"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseCommandBindings.qml" line="69"/>
         <source>Unlock the session file to delete sessions</source>
         <translation>Lås upp sessionsfilen för att radera sessioner</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="259"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseCommandBindings.qml" line="70"/>
         <source>Delete the selected session</source>
         <translation>Ta bort den valda sessionen</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="276"/>
-        <source>Unlock</source>
-        <translation>Lås Upp</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="277"/>
-        <source>Lock</source>
-        <translation>Lås</translation>
-    </message>
-    <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="282"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseCommandBindings.qml" line="80"/>
         <source>Unlock the session file to allow deletions</source>
         <translation>Lås upp sessionsfilen för att tillåta raderingar</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="283"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseCommandBindings.qml" line="81"/>
         <source>Set a password to prevent session deletions</source>
         <translation>Ange ett lösenord för att förhindra radering av sessioner</translation>
     </message>
+</context>
+<context>
+    <name>DatabaseExplorer</name>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="298"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="36"/>
+        <source>Sessions</source>
+        <translation>Sessioner</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="vanished">Öppna</translation>
+    </message>
+    <message>
+        <source>Open a session file</source>
+        <translation type="vanished">Öppna en sessionsfil</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="vanished">Stäng</translation>
+    </message>
+    <message>
+        <source>Close session file</source>
+        <translation type="vanished">Stäng sessionsfil</translation>
+    </message>
+    <message>
+        <source>Replay</source>
+        <translation type="vanished">Spela Upp</translation>
+    </message>
+    <message>
+        <source>Replay selected session on the dashboard</source>
+        <translation type="vanished">Spela upp vald session på instrumentpanelen</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation type="vanished">Ta Bort</translation>
+    </message>
+    <message>
+        <source>Unlock the session file to delete sessions</source>
+        <translation type="vanished">Lås upp sessionsfilen för att radera sessioner</translation>
+    </message>
+    <message>
+        <source>Delete the selected session</source>
+        <translation type="vanished">Ta bort den valda sessionen</translation>
+    </message>
+    <message>
+        <source>Unlock</source>
+        <translation type="vanished">Lås Upp</translation>
+    </message>
+    <message>
+        <source>Lock</source>
+        <translation type="vanished">Lås</translation>
+    </message>
+    <message>
+        <source>Unlock the session file to allow deletions</source>
+        <translation type="vanished">Lås upp sessionsfilen för att tillåta raderingar</translation>
+    </message>
+    <message>
+        <source>Set a password to prevent session deletions</source>
+        <translation type="vanished">Ange ett lösenord för att förhindra radering av sessioner</translation>
+    </message>
+    <message>
         <source>Export CSV</source>
-        <translation>Exportera CSV</translation>
+        <translation type="vanished">Exportera CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="303"/>
         <source>Export selected session to CSV</source>
-        <translation>Exportera vald session till CSV</translation>
+        <translation type="vanished">Exportera vald session till CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="310"/>
         <source>Export PDF</source>
-        <translation>Exportera PDF</translation>
+        <translation type="vanished">Exportera PDF</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="315"/>
         <source>Generate a PDF report for the selected session</source>
-        <translation>Generera en PDF-rapport för den valda sessionen</translation>
+        <translation type="vanished">Generera en PDF-rapport för den valda sessionen</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="329"/>
         <source>Restore Project</source>
-        <translation>Återställ Projekt</translation>
+        <translation type="vanished">Återställ Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="333"/>
         <source>Restore the project file from this session file</source>
-        <translation>Återställ projektfilen från denna sessionsfil</translation>
+        <translation type="vanished">Återställ projektfilen från denna sessionsfil</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="402"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="288"/>
         <source>Loading session…</source>
         <translation>Laddar session…</translation>
     </message>
     <message>
-        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="403"/>
+        <location filename="../../qml/DatabaseExplorer/DatabaseExplorer.qml" line="289"/>
         <source>Working…</source>
         <translation>Arbetar…</translation>
     </message>
@@ -7030,7 +7981,7 @@ Giltigt format: 01 A2 FF 3C</translation>
         <translation>Mätare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="286"/>
+        <location filename="../../qml/ProjectEditor/Views/DatasetView.qml" line="285"/>
         <source>Toggle analog meter (half-arc) widget</source>
         <translation>Växla analog mätare (halvbåge) widget</translation>
     </message>
@@ -7314,22 +8265,22 @@ Giltigt format: 01 A2 FF 3C</translation>
 <context>
     <name>EditorNavActions</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="107"/>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="109"/>
         <source>Go back</source>
         <translation>Gå tillbaka</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="108"/>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="114"/>
         <source>Go forward</source>
         <translation>Gå framåt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="122"/>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="132"/>
         <source>Move Up</source>
         <translation>Flytta Upp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="125"/>
+        <location filename="../../qml/ProjectEditor/Views/EditorNavActions.qml" line="137"/>
         <source>Move Down</source>
         <translation>Flytta Ner</translation>
     </message>
@@ -7844,7 +8795,7 @@ Giltigt format: 01 A2 FF 3C</translation>
     </message>
     <message>
         <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="534"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1895"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1885"/>
         <source>Output Panel</source>
         <translation>Utdatapanel</translation>
     </message>
@@ -7879,106 +8830,106 @@ Giltigt format: 01 A2 FF 3C</translation>
         <translation>MQTT-utgivare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1284"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1274"/>
         <source>Open the transform code editor for this dataset.</source>
         <translation>Öppna transformationskodredigeraren för denna datauppsättning.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1665"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1668"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1655"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1658"/>
         <source>Dataset Container</source>
         <translation>Datauppsättningscontainer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1677"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1667"/>
         <source>Multi-Plot</source>
         <translation>Flerplott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1680"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1670"/>
         <source>Multiple Plot</source>
         <translation>Flerplott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1689"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1692"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1679"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1682"/>
         <source>Accelerometer</source>
         <translation>Accelerometer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1701"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1704"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1691"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1694"/>
         <source>Gyroscope</source>
         <translation>Gyroskop</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1713"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1716"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1703"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1706"/>
         <source>GPS Map</source>
         <translation>GPS-karta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1724"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1727"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1714"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1717"/>
         <source>3D Plot</source>
         <translation>3D-plott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1735"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1738"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1725"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1728"/>
         <source>Image View</source>
         <translation>Bildvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1747"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1750"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1737"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1740"/>
         <source>Painter Widget</source>
         <translation>Painter-widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1759"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1762"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1749"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1752"/>
         <source>Web View</source>
         <translation>Webbvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1771"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1774"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1761"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1764"/>
         <source>Data Grid</source>
         <translation>Datarutnät</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1787"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1777"/>
         <source>Generic</source>
         <translation>Generisk</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1800"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1790"/>
         <source>Plot</source>
         <translation>Plott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1813"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1803"/>
         <source>FFT Plot</source>
         <translation>FFT-diagram</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1826"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1816"/>
         <source>Gauge</source>
         <translation>Mätare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1839"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1829"/>
         <source>Level Indicator</source>
         <translation>Nivåindikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1852"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1842"/>
         <source>Compass</source>
         <translation>Kompass</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1865"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1855"/>
         <source>Meter</source>
         <translation>Mätare</translation>
     </message>
@@ -8006,144 +8957,144 @@ Giltigt format: 01 A2 FF 3C</translation>
         <translation>Delat Minne</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1878"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1868"/>
         <source>LED Indicator</source>
         <translation>LED-indikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1907"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1897"/>
         <source>Slider</source>
         <translation>Skjutreglage</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1920"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1910"/>
         <source>Toggle</source>
         <translation>Växlare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1933"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1923"/>
         <source>Knob</source>
         <translation>Ratt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1946"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1936"/>
         <source>Text Field</source>
         <translation>Textfält</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1959"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1949"/>
         <source>Button</source>
         <translation>Knapp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1983"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2059"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2147"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1973"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2049"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2137"/>
         <source>Add Group</source>
         <translation>Lägg till Grupp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1999"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2075"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2163"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2208"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="1989"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2065"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2153"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2198"/>
         <source>Add Dataset</source>
         <translation>Lägg till Dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2013"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2089"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2177"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2222"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2429"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2003"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2079"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2167"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2212"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2419"/>
         <source>Add Output</source>
         <translation>Lägg till Utdata</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2029"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2102"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2019"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2092"/>
         <source>Add Action</source>
         <translation>Lägg till Åtgärd</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2038"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2028"/>
         <source>Add Data Source</source>
         <translation>Lägg till Datakälla</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2045"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2035"/>
         <source>Add Data Table</source>
         <translation>Lägg till Datatabell</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2113"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2249"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2316"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2444"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2478"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2534"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2103"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2239"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2306"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2434"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2468"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2524"/>
         <source>Rename…</source>
         <translation>Byt Namn…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2121"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2279"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2349"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2401"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2452"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2508"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2111"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2269"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2339"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2391"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2442"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2498"/>
         <source>Duplicate</source>
         <translation>Duplicera</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2132"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2290"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2361"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2413"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2463"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2519"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2545"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2122"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2280"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2351"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2403"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2453"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2509"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2535"/>
         <source>Delete…</source>
         <translation>Ta Bort…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2193"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2183"/>
         <source>Edit Frame Parser…</source>
         <translation>Redigera Frame-parser…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2235"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2225"/>
         <source>Edit Painter Code…</source>
         <translation>Redigera Painter-kod…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2257"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2325"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2377"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2486"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2247"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2315"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2367"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2476"/>
         <source>Move Up</source>
         <translation>Flytta Upp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2268"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2337"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2389"/>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2497"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2258"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2327"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2379"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2487"/>
         <source>Move Down</source>
         <translation>Flytta Ner</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2305"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2295"/>
         <source>Edit Transform Code…</source>
         <translation>Redigera Transform-kod…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2560"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2550"/>
         <source>Edit Code…</source>
         <translation>Redigera Kod…</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2575"/>
+        <location filename="../../qml/ProjectEditor/Views/FlowDiagram.qml" line="2565"/>
         <source>Edit Control Loop…</source>
         <translation>Redigera Kontrollslinga…</translation>
     </message>
@@ -12736,39 +13687,44 @@ Ange nödvändiga inloggningsuppgifter.</translation>
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="212"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="213"/>
         <source>Console Only Mode</source>
         <translation>Endast Konsolläge</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="215"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="216"/>
         <source>Quick Plot Mode</source>
         <translation>Snabbdiagramläge</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="222"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="223"/>
         <source>Empty Project</source>
         <translation>Tomt Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="743"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="710"/>
         <source>Serial Studio</source>
         <translation>Serial Studio</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="751"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="718"/>
         <source>Waiting for data…</source>
         <translation>Väntar på data…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="752"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="719"/>
         <source>Connecting to device…</source>
         <translation>Ansluter till enhet…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindow.qml" line="772"/>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="749"/>
         <source>Application</source>
         <translation>Applikation</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/MainWindow.qml" line="753"/>
+        <source>Command Palette</source>
+        <translation>Kommandopalett</translation>
     </message>
     <message>
         <source>Commands</source>
@@ -12803,44 +13759,36 @@ Ange nödvändiga inloggningsuppgifter.</translation>
 <context>
     <name>MainWindowActions</name>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="36"/>
         <source>Project Editor</source>
-        <translation>Projektredigerare</translation>
+        <translation type="vanished">Projektredigerare</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="42"/>
         <source>Open Project</source>
-        <translation>Öppna Projekt</translation>
+        <translation type="vanished">Öppna Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="51"/>
         <source>Open CSV</source>
-        <translation>Öppna CSV</translation>
+        <translation type="vanished">Öppna CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="57"/>
         <source>Open MDF4</source>
-        <translation>Öppna MDF4</translation>
+        <translation type="vanished">Öppna MDF4</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="63"/>
         <source>Deploy Operator App</source>
-        <translation>Distribuera Operatörsapp</translation>
+        <translation type="vanished">Distribuera Operatörsapp</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="69"/>
         <source>Extensions</source>
-        <translation>Tillägg</translation>
+        <translation type="vanished">Tillägg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="75"/>
         <source>Examples</source>
-        <translation>Exempel</translation>
+        <translation type="vanished">Exempel</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/MainWindowActions.qml" line="81"/>
         <source>About</source>
-        <translation>Om</translation>
+        <translation type="vanished">Om</translation>
     </message>
 </context>
 <context>
@@ -13293,12 +14241,12 @@ Vill du öppna nedladdningssidan?</translation>
 <context>
     <name>Misc::IconEngine</name>
     <message>
-        <location filename="../../src/Misc/IconEngine.cpp" line="152"/>
+        <location filename="../../src/Misc/IconEngine.cpp" line="154"/>
         <source>Invalid icon identifier</source>
         <translation>Ogiltig ikonidentifierare</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/IconEngine.cpp" line="222"/>
+        <location filename="../../src/Misc/IconEngine.cpp" line="224"/>
         <source>Empty SVG data received</source>
         <translation>Tom SVG-data mottagen</translation>
     </message>
@@ -14000,7 +14948,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Vattenfall</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="186"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="185"/>
         <source>Toggle waterfall for every selected dataset</source>
         <translation>Växla vattenfall för varje vald datamängd</translation>
     </message>
@@ -14025,7 +14973,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Mätare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="226"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="225"/>
         <source>Set gauge for every selected dataset</source>
         <translation>Ställ in mätare för varje vald datamängd</translation>
     </message>
@@ -14035,7 +14983,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Kompass</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="241"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="240"/>
         <source>Set compass for every selected dataset</source>
         <translation>Ställ in kompass för varje vald datamängd</translation>
     </message>
@@ -14045,7 +14993,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Mätare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="256"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="255"/>
         <source>Set meter for every selected dataset</source>
         <translation>Ställ in mätare för varje vald datamängd</translation>
     </message>
@@ -14055,7 +15003,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>LED</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="271"/>
+        <location filename="../../qml/ProjectEditor/Views/MultiSelectionView.qml" line="270"/>
         <source>Toggle LED for every selected dataset</source>
         <translation>Växla LED för varje vald datamängd</translation>
     </message>
@@ -14810,7 +15758,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Importera</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="92"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="91"/>
         <source>Import painter code from a .js file</source>
         <translation>Importera painter-kod från en .js-fil</translation>
     </message>
@@ -14820,7 +15768,7 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
         <translation>Mall</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="103"/>
+        <location filename="../../qml/ProjectEditor/Dialogs/PainterCodeDialog.qml" line="102"/>
         <source>Select a built-in painter template</source>
         <translation>Välj en inbyggd ritarmall</translation>
     </message>
@@ -14942,34 +15890,83 @@ Lägg till grupper ovan för att avläsa flera registertyper.</translation>
 <context>
     <name>PaletteModel</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="126"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="176"/>
         <source>Add Workspace</source>
         <translation>Lägg till Arbetsyta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="129"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="194"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="179"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="240"/>
         <source>Workspaces</source>
         <translation>Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="140"/>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="209"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="126"/>
         <source>Tools</source>
         <translation>Verktyg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="191"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="118"/>
+        <source>File</source>
+        <translation>Fil</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="119"/>
+        <source>Operation Mode</source>
+        <translation>Driftsläge</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="120"/>
+        <source>Connection</source>
+        <translation>Anslutning</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="121"/>
+        <source>View</source>
+        <translation>Vy</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="122"/>
+        <source>Data Export</source>
+        <translation>Dataexport</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="123"/>
+        <source>Console</source>
+        <translation>Konsol</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="124"/>
+        <source>Project</source>
+        <translation>Projekt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="125"/>
+        <source>License</source>
+        <translation>Licens</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="127"/>
+        <source>Help</source>
+        <translation>Hjälp</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="130"/>
+        <source>Other</source>
+        <translation>Övrigt</translation>
+    </message>
+    <message>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="237"/>
         <source>Folders</source>
         <translation>Mappar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="197"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="243"/>
         <source>Groups</source>
         <translation>Grupper</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="200"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/PaletteModel.qml" line="246"/>
         <source>Widgets</source>
         <translation>Widgetar</translation>
     </message>
@@ -15324,12 +16321,12 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
 <context>
     <name>ProjectEditor</name>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="44"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="45"/>
         <source>modified</source>
         <translation>ändrad</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="135"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="144"/>
         <source>Project</source>
         <translation>Projekt</translation>
     </message>
@@ -15338,47 +16335,47 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
         <translation type="vanished">Kommandon</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="406"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="412"/>
         <source>This project is password protected</source>
         <translation>Detta projekt är lösenordsskyddat</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="407"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="413"/>
         <source>Editing is available in Project mode</source>
         <translation>Redigering är tillgänglig i Projektläge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="418"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="424"/>
         <source>Enter the password to make changes, or open a different project.</source>
         <translation>Ange lösenordet för att göra ändringar, eller öppna ett annat projekt.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="419"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="425"/>
         <source>Switch to Project mode to load and edit a project.</source>
         <translation>Växla till Projektläge för att ladda och redigera ett projekt.</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="441"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="447"/>
         <source>Unlock</source>
         <translation>Lås Upp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="442"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="448"/>
         <source>Switch to Project Mode</source>
         <translation>Växla till Projektläge</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="461"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="467"/>
         <source>Open Other Project</source>
         <translation>Öppna Annat Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="462"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="468"/>
         <source>Close</source>
         <translation>Stäng</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="478"/>
+        <location filename="../../qml/ProjectEditor/ProjectEditor.qml" line="484"/>
         <source>Create New Project</source>
         <translation>Skapa Nytt Projekt</translation>
     </message>
@@ -15386,214 +16383,245 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
 <context>
     <name>ProjectEditorActions</name>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="56"/>
         <source>New Project</source>
-        <translation>Nytt Projekt</translation>
+        <translation type="vanished">Nytt Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="58"/>
         <source>Open Project</source>
-        <translation>Öppna Projekt</translation>
+        <translation type="vanished">Öppna Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="60"/>
         <source>Save Project</source>
-        <translation>Spara Projekt</translation>
+        <translation type="vanished">Spara Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="63"/>
         <source>Save Project As</source>
-        <translation>Spara Projekt Som</translation>
+        <translation type="vanished">Spara Projekt Som</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="66"/>
         <source>Import Protobuf Schema</source>
-        <translation>Importera Protobuf-schema</translation>
+        <translation type="vanished">Importera Protobuf-schema</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="68"/>
         <source>Restore Backup</source>
-        <translation>Återställ Säkerhetskopia</translation>
+        <translation type="vanished">Återställ Säkerhetskopia</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="71"/>
         <source>Lock Project Editor</source>
-        <translation>Lås Projektredigerare</translation>
+        <translation type="vanished">Lås Projektredigerare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="73"/>
         <source>Add Device</source>
-        <translation>Lägg till Enhet</translation>
+        <translation type="vanished">Lägg till Enhet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="75"/>
         <source>Add Group</source>
-        <translation>Lägg till Grupp</translation>
+        <translation type="vanished">Lägg till Grupp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="76"/>
         <source>Dataset Container</source>
-        <translation>Datauppsättningsbehållare</translation>
+        <translation type="vanished">Datauppsättningsbehållare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="77"/>
         <source>Add Image View</source>
-        <translation>Lägg till Bildvisning</translation>
+        <translation type="vanished">Lägg till Bildvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="78"/>
+        <source>Image View</source>
+        <translation type="vanished">Bildvisning</translation>
+    </message>
+    <message>
+        <source>Add Web View</source>
+        <translation type="vanished">Lägg till Webbvisning</translation>
+    </message>
+    <message>
+        <source>Web View</source>
+        <translation type="vanished">Webbvisning</translation>
+    </message>
+    <message>
+        <source>Add Painter</source>
+        <translation type="vanished">Lägg till Painter</translation>
+    </message>
+    <message>
+        <source>Painter Widget</source>
+        <translation type="vanished">Painter-widget</translation>
+    </message>
+    <message>
+        <source>Add Data Table</source>
+        <translation type="vanished">Lägg till Datatabell</translation>
+    </message>
+    <message>
+        <source>Data Grid</source>
+        <translation type="vanished">Datarutnät</translation>
+    </message>
+    <message>
+        <source>Add Multi-Plot</source>
+        <translation type="vanished">Lägg till Flerplott</translation>
+    </message>
+    <message>
+        <source>Multiple Plot</source>
+        <translation type="vanished">Flerplott</translation>
+    </message>
+    <message>
+        <source>Add 3D Plot</source>
+        <translation type="vanished">Lägg till 3D-plott</translation>
+    </message>
+    <message>
+        <source>3D Plot</source>
+        <translation type="vanished">3D-plott</translation>
+    </message>
+    <message>
+        <source>Add Accelerometer</source>
+        <translation type="vanished">Lägg till Accelerometer</translation>
+    </message>
+    <message>
+        <source>Accelerometer</source>
+        <translation type="vanished">Accelerometer</translation>
+    </message>
+    <message>
+        <source>Add Gyroscope</source>
+        <translation type="vanished">Lägg till Gyroskop</translation>
+    </message>
+    <message>
+        <source>Gyroscope</source>
+        <translation type="vanished">Gyroskop</translation>
+    </message>
+    <message>
+        <source>Add GPS Map</source>
+        <translation type="vanished">Lägg till GPS-karta</translation>
+    </message>
+    <message>
+        <source>GPS Map</source>
+        <translation type="vanished">GPS-karta</translation>
+    </message>
+    <message>
+        <source>Add Dataset</source>
+        <translation type="vanished">Lägg till Dataset</translation>
+    </message>
+    <message>
+        <source>Add Plot</source>
+        <translation type="vanished">Lägg till Diagram</translation>
+    </message>
+    <message>
+        <source>Add FFT Plot</source>
+        <translation type="vanished">Lägg till FFT-diagram</translation>
+    </message>
+    <message>
+        <source>Add Gauge</source>
+        <translation type="vanished">Lägg till Mätare</translation>
+    </message>
+    <message>
+        <source>Add Level Indicator</source>
+        <translation type="vanished">Lägg till Nivåindikator</translation>
+    </message>
+    <message>
+        <source>Add Compass</source>
+        <translation type="vanished">Lägg till Kompass</translation>
+    </message>
+    <message>
+        <source>Add LED Indicator</source>
+        <translation type="vanished">Lägg till LED-indikator</translation>
+    </message>
+    <message>
+        <source>Add Action</source>
+        <translation type="vanished">Lägg till Åtgärd</translation>
+    </message>
+    <message>
+        <source>Add Output Panel</source>
+        <translation type="vanished">Lägg till Utdatapanel</translation>
+    </message>
+    <message>
+        <source>Add Output Slider</source>
+        <translation type="vanished">Lägg till Utmatningsreglage</translation>
+    </message>
+    <message>
+        <source>Add Output Toggle</source>
+        <translation type="vanished">Lägg till Utmatningsväxel</translation>
+    </message>
+    <message>
+        <source>Add Output Knob</source>
+        <translation type="vanished">Lägg till Utmatningsvred</translation>
+    </message>
+    <message>
+        <source>Add Output Text Field</source>
+        <translation type="vanished">Lägg till Utmatningstextfält</translation>
+    </message>
+    <message>
+        <source>Add Output Button</source>
+        <translation type="vanished">Lägg till Utmatningsknapp</translation>
+    </message>
+</context>
+<context>
+    <name>ProjectEditorCommandBindings</name>
+    <message>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="97"/>
+        <source>Save the current project</source>
+        <translation>Spara det aktuella projektet</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="105"/>
+        <source>Save the current project under a new name</source>
+        <translation>Spara det aktuella projektet under ett nytt namn</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="134"/>
+        <source>Dataset Container</source>
+        <translation>Datauppsättningscontainer</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="139"/>
         <source>Image View</source>
         <translation>Bildvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="79"/>
-        <source>Add Web View</source>
-        <translation>Lägg till Webbvisning</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="80"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="143"/>
         <source>Web View</source>
         <translation>Webbvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="81"/>
-        <source>Add Painter</source>
-        <translation>Lägg till Painter</translation>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="150"/>
+        <source>Add a custom JavaScript-rendered painter widget</source>
+        <translation>Lägg till en anpassad JavaScript-renderad ritwidget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="82"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="151"/>
+        <source>Painter widgets require a Pro license, adding one will fall back to a data grid</source>
+        <translation>Painter-widgetar kräver en Pro-licens, att lägga till en kommer att återgå till ett datarutnät</translation>
+    </message>
+    <message>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="152"/>
         <source>Painter Widget</source>
         <translation>Painter-widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="83"/>
-        <source>Add Data Table</source>
-        <translation>Lägg till Datatabell</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="84"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="156"/>
         <source>Data Grid</source>
         <translation>Datarutnät</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="85"/>
-        <source>Add Multi-Plot</source>
-        <translation>Lägg till Flerplott</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="86"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="161"/>
         <source>Multiple Plot</source>
         <translation>Flerplott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="87"/>
-        <source>Add 3D Plot</source>
-        <translation>Lägg till 3D-plott</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="88"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="166"/>
         <source>3D Plot</source>
         <translation>3D-plott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="89"/>
-        <source>Add Accelerometer</source>
-        <translation>Lägg till Accelerometer</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="90"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="171"/>
         <source>Accelerometer</source>
         <translation>Accelerometer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="91"/>
-        <source>Add Gyroscope</source>
-        <translation>Lägg till Gyroskop</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="92"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="176"/>
         <source>Gyroscope</source>
         <translation>Gyroskop</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="93"/>
-        <source>Add GPS Map</source>
-        <translation>Lägg till GPS-karta</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="94"/>
+        <location filename="../../qml/Commands/ProjectEditorCommandBindings.qml" line="180"/>
         <source>GPS Map</source>
         <translation>GPS-karta</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="95"/>
-        <source>Add Dataset</source>
-        <translation>Lägg till Dataset</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="97"/>
-        <source>Add Plot</source>
-        <translation>Lägg till Diagram</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="99"/>
-        <source>Add FFT Plot</source>
-        <translation>Lägg till FFT-diagram</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="101"/>
-        <source>Add Gauge</source>
-        <translation>Lägg till Mätare</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="103"/>
-        <source>Add Level Indicator</source>
-        <translation>Lägg till Nivåindikator</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="105"/>
-        <source>Add Compass</source>
-        <translation>Lägg till Kompass</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="107"/>
-        <source>Add LED Indicator</source>
-        <translation>Lägg till LED-indikator</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="109"/>
-        <source>Add Action</source>
-        <translation>Lägg till Åtgärd</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="111"/>
-        <source>Add Output Panel</source>
-        <translation>Lägg till Utdatapanel</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="113"/>
-        <source>Add Output Slider</source>
-        <translation>Lägg till Utmatningsreglage</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="115"/>
-        <source>Add Output Toggle</source>
-        <translation>Lägg till Utmatningsväxel</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="117"/>
-        <source>Add Output Knob</source>
-        <translation>Lägg till Utmatningsvred</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="119"/>
-        <source>Add Output Text Field</source>
-        <translation>Lägg till Utmatningstextfält</translation>
-    </message>
-    <message>
-        <location filename="../../qml/ProjectEditor/ProjectEditorActions.qml" line="121"/>
-        <source>Add Output Button</source>
-        <translation>Lägg till Utmatningsknapp</translation>
     </message>
 </context>
 <context>
@@ -15701,401 +16729,316 @@ Klicka på Uppdatera för att uppdatera listan.</translation>
 <context>
     <name>ProjectToolbar</name>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="142"/>
         <source>New</source>
-        <translation>Ny</translation>
+        <translation type="vanished">Ny</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="145"/>
         <source>Create a new JSON project</source>
-        <translation>Skapa ett nytt JSON-projekt</translation>
+        <translation type="vanished">Skapa ett nytt JSON-projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="158"/>
         <source>Open</source>
-        <translation>Öppna</translation>
+        <translation type="vanished">Öppna</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="162"/>
         <source>Open an existing JSON project</source>
-        <translation>Öppna ett befintligt JSON-projekt</translation>
+        <translation type="vanished">Öppna ett befintligt JSON-projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="168"/>
         <source>Save</source>
-        <translation>Spara</translation>
+        <translation type="vanished">Spara</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="175"/>
         <source>Save the current project</source>
-        <translation>Spara det aktuella projektet</translation>
+        <translation type="vanished">Spara det aktuella projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="181"/>
         <source>Save As</source>
-        <translation>Spara Som</translation>
+        <translation type="vanished">Spara Som</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="188"/>
         <source>Save the current project under a new name</source>
-        <translation>Spara det aktuella projektet under ett nytt namn</translation>
+        <translation type="vanished">Spara det aktuella projektet under ett nytt namn</translation>
     </message>
     <message>
         <source>Unlock</source>
         <translation type="vanished">Lås Upp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="230"/>
         <source>Lock</source>
-        <translation>Lås</translation>
+        <translation type="vanished">Lås</translation>
     </message>
     <message>
         <source>Unlock the Project Editor with the project password</source>
         <translation type="vanished">Lås upp Projektredigeraren med projektlösenordet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="200"/>
         <source>Import</source>
-        <translation>Importera</translation>
+        <translation type="vanished">Importera</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="204"/>
         <source>Protobuf</source>
-        <translation>Protobuf</translation>
+        <translation type="vanished">Protobuf</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="208"/>
         <source>Generate a project from a Protocol Buffers (.proto) schema</source>
-        <translation>Generera ett projekt från ett Protocol Buffers (.proto) schema</translation>
+        <translation type="vanished">Generera ett projekt från ett Protocol Buffers (.proto) schema</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="234"/>
         <source>Set a password and lock the Project Editor</source>
-        <translation>Ange ett lösenord och lås Projektredigeraren</translation>
+        <translation type="vanished">Ange ett lösenord och lås Projektredigeraren</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="245"/>
         <source>Add Device</source>
-        <translation>Lägg till Enhet</translation>
+        <translation type="vanished">Lägg till Enhet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="249"/>
         <source>Add a new data source (device) to the project</source>
-        <translation>Lägg till en ny datakälla (enhet) till projektet</translation>
+        <translation type="vanished">Lägg till en ny datakälla (enhet) till projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="272"/>
         <source>Action</source>
-        <translation>Åtgärd</translation>
+        <translation type="vanished">Åtgärd</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="275"/>
         <source>Add a new action to the project</source>
-        <translation>Lägg till en ny åtgärd till projektet</translation>
+        <translation type="vanished">Lägg till en ny åtgärd till projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="260"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="264"/>
         <source>Output</source>
-        <translation>Utgång</translation>
+        <translation type="vanished">Utgång</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="218"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="222"/>
         <source>Restore</source>
-        <translation>Återställ</translation>
+        <translation type="vanished">Återställ</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="226"/>
         <source>Restore a recent automatic snapshot of the current project</source>
-        <translation>Återställ en nylig automatisk ögonblicksbild av det aktuella projektet</translation>
+        <translation type="vanished">Återställ en nylig automatisk ögonblicksbild av det aktuella projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="267"/>
         <source>Add a new output control panel with a button</source>
-        <translation>Lägg till en ny utgångskontrollpanel med en knapp</translation>
+        <translation type="vanished">Lägg till en ny utgångskontrollpanel med en knapp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="288"/>
         <source>Slider</source>
-        <translation>Skjutreglage</translation>
+        <translation type="vanished">Skjutreglage</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="291"/>
         <source>Add an output slider control</source>
-        <translation>Lägg till en utgångskontroll med skjutreglage</translation>
+        <translation type="vanished">Lägg till en utgångskontroll med skjutreglage</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="298"/>
         <source>Toggle</source>
-        <translation>Växlare</translation>
+        <translation type="vanished">Växlare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="301"/>
         <source>Add an output toggle control</source>
-        <translation>Lägg till en utgångskontroll med växlare</translation>
+        <translation type="vanished">Lägg till en utgångskontroll med växlare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="308"/>
         <source>Knob</source>
-        <translation>Ratt</translation>
+        <translation type="vanished">Ratt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="311"/>
         <source>Add an output knob control</source>
-        <translation>Lägg till en utgångskontroll med ratt</translation>
+        <translation type="vanished">Lägg till en utgångskontroll med ratt</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="319"/>
         <source>Text Field</source>
-        <translation>Textfält</translation>
+        <translation type="vanished">Textfält</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="321"/>
         <source>Add an output text field control</source>
-        <translation>Lägg till en utgångskontroll med textfält</translation>
+        <translation type="vanished">Lägg till en utgångskontroll med textfält</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="328"/>
         <source>Button</source>
-        <translation>Knapp</translation>
+        <translation type="vanished">Knapp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="331"/>
         <source>Add an output button control</source>
-        <translation>Lägg till en utdata-knappkontroll</translation>
+        <translation type="vanished">Lägg till en utdata-knappkontroll</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="344"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="348"/>
         <source>Dataset</source>
-        <translation>Dataset</translation>
+        <translation type="vanished">Dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="350"/>
         <source>Add a generic dataset</source>
-        <translation>Lägg till ett generiskt dataset</translation>
+        <translation type="vanished">Lägg till ett generiskt dataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="364"/>
         <source>Plot</source>
-        <translation>Diagram</translation>
+        <translation type="vanished">Diagram</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="367"/>
         <source>Add a 2D plot dataset</source>
-        <translation>Lägg till ett 2D-diagramdataset</translation>
+        <translation type="vanished">Lägg till ett 2D-diagramdataset</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="374"/>
         <source>FFT Plot</source>
-        <translation>FFT-diagram</translation>
+        <translation type="vanished">FFT-diagram</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="377"/>
         <source>Add a Fast Fourier Transform plot</source>
-        <translation>Lägg till ett Fast Fourier Transform-diagram</translation>
+        <translation type="vanished">Lägg till ett Fast Fourier Transform-diagram</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="384"/>
         <source>Gauge</source>
-        <translation>Mätare</translation>
+        <translation type="vanished">Mätare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="387"/>
         <source>Add a gauge widget for numeric data</source>
-        <translation>Lägg till en mätarwidget för numerisk data</translation>
+        <translation type="vanished">Lägg till en mätarwidget för numerisk data</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="395"/>
         <source>Level Indicator</source>
-        <translation>Nivåindikator</translation>
+        <translation type="vanished">Nivåindikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="397"/>
         <source>Add a vertical bar level indicator</source>
-        <translation>Lägg till en vertikal stapelnivåindikator</translation>
+        <translation type="vanished">Lägg till en vertikal stapelnivåindikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="404"/>
         <source>Compass</source>
-        <translation>Kompass</translation>
+        <translation type="vanished">Kompass</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="407"/>
         <source>Add a compass widget for directional data</source>
-        <translation>Lägg till en kompasswidget för riktningsdata</translation>
+        <translation type="vanished">Lägg till en kompasswidget för riktningsdata</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="415"/>
         <source>LED Indicator</source>
-        <translation>LED-indikator</translation>
+        <translation type="vanished">LED-indikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="417"/>
         <source>Add an LED-style status indicator</source>
-        <translation>Lägg till en LED-statusindikator</translation>
+        <translation type="vanished">Lägg till en LED-statusindikator</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="430"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="434"/>
         <source>Group</source>
-        <translation>Grupp</translation>
+        <translation type="vanished">Grupp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="436"/>
         <source>Add a dataset container group</source>
-        <translation>Lägg till en datauppsättningscontainergrupp</translation>
+        <translation type="vanished">Lägg till en datauppsättningscontainergrupp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="438"/>
         <source>Dataset Container</source>
-        <translation>Datauppsättningscontainer</translation>
+        <translation type="vanished">Datauppsättningscontainer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="442"/>
         <source>Image</source>
-        <translation>Bild</translation>
+        <translation type="vanished">Bild</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="444"/>
         <source>Add an image/video stream viewer</source>
-        <translation>Lägg till en bild-/videoströmvisare</translation>
+        <translation type="vanished">Lägg till en bild-/videoströmvisare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="446"/>
         <source>Image View</source>
-        <translation>Bildvisning</translation>
+        <translation type="vanished">Bildvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="450"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="454"/>
         <source>Web View</source>
-        <translation>Webbvisning</translation>
+        <translation type="vanished">Webbvisning</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="452"/>
         <source>Add a web viewer</source>
-        <translation>Lägg till en webbvisare</translation>
+        <translation type="vanished">Lägg till en webbvisare</translation>
     </message>
     <message>
         <source>Add an web viewer</source>
         <translation type="vanished">Lägg till en webbvisare</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="462"/>
         <source>Painter</source>
-        <translation>Painter</translation>
+        <translation type="vanished">Painter</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="466"/>
         <source>Add a custom JavaScript-rendered painter widget</source>
-        <translation>Lägg till en anpassad JavaScript-renderad painter-widget</translation>
+        <translation type="vanished">Lägg till en anpassad JavaScript-renderad painter-widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="467"/>
         <source>Painter widgets require a Pro license — adding one will fall back to a data grid</source>
-        <translation>Painter-widgetar kräver en Pro-licens — att lägga till en kommer att falla tillbaka till ett datarutnät</translation>
+        <translation type="vanished">Painter-widgetar kräver en Pro-licens — att lägga till en kommer att falla tillbaka till ett datarutnät</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="468"/>
         <source>Painter Widget</source>
-        <translation>Painter-widget</translation>
+        <translation type="vanished">Painter-widget</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="480"/>
         <source>Table</source>
-        <translation>Tabell</translation>
+        <translation type="vanished">Tabell</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="483"/>
         <source>Add a data table view</source>
-        <translation>Lägg till en datatabellvy</translation>
+        <translation type="vanished">Lägg till en datatabellvy</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="485"/>
         <source>Data Grid</source>
-        <translation>Datarutnät</translation>
+        <translation type="vanished">Datarutnät</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="491"/>
         <source>Multi-Plot</source>
-        <translation>Flerplott</translation>
+        <translation type="vanished">Flerplott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="493"/>
         <source>Add a 2D plot with multiple signals</source>
-        <translation>Lägg till ett 2D-diagram med flera signaler</translation>
+        <translation type="vanished">Lägg till ett 2D-diagram med flera signaler</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="495"/>
         <source>Multiple Plot</source>
-        <translation>Flerplott</translation>
+        <translation type="vanished">Flerplott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="500"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="505"/>
         <source>3D Plot</source>
-        <translation>3D-plott</translation>
+        <translation type="vanished">3D-plott</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="503"/>
         <source>Add a 3D plot visualization</source>
-        <translation>Lägg till en 3D-plottvisualisering</translation>
+        <translation type="vanished">Lägg till en 3D-plottvisualisering</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="511"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="515"/>
         <source>Accelerometer</source>
-        <translation>Accelerometer</translation>
+        <translation type="vanished">Accelerometer</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="513"/>
         <source>Add a group for 3-axis accelerometer data</source>
-        <translation>Lägg till en grupp för 3-axlig accelerometerdata</translation>
+        <translation type="vanished">Lägg till en grupp för 3-axlig accelerometerdata</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="521"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="524"/>
         <source>Gyroscope</source>
-        <translation>Gyroskop</translation>
+        <translation type="vanished">Gyroskop</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="525"/>
         <source>Add a group for 3-axis gyroscope data</source>
-        <translation>Lägg till en grupp för 3-axlig gyroskopdata</translation>
+        <translation type="vanished">Lägg till en grupp för 3-axlig gyroskopdata</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="530"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="535"/>
         <source>GPS Map</source>
-        <translation>GPS-karta</translation>
+        <translation type="vanished">GPS-karta</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="533"/>
         <source>Add a map widget for GPS data</source>
-        <translation>Lägg till en kartwidget för GPS-data</translation>
+        <translation type="vanished">Lägg till en kartwidget för GPS-data</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="547"/>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="551"/>
         <source>Assistant</source>
-        <translation>Assistent</translation>
+        <translation type="vanished">Assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="554"/>
         <source>Open the Assistant</source>
-        <translation>Öppna Assistenten</translation>
+        <translation type="vanished">Öppna Assistenten</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="560"/>
         <source>Help Center</source>
-        <translation>Hjälpcenter</translation>
+        <translation type="vanished">Hjälpcenter</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Sections/ProjectToolbar.qml" line="564"/>
         <source>Open the Project Editor documentation</source>
-        <translation>Öppna dokumentationen för projektredigeraren</translation>
+        <translation type="vanished">Öppna dokumentationen för projektredigeraren</translation>
     </message>
 </context>
 <context>
@@ -16618,12 +17561,12 @@ function parse(%1) { ... }
 Separatorparametern behövs inte längre.</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="214"/>
         <source>Critical</source>
         <translation>Kritiskt</translation>
     </message>
     <message>
-        <location filename="../../src/Misc/ModuleManager.cpp" line="212"/>
+        <location filename="../../src/Misc/ModuleManager.cpp" line="214"/>
         <source>Warning</source>
         <translation>Varning</translation>
     </message>
@@ -17380,77 +18323,77 @@ Separatorparametern behövs inte längre.</translation>
 <context>
     <name>SerialStudio</name>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="391"/>
+        <location filename="../../src/SerialStudio.cpp" line="386"/>
         <source>Data Grids</source>
         <translation>Datarutnät</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="394"/>
+        <location filename="../../src/SerialStudio.cpp" line="389"/>
         <source>Multiple Data Plots</source>
         <translation>Flera Datadiagram</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="397"/>
+        <location filename="../../src/SerialStudio.cpp" line="392"/>
         <source>Accelerometers</source>
         <translation>Accelerometrar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="400"/>
+        <location filename="../../src/SerialStudio.cpp" line="395"/>
         <source>Gyroscopes</source>
         <translation>Gyroskop</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="403"/>
+        <location filename="../../src/SerialStudio.cpp" line="398"/>
         <source>GPS</source>
         <translation>GPS</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="406"/>
+        <location filename="../../src/SerialStudio.cpp" line="401"/>
         <source>FFT Plots</source>
         <translation>FFT-diagram</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="409"/>
+        <location filename="../../src/SerialStudio.cpp" line="404"/>
         <source>LED Panels</source>
         <translation>LED-paneler</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="412"/>
+        <location filename="../../src/SerialStudio.cpp" line="407"/>
         <source>Data Plots</source>
         <translation>Datadiagram</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="415"/>
+        <location filename="../../src/SerialStudio.cpp" line="410"/>
         <source>Bars</source>
         <translation>Staplar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="418"/>
+        <location filename="../../src/SerialStudio.cpp" line="413"/>
         <source>Gauges</source>
         <translation>Mätare</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="421"/>
+        <location filename="../../src/SerialStudio.cpp" line="416"/>
         <source>Terminal</source>
         <translation>Terminal</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="424"/>
+        <location filename="../../src/SerialStudio.cpp" line="419"/>
         <source>Clock</source>
         <translation>Klocka</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="427"/>
+        <location filename="../../src/SerialStudio.cpp" line="422"/>
         <source>Stopwatch</source>
         <translation>Stoppur</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="430"/>
+        <location filename="../../src/SerialStudio.cpp" line="425"/>
         <source>Compasses</source>
         <translation>Kompasser</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="433"/>
+        <location filename="../../src/SerialStudio.cpp" line="428"/>
         <source>Meters</source>
         <translation>Mätare</translation>
     </message>
@@ -17459,92 +18402,92 @@ Separatorparametern behövs inte längre.</translation>
         <translation type="vanished">Termometrar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="436"/>
+        <location filename="../../src/SerialStudio.cpp" line="431"/>
         <source>3D Plots</source>
         <translation>3D-diagram</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="439"/>
+        <location filename="../../src/SerialStudio.cpp" line="434"/>
         <source>Web Views</source>
         <translation>Webbvisningar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="443"/>
+        <location filename="../../src/SerialStudio.cpp" line="438"/>
         <source>Image Views</source>
         <translation>Bildvisningar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="446"/>
+        <location filename="../../src/SerialStudio.cpp" line="441"/>
         <source>Output Panels</source>
         <translation>Utgångspaneler</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="449"/>
+        <location filename="../../src/SerialStudio.cpp" line="444"/>
         <source>Notifications</source>
         <translation>Notifieringar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="452"/>
+        <location filename="../../src/SerialStudio.cpp" line="447"/>
         <source>Waterfalls</source>
         <translation>Vattenfallsdiagram</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="455"/>
+        <location filename="../../src/SerialStudio.cpp" line="450"/>
         <source>Painter Widgets</source>
         <translation>Ritarwidgetar</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1078"/>
+        <location filename="../../src/SerialStudio.cpp" line="1073"/>
         <source>UTF-8</source>
         <translation>UTF-8</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1079"/>
+        <location filename="../../src/SerialStudio.cpp" line="1074"/>
         <source>UTF-16 LE</source>
         <translation>UTF-16 LE</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1080"/>
+        <location filename="../../src/SerialStudio.cpp" line="1075"/>
         <source>UTF-16 BE</source>
         <translation>UTF-16 BE</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1081"/>
+        <location filename="../../src/SerialStudio.cpp" line="1076"/>
         <source>Latin-1</source>
         <translation>Latin-1</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1082"/>
+        <location filename="../../src/SerialStudio.cpp" line="1077"/>
         <source>System</source>
         <translation>System</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1083"/>
+        <location filename="../../src/SerialStudio.cpp" line="1078"/>
         <source>GBK</source>
         <translation>GBK</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1084"/>
+        <location filename="../../src/SerialStudio.cpp" line="1079"/>
         <source>GB18030</source>
         <translation>GB18030</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1085"/>
+        <location filename="../../src/SerialStudio.cpp" line="1080"/>
         <source>Big5</source>
         <translation>Big5</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1086"/>
+        <location filename="../../src/SerialStudio.cpp" line="1081"/>
         <source>Shift-JIS</source>
         <translation>Shift-jis</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1087"/>
+        <location filename="../../src/SerialStudio.cpp" line="1082"/>
         <source>EUC-JP</source>
         <translation>EUC-JP</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1088"/>
+        <location filename="../../src/SerialStudio.cpp" line="1083"/>
         <source>EUC-KR</source>
         <translation>EUC-KR</translation>
     </message>
@@ -18601,23 +19544,23 @@ Separatorparametern behövs inte längre.</translation>
         <translation>Ai-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1473"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1474"/>
         <source>Display</source>
         <translation>Display</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1488"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1489"/>
         <source>Display Mode</source>
         <translation>Displayläge</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1556"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1557"/>
         <source>Scrollback Lines</source>
         <translation>Scrollback-rader</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="873"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1510"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1511"/>
         <source>Font Family</source>
         <translation>Teckensnittsfamilj</translation>
     </message>
@@ -18639,7 +19582,7 @@ Separatorparametern behövs inte längre.</translation>
     </message>
     <message>
         <location filename="../../qml/Dialogs/Settings.qml" line="895"/>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1532"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1533"/>
         <source>Font Size</source>
         <translation>Teckenstorlek</translation>
     </message>
@@ -18652,112 +19595,112 @@ Separatorparametern behövs inte längre.</translation>
         <translation type="vanished">Spara Bilder som Standard</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1581"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1582"/>
         <source>Show Timestamps</source>
         <translation>Visa Tidsstämplar</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1609"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1610"/>
         <source>Data Transmission</source>
         <translation>Dataöverföring</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1624"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1625"/>
         <source>Line Ending</source>
         <translation>Radslut</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1646"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1647"/>
         <source>Input Mode</source>
         <translation>Ingångsläge</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1668"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1669"/>
         <source>Text Encoding</source>
         <translation>Textkodning</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1690"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1691"/>
         <source>Checksum</source>
         <translation>Kontrollsumma</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1712"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1713"/>
         <source>Echo Sent Data</source>
         <translation>Eka Skickad Data</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1740"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1741"/>
         <source>Escape Codes</source>
         <translation>Escape-koder</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1755"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1756"/>
         <source>VT100 Emulation</source>
         <translation>Vt100-emulering</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1781"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1782"/>
         <source>ANSI Colors</source>
         <translation>Ansi-färger</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1845"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1846"/>
         <source>CSV Export</source>
         <translation>CSV-export</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1860"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1861"/>
         <source>Row Interval (ms)</source>
         <translation>Radintervall (ms)</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1922"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1923"/>
         <source>0 writes one row per received frame. A positive value logs one snapshot row of every channel at that interval, which keeps file size bounded for multi-source or high-rate projects.</source>
         <translation>0 skriver en rad per mottagen frame. Ett positivt värde loggar en ögonblicksrad för varje kanal vid det intervallet, vilket håller filstorleken begränsad för projekt med flera källor eller hög frekvens.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1968"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1969"/>
         <source>Delivery</source>
         <translation>Leverans</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="1983"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="1984"/>
         <source>System Notifications</source>
         <translation>Systemnotifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2004"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2005"/>
         <source>Show Warning/Critical events as OS desktop notifications when Serial Studio is not the foreground window.</source>
         <translation>Visa varnings-/kritiska händelser som skrivbordsnotifikationer när Serial Studio inte är det aktiva fönstret.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2014"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2015"/>
         <source>Application Logs</source>
         <translation>Applikationsloggar</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2029"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2030"/>
         <source>Route Warnings to Notifications</source>
         <translation>Dirigera Varningar till Notifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2050"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2051"/>
         <source>Off by default — Qt and QML emit warnings frequently and enabling this can drown out real alarms. Critical messages are always routed regardless of this setting.</source>
         <translation>Av som standard — QT och QML genererar varningar frekvent och att aktivera detta kan överrösta verkliga larm. Kritiska meddelanden dirigeras alltid oavsett denna inställning.</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2069"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2070"/>
         <source>Reset</source>
         <translation>Återställ</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2126"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2127"/>
         <source>Close</source>
         <translation>Stäng</translation>
     </message>
     <message>
-        <location filename="../../qml/Dialogs/Settings.qml" line="2134"/>
+        <location filename="../../qml/Dialogs/Settings.qml" line="2135"/>
         <source>Apply</source>
         <translation>Tillämpa</translation>
     </message>
@@ -19217,7 +20160,7 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Återställ mallparametrar till standardvärden</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="304"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="303"/>
         <source>Reset to the default parsing script</source>
         <translation>Återställ till standardtolkningsskriptet</translation>
     </message>
@@ -19254,17 +20197,17 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation>Ångra senaste kodredigeringen</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="336"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="335"/>
         <source>Redo the previously undone edit</source>
         <translation>Gör om tidigare ångrad redigering</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="354"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="353"/>
         <source>Cut selected code to clipboard</source>
         <translation>Klipp ut markerad kod till urklipp</translation>
     </message>
     <message>
-        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="364"/>
+        <location filename="../../qml/ProjectEditor/Views/SourceFrameParserView.qml" line="363"/>
         <source>Copy selected code to clipboard</source>
         <translation>Kopiera markerad kod till urklipp</translation>
     </message>
@@ -19346,182 +20289,161 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
 <context>
     <name>StartMenu</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="191"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="300"/>
         <source>Workspaces</source>
         <translation>Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="293"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="402"/>
         <source>No Workspaces Available</source>
         <translation>Inga Arbetsytor Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="328"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="437"/>
         <source>Actions</source>
         <translation>Åtgärder</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="351"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="460"/>
         <source>No Actions Available</source>
         <translation>Inga Åtgärder Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="381"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="490"/>
         <source>Plugins</source>
         <translation>Tillägg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="279"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="388"/>
         <source>New Workspace…</source>
         <translation>Ny Arbetsyta…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="419"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="528"/>
         <source>Manage Plugins…</source>
         <translation>Hantera Tillägg…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="429"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="538"/>
         <source>No Plugins Installed</source>
         <translation>Inga Tillägg Installerade</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="465"/>
         <source>Auto Layout</source>
-        <translation>Automatisk Layout</translation>
+        <translation type="vanished">Automatisk Layout</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="532"/>
         <source>Full Screen</source>
-        <translation>Helskärm</translation>
+        <translation type="vanished">Helskärm</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="544"/>
         <source>Add External Window</source>
-        <translation>Lägg till Externt Fönster</translation>
+        <translation type="vanished">Lägg till Externt Fönster</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="733"/>
         <source>Clock</source>
-        <translation>Klocka</translation>
+        <translation type="vanished">Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="740"/>
         <source>Stopwatch</source>
-        <translation>Stoppur</translation>
+        <translation type="vanished">Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="757"/>
         <source>Sessions</source>
-        <translation>Sessioner</translation>
+        <translation type="vanished">Sessioner</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="766"/>
         <source>File Transmission</source>
-        <translation>Filöverföring</translation>
+        <translation type="vanished">Filöverföring</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="774"/>
         <source>AI Assistant</source>
-        <translation>Ai-assistent</translation>
+        <translation type="vanished">Ai-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="265"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="374"/>
         <source>Show "%1"</source>
         <translation>Visa "%1"</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="270"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="379"/>
         <source>Show All Hidden Workspaces</source>
         <translation>Visa Alla Dolda Arbetsytor</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="494"/>
         <source>Freeze Dashboard</source>
-        <translation>Frys Dashboard</translation>
+        <translation type="vanished">Frys Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="564"/>
         <source>Export</source>
-        <translation>Exportera</translation>
+        <translation type="vanished">Exportera</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="595"/>
         <source>CSV File</source>
-        <translation>CSV-fil</translation>
+        <translation type="vanished">CSV-fil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="601"/>
         <source>MDF4 File</source>
-        <translation>MDF4-fil</translation>
+        <translation type="vanished">MDF4-fil</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="607"/>
         <source>Console Transcript</source>
-        <translation>Konsolutskrift</translation>
+        <translation type="vanished">Konsolutskrift</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="616"/>
         <source>Session Database</source>
-        <translation>Sessionsdatabas</translation>
+        <translation type="vanished">Sessionsdatabas</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="630"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="651"/>
         <source>No Export Formats Available</source>
         <translation>Inga Exportformat Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="660"/>
         <source>Tools</source>
-        <translation>Verktyg</translation>
+        <translation type="vanished">Verktyg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="789"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="726"/>
         <source>No Tools Available</source>
         <translation>Inga Verktyg Tillgängliga</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="857"/>
         <source>Reset</source>
-        <translation>Återställ</translation>
+        <translation type="vanished">Återställ</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Quit</source>
-        <translation>Avsluta</translation>
+        <translation type="vanished">Avsluta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="904"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="801"/>
         <source>Edit…</source>
         <translation>Redigera…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="716"/>
         <source>Console</source>
-        <translation>Konsol</translation>
+        <translation type="vanished">Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="725"/>
         <source>Notifications</source>
-        <translation>Aviseringar</translation>
+        <translation type="vanished">Aviseringar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="748"/>
         <source>Preferences</source>
-        <translation>Inställningar</translation>
+        <translation type="vanished">Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="829"/>
         <source>Help Center</source>
-        <translation>Hjälpcenter</translation>
+        <translation type="vanished">Hjälpcenter</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="915"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="812"/>
         <source>Delete</source>
         <translation>Ta Bort</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="916"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="813"/>
         <source>Hide</source>
         <translation>Dölj</translation>
     </message>
@@ -19530,19 +20452,16 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">MQTT</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="850"/>
         <source>Resume</source>
-        <translation>Återuppta</translation>
+        <translation type="vanished">Återuppta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="851"/>
         <source>Pause</source>
-        <translation>Pausa</translation>
+        <translation type="vanished">Pausa</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/StartMenu.qml" line="878"/>
         <source>Disconnect</source>
-        <translation>Koppla Från</translation>
+        <translation type="vanished">Koppla Från</translation>
     </message>
 </context>
 <context>
@@ -19787,42 +20706,42 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Sök…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="537"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
         <source>Settings</source>
         <translation>Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="538"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
         <source>Console</source>
         <translation>Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="539"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
         <source>Notifications</source>
         <translation>Notifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="540"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
         <source>Clock</source>
         <translation>Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="541"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
         <source>Stopwatch</source>
         <translation>Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="543"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="545"/>
         <source>AI Assistant</source>
         <translation>Ai-assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="546"/>
         <source>Resume</source>
         <translation>Återuppta</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="546"/>
         <source>Pause</source>
         <translation>Pausa</translation>
     </message>
@@ -19840,67 +20759,67 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation>Sök… (%1)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="902"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="906"/>
         <source>Unfreeze Dashboard</source>
         <translation>Lås Upp Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="903"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="907"/>
         <source>Freeze Dashboard</source>
         <translation>Lås Dashboard</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="961"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="965"/>
         <source>MQTT: Connected to %1</source>
         <translation>MQTT: Ansluten till %1</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="962"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="966"/>
         <source>MQTT: Not connected</source>
         <translation>MQTT: Ej ansluten</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="986"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="990"/>
         <source>MQTT Publisher</source>
         <translation>MQTT-utgivare</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="996"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1000"/>
         <source>Status:</source>
         <translation>Status:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1004"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1008"/>
         <source>Connected</source>
         <translation>Ansluten</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1005"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1009"/>
         <source>Disconnected</source>
         <translation>Frånkopplad</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1012"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1016"/>
         <source>Broker:</source>
         <translation>Broker:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1025"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1029"/>
         <source>Mode:</source>
         <translation>Läge:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1038"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1042"/>
         <source>Messages sent:</source>
         <translation>Meddelanden skickade:</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1052"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1056"/>
         <source>Open MQTT Settings</source>
         <translation>Öppna MQTT-inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="542"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="544"/>
         <source>File Transmission</source>
         <translation>Filöverföring</translation>
     </message>
@@ -19909,7 +20828,7 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Sök widgetar…</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1098"/>
+        <location filename="../../qml/MainWindow/Panes/Dashboard/Taskbar.qml" line="1102"/>
         <source>Remove from Workspace</source>
         <translation>Ta Bort från Arbetsyta</translation>
     </message>
@@ -20011,7 +20930,7 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation>Verktyg</translation>
     </message>
     <message>
-        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="289"/>
+        <location filename="../../qml/Widgets/Dashboard/Terminal.qml" line="288"/>
         <source>Collapse repeated lines into a single entry</source>
         <translation>Komprimera upprepade rader till en enda post</translation>
     </message>
@@ -20192,64 +21111,52 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
 <context>
     <name>ToolActions</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="48"/>
         <source>Auto Layout</source>
-        <translation>Automatisk Layout</translation>
+        <translation type="vanished">Automatisk Layout</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="56"/>
         <source>Full Screen</source>
-        <translation>Helskärm</translation>
+        <translation type="vanished">Helskärm</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="62"/>
         <source>Add External Window</source>
-        <translation>Lägg till Externt Fönster</translation>
+        <translation type="vanished">Lägg till Externt Fönster</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="68"/>
         <source>Console</source>
-        <translation>Konsol</translation>
+        <translation type="vanished">Konsol</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="74"/>
         <source>Notifications</source>
-        <translation>Notifikationer</translation>
+        <translation type="vanished">Notifikationer</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="82"/>
         <source>Clock</source>
-        <translation>Klocka</translation>
+        <translation type="vanished">Klocka</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="90"/>
         <source>Stopwatch</source>
-        <translation>Stoppur</translation>
+        <translation type="vanished">Stoppur</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="98"/>
         <source>Preferences</source>
-        <translation>Inställningar</translation>
+        <translation type="vanished">Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="104"/>
         <source>Help Center</source>
-        <translation>Hjälpcenter</translation>
+        <translation type="vanished">Hjälpcenter</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="110"/>
         <source>Sessions</source>
-        <translation>Sessioner</translation>
+        <translation type="vanished">Sessioner</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="117"/>
         <source>File Transmission</source>
-        <translation>Filöverföring</translation>
+        <translation type="vanished">Filöverföring</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Dashboard/ToolActions.qml" line="124"/>
         <source>AI Assistant</source>
-        <translation>Ai-assistent</translation>
+        <translation type="vanished">Ai-assistent</translation>
     </message>
 </context>
 <context>
@@ -20351,54 +21258,44 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
 <context>
     <name>Toolbar</name>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="197"/>
         <source>Project Editor</source>
-        <translation>Projektredigerare</translation>
+        <translation type="vanished">Projektredigerare</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="200"/>
         <source>Open the Project Editor to create or modify your JSON layout</source>
-        <translation>Öppna Projektredigeraren för att skapa eller ändra din JSON-layout</translation>
+        <translation type="vanished">Öppna Projektredigeraren för att skapa eller ändra din JSON-layout</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="214"/>
         <source>Open Project</source>
-        <translation>Öppna Projekt</translation>
+        <translation type="vanished">Öppna Projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="217"/>
         <source>Open an existing JSON project</source>
-        <translation>Öppna ett befintligt JSON-projekt</translation>
+        <translation type="vanished">Öppna ett befintligt JSON-projekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="226"/>
         <source>Open CSV</source>
-        <translation>Öppna CSV</translation>
+        <translation type="vanished">Öppna CSV</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="232"/>
         <source>Play a CSV file as if it were live sensor data</source>
-        <translation>Spela upp en CSV-fil som om den vore live sensordata</translation>
+        <translation type="vanished">Spela upp en CSV-fil som om den vore live sensordata</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="238"/>
         <source>Open MDF4</source>
-        <translation>Öppna MDF4</translation>
+        <translation type="vanished">Öppna MDF4</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="243"/>
         <source>Play an MDF4 file as if it were live sensor data (Pro)</source>
-        <translation>Spela upp en MDF4-fil som om den vore live sensordata (Pro)</translation>
+        <translation type="vanished">Spela upp en MDF4-fil som om den vore live sensordata (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="292"/>
         <source>Sessions</source>
-        <translation>Sessioner</translation>
+        <translation type="vanished">Sessioner</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="296"/>
         <source>Browse, replay, and export recorded sessions</source>
-        <translation>Bläddra, spela upp och exportera inspelade sessioner</translation>
+        <translation type="vanished">Bläddra, spela upp och exportera inspelade sessioner</translation>
     </message>
     <message>
         <source>Shortcuts</source>
@@ -20409,28 +21306,20 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Skapa en operatörsgenväg för det aktuella projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="254"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="260"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="302"/>
         <source>Extensions</source>
-        <translation>Tillägg</translation>
+        <translation type="vanished">Tillägg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="265"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="305"/>
         <source>Browse and install extensions</source>
-        <translation>Bläddra och installera tillägg</translation>
+        <translation type="vanished">Bläddra och installera tillägg</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="254"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="260"/>
         <source>Assistant</source>
-        <translation>Assistent</translation>
+        <translation type="vanished">Assistent</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="264"/>
         <source>Chat with an AI to build and edit your project</source>
-        <translation>Chatta med en AI för att bygga och redigera ditt projekt</translation>
+        <translation type="vanished">Chatta med en AI för att bygga och redigera ditt projekt</translation>
     </message>
     <message>
         <source>MQTT</source>
@@ -20441,184 +21330,152 @@ Aktivera Bädda in Projekt för att baka in projektet i genvägen, så att den f
         <translation type="vanished">Konfigurera MQTT-anslutning (publicera eller prenumerera)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="286"/>
         <source>Build an operator app for the current project</source>
-        <translation>Bygg en operatörsapp för det aktuella projektet</translation>
+        <translation type="vanished">Bygg en operatörsapp för det aktuella projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="319"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="323"/>
         <source>Preferences</source>
-        <translation>Inställningar</translation>
+        <translation type="vanished">Inställningar</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="327"/>
         <source>Open application settings and preferences</source>
-        <translation>Öppna programinställningar och preferenser</translation>
+        <translation type="vanished">Öppna programinställningar och preferenser</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="345"/>
         <source>UART</source>
-        <translation>UART</translation>
+        <translation type="vanished">UART</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="351"/>
         <source>Select Serial port (UART) communication</source>
-        <translation>Välj seriell port (UART)-kommunikation</translation>
+        <translation type="vanished">Välj seriell port (UART)-kommunikation</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="362"/>
         <source>Audio</source>
-        <translation>Ljud</translation>
+        <translation type="vanished">Ljud</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="366"/>
         <source>Select audio input device (Pro)</source>
-        <translation>Välj ljudingångsenhet (Pro)</translation>
+        <translation type="vanished">Välj ljudingångsenhet (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="381"/>
         <source>USB</source>
-        <translation>USB</translation>
+        <translation type="vanished">USB</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="386"/>
         <source>Select raw USB communication (Pro)</source>
-        <translation>Välj rå USB-kommunikation (Pro)</translation>
+        <translation type="vanished">Välj rå USB-kommunikation (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="395"/>
         <source>Network</source>
-        <translation>Nätverk</translation>
+        <translation type="vanished">Nätverk</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="400"/>
         <source>Select TCP/UDP network communication</source>
-        <translation>Välj TCP/UDP-nätverkskommunikation</translation>
+        <translation type="vanished">Välj TCP/UDP-nätverkskommunikation</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="412"/>
         <source>Modbus</source>
-        <translation>Modbus</translation>
+        <translation type="vanished">Modbus</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="525"/>
         <source>Browse example projects</source>
-        <translation>Bläddra bland exempelprojekt</translation>
+        <translation type="vanished">Bläddra bland exempelprojekt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="533"/>
         <source>Help Center</source>
-        <translation>Hjälpcenter</translation>
+        <translation type="vanished">Hjälpcenter</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="537"/>
         <source>Browse documentation, FAQ, and wiki</source>
-        <translation>Bläddra i dokumentation, FAQ och wiki</translation>
+        <translation type="vanished">Bläddra i dokumentation, FAQ och wiki</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="417"/>
         <source>Select MODBUS communication (Pro)</source>
-        <translation>Välj Modbus-kommunikation (Pro)</translation>
+        <translation type="vanished">Välj Modbus-kommunikation (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="281"/>
         <source>Deploy</source>
-        <translation>Distribuera</translation>
+        <translation type="vanished">Distribuera</translation>
     </message>
     <message>
         <source>Build an operator deployment for the current project</source>
         <translation type="vanished">Skapa en operatörsdistribution för det aktuella projektet</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="431"/>
         <source>HID</source>
-        <translation>HID</translation>
+        <translation type="vanished">HID</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="436"/>
         <source>Select HID device communication (Pro)</source>
-        <translation>Välj HID-enhetskommunikation (Pro)</translation>
+        <translation type="vanished">Välj HID-enhetskommunikation (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="446"/>
         <source>Bluetooth</source>
-        <translation>Bluetooth</translation>
+        <translation type="vanished">Bluetooth</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="450"/>
         <source>Select Bluetooth Low Energy communication</source>
-        <translation>Välj Bluetooth Low Energy-kommunikation</translation>
+        <translation type="vanished">Välj Bluetooth Low Energy-kommunikation</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="462"/>
         <source>CAN Bus</source>
-        <translation>CAN-buss</translation>
+        <translation type="vanished">CAN-buss</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="467"/>
         <source>Select CAN Bus communication (Pro)</source>
-        <translation>Välj CAN-busskommunikation (Pro)</translation>
+        <translation type="vanished">Välj CAN-busskommunikation (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="481"/>
         <source>Process</source>
-        <translation>Process</translation>
+        <translation type="vanished">Process</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="486"/>
         <source>Select process pipe communication (Pro)</source>
-        <translation>Välj processpipe-kommunikation (Pro)</translation>
+        <translation type="vanished">Välj processpipe-kommunikation (Pro)</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="502"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="506"/>
         <source>About</source>
-        <translation>Om</translation>
+        <translation type="vanished">Om</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="510"/>
         <source>Show application info and license details</source>
-        <translation>Visa applikationsinformation och licensdetaljer</translation>
+        <translation type="vanished">Visa applikationsinformation och licensdetaljer</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="522"/>
         <source>Examples</source>
-        <translation>Exempel</translation>
+        <translation type="vanished">Exempel</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="543"/>
         <source>AI Wiki &amp; Chat</source>
-        <translation>AI Wiki &amp; Chatt</translation>
+        <translation type="vanished">AI Wiki &amp; Chatt</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="546"/>
         <source>View detailed documentation and ask questions on DeepWiki</source>
-        <translation>Visa detaljerad dokumentation och ställ frågor på DeepWiki</translation>
+        <translation type="vanished">Visa detaljerad dokumentation och ställ frågor på DeepWiki</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="586"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="241"/>
         <source>Activate</source>
         <translation>Aktivera</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="590"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="245"/>
         <source>Manage license and activate Serial Studio Pro</source>
         <translation>Hantera licens och aktivera Serial Studio Pro</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="605"/>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="627"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="264"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="276"/>
         <source>Disconnect</source>
         <translation>Koppla Från</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="605"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="264"/>
         <source>Connect</source>
         <translation>Anslut</translation>
     </message>
     <message>
-        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="607"/>
+        <location filename="../../qml/MainWindow/Panes/Toolbar.qml" line="265"/>
         <source>Connect or disconnect from the configured device</source>
         <translation>Anslut eller koppla från den konfigurerade enheten</translation>
     </message>

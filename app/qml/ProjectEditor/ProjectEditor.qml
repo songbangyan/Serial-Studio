@@ -32,6 +32,7 @@ import "Sections" as Sections
 import "../Widgets" as Widgets
 import "../Dialogs" as Dialogs
 import "../MainWindow/Panes/Dashboard" as DashPanes
+import "../Commands" as Commands
 
 Widgets.SmartWindow {
   id: root
@@ -120,10 +121,18 @@ Widgets.SmartWindow {
   //
   // Command palette (Ctrl+K) exposing project actions, sharing the model with the other contexts.
   //
-  ProjectEditorActions {
-    id: _peProjectActions
+  Commands.ProjectEditorCommandBindings {
+    id: _peBindings
 
     editorWindow: root
+    pePalette: _pePalette
+  }
+
+  Commands.CommandModel {
+    id: _peProjectActions
+
+    context: "editor"
+    bindingSets: [_peBindings]
   }
 
   DashPanes.PaletteModel {
@@ -143,32 +152,29 @@ Widgets.SmartWindow {
     model: _pePaletteModel
   }
 
-  Shortcut {
-    sequences: ["Ctrl+K"]
-    onActivated: _pePalette.toggle()
-  }
-
   //
   // Shortcuts
   //
-  Shortcut {
-    sequences: [StandardKey.Open]
-    onActivated: Cpp_JSON_ProjectModel.openJsonFile()
-  } Shortcut {
-    sequences: [StandardKey.New]
-    onActivated: Cpp_JSON_ProjectModel.newJsonFile()
-  } Shortcut {
-    sequences: [StandardKey.Save]
-    onActivated: Cpp_JSON_ProjectModel.saveJsonFile()
-  } Shortcut {
-    sequences: [StandardKey.Quit]
-    onActivated: app.quitApplication()
-  } Shortcut {
-    sequences: [StandardKey.Back]
-    onActivated: Cpp_JSON_ProjectEditor.navigateBack()
-  } Shortcut {
-    sequences: [StandardKey.Forward]
-    onActivated: Cpp_JSON_ProjectEditor.navigateForward()
+  Instantiator {
+    model: {
+      void _peProjectActions.revision
+      return Cpp_UI_CommandRegistry.shortcutCommands("editor")
+    }
+
+    delegate: Shortcut {
+      required property var modelData
+
+      readonly property var behavior: _peProjectActions.binding(modelData.id)
+
+      sequences: modelData.sequences
+      context: modelData.shortcutContext === "application" ? Qt.ApplicationShortcut
+                                                           : Qt.WindowShortcut
+      enabled: behavior !== null && behavior.enabled !== false
+      onActivated: {
+        if (behavior !== null)
+          behavior.run()
+      }
+    }
   }
 
   //

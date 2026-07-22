@@ -287,7 +287,7 @@ void DataModel::OutputCodeEditor::formatSelection()
 /**
  * @brief Opens a file dialog to import an external JS file.
  */
-void DataModel::OutputCodeEditor::import()
+void DataModel::OutputCodeEditor::importFile()
 {
   auto* dialog = new QFileDialog(
     nullptr, tr("Select Javascript file to import"), QDir::homePath(), QStringLiteral("*.js"));

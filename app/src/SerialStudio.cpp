@@ -27,6 +27,7 @@
 
 #include "CSV/Player.h"
 #include "MDF4/Player.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/ThemeManager.h"
 
 #ifdef BUILD_COMMERCIAL
@@ -254,88 +255,82 @@ bool SerialStudio::isDatasetWidget(const DashboardWidget widget)
 }
 
 /**
- * @brief Retrieves the icon path for a specified dashboard widget.
+ * @brief Maps a dashboard widget to its logical icon name in the "widgets"
+ *        registry category.
+ */
+static QString dashboardWidgetIconName(const SerialStudio::DashboardWidget w)
+{
+  switch (w) {
+    case SerialStudio::DashboardDataGrid:
+      return QStringLiteral("datagrid");
+    case SerialStudio::DashboardMultiPlot:
+      return QStringLiteral("multiplot");
+    case SerialStudio::DashboardAccelerometer:
+      return QStringLiteral("accelerometer");
+    case SerialStudio::DashboardGyroscope:
+      return QStringLiteral("gyroscope");
+    case SerialStudio::DashboardGPS:
+      return QStringLiteral("gps");
+    case SerialStudio::DashboardFFT:
+      return QStringLiteral("fft");
+    case SerialStudio::DashboardLED:
+      return QStringLiteral("led");
+    case SerialStudio::DashboardPlot:
+      return QStringLiteral("plot");
+    case SerialStudio::DashboardBar:
+      return QStringLiteral("bar");
+    case SerialStudio::DashboardGauge:
+      return QStringLiteral("gauge");
+    case SerialStudio::DashboardCompass:
+      return QStringLiteral("compass");
+    case SerialStudio::DashboardMeter:
+      return QStringLiteral("meter");
+    case SerialStudio::DashboardTerminal:
+      return QStringLiteral("terminal");
+    case SerialStudio::DashboardClock:
+      return QStringLiteral("clock");
+    case SerialStudio::DashboardStopwatch:
+      return QStringLiteral("stopwatch");
+    case SerialStudio::DashboardPlot3D:
+      return QStringLiteral("plot3d");
+    case SerialStudio::DashboardWebView:
+      return QStringLiteral("webview");
+#ifdef BUILD_COMMERCIAL
+    case SerialStudio::DashboardImageView:
+      return QStringLiteral("image");
+    case SerialStudio::DashboardOutputPanel:
+      return QStringLiteral("output-panel");
+    case SerialStudio::DashboardNotificationLog:
+      return QStringLiteral("notification-log");
+    case SerialStudio::DashboardWaterfall:
+      return QStringLiteral("waterfall");
+    case SerialStudio::DashboardPainter:
+      return QStringLiteral("painter");
+#endif
+    case SerialStudio::DashboardNoWidget:
+      return QStringLiteral("group");
+    default:
+      return QStringLiteral("group");
+  }
+}
+
+/**
+ * @brief Retrieves the icon path for a specified dashboard widget via the icon
+ *        registry (16 px tier for the small variant, 32 px for the large one).
  */
 QString SerialStudio::dashboardWidgetIcon(const DashboardWidget w, const bool large)
 {
-  const QString iconPath = large ? "qrc:/icons/dashboard-large/" : "qrc:/icons/dashboard-small/";
+  static auto& registry = Misc::IconRegistry::instance();
+  return registry.icon(QStringLiteral("widgets"), dashboardWidgetIconName(w), large ? 32 : 16);
+}
 
-  switch (w) {
-    case DashboardDataGrid:
-      return iconPath + "datagrid.svg";
-      break;
-    case DashboardMultiPlot:
-      return iconPath + "multiplot.svg";
-      break;
-    case DashboardAccelerometer:
-      return iconPath + "accelerometer.svg";
-      break;
-    case DashboardGyroscope:
-      return iconPath + "gyroscope.svg";
-      break;
-    case DashboardGPS:
-      return iconPath + "gps.svg";
-      break;
-    case DashboardFFT:
-      return iconPath + "fft.svg";
-      break;
-    case DashboardLED:
-      return iconPath + "led.svg";
-      break;
-    case DashboardPlot:
-      return iconPath + "plot.svg";
-      break;
-    case DashboardBar:
-      return iconPath + "bar.svg";
-      break;
-    case DashboardGauge:
-      return iconPath + "gauge.svg";
-      break;
-    case DashboardCompass:
-      return iconPath + "compass.svg";
-      break;
-    case DashboardMeter:
-      return iconPath + "meter.svg";
-      break;
-    case DashboardTerminal:
-      return iconPath + "terminal.svg";
-      break;
-    case DashboardClock:
-      return iconPath + "clock.svg";
-      break;
-    case DashboardStopwatch:
-      return iconPath + "stopwatch.svg";
-      break;
-    case DashboardPlot3D:
-      return iconPath + "plot3d.svg";
-      break;
-    case DashboardWebView:
-      return iconPath + "webview.svg";
-      break;
-#ifdef BUILD_COMMERCIAL
-    case DashboardImageView:
-      return iconPath + "image.svg";
-      break;
-    case DashboardOutputPanel:
-      return iconPath + "output-panel.svg";
-      break;
-    case DashboardNotificationLog:
-      return iconPath + "notification-log.svg";
-      break;
-    case DashboardWaterfall:
-      return iconPath + "waterfall.svg";
-      break;
-    case DashboardPainter:
-      return iconPath + "painter.svg";
-      break;
-#endif
-    case DashboardNoWidget:
-      return iconPath + "group.svg";
-      break;
-    default:
-      return iconPath + "group.svg";
-      break;
-  }
+/**
+ * @brief Returns the icon-registry id ("widgets/<name>") for a dashboard widget, letting
+ *        consumers resolve the artwork tier for their own display size.
+ */
+QString SerialStudio::dashboardWidgetIconId(const DashboardWidget w)
+{
+  return QStringLiteral("widgets/") + dashboardWidgetIconName(w);
 }
 
 /**

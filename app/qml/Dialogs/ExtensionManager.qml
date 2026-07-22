@@ -132,7 +132,7 @@ Widgets.SmartDialog {
         text: qsTr("Repos")
         visible: Cpp_CommercialBuild
         icon.color: Cpp_ThemeManager.colors["text"]
-        icon.source: "qrc:/icons/toolbar/settings.svg"
+        icon.source: Cpp_Misc_IconRegistry.icon("commands", "settings", 32)
         onClicked: root.showRepos = true
 
         HoverHandler {
@@ -1259,7 +1259,7 @@ Widgets.SmartDialog {
                 icon.width: 12
                 icon.height: 12
                 icon.color: Cpp_ThemeManager.colors["text"]
-                icon.source: "qrc:/icons/toolbar/open-project.svg"
+                icon.source: Cpp_Misc_IconRegistry.icon("commands", "open-project", 16)
                 onClicked: Cpp_ExtensionManager.browseLocalRepo()
 
                 HoverHandler {

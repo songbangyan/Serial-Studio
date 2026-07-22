@@ -35,9 +35,9 @@ Item {
   //
   function iconForLevel(level) {
     switch (level) {
-    case 2: return "qrc:/icons/notifications/critical.svg"
-    case 1: return "qrc:/icons/notifications/warning.svg"
-    default: return "qrc:/icons/notifications/info.svg"
+    case 2: return Cpp_Misc_IconRegistry.icon("notifications", "critical", 16)
+    case 1: return Cpp_Misc_IconRegistry.icon("notifications", "warning", 16)
+    default: return Cpp_Misc_IconRegistry.icon("notifications", "info", 16)
     }
   }
 
@@ -296,7 +296,7 @@ Item {
             sourceSize: Qt.size(64, 64)
             Layout.alignment: Qt.AlignHCenter
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/icons/dashboard-large/notification-log.svg"
+            source: Cpp_Misc_IconRegistry.icon("widgets", "notification-log", 32)
           }
 
           Label {

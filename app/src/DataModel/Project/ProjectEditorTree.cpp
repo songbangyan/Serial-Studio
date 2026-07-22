@@ -34,6 +34,7 @@
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/Translator.h"
 #include "Misc/Utilities.h"
 #include "SerialStudio.h"
@@ -160,10 +161,12 @@ void DataModel::ProjectEditor::buildTreeModel()
 
   m_treeModel = new CustomModel(this);
 
-  const auto& pm = m_projectModelRef;
-  auto* root     = new QStandardItem(pm.title());
+  static auto& registry = Misc::IconRegistry::instance();
+  const auto& pm        = m_projectModelRef;
+  auto* root            = new QStandardItem(pm.title());
   root->setData(root->text(), TreeViewText);
-  root->setData("qrc:/icons/project-editor/treeview/project-setup.svg", TreeViewIcon);
+  root->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("project-setup"), 16),
+                TreeViewIcon);
   root->setData(true, TreeViewExpanded);
 
   m_treeModel->appendRow(root);
@@ -250,6 +253,7 @@ void DataModel::ProjectEditor::appendSourceTreeItems(QStandardItem* root)
   const auto& sources    = m_projectModelRef.sources();
   const bool multiSource = sources.size() > 1;
 
+  static auto& registry = Misc::IconRegistry::instance();
   for (const auto& source : sources) {
     auto* sourceItem = new QStandardItem(source.title);
     sourceItem->setData(-1, TreeViewFrameIndex);
@@ -263,7 +267,8 @@ void DataModel::ProjectEditor::appendSourceTreeItems(QStandardItem* root)
 
     auto* parserItem = new QStandardItem(tr("Frame Parser"));
     parserItem->setData(-1, TreeViewFrameIndex);
-    parserItem->setData("qrc:/icons/project-editor/treeview/code.svg", TreeViewIcon);
+    parserItem->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("code"), 16),
+                        TreeViewIcon);
     parserItem->setData(tr("Frame Parser"), TreeViewText);
     sourceItem->appendRow(parserItem);
     m_sourceParserItems.insert(parserItem, source);
@@ -284,13 +289,15 @@ void DataModel::ProjectEditor::appendActionTreeItems(QStandardItem* root)
   const bool filterActive = !q.isEmpty();
   const auto& actions     = m_projectModelRef.actions();
 
+  static auto& registry = Misc::IconRegistry::instance();
   for (const auto& action : actions) {
     if (filterActive && !action.title.contains(q, Qt::CaseInsensitive))
       continue;
 
     auto* actionItem = new QStandardItem(action.title);
     actionItem->setData(-1, TreeViewFrameIndex);
-    actionItem->setData("qrc:/icons/project-editor/treeview/action.svg", TreeViewIcon);
+    actionItem->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("action"), 16),
+                        TreeViewIcon);
     actionItem->setData(action.title, TreeViewText);
     actionItem->setData(KindAction, TreeItemKind);
     actionItem->setData(action.actionId, TreeItemId);
@@ -312,13 +319,14 @@ void DataModel::ProjectEditor::appendDatasetChildren(QStandardItem* groupItem,
   const bool filterActive = !q.isEmpty();
   const bool groupMatches = !filterActive || group.title.contains(q, Qt::CaseInsensitive);
 
+  static auto& registry = Misc::IconRegistry::instance();
   for (const auto& dataset : group.datasets) {
     if (filterActive && !groupMatches && !dataset.title.contains(q, Qt::CaseInsensitive))
       continue;
 
     auto* datasetItem = new QStandardItem(dataset.title);
     auto widgets      = SerialStudio::getDashboardWidgets(dataset);
-    QString dIcon     = "qrc:/icons/project-editor/treeview/dataset.svg";
+    QString dIcon     = registry.icon(QStringLiteral("editor"), QStringLiteral("dataset"), 16);
     if (widgets.count() > 0)
       dIcon = SerialStudio::dashboardWidgetIcon(widgets.first(), false);
 
@@ -348,28 +356,30 @@ void DataModel::ProjectEditor::appendOutputWidgetChildren(QStandardItem* groupIt
   if (!m_treeSearchQuery.trimmed().isEmpty())
     return;
 
+  static auto& registry = Misc::IconRegistry::instance();
   for (const auto& ow : group.outputWidgets) {
     auto* owItem = new QStandardItem(ow.title);
 
     QString owIcon;
     switch (ow.type) {
       case DataModel::OutputWidgetType::Button:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-button.svg");
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-button-alt"), 16);
         break;
       case DataModel::OutputWidgetType::Slider:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-slider.svg");
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-slider-alt"), 16);
         break;
       case DataModel::OutputWidgetType::Toggle:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-toggle.svg");
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-toggle-alt"), 16);
         break;
       case DataModel::OutputWidgetType::TextField:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-textfield.svg");
+        owIcon =
+          registry.icon(QStringLiteral("editor"), QStringLiteral("output-textfield-alt"), 48);
         break;
       case DataModel::OutputWidgetType::Knob:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-knob.svg");
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-knob-alt"), 16);
         break;
       default:
-        owIcon = QStringLiteral("qrc:/icons/project-editor/treeview/output-widget.svg");
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("widget"), 48);
         break;
     }
 
@@ -429,9 +439,11 @@ void DataModel::ProjectEditor::appendGroupTreeItems(QStandardItem* root,
   if (!anyGroup && !showFolders)
     return;
 
-  auto* groupsRoot = new QStandardItem(tr("Dashboard Widgets"));
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* groupsRoot      = new QStandardItem(tr("Dashboard Widgets"));
   groupsRoot->setData(tr("Dashboard Widgets"), TreeViewText);
-  groupsRoot->setData("qrc:/icons/project-editor/treeview/dashboard-widgets.svg", TreeViewIcon);
+  groupsRoot->setData(
+    registry.icon(QStringLiteral("editor"), QStringLiteral("dashboard-widgets"), 48), TreeViewIcon);
   groupsRoot->setData(-1, TreeViewFrameIndex);
   groupsRoot->setData(true, TreeViewExpanded);
 
@@ -501,6 +513,7 @@ QHash<int, QStandardItem*> DataModel::ProjectEditor::appendGroupFolderItems(
   QHash<int, bool> folderHasEnabled;
   accumulateFolderEnabled(folders, groups, folderHasGroup, folderHasEnabled);
 
+  static auto& registry = Misc::IconRegistry::instance();
   QHash<int, QStandardItem*> folderItems;
   for (const auto& f : folders) {
     const bool folderEnabled =
@@ -508,7 +521,8 @@ QHash<int, QStandardItem*> DataModel::ProjectEditor::appendGroupFolderItems(
 
     auto* item = new QStandardItem(f.title);
     item->setData(f.title, TreeViewText);
-    item->setData(QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg"), TreeViewIcon);
+    item->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16),
+                  TreeViewIcon);
     item->setData(-1, TreeViewFrameIndex);
     item->setData(KindGroupFolder, TreeItemKind);
     item->setData(f.folderId, TreeItemId);
@@ -542,6 +556,7 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
   Q_ASSERT(root != nullptr);
 
 #ifdef BUILD_COMMERCIAL
+  static auto& registry   = Misc::IconRegistry::instance();
   const QString q         = m_treeSearchQuery.trimmed();
   const bool filterActive = !q.isEmpty();
   const auto matches      = [&q](const QString& s) {
@@ -565,13 +580,15 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
 
   auto* tablesRoot = new QStandardItem(tr("Shared Memory"));
   tablesRoot->setData(tr("Shared Memory"), TreeViewText);
-  tablesRoot->setData("qrc:/icons/project-editor/treeview/shared-memory.svg", TreeViewIcon);
+  tablesRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("shared-memory"), 24),
+                      TreeViewIcon);
   tablesRoot->setData(-1, TreeViewFrameIndex);
   tablesRoot->setData(true, TreeViewExpanded);
 
   auto* sysDsItem = new QStandardItem(tr("Dataset Values"));
   sysDsItem->setData(tr("Dataset Values"), TreeViewText);
-  sysDsItem->setData("qrc:/icons/project-editor/treeview/dataset-values.svg", TreeViewIcon);
+  sysDsItem->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("dataset-values"), 24),
+                     TreeViewIcon);
   sysDsItem->setData(-1, TreeViewFrameIndex);
   tablesRoot->appendRow(sysDsItem);
 
@@ -591,7 +608,9 @@ void DataModel::ProjectEditor::appendSharedMemoryTreeItems(QStandardItem* root,
 
     auto* tableItem = new QStandardItem(table.name);
     tableItem->setData(table.name, TreeViewText);
-    tableItem->setData("qrc:/icons/project-editor/treeview/shared-table.svg", TreeViewIcon);
+    tableItem->setData(
+      registry.icon(QStringLiteral("editor"), QStringLiteral("shared-table-alt"), 16),
+      TreeViewIcon);
     tableItem->setData(-1, TreeViewFrameIndex);
     tableItem->setData(KindUserTable, TreeItemKind);
     tableItem->setData(-1, TreeItemId);
@@ -624,11 +643,13 @@ QHash<int, QStandardItem*> DataModel::ProjectEditor::appendTableFolderItems(
 {
   const auto& folders = m_projectModelRef.editorTableFolders();
 
+  static auto& registry = Misc::IconRegistry::instance();
   QHash<int, QStandardItem*> folderItems;
   for (const auto& f : folders) {
     auto* item = new QStandardItem(f.title);
     item->setData(f.title, TreeViewText);
-    item->setData(QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg"), TreeViewIcon);
+    item->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16),
+                  TreeViewIcon);
     item->setData(-1, TreeViewFrameIndex);
     item->setData(KindTableFolder, TreeItemKind);
     item->setData(f.folderId, TreeItemId);
@@ -656,10 +677,12 @@ QHash<int, QStandardItem*> DataModel::ProjectEditor::appendTableFolderItems(
  */
 QStandardItem* DataModel::ProjectEditor::createWorkspaceItem(const DataModel::Workspace& ws)
 {
-  auto* wsItem = new QStandardItem(ws.title);
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* wsItem          = new QStandardItem(ws.title);
   wsItem->setData(ws.title, TreeViewText);
-  wsItem->setData(ws.icon.isEmpty() ? QStringLiteral("qrc:/icons/dashboard-small/workspace.svg")
-                                    : Misc::IconEngine::resolveActionIconSource(ws.icon),
+  wsItem->setData(ws.icon.isEmpty()
+                    ? registry.icon(QStringLiteral("widgets"), QStringLiteral("workspace"), 16)
+                    : Misc::IconEngine::resolveActionIconSource(ws.icon),
                   TreeViewIcon);
   wsItem->setData(-1, TreeViewFrameIndex);
   wsItem->setData(KindWorkspace, TreeItemKind);
@@ -681,11 +704,13 @@ void DataModel::ProjectEditor::buildWorkspaceFolderTree(QStandardItem* wsRoot,
   const auto& folders    = m_projectModelRef.editorWorkspaceFolders();
   const auto& workspaces = m_projectModelRef.editorWorkspaces();
 
+  static auto& registry = Misc::IconRegistry::instance();
   QHash<int, QStandardItem*> folderItems;
   for (const auto& f : folders) {
     auto* item = new QStandardItem(f.title);
     item->setData(f.title, TreeViewText);
-    item->setData(QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg"), TreeViewIcon);
+    item->setData(registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16),
+                  TreeViewIcon);
     item->setData(-1, TreeViewFrameIndex);
     item->setData(KindWorkspaceFolder, TreeItemKind);
     item->setData(f.folderId, TreeItemId);
@@ -743,9 +768,11 @@ void DataModel::ProjectEditor::appendWorkspaceTreeItems(QStandardItem* root,
   if (!includeWorkspaces)
     return;
 
-  auto* wsRoot = new QStandardItem(tr("Workspaces"));
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* wsRoot          = new QStandardItem(tr("Workspaces"));
   wsRoot->setData(tr("Workspaces"), TreeViewText);
-  wsRoot->setData("qrc:/icons/project-editor/treeview/workspaces.svg", TreeViewIcon);
+  wsRoot->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("workspace"), 48),
+                  TreeViewIcon);
   wsRoot->setData(-1, TreeViewFrameIndex);
   wsRoot->setData(true, TreeViewExpanded);
 
@@ -779,9 +806,11 @@ void DataModel::ProjectEditor::appendMqttPublisherTreeItem(QStandardItem* root)
   if (filterActive && !tr("MQTT Publisher").contains(q, Qt::CaseInsensitive))
     return;
 
-  auto* item = new QStandardItem(tr("MQTT Publisher"));
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* item            = new QStandardItem(tr("MQTT Publisher"));
   item->setData(tr("MQTT Publisher"), TreeViewText);
-  item->setData("qrc:/icons/project-editor/treeview/mqtt-publisher.svg", TreeViewIcon);
+  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("mqtt-publisher"), 48),
+                TreeViewIcon);
   item->setData(-1, TreeViewFrameIndex);
   item->setData(KindMqttPublisher, TreeItemKind);
   item->setData(-1, TreeItemId);
@@ -803,9 +832,11 @@ void DataModel::ProjectEditor::appendControlScriptTreeItem(QStandardItem* root)
   if (filterActive && !tr("Control Loop").contains(q, Qt::CaseInsensitive))
     return;
 
-  auto* item = new QStandardItem(tr("Control Loop"));
+  static auto& registry = Misc::IconRegistry::instance();
+  auto* item            = new QStandardItem(tr("Control Loop"));
   item->setData(tr("Control Loop"), TreeViewText);
-  item->setData("qrc:/icons/project-editor/treeview/control-script.svg", TreeViewIcon);
+  item->setData(registry.icon(QStringLiteral("editor"), QStringLiteral("control-script"), 48),
+                TreeViewIcon);
   item->setData(-1, TreeViewFrameIndex);
   item->setData(KindControlScript, TreeItemKind);
   item->setData(-1, TreeItemId);

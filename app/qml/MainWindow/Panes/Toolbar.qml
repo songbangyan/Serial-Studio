@@ -24,8 +24,8 @@ import QtQuick.Window
 import QtQuick.Layouts
 import QtQuick.Controls
 
-import SerialStudio
 import "../../Widgets" as Widgets
+import "../../Commands" as Commands
 
 Rectangle {
   id: root
@@ -64,6 +64,21 @@ Rectangle {
 
   Layout.minimumHeight: titlebarHeight + toolbarContentHeight
   Layout.maximumHeight: titlebarHeight + toolbarContentHeight
+
+  //
+  // Command registry plumbing
+  //
+  Commands.AppCommandBindings {
+    id: _tbAppBindings
+
+  } Commands.DashboardCommandBindings {
+    id: _tbDashBindings
+  } Commands.CommandModel {
+    id: _tbModel
+
+    context: "app"
+    bindingSets: [_tbAppBindings, _tbDashBindings]
+  }
 
   //
   // Top toolbar section
@@ -163,10 +178,10 @@ Rectangle {
   }
 
   //
-  // Ribbon toolbar
+  // Command toolbar (registry-driven ribbon)
   //
-  Widgets.RibbonToolbar {
-    id: ribbon
+  Widgets.CommandToolbar {
+    id: _commandToolbar
 
     visible: opacity > 0
     enabled: root.showContent
@@ -189,370 +204,8 @@ Rectangle {
 
     height: 64 + 16
 
-    //
-    // Project section
-    //
-    Widgets.RibbonSection {
-      Widgets.ToolbarButton {
-        text: qsTr("Project Editor")
-        Layout.alignment: Qt.AlignVCenter
-        icon.source: "qrc:/icons/toolbar/project-setup.svg"
-        ToolTip.text: qsTr("Open the Project Editor to create or modify your JSON layout")
-        onClicked: app.showProjectEditor()
-      }
-
-      GridLayout {
-        rows: 3
-        columns: 1
-        rowSpacing: 0
-        columnSpacing: 4
-        Layout.alignment: Qt.AlignVCenter
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          horizontalLayout: true
-          text: qsTr("Open Project")
-          Layout.alignment: Qt.AlignLeft
-          icon.source: "qrc:/icons/toolbar/open-project.svg"
-          ToolTip.text: qsTr("Open an existing JSON project")
-          onClicked: {
-            Cpp_AppState.operationMode = SerialStudio.ProjectFile
-            Cpp_JSON_ProjectModel.openJsonFile()
-          }
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          text: qsTr("Open CSV")
-          horizontalLayout: true
-          Layout.alignment: Qt.AlignLeft
-          onClicked: Cpp_CSV_Player.openFile()
-          icon.source: "qrc:/icons/toolbar/csv.svg"
-          enabled: !Cpp_CSV_Player.isOpen && !Cpp_IO_Manager.isConnected
-          ToolTip.text: qsTr("Play a CSV file as if it were live sensor data")
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          horizontalLayout: true
-          text: qsTr("Open MDF4")
-          Layout.alignment: Qt.AlignLeft
-          onClicked: Cpp_MDF4_Player.openFile()
-          icon.source: "qrc:/icons/toolbar/mf4.svg"
-          enabled: !Cpp_MDF4_Player.isOpen && !Cpp_IO_Manager.isConnected
-          ToolTip.text: qsTr("Play an MDF4 file as if it were live sensor data (Pro)")
-        }
-      }
-    }
-
-    //
-    // Utilities
-    //
-    Widgets.RibbonSection {
-      collapsePriority: 30
-      collapsible: Cpp_CommercialBuild
-      collapsedText: Cpp_CommercialBuild ? qsTr("Assistant") : qsTr("Extensions")
-      collapsedIcon: Cpp_CommercialBuild ? "qrc:/icons/toolbar/ai.svg" :
-                                           "qrc:/icons/toolbar/extensions.svg"
-
-      Widgets.ToolbarButton {
-        Layout.alignment: Qt.AlignLeft
-        text: Cpp_CommercialBuild ? qsTr("Assistant") : qsTr("Extensions")
-        onClicked: Cpp_CommercialBuild ? app.showAIAssistant() : app.showExtensionManager()
-        icon.source: Cpp_CommercialBuild ? "qrc:/icons/toolbar/ai.svg" :
-                                           "qrc:/icons/toolbar/extensions.svg"
-        ToolTip.text: Cpp_CommercialBuild ? qsTr("Chat with an AI to build and edit your project") :
-                                            qsTr("Browse and install extensions")
-      }
-
-      Loader {
-        Layout.fillHeight: true
-        active: Cpp_CommercialBuild
-        Layout.alignment: Qt.AlignVCenter
-        sourceComponent: Component {
-          GridLayout {
-            rows: 3
-            columns: 1
-            rowSpacing: 0
-            columnSpacing: 4
-
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("Deploy")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              onClicked: app.showShortcutGenerator()
-              icon.source: "qrc:/icons/toolbar/deploy.svg"
-              ToolTip.text: qsTr("Build an operator app for the current project")
-            }
-
-            Widgets.ToolbarButton {
-              iconSize: 16
-              horizontalLayout: true
-              text: qsTr("Sessions")
-              Layout.alignment: Qt.AlignLeft
-              onClicked: app.showDatabaseExplorer()
-              icon.source: "qrc:/icons/toolbar/sessions.svg"
-              ToolTip.text: qsTr("Browse, replay, and export recorded sessions")
-            }
-
-            Widgets.ToolbarButton {
-              iconSize: 16
-              horizontalLayout: true
-              text: qsTr("Extensions")
-              Layout.alignment: Qt.AlignLeft
-              onClicked: app.showExtensionManager()
-              ToolTip.text: qsTr("Browse and install extensions")
-              icon.source: "qrc:/icons/toolbar/extensions-small.svg"
-            }
-          }
-        }
-      }
-    }
-
-    //
-    // Settings + Driver selection section (collapsible)
-    //
-    Widgets.RibbonSection {
-      collapsible: true
-      collapsePriority: 10
-      collapsedText: qsTr("Preferences")
-      collapsedIcon: "qrc:/icons/toolbar/settings.svg"
-
-      Widgets.ToolbarButton {
-        text: qsTr("Preferences")
-        Layout.alignment: Qt.AlignLeft
-        onClicked: app.showSettingsDialog()
-        icon.source: "qrc:/icons/toolbar/settings.svg"
-        ToolTip.text: qsTr("Open application settings and preferences")
-      }
-
-      GridLayout {
-        id: driverGrid
-
-        rows: 3
-        rowSpacing: 0
-        columnSpacing: 4
-        Layout.alignment: Qt.AlignVCenter
-        columns: Cpp_CommercialBuild ? 3 : 1
-
-        readonly property bool driverSelectionEnabled: app.ioEnabled &&
-                                                       (Cpp_AppState.operationMode !== SerialStudio.ProjectFile ||
-                                                        Cpp_JSON_ProjectModel.sourceCount <= 1)
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          text: qsTr("UART")
-          horizontalLayout: true
-          Layout.alignment: Qt.AlignLeft
-          enabled: driverGrid.driverSelectionEnabled
-          onClicked: Cpp_IO_Manager.busType = SerialStudio.UART
-          icon.source: "qrc:/icons/devices/drivers/uart.svg"
-          ToolTip.text: qsTr("Select Serial port (UART) communication")
-          font: Cpp_IO_Manager.busType === SerialStudio.UART ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("Audio")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              ToolTip.text: qsTr("Select audio input device (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.Audio
-              icon.source: "qrc:/icons/devices/drivers/audio.svg"
-              font: Cpp_IO_Manager.busType === SerialStudio.Audio ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("USB")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              icon.source: "qrc:/icons/devices/drivers/usb.svg"
-              ToolTip.text: qsTr("Select raw USB communication (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.RawUsb
-              font: Cpp_IO_Manager.busType === SerialStudio.RawUsb ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          text: qsTr("Network")
-          horizontalLayout: true
-          Layout.alignment: Qt.AlignLeft
-          enabled: driverGrid.driverSelectionEnabled
-          icon.source: "qrc:/icons/devices/drivers/network.svg"
-          ToolTip.text: qsTr("Select TCP/UDP network communication")
-          onClicked: Cpp_IO_Manager.busType = SerialStudio.Network
-          font: Cpp_IO_Manager.busType === SerialStudio.Network ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("Modbus")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              icon.source: "qrc:/icons/devices/drivers/modbus.svg"
-              ToolTip.text: qsTr("Select MODBUS communication (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.ModBus
-              font: Cpp_IO_Manager.busType === SerialStudio.ModBus ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("HID")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              icon.source: "qrc:/icons/devices/drivers/hid.svg"
-              ToolTip.text: qsTr("Select HID device communication (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.HidDevice
-              font: Cpp_IO_Manager.busType === SerialStudio.HidDevice ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          horizontalLayout: true
-          text: qsTr("Bluetooth")
-          Layout.alignment: Qt.AlignLeft
-          enabled: driverGrid.driverSelectionEnabled
-          icon.source: "qrc:/icons/devices/drivers/bluetooth.svg"
-          ToolTip.text: qsTr("Select Bluetooth Low Energy communication")
-          onClicked: Cpp_IO_Manager.busType = SerialStudio.BluetoothLE
-          font: Cpp_IO_Manager.busType === SerialStudio.BluetoothLE ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("CAN Bus")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              icon.source: "qrc:/icons/devices/drivers/canbus.svg"
-              ToolTip.text: qsTr("Select CAN Bus communication (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.CanBus
-              font: Cpp_IO_Manager.busType === SerialStudio.CanBus ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-
-        Loader {
-          visible: active
-          active: Cpp_CommercialBuild
-          Layout.alignment: Qt.AlignLeft
-          sourceComponent: Component {
-            Widgets.ToolbarButton {
-              iconSize: 16
-              text: qsTr("Process")
-              horizontalLayout: true
-              Layout.alignment: Qt.AlignLeft
-              enabled: driverGrid.driverSelectionEnabled
-              icon.source: "qrc:/icons/devices/drivers/process.svg"
-              ToolTip.text: qsTr("Select process pipe communication (Pro)")
-              onClicked: Cpp_IO_Manager.busType = SerialStudio.Process
-              font: Cpp_IO_Manager.busType === SerialStudio.Process ? Cpp_Misc_CommonFonts.boldUiFont : Cpp_Misc_CommonFonts.uiFont
-            }
-          }
-        }
-      }
-    }
-
-    //
-    // Help section (collapsible)
-    //
-    Widgets.RibbonSection {
-      collapsible: true
-      showSeparator: false
-      collapsePriority: 30
-      collapsedText: qsTr("About")
-      collapsedIcon: "qrc:/icons/toolbar/about.svg"
-
-      Widgets.ToolbarButton {
-        text: qsTr("About")
-        Layout.alignment: Qt.AlignLeft
-        onClicked: app.showAboutDialog()
-        icon.source: "qrc:/icons/toolbar/about.svg"
-        ToolTip.text: qsTr("Show application info and license details")
-      }
-
-      GridLayout {
-        rows: 3
-        columns: 1
-        rowSpacing: 0
-        columnSpacing: 4
-        Layout.alignment: Qt.AlignVCenter
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          text: qsTr("Examples")
-          horizontalLayout: true
-          Layout.alignment: Qt.AlignLeft
-          ToolTip.text: qsTr("Browse example projects")
-          icon.source: "qrc:/icons/toolbar/examples.svg"
-          onClicked: app.showExamplesBrowser()
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          horizontalLayout: true
-          text: qsTr("Help Center")
-          Layout.alignment: Qt.AlignLeft
-          onClicked: app.showHelpCenter()
-          icon.source: "qrc:/icons/toolbar/help.svg"
-          ToolTip.text: qsTr("Browse documentation, FAQ, and wiki")
-        }
-
-        Widgets.ToolbarButton {
-          iconSize: 16
-          horizontalLayout: true
-          text: qsTr("AI Wiki & Chat")
-          Layout.alignment: Qt.AlignLeft
-          icon.source: "qrc:/icons/toolbar/deepwiki.svg"
-          ToolTip.text: qsTr("View detailed documentation and ask questions on DeepWiki")
-          onClicked: Qt.openUrlExternally("https://deepwiki.com/Serial-Studio/Serial-Studio")
-        }
-      }
-    }
-
-    //
-    // Spacer
-    //
-    Widgets.RibbonSpacer {}
+    model: _tbModel
+    surface: "main-toolbar"
   }
 
   //
@@ -583,12 +236,15 @@ Rectangle {
     // License activation (Pro only)
     //
     Widgets.ToolbarButton {
+      readonly property var entry: _tbModel.binding("license.activate")
+
       text: qsTr("Activate")
-      onClicked: app.showLicenseDialog()
       Layout.alignment: Qt.AlignVCenter
-      icon.source: "qrc:/icons/toolbar/activate.svg"
+      visible: Cpp_CommercialBuild && Cpp_Licensing_Trial.trialExpired
+               && !Cpp_Licensing_LemonSqueezy.isActivated
       ToolTip.text: qsTr("Manage license and activate Serial Studio Pro")
-      visible: Cpp_CommercialBuild ? Cpp_Licensing_Trial.trialExpired && !Cpp_Licensing_LemonSqueezy.isActivated : false
+      icon.source: Cpp_Misc_IconRegistry.iconById("commands/activate", 24)
+      onClicked: entry.run()
     }
 
     //
@@ -597,29 +253,22 @@ Rectangle {
     Widgets.ToolbarButton {
       id: _connectButton
 
+      readonly property var entry: _tbModel.binding("io.toggleConnection")
+
       Layout.alignment: Qt.AlignVCenter
       implicitWidth: metrics.width + 16
       font: Cpp_Misc_CommonFonts.boldUiFont
       Layout.minimumWidth: metrics.width + 16
       Layout.maximumWidth: metrics.width + 16
+      checked: entry !== null && entry.checked === true
       text: checked ? qsTr("Disconnect") : qsTr("Connect")
-      checked: Cpp_IO_Manager.isConnected
       ToolTip.text: qsTr("Connect or disconnect from the configured device")
-      icon.source: checked ? "qrc:/icons/toolbar/connect.svg" :
-                             "qrc:/icons/toolbar/disconnect.svg"
+      icon.source: Cpp_Misc_IconRegistry.iconById(checked ? "editor/connect" : "editor/disconnect", 24)
 
-      visible: Cpp_CommercialBuild ? (Cpp_Licensing_Trial.trialExpired && !Cpp_Licensing_LemonSqueezy.isActivated ? false : true) : true
-      enabled: (Cpp_IO_Manager.isConnected || Cpp_IO_Manager.configurationOk)
-               && !Cpp_CSV_Player.isOpen
-               && !Cpp_MDF4_Player.isOpen
-               && !app.sessionPlayerOpen
+      visible: entry !== null && entry.visible !== false
+      enabled: entry !== null && entry.enabled !== false
 
-      onClicked: {
-        if (typeof mainWindow !== "undefined" && mainWindow.userToggleConnection)
-          mainWindow.userToggleConnection()
-        else
-          Cpp_IO_Manager.toggleConnection()
-      }
+      onClicked: entry.run()
 
       TextMetrics {
         id: metrics

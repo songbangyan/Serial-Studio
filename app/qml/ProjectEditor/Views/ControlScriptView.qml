@@ -151,18 +151,18 @@ Widgets.Pane {
             toolbarButton: false
             onClicked: editor.reload()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/reload.svg"
             ToolTip.text: qsTr("Reset to the default control loop")
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "reload", 16)
           }
 
           Widgets.ToolbarButton {
             iconSize: 24
             text: qsTr("Open")
             toolbarButton: false
-            onClicked: editor.import()
+            onClicked: editor.importFile()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/open.svg"
             ToolTip.text: qsTr("Import a control loop file")
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "open", 16)
           }
 
           Widgets.ToolbarButton {
@@ -173,7 +173,7 @@ Widgets.Pane {
             enabled: editor.undoAvailable
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Undo the last code edit")
-            icon.source: "qrc:/icons/code-editor/undo.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "undo", 24)
           }
 
           Widgets.ToolbarButton {
@@ -183,8 +183,8 @@ Widgets.Pane {
             onClicked: editor.redo()
             enabled: editor.redoAvailable
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/redo.svg"
             ToolTip.text: qsTr("Redo the previously undone edit")
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "redo", 24)
           }
 
           Rectangle {
@@ -201,8 +201,8 @@ Widgets.Pane {
             toolbarButton: false
             onClicked: editor.cut()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/cut.svg"
             ToolTip.text: qsTr("Cut selected code to clipboard")
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "cut", 24)
           }
 
           Widgets.ToolbarButton {
@@ -211,8 +211,8 @@ Widgets.Pane {
             toolbarButton: false
             onClicked: editor.copy()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/copy.svg"
             ToolTip.text: qsTr("Copy selected code to clipboard")
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "copy", 24)
           }
 
           Widgets.ToolbarButton {
@@ -222,7 +222,7 @@ Widgets.Pane {
             onClicked: editor.paste()
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Paste code from clipboard")
-            icon.source: "qrc:/icons/code-editor/paste.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "paste", 24)
           }
 
           Rectangle {
@@ -238,7 +238,7 @@ Widgets.Pane {
             text: qsTr("Help")
             toolbarButton: false
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/help.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 16)
             onClicked: app.showHelpCenter("Control-Script")
             ToolTip.text: qsTr("Open the control loop documentation")
           }
@@ -253,7 +253,7 @@ Widgets.Pane {
             text: qsTr("Validate")
             onClicked: editor.evaluate()
             Layout.alignment: Qt.AlignVCenter
-            icon.source: "qrc:/icons/code-editor/test.svg"
+            icon.source: Cpp_Misc_IconRegistry.icon("code", "test", 16)
             ToolTip.text: qsTr("Verify that the script compiles correctly")
           }
         }

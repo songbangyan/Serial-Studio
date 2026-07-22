@@ -31,7 +31,7 @@ Widgets.Pane {
   implicitWidth: 0
   implicitHeight: 0
   title: qsTr("Shared Memory")
-  icon: "qrc:/icons/project-editor/treeview/shared-memory.svg"
+  icon: Cpp_Misc_IconRegistry.icon("editor", "shared-memory", 24)
 
   actionComponent: EditorNavActions {}
 
@@ -55,7 +55,7 @@ Widgets.Pane {
                   "isSystem": true,
                   "isFolder": false,
                   "title": sys[0].name,
-                  "icon": "qrc:/icons/project-editor/treeview/dataset-values.svg",
+                  "icon": Cpp_Misc_IconRegistry.icon("editor", "dataset-values", 24),
                   "count": sys[0].entryCount
                 })
     }
@@ -170,7 +170,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               ToolTip.text: qsTr("Add a top-level folder")
               onClicked: Cpp_JSON_ProjectModel.promptAddTableFolder(-1)
-              icon.source: "qrc:/icons/project-editor/actions/add-folder.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
             }
 
             Widgets.ToolbarButton {
@@ -180,7 +180,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               ToolTip.text: qsTr("Add shared table")
               onClicked: Cpp_JSON_ProjectModel.promptAddTable()
-              icon.source: "qrc:/icons/project-editor/actions/add-table.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-table", 24)
             }
 
             Item { Layout.fillWidth: true }
@@ -191,7 +191,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               onClicked: app.showHelpCenter("data-tables")
-              icon.source: "qrc:/icons/code-editor/help.svg"
+              icon.source: Cpp_Misc_IconRegistry.icon("code", "help", 16)
               ToolTip.text: qsTr("Open help documentation for shared memory")
             }
           }

@@ -34,6 +34,7 @@
 #include "IO/Checksum.h"
 #include "IO/ConnectionManager.h"
 #include "Misc/IconEngine.h"
+#include "Misc/IconRegistry.h"
 #include "Misc/Translator.h"
 #include "Misc/Utilities.h"
 #include "SerialStudio.h"
@@ -234,6 +235,7 @@ QVariantList DataModel::ProjectEditor::workspaceFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::workspaceFolderContents(int parentFolderId) const
 {
+  static auto& registry  = Misc::IconRegistry::instance();
   const auto& pm         = m_projectModelRef;
   const auto& folders    = pm.editorWorkspaceFolders();
   const auto& workspaces = pm.editorWorkspaces();
@@ -256,7 +258,8 @@ QVariantList DataModel::ProjectEditor::workspaceFolderContents(int parentFolderI
     row[QStringLiteral("isFolder")] = true;
     row[QStringLiteral("id")]       = f.folderId;
     row[QStringLiteral("title")]    = f.title;
-    row[QStringLiteral("icon")]  = QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg");
+    row[QStringLiteral("icon")] =
+      registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16);
     row[QStringLiteral("count")] = children;
     out.append(row);
   }
@@ -269,10 +272,10 @@ QVariantList DataModel::ProjectEditor::workspaceFolderContents(int parentFolderI
     row[QStringLiteral("isFolder")] = false;
     row[QStringLiteral("id")]       = ws.workspaceId;
     row[QStringLiteral("title")]    = ws.title;
-    row[QStringLiteral("icon")]     = ws.icon.isEmpty()
-                                      ? QStringLiteral("qrc:/icons/dashboard-small/workspace.svg")
-                                      : Misc::IconEngine::resolveActionIconSource(ws.icon);
-    row[QStringLiteral("count")]    = static_cast<int>(ws.widgetRefs.size());
+    row[QStringLiteral("icon")] =
+      ws.icon.isEmpty() ? registry.icon(QStringLiteral("widgets"), QStringLiteral("workspace"), 16)
+                        : Misc::IconEngine::resolveActionIconSource(ws.icon);
+    row[QStringLiteral("count")] = static_cast<int>(ws.widgetRefs.size());
     out.append(row);
   }
 
@@ -292,9 +295,10 @@ QVariantList DataModel::ProjectEditor::groupFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::groupFolderContents(int parentFolderId) const
 {
-  const auto& pm      = m_projectModelRef;
-  const auto& folders = pm.editorGroupFolders();
-  const auto& groups  = pm.groups();
+  static auto& registry = Misc::IconRegistry::instance();
+  const auto& pm        = m_projectModelRef;
+  const auto& folders   = pm.editorGroupFolders();
+  const auto& groups    = pm.groups();
 
   QVariantList out;
   for (const auto& f : folders) {
@@ -314,7 +318,8 @@ QVariantList DataModel::ProjectEditor::groupFolderContents(int parentFolderId) c
     row[QStringLiteral("isFolder")] = true;
     row[QStringLiteral("id")]       = f.folderId;
     row[QStringLiteral("title")]    = f.title;
-    row[QStringLiteral("icon")]  = QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg");
+    row[QStringLiteral("icon")] =
+      registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16);
     row[QStringLiteral("count")] = children;
     out.append(row);
   }
@@ -369,9 +374,10 @@ QVariantList DataModel::ProjectEditor::tableFolderTree() const
  */
 QVariantList DataModel::ProjectEditor::tableFolderContents(int parentFolderId) const
 {
-  const auto& pm      = m_projectModelRef;
-  const auto& folders = pm.editorTableFolders();
-  const auto& tables  = pm.tables();
+  static auto& registry = Misc::IconRegistry::instance();
+  const auto& pm        = m_projectModelRef;
+  const auto& folders   = pm.editorTableFolders();
+  const auto& tables    = pm.tables();
 
   QVariantList out;
   for (const auto& f : folders) {
@@ -391,7 +397,8 @@ QVariantList DataModel::ProjectEditor::tableFolderContents(int parentFolderId) c
     row[QStringLiteral("isFolder")] = true;
     row[QStringLiteral("id")]       = f.folderId;
     row[QStringLiteral("title")]    = f.title;
-    row[QStringLiteral("icon")]  = QStringLiteral("qrc:/icons/project-editor/treeview/folder.svg");
+    row[QStringLiteral("icon")] =
+      registry.icon(QStringLiteral("widgets"), QStringLiteral("folder"), 16);
     row[QStringLiteral("count")] = children;
     out.append(row);
   }
@@ -405,7 +412,7 @@ QVariantList DataModel::ProjectEditor::tableFolderContents(int parentFolderId) c
     row[QStringLiteral("path")]     = DataModel::tableFullPath(folders, t.parentFolderId, t.name);
     row[QStringLiteral("title")]    = t.name;
     row[QStringLiteral("icon")] =
-      QStringLiteral("qrc:/icons/project-editor/treeview/shared-table.svg");
+      registry.icon(QStringLiteral("editor"), QStringLiteral("shared-table-alt"), 16);
     row[QStringLiteral("count")] = static_cast<int>(t.registers.size());
     out.append(row);
   }

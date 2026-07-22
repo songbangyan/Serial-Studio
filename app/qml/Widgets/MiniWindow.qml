@@ -500,7 +500,7 @@ Item {
           onClicked: root.minimizeClicked()
           icon.width: root.captionHeight / 2
           icon.height: root.captionHeight / 2
-          icon.source: "qrc:/icons/miniwindow/minimize.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("window", "minimize", 32)
 
           MouseArea {
             id: minBtMa
@@ -526,8 +526,9 @@ Item {
           icon.height: root.captionHeight / 2
 
           icon.color: _title.color
-          icon.source: root.state === "maximized" ? "qrc:/icons/miniwindow/restore.svg" :
-                                                    "qrc:/icons/miniwindow/maximize.svg"
+          icon.source: root.state === "maximized"
+                       ? Cpp_Misc_IconRegistry.icon("window", "restore", 32)
+                       : Cpp_Misc_IconRegistry.icon("window", "maximize", 32)
 
           MouseArea {
             id: maxBtMa
@@ -552,7 +553,7 @@ Item {
           icon.width: root.captionHeight / 2
           visible: root.windowControlsVisible
           icon.height: root.captionHeight / 2
-          icon.source: "qrc:/icons/miniwindow/close.svg"
+          icon.source: Cpp_Misc_IconRegistry.icon("window", "close", 32)
 
           MouseArea {
             id: closeBtMa
