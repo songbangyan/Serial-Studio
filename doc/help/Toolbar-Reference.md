@@ -134,7 +134,7 @@ The taskbar runs along the bottom of the dashboard.
 | **Search** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/buttons/search.svg" width="16" height="16"> | Filters open widgets and Start menu entries; results appear in a dropdown. | Shown when taskbar search is enabled in settings. |
 | **Pinned shortcuts** | varies | A configurable strip of quick-toggles: Settings, Console, Notifications, Clock, Stopwatch, File Transmission, AI Assistant, Pause / Resume. | The set and order are user-configurable; Pro-only tools are hidden in the free build. Stateful shortcuts light up when active. |
 | **Window buttons** | per-widget | One button per open dashboard widget; click to show, focus, or restore that widget. The center strip scrolls with the **<** / **>** arrows when it overflows. | Mirrors the widgets currently on the canvas. |
-| **Workspace switcher** | (dropdown) | Selects the active [workspace](#a-note-on-workspaces); the current one is bold. | Press **Ctrl+K** for a full-screen [overview of every workspace](#a-note-on-workspaces). |
+| **Workspace switcher** | (dropdown) | Selects the active [workspace](#a-note-on-workspaces); the current one is bold. | Press **Ctrl+K** to open the [Command Palette](Command-Palette.md) and jump to any workspace. |
 | **Auto Layout** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/buttons/auto-layout.svg" width="16" height="16"> | Toggles automatic window tiling (same as the Start menu entry). | Lights up when enabled. |
 | **Edit workspace** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/buttons/workspace-settings.svg" width="16" height="16"> | Renames or edits the active workspace. | Enabled only for user-created workspaces. |
 | **New workspace** | <img src="https://raw.githubusercontent.com/Serial-Studio/Serial-Studio/refs/heads/master/app/rcc/icons/buttons/add-workspace.svg" width="16" height="16"> | Creates a new workspace. | Hidden in operator runtime mode. |
@@ -144,7 +144,7 @@ The taskbar runs along the bottom of the dashboard.
 
 A **workspace** is a saved arrangement of dashboard windows. Each project includes a default workspace; you can add your own to keep different views of the same data (an overview screen, a diagnostics screen) and switch between them from the taskbar or the Start menu. User workspaces have IDs at or above 5000 and only those can be renamed or deleted.
 
-Once you have more than a few workspaces, **Ctrl+K** opens a full-screen overview: a searchable grid of every workspace, laid out like virtual desktops. Start typing to filter the list, use the arrow keys to move the highlight, press Enter to switch, or Escape to close without changing anything. However you switch, the dashboard slides in the direction of travel, coming in from the right when you move to a later workspace and from the left when you move back, so it stays easy to keep your bearings.
+Once you have more than a few workspaces, **Ctrl+K** opens the [Command Palette](Command-Palette.md): a searchable grid of every workspace, laid out like virtual desktops, alongside the dashboard's tools and open widgets. Start typing to filter the list, use the arrow keys to move the highlight, press Enter to switch, or Escape to close without changing anything. However you switch, the rebuilt dashboard slides in vertically in the direction of travel, rising up from below when you move to a later workspace and dropping down from above when you move back, so it stays easy to keep your bearings.
 
 ## Project Editor toolbar
 
@@ -360,6 +360,7 @@ The [notification](Notifications.md) log has a **Filter by channel** field, an u
 ## See also
 
 - [Getting Started](Getting-Started.md): the main-window layout and a first connection walkthrough.
+- [Command Palette](Command-Palette.md): reach any of these buttons' commands, plus workspaces and widgets, from one Ctrl+K search box.
 - [Operation Modes](Operation-Modes.md): how the Console / Dashboard view and parsing are chosen.
 - [Widget Reference](Widget-Reference.md): every widget type and its configuration fields.
 - [Plots](Plots.md): the plot toolbar and Sweep / Trigger mode in detail.

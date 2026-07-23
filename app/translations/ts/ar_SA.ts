@@ -4585,13 +4585,13 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
     </message>
     <message>
         <location filename="../../src/DataModel/FrameBuilder.cpp" line="2054"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2169"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2172"/>
         <source>Channel %1</source>
         <translation>القناة %1</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/FrameBuilder.cpp" line="2063"/>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2185"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2188"/>
         <source>Quick Plot</source>
         <translation>رسم بياني سريع</translation>
     </message>
@@ -4606,7 +4606,7 @@ Only enable this on trusted networks. Untrusted clients may read live data or se
         <translation>رسوم بيانية متعددة</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2180"/>
+        <location filename="../../src/DataModel/FrameBuilder.cpp" line="2183"/>
         <source>Audio Input</source>
         <translation>دخل الصوت</translation>
     </message>
@@ -5086,33 +5086,33 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation type="vanished">المجموعات</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="588"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="587"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="600"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="601"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="602"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="621"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="620"/>
         <source>Shared Memory</source>
         <translation>الذاكرة المشتركة</translation>
     </message>
     <message>
         <location filename="../../src/DataModel/Project/ProjectEditorSummaries.cpp" line="134"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="588"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="587"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="607"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="608"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="609"/>
         <source>Dataset Values</source>
         <translation>قيم مجموعة البيانات</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="778"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="777"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="791"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="792"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="793"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="809"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="808"/>
         <source>Workspaces</source>
         <translation>مساحات العمل</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="826"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="825"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="829"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="830"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="831"/>
         <source>MQTT Publisher</source>
         <translation>ناشر MQTT</translation>
     </message>
@@ -6589,15 +6589,15 @@ Add %4 dataset(s) using the template's defaults?</source>
         <translation>القيمة الدنيا</translation>
     </message>
     <message>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="462"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="463"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="464"/>
         <source>Dashboard Widgets</source>
         <translation>عناصر لوحة المعلومات</translation>
     </message>
     <message>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="852"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="851"/>
+        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="855"/>
         <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="856"/>
-        <location filename="../../src/DataModel/Project/ProjectEditorTree.cpp" line="857"/>
         <source>Control Loop</source>
         <translation>حلقة التحكم</translation>
     </message>
@@ -17831,77 +17831,77 @@ function parse(%1) { ... }
 <context>
     <name>SerialStudio</name>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="386"/>
+        <location filename="../../src/SerialStudio.cpp" line="373"/>
         <source>Data Grids</source>
         <translation>شبكات البيانات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="389"/>
+        <location filename="../../src/SerialStudio.cpp" line="376"/>
         <source>Multiple Data Plots</source>
         <translation>رسوم بيانية متعددة للبيانات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="392"/>
+        <location filename="../../src/SerialStudio.cpp" line="379"/>
         <source>Accelerometers</source>
         <translation>مقاييس التسارع</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="395"/>
+        <location filename="../../src/SerialStudio.cpp" line="382"/>
         <source>Gyroscopes</source>
         <translation>الجيروسكوبات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="398"/>
+        <location filename="../../src/SerialStudio.cpp" line="385"/>
         <source>GPS</source>
         <translation>GPS</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="401"/>
+        <location filename="../../src/SerialStudio.cpp" line="388"/>
         <source>FFT Plots</source>
         <translation>رسوم FFT البيانية</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="404"/>
+        <location filename="../../src/SerialStudio.cpp" line="391"/>
         <source>LED Panels</source>
         <translation>لوحات LED</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="407"/>
+        <location filename="../../src/SerialStudio.cpp" line="394"/>
         <source>Data Plots</source>
         <translation>رسوم البيانات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="410"/>
+        <location filename="../../src/SerialStudio.cpp" line="397"/>
         <source>Bars</source>
         <translation>الأشرطة</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="413"/>
+        <location filename="../../src/SerialStudio.cpp" line="400"/>
         <source>Gauges</source>
         <translation>المقاييس</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="416"/>
+        <location filename="../../src/SerialStudio.cpp" line="403"/>
         <source>Terminal</source>
         <translation>الطرفية</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="419"/>
+        <location filename="../../src/SerialStudio.cpp" line="406"/>
         <source>Clock</source>
         <translation>ساعة</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="422"/>
+        <location filename="../../src/SerialStudio.cpp" line="409"/>
         <source>Stopwatch</source>
         <translation>ساعة إيقاف</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="425"/>
+        <location filename="../../src/SerialStudio.cpp" line="412"/>
         <source>Compasses</source>
         <translation>البوصلات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="428"/>
+        <location filename="../../src/SerialStudio.cpp" line="415"/>
         <source>Meters</source>
         <translation>المقاييس</translation>
     </message>
@@ -17910,92 +17910,92 @@ function parse(%1) { ... }
         <translation type="vanished">مقاييس الحرارة</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="431"/>
+        <location filename="../../src/SerialStudio.cpp" line="418"/>
         <source>3D Plots</source>
         <translation>رسوم 3D</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="434"/>
+        <location filename="../../src/SerialStudio.cpp" line="421"/>
         <source>Web Views</source>
         <translation>عارضات الويب</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="438"/>
+        <location filename="../../src/SerialStudio.cpp" line="425"/>
         <source>Image Views</source>
         <translation>عارضات الصور</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="441"/>
+        <location filename="../../src/SerialStudio.cpp" line="428"/>
         <source>Output Panels</source>
         <translation>لوحات الإخراج</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="444"/>
+        <location filename="../../src/SerialStudio.cpp" line="431"/>
         <source>Notifications</source>
         <translation>الإشعارات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="447"/>
+        <location filename="../../src/SerialStudio.cpp" line="434"/>
         <source>Waterfalls</source>
         <translation>الشلالات</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="450"/>
+        <location filename="../../src/SerialStudio.cpp" line="437"/>
         <source>Painter Widgets</source>
         <translation>عناصر الرسام</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1073"/>
+        <location filename="../../src/SerialStudio.cpp" line="1060"/>
         <source>UTF-8</source>
         <translation>UTF-8</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1074"/>
+        <location filename="../../src/SerialStudio.cpp" line="1061"/>
         <source>UTF-16 LE</source>
         <translation>UTF-16 LE</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1075"/>
+        <location filename="../../src/SerialStudio.cpp" line="1062"/>
         <source>UTF-16 BE</source>
         <translation>UTF-16 BE</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1076"/>
+        <location filename="../../src/SerialStudio.cpp" line="1063"/>
         <source>Latin-1</source>
         <translation>Latin-1</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1077"/>
+        <location filename="../../src/SerialStudio.cpp" line="1064"/>
         <source>System</source>
         <translation>النظام</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1078"/>
+        <location filename="../../src/SerialStudio.cpp" line="1065"/>
         <source>GBK</source>
         <translation>GBK</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1079"/>
+        <location filename="../../src/SerialStudio.cpp" line="1066"/>
         <source>GB18030</source>
         <translation>GB18030</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1080"/>
+        <location filename="../../src/SerialStudio.cpp" line="1067"/>
         <source>Big5</source>
         <translation>Big5</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1081"/>
+        <location filename="../../src/SerialStudio.cpp" line="1068"/>
         <source>Shift-JIS</source>
         <translation>Shift-JIS</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1082"/>
+        <location filename="../../src/SerialStudio.cpp" line="1069"/>
         <source>EUC-JP</source>
         <translation>EUC-JP</translation>
     </message>
     <message>
-        <location filename="../../src/SerialStudio.cpp" line="1083"/>
+        <location filename="../../src/SerialStudio.cpp" line="1070"/>
         <source>EUC-KR</source>
         <translation>EUC-KR</translation>
     </message>

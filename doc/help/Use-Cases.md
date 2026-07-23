@@ -37,7 +37,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 
 **Solution:** Serial Studio Quick Plot mode connected via USB serial to display:
 - 6 separate plots for each joint angle (degrees)
-- XY plot (Pro) showing end-effector trajectory
+- XY plot showing end-effector trajectory
 - Torque limits as bar charts with threshold indicators
 
 **Hardware:** Arduino Mega + servo controllers
@@ -312,7 +312,7 @@ Real-world applications of Serial Studio across industries, education, and hobby
 - Serial Studio displays:
   - RPM, throttle position, MAF sensor
   - Engine temperature, oil pressure
-  - Horsepower and torque curves (XY plot Pro)
+  - Horsepower and torque curves (XY plot)
 
 **Hardware:** OBD-II Bluetooth adapter (ELM327 compatible)
 **Data Protocol:** AT commands parsed via custom JavaScript decoder

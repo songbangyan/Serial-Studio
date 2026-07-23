@@ -23,7 +23,7 @@ The Commercial License covers all official pre-built binaries, builds that inclu
 
 - Commercial, institutional, or enterprise deployment.
 - Redistribution of official builds.
-- Access to Pro-gated features (MQTT, Modbus, CAN Bus, MDF4 export, 3D visualization, XY plotting, and the licensing subsystem).
+- Access to Pro-gated features (MQTT, Modbus, CAN Bus, MDF4 export, 3D visualization, and the licensing subsystem).
 
 A Commercial License is sold per user or seat at <https://serial-studio.com>. It lets you use Serial Studio in proprietary projects with no obligation to share your project's source code. Priority support is included.
 

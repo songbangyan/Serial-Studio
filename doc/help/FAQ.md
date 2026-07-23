@@ -25,7 +25,7 @@ It works with any device that sends data via serial port, Bluetooth LE, MQTT, Mo
 
 The core is open source, with two flavors:
 
-1. **GPL version (open source).** Built from source under GPL-3.0. Includes core features, but leaves out Pro modules like MQTT, Modbus, CAN Bus, 3D and XY plotting, and the Waterfall widget.
+1. **GPL version (open source).** Built from source under GPL-3.0. Includes core features, but leaves out Pro modules like MQTT, Modbus, CAN Bus, 3D plotting, and the Waterfall widget.
 2. **Pro version (proprietary).** Official binary with everything, plus a 14-day trial. Individual, team, and test-stand plans are available as monthly, yearly, or lifetime licenses; check current pricing at [serial-studio.com/pricing](https://serial-studio.com/pricing).
 
 Pro features are proprietary. They're not open source. See the [License Agreement](License-Agreement.md) and [Pro vs GPL](#pro-vs-gpl) for details.
@@ -360,10 +360,10 @@ See [Operation Modes](Operation-Modes.md) and [Project Editor](Project-Editor.md
 - GPS maps (ArcGIS / Esri map tiles).
 - LED panel.
 - Terminal.
+- XY plots (parametric plots): set a plot's X axis to another dataset.
 
 **Pro only:**
 
-- XY plots (parametric plots).
 - 3D plots.
 - Waterfall (scrolling spectrogram with order tracking).
 - Image View (live JPEG/PNG camera feed widget).
@@ -505,7 +505,7 @@ The ARM64 AppImage needs Ubuntu 24.04+ (glibc 2.38+). Upgrade the OS or use the 
 | CAN Bus                          | ❌                         | ✅                             |
 | Audio input                      | ❌                         | ✅                             |
 | Basic plots, gauges, maps        | ✅                         | ✅                             |
-| XY plots                         | ❌                         | ✅                             |
+| XY plots                         | ✅                         | ✅                             |
 | 3D visualization                 | ❌                         | ✅                             |
 | FFT spectrum analyzer            | ✅                         | ✅                             |
 | Waterfall (spectrogram)          | ❌                         | ✅                             |

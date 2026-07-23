@@ -69,19 +69,12 @@ bool SerialStudio::proWidgetsEnabled()
 }
 
 /**
- * @brief Reports whether per-dataset X-axis sources (dataset-vs-dataset plots) are licensed. This
- * is the single Pro gate behind the Time/Samples/Dataset degrade; unlicensed builds fall back to
- * the free Samples axis.
+ * @brief Reports whether per-dataset X-axis sources (dataset-vs-dataset plots) are available. XY
+ * plotting is free for all users on both GPLv3 and commercial builds, so this always returns true.
  */
 bool SerialStudio::datasetXAxisEnabled()
 {
-#ifdef BUILD_COMMERCIAL
-  const auto& token = Licensing::CommercialToken::current();
-  return token.isValid() && SS_LICENSE_GUARD()
-      && token.featureTier() >= Licensing::FeatureTier::Trial;
-#else
-  return false;
-#endif
+  return true;
 }
 
 /**
@@ -151,9 +144,6 @@ bool SerialStudio::commercialCfg(const QVector<DataModel::Group>& g)
       return true;
 
     for (const auto& dataset : std::as_const((group.datasets))) {
-      if (dataset.xAxisId >= 0)
-        return true;
-
       if (dataset.waterfall)
         return true;
 
@@ -184,9 +174,6 @@ bool SerialStudio::commercialCfg(const std::vector<DataModel::Group>& g)
       return true;
 
     for (const auto& dataset : std::as_const((group.datasets))) {
-      if (dataset.xAxisId >= 0)
-        return true;
-
       if (dataset.waterfall)
         return true;
 

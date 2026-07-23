@@ -303,7 +303,7 @@ Every dataset in a project file supports these visualization-related fields:
 | `fftSamplingRate`  | int    | 100     | FFT sampling rate in Hz. |
 | `fftMin`           | double | 0       | FFT frequency axis minimum. |
 | `fftMax`           | double | 0       | FFT frequency axis maximum. |
-| `xAxis`            | int    | -2      | X-axis source: `-2` = time (default), or the `uniqueId` of another dataset for an XY plot (Pro). C++ field `xAxisId`. |
+| `xAxis`            | int    | -2      | X-axis source: `-2` = time (default), or the `uniqueId` of another dataset for an XY plot. C++ field `xAxisId`. |
 
 ## Dashboard layout
 

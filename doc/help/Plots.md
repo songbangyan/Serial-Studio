@@ -21,7 +21,7 @@ A plot's X axis is one of three kinds, chosen automatically from the dataset con
 |-------------|---------------------------------------------|-----------------------------------|
 | **Time**    | Default for a plotted dataset               | Seconds, newest sample at the right |
 | **Samples** | X axis set to Samples                        | Sample index, 0 to N (newest at the right) |
-| **Custom**  | `xAxisId` points at another dataset (Pro, Plot only) | That dataset's value (XY / scatter) |
+| **Custom**  | `xAxisId` points at another dataset (Plot only) | That dataset's value (XY / scatter) |
 
 A **time** plot scrolls: it shows the most recent window of data, spanning `[-T, 0]` where `T` is the dashboard time range. The newest reading is always pinned at the right edge.
 

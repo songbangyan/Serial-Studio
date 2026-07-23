@@ -2161,6 +2161,9 @@ void DataModel::FrameBuilder::buildQuickPlotAudioFrame(const QStringList& channe
     dataset.fftMin          = minValue;
     dataset.fftSamples      = fftSamples;
     dataset.fftSamplingRate = sampleRate;
+    dataset.fftLogX         = true;
+    dataset.fftBallistics   = true;
+    dataset.fftBallisticsRelease = 100;
 
     if (m_quickPlotHasHeader && index > 0
         && index - 1 < static_cast<int>(m_quickPlotChannelNames.size()))

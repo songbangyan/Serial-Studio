@@ -14,7 +14,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 **Pro version:**
 - Everything in the free version, plus:
 - Advanced protocols: MQTT, Modbus, CAN Bus, Audio Input, raw USB, HID, Process I/O.
-- Pro widgets: 3D Plot, XY Plot, Waterfall (spectrogram), Image View (live camera feed), Painter (user-scripted Canvas2D widget).
+- Pro widgets: 3D Plot, Waterfall (spectrogram), Image View (live camera feed), Painter (user-scripted Canvas2D widget).
 - Output (control) widgets: buttons, toggles, sliders, knobs, text fields, and the Output Panel.
 - Multi-device projects (several data sources in one dashboard).
 - Binary Direct mode (byte-array parsing without string conversion).
@@ -66,7 +66,7 @@ A comparison of features in the free (GPLv3) version against Serial Studio Pro.
 | | LED Panel | ✅ | ✅ |
 | | Web View (embedded web page) | ✅ | ✅ |
 | | 3D Plot | ❌ | ✅ |
-| | XY Plot (phase diagrams) | ❌ | ✅ |
+| | XY Plot (phase diagrams) | ✅ | ✅ |
 | | Waterfall (spectrogram, order tracking) | ❌ | ✅ |
 | | Image View (live camera/image feed) | ❌ | ✅ |
 | | Painter (user-scripted Canvas2D widget) | ❌ | ✅ |
@@ -223,24 +223,6 @@ function parse(frame) {
 **Requirements:** None beyond the base app. The 3D Plot renders on the CPU (no GPU or OpenGL needed) and runs on low-end hardware, including Raspberry Pi.
 
 **Learn more:** [Widget Reference - 3D Plot](Widget-Reference.md#3d-plot-pro)
-
-### XY Plot Widget
-
-**What it is:** 2D scatter plot displaying Y values against X values (instead of time).
-
-**Used for:**
-- Correlation analysis between two variables
-- Phase portraits (control systems)
-- Lissajous curves
-- I-V characteristic curves
-
-**Use cases:**
-- I-V curves (current vs voltage)
-- Control system phase portraits
-- Signal correlation analysis
-- Pressure-volume diagrams
-
-**Learn more:** [Widget Reference - Plot](Widget-Reference.md#plot) (set a dataset's X-axis source to another dataset)
 
 ### Waterfall Widget
 
@@ -464,7 +446,7 @@ systems, non-commercial university research, and home automation.
 - Commercial and business use rights.
 - MQTT, Modbus, CAN Bus, and Audio Input.
 - Raw USB (bulk/isochronous via libusb), HID, and Process I/O.
-- 3D and XY plots, Waterfall (spectrogram), Painter, and live Image View (camera feeds).
+- 3D plots, Waterfall (spectrogram), Painter, and live Image View (camera feeds).
 - Output (control) widgets and multi-device projects.
 - MDF4 export and playback, plus the Session Database.
 - File transfers (XMODEM/YMODEM/ZMODEM) and the in-app AI Assistant.
@@ -661,7 +643,7 @@ Yes, for Pro customers. Contact alex@serial-studio.com for rates and availabilit
 |---|--------------|-----|
 | **Best for** | Hobbyists, students, open-source | Professionals, businesses, industry |
 | **Protocols** | Basic (Serial, Network, BLE) | Advanced (MQTT, Modbus, CAN, Audio, Raw USB, HID, Process I/O) |
-| **Widgets** | Standard | Standard + 3D Plot, XY Plot, Waterfall, Image View, Painter, Output widgets |
+| **Widgets** | Standard (incl. XY Plot) | Standard + 3D Plot, Waterfall, Image View, Painter, Output widgets |
 | **Performance** | Hex/Base64 decoding | Binary Direct mode |
 | **Export** | CSV | CSV + MDF4 |
 | **Commercial use** | ❌ | ✅ |

@@ -103,8 +103,6 @@
   fails += expect(QStringLiteral("activated() opens with trial token"), SerialStudio::activated());
   fails += expect(QStringLiteral("proWidgetsEnabled() opens with trial token"),
                   SerialStudio::proWidgetsEnabled());
-  fails += expect(QStringLiteral("datasetXAxisEnabled() opens with trial token"),
-                  SerialStudio::datasetXAxisEnabled());
 
   auto tampered = token;
   tampered.setFeatureTier(Licensing::FeatureTier::Enterprise);
@@ -114,8 +112,7 @@
 
   Licensing::CommercialToken::clearCurrent();
   fails += expect(QStringLiteral("cleared token closes all gates"),
-                  !SerialStudio::activated() && !SerialStudio::proWidgetsEnabled()
-                    && !SerialStudio::datasetXAxisEnabled());
+                  !SerialStudio::activated() && !SerialStudio::proWidgetsEnabled());
 
   Licensing::CommercialToken::setCurrent(previous);
   return fails;
