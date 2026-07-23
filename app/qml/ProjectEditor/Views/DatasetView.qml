@@ -250,7 +250,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               enabled: Cpp_JSON_ProjectEditor.currentDatasetIsEditable
-              icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 32)
+              icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 24)
               ToolTip.text: qsTr("Toggle gauge widget for analog-style display")
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetGauge
               onClicked: {
@@ -356,7 +356,7 @@ Widgets.Pane {
               text: qsTr("Transform")
               Layout.alignment: Qt.AlignVCenter
               onClicked: Cpp_JSON_ProjectEditor.openTransformEditor()
-              icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 32)
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 24)
               ToolTip.text: qsTr("Edit a value transform expression for calibration, filtering, or unit conversion")
             }
           }

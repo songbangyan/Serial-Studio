@@ -20,6 +20,7 @@
  */
 
 #include <cmath>
+#include <limits>
 #include <memory>
 #include <QDirIterator>
 #include <QFileInfo>
@@ -86,6 +87,25 @@ static QStandardItem* findMappedItem(const Map& map, Pred&& pred)
       return it.key();
 
   return nullptr;
+}
+
+/**
+ * @brief Writes TreeViewExpanded across a subtree: every foldable node shallower than
+ *        @p maxExpandDepth is opened, deeper ones closed; recursion is depth-capped so a
+ *        malformed model can never loop unbounded (NASA Power of Ten).
+ */
+static void applyTreeExpansion(QStandardItem* item, int depth, int maxExpandDepth)
+{
+  Q_ASSERT(item != nullptr);
+  if (depth > 64)
+    return;
+
+  if (item->hasChildren())
+    item->setData(depth < maxExpandDepth, ProjectEditor::TreeViewExpanded);
+
+  const int rows = item->rowCount();
+  for (int r = 0; r < rows; ++r)
+    applyTreeExpansion(item->child(r), depth + 1, maxExpandDepth);
 }
 
 }  // namespace DataModel
@@ -372,8 +392,7 @@ void DataModel::ProjectEditor::appendOutputWidgetChildren(QStandardItem* groupIt
         owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-toggle"), 16);
         break;
       case DataModel::OutputWidgetType::TextField:
-        owIcon =
-          registry.icon(QStringLiteral("editor"), QStringLiteral("output-textfield"), 16);
+        owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-textfield"), 16);
         break;
       case DataModel::OutputWidgetType::Knob:
         owIcon = registry.icon(QStringLiteral("editor"), QStringLiteral("output-knob"), 16);
@@ -1093,6 +1112,39 @@ void DataModel::ProjectEditor::setTreeIndexExpanded(const QModelIndex& index, bo
 
   if (auto* item = m_treeModel->itemFromIndex(index))
     item->setData(expanded, TreeViewExpanded);
+}
+
+/**
+ * @brief Opens every foldable node in the tree; the view follows the model role per delegate.
+ */
+void DataModel::ProjectEditor::expandAllTreeItems()
+{
+  if (!m_treeModel)
+    return;
+
+  auto* root = m_treeModel->invisibleRootItem();
+  Q_ASSERT(root != nullptr);
+  for (int r = 0; r < root->rowCount(); ++r)
+    applyTreeExpansion(root->child(r), 0, std::numeric_limits<int>::max());
+
+  persistTreeExpansion();
+}
+
+/**
+ * @brief Collapses the tree to its overview: the root, top-level categories, and each category's
+ *        direct items stay visible (depth < 2 open); everything deeper folds away.
+ */
+void DataModel::ProjectEditor::collapseTreeToOverview()
+{
+  if (!m_treeModel)
+    return;
+
+  auto* root = m_treeModel->invisibleRootItem();
+  Q_ASSERT(root != nullptr);
+  for (int r = 0; r < root->rowCount(); ++r)
+    applyTreeExpansion(root->child(r), 0, 2);
+
+  persistTreeExpansion();
 }
 
 /**

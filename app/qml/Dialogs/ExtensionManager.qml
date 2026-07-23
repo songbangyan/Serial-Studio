@@ -132,7 +132,7 @@ Widgets.SmartDialog {
         text: qsTr("Repos")
         visible: Cpp_CommercialBuild
         icon.color: Cpp_ThemeManager.colors["text"]
-        icon.source: Cpp_Misc_IconRegistry.icon("commands", "settings", 32)
+        icon.source: Cpp_Misc_IconRegistry.icon("commands", "settings", 18)
         onClicked: root.showRepos = true
 
         HoverHandler {

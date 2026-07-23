@@ -41,7 +41,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Dataset Container")
-    icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+    icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 16)
     onTriggered: root.add(qsTr("Dataset Container"), SerialStudio.NoGroupWidget)
   }
 
@@ -97,7 +97,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Image View")
-    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "image", 32)
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "image", 16)
     onTriggered: root.add(qsTr("Image View"), SerialStudio.ImageView)
   }
 
@@ -105,7 +105,7 @@ Menu {
     icon.width: 16
     icon.height: 16
     text: qsTr("Web View")
-    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "webview", 32)
+    icon.source: Cpp_Misc_IconRegistry.icon("widgets", "webview", 16)
     onTriggered: root.add(qsTr("Web View"), SerialStudio.WebView)
   }
 

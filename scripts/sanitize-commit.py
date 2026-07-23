@@ -12,6 +12,7 @@
 #  - black                    -> format Python under app/, examples/, tests/, scripts/
 #  - documentation-verify.py  -> Markdown AI-narration scan
 #  - generate-sdk.py          -> regenerate SerialStudio.js / .lua from api-schema.json
+#  - registry-verify.py       -> spec-0028 icon/command registry + icon render-size lint
 #  - build_search_index.py    -> refresh AI assistant BM25 index
 #
 # Sanitize only: committing and pushing are left to the developer.
@@ -184,6 +185,11 @@ def main() -> int:
     run_python_step(
         "Regenerating command translation strings",
         root / "scripts" / "generate-command-strings.py",
+    )
+
+    run_python_step(
+        "Verifying icon & command registry",
+        root / "scripts" / "registry-verify.py",
     )
 
     run_python_step(

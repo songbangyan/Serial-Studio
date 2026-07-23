@@ -29,14 +29,20 @@ import SerialStudio
 
 import "." as Widgets
 
-Item {
+FocusScope {
   id: root
 
   z: 5000
+  focus: opened
   anchors.fill: parent
   opacity: opened ? 1 : 0
   visible: opened || opacity > 0
   onVisibleChanged: if (visible) Qt.callLater(_search.forceActiveFocus)
+
+  //
+  // Self-heal: reclaim focus if a dashboard grabber yanks it while the palette is open
+  //
+  onActiveFocusChanged: if (opened && !activeFocus) Qt.callLater(_search.forceActiveFocus)
 
   //
   // Logical open state, kept distinct from visibility so the fade/scale can play out on close.
@@ -268,6 +274,7 @@ Item {
       required property var modelData
 
       readonly property bool hovered: _cellMouse.containsMouse
+      readonly property bool itemEnabled: _cell.modelData.enabled !== false
       readonly property bool highlighted: _cell.modelData._idx === root.currentIndex
 
       Rectangle {
@@ -275,6 +282,7 @@ Item {
         border.width: 1
         anchors.fill: parent
         anchors.margins: 6
+        opacity: _cell.itemEnabled ? 1.0 : 0.4
         color: _cell.highlighted ? Cpp_ThemeManager.colors["highlight"]
                                  : Cpp_ThemeManager.colors["groupbox_background"]
         border.color: _cell.highlighted || _cell.hovered
@@ -335,7 +343,8 @@ Item {
 
           hoverEnabled: true
           anchors.fill: parent
-          cursorShape: Qt.PointingHandCursor
+          enabled: _cell.itemEnabled
+          cursorShape: _cell.itemEnabled ? Qt.PointingHandCursor : Qt.ArrowCursor
           onClicked: {
             root.currentIndex = _cell.modelData._idx
             root.activate(_cell.modelData)
@@ -360,12 +369,14 @@ Item {
       required property var modelData
 
       readonly property bool hovered: _rowMouse.containsMouse
+      readonly property bool itemEnabled: _row.modelData.enabled !== false
       readonly property bool highlighted: _row.modelData._idx === root.currentIndex
 
       Rectangle {
         radius: 4
         anchors.fill: parent
         anchors.rightMargin: 2
+        opacity: _row.itemEnabled ? 1.0 : 0.4
         color: _row.highlighted ? Cpp_ThemeManager.colors["highlight"]
                                 : (_row.hovered ? Cpp_ThemeManager.colors["groupbox_background"]
                                                 : "transparent")
@@ -425,7 +436,8 @@ Item {
 
           hoverEnabled: true
           anchors.fill: parent
-          cursorShape: Qt.PointingHandCursor
+          enabled: _row.itemEnabled
+          cursorShape: _row.itemEnabled ? Qt.PointingHandCursor : Qt.ArrowCursor
           onEntered: root.currentIndex = _row.modelData._idx
           onClicked: {
             root.currentIndex = _row.modelData._idx

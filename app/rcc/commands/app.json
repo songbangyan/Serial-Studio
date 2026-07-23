@@ -145,7 +145,8 @@
       "kind": "action",
       "contexts": [
         "app",
-        "dashboard"
+        "dashboard",
+        "editor"
       ],
       "pro": true,
       "order": 12,
@@ -159,7 +160,8 @@
       "kind": "action",
       "contexts": [
         "app",
-        "dashboard"
+        "dashboard",
+        "editor"
       ],
       "shortcut": "StandardKey.Preferences",
       "shortcutWindows": [
@@ -176,7 +178,8 @@
       "kind": "action",
       "contexts": [
         "app",
-        "dashboard"
+        "dashboard",
+        "editor"
       ],
       "order": 9,
       "category": "help"

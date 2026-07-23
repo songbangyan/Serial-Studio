@@ -550,18 +550,18 @@ Item {
 
           icon.source: {
             switch (modelData) {
-            case "settings":          return Cpp_Misc_IconRegistry.icon("commands", "settings", 16)
-            case "console":           return Cpp_Misc_IconRegistry.icon("commands", "console", 32)
+            case "settings":          return Cpp_Misc_IconRegistry.icon("commands", "settings", 24)
+            case "console":           return Cpp_Misc_IconRegistry.icon("commands", "console", 24)
             case "notifications":     return Cpp_Misc_IconRegistry.icon(
-                                             "widgets", "notification-log", 16)
-            case "clock":             return Cpp_Misc_IconRegistry.icon("widgets", "clock", 16)
-            case "stopwatch":         return Cpp_Misc_IconRegistry.icon("widgets", "stopwatch", 16)
+                                             "widgets", "notification-log", 24)
+            case "clock":             return Cpp_Misc_IconRegistry.icon("widgets", "clock", 24)
+            case "stopwatch":         return Cpp_Misc_IconRegistry.icon("widgets", "stopwatch", 24)
             case "file_transmission": return Cpp_Misc_IconRegistry.icon(
-                                             "commands", "file-transmission", 16)
-            case "ai_assistant":      return Cpp_Misc_IconRegistry.icon("commands", "ai", 48)
+                                             "commands", "file-transmission", 24)
+            case "ai_assistant":      return Cpp_Misc_IconRegistry.icon("commands", "ai", 24)
             case "pause":             return Cpp_IO_Manager.paused
-                                             ? Cpp_Misc_IconRegistry.icon("commands", "resume", 16)
-                                             : Cpp_Misc_IconRegistry.icon("commands", "pause", 16)
+                                             ? Cpp_Misc_IconRegistry.icon("commands", "resume", 24)
+                                             : Cpp_Misc_IconRegistry.icon("commands", "pause", 24)
             }
             return ""
           }

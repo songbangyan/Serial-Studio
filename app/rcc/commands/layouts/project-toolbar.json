@@ -53,6 +53,8 @@
     },
     {
       "type": "section",
+      "collapsedIcon": "editor/recover-backup",
+      "collapsedTitle": "Recover",
       "collapsible": true,
       "collapsePriority": 30,
       "collapsedCommands": [
@@ -83,6 +85,8 @@
     },
     {
       "type": "section",
+      "collapsedIcon": "editor/add-output-panel",
+      "collapsedTitle": "Output",
       "collapsible": true,
       "collapsePriority": 10,
       "collapsedCommands": [
@@ -138,6 +142,8 @@
     },
     {
       "type": "section",
+      "collapsedIcon": "editor/add-dataset",
+      "collapsedTitle": "Dataset",
       "collapsible": true,
       "collapsePriority": 20,
       "collapsedCommands": [
@@ -193,6 +199,8 @@
     },
     {
       "type": "section",
+      "collapsedIcon": "editor/add-group",
+      "collapsedTitle": "Group",
       "collapsible": true,
       "collapsePriority": 30,
       "collapsedCommands": [
@@ -205,21 +213,6 @@
           "title": "Group"
         },
         {
-          "type": "command",
-          "id": "editor.addImageView",
-          "title": "Image"
-        },
-        {
-          "type": "command",
-          "id": "editor.addWebView",
-          "title": "Web View"
-        },
-        {
-          "type": "command",
-          "id": "editor.addPainter",
-          "title": "Painter"
-        },
-        {
           "type": "grid",
           "rows": 3,
           "itemHints": {
@@ -227,6 +220,21 @@
             "horizontalLayout": true
           },
           "items": [
+            {
+              "type": "command",
+              "id": "editor.addImageView",
+              "title": "Image"
+            },
+            {
+              "type": "command",
+              "id": "editor.addWebView",
+              "title": "Web View"
+            },
+            {
+              "type": "command",
+              "id": "editor.addPainter",
+              "title": "Painter"
+            },
             {
               "type": "command",
               "id": "editor.addDataGrid",
@@ -263,6 +271,8 @@
     },
     {
       "type": "section",
+      "collapsedIcon": "editor/ai",
+      "collapsedTitle": "Assistant",
       "collapsible": true,
       "collapsePriority": 30,
       "showSeparator": false,

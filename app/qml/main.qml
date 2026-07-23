@@ -40,6 +40,12 @@ Item {
   property bool quitting: false
 
   //
+  // True while the command palette overlay holds keyboard focus; dashboard
+  // focus-grabbers (hover-follow, terminal auto-focus) stand down while set
+  //
+  property bool commandPaletteOpen: false
+
+  //
   // True when a commercial build holds an active license or trial
   //
   readonly property bool proVersion: Cpp_CommercialBuild

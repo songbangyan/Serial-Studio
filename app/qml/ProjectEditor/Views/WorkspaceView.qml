@@ -192,7 +192,7 @@ Widgets.Pane {
             }
             icon.source: root.workspaceIcon.length > 0
                          ? Cpp_Misc_IconEngine.resolveActionIconSource(root.workspaceIcon)
-                         : Cpp_Misc_IconRegistry.icon("widgets", "workspace", 32)
+                         : Cpp_Misc_IconRegistry.icon("widgets", "workspace", 24)
           }
 
           Widgets.ToolbarButton {

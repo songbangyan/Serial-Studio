@@ -131,7 +131,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             ToolTip.text: qsTr("Add a sub-folder inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceFolder(root.folderId)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
           }
 
           Widgets.ToolbarButton {
@@ -142,7 +142,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             ToolTip.text: qsTr("Add a workspace inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceInFolder(root.folderId)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 24)
           }
 
           Item { Layout.fillWidth: true }

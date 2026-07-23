@@ -5,7 +5,11 @@ Checks the migrated icon tree (`app/rcc/icons/`) against the registry contract:
 every file sits at `<category>/<tier>/<name>.svg` with a known category and a
 tier in {16, 24, 32, 48}; no byte-identical duplicates exist outside the exempt
 `buttons/` set (spec AC2); rcc.qrc and the disk tree agree in both directions;
-and every compat alias points at an existing file. The alias report counts live
+and every compat alias points at an existing file. It also lints QML icon
+requests: a `Cpp_Misc_IconRegistry.icon(...)` whose px would resolve to a larger
+tier than the object's render size (`iconSize`/`icon.width`/`sourceSize`) loads an
+oversized SVG and is flagged (spec 0028: request px must match render size). The
+alias report counts live
 source references to each old path -- task T21 drops the alias block only when
 `--require-no-alias-refs` passes. Exit code 0 = clean, 1 = violations.
 
@@ -255,6 +259,90 @@ def check_binding_guards(errors: list[str]) -> None:
                     )
 
 
+QML_ROOT = ROOT / "app" / "qml"
+RENDER_RES = (
+    re.compile(r"\biconSize\s*:\s*(\d+)\b"),
+    re.compile(r"\bicon\.width\s*:\s*(\d+)\b"),
+    re.compile(r"\bicon\.height\s*:\s*(\d+)\b"),
+    re.compile(r"\bsourceSize\.width\s*:\s*(\d+)\b"),
+    re.compile(r"\bsourceSize\.height\s*:\s*(\d+)\b"),
+)
+REQUEST_RE = re.compile(r"IconRegistry\.icon(?:ById)?\([^)]*\b(\d+)\s*\)")
+SORTED_TIERS = (16, 24, 32, 48)
+
+
+def served_tier(px: int) -> int:
+    for tier in SORTED_TIERS:
+        if px <= tier:
+            return tier
+    return SORTED_TIERS[-1]
+
+
+def strip_qml_noise(line: str, in_comment: bool) -> tuple[str, bool]:
+    out: list[str] = []
+    index = 0
+    length = len(line)
+    while index < length:
+        two = line[index : index + 2]
+        if in_comment:
+            if two == "*/":
+                in_comment = False
+                index += 2
+                continue
+            index += 1
+            continue
+        if two == "//":
+            break
+        if two == "/*":
+            in_comment = True
+            index += 2
+            continue
+        char = line[index]
+        if char in ('"', "'"):
+            index += 1
+            while index < length and line[index] != char:
+                index += 1
+            index += 1
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out), in_comment
+
+
+def check_icon_render_sizes(errors: list[str]) -> None:
+    for path in sorted(QML_ROOT.rglob("*.qml")):
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        stack: list[dict] = []
+        in_comment = False
+        rel = path.relative_to(ROOT).as_posix()
+        for number, line in enumerate(lines, 1):
+            if stack:
+                for regex in RENDER_RES:
+                    match = regex.search(line)
+                    if match and stack[-1]["render"] is None:
+                        stack[-1]["render"] = int(match.group(1))
+                for match in REQUEST_RE.finditer(line):
+                    stack[-1]["requests"].append((int(match.group(1)), number))
+            clean, in_comment = strip_qml_noise(line, in_comment)
+            for char in clean:
+                if char == "{":
+                    stack.append({"render": None, "requests": []})
+                elif char == "}" and stack:
+                    block = stack.pop()
+                    render = block["render"]
+                    if render is None:
+                        continue
+                    for px, where in block["requests"]:
+                        tier = served_tier(px)
+                        if tier > served_tier(render):
+                            fail(
+                                errors,
+                                f"{rel}:{where}: icon requested at {px}px loads the "
+                                f"{tier}px tier but is rendered at {render}px (spec "
+                                f"0028: request px must match render size)",
+                            )
+
+
 def alias_reference_counts(aliases: dict[str, str]) -> dict[str, int]:
     counts = {alias: 0 for alias in aliases}
     for source_root in SOURCE_ROOTS:
@@ -282,6 +370,7 @@ def main() -> int:
     ids = check_manifests(errors)
     check_layouts(errors, ids)
     check_binding_guards(errors)
+    check_icon_render_sizes(errors)
 
     referenced = 0
     if aliases and (args.alias_report or args.require_no_alias_refs):

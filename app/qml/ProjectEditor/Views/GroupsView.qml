@@ -130,7 +130,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a top-level folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddGroupFolder(-1)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
           }
 
           Widgets.ToolbarButton {
@@ -140,7 +140,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a group from a template")
             onClicked: addGroupMenu.popup()
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 24)
           }
 
           Item { Layout.fillWidth: true }

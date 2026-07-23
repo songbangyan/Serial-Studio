@@ -407,8 +407,12 @@ QVariantMap UI::CommandRegistry::containerNode(const QJsonObject& node) const
       continue;
 
     const auto resolved = toVariant(m_commands.at(index));
-    map.insert(QStringLiteral("collapsedTitle"), resolved.value(QStringLiteral("title")));
-    map.insert(QStringLiteral("collapsedIcon"), resolved.value(QStringLiteral("icon")));
+    if (!map.contains(QStringLiteral("collapsedTitle")))
+      map.insert(QStringLiteral("collapsedTitle"), resolved.value(QStringLiteral("title")));
+
+    if (!map.contains(QStringLiteral("collapsedIcon")))
+      map.insert(QStringLiteral("collapsedIcon"), resolved.value(QStringLiteral("icon")));
+
     break;
   }
 

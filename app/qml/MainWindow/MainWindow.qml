@@ -754,6 +754,11 @@ Widgets.SmartWindow {
       titleIcon: "qrc:/icons/buttons/workspaces.svg"
 
       //
+      // Freeze dashboard focus-grabbers while the palette owns the keyboard
+      //
+      onOpenedChanged: app.commandPaletteOpen = opened
+
+      //
       // When a dashboard is active, drive the single palette from its model (workspaces +
       // widget search + dashboard commands); otherwise the application-context model.
       //

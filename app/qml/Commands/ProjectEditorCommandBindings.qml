@@ -72,7 +72,11 @@ QtObject {
     "editor.helpCenter": root.cmdEditorHelpCenter,
     "editor.navigateBack": root.cmdEditorNavigateBack,
     "editor.navigateForward": root.cmdEditorNavigateForward,
+    "editor.expandTree": root.cmdEditorExpandTree,
+    "editor.collapseTree": root.cmdEditorCollapseTree,
     "app.ai": root.cmdAppAi,
+    "app.helpCenter": root.cmdAppHelpCenter,
+    "app.preferences": root.cmdAppPreferences,
     "palette.open": root.cmdPaletteOpen,
     "app.quit": root.cmdAppQuit
   })
@@ -248,12 +252,29 @@ QtObject {
     function run() { app.showAIAssistant() }
   }
 
+  readonly property QtObject cmdAppHelpCenter: QtObject {
+    function run() { app.showHelpCenter() }
+  }
+
+  readonly property QtObject cmdAppPreferences: QtObject {
+    readonly property bool visible: !app.runtimeMode
+    function run() { app.showSettingsDialog() }
+  }
+
   readonly property QtObject cmdEditorNavigateBack: QtObject {
     function run() { Cpp_JSON_ProjectEditor.navigateBack() }
   }
 
   readonly property QtObject cmdEditorNavigateForward: QtObject {
     function run() { Cpp_JSON_ProjectEditor.navigateForward() }
+  }
+
+  readonly property QtObject cmdEditorExpandTree: QtObject {
+    function run() { Cpp_JSON_ProjectEditor.expandAllTreeItems() }
+  }
+
+  readonly property QtObject cmdEditorCollapseTree: QtObject {
+    function run() { Cpp_JSON_ProjectEditor.collapseTreeToOverview() }
   }
 
   readonly property QtObject cmdPaletteOpen: QtObject {

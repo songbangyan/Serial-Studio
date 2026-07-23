@@ -129,7 +129,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a sub-folder inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddTableFolder(root.folderId)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
           }
 
           Widgets.ToolbarButton {

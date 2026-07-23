@@ -416,6 +416,28 @@ Widgets.Pane {
         id: sharedContextMenu
 
         //
+        // Expand All / Collapse All (whole tree)
+        //
+        MenuItem {
+          icon.width: 16
+          icon.height: 16
+          text: qsTr("Expand All")
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "expand", 16)
+          onTriggered: Cpp_JSON_ProjectEditor.expandAllTreeItems()
+        } MenuItem {
+          icon.width: 16
+          icon.height: 16
+          text: qsTr("Collapse All")
+          icon.source: Cpp_Misc_IconRegistry.icon("editor", "compress", 16)
+          onTriggered: Cpp_JSON_ProjectEditor.collapseTreeToOverview()
+        }
+
+        //
+        // Separator
+        //
+        MenuSeparator {}
+
+        //
         // Move Up / Move Down
         //
         MenuItem {
@@ -472,7 +494,7 @@ Widgets.Pane {
                    : qsTr("Show Selected (%1)").arg(treeView.enableableSelectionCount))
                 : (treeView.ctxItemEnabled ? qsTr("Hide") : qsTr("Show"))
           icon.source: treeView.ctxItemEnabled ? Cpp_Misc_IconRegistry.icon("editor", "hide", 16) :
-                                                 Cpp_Misc_IconRegistry.icon("editor", "show", 48)
+                                                 Cpp_Misc_IconRegistry.icon("editor", "show", 16)
           onTriggered: {
             const items = Cpp_JSON_ProjectEditor.selectedTreeItems()
             .filter(it => it.kind === ProjectEditor.KindGroup

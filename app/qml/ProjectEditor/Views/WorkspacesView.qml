@@ -128,7 +128,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Add a top-level folder")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspaceFolder(-1)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
           }
 
           Widgets.ToolbarButton {
@@ -139,7 +139,7 @@ Widgets.Pane {
             ToolTip.text: qsTr("Add workspace")
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
             onClicked: Cpp_JSON_ProjectModel.promptAddWorkspace()
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 24)
           }
 
           Item { Layout.fillWidth: true }
@@ -176,7 +176,7 @@ Widgets.Pane {
             enabled: Cpp_JSON_ProjectModel.customizeWorkspaces
                      && root.unresolvedCount > 0
             onClicked: Cpp_JSON_ProjectEditor.confirmCleanupUnresolvedWorkspaceWidgets()
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "clear", 32)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "clear", 24)
           }
         }
       }

@@ -94,12 +94,12 @@ to run from any directory.
 
 | Script | Role |
 |--------|------|
-| `sanitize-commit.py` | Top-level driver: chmod (POSIX) → expand-doxygen → clang-format → code-verify --fix → clang-format → code-verify --check → black → documentation-verify → generate-sdk → search-index rebuild → changed-file summary. Sanitize only — it never commits or pushes. **Run before every commit.** |
+| `sanitize-commit.py` | Top-level driver: chmod (POSIX) → expand-doxygen → clang-format → code-verify --fix → clang-format → code-verify --check → black → documentation-verify → generate-sdk → generate-command-strings → registry-verify → search-index rebuild → changed-file summary. Sanitize only — it never commits or pushes. **Run before every commit.** |
 | `code-verify.py` | Structural + tone linter for C++/QML/H. `--fix` rewrites in place; `--check` regenerates `.code-report`. Errors block CI; advisories are baseline-debt cleanup. |
 | `documentation-verify.py` | Markdown linter for AI-narration / marketing copy. Read-only; writes `.doc-report`. Targets `README.md`, `AGENTS.md`, `doc/help/**`, `examples/**/README.md` (CLAUDE.md is exempt). |
 | `expand-doxygen.py` | Rewrites single-line `/** text */` into the canonical 3-line block. |
 | `tu-cutter.py` | Deterministic TU splitter for god-class .cpp files: key-based manifest drives verbatim block moves into per-concern TUs + shared headers; refuses to cut unless the block parse reconstructs the original exactly. Used for the 2026-07 ProjectModel/ProjectEditor/ProjectHandler split (spec 0002). |
-| `registry-verify.py` | Spec-0028 registry lint: icon-tree layout/dup/qrc sync + command-manifest schema/ids/icons/shortcuts + commercial-guard scan of `app/qml/Commands/`. Run after touching icons, manifests, or bindings. |
+| `registry-verify.py` | Spec-0028 registry lint: icon-tree layout/dup/qrc sync + command-manifest schema/ids/icons/shortcuts + commercial-guard scan of `app/qml/Commands/` + QML icon render-size lint (flags `IconRegistry.icon(...)` requests that resolve to a larger tier than the object's render size). Run after touching icons, manifests, or bindings; now gated in `sanitize-commit.py`. |
 | `generate-command-strings.py` | Manifests -> `app/src/UI/CommandStrings.cpp` (lupdate stub, "Commands" context). Hooked into sanitize-commit; `--check` gates drift. |
 | `generate-legacy-icons.py` | icon-map.csv -> `Misc::legacyIconPath()` table mapping pre-0028 icon URLs persisted in user project files. Rerun only if the migration manifest changes. |
 

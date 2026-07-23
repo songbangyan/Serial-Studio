@@ -135,7 +135,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a sub-folder inside this folder")
             onClicked: Cpp_JSON_ProjectModel.promptAddGroupFolder(root.folderId)
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
           }
 
           Widgets.ToolbarButton {
@@ -145,7 +145,7 @@ Widgets.Pane {
             Layout.alignment: Qt.AlignVCenter
             ToolTip.text: qsTr("Add a group inside this folder")
             onClicked: addGroupMenu.popup()
-            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+            icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 24)
           }
 
           Item { Layout.fillWidth: true }

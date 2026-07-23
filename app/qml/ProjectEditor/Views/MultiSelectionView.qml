@@ -223,7 +223,7 @@ Widgets.Pane {
               toolbarButton: false
               Layout.alignment: Qt.AlignVCenter
               ToolTip.text: qsTr("Set gauge for every selected dataset")
-              icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 32)
+              icon.source: Cpp_Misc_IconRegistry.icon("widgets", "gauge", 24)
               checked: Cpp_JSON_ProjectEditor.datasetOptions & SerialStudio.DatasetGauge
               onClicked: {
                 const option = SerialStudio.DatasetGauge

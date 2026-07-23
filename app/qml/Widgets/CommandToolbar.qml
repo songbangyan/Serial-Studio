@@ -98,7 +98,7 @@ Item {
         showSeparator: modelData.showSeparator !== false
         collapsedText: modelData.collapsedTitle !== undefined ? modelData.collapsedTitle : ""
         collapsedIcon: modelData.collapsedIcon !== undefined && modelData.collapsedIcon.length > 0
-                         ? Cpp_Misc_IconRegistry.iconById(modelData.collapsedIcon, 24)
+                         ? Cpp_Misc_IconRegistry.iconById(modelData.collapsedIcon, 32)
                          : ""
 
         Repeater {

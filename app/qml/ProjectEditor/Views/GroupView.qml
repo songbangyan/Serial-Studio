@@ -131,7 +131,7 @@ Widgets.Pane {
             collapsible: true
             collapsePriority: 20
             showSeparator: false
-            collapsedText: qsTr("Add Dataset")
+            collapsedText: qsTr("Datasets")
             visible: !Cpp_JSON_ProjectEditor.currentGroupIsOutputPanel
             collapsedIcon: Cpp_Misc_IconRegistry.icon("editor", "add-dataset", 24)
 
@@ -243,7 +243,7 @@ Widgets.Pane {
             collapsible: true
             collapsePriority: 20
             showSeparator: false
-            collapsedText: qsTr("Add Control")
+            collapsedText: qsTr("Controls")
             visible: Cpp_JSON_ProjectEditor.currentGroupIsOutputPanel
             collapsedIcon: Cpp_Misc_IconRegistry.icon("editor", "add-output-button", 24)
 

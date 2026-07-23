@@ -102,7 +102,8 @@ QtObject {
     for (let i = 0; i < items.length; ++i)
       out.push({ isTool: true, isFolder: false,
                  text: items[i].name, icon: items[i].icon, iconId: items[i].iconId,
-                 shortcut: items[i].shortcut, category: items[i].category, run: items[i].run })
+                 shortcut: items[i].shortcut, category: items[i].category,
+                 enabled: items[i].enabled !== false, run: items[i].run })
 
     return out
   }
@@ -276,6 +277,9 @@ QtObject {
     }
 
     if (node.isTool) {
+      if (node.enabled === false)
+        return
+
       if (typeof node.run === "function")
         node.run()
 

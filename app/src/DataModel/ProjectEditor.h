@@ -413,6 +413,8 @@ public slots:
   void setTreeSearchQuery(const QString& query);
   void confirmCleanupUnresolvedWorkspaceWidgets();
   void persistTreeExpansion();
+  void expandAllTreeItems();
+  void collapseTreeToOverview();
   void expandTreeToIndex(const QModelIndex& index);
   void setTreeIndexExpanded(const QModelIndex& index, bool expanded);
 

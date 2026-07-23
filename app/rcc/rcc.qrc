@@ -299,19 +299,40 @@
         <file>icons/commands/16/y.svg</file>
         <file>icons/commands/16/zoom-in.svg</file>
         <file>icons/commands/16/zoom-out.svg</file>
+        <file>icons/commands/24/ai.svg</file>
         <file>icons/commands/24/anaglyph.svg</file>
         <file>icons/commands/24/auto-layout.svg</file>
+        <file>icons/commands/24/console-log.svg</file>
+        <file>icons/commands/24/console.svg</file>
+        <file>icons/commands/24/crosshair.svg</file>
         <file>icons/commands/24/export.svg</file>
         <file>icons/commands/24/external-window.svg</file>
+        <file>icons/commands/24/file-transmission.svg</file>
         <file>icons/commands/24/freeze.svg</file>
+        <file>icons/commands/24/front-view.svg</file>
         <file>icons/commands/24/full-screen.svg</file>
         <file>icons/commands/24/help.svg</file>
+        <file>icons/commands/24/interpolate-off.svg</file>
+        <file>icons/commands/24/interpolate-on.svg</file>
+        <file>icons/commands/24/left-view.svg</file>
+        <file>icons/commands/24/map.svg</file>
+        <file>icons/commands/24/mf4-log.svg</file>
+        <file>icons/commands/24/mf4.svg</file>
         <file>icons/commands/24/nasa.svg</file>
         <file>icons/commands/24/normal-screen.svg</file>
+        <file>icons/commands/24/orbit.svg</file>
+        <file>icons/commands/24/orthogonal-view.svg</file>
+        <file>icons/commands/24/poliline.svg</file>
         <file>icons/commands/24/quit.svg</file>
         <file>icons/commands/24/reset.svg</file>
+        <file>icons/commands/24/settings.svg</file>
         <file>icons/commands/24/tools.svg</file>
+        <file>icons/commands/24/top-view.svg</file>
+        <file>icons/commands/24/trigger.svg</file>
+        <file>icons/commands/24/weather.svg</file>
         <file>icons/commands/24/workspaces.svg</file>
+        <file>icons/commands/24/zoom-in.svg</file>
+        <file>icons/commands/24/zoom-out.svg</file>
         <file>icons/commands/32/about.svg</file>
         <file>icons/commands/32/actions.svg</file>
         <file>icons/commands/32/activate.svg</file>
@@ -322,6 +343,7 @@
         <file>icons/commands/32/camcoder.svg</file>
         <file>icons/commands/32/center.svg</file>
         <file>icons/commands/32/connect.svg</file>
+        <file>icons/commands/32/console-log.svg</file>
         <file>icons/commands/32/console.svg</file>
         <file>icons/commands/32/csv-log.svg</file>
         <file>icons/commands/32/csv.svg</file>
@@ -338,6 +360,8 @@
         <file>icons/commands/32/freeze.svg</file>
         <file>icons/commands/32/full-screen.svg</file>
         <file>icons/commands/32/help.svg</file>
+        <file>icons/commands/32/mf4-log.svg</file>
+        <file>icons/commands/32/mf4.svg</file>
         <file>icons/commands/32/open-project.svg</file>
         <file>icons/commands/32/pause.svg</file>
         <file>icons/commands/32/project-setup.svg</file>
@@ -349,6 +373,7 @@
         <file>icons/commands/32/sound-folder.svg</file>
         <file>icons/commands/32/tools.svg</file>
         <file>icons/commands/32/workspaces.svg</file>
+        <file>icons/commands/48/activate.svg</file>
         <file>icons/commands/48/ai.svg</file>
         <file>icons/commands/48/extensions.svg</file>
         <file>icons/commands/48/pictures-folder.svg</file>
@@ -384,6 +409,16 @@
         <file>icons/devices/16/process.svg</file>
         <file>icons/devices/16/uart.svg</file>
         <file>icons/devices/16/usb.svg</file>
+        <file>icons/devices/24/audio.svg</file>
+        <file>icons/devices/24/bluetooth.svg</file>
+        <file>icons/devices/24/canbus.svg</file>
+        <file>icons/devices/24/hid.svg</file>
+        <file>icons/devices/24/modbus.svg</file>
+        <file>icons/devices/24/mqtt.svg</file>
+        <file>icons/devices/24/network.svg</file>
+        <file>icons/devices/24/process.svg</file>
+        <file>icons/devices/24/uart.svg</file>
+        <file>icons/devices/24/usb.svg</file>
         <file>icons/devices/32/audio.svg</file>
         <file>icons/devices/32/bluetooth.svg</file>
         <file>icons/devices/32/canbus.svg</file>
@@ -395,11 +430,31 @@
         <file>icons/devices/32/uart.svg</file>
         <file>icons/devices/32/usb.svg</file>
         <file>icons/editor/16/action.svg</file>
+        <file>icons/editor/16/add-accelerometer.svg</file>
+        <file>icons/editor/16/add-action.svg</file>
         <file>icons/editor/16/add-bar.svg</file>
+        <file>icons/editor/16/add-compass.svg</file>
+        <file>icons/editor/16/add-datagrid.svg</file>
+        <file>icons/editor/16/add-device.svg</file>
+        <file>icons/editor/16/add-fft.svg</file>
         <file>icons/editor/16/add-folder.svg</file>
+        <file>icons/editor/16/add-gauge.svg</file>
+        <file>icons/editor/16/add-gps.svg</file>
+        <file>icons/editor/16/add-group.svg</file>
+        <file>icons/editor/16/add-gyroscope.svg</file>
+        <file>icons/editor/16/add-image.svg</file>
+        <file>icons/editor/16/add-led.svg</file>
+        <file>icons/editor/16/add-meter.svg</file>
+        <file>icons/editor/16/add-multiplot.svg</file>
+        <file>icons/editor/16/add-output-panel.svg</file>
         <file>icons/editor/16/add-painter.svg</file>
+        <file>icons/editor/16/add-plot.svg</file>
+        <file>icons/editor/16/add-plot3d.svg</file>
+        <file>icons/editor/16/add-waterfall.svg</file>
+        <file>icons/editor/16/add-webview.svg</file>
         <file>icons/editor/16/alarm.svg</file>
         <file>icons/editor/16/code.svg</file>
+        <file>icons/editor/16/compress.svg</file>
         <file>icons/editor/16/control-script.svg</file>
         <file>icons/editor/16/dashboard-widgets.svg</file>
         <file>icons/editor/16/data-conversion.svg</file>
@@ -410,6 +465,7 @@
         <file>icons/editor/16/duplicate.svg</file>
         <file>icons/editor/16/edit-code.svg</file>
         <file>icons/editor/16/encoding.svg</file>
+        <file>icons/editor/16/expand.svg</file>
         <file>icons/editor/16/frame-detection.svg</file>
         <file>icons/editor/16/frame-end.svg</file>
         <file>icons/editor/16/frame-start.svg</file>
@@ -453,28 +509,43 @@
         <file>icons/editor/16/tx-data.svg</file>
         <file>icons/editor/16/widget.svg</file>
         <file>icons/editor/16/workspace.svg</file>
+        <file>icons/editor/24/action.svg</file>
+        <file>icons/editor/24/add-accelerometer.svg</file>
+        <file>icons/editor/24/add-action.svg</file>
         <file>icons/editor/24/add-bar.svg</file>
         <file>icons/editor/24/add-compass.svg</file>
+        <file>icons/editor/24/add-datagrid.svg</file>
         <file>icons/editor/24/add-dataset.svg</file>
+        <file>icons/editor/24/add-device.svg</file>
         <file>icons/editor/24/add-fft.svg</file>
         <file>icons/editor/24/add-folder.svg</file>
         <file>icons/editor/24/add-gauge.svg</file>
+        <file>icons/editor/24/add-gps.svg</file>
+        <file>icons/editor/24/add-group.svg</file>
+        <file>icons/editor/24/add-gyroscope.svg</file>
+        <file>icons/editor/24/add-image.svg</file>
         <file>icons/editor/24/add-led.svg</file>
         <file>icons/editor/24/add-meter.svg</file>
+        <file>icons/editor/24/add-multiplot.svg</file>
         <file>icons/editor/24/add-output-button.svg</file>
         <file>icons/editor/24/add-output-knob.svg</file>
+        <file>icons/editor/24/add-output-panel.svg</file>
         <file>icons/editor/24/add-output-slider.svg</file>
         <file>icons/editor/24/add-output-textfield.svg</file>
         <file>icons/editor/24/add-output-toggle.svg</file>
         <file>icons/editor/24/add-painter.svg</file>
         <file>icons/editor/24/add-plot.svg</file>
+        <file>icons/editor/24/add-plot3d.svg</file>
         <file>icons/editor/24/add-register.svg</file>
         <file>icons/editor/24/add-table.svg</file>
         <file>icons/editor/24/add-waterfall.svg</file>
+        <file>icons/editor/24/add-webview.svg</file>
         <file>icons/editor/24/alarm-bands.svg</file>
         <file>icons/editor/24/bar.svg</file>
         <file>icons/editor/24/change-group.svg</file>
         <file>icons/editor/24/compass.svg</file>
+        <file>icons/editor/24/compress.svg</file>
+        <file>icons/editor/24/control-script.svg</file>
         <file>icons/editor/24/customize.svg</file>
         <file>icons/editor/24/dataset-values.svg</file>
         <file>icons/editor/24/delete-register.svg</file>
@@ -482,6 +553,8 @@
         <file>icons/editor/24/delete.svg</file>
         <file>icons/editor/24/device.svg</file>
         <file>icons/editor/24/duplicate.svg</file>
+        <file>icons/editor/24/edit-code.svg</file>
+        <file>icons/editor/24/expand.svg</file>
         <file>icons/editor/24/export-table.svg</file>
         <file>icons/editor/24/fft.svg</file>
         <file>icons/editor/24/help.svg</file>
@@ -490,6 +563,8 @@
         <file>icons/editor/24/led.svg</file>
         <file>icons/editor/24/load-ca-certs.svg</file>
         <file>icons/editor/24/meter.svg</file>
+        <file>icons/editor/24/move-down.svg</file>
+        <file>icons/editor/24/move-up.svg</file>
         <file>icons/editor/24/output-button.svg</file>
         <file>icons/editor/24/output-knob.svg</file>
         <file>icons/editor/24/output-slider.svg</file>
@@ -504,12 +579,47 @@
         <file>icons/editor/24/transform.svg</file>
         <file>icons/editor/24/waterfall.svg</file>
         <file>icons/editor/32/action.svg</file>
+        <file>icons/editor/32/add-accelerometer.svg</file>
+        <file>icons/editor/32/add-action.svg</file>
+        <file>icons/editor/32/add-bar.svg</file>
+        <file>icons/editor/32/add-compass.svg</file>
+        <file>icons/editor/32/add-datagrid.svg</file>
+        <file>icons/editor/32/add-dataset.svg</file>
+        <file>icons/editor/32/add-device.svg</file>
+        <file>icons/editor/32/add-fft.svg</file>
+        <file>icons/editor/32/add-folder.svg</file>
+        <file>icons/editor/32/add-gauge.svg</file>
+        <file>icons/editor/32/add-gps.svg</file>
+        <file>icons/editor/32/add-group.svg</file>
+        <file>icons/editor/32/add-gyroscope.svg</file>
+        <file>icons/editor/32/add-image.svg</file>
+        <file>icons/editor/32/add-led.svg</file>
+        <file>icons/editor/32/add-meter.svg</file>
+        <file>icons/editor/32/add-multiplot.svg</file>
+        <file>icons/editor/32/add-output-button.svg</file>
+        <file>icons/editor/32/add-output-knob.svg</file>
+        <file>icons/editor/32/add-output-panel.svg</file>
+        <file>icons/editor/32/add-output-slider.svg</file>
+        <file>icons/editor/32/add-output-textfield.svg</file>
+        <file>icons/editor/32/add-output-toggle.svg</file>
+        <file>icons/editor/32/add-painter.svg</file>
+        <file>icons/editor/32/add-plot.svg</file>
+        <file>icons/editor/32/add-plot3d.svg</file>
+        <file>icons/editor/32/add-register.svg</file>
+        <file>icons/editor/32/add-table.svg</file>
+        <file>icons/editor/32/add-waterfall.svg</file>
+        <file>icons/editor/32/add-webview.svg</file>
         <file>icons/editor/32/ai.svg</file>
         <file>icons/editor/32/clear.svg</file>
+        <file>icons/editor/32/compress.svg</file>
+        <file>icons/editor/32/control-script.svg</file>
         <file>icons/editor/32/dataset.svg</file>
+        <file>icons/editor/32/expand.svg</file>
         <file>icons/editor/32/export-table.svg</file>
         <file>icons/editor/32/group.svg</file>
         <file>icons/editor/32/help.svg</file>
+        <file>icons/editor/32/insert-constant.svg</file>
+        <file>icons/editor/32/load-ca-certs.svg</file>
         <file>icons/editor/32/lock.svg</file>
         <file>icons/editor/32/mqtt-publisher.svg</file>
         <file>icons/editor/32/new.svg</file>
@@ -524,12 +634,35 @@
         <file>icons/editor/32/save.svg</file>
         <file>icons/editor/32/transform.svg</file>
         <file>icons/editor/48/action.svg</file>
+        <file>icons/editor/48/add-accelerometer.svg</file>
+        <file>icons/editor/48/add-action.svg</file>
+        <file>icons/editor/48/add-bar.svg</file>
+        <file>icons/editor/48/add-compass.svg</file>
+        <file>icons/editor/48/add-datagrid.svg</file>
+        <file>icons/editor/48/add-device.svg</file>
+        <file>icons/editor/48/add-fft.svg</file>
         <file>icons/editor/48/add-folder.svg</file>
+        <file>icons/editor/48/add-gauge.svg</file>
+        <file>icons/editor/48/add-gps.svg</file>
+        <file>icons/editor/48/add-group.svg</file>
+        <file>icons/editor/48/add-gyroscope.svg</file>
+        <file>icons/editor/48/add-image.svg</file>
+        <file>icons/editor/48/add-led.svg</file>
+        <file>icons/editor/48/add-meter.svg</file>
+        <file>icons/editor/48/add-multiplot.svg</file>
+        <file>icons/editor/48/add-output-panel.svg</file>
+        <file>icons/editor/48/add-painter.svg</file>
+        <file>icons/editor/48/add-plot.svg</file>
+        <file>icons/editor/48/add-plot3d.svg</file>
+        <file>icons/editor/48/add-waterfall.svg</file>
+        <file>icons/editor/48/add-webview.svg</file>
         <file>icons/editor/48/ai.svg</file>
+        <file>icons/editor/48/compress.svg</file>
         <file>icons/editor/48/control-script.svg</file>
         <file>icons/editor/48/dashboard-widgets.svg</file>
         <file>icons/editor/48/dataset.svg</file>
         <file>icons/editor/48/device.svg</file>
+        <file>icons/editor/48/expand.svg</file>
         <file>icons/editor/48/group.svg</file>
         <file>icons/editor/48/mqtt-publisher.svg</file>
         <file>icons/editor/48/open.svg</file>
@@ -545,6 +678,15 @@
         <file>icons/notifications/16/critical.svg</file>
         <file>icons/notifications/16/info.svg</file>
         <file>icons/notifications/16/warning.svg</file>
+        <file>icons/notifications/24/critical.svg</file>
+        <file>icons/notifications/24/info.svg</file>
+        <file>icons/notifications/24/warning.svg</file>
+        <file>icons/notifications/32/critical.svg</file>
+        <file>icons/notifications/32/info.svg</file>
+        <file>icons/notifications/32/warning.svg</file>
+        <file>icons/notifications/48/critical.svg</file>
+        <file>icons/notifications/48/info.svg</file>
+        <file>icons/notifications/48/warning.svg</file>
         <file>icons/panes/16/dashboard.svg</file>
         <file>icons/panes/16/details.svg</file>
         <file>icons/panes/16/important.svg</file>
@@ -552,11 +694,31 @@
         <file>icons/panes/16/overview.svg</file>
         <file>icons/panes/16/sessions.svg</file>
         <file>icons/panes/16/setup.svg</file>
+        <file>icons/panes/24/dashboard.svg</file>
+        <file>icons/panes/24/details.svg</file>
         <file>icons/panes/24/important.svg</file>
         <file>icons/panes/24/info.svg</file>
+        <file>icons/panes/24/overview.svg</file>
+        <file>icons/panes/24/sessions.svg</file>
+        <file>icons/panes/24/setup.svg</file>
+        <file>icons/panes/32/dashboard.svg</file>
         <file>icons/panes/32/details.svg</file>
+        <file>icons/panes/32/important.svg</file>
+        <file>icons/panes/32/info.svg</file>
+        <file>icons/panes/32/overview.svg</file>
         <file>icons/panes/32/sessions.svg</file>
+        <file>icons/panes/32/setup.svg</file>
+        <file>icons/panes/48/dashboard.svg</file>
+        <file>icons/panes/48/details.svg</file>
+        <file>icons/panes/48/important.svg</file>
+        <file>icons/panes/48/info.svg</file>
+        <file>icons/panes/48/overview.svg</file>
+        <file>icons/panes/48/sessions.svg</file>
+        <file>icons/panes/48/setup.svg</file>
         <file>icons/system/16/missing.svg</file>
+        <file>icons/system/24/missing.svg</file>
+        <file>icons/system/32/missing.svg</file>
+        <file>icons/system/48/missing.svg</file>
         <file>icons/widgets/16/accelerometer.svg</file>
         <file>icons/widgets/16/bar.svg</file>
         <file>icons/widgets/16/clock.svg</file>
@@ -582,6 +744,31 @@
         <file>icons/widgets/16/waterfall.svg</file>
         <file>icons/widgets/16/webview.svg</file>
         <file>icons/widgets/16/workspace.svg</file>
+        <file>icons/widgets/24/accelerometer.svg</file>
+        <file>icons/widgets/24/bar.svg</file>
+        <file>icons/widgets/24/clock.svg</file>
+        <file>icons/widgets/24/compass.svg</file>
+        <file>icons/widgets/24/datagrid.svg</file>
+        <file>icons/widgets/24/fft.svg</file>
+        <file>icons/widgets/24/folder.svg</file>
+        <file>icons/widgets/24/gauge.svg</file>
+        <file>icons/widgets/24/gps.svg</file>
+        <file>icons/widgets/24/group.svg</file>
+        <file>icons/widgets/24/gyroscope.svg</file>
+        <file>icons/widgets/24/image.svg</file>
+        <file>icons/widgets/24/led.svg</file>
+        <file>icons/widgets/24/meter.svg</file>
+        <file>icons/widgets/24/multiplot.svg</file>
+        <file>icons/widgets/24/notification-log.svg</file>
+        <file>icons/widgets/24/output-panel.svg</file>
+        <file>icons/widgets/24/output.svg</file>
+        <file>icons/widgets/24/plot.svg</file>
+        <file>icons/widgets/24/plot3d.svg</file>
+        <file>icons/widgets/24/stopwatch.svg</file>
+        <file>icons/widgets/24/terminal.svg</file>
+        <file>icons/widgets/24/waterfall.svg</file>
+        <file>icons/widgets/24/webview.svg</file>
+        <file>icons/widgets/24/workspace.svg</file>
         <file>icons/widgets/32/accelerometer.svg</file>
         <file>icons/widgets/32/bar.svg</file>
         <file>icons/widgets/32/clock.svg</file>
@@ -607,6 +794,31 @@
         <file>icons/widgets/32/waterfall.svg</file>
         <file>icons/widgets/32/webview.svg</file>
         <file>icons/widgets/32/workspace.svg</file>
+        <file>icons/widgets/48/accelerometer.svg</file>
+        <file>icons/widgets/48/bar.svg</file>
+        <file>icons/widgets/48/clock.svg</file>
+        <file>icons/widgets/48/compass.svg</file>
+        <file>icons/widgets/48/datagrid.svg</file>
+        <file>icons/widgets/48/fft.svg</file>
+        <file>icons/widgets/48/folder.svg</file>
+        <file>icons/widgets/48/gauge.svg</file>
+        <file>icons/widgets/48/gps.svg</file>
+        <file>icons/widgets/48/group.svg</file>
+        <file>icons/widgets/48/gyroscope.svg</file>
+        <file>icons/widgets/48/image.svg</file>
+        <file>icons/widgets/48/led.svg</file>
+        <file>icons/widgets/48/meter.svg</file>
+        <file>icons/widgets/48/multiplot.svg</file>
+        <file>icons/widgets/48/notification-log.svg</file>
+        <file>icons/widgets/48/output-panel.svg</file>
+        <file>icons/widgets/48/painter.svg</file>
+        <file>icons/widgets/48/plot.svg</file>
+        <file>icons/widgets/48/plot3d.svg</file>
+        <file>icons/widgets/48/stopwatch.svg</file>
+        <file>icons/widgets/48/terminal.svg</file>
+        <file>icons/widgets/48/waterfall.svg</file>
+        <file>icons/widgets/48/webview.svg</file>
+        <file>icons/widgets/48/workspace.svg</file>
         <file>icons/window/32/close.svg</file>
         <file>icons/window/32/maximize.svg</file>
         <file>icons/window/32/minimize.svg</file>

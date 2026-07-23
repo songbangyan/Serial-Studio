@@ -565,7 +565,7 @@ Item {
       HoverHandler {
         id: freezeFocusHover
 
-        enabled: _wm.frozen
+        enabled: _wm.frozen && !app.commandPaletteOpen
         property point hoverPosition: freezeFocusHover.point.position
         onHoverPositionChanged: if (freezeFocusHover.hovered)
                                   _wm.focusWindowUnderCursor(hoverPosition)

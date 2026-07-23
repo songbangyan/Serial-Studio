@@ -44,7 +44,7 @@ Item {
   // Super important for shortcuts & VT-100 keyboard input
   //
   onVisibleChanged: {
-    if (visible) {
+    if (visible && !app.commandPaletteOpen) {
       if (root.vt100Interactive)
         Qt.callLater(terminal.forceActiveFocus)
       else
@@ -60,7 +60,8 @@ Item {
     target: Cpp_IO_Manager
 
     function onConnectedChanged() {
-      if (Cpp_IO_Manager.isConnected && Cpp_Console_Handler.vt100Emulation)
+      if (Cpp_IO_Manager.isConnected && Cpp_Console_Handler.vt100Emulation
+          && !app.commandPaletteOpen)
         Qt.callLater(terminal.forceActiveFocus)
     }
   }

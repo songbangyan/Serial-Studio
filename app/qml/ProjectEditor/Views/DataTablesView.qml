@@ -170,7 +170,7 @@ Widgets.Pane {
               Layout.alignment: Qt.AlignVCenter
               ToolTip.text: qsTr("Add a top-level folder")
               onClicked: Cpp_JSON_ProjectModel.promptAddTableFolder(-1)
-              icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 48)
+              icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-folder", 24)
             }
 
             Widgets.ToolbarButton {

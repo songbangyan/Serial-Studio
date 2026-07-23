@@ -920,7 +920,7 @@ Item {
   function busTypeIcon(busType) {
     const names = ["uart", "network", "bluetooth", "audio", "modbus",
                    "canbus", "usb", "hid", "process", "mqtt"]
-    return Cpp_Misc_IconRegistry.icon("devices", names[busType] || "uart", 16)
+    return Cpp_Misc_IconRegistry.icon("devices", names[busType] || "uart", 24)
   }
 
   function groupIcon(grp) {
@@ -1653,7 +1653,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Dataset Container")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "group", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Dataset Container"),
                                        SerialStudio.NoGroupWidget,
@@ -1723,7 +1723,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Image View")
-      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "image", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "image", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Image View"),
                                        SerialStudio.ImageView,
@@ -1747,7 +1747,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Web View")
-      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "webview", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "webview", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addGroup(qsTr("Web View"),
                                        SerialStudio.WebView,
@@ -1775,7 +1775,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Generic")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "dataset", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "dataset", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addDataset(SerialStudio.DatasetGeneric,
@@ -1883,7 +1883,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Output Panel")
-      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "output-panel", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("widgets", "output-panel", 16)
       onTriggered: menuController.locked(() => {
         menuController.selectTargetGroup()
         Cpp_JSON_ProjectModel.addOutputPanel(menuController.targetSourceId())
@@ -2017,7 +2017,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Add Action")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "action", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-action", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
     }
@@ -2026,7 +2026,7 @@ Item {
       icon.height: 16
       enabled: Cpp_CommercialBuild
       text: qsTr("Add Data Source")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "device", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-device", 16)
       onTriggered: menuController.locked(() => Cpp_JSON_ProjectModel.addSource())
     }
     MenuItem {
@@ -2090,7 +2090,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Add Action")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "action", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "add-action", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.addAction(menuController.targetSourceId()))
     }
@@ -2109,7 +2109,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateSource(menuController.currentSourceId))
     }
@@ -2120,7 +2120,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteSource(menuController.currentSourceId, true))
     }
@@ -2267,7 +2267,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
     }
@@ -2278,7 +2278,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
     }
@@ -2293,7 +2293,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Edit Transform Code…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 16)
       onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
         menuController.currentGroupId, menuController.currentDatasetId)
     }
@@ -2337,7 +2337,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateDataset(menuController.currentGroupId,
                                                menuController.currentDatasetId))
@@ -2349,7 +2349,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteDataset(menuController.currentGroupId,
                                             menuController.currentDatasetId, true))
@@ -2389,7 +2389,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateOutputWidget(menuController.currentGroupId,
                                                     menuController.currentWidgetId))
@@ -2401,7 +2401,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteOutputWidget(menuController.currentGroupId,
                                                  menuController.currentWidgetId, true))
@@ -2440,7 +2440,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateGroup(menuController.currentGroupId))
     }
@@ -2451,7 +2451,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteGroup(menuController.currentGroupId, true))
     }
@@ -2496,7 +2496,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Duplicate")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "duplicate", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.duplicateAction(menuController.currentActionId))
     }
@@ -2507,7 +2507,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.deleteAction(menuController.currentActionId, true))
     }
@@ -2533,7 +2533,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Delete…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 24)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "delete", 16)
       onTriggered: menuController.locked(() =>
         Cpp_JSON_ProjectModel.confirmDeleteTable(menuController.currentTableName))
     }
@@ -2548,7 +2548,7 @@ Item {
       icon.width: 16
       icon.height: 16
       text: qsTr("Edit Code…")
-      icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 32)
+      icon.source: Cpp_Misc_IconRegistry.icon("editor", "transform", 16)
       onTriggered: Cpp_JSON_ProjectEditor.openTransformEditorFor(
         menuController.currentGroupId, menuController.currentDatasetId)
     }
