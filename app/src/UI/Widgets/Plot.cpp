@@ -94,7 +94,7 @@ void Widgets::Plot::resolveXAxis(const DataModel::Dataset& yDataset)
     return;
   }
 
-  const auto xAxisId = SerialStudio::datasetXAxisEnabled() ? yDataset.xAxisId : -1;
+  const auto xAxisId = yDataset.xAxisId;
 
   const auto& datasets = m_dashboard.datasets();
   if (datasets.contains(xAxisId)) {
@@ -744,7 +744,7 @@ void Widgets::Plot::updateRange()
   }
 
   const auto& yD = GET_DATASET(SerialStudio::DashboardPlot, m_index);
-  if (SerialStudio::datasetXAxisEnabled() && yD.xAxisId >= 0) {
+  if (yD.xAxisId >= 0) {
     const auto& datasets = m_dashboard.datasets();
     auto it              = datasets.find(yD.xAxisId);
     if (it != datasets.end())
@@ -791,8 +791,7 @@ void Widgets::Plot::calculateAutoScaleRange()
   yChanged        = computeMinMaxValues<1>(m_minY, m_maxY, dy, true, m_logY);
   yChanged       |= updateDataExtremes(dy);
 
-  if (!m_timeAxis && SerialStudio::datasetXAxisEnabled()
-      && m_dashboard.datasets().contains(dy.xAxisId)) {
+  if (!m_timeAxis && m_dashboard.datasets().contains(dy.xAxisId)) {
     const auto& dx = m_dashboard.datasets()[dy.xAxisId];
     xChanged       = computeMinMaxValues<0>(m_minX, m_maxX, dx, false, m_logX);
   }

@@ -72,11 +72,10 @@ widgetSettings entry (their flags already persist globally).
 
 `Dataset::xAxisId` selects the plot X source, and
 there are three **live** modes: `kXAxisTime (-2)` the **default**, `kXAxisSamples (-1)`, or a
-dataset `uniqueId (>=0)` (`Frame.h`). Time and Samples are **free**; dataset-as-X stays
-Pro/Trial-gated (the `SerialStudio::datasetXAxisEnabled()` predicate in `Plot.cpp` /
-`Dashboard::registerXAxisIfNeeded`). When unlicensed or Trial-expired, a dataset-X plot
-**silently degrades to Samples**: the dataset-X branch in `configureLineSeries` fails its gate
-and falls through to the shared Samples carrier. Samples is live: a shared monotonic index ring
+dataset `uniqueId (>=0)` (`Frame.h`). All three modes are **free** for every build. A dataset-X
+plot resolves whenever its `xAxisId` names a live dataset (the `xAxisId >= 0 &&
+datasets.contains(...)` check in `Plot.cpp` / `Dashboard::registerXAxisIfNeeded`); an unresolved
+id **falls through to Samples** via the shared carrier in `configureLineSeries`. Samples is live: a shared monotonic index ring
 (`m_pltXAxis`, `fillRange`) + the per-dataset y ring, rendered via `downsampleMonotonic`.
 Deserialize **preserves `-1` verbatim** (Frame.cpp:301, `ss_jsr(obj, Keys::XAxis, kXAxisTime)`);
 `migrateLegacyXAxisIds` (ProjectModelLoading.cpp:158) keeps Time and Samples untouched, remaps

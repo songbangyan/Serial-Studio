@@ -1186,7 +1186,7 @@ QList<std::pair<int, int>> UI::Dashboard::replaySeekSeries() const
     const auto& ds = getDatasetWidget(SerialStudio::DashboardPlot, i);
     add(ds.sourceId, ds.uniqueId);
 
-    if (useTimeXAxis(ds) || !SerialStudio::datasetXAxisEnabled())
+    if (useTimeXAxis(ds))
       continue;
 
     const auto xIt = m_datasets.constFind(ds.xAxisId);
@@ -1240,9 +1240,6 @@ void UI::Dashboard::fillSeekPlotSingle(int index,
     for (int k = 0; k < count; ++k)
       yIt.value().push(values[k]);
   }
-
-  if (!SerialStudio::datasetXAxisEnabled())
-    return;
 
   const auto xDsIt = m_datasets.constFind(ds.xAxisId);
   if (xDsIt == m_datasets.constEnd())
@@ -2794,9 +2791,6 @@ void UI::Dashboard::configureWaterfallSeries()
  */
 void UI::Dashboard::registerXAxisIfNeeded(const DataModel::Dataset& dataset)
 {
-  if (!SerialStudio::datasetXAxisEnabled())
-    return;
-
   const int xSource = dataset.xAxisId;
   if (m_xAxisData.contains(xSource))
     return;
@@ -3019,7 +3013,7 @@ void UI::Dashboard::configureLineSeries()
       m_pltValues.append(series);
     }
 
-    else if (SerialStudio::datasetXAxisEnabled() && m_datasets.contains(yDataset.xAxisId)) {
+    else if (m_datasets.contains(yDataset.xAxisId)) {
       DSP::LineSeries series;
       series.x = &m_xAxisData[yDataset.xAxisId];
       series.y = &m_yAxisData[yDataset.uniqueId];
@@ -3082,7 +3076,7 @@ void UI::Dashboard::buildLinePushes()
       }
     }
 
-    const int xAxisId = SerialStudio::datasetXAxisEnabled() ? yDataset.xAxisId : -1;
+    const int xAxisId = yDataset.xAxisId;
 
     auto xDsIt = m_datasets.find(xAxisId);
     if (xDsIt == m_datasets.end())

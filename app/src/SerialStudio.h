@@ -292,7 +292,6 @@ public:
   Q_INVOKABLE [[nodiscard]] static bool commercialCfg(const QVector<DataModel::Group>& g);
   Q_INVOKABLE [[nodiscard]] static bool commercialCfg(const std::vector<DataModel::Group>& g);
 
-  [[nodiscard]] static bool datasetXAxisEnabled();
   [[nodiscard]] static XAxisMode groupXAxisMode(const DataModel::Group& g);
   [[nodiscard]] static XAxisPolicy resolveXAxisPolicy(
     const DataModel::Dataset& d, const QMap<int, DataModel::Dataset>& datasets);

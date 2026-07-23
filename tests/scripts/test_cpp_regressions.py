@@ -320,28 +320,6 @@ def test_license_guard_present_in_gps():
     ), "SS_LICENSE_GUARD() missing from GPS map type guard"
 
 
-def test_license_guard_present_in_plot():
-    """Widgets::Plot custom X-axis gates through SerialStudio::datasetXAxisEnabled(),
-    whose body must carry the SS_LICENSE_GUARD() predicate."""
-    plot = _read("app/src/UI/Widgets/Plot.cpp")
-
-    assert re.search(
-        r"SerialStudio::datasetXAxisEnabled\(\)",
-        plot,
-    ), "Plot custom X-axis must gate through SerialStudio::datasetXAxisEnabled()"
-
-    helper = _read("app/src/SerialStudio.cpp")
-    body = re.search(
-        r"bool SerialStudio::datasetXAxisEnabled\(\)[\s\S]*?\n\}",
-        helper,
-    )
-    assert body is not None, "datasetXAxisEnabled() body must be present"
-    assert re.search(
-        r"\w+\.isValid\(\)\s*&&\s*SS_LICENSE_GUARD\(\)",
-        body.group(0),
-    ), "SS_LICENSE_GUARD() missing from datasetXAxisEnabled()"
-
-
 def test_license_guard_cmake_generator_exists():
     """The CMake guard generator script must exist and be included."""
     cmake_script = _read("cmake/GenLicenseGuards.cmake")

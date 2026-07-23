@@ -69,15 +69,6 @@ bool SerialStudio::proWidgetsEnabled()
 }
 
 /**
- * @brief Reports whether per-dataset X-axis sources (dataset-vs-dataset plots) are available. XY
- * plotting is free for all users on both GPLv3 and commercial builds, so this always returns true.
- */
-bool SerialStudio::datasetXAxisEnabled()
-{
-  return true;
-}
-
-/**
  * @brief Classifies a group's X-axis mode from its front dataset's encoding. Empty groups and the
  * time sentinel map to Time, the samples sentinel to Samples, any dataset id to Dataset. Callers
  * apply their own guards on the empty case (Dashboard's !empty guard sends it to the samples path,
@@ -108,7 +99,7 @@ SerialStudio::XAxisPolicy SerialStudio::resolveXAxisPolicy(
   if (d.xAxisId == DataModel::kXAxisTime)
     return {XAxisMode::Time, -1};
 
-  if (d.xAxisId >= 0 && datasetXAxisEnabled() && datasets.contains(d.xAxisId))
+  if (d.xAxisId >= 0 && datasets.contains(d.xAxisId))
     return {XAxisMode::Dataset, d.xAxisId};
 
   return {XAxisMode::Samples, -1};
