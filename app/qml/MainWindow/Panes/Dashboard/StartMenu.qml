@@ -187,7 +187,10 @@ Popup {
 
     property bool closesMenu: true
     required property string commandId
-    readonly property var entry: _menuModel.entryFor(commandId)
+    readonly property var entry: {
+      void _menuModel.revision
+      return _menuModel.entryFor(commandId)
+    }
 
     onClicked: {
       if (_command.closesMenu)
@@ -214,7 +217,10 @@ Popup {
     icon.source: entry !== null ? Cpp_Misc_IconRegistry.iconById(entry.iconId, 32) : ""
 
     required property string commandId
-    readonly property var entry: _menuModel.entryFor(commandId)
+    readonly property var entry: {
+      void _menuModel.revision
+      return _menuModel.entryFor(commandId)
+    }
 
     onCheckedChanged: {
       if (entry !== null && checked !== entry.checked)

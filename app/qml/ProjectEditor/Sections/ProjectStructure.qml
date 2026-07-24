@@ -433,9 +433,17 @@ Widgets.Pane {
         }
 
         //
-        // Separator
+        // Separator: hidden when the whole orderable/rename/enable/duplicate/delete region
+        // collapses, so it never renders back-to-back with the Seed Aliases separator below
         //
-        MenuSeparator {}
+        MenuSeparator {
+          height: visible ? implicitHeight : 0
+          visible: treeView.ctxItemOrderable
+                   || treeView.ctxRenameable
+                   || treeView.enableableSelectionCount > 0
+                   || treeView.selectableSelectionCount > 0
+                   || treeView.deletableSelectionCount > 0
+        }
 
         //
         // Move Up / Move Down

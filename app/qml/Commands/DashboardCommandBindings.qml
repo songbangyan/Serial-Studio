@@ -62,6 +62,7 @@ QtObject {
     "dashboard.reset": root.cmdDashboardReset,
     "io.pause": root.cmdIoPause,
     "io.disconnect": root.cmdIoDisconnect,
+    "app.quit": root.cmdAppQuit,
     "export.csv": root.cmdExportCsv,
     "export.mdf4": root.cmdExportMdf4,
     "export.console": root.cmdExportConsole,
@@ -194,6 +195,14 @@ QtObject {
       else
         Cpp_IO_Manager.disconnectDevice()
     }
+  }
+
+  //
+  // Quit is offered only in operator mode; the editor host has its own exit paths.
+  //
+  readonly property QtObject cmdAppQuit: QtObject {
+    readonly property bool visible: app.runtimeMode
+    function run() { app.quitApplication() }
   }
 
   //
