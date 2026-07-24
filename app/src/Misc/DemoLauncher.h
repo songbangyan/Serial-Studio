@@ -48,7 +48,6 @@ private:
   [[nodiscard]] QString demoDirectory() const;
   [[nodiscard]] QString demoProjectPath() const;
   [[nodiscard]] bool stageDemoProject(QString& projectPath) const;
-  void applyProGating() const;
   void showStartFailure() const;
 };
 }  // namespace Misc

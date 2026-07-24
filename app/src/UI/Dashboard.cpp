@@ -2049,7 +2049,10 @@ void UI::Dashboard::reconfigureDashboard(const DataModel::Frame& frame)
 }
 
 /**
- * @brief Populates m_widgetGroups and m_widgetDatasets from the current frame.
+ * @brief Populates m_widgetGroups and m_widgetDatasets from the current frame. A datasetless
+ *        data grid is dropped instead of materialised: painter groups own no datasets and fall
+ *        back to a data grid on builds or licenses without the painter, where an empty table is
+ *        worse than no widget at all.
  */
 void UI::Dashboard::buildWidgetGroups(const DataModel::Frame& frame, bool pro)
 {
@@ -2058,8 +2061,10 @@ void UI::Dashboard::buildWidgetGroups(const DataModel::Frame& frame, bool pro)
   (void)frame;
 
   for (const auto& group : m_lastFrame.groups) {
-    const auto key = SerialStudio::getDashboardWidget(group);
-    if (key != SerialStudio::DashboardNoWidget)
+    const auto key       = SerialStudio::getDashboardWidget(group);
+    const bool emptyGrid = key == SerialStudio::DashboardDataGrid && group.datasets.empty();
+
+    if (key != SerialStudio::DashboardNoWidget && !emptyGrid)
       m_widgetGroups[key].append(group);
 
     if (key == SerialStudio::DashboardPlot3D && !pro) {
@@ -2085,9 +2090,11 @@ void UI::Dashboard::buildWidgetGroups(const DataModel::Frame& frame, bool pro)
       if (bucket.isEmpty())
         m_widgetGroups.remove(key);
 
-      auto copy  = group;
-      copy.title = tr("%1 (Fallback)").arg(group.title);
-      m_widgetGroups[SerialStudio::DashboardDataGrid].append(copy);
+      if (!group.datasets.empty()) {
+        auto copy  = group;
+        copy.title = tr("%1 (Fallback)").arg(group.title);
+        m_widgetGroups[SerialStudio::DashboardDataGrid].append(copy);
+      }
     }
 #endif
 

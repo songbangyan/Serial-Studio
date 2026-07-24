@@ -36,6 +36,7 @@
 #include "Licensing/MonotonicClock.h"
 #include "Licensing/OfflineCertificate.h"
 #include "Licensing/OfflinePublicKey.h"
+#include "Licensing/Trial.h"
 #include "Misc/Utilities.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -325,7 +326,9 @@ void Licensing::OfflineLicense::clearOfflineLicense()
 }
 
 /**
- * @brief Drops the in-memory activation state and notifies listeners.
+ * @brief Drops the in-memory activation state and notifies listeners; a still-running trial
+ *        re-claims the shared capability token before the signal fans out, so removing an
+ *        offline license cannot strip Pro features from a machine that is still in trial.
  */
 void Licensing::OfflineLicense::resetActivationState()
 {
@@ -333,6 +336,7 @@ void Licensing::OfflineLicense::resetActivationState()
   m_variantName = QString();
   m_expiresAt   = QDateTime();
 
+  Trial::reassertTokenIfEntitled();
   Q_EMIT activatedChanged();
 }
 

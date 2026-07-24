@@ -33,29 +33,14 @@
 #include "Misc/Utilities.h"
 #include "SerialStudio.h"
 
-#ifdef BUILD_COMMERCIAL
-#  include "Licensing/LemonSqueezy.h"
-#endif
-
 //--------------------------------------------------------------------------------------------------
 // Constructor & singleton access
 //--------------------------------------------------------------------------------------------------
 
 /**
- * @brief Constructs the demo launcher. Re-applies the Pro gating on license flips so a demo
- *        started before activation completes picks up its Pro-only groups.
+ * @brief Constructs the demo launcher.
  */
-Misc::DemoLauncher::DemoLauncher()
-{
-#ifdef BUILD_COMMERCIAL
-  static auto& lemonSqueezy = Licensing::LemonSqueezy::instance();
-  connect(&lemonSqueezy, &Licensing::LemonSqueezy::activatedChanged, this, [this] {
-    static auto& projectModel = DataModel::ProjectModel::instance();
-    if (projectModel.jsonFilePath() == demoProjectPath())
-      applyProGating();
-  });
-#endif
-}
+Misc::DemoLauncher::DemoLauncher() {}
 
 /**
  * @brief Returns the singleton instance of the demo launcher.
@@ -72,9 +57,9 @@ Misc::DemoLauncher& Misc::DemoLauncher::instance()
 
 /**
  * @brief Stage a writable copy, open it under a demo session (never persisted as the last
- *        project), gate the Pro 3D group, then connect so the simulation runs. A failed load
- *        restores the prior mode and session; when the demo is already loaded it re-arms the
- *        session, re-applies mode and gating, and reconnects instead of re-staging.
+ *        project), then connect so the simulation runs. A failed load restores the prior mode
+ *        and session; an already-loaded demo re-arms and reconnects instead of re-staging. Every
+ *        group ships enabled, so a token landing later cannot leave the Pro groups switched off.
  */
 bool Misc::DemoLauncher::startDemo()
 {
@@ -88,7 +73,6 @@ bool Misc::DemoLauncher::startDemo()
   if (projectModel.jsonFilePath() == demoProjectPath()) {
     state.setDemoSession(demoDirectory());
     state.setOperationMode(SerialStudio::ProjectFile);
-    applyProGating();
 
     if (io.isConnected())
       io.disconnectDevice();
@@ -113,8 +97,6 @@ bool Misc::DemoLauncher::startDemo()
     showStartFailure();
     return false;
   }
-
-  applyProGating();
 
   if (io.isConnected())
     io.disconnectDevice();
@@ -182,22 +164,6 @@ bool Misc::DemoLauncher::stageDemoProject(QString& projectPath) const
   }
 
   return true;
-}
-
-/**
- * @brief Enables the Pro-only groups (the Mission View painter, and any 3D plot) when Pro
- *        widgets are available; they ship disabled in the bundled project so GPL and
- *        unlicensed builds never render them.
- */
-void Misc::DemoLauncher::applyProGating() const
-{
-  static auto& model = DataModel::ProjectModel::instance();
-  const auto& groups = model.groups();
-
-  for (size_t i = 0; i < groups.size(); ++i)
-    if (groups[i].widget == QStringLiteral("painter")
-        || groups[i].widget == QStringLiteral("plot3d"))
-      model.setGroupEnabled(static_cast<int>(i), SerialStudio::proWidgetsEnabled());
 }
 
 /**

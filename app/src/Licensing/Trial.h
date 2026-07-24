@@ -71,6 +71,8 @@ private:
 public:
   [[nodiscard]] static Trial& instance();
 
+  static void reassertTokenIfEntitled();
+
   [[nodiscard]] bool busy() const noexcept;
   [[nodiscard]] bool firstRun() const;
   [[nodiscard]] bool trialEnabled() const;

@@ -30,6 +30,7 @@
 #include "Licensing/MachineID.h"
 #include "Licensing/MonotonicClock.h"
 #include "Licensing/OfflineLicense.h"
+#include "Licensing/Trial.h"
 #include "Misc/Utilities.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -440,7 +441,8 @@ QDateTime Licensing::LemonSqueezy::monotonicNow()
 /**
  * @brief Clears in-memory licensing state and optionally the stored license key;
  * the on-disk blob is only rewritten when persist is set, so a failed cache
- * restore cannot erase a license a later live verdict could still confirm.
+ * restore cannot erase a license a later live verdict could still confirm. The
+ * token slot is shared with Trial, which re-claims it before the emissions below.
  */
 void Licensing::LemonSqueezy::clearLicenseCache(const bool clearLicense, const bool persist)
 {
@@ -457,6 +459,7 @@ void Licensing::LemonSqueezy::clearLicenseCache(const bool clearLicense, const b
   m_activationDate = QDateTime();
   m_licensingData  = QJsonObject();
   CommercialToken::clearCurrent();
+  Trial::reassertTokenIfEntitled();
   qApp->setApplicationDisplayName(appName());
 
   if (clearLicense) {

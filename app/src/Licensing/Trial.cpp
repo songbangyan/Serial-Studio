@@ -35,6 +35,8 @@
 #include "Misc/Utilities.h"
 #include "MonotonicClock.h"
 
+static Licensing::Trial* s_trial = nullptr;
+
 /**
  * @brief Builds and installs a commercial token for an active trial.
  */
@@ -83,6 +85,8 @@ Licensing::Trial::Trial()
 
   if (!lemonSqueezy.isActivated())
     readSettings();
+
+  s_trial = this;
 }
 
 /**
@@ -92,6 +96,20 @@ Licensing::Trial& Licensing::Trial::instance()
 {
   static Trial instance;
   return instance;
+}
+
+/**
+ * @brief Re-installs the trial token after another licensing path cleared the shared token slot,
+ *        so a failed validation or an offline deactivation cannot silently strip Pro features
+ *        from a machine still in trial. Reads the constructed-instance pointer, not instance():
+ *        LemonSqueezy's constructor can reach a clear, which would recurse the Meyers guard.
+ */
+void Licensing::Trial::reassertTokenIfEntitled()
+{
+  if (!s_trial || !s_trial->trialEnabled() || CommercialToken::current().isValid())
+    return;
+
+  installTrialToken(s_trial->daysRemaining());
 }
 
 //--------------------------------------------------------------------------------------------------

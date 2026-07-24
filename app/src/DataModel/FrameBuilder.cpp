@@ -2148,21 +2148,21 @@ void DataModel::FrameBuilder::buildQuickPlotAudioFrame(const QStringList& channe
   datasets.reserve(channels.count());
   for (const auto& channel : std::as_const(channels)) {
     DataModel::Dataset dataset;
-    dataset.fft             = true;
-    dataset.plt             = !multipleChannels;
-    dataset.groupId         = 0;
-    dataset.datasetId       = index - 1;
-    dataset.uniqueId        = dataset_unique_id(0, 0, index - 1);
-    dataset.index           = index;
-    dataset.value           = channel;
-    dataset.pltMax          = maxValue;
-    dataset.pltMin          = minValue;
-    dataset.fftMax          = maxValue;
-    dataset.fftMin          = minValue;
-    dataset.fftSamples      = fftSamples;
-    dataset.fftSamplingRate = sampleRate;
-    dataset.fftLogX         = true;
-    dataset.fftBallistics   = true;
+    dataset.fft                  = true;
+    dataset.plt                  = !multipleChannels;
+    dataset.groupId              = 0;
+    dataset.datasetId            = index - 1;
+    dataset.uniqueId             = dataset_unique_id(0, 0, index - 1);
+    dataset.index                = index;
+    dataset.value                = channel;
+    dataset.pltMax               = maxValue;
+    dataset.pltMin               = minValue;
+    dataset.fftMax               = maxValue;
+    dataset.fftMin               = minValue;
+    dataset.fftSamples           = fftSamples;
+    dataset.fftSamplingRate      = sampleRate;
+    dataset.fftLogX              = true;
+    dataset.fftBallistics        = true;
     dataset.fftBallisticsRelease = 100;
 
     if (m_quickPlotHasHeader && index > 0
